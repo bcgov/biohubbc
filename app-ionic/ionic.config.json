@@ -1,0 +1,7 @@
+{
+  "name": "biohubbc-Ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}

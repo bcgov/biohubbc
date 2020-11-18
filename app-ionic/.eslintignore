@@ -1,0 +1,12 @@
+node_modules
+
+dist
+coverage
+
+openshift
+sonar-runner
+uploads
+
+.vscode
+
+src/serviceWorker.ts

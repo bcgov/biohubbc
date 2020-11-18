@@ -1,0 +1,10 @@
+{
+  "verbose": false,
+  "ignore": [
+    "*.spec.ts"
+  ],
+  "watch": [
+    "src"
+  ],
+  "ext": "ts"
+}
