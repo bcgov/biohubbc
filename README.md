@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
+
 # BioDiversityHub BC
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
@@ -10,7 +12,7 @@ The objectives for the BioHubBC project are:
 
 ## Acknowledgements
 
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)]()
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
 
 ## License
 
