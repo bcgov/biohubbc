@@ -1,0 +1,22 @@
+{
+  "name": "pipeline",
+  "version": "1.0.0",
+  "description": "Contains dependencies and scripts for executing OpenShift pipeline build/deploy scripts",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/ocp-sso.git"
+  },
+  "scripts": {
+    "build": "node api.build.js",
+    "deploy": "node api.deploy.js",
+    "test": "node api.test.js",
+    "clean": "node clean.js"
+  },
+  "dependencies": {
+    "pipeline-cli": "git+https://github.com/BCDevOps/pipeline-cli.git#v1.1"
+  }
+}

@@ -1,0 +1,236 @@
+apiVersion: v1
+kind: Template
+metadata:
+  resourceVersion: ''
+  selfLink: ''
+  name: biohubbc-app-dc
+parameters:
+  - name: NAME
+    value: biohubbc-app
+  - name: SUFFIX
+    value: 'dev'
+  - name: VERSION
+    value: '1.0'
+  - name: HOST
+  - name: CHANGE_ID
+    value: '0'
+  - name: REACT_APP_API_HOST
+    description: API host for application backend
+    value: ''
+  - name: ENVIRONMENT
+    description: ENVIRONMENT specification variable
+    value: 'dev'
+  - name: APP_IONIC_PORT_DEFAULT
+    description: Application default port
+    value: '8100'
+  - name: APP_IONIC_PORT_DEFAULT_NAME
+    description: Default port resource name
+    value: '8100-tcp'
+  - name: CPU_REQUEST
+    description: CPU REQUEST for deployment config
+    value: '200m'
+  - name: CPU_LIMIT
+    description: CPU LIMIT for dc
+    value: '500m'
+  - name: MEMORY_REQUEST
+    description: MEMORY REQUEST for dc
+    value: '1Gi'
+  - name: MEMORY_LIMIT
+    description: MEMORY LIMIT for dc
+    value: '2Gi'
+  - name: SSO_URL
+    description: Key clock login url
+    value: 'https://oidc.gov.bc.ca'
+  - name: SSO_CLIENT_ID
+    description: Client Id for application
+    value: 'lucy'
+  - name: SSO_REALM
+    description: Realm identifier or name
+    value: dfmlcg7z
+  - name: REPLICAS
+    value: '1'
+  - name: REPLICA_MAX
+    required: true
+    value: '1'
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Nodejs Runtime Image
+      labels:
+        shared: 'true'
+      creationTimestamp: null
+      generation: 0
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: null
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      generation: 0
+      labels: null
+      name: ${NAME}${SUFFIX}
+    spec:
+      replicas: '${{REPLICAS}}'
+      revisionHistoryLimit: 10
+      selector:
+        deploymentConfig: ${NAME}${SUFFIX}
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources:
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
+          requests:
+            cpu: ${CPU_REQUEST}
+            memory: ${MEMORY_REQUEST}
+        type: Rolling
+      template:
+        metadata:
+          annotations: null
+          creationTimestamp: null
+          labels:
+            deploymentConfig: ${NAME}${SUFFIX}
+        spec:
+          containers:
+            - env:
+                - name: CHANGE_VERSION
+                  value: ${CHANGE_ID}
+                - name: REACT_APP_API_HOST
+                  value: ${REACT_APP_API_HOST}
+                - name: ENVIRONMENT
+                  value: ${ENVIRONMENT}
+                - name: VERSION
+                  value: ${VERSION}
+                - name: SSO_URL
+                  value: ${SSO_URL}
+                - name: SSO_CLIENT_ID
+                  value: ${SSO_CLIENT_ID}
+                - name: SSO_REALM
+                  value: ${SSO_REALM}
+              image: ' '
+              imagePullPolicy: Always
+              name: app
+              ports:
+                - containerPort: ${{APP_IONIC_PORT_DEFAULT}}
+                  protocol: TCP
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+              readinessProbe:
+                failureThreshold: 10
+                httpGet:
+                  path: /
+                  port: ${{APP_IONIC_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 65
+                periodSeconds: 20
+                successThreshold: 1
+                timeoutSeconds: 20
+              livenessProbe:
+                failureThreshold: 10
+                httpGet:
+                  path: /
+                  port: ${{APP_IONIC_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 65
+                periodSeconds: 30
+                successThreshold: 1
+                timeoutSeconds: 20
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: ${NAME}${SUFFIX}
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${VERSION}
+          type: ImageChange
+        - type: ConfigChange
+    status:
+      availableReplicas: 0
+      latestVersion: 0
+      observedGeneration: 0
+      replicas: 0
+      unavailableReplicas: 0
+      updatedReplicas: 0
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations: null
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      ports:
+        - name: ${NAME}-${APP_IONIC_PORT_DEFAULT_NAME}
+          port: ${{APP_IONIC_PORT_DEFAULT}}
+          protocol: TCP
+          targetPort: ${{APP_IONIC_PORT_DEFAULT}}
+      selector:
+        deploymentconfig: ${NAME}${SUFFIX}
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      annotations: {}
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      host: ${HOST}
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      port:
+        targetPort: ${NAME}-${APP_IONIC_PORT_DEFAULT_NAME}
+      to:
+        kind: Service
+        name: ${NAME}${SUFFIX}
+        weight: 100
+      wildcardPolicy: None
+    status:
+      ingress: null
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      annotations: {}
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      maxReplicas: '${{REPLICA_MAX}}'
+      minReplicas: '${{REPLICAS}}'
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: ${NAME}${SUFFIX}
+      cpuUtilization:
+        targetPercentage: 95

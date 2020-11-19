@@ -1,0 +1,172 @@
+{
+    "apiVersion": "v1",
+    "kind": "Template",
+    "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+            "build": "biohubbc-app"
+        },
+        "name": "biohubbc-app"
+    },
+    "parameters": [
+        {
+          "name": "NAME",
+          "displayName": "Name",
+          "description": "A suffix appended to all objects",
+          "required": true,
+          "value": "biohubbc-app"
+        },
+        {
+          "name": "SUFFIX",
+          "displayName": "Name Suffix",
+          "description": "A suffix appended to all objects",
+          "required": true,
+          "value": "dev"
+        },
+        {
+          "name": "VERSION",
+          "required": true,
+          "value": "1.0"
+        },
+        {
+          "name": "SOURCE_CONTEXT_DIR",
+          "required": true,
+          "value": "app"
+        },
+        {
+          "name": "SOURCE_REPOSITORY_URL",
+          "required": true,
+          "value": "https://github.com/bcgov/biohubbc"
+        },
+        {
+          "name": "SOURCE_REPOSITORY_REF",
+          "required": false,
+          "value": "dev"
+        },
+        {
+          "name": "SOURCE_IMAGE_NAME",
+          "required": true,
+          "value": "rhscl-nodejs-8-rhel7"
+        },
+        {
+          "name": "SOURCE_IMAGE_TAG",
+          "required": true,
+          "value": "1-50"
+        }
+    ],
+    "objects":[
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+              "name": "rhscl-nodejs-8-rhel7",
+              "creationTimestamp": null,
+              "annotations": {
+                "description": "Nodejs Base Image"
+              },
+              "labels": {
+                "shared": "true"
+              }
+            },
+            "spec": {
+              "lookupPolicy": {
+                "local": false
+              },
+              "tags": [
+                {
+                  "name": "1-50",
+                  "annotations": null,
+                  "from": {
+                    "kind": "DockerImage",
+                    "name": "registry.access.redhat.com/rhscl/nodejs-8-rhel7:1-50"
+                  },
+                  "importPolicy": {},
+                  "referencePolicy": {
+                    "type": "Local"
+                  }
+                }
+              ]
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+              "name": "${NAME}",
+              "creationTimestamp": null,
+              "annotations": {
+                "description": "Nodejs Runtime Image"
+              },
+              "labels": {
+                "shared": "true"
+              }
+            },
+            "spec": {
+              "lookupPolicy": {
+                "local": false
+              }
+            }
+          },
+        {
+            "apiVersion": "v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "name": "${NAME}${SUFFIX}",
+                "creationTimestamp": null,
+                "labels": {},
+                "annotations": {}
+            },
+            "spec": {
+                "failedBuildsHistoryLimit": 5,
+                "nodeSelector": null,
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "${NAME}:${VERSION}"
+                    }
+                },
+                "postCommit": {},
+                "resources": {
+                    "limits": {
+                        "cpu": "1250m",
+                        "memory": "2Gi"
+                    },
+                    "requests": {
+                        "cpu": "500m",
+                        "memory": "1Gi"
+                    }
+                },
+                "runPolicy": "Serial",
+                "source": {
+                    "contextDir": "${SOURCE_CONTEXT_DIR}",
+                    "git": {
+                        "uri": "${SOURCE_REPOSITORY_URL}",
+                        "ref": "${SOURCE_REPOSITORY_REF}"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "rhscl-nodejs-8-rhel7:1-50"
+                        }
+                    },
+                    "type": "Docker"
+                },
+                "successfulBuildsHistoryLimit": 5,
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange"
+                    }
+                ]
+            },
+            "status": {
+                "lastVersion": 7
+            }
+        }
+    ]
+}

@@ -1,0 +1,285 @@
+apiVersion: v1
+kind: Template
+metadata:
+  resourceVersion: ''
+  selfLink: ''
+  name: biohubbc-api-dc
+parameters:
+  - name: NAME
+    value: biohubbc-api
+  - name: SUFFIX
+    value: '-dev'
+  - name: VERSION
+    description: Version of the application
+    value: '1.0.0'
+  - name: HOST
+    description: Host name of the application
+    required: true
+  - name: CHANGE_ID
+    description: Change id of the project. This will help to pull image stream
+    required: true
+    value: '0'
+  - name: DB_SERVICE_NAME
+    description: 'Database service name associated with deployment'
+    required: true
+  - name: ENVIRONMENT
+    description: Application Environment type variable
+    required: true
+    value: 'dev'
+  - name: CERTIFICATE_URL
+    description: Authentication certificate urls
+    required: true
+    value: 'https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
+  - name: CPU_REQ
+    value: '500m'
+  - name: CPU_LIMIT
+    value: '750m'
+  - name: MEMORY_REQ
+    value: '1Gi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+  - name: REPLICAS
+    value: '1'
+  - name: API_PORT_DEFAULT
+    value: '3002'
+  - name: API_PORT_DEFAULT_NAME
+    description: Api default port name
+    value: '3002-tcp'
+  - name: OBJECT_STORE_SECRETS
+    description: Secrets used to read and write to the S3 storage
+    value: 'biohubbc-object-store'
+  - name: REPLICA_MAX
+    required: true
+    value: '1'
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: Nodejs Runtime Image
+      labels:
+        shared: 'true'
+      creationTimestamp: null
+      generation: 0
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+    status:
+      dockerImageRepository: null
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      creationTimestamp: null
+      generation: 0
+      labels: null
+      name: ${NAME}${SUFFIX}
+    spec:
+      replicas: '${{REPLICAS}}'
+      revisionHistoryLimit: 10
+      selector:
+        deploymentConfig: ${NAME}${SUFFIX}
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources:
+          limits:
+            cpu: ${CPU_LIMIT}
+            memory: ${MEMORY_LIMIT}
+          requests:
+            cpu: ${CPU_REQ}
+            memory: ${MEMORY_REQ}
+        type: Rolling
+      template:
+        metadata:
+          annotations: null
+          creationTimestamp: null
+          labels:
+            deploymentConfig: ${NAME}${SUFFIX}
+        spec:
+          containers:
+            - env:
+                - name: API_HOST
+                  value: ${HOST}
+                - name: DB_HOST
+                  value: ${DB_SERVICE_NAME}
+                - name: DB_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: ${DB_SERVICE_NAME}
+                - name: DB_PORT
+                  value: '5432'
+                - name: APP_CERTIFICATE_URL
+                  value: ${CERTIFICATE_URL}
+                - name: CHANGE_VERSION
+                  value: ${CHANGE_ID}
+                - name: ENVIRONMENT
+                  value: ${ENVIRONMENT}
+                - name: VERSION
+                  value: ${VERSION}
+                - name: OBJECT_STORE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_url
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_access_key_id
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_SECRET_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_secret_key_id
+                      name: ${OBJECT_STORE_SECRETS}
+                - name: OBJECT_STORE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_bucket_name
+                      name: ${OBJECT_STORE_SECRETS}
+              image: ' '
+              imagePullPolicy: Always
+              name: api
+              ports:
+                - containerPort: ${{API_PORT_DEFAULT}}
+                  protocol: TCP
+              resources:
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+                requests:
+                  cpu: ${CPU_REQ}
+                  memory: ${MEMORY_REQ}
+              readinessProbe:
+                failureThreshold: 10
+                httpGet:
+                  path: /api/misc/version
+                  port: ${{API_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 100
+                periodSeconds: 30
+                successThreshold: 1
+                timeoutSeconds: 20
+              livenessProbe:
+                failureThreshold: 10
+                httpGet:
+                  path: /api/misc/version
+                  port: ${{API_PORT_DEFAULT}}
+                  scheme: HTTP
+                initialDelaySeconds: 80
+                periodSeconds: 30
+                successThreshold: 1
+                timeoutSeconds: 20
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /opt/app-root/app
+                  name: ${NAME}${SUFFIX}
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - emptyDir: {}
+              name: ${NAME}${SUFFIX}
+      test: false
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - api
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${VERSION}
+          type: ImageChange
+        - type: ConfigChange
+    status:
+      availableReplicas: 0
+      latestVersion: 0
+      observedGeneration: 0
+      replicas: 0
+      unavailableReplicas: 0
+      updatedReplicas: 0
+  - apiVersion: v1
+    stringData:
+      database-name: ''
+      database-password: ''
+      database-user: ''
+    kind: Secret
+    metadata:
+      annotations:
+        as-copy-of: ${DB_SERVICE_NAME}
+      creationTimestamp: null
+      name: ${NAME}${SUFFIX}
+    type: Opaque
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations: null
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      ports:
+        - name: ${NAME}-${API_PORT_DEFAULT_NAME}
+          port: ${{API_PORT_DEFAULT}}
+          protocol: TCP
+          targetPort: ${{API_PORT_DEFAULT}}
+      selector:
+        deploymentconfig: ${NAME}${SUFFIX}
+      sessionAffinity: None
+      type: ClusterIP
+    status:
+      loadBalancer: {}
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      annotations: {}
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      host: ${HOST}
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      port:
+        targetPort: ${NAME}-${API_PORT_DEFAULT_NAME}
+      to:
+        kind: Service
+        name: ${NAME}${SUFFIX}
+        weight: 100
+      wildcardPolicy: None
+    status:
+      ingress: null
+  - apiVersion: autoscaling/v1
+    kind: HorizontalPodAutoscaler
+    metadata:
+      annotations: {}
+      creationTimestamp: null
+      labels: {}
+      name: ${NAME}${SUFFIX}
+    spec:
+      maxReplicas: '${{REPLICA_MAX}}'
+      minReplicas: '${{REPLICAS}}'
+      scaleTargetRef:
+        apiVersion: v1
+        kind: DeploymentConfig
+        name: ${NAME}${SUFFIX}
+      cpuUtilization:
+        targetPercentage: 95

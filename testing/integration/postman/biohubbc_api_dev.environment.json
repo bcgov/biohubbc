@@ -1,0 +1,49 @@
+{
+	"id": "3d2fa9aa-b5e8-476c-ae3e-f813dc512df9",
+	"name": "BioHubBC-Environment-DEV",
+	"values": [
+		{
+			"key": "AUTH_HOST",
+			"value": "https://dev.oidc.gov.bc.ca",
+			"enabled": true
+		},
+		{
+			"key": "BASEURL",
+			"value": "https://api-dev-biohubbc.pathfinder.gov.bc.ca/api",
+			"enabled": true
+		},
+		{
+			"key": "BASEURLMOBILE",
+			"value": "https://api-dev-biohubbc.pathfinder.gov.bc.ca/api",
+			"enabled": true
+		},
+		{
+			"key": "POSTMAN_USERNAME",
+			"value": "postman",
+			"enabled": true
+		},
+		{
+			"key": "POSTMAN_PW",
+			"value": "<postman pw>",
+			"enabled": true
+		},
+		{
+			"key": "KEYCLOAK_TOKEN_EXPIRY",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "KEYCLOAK_TOKEN",
+			"value": "",
+			"enabled": true
+		},
+		{
+			"key": "KEYCLOAK_URL",
+			"value": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2020-10-20T21:49:27.343Z",
+	"_postman_exported_using": "Postman/7.32.0"
+}

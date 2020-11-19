@@ -1,33 +1,79 @@
 {
-  "name": "biohubbc",
-  "version": "0.1.0",
-  "private": true,
+  "name": "biohubbc-app",
+  "version": "0.0.0",
+  "description": "BioHubBC - Web Application",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/biohubbc.git"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.53",
-    "@types/react-dom": "^16.9.8",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.0",
-    "typescript": "^4.0.3",
-
-    "web-vitals": "^0.2.4"
+    "@bcgov/bc-sans": "^1.0.1",
+    "@date-io/date-fns": "^1.3.13",
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.2.1",
+    "@material-ui/lab": "latest",
+    "@material-ui/pickers": "^3.2.10",
+    "@material-ui/styles": "^4.10.0",
+    "@react-keycloak/web": "^2.1.0",
+    "@rjsf/core": "~2.4.0",
+    "@rjsf/material-ui": "~2.4.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^8.0.3",
+    "@tmcw/togeojson": "^4.2.0",
+    "axios": "^0.20.0",
+    "clsx": "~1.1.1",
+    "date-fns": "^2.16.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "js-yaml": "~3.14.0",
+    "keycloak-js": "^9.0.2",
+    "leaflet": "^1.7.1",
+    "leaflet-draw": "^1.0.0",
+    "leaflet.locatecontrol": "^0.72.0",
+    "material-ui-dropzone": "^3.5.0",
+    "moment": "^2.29.0",
+    "node-sass": "~4.14.1",
+    "qs": "^6.9.4",
+    "react": "^16.13.0",
+    "react-dom": "^16.13.0",
+    "react-error-boundary": "~2.3.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
+    "rxjs": "^6.6.3",
+    "typescript": "3.8.3",
+    "uuid": "^8.3.0",
+    "xmldom": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.3",
+    "@types/jest": "^24.0.25",
+    "@types/node": "^12.12.24",
+    "@types/qs": "^6.5.1",
+    "@types/react": "^16.9.17",
+    "@types/react-dom": "^16.9.4",
+    "@types/react-router": "^5.1.4",
+    "@types/react-router-dom": "^5.1.3",
+    "@types/uuid": "^8.3.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.1.2",
+    "react-scripts": "^3.4.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "build-prod": "react-scripts build --prod",
+    "deploy_start": "node server",
+    "eject": "react-scripts eject",
+    "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
+    "lint:fix": "npm run lint -- --fix"
   },
   "browserslist": {
     "production": [

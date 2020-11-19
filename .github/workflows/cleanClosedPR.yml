@@ -1,0 +1,54 @@
+# Clean out the deployment artifacts when a PR is closed, without a merge.
+# This clean out gets rid of the PR artifacts in Dev and in Tools.
+name: Clean out Dev from closed PR Artifacts
+on:
+  pull_request:
+    branches: [dev]
+    types: [closed]
+jobs:
+  clean:
+    name: Clean Deployment Artifacts for API and App in Dev and Tools environment
+    runs-on: ubuntu-latest
+    # Only do this when the PR was not merged and only for dev
+    if: ${{ github.event.pull_request.merged != true && github.base_ref == 'dev'  }}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Dev Branch - Contains the Pipeline Code
+        uses: actions/checkout@v2
+        with:
+          ref: 'dev'
+
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.16
+
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      # Log in to OpenShift.
+      - name: Log in to OpenShift
+        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+
+      # Clean the app deployment artifacts
+      - name: Clean APP Deployment
+        working-directory: "./app/.pipeline/"
+        run: |
+          npm install
+          # npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
