@@ -11,6 +11,14 @@
   },
   "servers": [
     {
+      "url": "http://localhost:3002/api",
+      "description": "local api"
+    },
+    {
+      "url": "http://localhost:7080/api",
+      "description": "local api via docker"
+    },
+    {
       "url": "https://api-dev-biohubbc.pathfinder.gov.bc.ca",
       "description": "deployed api in dev environment"
     },
@@ -35,7 +43,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT",
-        "description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.The 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`"
+        "description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header. The 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`"
       }
     },
     "responses": {
