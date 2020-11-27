@@ -8,7 +8,7 @@ export const GET: Operation = [
     defaultLog.debug({ label: 'misc-version-get' });
 
     const versionInfo = {
-      version: process.env.VERSION || '0',
+      version: process.env.VERSION || '0.0.0',
       environment: process.env.environment || process.env.NODE_ENV || 'localhost'
     };
 
@@ -39,6 +39,9 @@ GET.apiDoc = {
           }
         }
       }
+    },
+    503: {
+      $ref: '#/components/responses/503'
     },
     default: {
       $ref: '#/components/responses/default'
