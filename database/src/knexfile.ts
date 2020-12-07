@@ -1,9 +1,9 @@
 module.exports = {
   local: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -14,6 +14,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
+      schemaName: 'public',
       directory: './migrations'
     },
     seeds: {
@@ -22,10 +23,10 @@ module.exports = {
     }
   },
   dev: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -36,14 +37,15 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
+      schemaName: 'public',
       directory: './migrations'
     }
   },
   test: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -54,14 +56,15 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
+      schemaName: 'public',
       directory: './migrations'
     }
   },
   prod: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -72,6 +75,7 @@ module.exports = {
     },
     migrations: {
       tableName: 'migration',
+      schemaName: 'public',
       directory: './migrations'
     }
   }

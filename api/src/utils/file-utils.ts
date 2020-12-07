@@ -1,10 +1,8 @@
-'use strict';
-
 import AWS from 'aws-sdk';
 import { GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
 import { v4 as uuidv4 } from 'uuid';
-import { S3ACLRole } from '../constants/misc';
-import { MediaBase64 } from '../models/activity';
+import { S3_ROLE } from '../constants/roles';
+import { MediaBase64 } from '../models/media';
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 // const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
@@ -55,7 +53,7 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
     Body: media.mediaBuffer,
     ContentType: media.contentType,
     Key: key,
-    ACL: S3ACLRole.AUTH_READ,
+    ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
   }).promise();
 }

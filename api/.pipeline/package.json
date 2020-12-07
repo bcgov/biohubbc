@@ -13,7 +13,6 @@
   "scripts": {
     "build": "node api.build.js",
     "deploy": "node api.deploy.js",
-    "test": "node api.test.js",
     "clean": "node clean.js"
   },
   "dependencies": {

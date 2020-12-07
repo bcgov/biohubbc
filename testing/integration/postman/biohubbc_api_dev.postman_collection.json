@@ -1,428 +1,444 @@
 {
 	"info": {
-		"_postman_id": "c473d45e-39c2-4926-80c5-f3f183528080",
+		"_postman_id": "e0b4a7cc-a614-4c29-b692-2f63d1f4e4d1",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "misc/version",
-			"item": [
+			"name": "/template",
+			"event": [
 				{
-					"name": "/misc/version",
-					"event": [
+					"listen": "test",
+					"script": {
+						"id": "5b19d99a-a6c4-40e5-b122-8e6101fbcf87",
+						"exec": [
+							"// Set the `TEMPLATE_ID` environment variable to the `template_id` value returned by the last `POST template` request\r",
+							"var response = JSON.parse(responseBody);\r",
+							"pm.environment.set(\"TEMPLATE_ID\", response.template_id);\r",
+							"\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ddc6bd50-e79b-4c1c-9998-0b56873c8070",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"A template name\",\r\n    \"description\": \"A template description\",\r\n    \"tags\": [\r\n        \"animal\",\r\n        \"terrestrial\"\r\n    ],\r\n    \"data_template\": {\r\n        \"title\": \"Observation Form\",\r\n        \"type\": \"object\",\r\n        \"required\": [\r\n            \"type\",\r\n            \"date\",\r\n            \"quantity\"\r\n        ],\r\n        \"properties\": {\r\n            \"type\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Type\",\r\n                \"x-enum-code\": {\r\n                    \"x-enum-code-category-name\": \"biohub\",\r\n                    \"x-enum-code-header-name\": \"biohub_type_code\",\r\n                    \"x-enum-code-name\": \"code_name\",\r\n                    \"x-enum-code-text\": \"code_description\",\r\n                    \"x-enum-code-sort-order\": \"code_sort_order\"\r\n                }\r\n            },\r\n            \"date\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Date\",\r\n                \"format\": \"date-time\"\r\n            },\r\n            \"quantity\": {\r\n                \"type\": \"number\",\r\n                \"title\": \"Quantity\",\r\n                \"minimum\": 0,\r\n                \"maximum\": 1000\r\n            },\r\n            \"comment\": {\r\n                \"type\": \"string\",\r\n                \"title\": \"Comment\",\r\n                \"maxLength\": 500\r\n            }\r\n        }\r\n    },\r\n    \"ui_template\": {\r\n        \"ui:order\": [\r\n            \"type\",\r\n            \"quantity\",\r\n            \"date\",\r\n            \"comment\"\r\n        ],\r\n        \"type\": {},\r\n        \"quantity\": {},\r\n        \"date\": {\r\n            \"ui:widget\": \"datetime\"\r\n        },\r\n        \"comment\": {\r\n            \"ui:widget\": \"textarea\"\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/template",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"template"
+					]
+				},
+				"description": "Create a new template."
+			},
+			"response": [
+				{
+					"name": "Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "b149f760-64d0-4959-bced-447cff3d9adf",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Body matches 'dev-'\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"dev-\");\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript"
-							}
+							"key": "Content-Type",
+							"value": "application/json"
 						}
 					],
-					"request": {
-						"auth": {
-							"type": "noauth"
+					"cookie": [],
+					"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+				},
+				{
+					"name": "Unauthorized user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
 						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+				}
+			]
+		},
+		{
+			"name": "/template/{templateId}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "660c9fcd-6722-41e2-977c-102bca08677d",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/template/{{TEMPLATE_ID}}",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"template",
+						"{{TEMPLATE_ID}}"
+					]
+				},
+				"description": "Fetch a template."
+			},
+			"response": [
+				{
+					"name": "Unauthorized user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+				},
+				{
+					"name": "Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+				}
+			]
+		},
+		{
+			"name": "/activity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "19ae9abf-b8e5-4939-96e7-93449517772a",
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"tags\": [\r\n        \"animal\",\r\n        \"terrestrial\"\r\n    ],\r\n    \"template_id\": \"{{TEMPLATE_ID}}\",\r\n    \"form_data\": {\r\n        \"type\": \"test_type\",\r\n        \"date\": \"2020-12-15T02:00:03.978Z\",\r\n        \"quantity\": 11,\r\n        \"comment\": \"This is a comment\"\r\n    }\r\n}",
+					"options": {
+						"raw": {}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/activity",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"activity"
+					]
+				},
+				"description": "Create a new activity."
+			},
+			"response": [
+				{
+					"name": "Unauthorized user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
+				},
+				{
+					"name": "Created",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/activity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"activity"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
+				}
+			]
+		},
+		{
+			"name": "/version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ebc75b05-0f5b-4a69-9910-38ec8422e942",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASEURL}}/version",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"version"
+					]
+				},
+				"description": "Get api version information."
+			},
+			"response": [
+				{
+					"name": "Fetched api version information",
+					"originalRequest": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURLMOBILE}}/misc/version",
+							"raw": "{{baseUrl}}/misc/version",
 							"host": [
-								"{{BASEURLMOBILE}}"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"misc",
 								"version"
 							]
-						},
-						"description": "Get api version information"
-					},
-					"response": [
-						{
-							"name": "Fetched api version information",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/misc/version",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"misc",
-										"version"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"version\": \"eu esse sint aliqua Lorem\",\n \"environment\": \"est qui nostrud\"\n}"
 						}
-					]
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "activity",
-			"item": [
-				{
-					"name": "/activity/{activityId}",
-					"event": [
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "4519db77-2e33-4f82-8825-e511d16ee402",
-								"exec": [
-									"pm.test(\"Successful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
+							"key": "Content-Type",
+							"value": "application/json"
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-								"key": "Authorization",
-								"value": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {}
-							}
-						},
-						"url": {
-							"raw": "{{BASEURLMOBILE}}/activity/2",
-							"host": [
-								"{{BASEURLMOBILE}}"
-							],
-							"path": [
-								"activity",
-								"2"
-							]
-						},
-						"description": "Get a single activity by its ID.\r\nAlso fetches any media associated with the activity."
-					},
-					"response": [
-						{
-							"name": "Unauthorized user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
-						},
-						{
-							"name": "Created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
-						}
-					]
-				},
-				{
-					"name": "/activity",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "a47d517e-1931-4a4b-936e-1804eb8e6b8f",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"media\": [],\r\n    \"geometry\": [\r\n        {\r\n            \"type\": \"Feature\",\r\n            \"geometry\": {\r\n                \"type\": \"Polygon\",\r\n                \"coordinates\": [\r\n                    [\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ],\r\n                        [\r\n                            -123.3797264099121,\r\n                            48.441842443378555\r\n                        ],\r\n                        [\r\n                            -123.36264610290526,\r\n                            48.435692728712105\r\n                        ],\r\n                        [\r\n                            -123.3467674255371,\r\n                            48.448333001219005\r\n                        ],\r\n                        [\r\n                            -123.36565017700195,\r\n                            48.453399614563764\r\n                        ]\r\n                    ]\r\n                ]\r\n            },\r\n            \"properties\": {}\r\n        }\r\n    ],\r\n    \"form_data\": {\r\n        \"activity_data\": {\r\n            \"species_id\": \"123456\",\r\n            \"activity_status\": \"pending\",\r\n            \"media_indicator\": true,\r\n            \"jurisdiction_code\": \"MOT\",\r\n            \"access_description\": \"fence\",\r\n            \"species_agency_code\": \"CPR\",\r\n            \"created_date_on_device\": \"2020-10-15\",\r\n            \"updated_date_on_device\": \"2020-10-15\"\r\n        },\r\n        \"activity_type_data\": {},\r\n        \"activity_subtype_data\": {\r\n            \"plant_count\": 3,\r\n            \"biological_agent\": \"bioAgent\",\r\n            \"duration_of_count\": 4,\r\n            \"treatment_contractor\": \"contractorName\",\r\n            \"applicator1_last_name\": \"lastName\",\r\n            \"applicator1_first_name\": \"firsTName\",\r\n            \"biological_agent_count\": 3,\r\n            \"biological_agent_presence\": \"yes\"\r\n        }\r\n    },\r\n    \"activity_type\": \"Treatment\",\r\n    \"activity_subtype\": \"Activity_Treatment_BiologicalDispersalPlant\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASEURLMOBILE}}/activity",
-							"host": [
-								"{{BASEURLMOBILE}}"
-							],
-							"path": [
-								"activity"
-							]
-						},
-						"description": "Create a new activitiy, and upload any included media to S3."
-					},
-					"response": []
+					"cookie": [],
+					"body": "{\n \"version\": \"eu esse sint aliqua Lorem\",\n \"environment\": \"est qui nostrud\"\n}"
 				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "activities",
-			"item": [
-				{
-					"name": "/activities",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "98b173c2-d75c-47c1-8cdf-a071804cc2f6",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"page\": 0,\r\n    \"limit\": 1,\r\n    \"activity_type\": [\"Treatment\"],\r\n    \"activity_subtype\": [],\r\n    \"date_range_start\": \"\",\r\n    \"date_range_end\": \"\",\r\n    \"search_feature\": {\r\n        \"type\": \"Feature\",\r\n        \"geometry\": {\r\n            \"type\": \"Polygon\",\r\n            \"coordinates\": [\r\n                [\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.42094176838064\r\n                    ],\r\n                    [\r\n                        -123.32942962646484,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.46427120178859\r\n                    ],\r\n                    [\r\n                        -123.40315818786621,\r\n                        48.42094176838064\r\n                    ]\r\n                ]\r\n            ]\r\n        },\r\n        \"properties\": {}\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASEURLMOBILE}}/activities",
-							"host": [
-								"{{BASEURLMOBILE}}"
-							],
-							"path": [
-								"activities"
-							]
-						},
-						"description": "Fetch 0 or more activities based on supported search criteria.\r\nDoes not fetch associated media."
-					},
-					"response": []
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "media",
-			"item": [
-				{
-					"name": "/media/{key}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "8ca75669-45b5-4d29-bc9f-6ed965a06a6c",
-								"exec": [
-									"pm.test(\"Successful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-								"key": "Authorization",
-								"value": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"url": {
-							"raw": "{{BASEURLMOBILE}}/media/0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png",
-							"host": [
-								"{{BASEURLMOBILE}}"
-							],
-							"path": [
-								"media",
-								"0981685c-d2b1-47e0-91a4-099d97a91676-BunnyPNG.png"
-							]
-						},
-						"description": "Fetch a single media item based on its S3 key."
-					},
-					"response": [
-						{
-							"name": "Unauthorized user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
-						},
-						{
-							"name": "Created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
-						}
-					]
-				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "token",
@@ -430,7 +446,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "3cc533cc-8bdb-4518-83f6-f65f5975a861",
+						"id": "3ced0cb4-22d1-4598-b582-5feea5bea589",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
@@ -462,17 +478,17 @@
 						},
 						{
 							"key": "client_id",
-							"value": "biohubbc-bc",
+							"value": "{{KEYCLOAK_CLIENT_ID}}",
 							"type": "text"
 						},
 						{
 							"key": "username",
-							"value": "{{POSTMAN_USERNAME}}",
+							"value": "{{TEST_USERNAME}}",
 							"type": "text"
 						},
 						{
 							"key": "password",
-							"value": "{{POSTMAN_PW}}",
+							"value": "{{TEST_PASSWORD}}",
 							"type": "text"
 						},
 						{
@@ -507,7 +523,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "db6d8e16-2ecc-4e8b-a0db-0d63246d4bc3",
+				"id": "9eae8876-aaea-4334-91db-92ec5fb99371",
 				"type": "text/javascript",
 				"exec": [
 					"const echoPostRequest = {",
@@ -558,7 +574,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "974a0009-28d8-4bbb-a832-55f982e31c2f",
+				"id": "d52d1cc3-7e86-4be2-8ba2-0b30e6863137",
 				"type": "text/javascript",
 				"exec": [
 					""

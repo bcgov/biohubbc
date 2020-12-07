@@ -10,8 +10,6 @@ ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
 
-WORKDIR $HOME_ROOT
-
 WORKDIR $HOME
 
 # Install dependencies

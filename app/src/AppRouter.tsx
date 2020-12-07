@@ -9,7 +9,7 @@ import AppRoute from 'utils/AppRoute';
 
 const AppRouter: React.FC = () => {
   const getTitle = (page: string) => {
-    return `biohubbc - ${page}`;
+    return `BioHub - ${page}`;
   };
 
   return (

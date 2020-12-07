@@ -1,26 +1,17 @@
 version: '3.5'
 
 services:
-  ## Build the api npm dependencies docker image
-  api_dependency:
-    image: ${PROJECT_NAME}-${TAG}-api-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-dep
-    build:
-      context: ./
-      dockerfile: ./.docker/api/Dockerfile.npm
-    volumes:
-      - npmcache_api:/opt/app-root/src/node_modules
-
   ## Build the api docker image
   api:
-    image: ${PROJECT_NAME}-${TAG}-api-img
-    container_name: ${PROJECT_NAME}-${TAG}-api
+    image: ${DOCKER_PROJECT_NAME}-api-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-api-${DOCKER_NAMESPACE}-container
     build:
       context: ./
       dockerfile: ./.docker/api/Dockerfile
     ports:
       - ${API_PORT}:${API_PORT}
     environment:
+      - NODE_ENV=${NODE_ENV}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       - DB_HOST=${DB_HOST}
@@ -28,30 +19,11 @@ services:
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
-      - APP_CERTIFICATE_URL=${APP_CERTIFICATE_URL}
-      - APP_CERTIFICATE_URL_TEST=${APP_CERTIFICATE_URL_TEST}
-      - ENVIRONMENT=local
-      - NODE_ENV=local
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
       - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
+      - LOG_LEVEL=${LOG_LEVEL}
     volumes:
-      - ./api:/opt/app-root/src
-      - npmcache_api:/opt/app-root/src/node_modules
-    networks:
-      - local-network
-    links:
-      - db
-    depends_on:
-      - db
-      - api_dependency
-    restart: 'no'
-
-networks:
-  local-network:
-    driver: bridge
-
-volumes:
-  npmcache:
-    name: ${PROJECT_NAME}-${TAG}-vol-npmcache
+      - ./:/opt/app-root/src

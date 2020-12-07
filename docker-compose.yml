@@ -3,14 +3,15 @@ version: '3.5'
 services:
   ## Build postgres docker image
   db:
-    image: ${PROJECT_NAME}-${TAG}-postgres-img
-    container_name: ${PROJECT_NAME}-${TAG}-db
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-container
     build:
       context: ./database/.docker/db
       dockerfile: Dockerfile
     ports:
       - ${DB_PORT}:${DB_PORT}
     environment:
+      - NODE_ENV=${NODE_ENV}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_DATABASE}
@@ -22,50 +23,36 @@ services:
 
   ## Run the database migrations and seeding
   db_setup:
-    image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
-    container_name: ${PROJECT_NAME}-${TAG}-db-setup
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-container
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.setup
     environment:
+      - NODE_ENV=${NODE_ENV}
       - DB_HOST=${DB_HOST}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
-      - ENVIRONMENT=local
-      - NODE_ENV=local
+      - DB_SCHEMA=${DB_SCHEMA}
     networks:
       - local-network
-    links:
-      - db
     depends_on:
       - db
-      # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
-      # started before the setup runs. Possible better solutions:
-      # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-      - api_dependency
-
-  ## Build the api npm dependencies docker image
-  api_dependency:
-    image: ${PROJECT_NAME}-${TAG}-api-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-api-dep
-    build:
-      context: ./api
-      dockerfile: ./.docker/api/Dockerfile.npm
-    volumes:
-      - npmcache_api:/opt/app-root/src/node_modules
+    command: ['./.docker/wait-for-it.sh', 'db:${DB_PORT}', '--', 'npm', 'run', 'setup']
 
   ## Build the api docker image
   api:
-    image: ${PROJECT_NAME}-${TAG}-api-img
-    container_name: ${PROJECT_NAME}-${TAG}-api
+    image: ${DOCKER_PROJECT_NAME}-api-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-api-${DOCKER_NAMESPACE}-container
     build:
       context: ./api
       dockerfile: ./.docker/api/Dockerfile
     ports:
       - ${API_PORT}:${API_PORT}
     environment:
+      - NODE_ENV=${NODE_ENV}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       - DB_HOST=${DB_HOST}
@@ -73,74 +60,56 @@ services:
       - DB_PASS=${DB_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
-      - APP_CERTIFICATE_URL=${APP_CERTIFICATE_URL}
-      - APP_CERTIFICATE_URL_TEST=${APP_CERTIFICATE_URL_TEST}
-      - ENVIRONMENT=local
-      - NODE_ENV=local
+      - DB_SCHEMA=${DB_SCHEMA}
+      - KEYCLOAK_URL=${KEYCLOAK_URL}
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
       - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
+      - LOG_LEVEL=${LOG_LEVEL}
     volumes:
       - ./api:/opt/app-root/src
-      - npmcache_api:/opt/app-root/src/node_modules
     networks:
       - local-network
-    links:
-      - db
     depends_on:
       - db
       - db_setup
-      - api_dependency
-
-  ## Build the app npm dependencies docker image
-  app_dependency:
-    image: ${PROJECT_NAME}-${TAG}-app-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-app-dep
-    build:
-      context: ./app
-      dockerfile: ./.docker/app/Dockerfile.npm
-    volumes:
-      - npmcache_app:/opt/app-root/src/node_modules
 
   ## Build the app docker image
   app:
-    image: ${PROJECT_NAME}-${TAG}-app-img
-    container_name: ${PROJECT_NAME}-${TAG}-app
+    image: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-container
     build:
       context: ./app
       dockerfile: ./.docker/app/Dockerfile
     ports:
       - ${APP_PORT}:${APP_PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - APP_PORT=${APP_PORT}
+      - LOCAL_API_HOST=app_api:${API_PORT}
     volumes:
       - ./app:/opt/app-root/src
-      - npmcache_app:/opt/app-root/src/node_modules
     networks:
       - local-network
     depends_on:
-      - app_dependency
       - nginx
-    environment:
-      - APP_PORT=${APP_PORT}
-      - LOCAL_API_HOST=app_api:${API_PORT}
-      - ENVIRONMENT=local
-      - VERSION=${VERSION}
 
   # Build the nginx web-server docker image
   nginx:
-    image: ${PROJECT_NAME}-${TAG}-nginx-img
-    container_name: ${PROJECT_NAME}-${TAG}-nginx
+    image: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-container
     build:
       context: ./.docker/nginx
       dockerfile: Dockerfile
     restart: always
     ports:
       - 80:80
+    networks:
+      - local-network
     depends_on:
       - db
       - api
-    networks:
-      - local-network
 
 networks:
   local-network:
@@ -148,8 +117,4 @@ networks:
 
 volumes:
   postgres:
-    name: ${PROJECT_NAME}-${TAG}-vol-postgres
-  npmcache_api:
-    name: ${PROJECT_NAME}-${TAG}-vol-npmcache-api
-  npmcache_app:
-    name: ${PROJECT_NAME}-${TAG}-vol-npmcache-app
+    name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-vol

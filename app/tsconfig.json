@@ -25,6 +25,6 @@
     "noEmit": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src", "../app-common-library"],
+  "include": ["src", "../app-common-library", "src/components/common/.tsx"],
   "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
 }

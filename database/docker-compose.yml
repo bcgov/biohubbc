@@ -1,0 +1,52 @@
+version: '3.5'
+
+services:
+  ## Build database image
+  db:
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./.docker/db
+      dockerfile: Dockerfile
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_DATABASE}
+      - PORT=${DB_PORT}
+    networks:
+      - local-network
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  ## Build setup image
+  ## Runs the database migrations and seeding
+  db_setup:
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-container
+    build:
+      context: ./
+      dockerfile: ./.docker/db/Dockerfile.setup
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_SCHEMA=${DB_SCHEMA}
+    networks:
+      - local-network
+    depends_on:
+      - db
+    command: ['./.docker/wait-for-it.sh', 'db:${DB_PORT}', '--', 'npm', 'run', 'setup']
+
+networks:
+  local-network:
+    driver: bridge
+
+volumes:
+  postgres:
+    name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-vol

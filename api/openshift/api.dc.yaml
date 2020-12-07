@@ -22,7 +22,7 @@ parameters:
   - name: DB_SERVICE_NAME
     description: 'Database service name associated with deployment'
     required: true
-  - name: ENVIRONMENT
+  - name: NODE_ENV
     description: Application Environment type variable
     required: true
     value: 'dev'
@@ -123,12 +123,12 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: '5432'
-                - name: APP_CERTIFICATE_URL
+                - name: KEYCLOAK_URL
                   value: ${CERTIFICATE_URL}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
-                - name: ENVIRONMENT
-                  value: ${ENVIRONMENT}
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
                 - name: VERSION
                   value: ${VERSION}
                 - name: OBJECT_STORE_URL
