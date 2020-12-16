@@ -1,45 +1,19 @@
 version: '3.5'
 
 services:
-  ## Build the app npm dependencies docker image
-  app_dependency:
-    image: ${PROJECT_NAME}-${TAG}-app-dep-img
-    container_name: ${PROJECT_NAME}-${TAG}-app-dep
-    build:
-      context: ./
-      dockerfile: ./.docker/app/Dockerfile.npm
-    volumes:
-      - npmcache_app:/opt/app-root/src/node_modules
-
   # https://blog.knoldus.com/deployment-with-docker-in-ionic/ #########################################################
-
   ## Build the app docker image
   app:
-    image: ${PROJECT_NAME}-${TAG}-app-img
-    container_name: ${PROJECT_NAME}-${TAG}-app
+    image: ${DOCKER_PROJECT_NAME}-app-ionic-${DOCKER_NAMESPACE}-setup-img
+    container_name: ${DOCKER_PROJECT_NAME}-app-ionic-${DOCKER_NAMESPACE}-setup-container
     build:
       context: ./
       dockerfile: ./.docker/app/Dockerfile
     ports:
       - ${APP_IONIC_PORT}:${APP_IONIC_PORT}
-    volumes:
-      - ./app:/opt/app-root/src
-      - npmcache_app:/opt/app-root/src/node_modules
-    networks:
-      - local-network
-    depends_on:
-      - app_dependency
-      - nginx
     environment:
+      - NODE_ENV=${NODE_ENV}
       - APP_IONIC_PORT=${APP_IONIC_PORT}
       - LOCAL_API_HOST=app_api:${REACT_APP_API_PORT}
-      - ENVIRONMENT=local
-      - VERSION=${VERSION}
-
-networks:
-  local-network:
-    driver: bridge
-
-volumes:
-  npmcache:
-    name: ${PROJECT_NAME}-${TAG}-vol-npmcache
+    volumes:
+      - ./:/opt/app-root/src

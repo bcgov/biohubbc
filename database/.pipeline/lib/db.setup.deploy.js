@@ -56,7 +56,6 @@ module.exports = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
-        ENVIRONMENT: phases[phase].env || 'dev',
         NODE_ENV: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
         IMAGE: dbSetupImageStream.image.dockerImageReference

@@ -1,6 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { useMemo } from 'react';
+import { IActivity, ICreateActivity, ITemplate } from 'interfaces/useBioHubApi-interfaces';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
@@ -36,6 +37,30 @@ export const useBiohubApi = () => {
   const api = useApi();
 
   /**
+   * Get a template based on its ID.
+   *
+   * @param {templateId} templateId
+   * @return {*}  {Promise<ITemplate>}
+   */
+  const getTemplate = async (templateId: string): Promise<ITemplate> => {
+    const { data } = await api.get(`/api/template/${templateId}`);
+
+    return data;
+  };
+
+  /**
+   * Create a new activity record.
+   *
+   * @param {ICreateActivity} activity
+   * @return {*}  {Promise<IActivity>}
+   */
+  const createActivity = async (activity: ICreateActivity): Promise<IActivity> => {
+    const { data } = await api.post('/api/activity', activity);
+
+    return data;
+  };
+
+  /**
    * Fetch the api json-schema spec.
    *
    * @return {*}  {Promise<any>}
@@ -47,6 +72,8 @@ export const useBiohubApi = () => {
   };
 
   return {
+    getTemplate,
+    createActivity,
     getApiSpec
   };
 };

@@ -17,8 +17,8 @@ parameters:
   - name: API_HOST
     description: API host for application backend
     value: ''
-  - name: ENVIRONMENT
-    description: ENVIRONMENT specification variable
+  - name: NODE_ENV
+    description: NODE_ENV specification variable
     value: 'dev'
   - name: APP_PORT_DEFAULT
     description: Application default port
@@ -107,8 +107,8 @@ objects:
                   value: ${CHANGE_ID}
                 - name: API_HOST
                   value: ${API_HOST}
-                - name: ENVIRONMENT
-                  value: ${ENVIRONMENT}
+                - name: NODE_ENV
+                  value: ${NODE_ENV}
                 - name: VERSION
                   value: ${VERSION}
                 - name: SSO_URL

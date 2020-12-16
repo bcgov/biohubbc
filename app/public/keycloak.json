@@ -1,16 +1,8 @@
 {
-    "realm": "dfmlcg7z",
-    "auth-server-url": "https://dev.oidc.gov.bc.ca/auth/",
-    "ssl-required": "external",
-    "resource": "invasives-bc",
-    "public-client": true,
-    "confidential-port": 0,
-    "clients": [
-        {
-            "clientId": "invasives-bc",
-            "enabled": true,
-            "publicClient": true,
-            "redirectUris": ["http://127.0.0.1"]
-        }
-    ]
+  "realm": "dfmlcg7z",
+  "auth-server-url": "https://dev.oidc.gov.bc.ca/auth",
+  "ssl-required": "external",
+  "resource": "invasives-bc",
+  "public-client": true,
+  "confidential-port": 0
 }

@@ -4,7 +4,6 @@
 # Makefile -- BioHubBC
 # ------------------------------------------------------------------------------
 
-
 # You must manually create an empty `.env` file at the root level (this level), otherwise the below commands will fail.
 -include .env
 
@@ -12,63 +11,99 @@ export $(shell sed 's/=.*//' .env)
 
 all : help
 .DEFAULT : help
-.PHONY : local local-debug build-local setup-local run-local run-debug close-local cclean-local test-local database app api help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug database app app-ionic api help
 
 # ------------------------------------------------------------------------------
 # Task Aliases
 # ------------------------------------------------------------------------------
 
-# Note: If you need to edit the .env file before running the build:
-# 1. Run `make setup-docker`
-# 2. Edit the `.env` file
+# Running the docker build
+# 1. Run `make env`
+# 2. Edit the `.env` file as needed to update variables and  secrets
 # 3. Run `make local` or `make local-debug`
 
-local: | setup-docker close-local build-local run-local ## Performs all commands necessary to run api in docker
+env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
-local-debug: | setup-docker close-local build-local run-debug ## Performs all commands necessary to run api in docker in debug mode
+all: | close build run ## Performs all commands necessary to run all projects in docker
+
+all-debug: | close build run-debug ## Performs all commands necessary to run all projects in docker in debug mode
+
+backend: | close build-backend run-backend ## Performs all commands necessary to run all abckend projects in docker
+
+backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all abckend projects in docker in debug mode
 
 # ------------------------------------------------------------------------------
-# Development Commands
+# Setup/Cleanup Commands
 # ------------------------------------------------------------------------------
 
-setup-docker: ## Prepares the environment variables for local development using docker (will not overwrite an existing .env file)
+setup: ## Prepares the environment variables used by all project docker containers
 	@echo "==============================================="
-	@echo "Make: setup-local - copying env.docker to .env"
+	@echo "Make: setup - copying env.docker to .env"
 	@echo "==============================================="
 	@cp -i env_config/env.docker .env
 
-build-local: ## Builds the local development containers
+close: ## Closes all project containers
 	@echo "==============================================="
-	@echo "Make: build-local - building Docker images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build
-
-run-local: ## Runs the local development containers
-	@echo "==============================================="
-	@echo "Make: run-local - running api/app images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d
-
-run-debug: ## Runs the local development containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-debug - running api/app images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up
-
-close-local: ## Closes the local development containers
-	@echo "==============================================="
-	@echo "Make: close-local - closing Docker containers"
+	@echo "Make: close - closing Docker containers"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml down
 
-clean-local: ## Closes and cleans (removes) local development containers
+clean: ## Closes and cleans (removes) all project containers
 	@echo "==============================================="
-	@echo "Make: clean-local - closing and cleaning Docker containers"
+	@echo "Make: clean - closing and cleaning Docker containers"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
 # ------------------------------------------------------------------------------
-# Helper Commands
+# Build/Run Backend+Frontend Commands
+# - Builds all of the biohub projects (database, api, app, app-ionic)
+# ------------------------------------------------------------------------------
+
+build: ## Builds all project containers
+	@echo "==============================================="
+	@echo "Make: build - building all project images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build
+
+run: ## Runs all project containers
+	@echo "==============================================="
+	@echo "Make: run - running all project images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d
+
+run-debug: ## Runs all project containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-debug - running all project images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up
+
+
+# ------------------------------------------------------------------------------
+# Build/Run Backend Commands
+# - Builds all of the biohub backend projects (database, api)
+# ------------------------------------------------------------------------------
+
+build-backend: ## Builds all project containers
+	@echo "==============================================="
+	@echo "Make: build-backend - building backend images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup api nginx
+
+run-backend: ## Runs all project containers
+	@echo "==============================================="
+	@echo "Make: run-backend - running backend images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
+
+run-backend-debug: ## Runs all project containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-backend-debug - running backend images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup api nginx
+
+# ------------------------------------------------------------------------------
+# Exec Commands
+# - Autmatically execs into the specified container
 # ------------------------------------------------------------------------------
 
 database: ## Executes into database container.
@@ -84,11 +119,21 @@ app: ## Executes into the app container.
 	@echo "==============================================="
 	@docker-compose exec app bash
 
+app-ionic: ## Executes into the app container.
+	@echo "==============================================="
+	@echo "Shelling into app-ionic container"
+	@echo "==============================================="
+	@docker-compose exec app_ionic bash
+
 api: ## Executes into the workspace container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
 	@docker-compose exec api bash
+
+# ------------------------------------------------------------------------------
+# Help Commands
+# ------------------------------------------------------------------------------
 
 help:	## Display this help screen.
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

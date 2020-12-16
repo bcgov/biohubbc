@@ -1,16 +1,18 @@
-'use strict';
-
 import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
-import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
-import { authenticate } from './utils/auth-utils';
+import { OpenAPI } from 'openapi-types';
+import { apiDoc } from './openapi/api';
+import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
+// import { authenticate } from './security/auth-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
+
+const BODY_SIZE_LIMIT = process.env.BODY_SIZE_LIMIT || '50mb';
 
 // Get initial express app
 const app: express.Express = express();
@@ -30,25 +32,27 @@ app.use(function (req: any, res: any, next: any) {
 
 // Initialize express-openapi framework
 initialize({
-  apiDoc: './src/openapi/api-doc.json', // base open api spec
+  apiDoc: apiDoc as OpenAPI.Document, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
   promiseMode: true, // allow endpoint handlers to return promises
   consumesMiddleware: {
-    'application/json': bodyParser.json({ limit: '50mb' }),
-    'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
+    'application/json': bodyParser.json({ limit: BODY_SIZE_LIMIT }),
+    'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: BODY_SIZE_LIMIT, extended: true })
   },
   securityHandlers: {
+    // applies authentication logic
     Bearer: function (req, scopes) {
-      // return true // bypass authentication
-      return authenticate(req, scopes);
+      return true; // bypass authentication (local dev only)
+      // return authenticate(req, scopes);
     }
   },
   securityFilter: async (req, res) => {
-    const updatedReq = await applyApiDocSecurityFilters(req);
-    res.status(200).json(updatedReq['apiDoc']);
+    // applies modifications to the api-doc before being returned via the `/api-docs` endpoint
+    const modifiedApiDoc = await applyApiDocSecurityFilters(req);
+    res.status(200).json(modifiedApiDoc);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
