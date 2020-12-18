@@ -31,7 +31,7 @@ export function isValidJSONSchema(jsonSchema: object): validationResult {
  * @return {boolean} true if the template is valid, false otherwise
  */
 export function isJSONObjectValidForJSONSchema(jsonObject: object, jsonSchema: object): validationResult {
-  const ajv = new Ajv();
+  const ajv = new Ajv({ allErrors: true });
 
   const isValidJSONSchema = ajv.validate(jsonSchema, jsonObject);
 

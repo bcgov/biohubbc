@@ -28,6 +28,7 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
       ${activity.form_data}
     )
     RETURNING
+      activity_id,
       tags,
       template_id,
       form_data;

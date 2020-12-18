@@ -130,7 +130,7 @@ function createActivity(): RequestHandler {
 
         const validationResult = isJSONObjectValidForJSONSchema(sanitizedData.form_data, data_template);
 
-        if (!validationResult) {
+        if (!validationResult || !validationResult.isValid) {
           // Form data does not conform to the specified template
           await connection.query('COMMIT');
 
