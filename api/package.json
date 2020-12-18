@@ -17,7 +17,7 @@
     "migrate:rollback": "knex migrate:rollback",
     "test": "ts-mocha --timeout 60000",
     "lint": "eslint . --ignore-pattern 'node_modules' --ext .ts",
-    "lint-fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts"
+    "lint:fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts"
   },
   "engines": {
     "node": ">= 10.0.0",

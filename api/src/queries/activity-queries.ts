@@ -43,3 +43,36 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get a single activity.
+ *
+ * @param {string} activityId
+ * @returns {SQLStatement} sql query object
+ */
+export const getActivitySQL = (activityId: string): SQLStatement => {
+  defaultLog.debug({ label: 'getActivitySQL', message: 'params', activityId });
+
+  if (!activityId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      activity_id,
+      tags
+    from
+      activity
+    where
+      activity_id = ${activityId};
+  `;
+
+  defaultLog.debug({
+    label: 'getActivitySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

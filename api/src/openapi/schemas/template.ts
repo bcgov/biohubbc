@@ -1,8 +1,11 @@
+import { tags } from '../components/tags';
+
 const template = {
   title: 'Template Object',
   type: 'object',
-  required: ['name', 'description', 'tags', 'data_template', 'ui_template'],
+  required: ['tags', 'name', 'description', 'data_template', 'ui_template'],
   properties: {
+    tags: { ...tags },
     name: {
       description: 'Template name',
       type: 'string',
@@ -13,15 +16,6 @@ const template = {
       description: 'Template description',
       type: 'string',
       maxLength: 300
-    },
-    tags: {
-      description: 'Tags to idenfity the template',
-      type: 'array',
-      items: {
-        type: 'string',
-        enum: ['plant', 'animal', 'aquatic', 'terrestrial', 'invasive']
-      },
-      minItems: 2
     },
     data_template: {
       description: 'Specification of the form fields and their data types/constraints.',

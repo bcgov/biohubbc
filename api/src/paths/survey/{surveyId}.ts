@@ -4,18 +4,18 @@ import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getTemplateSQL } from '../../queries/template-queries';
-import { templateResponseBody } from '../../openapi/schemas/template';
+import { getSurveySQL } from '../../queries/survey-queries';
+import { surveyResponseBody } from '../../openapi/schemas/survey';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
-const defaultLog = getLogger('paths/template/{templateId}');
+const defaultLog = getLogger('paths/survey/{surveyId}');
 
-export const GET: Operation = [logRequest('paths/template/{templateId}', 'POST'), getTemplate()];
+export const GET: Operation = [logRequest('paths/survey/{surveyId}', 'POST'), getSurvey()];
 
 GET.apiDoc = {
-  description: 'Fetch a template by its ID.',
-  tags: ['template'],
+  description: 'Fetch a survey by its ID.',
+  tags: ['survey'],
   security: [
     {
       Bearer: READ_ROLES
@@ -24,17 +24,17 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'templateId',
+      name: 'surveyId',
       required: true
     }
   ],
   responses: {
     200: {
-      description: 'Template with matching templateId.',
+      description: 'Survey with matching surveyId.',
       content: {
         'application/json': {
           schema: {
-            ...(templateResponseBody as object)
+            ...(surveyResponseBody as object)
           }
         }
       }
@@ -61,11 +61,11 @@ GET.apiDoc = {
 };
 
 /**
- * Get a template by its id.
+ * Get a survey by its id.
  *
  * @returns {RequestHandler}
  */
-function getTemplate(): RequestHandler {
+function getSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = await getDBConnection();
 
@@ -77,9 +77,9 @@ function getTemplate(): RequestHandler {
     }
 
     try {
-      const getTemplateSQLStatement: SQLStatement = getTemplateSQL(req.params.templateId);
+      const getSurveySQLStatement: SQLStatement = getSurveySQL(req.params.surveyId);
 
-      if (!getTemplateSQLStatement) {
+      if (!getSurveySQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -87,15 +87,15 @@ function getTemplate(): RequestHandler {
       }
 
       const createResponse: QueryResult = await connection.query(
-        getTemplateSQLStatement.text,
-        getTemplateSQLStatement.values
+        getSurveySQLStatement.text,
+        getSurveySQLStatement.values
       );
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getTemplate', message: 'error', error });
+      defaultLog.debug({ label: 'getSurvey', message: 'error', error });
       throw error;
     } finally {
       connection.release();

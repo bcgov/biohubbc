@@ -78,7 +78,7 @@ export const getTemplateSQL = (templateId: string): SQLStatement => {
   `;
 
   defaultLog.debug({
-    label: 'postTemplateSQL',
+    label: 'getTemplateSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

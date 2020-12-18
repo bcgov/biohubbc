@@ -4,9 +4,9 @@ import { parseBase64DataURLString } from './../utils/file-utils';
  * A single media item.
  *
  * @export
- * @interface IMediaItem
+ * @interface IMedia
  */
-export interface IMediaItem {
+export interface IMedia {
   media_date?: string;
   description?: string;
   file_name: string;
@@ -30,10 +30,10 @@ export class MediaBase64 {
   /**
    * Creates an instance of MediaBase64.
    *
-   * @param {IMediaItem} obj
+   * @param {IMedia} obj
    * @memberof MediaBase64
    */
-  constructor(obj: IMediaItem) {
+  constructor(obj: IMedia) {
     if (!obj) {
       throw new Error('media was null');
     }

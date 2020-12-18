@@ -23,7 +23,7 @@ export function isValidJSONSchema(jsonSchema: object): validationResult {
 }
 
 /**
- * Validate that a JSON object conforms a JSON-Schema template.
+ * Validate that a JSON object conforms to a JSON-Schema template.
  *
  * @export
  * @param {object} jsonObject

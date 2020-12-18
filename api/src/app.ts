@@ -44,7 +44,7 @@ initialize({
   },
   securityHandlers: {
     // applies authentication logic
-    Bearer: function (req, scopes) {
+    Bearer: function (/*req, scopes*/) {
       return true; // bypass authentication (local dev only)
       // return authenticate(req, scopes);
     }
@@ -58,7 +58,7 @@ initialize({
     // Transform openapi-request-validator and openapi-response-validator errors
     return ajvError;
   },
-  errorMiddleware: function (error, req, res, next) {
+  errorMiddleware: function (error, req, res) {
     if (!error.status) {
       // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
       // log any unintentionally thrown errors (where no status has been set)

@@ -3,6 +3,21 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('models/template');
 
 /**
+ * A single template item.
+ *
+ * @export
+ * @interface ITemplate
+ */
+export interface ITemplate {
+  template_id?: string;
+  tags: string[];
+  name: string;
+  description: string;
+  data_template: object;
+  ui_template: object;
+}
+
+/**
  * POST template object.
  *
  * @export

@@ -1,45 +1,43 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { PostTemplateObj } from '../models/template';
-import { postTemplateSQL } from '../queries/template-queries';
-import { templatePostBody, templateResponseBody } from '../openapi/schemas/template';
+import { PostSurveyObject } from '../models/survey';
+import { surveyPostBody, surveyResponseBody } from '../openapi/schemas/survey';
+import { postSurveySQL } from '../queries/survey-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
-import { isValidJSONSchema } from '../utils/template-utils';
 
-const defaultLog = getLogger('paths/template');
+const defaultLog = getLogger('paths/survey');
 
-export const POST: Operation = [logRequest('paths/template', 'POST'), createTemplate()];
+export const POST: Operation = [logRequest('paths/survey', 'POST'), createSurvey()];
 
 POST.apiDoc = {
-  description: 'Create a new template.',
-  tags: ['template'],
+  description: 'Create a new Survey.',
+  tags: ['survey'],
   security: [
     {
       Bearer: WRITE_ROLES
     }
   ],
   requestBody: {
-    description: 'Request body to create a new template',
+    description: 'Survey post request object.',
     content: {
       'application/json': {
         schema: {
-          ...(templatePostBody as object)
+          ...(surveyPostBody as object)
         }
       }
     }
   },
   responses: {
     200: {
-      description: 'The newly created template.',
+      description: 'Survey response object.',
       content: {
         'application/json': {
           schema: {
-            ...(templateResponseBody as object)
+            ...(surveyResponseBody as object)
           }
         }
       }
@@ -66,23 +64,13 @@ POST.apiDoc = {
 };
 
 /**
- * Creates a new template record.
+ * Creates a new survey record.
  *
  * @returns {RequestHandler}
  */
-function createTemplate(): RequestHandler {
+function createSurvey(): RequestHandler {
   return async (req, res) => {
-    const sanitizedData = new PostTemplateObj(req.body);
-
-    const validationResult = isValidJSONSchema(sanitizedData.data_template);
-
-    if (!validationResult.isValid) {
-      throw {
-        status: 400,
-        message: 'Data template is invalid',
-        errors: validationResult.errors
-      };
-    }
+    const sanitizedData = new PostSurveyObject(req.body);
 
     const connection = await getDBConnection();
 
@@ -94,25 +82,22 @@ function createTemplate(): RequestHandler {
     }
 
     try {
-      const createTemplateSQLStatement: SQLStatement = postTemplateSQL(sanitizedData);
+      const postSurveySQLStatement: SQLStatement = postSurveySQL(sanitizedData);
 
-      if (!createTemplateSQLStatement) {
+      if (!postSurveySQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
-        createTemplateSQLStatement.text,
-        createTemplateSQLStatement.values
-      );
+      const createResponse = await connection.query(postSurveySQLStatement.text, postSurveySQLStatement.values);
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'createTemplate', message: 'error', error });
+      defaultLog.debug({ label: 'createSurvey', message: 'error', error });
       throw error;
     } finally {
       connection.release();
