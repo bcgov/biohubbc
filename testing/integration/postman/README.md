@@ -1,42 +1,48 @@
-#API Testing with Postman (POC)
+# API Testing with Postman (POC)
 
-This is the Postman Setup for testing for testing the Mobile API. 
-It's primary goal is to run against oour PR and Dev code.
+This is the Postman Setup for testing the API. It's primary goal is to run against our PR and Dev code.
 
-How to run the PostMan Tests:
+## How to run the PostMan Tests:
+
+
+### Import files
 - [Get Postman](https://www.postman.com/downloads/)
-- Import `biohubbc_api_dev.postman_collection.json`
-- Go to *Manage environments*, gear ison at top right hand corner
-- Import DEV.postman_environment.json
-- Change the following settings in Postman environment DEV:
+- File > Import Folder
+- Select the `./testing/integration/postman` folder.
 
-```json
-		{
-			"key": "baseUrlMobile",
-			"value": "Change to PR API base url",
-			"enabled": true
-		},
-		{
-			"key": "prNumber",
-			"value": "<<change to PR#>>",
-			"enabled": true
-		},
-		{
-			"key": "postman_pw",
-			"value": "<<Change to istest1 pwd>>",
-			"enabled": true
-        }
-```
+### Select environment
+- In the drop-down at the top-right corner of the screen, select `BioHubBC-API-DEV`
 
-**baseUrlMobile** Is used to point to the Mobile API, we would typically point that either to Dev API or our Pull Request API instance
-**prNumber** Is the current PR code we are pointing at
-**postman_pw** is the password for our test user *istest1*
+### Edit the environment
+- Next to the drop-down, click the 3 dots menu.
+- From the pop-up window, click the `BioHubBC-API-DEV` environment
+- Edit the `Current Value` column for the following fields with placeholder values:
+  - BASEURL
+  - TEST_USERNAME
+  - TEST_PASSWORD
 
-##Running Tests
-- Tests can be run within the Postman application either one by one or with the *Runner* option, which allows for the complete suite to run.
+  ```json
+  ({
+    "key": "BASEURL",
+    "value": "Change to APU url",
+    "enabled": true
+  },
+  {
+    "key": "TEST_USERNAME",
+    "value": "<<Change to test user username>>",
+    "enabled": true
+  },
+  {
+    "key": "TEST_PASSWORD",
+    "value": "<<Change to test user password>>",
+    "enabled": true
+  })
+  ```
+
+## Running Tests
+
+- Tests can be run within the Postman application either one by one or with the _Runner_ option, which allows for the complete suite to run.
 - Tests can also run from the command line (and therefore the CI) with [Newman](https://learning.postman.com/docs/running-collections/using-newman-cli/command-line-integration-with-newman/)
-
-
 
 ## License
 

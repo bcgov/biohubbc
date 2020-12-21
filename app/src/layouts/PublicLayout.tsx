@@ -1,17 +1,9 @@
-import {
-  CssBaseline,
-  makeStyles,
-  Theme
-} from '@material-ui/core';
+import { Box, Container, CssBaseline, makeStyles, Theme } from '@material-ui/core';
+import Footer from 'components/layout/Footer';
+import Header from 'components/layout/Header';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  publicLayoutRoot: {
-    height: 'inherit',
-    width: 'inherit',
-    display: 'flex',
-    flexDirection: 'column'
-  },
   mainContent: {
     flex: 1,
     width: 'inherit',
@@ -28,16 +20,21 @@ const PublicLayout: React.FC = (props) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.publicLayoutRoot}>
+    <Box mb={2} height="inherit" width="inherit" display="flex" flexDirection="column">
       <CssBaseline />
+
+      <Header />
+
       <main className={classes.mainContent}>
-        {/* <ErrorBoundary FallbackComponent={ErrorDialog}> */}
         {React.Children.map(props.children, (child: any) => {
           return React.cloneElement(child, { classes: classes });
         })}
-        {/* </ErrorBoundary> */}
       </main>
-    </div>
+
+      <footer>
+        <Footer />
+      </footer>
+    </Box>
   );
 };
 

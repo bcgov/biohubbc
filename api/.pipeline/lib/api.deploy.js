@@ -29,7 +29,7 @@ module.exports = (settings) => {
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
-        ENVIRONMENT: phases[phase].env || 'dev',
+        NODE_ENV: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         CERTIFICATE_URL: phases[phase].certificateURL,
         REPLICAS: phases[phase].replicas || 1,

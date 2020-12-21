@@ -1,5 +1,5 @@
-import * as React from 'react';
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+import React from 'react';
 
 export interface IAuthState {
   ready?: boolean;
@@ -10,10 +10,10 @@ export const AuthStateContext = React.createContext<IAuthState>({
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
-  const keycloak = useKeycloakWrapper();
+  const keycloakWrapper = useKeycloakWrapper();
 
   return (
-    <AuthStateContext.Provider value={{ ready: keycloak.obj?.authenticated }}>
+    <AuthStateContext.Provider value={{ ready: keycloakWrapper.keycloak?.authenticated }}>
       {props.children}
     </AuthStateContext.Provider>
   );

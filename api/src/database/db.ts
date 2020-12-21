@@ -1,16 +1,18 @@
-'use strict';
-
-import { Pool, PoolConfig, PoolClient } from 'pg';
-
+import { Pool, PoolClient, PoolConfig } from 'pg';
 import { getLogger } from '../utils/logger';
-const defaultLog = getLogger('db');
+
+const defaultLog = getLogger('database/db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';
 const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER || 'hello';
-const DB_PASSWORD: string = process.env.DB_PASS || 'world';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'lucy';
+const DB_USERNAME: string = process.env.DB_USER || 'postgres';
+const DB_PASSWORD: string = process.env.DB_PASS || 'postgres';
+const DB_DATABASE: string = process.env.DB_DATABASE || 'biohubbc';
 const DB_SCHEMA: string = process.env.DB_SCHEMA || 'biohubbc';
+
+const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
+const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
+const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
 const poolConfig: PoolConfig = {
   user: DB_USERNAME,
@@ -18,9 +20,9 @@ const poolConfig: PoolConfig = {
   database: DB_DATABASE,
   port: DB_PORT,
   host: DB_HOST,
-  max: 20,
-  connectionTimeoutMillis: 0, // default
-  idleTimeoutMillis: 10000 // default
+  max: DB_POOL_SIZE,
+  connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
+  idleTimeoutMillis: DB_IDLE_TIMEOUT
 };
 
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
