@@ -1,0 +1,2 @@
+# Git doesnt allow empty folders, but KNEX expects a `seeds` folder when running with `NODE_ENV=local` (which is just for local builds in Docker).
+# Delete this file once an actual seed file is created.

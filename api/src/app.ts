@@ -4,15 +4,15 @@ import { initialize } from 'express-openapi';
 import { OpenAPI } from 'openapi-types';
 import { apiDoc } from './openapi/api';
 import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
-// import { authenticate } from './security/auth-utils';
+import { authenticate } from './security/auth-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
-const HOST = process.env.API_HOST;
+const HOST: string = process.env.API_HOST;
 const PORT = Number(process.env.API_PORT);
 
-const BODY_SIZE_LIMIT = process.env.BODY_SIZE_LIMIT || '50mb';
+const BODY_SIZE_LIMIT: string = process.env.BODY_SIZE_LIMIT || '50mb';
 
 // Get initial express app
 const app: express.Express = express();
@@ -44,9 +44,8 @@ initialize({
   },
   securityHandlers: {
     // applies authentication logic
-    Bearer: function (/*req, scopes*/) {
-      return true; // bypass authentication (local dev only)
-      // return authenticate(req, scopes);
+    Bearer: function (req, scopes) {
+      return authenticate(req, scopes);
     }
   },
   securityFilter: async (req, res) => {

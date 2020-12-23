@@ -77,7 +77,7 @@ function getSurvey(): RequestHandler {
     }
 
     try {
-      const getSurveySQLStatement: SQLStatement = getSurveySQL(req.params.surveyId);
+      const getSurveySQLStatement: SQLStatement = getSurveySQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement) {
         throw {

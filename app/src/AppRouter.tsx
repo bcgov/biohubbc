@@ -1,4 +1,5 @@
 import HomeRouter from 'features/home/HomeRouter';
+import ProjectsRouter from 'features/projects/ProjectsRouter';
 import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';
 import AccessDenied from 'pages/misc/AccessDenied';
@@ -26,6 +27,13 @@ const AppRouter: React.FC = () => {
         component={NotFoundPage}
         layout={PublicLayout}></AppRoute>
       <AppRoute protected path="/home" component={HomeRouter} layout={AuthLayout} title={getTitle('Home')} />
+      <AppRoute
+        protected
+        path="/projects"
+        component={ProjectsRouter}
+        layout={AuthLayout}
+        title={getTitle('Projects')}
+      />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

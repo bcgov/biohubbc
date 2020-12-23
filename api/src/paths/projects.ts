@@ -2,39 +2,35 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { READ_ROLES } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { getActivitySQL } from '../../queries/activity-queries';
-import { activityResponseBody } from '../../openapi/schemas/activity';
-import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
+import { READ_ROLES } from '../constants/roles';
+import { getDBConnection } from '../database/db';
+import { projectResponseBody } from '../openapi/schemas/project';
+import { getProjectsSQL } from '../queries/project-queries';
+import { getLogger } from '../utils/logger';
+import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/activity/{activityId}');
+const defaultLog = getLogger('paths/project');
 
-export const GET: Operation = [logRequest('paths/activity/{activityId}', 'POST'), getActivity()];
+export const GET: Operation = [logRequest('paths/project', 'POST'), getProjects()];
 
 GET.apiDoc = {
-  description: 'Fetch a activity by its ID.',
-  tags: ['activity'],
+  description: 'Get all Projects.',
+  tags: ['project'],
   security: [
     {
       Bearer: READ_ROLES
     }
   ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'activityId',
-      required: true
-    }
-  ],
   responses: {
     200: {
-      description: 'Activity with matching activityId.',
+      description: 'Project response object.',
       content: {
         'application/json': {
           schema: {
-            ...(activityResponseBody as object)
+            type: 'array',
+            items: {
+              ...(projectResponseBody as object)
+            }
           }
         }
       }
@@ -61,11 +57,11 @@ GET.apiDoc = {
 };
 
 /**
- * Get a activity by its id.
+ * Get all projecst.
  *
  * @returns {RequestHandler}
  */
-function getActivity(): RequestHandler {
+function getProjects(): RequestHandler {
   return async (req, res) => {
     const connection = await getDBConnection();
 
@@ -77,9 +73,9 @@ function getActivity(): RequestHandler {
     }
 
     try {
-      const getActivitySQLStatement: SQLStatement = getActivitySQL(Number(req.params.activityId));
+      const getProjectsSQLStatement: SQLStatement = getProjectsSQL(req.params.projectId);
 
-      if (!getActivitySQLStatement) {
+      if (!getProjectsSQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -87,15 +83,15 @@ function getActivity(): RequestHandler {
       }
 
       const createResponse: QueryResult = await connection.query(
-        getActivitySQLStatement.text,
-        getActivitySQLStatement.values
+        getProjectsSQLStatement.text,
+        getProjectsSQLStatement.values
       );
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getActivity', message: 'error', error });
+      defaultLog.debug({ label: 'getProjects', message: 'error', error });
       throw error;
     } finally {
       connection.release();

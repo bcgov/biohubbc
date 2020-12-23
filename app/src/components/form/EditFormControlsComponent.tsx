@@ -3,17 +3,15 @@ import { ArrowBack } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router';
 
-export interface IFormControlsComponentProps {
-  id: number;
+export interface IEditFormControlsComponentProps {
+  onSubmit?: Function;
   isDisabled?: boolean;
 }
 
-const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
+const EditFormControlsComponent: React.FC<IEditFormControlsComponentProps> = (props) => {
   const history = useHistory();
 
-  const navigateToEditProjectPage = (id: string | number) => {
-    history.push(`/projects/${id}/edit`);
-  };
+  const isDisabled = props.isDisabled || false;
 
   return (
     <>
@@ -25,8 +23,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={() => navigateToEditProjectPage(props.id)}>
-              Edit
+            <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onSubmit()}>
+              Save
             </Button>
           </Grid>
         </Grid>
@@ -35,4 +33,4 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => 
   );
 };
 
-export default FormControlsComponent;
+export default EditFormControlsComponent;

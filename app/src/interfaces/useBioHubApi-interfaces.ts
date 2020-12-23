@@ -1,4 +1,15 @@
 /**
+ * The parent type that an object must conform to, at a minimum, to be rendered via the FormContainer.tsx
+ *
+ * @export
+ * @interface IFormRecord
+ */
+export interface IFormRecord {
+  id?: any;
+  form_data?: any;
+}
+
+/**
  * Create new activity endpoint object.
  *
  * @export
@@ -6,7 +17,7 @@
  */
 export interface ICreateActivity {
   tags: string[];
-  template_id: string;
+  id: string;
   form_data: any;
 }
 
@@ -15,11 +26,11 @@ export interface ICreateActivity {
  *
  * @export
  * @interface IActivity
+ * @extends {IFormRecord}
  */
-export interface IActivity {
-  activity_id: string;
+export interface IActivity extends IFormRecord {
+  id: number;
   tags: string[];
-  template_id: string;
   form_data: any;
 }
 
@@ -44,7 +55,7 @@ export interface ICreateTemplate {
  * @interface ITemplate
  */
 export interface ITemplate {
-  template_id: string;
+  id: string;
   name: string;
   description: string;
   tags: string[];

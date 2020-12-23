@@ -9,7 +9,7 @@ const defaultLog = getLogger('models/survey');
  * @interface ISurvey
  */
 export interface ISurvey {
-  survey_id?: string;
+  id?: string;
   tags: string[];
 }
 

@@ -10,8 +10,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE ${DB_SCHEMA}.activity ();
     COMMENT ON TABLE ${DB_SCHEMA}.activity IS 'Stores activity information. Includes the id of the template used to create the form, and data captured by the form.';
 
-    ALTER TABLE ${DB_SCHEMA}.activity ADD COLUMN activity_id SERIAL PRIMARY KEY;
-    COMMENT ON COLUMN ${DB_SCHEMA}.activity.activity_id IS 'Auto generated primary key';
+    ALTER TABLE ${DB_SCHEMA}.activity ADD COLUMN id SERIAL PRIMARY KEY;
+    COMMENT ON COLUMN ${DB_SCHEMA}.activity.id IS 'Auto generated primary key';
 
     ALTER TABLE ${DB_SCHEMA}.activity ADD COLUMN tags text[];
     COMMENT ON COLUMN ${DB_SCHEMA}.activity.tags IS 'Array of keywords used to help categorize this activity';
