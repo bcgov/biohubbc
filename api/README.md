@@ -10,61 +10,11 @@
 
 <br />
 
-# Running Locally with Docker
-
-See `./Makefile` for all available commands.
-
-## Primary make commands
-
-- Build and run a dockerized instance of the api, a postgresql database, and an nginx reverse proxy.
-
-  ```
-  make local
-  ```
-
-- Build and run a dockerized instance of the api, a postgresql database, and an nginx reverse proxy, in debug mode where all docker output is printed to the console:
-
-  ```
-  make local-debug
-  ```
-
-## Calling the API
-
-Access the api directly: `localhost:3002/api/`
-
-Access the api via the nginx reverse proxy: `localhost:80/api/`
-
-<br />
-
-# Running Locally without Docker
-
-## Prerequisites
-
-- A PostgreSQL database, with details matching the _DB\_\*_ variables in `./env_config/env.local`, is available.
-
-## Commands
-
-1. Download dependencies
-
-```
-npm install
-```
-
-2. Run the app
-
-```
-npm start
-```
-
-3. Go to http://localhost:3002/api/docs/ to verify that the application is running.
-
-<br />
-
 # API Specification
 
 The API is defined in `api-doc.yaml`.
 
-If this project is running locally, you can view the api docs at: `http://localhost:3002/api/docs/` or `http://localhost:7080/api/docs/` if running in Docker.
+If this project is running in docker you can view the api docs at: `http://localhost:6100/api/api-docs/` or via nginx at `http://localhost:80/api/api-docs/`.
 
 This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `api-doc.yaml` and the `./src/path/` content.
 

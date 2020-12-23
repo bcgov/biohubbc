@@ -1,15 +1,69 @@
-[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
+[![img](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_biohubbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
 
 # BioDiversityHub BC
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
 
 The objectives for the BioHubBC project are:
-  * To provide a single source for aquatic and terrestrial species and habitat data.
-  * To reduce the barriers for collecting and sharing aquatic and terrestrial species and habitat data throughout the province of British Columbia.
-  * To reduce the effort involved with managing aquatic and terrestrial species and habitat data.
-  * To improve access for all stakeholders to the aquatic and terrestrial species and habitat data needed to make informed decisions and policies for the province.
+
+- To provide a single source for aquatic and terrestrial species and habitat data.
+- To reduce the barriers for collecting and sharing aquatic and terrestrial species and habitat data throughout the province of British Columbia.
+- To reduce the effort involved with managing aquatic and terrestrial species and habitat data.
+- To improve access for all stakeholders to the aquatic and terrestrial species and habitat data needed to make informed decisions and policies for the province.
+
+# Running Locally with Docker
+
+See `./Makefile` for all available commands.
+
+## Pre-reqs
+
+Initialize the `./env` file.
+
+This file may need additional editing to provide secrets, etc.
+
+```
+make env
+```
+
+## Run all projects
+
+Runs the database, api, web and ionic frontends.
+
+```
+make all
+```
+
+## Run only backend projects
+
+Runs the database and api.
+
+```
+make backend
+```
+
+## Run web projects
+
+Runs the database, api, and web frontend.
+
+```
+make web
+```
+
+## Run ionic projects
+
+Runs the database, api, and ionic frontend.
+
+```
+make ionic
+```
+
+## Calling the API
+
+Access the api directly: `localhost:6100/api/`
+
+Access the api via the nginx reverse proxy: `localhost:80/api/`
+
+<br />
 
 ## Acknowledgements
 

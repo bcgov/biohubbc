@@ -1,4 +1,4 @@
-version: '3.5'
+version: "3.5"
 
 services:
   ## Build postgres docker image
@@ -36,11 +36,14 @@ services:
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
     depends_on:
       - db
-    command: ['./.docker/wait-for-it.sh', 'db:${DB_PORT}', '--', 'npm', 'run', 'setup']
+    command:
+      ["./.docker/wait-for-it.sh", "db:${DB_PORT}", "--", "npm", "run", "setup"]
 
   ## Build the api docker image
   api:
@@ -69,31 +72,12 @@ services:
       - LOG_LEVEL=${LOG_LEVEL}
     volumes:
       - ./api:/opt/app-root/src
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
     depends_on:
       - db
       - db_setup
-
-  ## Build the app docker image
-  app:
-    image: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-container
-    build:
-      context: ./app
-      dockerfile: ./.docker/app/Dockerfile
-    ports:
-      - ${APP_PORT}:${APP_PORT}
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - APP_PORT=${APP_PORT}
-      - LOCAL_API_HOST=app_api:${API_PORT}
-    volumes:
-      - ./app:/opt/app-root/src
-    networks:
-      - local-network
-    depends_on:
-      - nginx
 
   # Build the nginx web-server docker image
   nginx:
@@ -108,7 +92,53 @@ services:
     networks:
       - local-network
     depends_on:
-      - db
+      - api
+
+  ## Build the app docker image
+  app:
+    image: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./app
+      dockerfile: ./.docker/app/Dockerfile
+    stdin_open: true
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - REACT_APP_NODE_ENV=${NODE_ENV}
+      - PORT=${APP_PORT}
+      - REACT_APP_API_HOST=http://${API_HOST}
+      - REACT_APP_API_PORT=${API_PORT}
+    volumes:
+      - ./app:/opt/app-root/src
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
+      - api
+
+  ## Build the app docker image
+  app_ionic:
+    image: ${DOCKER_PROJECT_NAME}-app-ionic-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-app-ionic-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./app-ionic
+      dockerfile: ./.docker/app-ionic/Dockerfile
+    stdin_open: true
+    ports:
+      - ${APP_IONIC_PORT}:${APP_IONIC_PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${APP_IONIC_PORT}
+      - REACT_APP_API_HOST=http://${API_HOST}
+      - REACT_APP_API_PORT=${API_PORT}
+    volumes:
+      - ./app-ionic:/opt/app-root/src
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
       - api
 
 networks:

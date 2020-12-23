@@ -5,7 +5,7 @@ import { CircularProgress, createMuiTheme, makeStyles, ThemeProvider } from '@ma
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';
 import { DatabaseChangesContextProvider } from 'contexts/DatabaseChangesContext';
-import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
+import Keycloak, { KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import AppRouter from './AppRouter';
 import { AuthStateContext, AuthStateContextProvider, IAuthState } from './contexts/authStateContext';
@@ -87,14 +87,8 @@ interface IAppProps {
 const App: React.FC<IAppProps> = (props) => {
   const classes = useStyles();
 
-  const keycloakConfig: KeycloakConfig = {
-    realm: 'dfmlcg7z',
-    url: 'https://dev.oidc.gov.bc.ca/auth/',
-    clientId: 'biohub-bc'
-  };
-
   //@ts-ignore
-  const keycloak: KeycloakInstance = new Keycloak(keycloakConfig);
+  const keycloak: KeycloakInstance = new Keycloak('/keycloak.json');
 
   let initConfig = null;
 

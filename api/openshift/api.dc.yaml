@@ -41,10 +41,10 @@ parameters:
   - name: REPLICAS
     value: '1'
   - name: API_PORT_DEFAULT
-    value: '3002'
+    value: '6100'
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
-    value: '3002-tcp'
+    value: '6100-tcp'
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'biohubbc-object-store'

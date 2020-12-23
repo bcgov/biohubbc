@@ -9,9 +9,8 @@
 
 export $(shell sed 's/=.*//' .env)
 
-all : help
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug database app app-ionic api help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app app-ionic api help
 
 # ------------------------------------------------------------------------------
 # Task Aliases
@@ -25,12 +24,16 @@ all : help
 env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
 all: | close build run ## Performs all commands necessary to run all projects in docker
-
 all-debug: | close build run-debug ## Performs all commands necessary to run all projects in docker in debug mode
 
-backend: | close build-backend run-backend ## Performs all commands necessary to run all abckend projects in docker
+backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects in docker
+backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all backend projects in docker in debug mode
 
-backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all abckend projects in docker in debug mode
+web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects in docker
+web-debug: | close build-web run-web-debug ## Performs all commands necessary to run all backend+web projects in docker in debug mode
+
+ionic: | close build-ionic run-ionic ## Performs all commands necessary to run all backend+ionic projects in docker
+ionic-debug: | close build-ionic run-ionic-debug ## Performs all commands necessary to run all backend+ionic projects in docker in debug mode
 
 # ------------------------------------------------------------------------------
 # Setup/Cleanup Commands
@@ -56,7 +59,7 @@ clean: ## Closes and cleans (removes) all project containers
 
 # ------------------------------------------------------------------------------
 # Build/Run Backend+Frontend Commands
-# - Builds all of the biohub projects (database, api, app, app-ionic)
+# - Builds all of the biohub projects (db, db_setup, api, nginx, app, app_ionic)
 # ------------------------------------------------------------------------------
 
 build: ## Builds all project containers
@@ -80,26 +83,72 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 
 # ------------------------------------------------------------------------------
 # Build/Run Backend Commands
-# - Builds all of the biohub backend projects (database, api)
+# - Builds all of the biohub backend projects (db, db_setup, api, nginx)
 # ------------------------------------------------------------------------------
 
-build-backend: ## Builds all project containers
+build-backend: ## Builds all backend containers
 	@echo "==============================================="
 	@echo "Make: build-backend - building backend images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db db_setup api nginx
 
-run-backend: ## Runs all project containers
+run-backend: ## Runs all backend containers
 	@echo "==============================================="
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
 
-run-backend-debug: ## Runs all project containers in debug mode, where all container output is printed to the console
+run-backend-debug: ## Runs all backend containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db db_setup api nginx
+
+# ------------------------------------------------------------------------------
+# Build/Run Backend+Web Commands (backend + web frontend)
+# - Builds all of the biohub backend+web projects (db, db_setup, api, nginx, app)
+# ------------------------------------------------------------------------------
+
+build-web: ## Builds all backend+web containers
+	@echo "==============================================="
+	@echo "Make: build-web - building web images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup api nginx app
+
+run-web: ## Runs all backend+web containers
+	@echo "==============================================="
+	@echo "Make: run-web - running web images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app
+
+run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-web-debug - running web images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup api nginx app
+
+# ------------------------------------------------------------------------------
+# Build/Run Backend+Ionic Commands (backend + ionic frontend)
+# - Builds all of the biohub backend+ionic projects (db, db_setup, api, nginx, app_ionic)
+# ------------------------------------------------------------------------------
+
+build-ionic: ## Builds all backend+web containers
+	@echo "==============================================="
+	@echo "Make: build-ionic - building ionic images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup api nginx app_ionic
+
+run-ionic: ## Runs all backend+web containers
+	@echo "==============================================="
+	@echo "Make: run-ionic - running ionic images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app_ionic
+
+run-ionic-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-ionic-debug - running ionic images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup api nginx app_ionic
 
 # ------------------------------------------------------------------------------
 # Exec Commands

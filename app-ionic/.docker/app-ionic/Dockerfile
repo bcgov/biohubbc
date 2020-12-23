@@ -1,8 +1,5 @@
 FROM node:10
 
-# RUN npm install -g @ionic/cli
-
-ENV HOME_ROOT=/opt/app-root
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
@@ -24,5 +21,5 @@ COPY . ./
 
 VOLUME ${HOME}
 
-# start app
-CMD [ "npm", "run", "start:ionic" ]
+# start app-ionic with live reload
+CMD ["npm", "run", "start"]

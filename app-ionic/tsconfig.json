@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react",
@@ -23,8 +27,17 @@
     "strict": false,
     "isolatedModules": true,
     "noEmit": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/node_modules",
+    "**/dist"
+  ]
 }

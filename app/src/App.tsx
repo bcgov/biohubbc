@@ -4,19 +4,13 @@ import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@mater
 import { KeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
 import { AuthStateContext, AuthStateContextProvider, IAuthState } from 'contexts/authStateContext';
-import Keycloak, { KeycloakConfig, KeycloakInstance } from 'keycloak-js';
+import Keycloak, { KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import appTheme from 'themes/appTheme';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 const App: React.FC = () => {
-  // const keycloakInstanceConfig: KeycloakConfig = {
-  //   realm: 'dfmlcg7z',
-  //   url: 'https://dev.oidc.gov.bc.ca/auth/',
-  //   clientId: 'invasives-bc'
-  // };
-
   //@ts-ignore
   const keycloak: KeycloakInstance = new Keycloak('/keycloak.json');
 
