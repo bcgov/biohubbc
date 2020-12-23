@@ -72,7 +72,7 @@ POST.apiDoc = {
  * @returns {RequestHandler}
  */
 function createActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     const sanitizedData = new PostActivityObject(req.body);
 
     const connection = await getDBConnection();

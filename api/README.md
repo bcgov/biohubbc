@@ -163,14 +163,14 @@ npm run lint
 
 ## Run Linters + Formatters
 
-_Note: In the worst case scenario, where linting/formatting has been neglected, then these `lint-fix` commands have the potential to create 100's of file changes. In this case, it is recommended to only run these commands as part of a separate commit._
+_Note: In the worst case scenario, where linting/formatting has been neglected, then these `lint:fix` commands have the potential to create 100's of file changes. In this case, it is recommended to only run these commands as part of a separate commit._
 
 _Note: Not all linting/formatting errors can be automatically fixed, and will require human intervention._
 
 - Lint and fix the `*.ts` files using `ESLint` + `Prettier`.
 
 ```
-npm run lint-fix
+npm run lint:fix
 ```
 
 <br />

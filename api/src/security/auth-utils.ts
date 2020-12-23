@@ -1,20 +1,16 @@
-;
-
 import { decode, verify } from 'jsonwebtoken';
 import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('auth-utils');
+const defaultLog = getLogger('security/auth-utils');
 
 const KEYCLOAK_URL =
   process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs';
 
+// Ignore keycloak token expiration - for development purposes only
 const TOKEN_IGNORE_EXPIRATION: boolean =
-  process.env.TOKEN_IGNORE_EXPIRATION === 'true' ||
-  process.env.NODE_ENV === 'dev' ||
-  process.env.DB_HOST === 'localhost' ||
-  false;
+  process.env.TOKEN_IGNORE_EXPIRATION === 'true' || process.env.DB_HOST === 'localhost' || false;
 
 /**
  * Authenticate the current user against the current route.

@@ -1,7 +1,19 @@
-import Ajv from 'ajv';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/activity');
+
+/**
+ * A single activity item.
+ *
+ * @export
+ * @interface IActivity
+ */
+export interface IActivity {
+  activity_id?: string;
+  tags: string[];
+  template_id: string;
+  form_data: object;
+}
 
 /**
  * Activity post request body.
