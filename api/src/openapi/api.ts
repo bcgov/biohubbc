@@ -11,11 +11,7 @@ export const apiDoc = {
   },
   servers: [
     {
-      url: 'http://localhost:3002/api',
-      description: 'local api'
-    },
-    {
-      url: 'http://localhost:7080/api',
+      url: 'http://localhost:6100/api',
       description: 'local api via docker'
     },
     {

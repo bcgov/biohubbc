@@ -4,29 +4,29 @@
 
 FROM node:10
 
-# Setting Path
-ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:/opt/app-root/src/node_modules/.bin/:/opt/app-root/src/app.npm-global/bin/:/opt/app-root/src/app/bin:/opt/app-root/src/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV HOME=/opt/app-root/src
 
-# Create app directory
+RUN mkdir -p $HOME
 
-WORKDIR /opt/app-root/src
+WORKDIR $HOME
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-# COPY PACKAGE JSON
+# Copy the package files only
+# A wildcard is used to ensure both package.json AND package-lock.json are copied where available (npm@5+)
 COPY ./package*.json ./
 
-# INSTALL NODE DEPENDENCIES
+# If you are building your code for production
+# RUN npm install --only=production
 RUN npm install
 
-# Copy All the sources
-COPY ./ .
+ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:${HOME}/node_modules/.bin/:${HOME}/app.npm-global/bin/:${HOME}/bin:${HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-# BUILD APP
+# Copy the rest of the files
+COPY . ./
+
+# Build app
 RUN npm run build-prod
 
-EXPOSE 3030
+EXPOSE 7100
 
 # RUN APP
 CMD ["npm", "run", "deploy_start"]

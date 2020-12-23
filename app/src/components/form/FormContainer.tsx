@@ -63,7 +63,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
     };
 
     setupForm();
-  }, []);
+  }, [biohubApi, props.activity, props.template]);
 
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;

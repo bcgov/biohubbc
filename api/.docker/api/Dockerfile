@@ -1,6 +1,5 @@
 FROM node:10
 
-ENV HOME_ROOT=/opt/app-root
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME

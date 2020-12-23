@@ -9,8 +9,8 @@ import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
-const HOST = process.env.API_HOST || 'localhost';
-const PORT = Number(process.env.API_PORT || '3002');
+const HOST = process.env.API_HOST;
+const PORT = Number(process.env.API_PORT);
 
 const BODY_SIZE_LIMIT = process.env.BODY_SIZE_LIMIT || '50mb';
 

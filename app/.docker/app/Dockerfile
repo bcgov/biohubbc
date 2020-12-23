@@ -1,6 +1,5 @@
 FROM node:10
 
-ENV HOME_ROOT=/opt/app-root
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
@@ -22,5 +21,5 @@ COPY . ./
 
 VOLUME ${HOME}
 
-# start app
+# start app with live reload
 CMD ["npm", "run", "start"]

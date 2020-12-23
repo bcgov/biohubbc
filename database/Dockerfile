@@ -1,6 +1,9 @@
+# ################################# W A R N I N G ####################################################################
+# This DockerFile is used for deployments only, please do not change for other purposes. It will break our deployment.
+# ####################################################################################################################
+
 FROM node:10
 
-ENV HOME_ROOT=/opt/app-root
 ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
@@ -15,8 +18,10 @@ COPY ./package*.json ./
 # RUN npm install --only=production
 RUN npm install
 
+ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:${HOME}/node_modules/.bin/:${HOME}/app.npm-global/bin/:${HOME}/bin:${HOME}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
 # Copy the rest of the files
-COPY . .
+COPY . ./
 
 # run the database migrations
 CMD [ "npm", "run", "migrate:latest" ]

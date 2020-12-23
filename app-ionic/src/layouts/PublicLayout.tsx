@@ -1,8 +1,4 @@
-import {
-  CssBaseline,
-  makeStyles,
-  Theme
-} from '@material-ui/core';
+import { CssBaseline, makeStyles, Theme } from '@material-ui/core';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({

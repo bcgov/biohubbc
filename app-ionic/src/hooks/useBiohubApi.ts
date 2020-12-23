@@ -1,16 +1,18 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { DatabaseContext } from 'contexts/DatabaseContext';
-import { IActivitySearchCriteria, ICreateOrUpdateActivity } from 'interfaces/useBiohubApi-interfaces';
-import { IPointOfInterestSearchCriteria, ICreatePointOfInterest } from 'interfaces/useBiohubApi-interfaces';
+import {
+  IPointOfInterestSearchCriteria,
+  IActivitySearchCriteria,
+  ICreateOrUpdateActivity
+} from 'interfaces/useBiohubApi-interfaces';
 import qs from 'qs';
 import { useContext, useMemo } from 'react';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 
-const API_URL =
-  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-biohubbc.pathfinder.gov.bc.ca';
+const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-biohubbc.pathfinder.gov.bc.ca';
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
