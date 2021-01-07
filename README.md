@@ -17,17 +17,24 @@ See `./Makefile` for all available commands.
 
 ## Pre-reqs
 
-Initialize the `./env` file.
+### Install Docker
 
-This file may need additional editing to provide secrets, etc.
+Note: this setup uses volumes to support live reload. You will need to ensure that you grant docker access to whichever hard-drive you are working in.
+
+### Initialize the `./env` file.
+
+This will copy `./env_config/env.docker` to `./.env`  
+Note: this file may need additional editing to provide secrets for external services (like S3).
 
 ```
 make env
 ```
 
+_Note: you will need to use a terminal that supports make, etc. On Mac this is the default terminal, on Windows you can use something like `git-bash`._
+
 ## Run all projects
 
-Runs the database, api, web and ionic frontends.
+Builds and runs the database (including migrations/seeding), api, web and ionic apps.
 
 ```
 make all
@@ -35,7 +42,7 @@ make all
 
 ## Run only backend projects
 
-Runs the database and api.
+Runs the database (including migrations/seeding) and api.
 
 ```
 make backend
@@ -43,7 +50,7 @@ make backend
 
 ## Run web projects
 
-Runs the database, api, and web frontend.
+Runs the database (including migrations/seeding), api, and web app.
 
 ```
 make web
@@ -51,17 +58,85 @@ make web
 
 ## Run ionic projects
 
-Runs the database, api, and ionic frontend.
+Runs the database (including migrations/seeding), api, and ionic app.
 
 ```
 make ionic
 ```
 
-## Calling the API
+## Access the running applications
 
-Access the api directly: `localhost:6100/api/`
+api:
 
-Access the api via the nginx reverse proxy: `localhost:80/api/`
+- `localhost:6100/api/`
+- `localhost:80/api/`
+
+app:
+
+- `localhost:7100`
+
+app-ionic
+
+- `localhost:8100`
+
+# Helpful Makefile Commands
+
+See `./Makefile` for all available commands.  
+The most common commands, other than the ones mentioned above which run the project(s).
+
+### Close all containers
+
+```
+make close
+```
+
+### Close and delete all containers/artifacts
+
+```
+make clean
+```
+
+### Shell into a container (database, api, app, app-ionic)
+
+```
+make database
+```
+
+```
+make api
+```
+
+```
+make app
+```
+
+```
+make app-ionic
+```
+
+### Prune Docker Artifacts
+
+This will aggressively delete docker artifacts to recover hard-drive space.  
+See [documentation](https://docs.docker.com/engine/reference/commandline/system_prune/) for OPTIONS.
+
+```
+docker system prune [OPTIONS]
+```
+
+# Helpful Docker Commands
+
+### Show all running containers
+
+`docker ps`
+
+### Show all containers (running and closed)
+
+`docker ps -a`
+
+### View the logs for a container
+
+`docker logs <container id or name>`  
+Include `-f` to "follow" the container logs, showing logs in real time
 
 <br />
 
