@@ -46,7 +46,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Build the database image
       - name: Build Database Image
@@ -78,7 +78,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Build the database image
       - name: Build Database Setup Image
@@ -110,7 +110,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Build the api image
       - name: Build API Image
@@ -142,7 +142,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Build the app image
       - name: Build APP Image
@@ -176,7 +176,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Deploy the database image
       - name: Deploy Database Image
@@ -211,7 +211,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
@@ -246,7 +246,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Deploy the api image
       - name: Deploy API Image
@@ -280,7 +280,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Deploy the app image
       - name: Deploy App Image
@@ -316,7 +316,7 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login https://console.pathfinder.gov.bc.ca:8443 --token=${{ secrets.TOOLS_SA_TOKEN }}
+        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts

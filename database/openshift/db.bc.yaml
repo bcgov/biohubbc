@@ -30,7 +30,7 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgresql-9.6-oracle-fdw:v1-stable
+            name: patroni-postgres:12.4-latest
             namespace: bcgov
           generation: 1
           importPolicy: {}
