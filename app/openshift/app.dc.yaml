@@ -46,7 +46,7 @@ parameters:
     value: 'lucy'
   - name: SSO_REALM
     description: Realm identifier or name
-    value: dfmlcg7z
+    value: 35r1iman
   - name: REPLICAS
     value: '1'
   - name: REPLICA_MAX
