@@ -105,5 +105,3 @@ dist
 
 # Apple macOS folder attributes file
 **/.DS_Store
-
-**/package-lock.json
