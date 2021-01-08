@@ -116,11 +116,18 @@ make app-ionic
 
 ### Prune Docker Artifacts
 
-This will aggressively delete docker artifacts to recover hard-drive space.  
+This will aggressively delete docker artifacts to recover docker hard-drive space.
+
 See [documentation](https://docs.docker.com/engine/reference/commandline/system_prune/) for OPTIONS.
 
 ```
 docker system prune [OPTIONS]
+```
+
+See [documentation](https://docs.docker.com/engine/reference/commandline/volume_prune/) for OPTIONS.
+
+```
+docker volume prune [OPTIONS]
 ```
 
 # Helpful Docker Commands
