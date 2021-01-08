@@ -169,7 +169,7 @@ objects:
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/misc/version
+                  path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 100
@@ -179,7 +179,7 @@ objects:
               livenessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/misc/version
+                  path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 80
