@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotFoundPage renders correctly 1`] = `
+<div
+  className="MuiContainer-root MuiContainer-maxWidthLg"
+>
+  <div
+    className="MuiGrid-root MuiGrid-container"
+  >
+    <div
+      className="MuiGrid-root MuiGrid-item"
+    >
+      <h1>
+        Page not found
+      </h1>
+      <a
+        href="/home"
+        onClick={[Function]}
+      >
+        Go back to the home page
+      </a>
+    </div>
+  </div>
+</div>
+`;

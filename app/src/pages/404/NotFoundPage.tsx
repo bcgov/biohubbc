@@ -1,8 +1,8 @@
-import React from 'react';
 import { Container, Grid } from '@material-ui/core';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
-export const NotFoundPage = () => {
+const NotFoundPage = () => {
   return (
     <Container>
       <Grid container direction="row">
@@ -14,3 +14,5 @@ export const NotFoundPage = () => {
     </Container>
   );
 };
+
+export default NotFoundPage;

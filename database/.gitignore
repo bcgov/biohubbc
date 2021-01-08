@@ -6,10 +6,16 @@ node_modules
 **/.config
 **.bash_history
 
+# Build artifacts
 dist
 
+# Testing
 coverage
 
+# SonarQube
+.sonarqube
+
+# env file used by local and docker builds/runs
 .env
 
 # misc

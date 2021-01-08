@@ -1,0 +1,40 @@
+name: Linting Checks
+
+on: [pull_request]
+
+# TODO add app-ionic when it is ready
+jobs:
+  lint:
+    name: Running Linter
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10"
+
+      - name: Install database dependencies
+        working-directory: database
+        run: npm install
+
+      - name: Run database linter
+        working-directory: database
+        run: CI=true npm run lint
+
+      - name: Install api dependencies
+        working-directory: api
+        run: npm install
+
+      - name: Run api linter
+        working-directory: api
+        run: CI=true npm run lint
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm install
+
+      - name: Run app linter
+        working-directory: app
+        run: CI=true npm run lint
