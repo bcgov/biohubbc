@@ -19,15 +19,15 @@ export const apiDoc = {
       description: 'local api via docker via nginx'
     },
     {
-      url: 'https://api-dev-biohubbc.pathfinder.gov.bc.ca',
+      url: 'https://api-dev-biohubbc.apps.silver.devops.gov.bc.ca',
       description: 'deployed api in dev environment'
     },
     {
-      url: 'https://api-test-biohubbc.pathfinder.gov.bc.ca',
+      url: 'https://api-test-biohubbc.apps.silver.devops.gov.bc.ca',
       description: 'deployed api in test environment'
     },
     {
-      url: 'https://api-biohubbc.pathfinder.gov.bc.ca',
+      url: 'https://api-biohubbc.apps.silver.devops.gov.bc.ca',
       description: 'deployed api in prod environment'
     }
   ],

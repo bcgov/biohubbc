@@ -1,0 +1,53 @@
+{
+  "name": "biohubbc",
+  "namespaceSuffix": "af2668",
+  "namespace": {
+    "tools": "tools",
+    "dev": "dev",
+    "test": "test",
+    "prod": "prod"
+  },
+  "version": "1.0.0",
+  "module": {
+    "db": "biohubbc-db",
+    "api": "biohubbc-api",
+    "app": "biohubbc-app"
+  },
+  "staticBranches": [
+    "dev",
+    "test",
+    "prod"
+  ],
+  "staticUrls": {
+    "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "prod": "biohubbc.apps.silver.devops.gov.bc.ca"
+  },
+  "staticUrlsAPI": {
+    "dev": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
+  },
+  "certificateURL": {
+    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "test": "https://test.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
+    "prod": "https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+  },
+  "sso": {
+    "dev": {
+      "url": "https://dev.oidc.gov.bc.ca",
+      "clientId": "biohubbc",
+      "realm": "35r1iman"
+    },
+    "test": {
+      "url": "https://test.oidc.gov.bc.ca",
+      "clientId": "biohubbc",
+      "realm": "35r1iman"
+    },
+    "prod": {
+      "url": "https://oidc.gov.bc.ca",
+      "clientId": "biohubbc",
+      "realm": "35r1iman"
+    }
+  }
+}
