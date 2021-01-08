@@ -42,7 +42,7 @@ jobs:
 
       # Log in to OpenShift.
       - name: Log in to OpenShift
-        run: oc login --token=${​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​{​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ secrets.TOOLS_SA_TOKEN }​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​}​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​​ --server=https://api.silver.devops.gov.bc.ca:6443
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
       # Clean the app deployment artifacts
       - name: Clean APP Deployment
