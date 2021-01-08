@@ -1,0 +1,11 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: biohubbc-db
+data:
+  database-admin-password: <fill in values>
+  database-admin-user: <fill in values>
+  database-name: <fill in values>
+  database-password: <fill in values>
+  database-user: <fill in values>
+type: Opaque

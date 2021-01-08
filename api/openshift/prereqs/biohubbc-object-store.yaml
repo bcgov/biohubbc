@@ -1,0 +1,10 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: biohubbc-object-store
+data:
+  object_store_access_key_id: <fill in values>
+  object_store_bucket_name: <fill in values>
+  object_store_secret_key_id: <fill in values>
+  object_store_url: <fill in values>
+type: Opaque
