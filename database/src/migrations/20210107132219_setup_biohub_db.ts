@@ -5,7 +5,7 @@ const DB_SCHEMA = 'biohub';
 const path = require('path');
 
 export async function up(knex: Knex): Promise<void> {
-    //const filePath = path.join(__dirname, '..', 'release.0.3', 'biohub.0.3.sql')
+  
     const biohub_tables = fs.readFileSync(path.join(__dirname, '..', 'release.0.3', 'biohub.0.3.sql'));
     const biohub_admin_sql = fs.readFileSync(path.join(__dirname, '..', 'release.0.3', 'biohub_admin.0.3.sql'));
     const biohub_dapi_views = fs.readFileSync(path.join(__dirname, '..', 'release.0.3', 'biohub_dapi_views.sql'));
