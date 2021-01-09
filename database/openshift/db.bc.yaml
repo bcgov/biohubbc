@@ -30,8 +30,8 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: patroni-postgres:12.4-latest
-            namespace: bcgov
+            name: postgresql:latest
+            namespace: openshift
           generation: 1
           importPolicy: {}
           referencePolicy:
