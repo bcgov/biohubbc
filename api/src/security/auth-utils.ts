@@ -6,7 +6,7 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('security/auth-utils');
 
 const KEYCLOAK_URL =
-  process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs';
+  process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs';
 
 // Ignore keycloak token expiration - for development purposes only
 const TOKEN_IGNORE_EXPIRATION: boolean =

@@ -29,7 +29,7 @@ parameters:
   - name: CERTIFICATE_URL
     description: Authentication certificate urls
     required: true
-    value: 'https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs'
+    value: 'https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs'
   - name: CPU_REQ
     value: '500m'
   - name: CPU_LIMIT
@@ -104,6 +104,8 @@ objects:
             - env:
                 - name: API_HOST
                   value: ${HOST}
+                - name: API_PORT
+                  value: ${API_PORT_DEFAULT}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER
@@ -167,7 +169,7 @@ objects:
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/misc/version
+                  path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 100
@@ -177,7 +179,7 @@ objects:
               livenessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/misc/version
+                  path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 80
