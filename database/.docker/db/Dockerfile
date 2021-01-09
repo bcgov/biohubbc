@@ -1,7 +1,7 @@
-FROM postgres:9.6
+FROM postgres:12
 
 # set variables
-ENV POSTGISV 2.4
+ENV POSTGISV 3
 ENV TZ America/Vancouver
 ENV PORT 5432
 

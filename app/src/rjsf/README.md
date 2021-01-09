@@ -1,4 +1,4 @@
-# bcgov/invasivesbc/app/src/rjsf
+# bcgov/biohubbc/app/src/rjsf
 
 Contains config and components used by rjsf.
 
@@ -17,9 +17,8 @@ The 3 base [rjsf templates](https://react-jsonschema-form.readthedocs.io/en/late
 
 These are copied from the [@rjsf/material-ui](https://www.npmjs.com/package/@rjsf/material-ui) package as a starting point.
 
-Why? InvasivesBC needs some custom styling for their forms that is not currently possible using the stock rjsf themes. It may be possible to inject some custom components, which rjsf has some provisions to allow, but the code needed to achieve that would likely be similar in size/complexity to the stock template components themselves. In this case, stealing and modifying them locally is simpler and tantamount to re-creating them ourselves.
+Why? BiodiversityHub BC needs some custom styling for their forms that is not currently possible using the stock rjsf themes. It may be possible to inject some custom components, which rjsf has some provisions to allow, but the code needed to achieve that would likely be similar in size/complexity to the stock template components themselves. In this case, stealing and modifying them locally is simpler and tantamount to re-creating them ourselves.
 
 ### Components
 
 Rjsf specific react components used by custom templates and widgets.
-

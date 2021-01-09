@@ -29,9 +29,9 @@
     "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
   },
   "certificateURL": {
-    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
-    "test": "https://test.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs",
-    "prod": "https://oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/certs"
+    "dev": "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
+    "test": "https://test.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
+    "prod": "https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs"
   },
   "sso": {
     "dev": {
