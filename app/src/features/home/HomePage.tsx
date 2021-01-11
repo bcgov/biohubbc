@@ -1,20 +1,19 @@
-import { Box, Container } from '@material-ui/core';
-import FormContainer from 'components/form/FormContainer';
-import { IActivity } from 'interfaces/useBioHubApi-interfaces';
+import { Box, Container, Typography } from '@material-ui/core';
 import React from 'react';
 
-const HomePage = () => {
-  const testActivity: IActivity = {
-    activity_id: '1',
-    tags: ['animal', 'terrestrial'],
-    template_id: '1',
-    form_data: {}
-  };
-
+/**
+ * The home page.
+ *
+ * @return {*}
+ */
+const HomePage: React.FC = () => {
   return (
     <Box my={3}>
       <Container>
-        <FormContainer activity={testActivity} />
+        <Box>
+          <Typography variant="h4">Welcome to BioHub!</Typography>
+          <Typography variant="body1">There is nothing on this page yet.</Typography>
+        </Box>
       </Container>
     </Box>
   );

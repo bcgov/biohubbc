@@ -20,7 +20,7 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO activity (
       tags,
-      template_id,
+      tempalte_id,
       form_data
     ) VALUES (
       ${activity.tags},
@@ -28,7 +28,7 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
       ${activity.form_data}
     )
     RETURNING
-      activity_id,
+      id,
       tags,
       template_id,
       form_data;
@@ -47,10 +47,10 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
 /**
  * SQL query to get a single activity.
  *
- * @param {string} activityId
+ * @param {number} activityId
  * @returns {SQLStatement} sql query object
  */
-export const getActivitySQL = (activityId: string): SQLStatement => {
+export const getActivitySQL = (activityId: number): SQLStatement => {
   defaultLog.debug({ label: 'getActivitySQL', message: 'params', activityId });
 
   if (!activityId) {
@@ -59,12 +59,12 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
 
   const sqlStatement = SQL`
     SELECT
-      activity_id,
+      id,
       tags
     from
       activity
     where
-      activity_id = ${activityId};
+      id = ${activityId};
   `;
 
   defaultLog.debug({

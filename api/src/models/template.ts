@@ -9,7 +9,7 @@ const defaultLog = getLogger('models/template');
  * @interface ITemplate
  */
 export interface ITemplate {
-  template_id?: string;
+  id?: string;
   tags: string[];
   name: string;
   description: string;

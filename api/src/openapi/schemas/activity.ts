@@ -3,15 +3,15 @@ import { tags } from '../components/tags';
 const activity = {
   title: 'Activity Object',
   type: 'object',
-  required: ['tags', 'template_id', 'form_data'],
+  // required: [],
   properties: {
     tags: { ...tags },
     template_id: {
-      description: 'Specification of the UI characteristics of the form fields',
-      type: 'string'
+      description: 'ID of the template used to render a form for this activity.',
+      type: 'number'
     },
     form_data: {
-      description: 'Specification of the form fields and their data types/constraints.',
+      description: 'Form data for this activity.',
       type: 'object'
     }
   }
@@ -24,9 +24,9 @@ export const activityPostBody = {
 export const activityResponseBody = {
   ...activity,
   properties: {
-    activity_id: {
+    id: {
       description: 'Activity ID',
-      type: 'string'
+      type: 'number'
     },
     ...activity.properties
   }

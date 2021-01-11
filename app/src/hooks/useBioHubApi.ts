@@ -1,7 +1,9 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
-import { useMemo } from 'react';
+import { IProject } from 'interfaces/project-interfaces';
 import { IActivity, ICreateActivity, ITemplate } from 'interfaces/useBioHubApi-interfaces';
+import moment from 'moment';
+import { useMemo } from 'react';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
@@ -35,6 +37,85 @@ const useApi = () => {
  */
 export const useBiohubApi = () => {
   const api = useApi();
+
+  /**
+   * Get all projects.
+   *
+   * @return {*}  {Promise<IProject[]>}
+   */
+  const getProjects = async (): Promise<IProject[]> => {
+    // const { data } = await api.get(`/api/projects`);
+
+    // return data;
+
+    // TODO: stub for development
+    return [
+      {
+        id: 1,
+        name: 'Project Name 1',
+        objectives: 'Project Objectives 1',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 1',
+        start_date: moment().toISOString(),
+        end_date: moment().toISOString(),
+        results: 'Results 1',
+        caveats: 'Caveats 1',
+        comments: 'Comments 1'
+      },
+      {
+        id: 2,
+        name: 'Project Name 2',
+        objectives: 'Project Objectives 2',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 2',
+        start_date: moment().toISOString(),
+        end_date: moment().toISOString(),
+        results: 'Results 2',
+        caveats: 'Caveats 2',
+        comments: 'Comments 2'
+      },
+      {
+        id: 3,
+        name: 'Project Name 3',
+        objectives: 'Project Objectives 3',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 3',
+        start_date: moment().toISOString(),
+        end_date: moment().toISOString(),
+        results: 'Results 3',
+        caveats: 'Caveats 3',
+        comments: 'Comments 3'
+      },
+      {
+        id: 4,
+        name: 'Project Name 4',
+        objectives: 'Project Objectives 4',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 4',
+        start_date: moment().toISOString(),
+        end_date: moment().toISOString(),
+        results: 'Results 4',
+        caveats: 'Caveats 4',
+        comments: 'Comments 4'
+      }
+    ];
+  };
+
+  /**
+   * Get a project based on its ID.
+   *
+   * @param {projectId} projectId
+   * @return {*}  {Promise<IProject>}
+   */
+  const getProject = async (projectId: string): Promise<IProject> => {
+    const { data } = await api.get(`/api/project/${projectId}`);
+
+    return data;
+  };
 
   /**
    * Get a template based on its ID.
@@ -72,6 +153,8 @@ export const useBiohubApi = () => {
   };
 
   return {
+    getProjects,
+    getProject,
     getTemplate,
     createActivity,
     getApiSpec

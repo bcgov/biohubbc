@@ -24,7 +24,7 @@ export const postSurveySQL = (survey: PostSurveyObject): SQLStatement => {
       ${survey.tags}
     )
     RETURNING
-      survey_id,
+      id,
       tags
   `;
 
@@ -41,10 +41,10 @@ export const postSurveySQL = (survey: PostSurveyObject): SQLStatement => {
 /**
  * SQL query to get a single survey.
  *
- * @param {string} surveyId
+ * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveySQL = (surveyId: string): SQLStatement => {
+export const getSurveySQL = (surveyId: number): SQLStatement => {
   defaultLog.debug({ label: 'getSurveySQL', message: 'params', surveyId });
 
   if (!surveyId) {
@@ -53,12 +53,12 @@ export const getSurveySQL = (surveyId: string): SQLStatement => {
 
   const sqlStatement = SQL`
     SELECT
-      survey_id,
+      id,
       tags
     from
       survey
     where
-      survey_id = ${surveyId};
+      id = ${surveyId};
   `;
 
   defaultLog.debug({

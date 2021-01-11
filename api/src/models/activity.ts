@@ -9,9 +9,9 @@ const defaultLog = getLogger('models/activity');
  * @interface IActivity
  */
 export interface IActivity {
-  activity_id?: string;
+  id?: string;
   tags: string[];
-  template_id: string;
+  template_id: number;
   form_data: object;
 }
 
@@ -33,10 +33,10 @@ export class PostActivityObject {
   /**
    * The id of the template that defines the form_data.
    *
-   * @type {string}
+   * @type {number}
    * @memberof PostActivityObject
    */
-  template_id: string;
+  template_id: number;
 
   /**
    * Form data.

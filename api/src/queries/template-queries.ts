@@ -32,7 +32,7 @@ export const postTemplateSQL = (templateObj: PostTemplateObj): SQLStatement => {
       ${templateObj.ui_template}
     )
     RETURNING
-      template_id,
+      id,
       name,
       description,
       tags,
@@ -53,10 +53,10 @@ export const postTemplateSQL = (templateObj: PostTemplateObj): SQLStatement => {
 /**
  * SQL query to get a single template.
  *
- * @param {string} templateId
+ * @param {number} templateId
  * @returns {SQLStatement} sql query object
  */
-export const getTemplateSQL = (templateId: string): SQLStatement => {
+export const getTemplateSQL = (templateId: number): SQLStatement => {
   defaultLog.debug({ label: 'getTemplateSQL', message: 'params', templateId });
 
   if (!templateId) {
@@ -65,7 +65,7 @@ export const getTemplateSQL = (templateId: string): SQLStatement => {
 
   const sqlStatement = SQL`
     SELECT
-      template_id,
+      id,
       name,
       description,
       tags,
@@ -74,7 +74,7 @@ export const getTemplateSQL = (templateId: string): SQLStatement => {
     from
       template
     where
-      template_id = ${templateId};
+      id = ${templateId};
   `;
 
   defaultLog.debug({

@@ -77,7 +77,7 @@ function getProject(): RequestHandler {
     }
 
     try {
-      const getProjectSQLStatement: SQLStatement = getProjectSQL(req.params.projectId);
+      const getProjectSQLStatement: SQLStatement = getProjectSQL(Number(req.params.projectId));
 
       if (!getProjectSQLStatement) {
         throw {

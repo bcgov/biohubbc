@@ -3,7 +3,7 @@ import { tags } from '../components/tags';
 const survey = {
   title: 'Activity Object',
   type: 'object',
-  required: ['tags'],
+  // required: [],
   properties: {
     tags: { ...tags }
   }
@@ -16,9 +16,9 @@ export const surveyPostBody = {
 export const surveyResponseBody = {
   ...survey,
   properties: {
-    survey_id: {
+    id: {
       description: 'Survey ID',
-      type: 'string'
+      type: 'number'
     },
     ...survey.properties
   }

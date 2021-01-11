@@ -3,7 +3,6 @@ export const tags = {
   type: 'array',
   items: {
     type: 'string',
-    enum: ['plant', 'animal', 'aquatic', 'terrestrial', 'invasive']
-  },
-  minItems: 2
+    enum: ['project', 'plant', 'animal', 'aquatic', 'terrestrial', 'invasive']
+  }
 };
