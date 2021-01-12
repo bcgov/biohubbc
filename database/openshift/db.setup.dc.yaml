@@ -83,6 +83,8 @@ objects:
               value: ${VERSION}
             - name: DB_SCHEMA
               value: 'biohub'
+            - name: DB_SCHEMA_DAPI_V1
+              value: 'biohub_dapi_v1'
           imagePullPolicy: Always
       restartPolicy: Never
       activeDeadlineSeconds: 900
