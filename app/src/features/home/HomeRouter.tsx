@@ -9,6 +9,12 @@ interface IHomeRouterProps {
   classes: any;
 }
 
+/**
+ * Router for all `/home/*` pages.
+ *
+ * @param {*} props
+ * @return {*}
+ */
 const HomeRouter: React.FC<IHomeRouterProps> = (props) => {
   return (
     <Switch>

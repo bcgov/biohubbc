@@ -69,7 +69,9 @@ export const getLogger = function (logLabel: string) {
           winston.format.colorize(),
           winston.format.printf(({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
             const optionalLabel = (label && ` ${label} -`) || '';
-            const optionalError = (error && `\n${error}`) || '';
+            const optionalError =
+              (error && ((Object.keys(error).length && `\n${JSON.stringify(error, undefined, 2)}`) || `\n${error}`)) ||
+              '';
             const optionalOther =
               (other && Object.keys(other).length && `\n${JSON.stringify(other, undefined, 2)}`) || '';
             return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${message} ${optionalError} ${optionalOther}`;

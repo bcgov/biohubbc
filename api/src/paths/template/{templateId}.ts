@@ -77,7 +77,7 @@ function getTemplate(): RequestHandler {
     }
 
     try {
-      const getTemplateSQLStatement: SQLStatement = getTemplateSQL(req.params.templateId);
+      const getTemplateSQLStatement: SQLStatement = getTemplateSQL(Number(req.params.templateId));
 
       if (!getTemplateSQLStatement) {
         throw {

@@ -1,11 +1,54 @@
-import { tags } from '../components/tags';
-
+// TODO add descriptions to each property and define required fields
 const project = {
   title: 'Activity Object',
   type: 'object',
-  required: ['tags'],
+  // required: [],
   properties: {
-    tags: { ...tags }
+    name: {
+      type: 'string'
+    },
+    objectives: {
+      type: 'string'
+    },
+    scientific_collection_permit_number: {
+      type: 'string'
+    },
+    management_recovery_action: {
+      type: 'string'
+    },
+    location_description: {
+      type: 'string'
+    },
+    start_date: {
+      type: 'string'
+    },
+    end_date: {
+      type: 'string'
+    },
+    results: {
+      type: 'string'
+    },
+    caveats: {
+      type: 'string'
+    },
+    comments: {
+      type: 'string'
+    },
+    create_date: {
+      type: 'string'
+    },
+    create_user: {
+      type: 'number'
+    },
+    update_date: {
+      type: 'string'
+    },
+    update_user: {
+      type: 'number'
+    },
+    revision_count: {
+      type: 'number'
+    }
   }
 };
 
@@ -16,9 +59,9 @@ export const projectPostBody = {
 export const projectResponseBody = {
   ...project,
   properties: {
-    project_id: {
+    id: {
       description: 'Project ID',
-      type: 'string'
+      type: 'number'
     },
     ...project.properties
   }

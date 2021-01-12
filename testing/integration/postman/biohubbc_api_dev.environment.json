@@ -34,7 +34,7 @@
     },
     {
       "key": "KEYCLOAK_URL",
-      "value": "https://dev.oidc.gov.bc.ca/auth/realms/dfmlcg7z/protocol/openid-connect/token",
+      "value": "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/token",
       "enabled": true
     },
     {

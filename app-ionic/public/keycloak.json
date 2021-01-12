@@ -1,8 +1,8 @@
 {
-  "realm": "dfmlcg7z",
+  "realm": "35r1iman",
   "auth-server-url": "https://dev.oidc.gov.bc.ca/auth",
   "ssl-required": "external",
-  "resource": "invasives-bc",
+  "resource": "biohubbc",
   "public-client": true,
   "confidential-port": 0
 }

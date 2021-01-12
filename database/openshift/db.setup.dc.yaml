@@ -81,6 +81,8 @@ objects:
               value: ${NODE_ENV}
             - name: VERSION
               value: ${VERSION}
+            - name: DB_SCHEMA
+              value: 'biohub'
           imagePullPolicy: Always
       restartPolicy: Never
       activeDeadlineSeconds: 900

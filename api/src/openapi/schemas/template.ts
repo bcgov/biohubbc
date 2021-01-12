@@ -3,7 +3,7 @@ import { tags } from '../components/tags';
 const template = {
   title: 'Template Object',
   type: 'object',
-  required: ['tags', 'name', 'description', 'data_template', 'ui_template'],
+  // required: [],
   properties: {
     tags: { ...tags },
     name: {
@@ -35,9 +35,9 @@ export const templatePostBody = {
 export const templateResponseBody = {
   ...template,
   properties: {
-    template_id: {
+    id: {
       description: 'Template ID',
-      type: 'string'
+      type: 'number'
     },
     ...template.properties
   }
