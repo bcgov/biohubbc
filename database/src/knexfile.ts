@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   local: {
     client: 'pg',
     connection: {

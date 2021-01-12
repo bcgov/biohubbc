@@ -2,9 +2,9 @@ import { Box, CircularProgress, Container, Typography } from '@material-ui/core'
 import EditFormControlsComponent from 'components/form/EditFormControlsComponent';
 import FormContainer from 'components/form/FormContainer';
 import { projectTemplate } from 'constants/project-templates';
+import { testProject } from 'constants/temp_demo';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectRecord } from 'interfaces/project-interfaces';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 // import { useParams } from 'react-router';
 
@@ -18,7 +18,7 @@ const EditProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState<IProjectRecord | null>(null);
 
   useEffect(() => {
     // This function is not fully flushed out or tested
@@ -31,65 +31,6 @@ const EditProjectPage: React.FC = () => {
       //   // TODO error messaging
       //   return;
       // }
-
-      // An example of a project
-      const testProject: IProjectRecord = {
-        id: 1,
-        project: {
-          id: 1,
-          name: 'Project Name',
-          objectives: 'Project Objectives',
-          scientific_collection_permit_number: '123456',
-          management_recovery_action: 'A',
-          location_description: 'Location Description',
-          start_date: moment().toISOString(),
-          end_date: moment().toISOString(),
-          results: 'Results',
-          caveats: 'Caveats',
-          comments: 'Comments'
-        },
-        fundingAgency: {
-          fundingAgency: {
-            id: 1,
-            funding_agency_project_id: '1',
-            funding_amount: 100,
-            funding_end_date: moment().toISOString(),
-            funding_start_date: moment().toISOString()
-          },
-          agency: {
-            id: 1,
-            name: 'Agency',
-            record_effective_date: moment().toISOString(),
-            record_end_date: moment().toISOString()
-          },
-          landBasedClimateStrategy: {
-            id: 1,
-            name: 'Land Based Climate Strategy'
-          }
-        },
-        managementActions: {
-          managementActions: {
-            id: 1
-          },
-          actionType: {
-            id: 1,
-            name: 'Action type',
-            description: 'Action Description',
-            record_effective_date: moment().toISOString(),
-            record_end_date: moment().toISOString()
-          }
-        },
-        region: {
-          id: 1,
-          common_code: 'Common Code'
-        },
-        proponent: {
-          id: 1,
-          name: 'Proponent Name',
-          record_effective_date: moment().toISOString(),
-          record_end_date: moment().toISOString()
-        }
-      };
 
       setProject(testProject /*templateResponse*/);
     };

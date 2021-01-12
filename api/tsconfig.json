@@ -9,18 +9,19 @@
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strict": false,
+    "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true,
+    "strict": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src", "../app-common-library"],
-  "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
+  "include": ["src"]
 }

@@ -4,7 +4,7 @@ import React from 'react';
 export interface IFormControlsComponentProps {
   classes?: any;
   isDisabled?: boolean;
-  onSubmit?: Function;
+  onSubmit: Function;
 }
 
 const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {

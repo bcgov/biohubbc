@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "module": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react",
@@ -15,29 +11,20 @@
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strict": false,
     "isolatedModules": true,
+    "noFallthroughCasesInSwitch": true,
     "noEmit": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
-    "noFallthroughCasesInSwitch": true
+    "strict": true,
+    "typeRoots": ["node_modules/@types"]
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "**/*.spec.ts",
-    "**/node_modules",
-    "**/dist"
-  ]
+  "include": ["src"]
 }

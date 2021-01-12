@@ -23,7 +23,17 @@ const EditFormControlsComponent: React.FC<IEditFormControlsComponentProps> = (pr
             </Button>
           </Grid>
           <Grid item>
-            <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onSubmit()}>
+            <Button
+              disabled={isDisabled}
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (!props || !props.onSubmit) {
+                  return;
+                }
+
+                props.onSubmit();
+              }}>
               Save
             </Button>
           </Grid>

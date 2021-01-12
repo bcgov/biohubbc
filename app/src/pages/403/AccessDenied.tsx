@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Link } from 'react-router-dom';
 import { Container, Grid } from '@material-ui/core';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const AccessDenied = () => {
   return (

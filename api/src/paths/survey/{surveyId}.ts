@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getSurveySQL } from '../../queries/survey-queries';
 import { surveyResponseBody } from '../../openapi/schemas/survey';
+import { getSurveySQL } from '../../queries/survey-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -77,7 +76,7 @@ function getSurvey(): RequestHandler {
     }
 
     try {
-      const getSurveySQLStatement: SQLStatement = getSurveySQL(Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveySQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement) {
         throw {

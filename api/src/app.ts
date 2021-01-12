@@ -9,7 +9,7 @@ import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
-const HOST: string = process.env.API_HOST;
+const HOST = process.env.API_HOST;
 const PORT = Number(process.env.API_PORT);
 
 const BODY_SIZE_LIMIT: string = process.env.BODY_SIZE_LIMIT || '50mb';
@@ -35,6 +35,7 @@ initialize({
   apiDoc: apiDoc as OpenAPI.Document, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
+  pathsIgnore: new RegExp('.(spec|test)$'), // ignore test files in paths
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
   promiseMode: true, // allow endpoint handlers to return promises

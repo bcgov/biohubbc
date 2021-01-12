@@ -40,7 +40,7 @@ export interface IFormContainerProps {
 }
 
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
-  const [formRef, setFormRef] = useState(null);
+  const [formRef, setFormRef] = useState<any | null>(null);
 
   const isDisabled = props.isDisabled;
 
@@ -50,7 +50,16 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         (props.formControlsLocation === FormControlLocation.TOP_AND_BOTTOM && (
           <Box mb={3}>
             {React.Children.map(props.formControlsComponent, (child: any) => {
-              return React.cloneElement(child, { ...child.props, onSubmit: () => formRef.submit() });
+              return React.cloneElement(child, {
+                ...child.props,
+                onSubmit: () => {
+                  if (!formRef || !formRef.submit) {
+                    return;
+                  }
+
+                  formRef.submit();
+                }
+              });
             })}
           </Box>
         ))}

@@ -1,8 +1,8 @@
 import Ajv, { ErrorObject } from 'ajv';
 
-export interface validationResult {
+export interface IValidationResult {
   isValid: boolean;
-  errors: ErrorObject[];
+  errors: ErrorObject[] | null | undefined;
 }
 
 /**
@@ -14,7 +14,7 @@ export interface validationResult {
  * @param {object} jsonSchema
  * @return {boolean} true if the template is valid, false otherwise
  */
-export function isValidJSONSchema(jsonSchema: object): validationResult {
+export function isValidJSONSchema(jsonSchema: object): IValidationResult {
   const ajv = new Ajv();
 
   const isValidJSONSchema = ajv.validateSchema(jsonSchema);
@@ -30,7 +30,7 @@ export function isValidJSONSchema(jsonSchema: object): validationResult {
  * @param {object} jsonSchema
  * @return {boolean} true if the template is valid, false otherwise
  */
-export function isJSONObjectValidForJSONSchema(jsonObject: object, jsonSchema: object): validationResult {
+export function isJSONObjectValidForJSONSchema(jsonObject: object, jsonSchema: object): IValidationResult {
   const ajv = new Ajv({ allErrors: true });
 
   const isValidJSONSchema = ajv.validate(jsonSchema, jsonObject);

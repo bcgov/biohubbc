@@ -10,7 +10,7 @@ const defaultLog = getLogger('queries/survey-queries');
  * @param {PostSurveyObject} survey
  * @returns {SQLStatement} sql query object
  */
-export const postSurveySQL = (survey: PostSurveyObject): SQLStatement => {
+export const postSurveySQL = (survey: PostSurveyObject): SQLStatement | null => {
   defaultLog.debug({ label: 'postSurveySQL', message: 'params', PostSurveyObject });
 
   if (!survey) {
@@ -44,7 +44,7 @@ export const postSurveySQL = (survey: PostSurveyObject): SQLStatement => {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveySQL = (surveyId: number): SQLStatement => {
+export const getSurveySQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getSurveySQL', message: 'params', surveyId });
 
   if (!surveyId) {

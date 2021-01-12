@@ -1,0 +1,32 @@
+name: Test Checks
+
+on: [pull_request]
+
+# TODO add app-ionic when it is ready
+jobs:
+  test:
+    name: Running Tests
+    runs-on: ubuntu-16.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10"
+
+      - name: Install api dependencies
+        working-directory: api
+        run: npm install
+
+      - name: Run api tests with coverage
+        working-directory: api
+        run: CI=true npm run coverage
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm install
+
+      - name: Run app tests with coverage
+        working-directory: app
+        run: CI=true npm run coverage

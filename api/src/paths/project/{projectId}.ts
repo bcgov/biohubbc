@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getProjectSQL } from '../../queries/project-queries';
 import { projectResponseBody } from '../../openapi/schemas/project';
+import { getProjectSQL } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -77,7 +76,7 @@ function getProject(): RequestHandler {
     }
 
     try {
-      const getProjectSQLStatement: SQLStatement = getProjectSQL(Number(req.params.projectId));
+      const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
 
       if (!getProjectSQLStatement) {
         throw {
