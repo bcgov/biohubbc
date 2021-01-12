@@ -401,7 +401,7 @@ COMMENT ON TABLE project_participation IS 'A history of the project user partici
 CREATE TABLE project_region(
     id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     p_id              integer         NOT NULL,
-    common_code       varchar(30)     NOT NULL,
+    region_name       varchar(200)    NOT NULL,
     create_date       timestamp(6)    DEFAULT now() NOT NULL,
     create_user       integer         NOT NULL,
     update_date       timestamp(6),
@@ -417,7 +417,7 @@ COMMENT ON COLUMN project_region.id IS 'System generated surrogate primary key i
 ;
 COMMENT ON COLUMN project_region.p_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_region.common_code IS 'A common code.'
+COMMENT ON COLUMN project_region.region_name IS 'The region name.'
 ;
 COMMENT ON COLUMN project_region.create_date IS 'The datetime the record was created.'
 ;
@@ -794,7 +794,7 @@ CREATE INDEX "Ref10034" ON project_participation(pr_id)
 -- INDEX: pr_uk1 
 --
 
-CREATE UNIQUE INDEX pr_uk1 ON project_region(p_id)
+CREATE UNIQUE INDEX pr_uk1 ON project_region(p_id, region_name)
 ;
 -- 
 -- INDEX: "Ref4524" 
