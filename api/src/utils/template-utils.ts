@@ -2,7 +2,7 @@ import Ajv, { ErrorObject } from 'ajv';
 
 export interface IValidationResult {
   isValid: boolean;
-  errors: ErrorObject[];
+  errors: ErrorObject[] | null | undefined;
 }
 
 /**

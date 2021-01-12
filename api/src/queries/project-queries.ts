@@ -10,7 +10,7 @@ const defaultLog = getLogger('queries/project-queries');
  * @param {PostProjectObject} project
  * @returns {SQLStatement} sql query object
  */
-export const postProjectSQL = (project: PostProjectObject): SQLStatement => {
+export const postProjectSQL = (project: PostProjectObject): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 
   if (!project) {
@@ -66,7 +66,7 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement => {
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectSQL = (projectId: number): SQLStatement => {
+export const getProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectSQL', message: 'params', projectId });
 
   if (!projectId) {
@@ -113,7 +113,7 @@ export const getProjectSQL = (projectId: number): SQLStatement => {
  * @param {string} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectsSQL = (projectId: string): SQLStatement => {
+export const getProjectsSQL = (projectId: string): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectsSQL', message: 'params', projectId });
 
   if (!projectId) {

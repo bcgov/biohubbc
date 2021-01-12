@@ -27,7 +27,7 @@ const poolConfig: PoolConfig = {
 
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
 
-let pool: Pool = null;
+let pool: Pool;
 
 try {
   pool = new Pool(poolConfig);
@@ -45,7 +45,7 @@ try {
  * @returns {Promise<PoolClient>}
  */
 export const getDBConnection = async function (): Promise<PoolClient> {
-  let client: PoolClient = null;
+  let client: PoolClient;
 
   try {
     client = await pool.connect();

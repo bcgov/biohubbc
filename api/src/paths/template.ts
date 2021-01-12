@@ -1,12 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostTemplateObj } from '../models/template';
-import { postTemplateSQL } from '../queries/template-queries';
 import { templatePostBody, templateResponseBody } from '../openapi/schemas/template';
+import { postTemplateSQL } from '../queries/template-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { isValidJSONSchema } from '../utils/template-utils';
@@ -94,7 +93,7 @@ function createTemplate(): RequestHandler {
     }
 
     try {
-      const createTemplateSQLStatement: SQLStatement = postTemplateSQL(sanitizedData);
+      const createTemplateSQLStatement = postTemplateSQL(sanitizedData);
 
       if (!createTemplateSQLStatement) {
         throw {

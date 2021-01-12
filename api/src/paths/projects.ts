@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { projectResponseBody } from '../openapi/schemas/project';
@@ -73,7 +72,7 @@ function getProjects(): RequestHandler {
     }
 
     try {
-      const getProjectsSQLStatement: SQLStatement = getProjectsSQL(req.params.projectId);
+      const getProjectsSQLStatement = getProjectsSQL(req.params.projectId);
 
       if (!getProjectsSQLStatement) {
         throw {

@@ -18,7 +18,7 @@ const EditProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const [project, setProject] = useState(null);
+  const [project, setProject] = useState<IProjectRecord | null>(null);
 
   useEffect(() => {
     // This function is not fully flushed out or tested

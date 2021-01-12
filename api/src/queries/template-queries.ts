@@ -10,7 +10,7 @@ const defaultLog = getLogger('queries/template-queries');
  * @param {PostTemplateObj} templateObj
  * @returns {SQLStatement} sql query object
  */
-export const postTemplateSQL = (templateObj: PostTemplateObj): SQLStatement => {
+export const postTemplateSQL = (templateObj: PostTemplateObj): SQLStatement | null => {
   defaultLog.debug({ label: 'postTemplateSQL', message: 'params', postTemplateSQL });
 
   if (!templateObj) {
@@ -56,7 +56,7 @@ export const postTemplateSQL = (templateObj: PostTemplateObj): SQLStatement => {
  * @param {number} templateId
  * @returns {SQLStatement} sql query object
  */
-export const getTemplateSQL = (templateId: number): SQLStatement => {
+export const getTemplateSQL = (templateId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getTemplateSQL', message: 'params', templateId });
 
   if (!templateId) {

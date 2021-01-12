@@ -1,13 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostActivityObject } from '../models/activity';
+import { activityPostBody, activityResponseBody } from '../openapi/schemas/activity';
 import { postActivitySQL } from '../queries/activity-queries';
 import { getTemplateSQL } from '../queries/template-queries';
-import { activityPostBody, activityResponseBody } from '../openapi/schemas/activity';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { isJSONObjectValidForJSONSchema } from '../utils/template-utils';
@@ -85,8 +84,8 @@ function createActivity(): RequestHandler {
     }
 
     try {
-      const getTemplateSQLStatement: SQLStatement = getTemplateSQL(sanitizedData.template_id);
-      const postActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedData);
+      const getTemplateSQLStatement = getTemplateSQL(sanitizedData.template_id);
+      const postActivitySQLStatement = postActivitySQL(sanitizedData);
 
       if (!getTemplateSQLStatement || !postActivitySQLStatement) {
         throw {
@@ -95,7 +94,7 @@ function createActivity(): RequestHandler {
         };
       }
 
-      let createResponse: QueryResult = null;
+      let createResponse: QueryResult;
 
       try {
         // Perform both get and create operations as a single transaction

@@ -54,7 +54,7 @@ const CreateProjectPage: React.FC = () => {
     return ['Project Details', 'Project Funding', 'Project Agency', 'Project Proponent'];
   }
 
-  function getStepContent(step) {
+  function getStepContent(step: any) {
     switch (step) {
       case 0:
         return <FormContainer template={projectTemplate} formControlsComponent={EditFormControlsComponent} />;

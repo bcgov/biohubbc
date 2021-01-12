@@ -7,7 +7,7 @@
  * @returns {(...args: any) => any}
  */
 export const debounced = function (delay: number, fn: (...args: any) => any): (...args: any) => any {
-  let timerId: NodeJS.Timeout;
+  let timerId: NodeJS.Timeout | null;
 
   return (...args) => {
     if (timerId) {

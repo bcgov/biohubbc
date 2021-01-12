@@ -9,7 +9,7 @@ import winston from 'winston';
  */
 export interface ILoggerMessage extends winston.Logform.TransformableInfo {
   timestamp?: string; // Optionally overwrite the default timestamp
-  label: string; // Add a label to this message (generally the name of the parent function)
+  label?: string; // Add a label to this message (generally the name of the parent function)
   error?: Error; // An optional error to display
 }
 
