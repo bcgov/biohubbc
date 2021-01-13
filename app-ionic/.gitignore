@@ -6,10 +6,15 @@ node_modules
 **/.config
 **.bash_history
 
+# Build artifacts
 dist
 build
 
+# Testing
 coverage
+
+# SonarQube
+.sonarqube
 
 # ionic cli config, which will re-create as needed for local cli use
 .ionic

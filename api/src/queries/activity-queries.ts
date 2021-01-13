@@ -10,7 +10,7 @@ const defaultLog = getLogger('queries/activity-queries');
  * @param {PostActivityObject} activity
  * @returns {SQLStatement} sql query object
  */
-export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
+export const postActivitySQL = (activity: PostActivityObject): SQLStatement | null => {
   defaultLog.debug({ label: 'postActivitySQL', message: 'params', PostActivityObject });
 
   if (!activity) {
@@ -50,7 +50,7 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement => {
  * @param {number} activityId
  * @returns {SQLStatement} sql query object
  */
-export const getActivitySQL = (activityId: number): SQLStatement => {
+export const getActivitySQL = (activityId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getActivitySQL', message: 'params', activityId });
 
   if (!activityId) {

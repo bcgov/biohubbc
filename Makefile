@@ -4,9 +4,9 @@
 # Makefile -- BioHubBC
 # ------------------------------------------------------------------------------
 
-# You must manually create an empty `.env` file at the root level (this level), otherwise the below commands will fail.
 -include .env
 
+# Apply the contents of the .env to the terminal, so that the docker-compose file can use them in its builds
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help

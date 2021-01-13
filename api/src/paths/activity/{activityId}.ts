@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getActivitySQL } from '../../queries/activity-queries';
 import { activityResponseBody } from '../../openapi/schemas/activity';
+import { getActivitySQL } from '../../queries/activity-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -77,7 +76,7 @@ function getActivity(): RequestHandler {
     }
 
     try {
-      const getActivitySQLStatement: SQLStatement = getActivitySQL(Number(req.params.activityId));
+      const getActivitySQLStatement = getActivitySQL(Number(req.params.activityId));
 
       if (!getActivitySQLStatement) {
         throw {

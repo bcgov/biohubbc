@@ -12,71 +12,17 @@
 
 # API Specification
 
-The API is defined in `api-doc.yaml`.
+The root API schema is defined in `./src/openapi/api.ts`.
 
-If this project is running in docker you can view the api docs at: `http://localhost:6100/api/api-docs/` or via nginx at `http://localhost:80/api/api-docs/`.
+If this project is running in docker you can view the api docs at: `http://localhost:6100/api/api-docs/` or via nginx at `http://localhost/api/api-docs/`.
 
-This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `api-doc.yaml` and the `./src/path/` content.
+This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `./src/openapi/api.ts` and the `./src/path/` content.
 
 - The endpoint paths are defined based on the folder structure of the `./src/paths/` folder.
   - Example: `<host>/api/activity` is handled by `./src/paths/activity.ts`
-  - Example: `<host>/api/code/observation/plant` is handled by `./src/paths/code/observation/plant.ts`
+  - Example: `<host>/api/activity/{activityId} ` is handled by `./src/paths/activity/{activityId}.ts`
 
-Recommend reviewing the [Open API Specification](https://swagger.io/docs/specification/about/) before making any changes to the `api-doc.yaml` file.
-
-_Note: This API currently uses OpenAPI 2.0, as 3.0 is not yet fully supported by many of the swagger libraries/tools used._
-
-<br />
-
-# Database Migrations
-
-## Info
-
-This api users `Knex` to manage and run database migrations.
-
-A log of executed migrations can be found in the `migration` postgres table. Knex will not re-run a migration that has been run before (indicated by an entry in the `migration` table).
-
-### Technologies used
-
-- [Knex](http://knexjs.org/)
-
-### Configuration file
-
-- knexfile.ts
-
-## Running migrations Locally
-
-- Set up the environment variables required by the `knexfile.ts` config
-
-  ```
-  make setup-local
-  ```
-
-- Run migrations:
-
-  ```
-  npm run migrate:latest
-
-  or
-
-  npx knex migrate:latest
-  ```
-
-- Rollback last set of migrations:
-
-  ```
-  npm run migrate:rollback
-
-  or
-
-  npx knex migrate:rollback
-  ```
-
-- See other available Knex commands:
-
-  ```
-  npx knex --help
-  ```
+Recommend reviewing the [Open API Specification](https://swagger.io/docs/specification/about/) before making any changes to any of the API schemas.
 
 <br />
 
@@ -171,32 +117,39 @@ Supported log properties:
 
 # Testing
 
-- To access the API without logging in to the front end, you can manually add a user this way:
+## Technologies used
 
-```
-$ make database
-$ psql
-psql_prompt: insert into application_user (first_name, last_name, email,preferred_username) values ('test', 'user', 'test.user@email.com','testuser@idir');
+- [Mocha](https://www.npmjs.com/package/mocha) - Unit test framework
+- [Chai](https://www.npmjs.com/package/chai) - Assertion library
+- [SuperTest](https://www.npmjs.com/package/supertest) - API testing library
+- [Nock](https://www.npmjs.com/package/nock) - HTTP mocking library
 
-psql_prompt: insert into user_role (user_id, role_code_id) values (8,3);
-```
-
-## Info
-
-### Technologies used
-
-- [Mocha](https://www.npmjs.com/package/mocha)
-- [Chai](https://www.npmjs.com/package/chai)
-- [SuperTest](https://www.npmjs.com/package/supertest)
-- [Nock](https://www.npmjs.com/package/nock)
-
-## Run Tests
+## Running Tests
 
 - Run the unit tests
 
-```
-npm run test
-```
+  ```
+  npm test
+  ```
+
+- Run the unit tests in watch mode (will re-run the tests on code changes).
+
+  ```
+  npm run test:watch
+  ```
+
+- Run the unit test coverage report
+
+  The coverage report will be output to `./coverage`
+
+  ```
+  npm run coverage
+  ```
+
+## Writing Tests
+
+Any files that match `/src/**/*.@(test|spec).ts` will be considered tests.  
+See [Mocha](https://mochajs.org) for documentation on writing tests.
 
 <br />
 

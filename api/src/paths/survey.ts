@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostSurveyObject } from '../models/survey';
@@ -82,7 +81,7 @@ function createSurvey(): RequestHandler {
     }
 
     try {
-      const postSurveySQLStatement: SQLStatement = postSurveySQL(sanitizedData);
+      const postSurveySQLStatement = postSurveySQL(sanitizedData);
 
       if (!postSurveySQLStatement) {
         throw {

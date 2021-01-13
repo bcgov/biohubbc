@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostProjectObject } from '../models/project';
@@ -82,7 +81,7 @@ function createProject(): RequestHandler {
     }
 
     try {
-      const postProjectSQLStatement: SQLStatement = postProjectSQL(sanitizedData);
+      const postProjectSQLStatement = postProjectSQL(sanitizedData);
 
       if (!postProjectSQLStatement) {
         throw {

@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { SQLStatement } from 'sql-template-strings';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getTemplateSQL } from '../../queries/template-queries';
 import { templateResponseBody } from '../../openapi/schemas/template';
+import { getTemplateSQL } from '../../queries/template-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -77,7 +76,7 @@ function getTemplate(): RequestHandler {
     }
 
     try {
-      const getTemplateSQLStatement: SQLStatement = getTemplateSQL(Number(req.params.templateId));
+      const getTemplateSQLStatement = getTemplateSQL(Number(req.params.templateId));
 
       if (!getTemplateSQLStatement) {
         throw {

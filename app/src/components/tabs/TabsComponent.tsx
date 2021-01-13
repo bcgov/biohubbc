@@ -7,7 +7,7 @@ const TabsComponent: React.FC = () => {
 
   const getActiveTab = useCallback(
     (activeTabNumber: number): number => {
-      const urlContainsPath = (path: string): string => {
+      const urlContainsPath = (path: string): string | null => {
         return (history.location.pathname.includes(path) && history.location.pathname) || null;
       };
 
