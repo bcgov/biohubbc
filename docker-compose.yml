@@ -36,6 +36,8 @@ services:
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER_API=${DB_USER_API}
+      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
