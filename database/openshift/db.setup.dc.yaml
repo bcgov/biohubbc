@@ -59,13 +59,15 @@ objects:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  key: database-user
+                  key: database-root-user
                   name: ${DB_SERVICE_NAME}
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-password
+                  key: database-root-password
                   name: ${DB_SERVICE_NAME}
+            - name: DB_USER_API
+              value: 'biohub_api'
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -81,6 +83,8 @@ objects:
               value: ${VERSION}
             - name: DB_SCHEMA
               value: 'biohub'
+            - name: DB_SCHEMA_DAPI_V1
+              value: 'biohub_dapi_v1'
           imagePullPolicy: Always
       restartPolicy: Never
       activeDeadlineSeconds: 900
