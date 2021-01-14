@@ -35,13 +35,14 @@ const ProjectsPage: React.FC = () => {
     history.push('/projects/create');
   };
 
-  const navigateToEditProjectPage = (id: string | number) => {
+  const navigateToEditProjectPage = (id: number) => {
     history.push(`/projects/${id}/edit`);
   };
 
-  const navigateToProjectPage = (id: string | number) => {
+  const navigateToProjectPage = (id: number) => {
     history.push(`/projects/${id}`);
   };
+
   useEffect(() => {
     const getProjects = async () => {
       const projectsResponse = await biohubApi.getProjects();

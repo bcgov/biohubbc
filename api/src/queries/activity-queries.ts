@@ -20,7 +20,7 @@ export const postActivitySQL = (activity: PostActivityObject): SQLStatement | nu
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO activity (
       tags,
-      tempalte_id,
+      template_id,
       form_data
     ) VALUES (
       ${activity.tags},

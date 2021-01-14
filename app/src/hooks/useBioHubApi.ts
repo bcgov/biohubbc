@@ -1,7 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
-import { IProject } from 'interfaces/project-interfaces';
-import { IActivity, ICreateActivity, ITemplate } from 'interfaces/useBioHubApi-interfaces';
+import { IProject, IProjectPostObject } from 'interfaces/project-interfaces';
+import { IActivity, ICreateActivity, ICreateProjectResponse, ITemplate } from 'interfaces/useBioHubApi-interfaces';
 import moment from 'moment';
 import { useMemo } from 'react';
 
@@ -20,7 +20,6 @@ const useApi = () => {
   const instance = useMemo(() => {
     return axios.create({
       headers: {
-        // 'Access-Control-Allow-Origin': '*',
         Authorization: `Bearer ${keycloak?.token}`
       },
       baseURL: API_URL
@@ -111,8 +110,20 @@ export const useBiohubApi = () => {
    * @param {projectId} projectId
    * @return {*}  {Promise<IProject>}
    */
-  const getProject = async (projectId: string): Promise<IProject> => {
+  const getProject = async (projectId: number): Promise<IProject> => {
     const { data } = await api.get(`/api/project/${projectId}`);
+
+    return data;
+  };
+
+  /**
+   * Create a new project.
+   *
+   * @param {IProjectPostObject} project
+   * @return {*}  {Promise<ICreateProjectResponse>}
+   */
+  const createProject = async (project: IProjectPostObject): Promise<ICreateProjectResponse> => {
+    const { data } = await api.post('/api/project', project);
 
     return data;
   };
@@ -123,7 +134,7 @@ export const useBiohubApi = () => {
    * @param {templateId} templateId
    * @return {*}  {Promise<ITemplate>}
    */
-  const getTemplate = async (templateId: string): Promise<ITemplate> => {
+  const getTemplate = async (templateId: number): Promise<ITemplate> => {
     const { data } = await api.get(`/api/template/${templateId}`);
 
     return data;
@@ -137,6 +148,17 @@ export const useBiohubApi = () => {
    */
   const createActivity = async (activity: ICreateActivity): Promise<IActivity> => {
     const { data } = await api.post('/api/activity', activity);
+
+    return data;
+  };
+
+  /**
+   * Fetch all code sets.
+   *
+   * @return {*}  {Promise<any>}
+   */
+  const getAllCodes = async (): Promise<any> => {
+    const { data } = await api.get('/api/codes/');
 
     return data;
   };
@@ -156,7 +178,9 @@ export const useBiohubApi = () => {
     getProjects,
     getProject,
     getTemplate,
+    createProject,
     createActivity,
+    getAllCodes,
     getApiSpec
   };
 };

@@ -56,7 +56,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projecst.
+ * Get all projects.
  *
  * @returns {RequestHandler}
  */
@@ -72,7 +72,7 @@ function getProjects(): RequestHandler {
     }
 
     try {
-      const getProjectsSQLStatement = getProjectsSQL(req.params.projectId);
+      const getProjectsSQLStatement = getProjectsSQL();
 
       if (!getProjectsSQLStatement) {
         throw {
@@ -81,12 +81,12 @@ function getProjects(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
+      const getProjectsResponse: QueryResult = await connection.query(
         getProjectsSQLStatement.text,
         getProjectsSQLStatement.values
       );
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      const result = (getProjectsResponse && getProjectsResponse.rows) || null;
 
       return res.status(200).json(result);
     } catch (error) {

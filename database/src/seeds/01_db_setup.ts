@@ -18,13 +18,13 @@ export async function seed(knex: Knex): Promise<void> {
     path.join(__dirname, '..', 'release.0.3', 'populate_funding_agency.sql')
   );
 
-    await knex.raw(`
-        set schema '${DB_SCHEMA}';
-        set search_path = ${DB_SCHEMA};
-        
-        ${populate_climate_change_initiatives}
-        ${populate_management_action_type}
-        ${populate_land_based_investment_strategy}
-        ${populate_funding_agency}
-    `);
+  await knex.raw(`
+    set schema '${DB_SCHEMA}';
+    set search_path = ${DB_SCHEMA};
+
+    ${populate_climate_change_initiatives}
+    ${populate_management_action_type}
+    ${populate_land_based_investment_strategy}
+    ${populate_funding_agency}
+  `);
 }

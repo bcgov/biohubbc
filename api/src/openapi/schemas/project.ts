@@ -1,68 +1,78 @@
-// TODO add descriptions to each property and define required fields
-const project = {
-  title: 'Activity Object',
+/**
+ * Project endpoint post body openapi schema.
+ *
+ * TODO WIP - this object is not in any kind of final form and can change as needed.
+ */
+export const projectPostBody = {
+  title: 'Project Post Object',
   type: 'object',
-  // required: [],
+  required: ['project'],
   properties: {
-    name: {
-      type: 'string'
+    project: {
+      title: 'Project Model Object',
+      type: 'object',
+      // required: [],
+      properties: {
+        name: {
+          type: 'string'
+        },
+        objectives: {
+          type: 'string'
+        },
+        scientific_collection_permit_number: {
+          type: 'string'
+        },
+        management_recovery_action: {
+          type: 'string'
+        },
+        location_description: {
+          type: 'string'
+        },
+        start_date: {
+          type: 'string'
+        },
+        end_date: {
+          type: 'string'
+        },
+        results: {
+          type: 'string'
+        },
+        caveats: {
+          type: 'string'
+        },
+        comments: {
+          type: 'string'
+        }
+      }
     },
-    objectives: {
-      type: 'string'
+    proponent: {
+      title: 'Proponent Model Object',
+      type: 'object',
+      properties: {}
     },
-    scientific_collection_permit_number: {
-      type: 'string'
+    agency: {
+      title: 'Agency Model Object',
+      type: 'object',
+      properties: {}
     },
-    management_recovery_action: {
-      type: 'string'
-    },
-    location_description: {
-      type: 'string'
-    },
-    start_date: {
-      type: 'string'
-    },
-    end_date: {
-      type: 'string'
-    },
-    results: {
-      type: 'string'
-    },
-    caveats: {
-      type: 'string'
-    },
-    comments: {
-      type: 'string'
-    },
-    create_date: {
-      type: 'string'
-    },
-    create_user: {
-      type: 'number'
-    },
-    update_date: {
-      type: 'string'
-    },
-    update_user: {
-      type: 'number'
-    },
-    revision_count: {
-      type: 'number'
+    funding: {
+      title: 'Funding Model Object',
+      type: 'object',
+      properties: {}
     }
   }
 };
 
-export const projectPostBody = {
-  ...project
-};
-
+/**
+ * Project endpoint response body openapi schema.
+ */
 export const projectResponseBody = {
-  ...project,
+  title: 'Project Response Object',
+  type: 'object',
+  required: ['id'],
   properties: {
     id: {
-      description: 'Project ID',
       type: 'number'
-    },
-    ...project.properties
+    }
   }
 };

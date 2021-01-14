@@ -1,7 +1,10 @@
 import { tags } from '../components/tags';
 
-const activity = {
-  title: 'Activity Object',
+/**
+ * Activity endpoint post body openapi schema.
+ */
+export const activityPostBody = {
+  title: 'Activity Post Object',
   type: 'object',
   // required: [],
   properties: {
@@ -17,17 +20,16 @@ const activity = {
   }
 };
 
-export const activityPostBody = {
-  ...activity
-};
-
+/**
+ * Activity endpoint response body openapi schema.
+ */
 export const activityResponseBody = {
-  ...activity,
+  title: 'Activity Response Object',
+  type: 'object',
+  required: ['id'],
   properties: {
     id: {
-      description: 'Activity ID',
       type: 'number'
-    },
-    ...activity.properties
+    }
   }
 };

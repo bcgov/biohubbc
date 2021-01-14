@@ -12,6 +12,7 @@ build
 
 # Testing
 coverage
+test-report.xml
 
 # SonarQube
 .sonarqube

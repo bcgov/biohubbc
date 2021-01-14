@@ -37,5 +37,5 @@ jobs:
       - name: RunTest
         working-directory: ./testing/integration/postman
         run: |
-          sed -i "s/<password>/${{ secrets.TEST_PASSWORD }}/g" biohubbc_api_dev.environment.json
-          newman run biohubbc_api_dev.postman_collection.json -e biohubbc_api_dev.environment.json
+          sed -i "s/<password>/${{ secrets.TEST_PASSWORD }}/g" BioHubBC-Environment-DEV.postman_environment.json
+          newman run BioHubBC-API-DEV.postman_collection.json -e BioHubBC-Environment-DEV.postman_environment.json

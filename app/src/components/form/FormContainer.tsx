@@ -1,5 +1,5 @@
 import { Box, ThemeProvider, Typography } from '@material-ui/core';
-import { IChangeEvent, ISubmitEvent } from '@rjsf/core';
+import { IChangeEvent, ISubmitEvent, AjvError, ErrorListProps } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { IFormRecord, ITemplate } from 'interfaces/useBioHubApi-interfaces';
 import React, { useState } from 'react';
@@ -10,8 +10,12 @@ import rjsfTheme from 'themes/rjsfTheme';
 
 export enum FormControlLocation {
   TOP = 'top',
-  BOTTOM = 'bottom',
-  TOP_AND_BOTTOM = 'top_and_bottom'
+  BOTTOM = 'bottom'
+}
+
+export interface IFormControlsComponentProps {
+  onSubmit: Function;
+  isDisabled?: boolean;
 }
 
 export interface IFormContainerProps {
@@ -19,8 +23,9 @@ export interface IFormContainerProps {
   template: ITemplate;
   customValidation?: any;
   isDisabled?: boolean;
-  formControlsComponent: any;
-  formControlsLocation?: FormControlLocation;
+  formControlsComponent?: React.FunctionComponent<IFormControlsComponentProps>;
+  formControlsLocation?: FormControlLocation[];
+  formErrorComponent?: React.FunctionComponent<ErrorListProps>;
   /**
    * A function executed everytime the form changes.
    *
@@ -30,7 +35,7 @@ export interface IFormContainerProps {
   /**
    * A function executed when the form submit hook fires, and form validation errors are found.
    */
-  onFormSubmitError?: (errors: any[], formRef: any) => any;
+  onFormError?: (errors: any[], formRef: any) => any;
   /**
    * A function executed everytime the form submit hook fires.
    *
@@ -39,6 +44,56 @@ export interface IFormContainerProps {
   onFormSubmitSuccess?: (event: ISubmitEvent<any>, formRef: any) => any;
 }
 
+/**
+ * Conditionally returns a form controls element.
+ *
+ * @param {FormControlLocation} targetLocation The desired form control location.
+ * @param {FormControlLocation[]} formControlsLocation The allowed form control locations(s).
+ * @param {React.FunctionComponent<IFormControlsComponentProps>} formControlsComponent The form control component to
+ * render, which will receive additional props.
+ * @param {*} formRef The form reference, used in passing additional props to the from control component.
+ * @return {*}
+ */
+const getFormControls = (
+  targetLocation: FormControlLocation,
+  formControlsLocation: FormControlLocation[] | undefined,
+  formControlsComponent: React.FunctionComponent<IFormControlsComponentProps> | undefined,
+  formRef: any
+) => {
+  if (formControlsLocation && formControlsLocation.includes(targetLocation)) {
+    return (
+      <Box my={3}>
+        {formControlsComponent &&
+          formControlsComponent({
+            onSubmit: () => {
+              if (!formRef || !formRef.submit) {
+                return;
+              }
+
+              formRef.submit();
+            }
+          })}
+      </Box>
+    );
+  }
+};
+
+const transformErrors = (errors: AjvError[]) => {
+  const transformedErrors = errors.filter((error) => {
+    if (error.message === 'should be equal to one of the allowed values') {
+      return false;
+    }
+
+    if (error.message === 'should match exactly one schema in oneOf') {
+      return false;
+    }
+
+    return true;
+  });
+
+  return transformedErrors;
+};
+
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [formRef, setFormRef] = useState<any | null>(null);
 
@@ -46,23 +101,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
 
   return (
     <Box>
-      {props.formControlsLocation === FormControlLocation.TOP ||
-        (props.formControlsLocation === FormControlLocation.TOP_AND_BOTTOM && (
-          <Box mb={3}>
-            {React.Children.map(props.formControlsComponent, (child: any) => {
-              return React.cloneElement(child, {
-                ...child.props,
-                onSubmit: () => {
-                  if (!formRef || !formRef.submit) {
-                    return;
-                  }
-
-                  formRef.submit();
-                }
-              });
-            })}
-          </Box>
-        ))}
+      {getFormControls(FormControlLocation.TOP, props.formControlsLocation, props.formControlsComponent, formRef)}
 
       <ThemeProvider theme={rjsfTheme}>
         <Form
@@ -74,18 +113,23 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           formData={props?.record || null}
           schema={props.template.data_template}
           uiSchema={props.template.ui_template}
-          liveValidate={false}
+          liveValidate={true}
           showErrorList={true}
           validate={props.customValidation}
           autoComplete="off"
-          ErrorList={() => {
+          transformErrors={transformErrors}
+          ErrorList={(errorProps) => {
+            if (props.formErrorComponent) {
+              return props.formErrorComponent(errorProps);
+            }
+
             return (
-              <Box>
+              <Box mb={2}>
                 <Typography color="error" variant="h5">
-                  The form contains errors.
+                  The form is incomplete
                 </Typography>
                 <Typography color="error" variant="h6">
-                  Incorrect fields are highlighted below.
+                  Fields that need further action are highlighted below
                 </Typography>
               </Box>
             );
@@ -98,11 +142,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
             props.onFormChange(event, formRef);
           }}
           onError={(error) => {
-            if (!props.onFormSubmitError) {
+            if (!props.onFormError) {
               return;
             }
 
-            props.onFormSubmitError(error, formRef);
+            props.onFormError(error, formRef);
           }}
           onSubmit={(event) => {
             if (!props.onFormSubmitSuccess) {
@@ -124,15 +168,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
         </Form>
       </ThemeProvider>
 
-      {!props.formControlsLocation ||
-        props.formControlsLocation === FormControlLocation.BOTTOM ||
-        (props.formControlsLocation === FormControlLocation.TOP_AND_BOTTOM && (
-          <Box mt={3}>
-            {React.Children.map(props.formControlsComponent, (child: any) => {
-              return React.cloneElement(child, { ...child.props, onSubmit: () => formRef.submit() });
-            })}
-          </Box>
-        ))}
+      {getFormControls(FormControlLocation.BOTTOM, props.formControlsLocation, props.formControlsComponent, formRef)}
     </Box>
   );
 };

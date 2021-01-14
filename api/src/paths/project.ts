@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { QueryResult } from 'pg';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostProjectObject } from '../models/project';
@@ -69,7 +70,7 @@ POST.apiDoc = {
  */
 function createProject(): RequestHandler {
   return async (req, res) => {
-    const sanitizedData = new PostProjectObject(req.body);
+    const sanitizedProjectData = new PostProjectObject(req.body.project);
 
     const connection = await getDBConnection();
 
@@ -81,7 +82,7 @@ function createProject(): RequestHandler {
     }
 
     try {
-      const postProjectSQLStatement = postProjectSQL(sanitizedData);
+      const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
 
       if (!postProjectSQLStatement) {
         throw {
@@ -90,9 +91,22 @@ function createProject(): RequestHandler {
         };
       }
 
-      const createResponse = await connection.query(postProjectSQLStatement.text, postProjectSQLStatement.values);
+      let createProjectResponse: QueryResult;
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      try {
+        await connection.query('BEGIN');
+
+        createProjectResponse = await connection.query(postProjectSQLStatement.text, postProjectSQLStatement.values);
+
+        // TODO populate other related tables that have the project id as a foreign key
+
+        await connection.query('COMMIT');
+      } catch (error) {
+        await connection.query('ROLLBACK');
+        throw error;
+      }
+
+      const result = (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {

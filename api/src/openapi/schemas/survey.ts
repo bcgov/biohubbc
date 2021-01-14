@@ -1,25 +1,29 @@
 import { tags } from '../components/tags';
 
-const survey = {
-  title: 'Activity Object',
+/**
+ * Survey endpoint post body openapi schema.
+ */
+export const surveyPostBody = {
+  title: 'Survey Post Object',
   type: 'object',
   // required: [],
   properties: {
-    tags: { ...tags }
+    tags: {
+      ...tags
+    }
   }
 };
 
-export const surveyPostBody = {
-  ...survey
-};
-
+/**
+ * Survey endpoint response body openapi schema.
+ */
 export const surveyResponseBody = {
-  ...survey,
+  title: 'Survey Response Object',
+  type: 'object',
+  required: ['id'],
   properties: {
     id: {
-      description: 'Survey ID',
       type: 'number'
-    },
-    ...survey.properties
+    }
   }
 };

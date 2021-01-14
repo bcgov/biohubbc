@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
 import { OpenAPI } from 'openapi-types';
-import { apiDoc } from './openapi/api';
+import { rootAPIDoc } from './openapi/root-api-doc';
 import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
 import { authenticate } from './security/auth-utils';
 import { getLogger } from './utils/logger';
@@ -32,7 +32,7 @@ app.use(function (req: any, res: any, next: any) {
 
 // Initialize express-openapi framework
 initialize({
-  apiDoc: apiDoc as OpenAPI.Document, // base open api spec
+  apiDoc: rootAPIDoc as OpenAPI.Document, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   pathsIgnore: new RegExp('.(spec|test)$'), // ignore test files in paths
