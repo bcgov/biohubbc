@@ -12,7 +12,7 @@ import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 const App: React.FC = () => {
   //@ts-ignore
-  const keycloak: KeycloakInstance = new Keycloak('/keycloak.json');
+  const keycloak: KeycloakInstance = new Keycloak(process.env.REACT_APP_KEYCLOAK_CONFIG || '/config/keycloak');
 
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">

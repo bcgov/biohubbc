@@ -51,6 +51,8 @@ parameters:
   - name: REPLICA_MAX
     required: true
     value: '1'
+  - name: LOG_LEVEL
+    value: 'info'
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -153,6 +155,8 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
+                - name: LOG_LEVEL
+                  value: ${LOG_LEVEL}
               image: ' '
               imagePullPolicy: Always
               name: api

@@ -69,12 +69,12 @@ POST.apiDoc = {
  */
 function createProject(): RequestHandler {
   return async (req, res) => {
-    const sanitizedData = new PostProjectObject(req.body);
+    const sanitizedProjectData = new PostProjectObject(req.body.project);
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const postProjectSQLStatement = postProjectSQL(sanitizedData);
+      const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
 
       if (!postProjectSQLStatement) {
         throw {

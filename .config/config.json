@@ -35,17 +35,17 @@
   },
   "sso": {
     "dev": {
-      "url": "https://dev.oidc.gov.bc.ca",
+      "url": "https://dev.oidc.gov.bc.ca/auth",
       "clientId": "biohubbc",
       "realm": "35r1iman"
     },
     "test": {
-      "url": "https://test.oidc.gov.bc.ca",
+      "url": "https://test.oidc.gov.bc.ca/auth",
       "clientId": "biohubbc",
       "realm": "35r1iman"
     },
     "prod": {
-      "url": "https://oidc.gov.bc.ca",
+      "url": "https://oidc.gov.bc.ca/auth",
       "clientId": "biohubbc",
       "realm": "35r1iman"
     }

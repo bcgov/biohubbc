@@ -1,29 +1,16 @@
+import { ITemplateSchema } from '../openapi/schemas/template';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/template');
-
-/**
- * A single template item.
- *
- * @export
- * @interface ITemplate
- */
-export interface ITemplate {
-  id?: string;
-  tags: string[];
-  name: string;
-  description: string;
-  data_template: object;
-  ui_template: object;
-}
 
 /**
  * POST template object.
  *
  * @export
  * @class PostTemplateObj
+ * @implements {Partial<ITemplateModel>}
  */
-export class PostTemplateObj {
+export class PostTemplateObj implements Partial<ITemplateSchema> {
   /**
    * The name of the template.
    *

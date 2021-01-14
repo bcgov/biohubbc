@@ -23,7 +23,7 @@ const appTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: ['BCSans'].join(',')
+    fontFamily: ['BCSans', '"Noto Sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(',')
   },
   overrides: {
     MuiTypography: {
@@ -32,13 +32,16 @@ const appTheme = createMuiTheme({
         fontSize: '3rem'
       },
       h2: {
-        fontSize: '2.5rem'
+        fontSize: '2.5rem',
+        fontWeight: 700
       },
       h3: {
-        fontSize: '2rem'
+        fontSize: '2rem',
+        fontWeight: 600
       },
       h4: {
-        fontSize: '1.5rem'
+        fontSize: '1.5rem',
+        fontWeight: 600
       },
       h5: {
         fontSize: '1.25rem'
@@ -64,6 +67,22 @@ const appTheme = createMuiTheme({
       root: {
         maxWidth: 'xl',
         margin: 'auto'
+      }
+    },
+    MuiStepLabel: {
+      labelContainer: {
+        paddingLeft: '2.3rem'
+      }
+    },
+    MuiStepContent: {
+      root: {
+        paddingLeft: '4rem'
+      }
+    },
+    MuiStepIcon: {
+      root: {
+        fontSize: '2.5rem',
+        marginLeft: '-.525rem'
       }
     }
   }

@@ -5,7 +5,7 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('queries/project-queries');
 
 /**
- * SQL query to insert a new project.
+ * SQL query to insert a project row.
  *
  * @param {PostProjectObject} project
  * @returns {SQLStatement} sql query object
@@ -39,15 +39,10 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
       ${project.end_date},
       ${project.results},
       ${project.caveats},
-      ${project.comments},
-      ${project.create_date},
-      ${project.create_user},
-      ${project.update_date},
-      ${project.update_user},
-      ${project.revision_count},
+      ${project.comments}
     )
     RETURNING
-      *
+      id;
   `;
 
   defaultLog.debug({
@@ -73,6 +68,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
+  // TODO pull the record wtih the latest revision_count?
   const sqlStatement = SQL`
     SELECT
       id,

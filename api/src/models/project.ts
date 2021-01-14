@@ -3,13 +3,13 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('models/project');
 
 /**
- * A single project item.
+ * An interface representing the project table.
  *
  * @export
  * @interface IProject
  */
 export interface IProject {
-  id?: string;
+  id: number;
   name: string;
   objectives: string;
   scientific_collection_permit_number: string;
@@ -20,15 +20,112 @@ export interface IProject {
   results: string;
   caveats: string;
   comments: string;
-  create_date: string;
-  create_user: number;
-  update_date: string;
-  update_user: number;
-  revision_count: number;
+}
+
+// /**
+//  * An interface representing the project climate initiative table.
+//  *
+//  * @export
+//  * @interface IProjectClimateInitiative
+//  */
+// export interface IProjectClimateInitiative {}
+
+/**
+ * An interface representing the project funding agency table.
+ *
+ * @export
+ * @interface IProjectFundingAgency
+ */
+export interface IProjectFundingAgency {
+  id: number;
+  funding_agency_project_id: string;
+  funding_amount: number;
+  funding_start_date: string;
+  funding_end_date: string;
 }
 
 /**
- * Project post request body.
+ * An interface representing the funding angency table.
+ *
+ * @export
+ * @interface IFundingAgency
+ */
+export interface IFundingAgency {
+  id: number;
+  name: string;
+  record_effective_date: string;
+  record_end_date?: string;
+}
+
+/**
+ * An interface representing the land based investment strategy table.
+ *
+ * @export
+ * @interface ILandBasedInvestmentStrategy
+ */
+export interface ILandBasedInvestmentStrategy {
+  id: number;
+  name: string;
+}
+
+/**
+ * An interface representing the project management actions table.
+ *
+ * @export
+ * @interface IProjectManagementActions
+ */
+export interface IProjectManagementActions {
+  id: number;
+}
+
+/**
+ * An interface representing the management action type table.
+ *
+ * @export
+ * @interface IManagementActionType
+ */
+export interface IManagementActionType {
+  id: number;
+  name: string;
+  record_effective_date: string;
+  record_end_date?: string;
+  description: string;
+}
+
+/**
+ * An interface representing the project region table.
+ *
+ * @export
+ * @interface IProjectRegion
+ */
+export interface IProjectRegion {
+  id: number;
+  common_code: string;
+}
+
+// /**
+//  * An interface representing the project participation table.
+//  *
+//  * @export
+//  * @interface IProjectParticipation
+//  */
+// export interface IProjectParticipation {}
+
+/**
+ * An interface representing the project proponent table.
+ *
+ * @export
+ * @interface IProponent
+ */
+export interface IProponent {
+  id: number;
+  name: string;
+  record_effective_date: string;
+  record_end_date?: string;
+}
+
+/**
+ * Model for the project table.
  *
  * @export
  * @class PostProjectObject
@@ -44,11 +141,6 @@ export class PostProjectObject {
   results: string;
   caveats: string;
   comments: string;
-  create_date: string;
-  create_user: number;
-  update_date: string;
-  update_user: number;
-  revision_count: number;
 
   /**
    * Creates an instance of PostProjectObject.
@@ -69,10 +161,5 @@ export class PostProjectObject {
     this.results = (obj && obj.results) || null;
     this.caveats = (obj && obj.caveats) || null;
     this.comments = (obj && obj.comments) || null;
-    this.create_date = (obj && obj.create_date) || null;
-    this.create_user = (obj && obj.create_user) || null;
-    this.update_date = (obj && obj.update_date) || null;
-    this.update_user = (obj && obj.update_user) || null;
-    this.revision_count = (obj && obj.revision_count) || null;
   }
 }

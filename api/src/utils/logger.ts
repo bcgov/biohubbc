@@ -14,6 +14,36 @@ export interface ILoggerMessage extends winston.Logform.TransformableInfo {
 }
 
 /**
+ * Checks if the value provided is an object.
+ *
+ * @param {*} obj
+ * @returns {boolean} True if the value is an object, false otherwise.
+ */
+const isObject = (item: any): boolean => {
+  return item && typeof item === 'object' && item.constructor.name === 'Object';
+};
+
+/**
+ * Checks if the value provided is an object with enumerable keys (ignores symbols).
+ *
+ * @param {*} obj
+ * @returns {boolean} True if the value is an object with enumerable keys, false otherwise.
+ */
+const isObjectWithkeys = (item: any): boolean => {
+  return isObject(item) && !!Object.keys(item).length;
+};
+
+/**
+ * Pretty stringify.
+ *
+ * @param {any} item
+ * @return {*}  {string}
+ */
+const prettyPrint = (item: any): string => {
+  return JSON.stringify(item, undefined, 2);
+};
+
+/**
  * Get or create a logger for the given logLabel.
  *
  * Centralized logger that uses Winston 3.x.
@@ -25,9 +55,11 @@ export interface ILoggerMessage extends winston.Logform.TransformableInfo {
  *
  * Usage:
  *
- * log.info({ label: 'functionName', message: 'Some info!' })
+ * log.info({ message: 'A basic log message!' })
  *
- * log.error({ label: 'functionName', message: 'An error!:', error })
+ * log.info({ label: 'functionName', message: 'A message with a label!' })
+ *
+ * log.error({ label: 'functionName', message: 'An error message!:', error })
  *
  * log.debug({ label: 'functionName', message: 'A debug message!:', debugInfo1, debugInfo2 })
  *
@@ -35,9 +67,11 @@ export interface ILoggerMessage extends winston.Logform.TransformableInfo {
  *
  * Example Output:
  *
- * [15-09-2019 14:44:30] [info] (class-or-file-name): functionName - Some info!
+ * [15-09-2019 14:44:30] [info] (class-or-file-name): A basic log message!
  *
- * [02-12-2019 14:45:02] [error] (class-or-file-name): functionName - An error!
+ * [15-09-2019 14:44:30] [info] (class-or-file-name): functionName - A message with a label!
+ *
+ * [02-12-2019 14:45:02] [error] (class-or-file-name): functionName - An error message!
  * {
  *   error: 404 Not Found
  * }
@@ -69,12 +103,16 @@ export const getLogger = function (logLabel: string) {
           winston.format.colorize(),
           winston.format.printf(({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
             const optionalLabel = (label && ` ${label} -`) || '';
+
+            const logMessage = (message && ((isObject(message) && `${prettyPrint(message)}`) || message)) || '';
+
             const optionalError =
-              (error && ((Object.keys(error).length && `\n${JSON.stringify(error, undefined, 2)}`) || `\n${error}`)) ||
-              '';
+              (error && ((isObjectWithkeys(error) && `\n${prettyPrint(error)}`) || `\n${error}`)) || '';
+
             const optionalOther =
-              (other && Object.keys(other).length && `\n${JSON.stringify(other, undefined, 2)}`) || '';
-            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${message} ${optionalError} ${optionalOther}`;
+              (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
+
+            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
           })
         )
       })

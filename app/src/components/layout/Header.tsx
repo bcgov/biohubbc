@@ -11,7 +11,7 @@ const Header: React.FC = () => {
       </Toolbar>
       <Divider style={{ backgroundColor: '#fcba19', height: '2px', width: '100%' }}></Divider>
       <Toolbar variant="dense" style={{ backgroundColor: '#38598A' }}>
-        <Link href="#" variant="h5" style={{ color: '#ECFFFB' }}>
+        <Link href="/projects" variant="h5" style={{ color: '#ECFFFB' }}>
           Projects
         </Link>
       </Toolbar>

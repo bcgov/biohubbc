@@ -1,20 +1,11 @@
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/styles';
 import { ObjectFieldTemplateProps, utils } from '@rjsf/core';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 
 const { canExpand } = utils;
 
-const useStyles = makeStyles({
-  root: {
-    marginTop: 10
-  }
-});
-
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
-  const classes = useStyles();
-
   const DescriptionField = props.DescriptionField;
   const TitleField = props.TitleField;
 
@@ -26,7 +17,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
       {props.description && (
         <DescriptionField id={`${props.idSchema.$id}-description`} description={props.description} />
       )}
-      <Grid container={true} spacing={2} className={classes.root}>
+      <Grid container={true} spacing={2}>
         {props.properties.map((element: any, index: number) => (
           <Grid
             item={true}

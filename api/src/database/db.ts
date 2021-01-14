@@ -5,11 +5,11 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
 
-const DB_HOST: string = process.env.DB_HOST || 'localhost';
-const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER_API || 'postgres';
-const DB_PASSWORD: string = process.env.DB_USER_API_PASS || 'postgres';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'biohubbc';
+const DB_HOST = process.env.DB_HOST;
+const DB_PORT = Number(process.env.DB_PORT);
+const DB_USERNAME = process.env.DB_USER_API;
+const DB_PASSWORD = process.env.DB_USER_API_PASS;
+const DB_DATABASE = process.env.DB_DATABASE;
 
 const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
@@ -48,42 +48,71 @@ export interface IDBConnection {
 /**
  * Wraps the pg client, exposing various functions for use when making database calls.
  *
- * Note: Using this will automatically set up the necessary database contexts, etc, for you.
+ * Usage Example:
+ *
+ * const connection = await getDBConnection(req['keycloak_token']);
+ * try {
+ *   await connection.open();
+ *   await connection.query(sqlStatement1.text, sqlStatement1.values);
+ *   await connection.query(sqlStatement2.text, sqlStatement2.values);
+ *   await connection.query(sqlStatement3.text, sqlStatement3.values);
+ *   await connection.commit();
+ * } catch (error) {
+ *   await connection.rollback();
+ * } finally {
+ *   connection.release();
+ * }
  *
  * @returns {IDBConnection}
  */
 export const getDBConnection = function (keycloakToken: string): IDBConnection {
   let _client: PoolClient;
 
+  let _isOpen = false;
+
   const _token = keycloakToken;
 
   /**
-   * Opens a new connection, and begins a transaction.
+   * Opens a new connection, begins a transaction, and sets the user context.
+   *
+   * Note: Does nothing if the connection is already open.
    */
   const open = async () => {
-    if (_client) {
+    if (_client || _isOpen) {
       return;
     }
 
-    await _getNewClientAndBeginTransaction();
+    _client = await pool.connect();
+
+    _isOpen = true;
+
+    await _setUserContext();
+
+    await _client.query('BEGIN');
   };
 
   /**
    * Releases (closes) the connection.
+   *
+   * Note: Does nothing if the connection is already released.
    */
   const release = () => {
-    if (!_client) {
+    if (!_client || !_isOpen) {
       return;
     }
 
     _client.release();
+
+    _isOpen = false;
   };
 
   /**
    * Commits the transaction that was opened by calling `.open()`.
+   *
+   * Note: Does nothing if the connection is not open, or was released.
    */
   const commit = async () => {
-    if (!_client) {
+    if (!_client || !_isOpen) {
       return;
     }
 
@@ -92,9 +121,11 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
 
   /**
    * Rollsback the transaction, undoing any queries performed by this connection.
+   *
+   * Note: Does nothing if the connection is not open, or was released.
    */
   const rollback = async () => {
-    if (!_client) {
+    if (!_client || !_isOpen) {
       return;
     }
 
@@ -104,23 +135,24 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
   /**
    * Performs a query agaisnt this connection, returning the results.
    *
+   * Note: Does nothing if the connection is not open, or was released.
+   *
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any> | void>)}
    */
   const query = async (text: string, values?: any[]): Promise<QueryResult<any> | void> => {
-    if (!_client) {
+    if (!_client || !_isOpen) {
       return;
     }
 
     return _client.query(text, values || []);
   };
 
-  const _getNewClientAndBeginTransaction = async () => {
-    _client = await pool.connect();
-
-    await _client.query('BEGIN');
-
+  /**
+   * Internal function to set the user context.
+   */
+  const _setUserContext = async () => {
     // Strip the `@<alias>` from the end of the username, which is added in keycloak to IDIR and BCeID usernames
     const idir = _token['preferred_username']?.split('@')[0];
     const bceid = _token['preferred_username']?.split('@')[0];
@@ -145,7 +177,15 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
       };
     }
 
-    await _client.query(setSystemUserContextSQLStatement.text, setSystemUserContextSQLStatement.values);
+    try {
+      await _client.query(setSystemUserContextSQLStatement.text, setSystemUserContextSQLStatement.values);
+    } catch (error) {
+      throw {
+        status: 500,
+        message: 'Failed to set user context',
+        errors: [error]
+      };
+    }
   };
 
   return { open: open, query: query, release: release, commit: commit, rollback: rollback };

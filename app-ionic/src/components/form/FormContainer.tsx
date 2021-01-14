@@ -24,7 +24,7 @@ export interface IFormContainerProps extends IFormControlsComponentProps {
   /**
    * A function executed when the form submit hook fires, and form validation errors are found.
    */
-  onFormSubmitError?: (errors: any[], formRef: any) => any;
+  onFormError?: (errors: any[], formRef: any) => any;
   /**
    * A function executed everytime the form submit hook fires.
    *
@@ -93,11 +93,11 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           props.onFormChange(event, formRef);
         }}
         onError={(error) => {
-          if (!props.onFormSubmitError) {
+          if (!props.onFormError) {
             return;
           }
 
-          props.onFormSubmitError(error, formRef);
+          props.onFormError(error, formRef);
         }}
         onSubmit={(event) => {
           if (!props.onFormSubmitSuccess) {

@@ -58,7 +58,8 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    branch: branch
+    branch: branch,
+    logLevel: 'debug'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -76,7 +77,8 @@ const phases = {
     env: 'dev',
     certificateURL: config.certificateURL.dev,
     replicas: 1,
-    maxReplicas: 2
+    maxReplicas: 2,
+    logLevel: 'debug'
   },
   test: {
     namespace: 'af2668-test',
@@ -92,7 +94,8 @@ const phases = {
     env: 'test',
     certificateURL: config.certificateURL.test,
     replicas: 3,
-    maxReplicas: 5
+    maxReplicas: 5,
+    logLevel: 'debug'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -108,7 +111,8 @@ const phases = {
     env: 'prod',
     certificateURL: config.certificateURL.prod,
     replicas: 3,
-    maxReplicas: 6
+    maxReplicas: 6,
+    logLevel: 'info'
   }
 };
 
