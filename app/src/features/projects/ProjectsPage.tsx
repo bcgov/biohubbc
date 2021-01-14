@@ -11,11 +11,47 @@ import {
   TableHead,
   TableRow
 } from '@material-ui/core';
-import { Add, Edit } from '@material-ui/icons';
+import {
+  withStyles,
+  Theme,
+  createStyles
+} from '@material-ui/core/styles';
+import { Edit} from '@material-ui/icons';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+
+/**
+ * Table styling
+ * https://material-ui.com/components/tables/
+ */
+const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    title: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 800
+    },
+    head: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 600
+    },
+    body: {
+    }
+  })
+)(TableCell);
+
+const StyledTableRow = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }),
+)(TableRow);
 
 /**
  * Page to display a list of projects.
@@ -61,8 +97,8 @@ const ProjectsPage: React.FC = () => {
   return (
     <Box my={3}>
       <Container>
-        <Box mb={3}>
-          <Button variant="contained" color="primary" startIcon={<Add />} onClick={navigateToCreateProjectPage}>
+        <Box mb={3} fontSize={30} fontWeight="fontWeightBold"> 
+        Projects<Button variant="outlined" size= "small" color="primary" style={{float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold'}} onClick={navigateToCreateProjectPage}>
             Create Project
           </Button>
         </Box>
@@ -71,20 +107,18 @@ const ProjectsPage: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Start Date</TableCell>
-                  <TableCell>End Date</TableCell>
-                  <TableCell>Location Description</TableCell>
+                  <StyledTableCell>Project Name</StyledTableCell>
+                  <StyledTableCell>Dates</StyledTableCell>
+                  <StyledTableCell>Location</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {projects.map((row) => (
-                  <TableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
+                  <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
                     <TableCell component="th" scope="row">
-                      {row.id}
+                      {row.name}
                     </TableCell>
-                    <TableCell>{row.start_date}</TableCell>
-                    <TableCell>{row.end_date}</TableCell>
+                    <TableCell>{row.start_date} - {row.end_date}</TableCell>
                     <TableCell>{row.location_description}</TableCell>
                     <TableCell>
                       <IconButton
@@ -95,7 +129,7 @@ const ProjectsPage: React.FC = () => {
                         <Edit color="primary" />
                       </IconButton>
                     </TableCell>
-                  </TableRow>
+                  </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
