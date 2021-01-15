@@ -7,10 +7,10 @@ const Header: React.FC = () => {
     <AppBar position="static">
       <Toolbar variant="dense">
         <Typography variant="h5" noWrap>
-          BioHub
+          BioHub1
         </Typography>
       </Toolbar>
-      <Toolbar variant="dense">
+      <Toolbar variant="dense" style={{color: '#add8e6'}}>
         <TabsComponent />
       </Toolbar>
     </AppBar>

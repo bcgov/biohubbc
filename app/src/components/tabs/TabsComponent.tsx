@@ -35,7 +35,7 @@ const TabsComponent: React.FC = () => {
 
   return (
     <Tabs value={activeTab} onChange={handleChange}>
-      <Tab label="Home" onClick={() => history.push('/home')} />
+      {/* <Tab label="Home" onClick={() => history.push('/home')} /> */}
       <Tab label="Projects" onClick={() => history.push('/projects')} />
     </Tabs>
   );

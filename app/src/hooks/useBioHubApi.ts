@@ -56,26 +56,26 @@ export const useBiohubApi = () => {
         objectives: 'Project Objectives 1',
         scientific_collection_permit_number: '123456',
         management_recovery_action: 'A',
-        location_description: 'Location Description 1 - edited',
+        location_description: 'Location Description',
         start_date: moment().format("MM/D/YY"),
         end_date: moment().format("MM/D/YY"),
         results: 'Results 1',
         caveats: 'Caveats 1',
         comments: 'Comments 1'
-      }
-      // {
-      //   id: 2,
-      //   name: 'Project Name 2',
-      //   objectives: 'Project Objectives 2',
-      //   scientific_collection_permit_number: '123456',
-      //   management_recovery_action: 'A',
-      //   location_description: 'Location Description 2',
-      //   start_date: moment().format("MM/D/YY"),
-      //   end_date: moment().format("MM/D/YY"),
-      //   results: 'Results 2',
-      //   caveats: 'Caveats 2',
-      //   comments: 'Comments 2'
-      // },
+      },
+      {
+        id: 2,
+        name: 'Project Name 2',
+        objectives: 'Project Objectives 2',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 2',
+        start_date: moment().format("MM/D/YY"),
+        end_date: moment().format("MM/D/YY"),
+        results: 'Results 2',
+        caveats: 'Caveats 2',
+        comments: 'Comments 2'
+      },
       // {
       //   id: 3,
       //   name: 'Project Name 3',
@@ -89,19 +89,19 @@ export const useBiohubApi = () => {
       //   caveats: 'Caveats 3',
       //   comments: 'Comments 3'
       // },
-      // {
-      //   id: 4,
-      //   name: 'Project Name 4',
-      //   objectives: 'Project Objectives 4',
-      //   scientific_collection_permit_number: '123456',
-      //   management_recovery_action: 'A',
-      //   location_description: 'Location Description 4',
-      //   start_date: moment().format("MM/D/YY"),
-      //   end_date: moment().format("MM/D/YY"),
-      //   results: 'Results 4',
-      //   caveats: 'Caveats 4',
-      //   comments: 'Comments 4'
-      // }
+      {
+        id: 4,
+        name: 'Project Name 4',
+        objectives: 'Project Objectives 4',
+        scientific_collection_permit_number: '123456',
+        management_recovery_action: 'A',
+        location_description: 'Location Description 4',
+        start_date: moment().format("MM/D/YY"),
+        end_date: moment().format("MM/D/YY"),
+        results: 'Results 4',
+        caveats: 'Caveats 4',
+        comments: 'Comments 4'
+      }
     ];
   };
 

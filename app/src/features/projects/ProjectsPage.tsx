@@ -2,7 +2,7 @@ import {
   Box,
   Button,
   Container,
-  IconButton,
+  //IconButton,
   Paper,
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import {
   Theme,
   createStyles
 } from '@material-ui/core/styles';
-import { Edit} from '@material-ui/icons';
+//import { Edit} from '@material-ui/icons';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
@@ -71,9 +71,9 @@ const ProjectsPage: React.FC = () => {
     history.push('/projects/create');
   };
 
-  const navigateToEditProjectPage = (id: string | number) => {
-    history.push(`/projects/${id}/edit`);
-  };
+  // const navigateToEditProjectPage = (id: string | number) => {
+  //   history.push(`/projects/${id}/edit`);
+  // };
 
   const navigateToProjectPage = (id: string | number) => {
     history.push(`/projects/${id}`);
@@ -120,15 +120,6 @@ const ProjectsPage: React.FC = () => {
                     </TableCell>
                     <TableCell>{row.start_date} - {row.end_date}</TableCell>
                     <TableCell>{row.location_description}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          navigateToEditProjectPage(row.id);
-                        }}>
-                        <Edit color="primary" />
-                      </IconButton>
-                    </TableCell>
                   </StyledTableRow>
                 ))}
               </TableBody>
