@@ -92,10 +92,9 @@ function getProjects(): RequestHandler {
         rows = queryResponse.rows;
       }
 
-      let result: any[] = _extractProjects(rows);
+      const result: any[] = _extractProjects(rows);
 
       return res.status(200).json(result);
-      
     } catch (error) {
       defaultLog.debug({ label: 'getProjects', message: 'error', error });
       throw error;
@@ -113,11 +112,11 @@ function getProjects(): RequestHandler {
  * @return {any[]} An array of project data
  */
 export function _extractProjects(rows: any[]): any[] {
-  let projects: any[] = []; 
+  const projects: any[] = [];
 
   if (rows != null) {
-    rows.forEach( (row) => {
-      let project: any = {
+    rows.forEach((row) => {
+      const project: any = {
         id: row.id,
         name: row.name,
         start_date: row.start_date,

@@ -23,9 +23,7 @@ const appTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: [
-      'BCSans',
-    ].join(','),
+    fontFamily: ['BCSans'].join(',')
   },
   overrides: {
     MuiTypography: {

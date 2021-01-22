@@ -46,7 +46,6 @@ export const useBiohubApi = () => {
     const { data } = await api.get(`/api/projects`);
 
     return data;
-
   };
 
   /**

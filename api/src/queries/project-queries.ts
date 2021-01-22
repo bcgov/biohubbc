@@ -114,7 +114,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const getProjectsSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectsSQL', message: 'SQL statement - retrieve projects'});
+  defaultLog.debug({ label: 'getProjectsSQL', message: 'SQL statement - retrieve projects' });
 
   // TODO these fields were chosen arbitarily based on having a small
   const sqlStatement = SQL`
