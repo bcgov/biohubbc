@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
+import 'styles.scss';
 
 const appTheme = createMuiTheme({
   palette: {
@@ -20,6 +21,11 @@ const appTheme = createMuiTheme({
       secondary: 'rgba(0, 0, 0, 0.67)',
       disabled: 'rgba(0, 0, 0, 0.67)'
     }
+  },
+  typography: {
+    fontFamily: [
+      'BCSans',
+    ].join(','),
   },
   overrides: {
     MuiTypography: {
@@ -43,6 +49,14 @@ const appTheme = createMuiTheme({
         fontSize: '1rem'
       }
     },
+    // typography: {
+    //   body: {
+    //     fontFamily: "'Open Sans', sans-serif",
+    //     fontWeight: 400,
+    //     fontSize: 16,
+    //     color: "red"
+    //   }
+    // },
     MuiCircularProgress: {
       // https://material-ui.com/api/circular-progress/
       root: {

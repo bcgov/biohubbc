@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  //IconButton,
   Paper,
   Table,
   TableBody,
@@ -16,7 +15,6 @@ import {
   Theme,
   createStyles
 } from '@material-ui/core/styles';
-//import { Edit} from '@material-ui/icons';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
@@ -28,11 +26,6 @@ import { useHistory } from 'react-router';
  */
 const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
-    title: {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.common.black,
-      fontWeight: 800
-    },
     head: {
       backgroundColor: theme.palette.common.white,
       color: theme.palette.common.black,
@@ -54,6 +47,22 @@ const StyledTableRow = withStyles((theme: Theme) =>
 )(TableRow);
 
 /**
+   * Creates a style for an empty list of projects.
+   *
+   */
+
+const StyledTableCellEmpty = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 400,
+      textAlign: 'center'
+    }
+  }),
+)(TableCell);
+
+/**
  * Page to display a list of projects.
  *
  * @return {*}
@@ -71,9 +80,6 @@ const ProjectsPage: React.FC = () => {
     history.push('/projects/create');
   };
 
-  // const navigateToEditProjectPage = (id: string | number) => {
-  //   history.push(`/projects/${id}/edit`);
-  // };
 
   const navigateToProjectPage = (id: string | number) => {
     history.push(`/projects/${id}`);
@@ -93,16 +99,50 @@ const ProjectsPage: React.FC = () => {
       getProjects();
     }
   }, [biohubApi, isLoading]);
+  
 
-  return (
-    <Box my={3}>
-      <Container>
-        <Box mb={3} fontSize={30} fontWeight="fontWeightBold"> 
+/**
+ * Displays project list.
+ */
+
+  let hasProjects = projects.length > 0;
+
+  if (!hasProjects){
+    return (
+      
+      <Box my={3}><Container>
+      <Box mb={3} fontSize={30} fontWeight="fontWeightBold"> 
         Projects<Button variant="outlined" size= "small" color="primary" style={{float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold'}} onClick={navigateToCreateProjectPage}>
             Create Project
           </Button>
         </Box>
         <Box>
+            <TableContainer component={Paper}>
+             <Table>
+               <TableHead>
+                 <TableRow>
+                 </TableRow>
+               </TableHead>
+               <TableBody>
+                <TableRow><StyledTableCellEmpty>No Projects found</StyledTableCellEmpty></TableRow>
+               </TableBody>
+             </Table>
+           </TableContainer>
+          </Box>
+        </Container>
+      </Box>
+
+    )
+  } else{
+    return(
+        <Box my={3}><Container>
+          <Box mb={3} fontSize={30} fontWeight="fontWeightBold"> 
+            Projects<Button variant="outlined" size= "small" color="primary" style={{float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold'}} onClick={navigateToCreateProjectPage}>
+            Create Project
+          </Button>
+        </Box>
+        <Box>
+
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -115,9 +155,7 @@ const ProjectsPage: React.FC = () => {
               <TableBody>
                 {projects.map((row) => (
                   <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
-                    <TableCell component="th" scope="row">
-                      {row.name}
-                    </TableCell>
+                    <TableCell>{row.name}</TableCell>
                     <TableCell>{row.start_date} - {row.end_date}</TableCell>
                     <TableCell>{row.location_description}</TableCell>
                   </StyledTableRow>
@@ -128,7 +166,11 @@ const ProjectsPage: React.FC = () => {
         </Box>
       </Container>
     </Box>
-  );
+
+    )
+  };
 };
+
+
 
 export default ProjectsPage;

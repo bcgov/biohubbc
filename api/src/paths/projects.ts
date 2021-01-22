@@ -7,11 +7,10 @@ import { projectResponseBody } from '../openapi/schemas/project';
 import { getProjectsSQL } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
-import moment from 'moment';
 
 const defaultLog = getLogger('paths/project');
 
-export const GET: Operation = [logRequest('paths/project', 'POST'), getProjects()];
+export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjects()];
 
 GET.apiDoc = {
   description: 'Get all Projects.',
@@ -57,7 +56,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projecst.
+ * Get all projects.
  *
  * @returns {RequestHandler}
  */
@@ -73,7 +72,7 @@ function getProjects(): RequestHandler {
     }
 
     try {
-      const getProjectsSQLStatement = getProjectsSQL(req.params.projectId);
+      const getProjectsSQLStatement = getProjectsSQL();
 
       if (!getProjectsSQLStatement) {
         throw {
@@ -82,71 +81,21 @@ function getProjects(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
+      const queryResponse: QueryResult = await connection.query(
         getProjectsSQLStatement.text,
         getProjectsSQLStatement.values
       );
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      let rows: any[] = [];
 
-      res.status(200).json(result);
+      if (queryResponse && queryResponse.rows) {
+        rows = queryResponse.rows;
+      }
 
-      //return res.status(200).json(result);
+      let result: any[] = _extractProjects(rows);
 
-      return [
-        {
-          id: 1,
-          name: 'Project Name 1',
-          objectives: 'Project Objectives 1',
-          scientific_collection_permit_number: '123456',
-          management_recovery_action: 'A',
-          location_description: 'Location Description',
-          start_date: moment().format("MM/D/YY"),
-          end_date: moment().format("MM/D/YY"),
-          results: 'Results 1',
-          caveats: 'Caveats 1',
-          comments: 'Comments 1'
-        }
-        // {
-        //   id: 2,
-        //   name: 'Project Name 2',
-        //   objectives: 'Project Objectives 2',
-        //   scientific_collection_permit_number: '123456',
-        //   management_recovery_action: 'A',
-        //   location_description: 'Location Description 2',
-        //   start_date: moment().format("MM/D/YY"),
-        //   end_date: moment().format("MM/D/YY"),
-        //   results: 'Results 2',
-        //   caveats: 'Caveats 2',
-        //   comments: 'Comments 2'
-        // },
-        // {
-        //   id: 3,
-        //   name: 'Project Name 3',
-        //   objectives: 'Project Objectives 3',
-        //   scientific_collection_permit_number: '123456',
-        //   management_recovery_action: 'A',
-        //   location_description: 'Location Description 3',
-        //   start_date: moment().format("MM/D/YY"),
-        //   end_date: moment().format("MM/D/YY"),
-        //   results: 'Results 3',
-        //   caveats: 'Caveats 3',
-        //   comments: 'Comments 3'
-        // },
-        // {
-        //   id: 4,
-        //   name: 'Project Name 4',
-        //   objectives: 'Project Objectives 4',
-        //   scientific_collection_permit_number: '123456',
-        //   management_recovery_action: 'A',
-        //   location_description: 'Location Description 4',
-        //   start_date: moment().format("MM/D/YY"),
-        //   end_date: moment().format("MM/D/YY"),
-        //   results: 'Results 4',
-        //   caveats: 'Caveats 4',
-        //   comments: 'Comments 4'
-        // }
-      ];
+      return res.status(200).json(result);
+      
     } catch (error) {
       defaultLog.debug({ label: 'getProjects', message: 'error', error });
       throw error;
@@ -154,4 +103,31 @@ function getProjects(): RequestHandler {
       connection.release();
     }
   };
+}
+
+/**
+ * Extract an array of project data from DB query.
+ *
+ * @export
+ * @param {any[]} rows DB query result rows
+ * @return {any[]} An array of project data
+ */
+export function _extractProjects(rows: any[]): any[] {
+  let projects: any[] = []; 
+
+  if (rows != null) {
+    rows.forEach( (row) => {
+      let project: any = {
+        id: row.id,
+        name: row.name,
+        start_date: row.start_date,
+        end_date: row.end_date,
+        location_description: row.location_description
+      };
+
+      projects.push(project);
+    });
+  }
+
+  return projects;
 }
