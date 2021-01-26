@@ -47,14 +47,6 @@ const appTheme = createMuiTheme({
         fontSize: '1rem'
       }
     },
-    // typography: {
-    //   body: {
-    //     fontFamily: "'Open Sans', sans-serif",
-    //     fontWeight: 400,
-    //     fontSize: 16,
-    //     color: "red"
-    //   }
-    // },
     MuiCircularProgress: {
       // https://material-ui.com/api/circular-progress/
       root: {
