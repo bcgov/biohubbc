@@ -14,7 +14,7 @@ parameters:
   - name: HOST
   - name: CHANGE_ID
     value: '0'
-  - name: API_HOST
+  - name: REACT_APP_API_HOST
     description: API host for application backend
     value: ''
   - name: NODE_ENV
@@ -105,8 +105,8 @@ objects:
             - env:
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
-                - name: API_HOST
-                  value: ${API_HOST}
+                - name: REACT_APP_API_HOST
+                  value: ${REACT_APP_API_HOST}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: VERSION

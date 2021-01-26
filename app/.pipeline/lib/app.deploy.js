@@ -23,7 +23,7 @@ module.exports = (settings) => {
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
-        API_HOST: phases[phase].apiHost,
+        REACT_APP_API_HOST: phases[phase].apiHost,
         NODE_ENV: phases[phase].env || 'dev',
         SSO_URL: phases[phase].sso.url,
         SSO_CLIENT_ID: phases[phase].sso.clientId,
