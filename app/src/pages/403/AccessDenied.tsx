@@ -9,7 +9,7 @@ const AccessDenied = () => {
         <Grid item>
           <h1>Access Denied</h1>
           <h2>You do not have permission to view this page</h2>
-          <Link to="/home">Go back to the home page</Link>
+          <Link to="/projects">Go back to the projects page</Link>
         </Grid>
       </Grid>
     </Container>
