@@ -17,10 +17,10 @@ exports[`NotFoundPage renders correctly 1`] = `
         You do not have permission to view this page
       </h2>
       <a
-        href="/home"
+        href="/projects"
         onClick={[Function]}
       >
-        Go back to the home page
+        Go back to the projects page
       </a>
     </div>
   </div>
