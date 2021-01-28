@@ -10,6 +10,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - ${DB_PORT}:${DB_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_USER=${DB_USER}
@@ -20,32 +25,6 @@ services:
       - local-network
     volumes:
       - postgres:/var/lib/postgresql/data
-
-  ## Run the database migrations and seeding
-  db_setup:
-    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-container
-    build:
-      context: ./database
-      dockerfile: ./.docker/db/Dockerfile.setup
-    environment:
-      - NODE_ENV=${NODE_ENV}
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_PORT=${DB_PORT}
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_SCHEMA=${DB_SCHEMA}
-      - DB_USER_API=${DB_USER_API}
-      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
-    volumes:
-      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
-    networks:
-      - local-network
-    depends_on:
-      - db
-    command:
-      ["./.docker/wait-for-it.sh", "db:${DB_PORT}", "--", "npm", "run", "setup"]
 
   ## Build the api docker image
   api:
@@ -142,6 +121,32 @@ services:
       - local-network
     depends_on:
       - api
+
+  ## Run the database migrations and seeding
+  db_setup:
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-container
+    build:
+      context: ./database
+      dockerfile: ./.docker/db/Dockerfile.setup
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER_API=${DB_USER_API}
+      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npm", "run", "setup"]
 
 networks:
   local-network:
