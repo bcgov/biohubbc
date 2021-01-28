@@ -67,7 +67,10 @@ objects:
                   key: database-root-password
                   name: ${DB_SERVICE_NAME}
             - name: DB_USER_API
-              value: 'biohub_api'
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: ${DB_SERVICE_NAME}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
