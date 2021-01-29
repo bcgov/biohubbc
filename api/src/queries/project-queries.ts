@@ -127,7 +127,7 @@ export const getProjectsSQL = (): SQLStatement | null => {
       to_char(end_date,'MM/DD/YYYY') as end_date,
       location_description
     from
-      biohub.project;
+      project;
   `;
 
   defaultLog.debug({
