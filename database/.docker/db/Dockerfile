@@ -1,4 +1,4 @@
-FROM postgres:12
+FROM postgres:13.1
 
 # set variables
 ENV POSTGISV 3
@@ -13,7 +13,9 @@ RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-postgis-
 RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting
 RUN apt-get -qq install -y --no-install-recommends postgresql-$PG_MAJOR-pgrouting-scripts
 RUN apt-get -qq install -y --no-install-recommends postgresql-server-dev-$PG_MAJOR
+RUN apt-get -qq install -y --no-install-recommends pgbadger pg-activity
 RUN apt-get -qq purge -y --auto-remove postgresql-server-dev-$PG_MAJOR
+RUN apt-get -qq autoremove -y
 RUN apt-get -qq clean
 
 # set time zone
