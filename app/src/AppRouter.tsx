@@ -25,7 +25,13 @@ const AppRouter: React.FC = () => {
         title={getTitle('Page Not Found')}
         component={NotFoundPage}
         layout={PublicLayout}></AppRoute>
-      <AppRoute protected path="/projects" component={ProjectsRouter} layout={AuthLayout} title={getTitle('Projects')} />
+      <AppRoute
+        protected
+        path="/projects"
+        component={ProjectsRouter}
+        layout={AuthLayout}
+        title={getTitle('Projects')}
+      />
       <AppRoute
         protected
         path="/projects"

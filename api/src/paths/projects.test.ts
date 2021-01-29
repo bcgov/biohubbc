@@ -49,7 +49,6 @@ describe('Unit Testing: GET /projects - Test database query result parsing', () 
 //         done();
 //       });
 //   });
-  
 //   it('should make a connection to the API', function (done) {
 //     request(API_URL)
 //       .get('/api/api-docs')
@@ -59,11 +58,8 @@ describe('Unit Testing: GET /projects - Test database query result parsing', () 
 //         done();
 //       });
 //   });
-
-  
 //   var auth: any = {};
 //   before(loginUser(auth));
-
 //   it('should respond with JSON array', function (done: any) {
 //     request(API_URL)
 //       .get('/api/projects')
@@ -75,11 +71,8 @@ describe('Unit Testing: GET /projects - Test database query result parsing', () 
 //         res.body.should.be.instanceof(Array);
 //         done();
 //       });
-//   }); 
-
-  
+//   });
 // });
-
 // function loginUser(auth: any) {
 //   return function(done: any) {
 //       request(KEYCLOAK_URL)
@@ -96,5 +89,4 @@ describe('Unit Testing: GET /projects - Test database query result parsing', () 
 //           return done();
 //       }
 //   };
-// }
-
+// };
