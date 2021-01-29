@@ -1,4 +1,3 @@
-//import ProjectsRouter from 'features/home/HomeRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';

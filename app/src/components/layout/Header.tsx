@@ -1,7 +1,12 @@
-import { AppBar, Divider, Toolbar, Typography } from '@material-ui/core';
+
+import {Link, Typography, AppBar, Divider, Toolbar } from '@material-ui/core';
 import React from 'react';
+//import appTheme from './../../themes/appTheme';
+
 
 const Header: React.FC = () => {
+
+  //const classes = appTheme;
   return (
     <AppBar position="static">
       <Toolbar style={{ backgroundColor: '#003366' }}>
@@ -11,12 +16,14 @@ const Header: React.FC = () => {
       </Toolbar>
       <Divider style={{ backgroundColor: '#fcba19', height: '2px', width: '100%' }}></Divider>
       <Toolbar variant="dense" style={{ backgroundColor: '#38598A' }}>
-        <Typography variant="h6" noWrap>
+        <Link href="#" variant="h5" style={{ color: '#ECFFFB'}}>
           Projects
-        </Typography>
+        </Link>
       </Toolbar>
     </AppBar>
+
   );
 };
+
 
 export default Header;
