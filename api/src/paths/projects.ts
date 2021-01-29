@@ -10,7 +10,7 @@ import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/project');
 
-export const GET: Operation = [logRequest('paths/project', 'POST'), getProjects()];
+export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjects()];
 
 GET.apiDoc = {
   description: 'Get all Projects.',
@@ -56,7 +56,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projecst.
+ * Get all projects.
  *
  * @returns {RequestHandler}
  */
@@ -72,7 +72,7 @@ function getProjects(): RequestHandler {
     }
 
     try {
-      const getProjectsSQLStatement = getProjectsSQL(req.params.projectId);
+      const getProjectsSQLStatement = getProjectsSQL();
 
       if (!getProjectsSQLStatement) {
         throw {
@@ -81,12 +81,18 @@ function getProjects(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
+      const queryResponse: QueryResult = await connection.query(
         getProjectsSQLStatement.text,
         getProjectsSQLStatement.values
       );
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      let rows: any[] = [];
+
+      if (queryResponse && queryResponse.rows) {
+        rows = queryResponse.rows;
+      }
+
+      const result: any[] = _extractProjects(rows);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -96,4 +102,31 @@ function getProjects(): RequestHandler {
       connection.release();
     }
   };
+}
+
+/**
+ * Extract an array of project data from DB query.
+ *
+ * @export
+ * @param {any[]} rows DB query result rows
+ * @return {any[]} An array of project data
+ */
+export function _extractProjects(rows: any[]): any[] {
+  const projects: any[] = [];
+
+  if (rows != null) {
+    rows.forEach((row) => {
+      const project: any = {
+        id: row.id,
+        name: row.name,
+        start_date: row.start_date,
+        end_date: row.end_date,
+        location_description: row.location_description
+      };
+
+      projects.push(project);
+    });
+  }
+
+  return projects;
 }

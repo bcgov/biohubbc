@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
+import 'styles.scss';
 
 const appTheme = createMuiTheme({
   palette: {
@@ -20,6 +21,9 @@ const appTheme = createMuiTheme({
       secondary: 'rgba(0, 0, 0, 0.67)',
       disabled: 'rgba(0, 0, 0, 0.67)'
     }
+  },
+  typography: {
+    fontFamily: ['BCSans'].join(',')
   },
   overrides: {
     MuiTypography: {

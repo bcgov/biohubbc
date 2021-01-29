@@ -108,15 +108,15 @@ objects:
                   value: ${API_PORT_DEFAULT}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
-                - name: DB_USER
+                - name: DB_USER_API
                   valueFrom:
                     secretKeyRef:
-                      key: database-user
+                      key: database-user-api
                       name: ${DB_SERVICE_NAME}
-                - name: DB_PASS
+                - name: DB_USER_API_PASS
                   valueFrom:
                     secretKeyRef:
-                      key: database-password
+                      key: database-user-api-password
                       name: ${DB_SERVICE_NAME}
                 - name: DB_DATABASE
                   valueFrom:
@@ -220,8 +220,8 @@ objects:
   - apiVersion: v1
     stringData:
       database-name: ''
-      database-password: ''
-      database-user: ''
+      database-user-api-password: ''
+      database-user-api: ''
     kind: Secret
     metadata:
       annotations:

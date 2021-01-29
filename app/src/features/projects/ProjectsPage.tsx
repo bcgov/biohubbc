@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -11,11 +10,52 @@ import {
   TableHead,
   TableRow
 } from '@material-ui/core';
-import { Add, Edit } from '@material-ui/icons';
+import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+
+/**
+ * Table styling
+ * https://material-ui.com/components/tables/
+ */
+const StyledTableCell = withStyles((theme: Theme) =>
+  createStyles({
+    head: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 600
+    },
+    body: {}
+  })
+)(TableCell);
+
+const StyledTableRow = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover
+      }
+    }
+  })
+)(TableRow);
+
+/**
+ * Creates a style for an empty list of projects.
+ *
+ */
+
+const StyledTableCellEmpty = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      backgroundColor: theme.palette.common.white,
+      color: theme.palette.common.black,
+      fontWeight: 400,
+      textAlign: 'center'
+    }
+  })
+)(TableCell);
 
 /**
  * Page to display a list of projects.
@@ -33,10 +73,6 @@ const ProjectsPage: React.FC = () => {
 
   const navigateToCreateProjectPage = () => {
     history.push('/projects/create');
-  };
-
-  const navigateToEditProjectPage = (id: string | number) => {
-    history.push(`/projects/${id}/edit`);
   };
 
   const navigateToProjectPage = (id: string | number) => {
@@ -58,52 +94,87 @@ const ProjectsPage: React.FC = () => {
     }
   }, [biohubApi, isLoading]);
 
-  return (
-    <Box my={3}>
-      <Container>
-        <Box mb={3}>
-          <Button variant="contained" color="primary" startIcon={<Add />} onClick={navigateToCreateProjectPage}>
-            Create Project
-          </Button>
-        </Box>
-        <Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Start Date</TableCell>
-                  <TableCell>End Date</TableCell>
-                  <TableCell>Location Description</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {projects.map((row) => (
-                  <TableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
-                    <TableCell component="th" scope="row">
-                      {row.id}
-                    </TableCell>
-                    <TableCell>{row.start_date}</TableCell>
-                    <TableCell>{row.end_date}</TableCell>
-                    <TableCell>{row.location_description}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          navigateToEditProjectPage(row.id);
-                        }}>
-                        <Edit color="primary" />
-                      </IconButton>
-                    </TableCell>
+  /**
+   * Displays project list.
+   */
+
+  let hasProjects = projects.length > 0;
+
+  if (!hasProjects) {
+    return (
+      <Box my={3}>
+        <Container>
+          <Box mb={3} fontSize={30} fontWeight="fontWeightBold">
+            Projects
+            <Button
+              variant="outlined"
+              size="small"
+              color="primary"
+              style={{ float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}
+              onClick={navigateToCreateProjectPage}>
+              Create Project
+            </Button>
+          </Box>
+          <Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow></TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <StyledTableCellEmpty>No Projects found</StyledTableCellEmpty>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Container>
-    </Box>
-  );
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Container>
+      </Box>
+    );
+  } else {
+    return (
+      <Box my={3}>
+        <Container>
+          <Box mb={3} fontSize={30} fontWeight="fontWeightBold">
+            Projects
+            <Button
+              variant="outlined"
+              size="small"
+              color="primary"
+              style={{ float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}
+              onClick={navigateToCreateProjectPage}>
+              Create Project
+            </Button>
+          </Box>
+          <Box>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Project Name</StyledTableCell>
+                    <StyledTableCell>Dates</StyledTableCell>
+                    <StyledTableCell>Location</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {projects.map((row) => (
+                    <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell>
+                        {row.start_date} - {row.end_date}
+                      </TableCell>
+                      <TableCell>{row.location_description}</TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </Container>
+      </Box>
+    );
+  }
 };
 
 export default ProjectsPage;

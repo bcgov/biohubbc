@@ -113,12 +113,8 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
  * @param {string} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectsSQL = (projectId: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectsSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
+export const getProjectsSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectsSQL', message: 'SQL statement - retrieve projects' });
 
   // TODO these fields were chosen arbitarily based on having a small
   const sqlStatement = SQL`
@@ -127,8 +123,9 @@ export const getProjectsSQL = (projectId: string): SQLStatement | null => {
       name,
       scientific_collection_permit_number,
       management_recovery_action,
-      start_date,
-      end_date
+      to_char(start_date,'MM/DD/YYYY') as start_date,
+      to_char(end_date,'MM/DD/YYYY') as end_date,
+      location_description
     from
       project;
   `;

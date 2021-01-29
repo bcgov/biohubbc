@@ -2,13 +2,13 @@ import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { IProject } from 'interfaces/project-interfaces';
 import { IActivity, ICreateActivity, ITemplate } from 'interfaces/useBioHubApi-interfaces';
-import moment from 'moment';
 import { useMemo } from 'react';
 
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 
-const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'api-dev-biohubbc.apps.silver.devops.gov.bc.ca';
+const API_URL =
+  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-biohubbc.apps.silver.devops.gov.bc.ca';
 
 /**
  * Returns an instance of axios with baseURL and authorization headers set.
@@ -44,65 +44,9 @@ export const useBiohubApi = () => {
    * @return {*}  {Promise<IProject[]>}
    */
   const getProjects = async (): Promise<IProject[]> => {
-    // const { data } = await api.get(`/api/projects`);
+    const { data } = await api.get(`/api/projects`);
 
-    // return data;
-
-    // TODO: stub for development
-    return [
-      {
-        id: 1,
-        name: 'Project Name 1',
-        objectives: 'Project Objectives 1',
-        scientific_collection_permit_number: '123456',
-        management_recovery_action: 'A',
-        location_description: 'Location Description 1',
-        start_date: moment().toISOString(),
-        end_date: moment().toISOString(),
-        results: 'Results 1',
-        caveats: 'Caveats 1',
-        comments: 'Comments 1'
-      },
-      {
-        id: 2,
-        name: 'Project Name 2',
-        objectives: 'Project Objectives 2',
-        scientific_collection_permit_number: '123456',
-        management_recovery_action: 'A',
-        location_description: 'Location Description 2',
-        start_date: moment().toISOString(),
-        end_date: moment().toISOString(),
-        results: 'Results 2',
-        caveats: 'Caveats 2',
-        comments: 'Comments 2'
-      },
-      {
-        id: 3,
-        name: 'Project Name 3',
-        objectives: 'Project Objectives 3',
-        scientific_collection_permit_number: '123456',
-        management_recovery_action: 'A',
-        location_description: 'Location Description 3',
-        start_date: moment().toISOString(),
-        end_date: moment().toISOString(),
-        results: 'Results 3',
-        caveats: 'Caveats 3',
-        comments: 'Comments 3'
-      },
-      {
-        id: 4,
-        name: 'Project Name 4',
-        objectives: 'Project Objectives 4',
-        scientific_collection_permit_number: '123456',
-        management_recovery_action: 'A',
-        location_description: 'Location Description 4',
-        start_date: moment().toISOString(),
-        end_date: moment().toISOString(),
-        results: 'Results 4',
-        caveats: 'Caveats 4',
-        comments: 'Comments 4'
-      }
-    ];
+    return data;
   };
 
   /**

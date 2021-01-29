@@ -8,7 +8,7 @@ const NotFoundPage = () => {
       <Grid container direction="row">
         <Grid item>
           <h1>Page not found</h1>
-          <Link to="/home">Go back to the home page</Link>
+          <Link to="/projects">Go back to the projects page</Link>
         </Grid>
       </Grid>
     </Container>

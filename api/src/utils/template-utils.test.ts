@@ -29,7 +29,15 @@ describe('isValidJSONSchema', () => {
   });
 
   describe('with a valid schema', () => {
-    const jsonSchema = {};
+    const jsonSchema = {
+      title: 'A Valid JSONSchema',
+      type: 'object',
+      properties: {
+        property: {
+          type: 'integer'
+        }
+      }
+    };
 
     let validationResult: IValidationResult;
 
