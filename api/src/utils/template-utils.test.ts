@@ -30,7 +30,7 @@ describe('isValidJSONSchema', () => {
 
   describe('with a valid schema', () => {
     const jsonSchema = {
-      title: 'An Invalid JSONSchema',
+      title: 'A Valid JSONSchema',
       type: 'object',
       properties: {
         property: {
