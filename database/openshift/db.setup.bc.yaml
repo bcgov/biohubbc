@@ -22,6 +22,9 @@ parameters:
   - name: SOURCE_CONTEXT_DIR
     required: true
     value: database
+  - name: DB_SETUP_DOCKERFILE_PATH
+    required: true
+    value: './.docker/db/Dockerfile.migrate'
   - name: SOURCE_REPOSITORY_URL
     required: true
     value: https://github.com/bcgov/biohubbc
@@ -102,6 +105,7 @@ objects:
         type: Git
       strategy:
         dockerStrategy:
+          dockerfilePath: '${DB_SETUP_DOCKERFILE_PATH}'
           from:
             kind: ImageStreamTag
             name: ${SOURCE_IMAGE_NAME}:${SOURCE_IMAGE_TAG}

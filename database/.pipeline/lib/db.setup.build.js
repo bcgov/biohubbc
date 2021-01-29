@@ -27,6 +27,7 @@ module.exports = (settings) => {
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         SOURCE_CONTEXT_DIR: 'database',
+        DB_SETUP_DOCKERFILE_PATH: phases[phase].dbSetupDockerfilePath,
         SOURCE_REPOSITORY_URL: oc.git.http_url,
         SOURCE_REPOSITORY_REF: phases[phase].branch || oc.git.ref
       }

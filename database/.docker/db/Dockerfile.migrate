@@ -20,5 +20,5 @@ COPY . .
 # RUN npm set progress=false
 RUN npm install
 
-# run the database migrations and seeding
-CMD [ "npm", "run", "setup" ]
+# run the database migrations only (no seeeding)
+CMD [ "npm", "run", "migrate:latest" ]
