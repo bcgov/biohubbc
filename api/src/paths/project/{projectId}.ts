@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { projectResponseBody } from '../../openapi/schemas/project';
@@ -66,14 +65,7 @@ GET.apiDoc = {
  */
 function getProject(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
@@ -85,10 +77,11 @@ function getProject(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
-        getProjectSQLStatement.text,
-        getProjectSQLStatement.values
-      );
+      await connection.open();
+
+      const createResponse = await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
+
+      await connection.commit();
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 

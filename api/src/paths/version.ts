@@ -1,8 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { logRequest } from '../utils/path-utils';
 
-export const GET: Operation = [logRequest('paths/version', 'GET'), getVersionInformation()];
+export const GET: Operation = [getVersionInformation()];
 
 GET.apiDoc = {
   description: 'Get API information',

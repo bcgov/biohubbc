@@ -71,14 +71,7 @@ function createProject(): RequestHandler {
   return async (req, res) => {
     const sanitizedData = new PostProjectObject(req.body);
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const postProjectSQLStatement = postProjectSQL(sanitizedData);
@@ -90,9 +83,22 @@ function createProject(): RequestHandler {
         };
       }
 
-      const createResponse = await connection.query(postProjectSQLStatement.text, postProjectSQLStatement.values);
+      let createProjectResponse;
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      try {
+        await connection.open();
+
+        createProjectResponse = await connection.query(postProjectSQLStatement.text, postProjectSQLStatement.values);
+
+        // TODO populate other related tables that have the project id as a foreign key
+
+        await connection.commit();
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      }
+
+      const result = (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
 
       return res.status(200).json(result);
     } catch (error) {

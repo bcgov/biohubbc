@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostActivityObject } from '../models/activity';
@@ -74,14 +73,7 @@ function createActivity(): RequestHandler {
   return async (req, res) => {
     const sanitizedData = new PostActivityObject(req.body);
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getTemplateSQLStatement = getTemplateSQL(sanitizedData.template_id);
@@ -94,20 +86,17 @@ function createActivity(): RequestHandler {
         };
       }
 
-      let createResponse: QueryResult;
+      let createResponse;
 
       try {
         // Perform both get and create operations as a single transaction
-        await connection.query('BEGIN');
+        await connection.open();
 
-        const getResponse: QueryResult = await connection.query(
-          getTemplateSQLStatement.text,
-          getTemplateSQLStatement.values
-        );
+        const getResponse = await connection.query(getTemplateSQLStatement.text, getTemplateSQLStatement.values);
 
         if (!getResponse || !getResponse.rowCount) {
           // Found 0 matching templates, expecting 1
-          await connection.query('COMMIT');
+          await connection.commit();
 
           throw {
             status: 400,
@@ -117,7 +106,7 @@ function createActivity(): RequestHandler {
 
         if (getResponse.rowCount > 1) {
           // Found more than 1 matching templates, expecting 1
-          await connection.query('COMMIT');
+          await connection.commit();
 
           throw {
             status: 500,
@@ -131,7 +120,7 @@ function createActivity(): RequestHandler {
 
         if (!validationResult || !validationResult.isValid) {
           // Form data does not conform to the specified template
-          await connection.query('COMMIT');
+          await connection.commit();
 
           throw {
             status: 400,
@@ -142,9 +131,9 @@ function createActivity(): RequestHandler {
 
         createResponse = await connection.query(postActivitySQLStatement.text, postActivitySQLStatement.values);
 
-        await connection.query('COMMIT');
+        await connection.commit();
       } catch (error) {
-        await connection.query('ROLLBACK');
+        await connection.rollback();
         throw error;
       }
 

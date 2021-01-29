@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { projectResponseBody } from '../openapi/schemas/project';
@@ -62,14 +61,7 @@ GET.apiDoc = {
  */
 function getProjects(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getProjectsSQLStatement = getProjectsSQL();
@@ -81,15 +73,16 @@ function getProjects(): RequestHandler {
         };
       }
 
-      const queryResponse: QueryResult = await connection.query(
-        getProjectsSQLStatement.text,
-        getProjectsSQLStatement.values
-      );
+      await connection.open();
+
+      const getProjectsResponse = await connection.query(getProjectsSQLStatement.text, getProjectsSQLStatement.values);
+
+      await connection.commit();
 
       let rows: any[] = [];
 
-      if (queryResponse && queryResponse.rows) {
-        rows = queryResponse.rows;
+      if (getProjectsResponse && getProjectsResponse.rows) {
+        rows = getProjectsResponse.rows;
       }
 
       const result: any[] = _extractProjects(rows);

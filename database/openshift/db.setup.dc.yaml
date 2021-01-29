@@ -21,6 +21,12 @@ parameters:
   - name: DB_SERVICE_NAME
     description: 'Database service name associated  with deployment'
     required: true
+  - name: DB_SCHEMA
+    description: 'Database schema'
+    required: true
+  - name: DB_SCHEMA_DAPI_V1
+    description: 'Database api v1 schema'
+    required: true
   - name: NODE_ENV
     description: Application Environment type variable
     required: true
@@ -59,15 +65,23 @@ objects:
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  key: database-root-user
+                  key: database-user-root
                   name: ${DB_SERVICE_NAME}
-            - name: DB_PASS
+            - name: DB_USER_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-root-password
+                  key: database-user-root-password
                   name: ${DB_SERVICE_NAME}
             - name: DB_USER_API
-              value: 'biohub_api'
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api
+                  name: ${DB_SERVICE_NAME}
+            - name: DB_USER_API_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api-password
+                  name: ${DB_SERVICE_NAME}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
@@ -82,9 +96,9 @@ objects:
             - name: VERSION
               value: ${VERSION}
             - name: DB_SCHEMA
-              value: 'biohub'
+              value: ${DB_SCHEMA}
             - name: DB_SCHEMA_DAPI_V1
-              value: 'biohub_dapi_v1'
+              value: ${DB_SCHEMA_DAPI_V1}
           imagePullPolicy: Always
       restartPolicy: Never
       activeDeadlineSeconds: 900
