@@ -1,7 +1,7 @@
 import Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-const DB_USER = process.env.DB_USER;
+const DB_ADMIN = process.env.DB_ADMIN;
 
 /**
  * Insert system_user rows for each member of the development team.
@@ -40,7 +40,7 @@ const getInsertSystemUserSQL = (userIdentifier: string, userType: string) => `
     '${userIdentifier}',
     now(),
     now(),
-    (SELECT id from system_user where user_identifier = '${DB_USER}')
+    (SELECT id from system_user where user_identifier = '${DB_ADMIN}')
   FROM
     user_identity_source
   WHERE

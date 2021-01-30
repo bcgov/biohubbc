@@ -62,20 +62,15 @@ objects:
           env:
             - name: DB_HOST
               value: ${DB_SERVICE_NAME}
-            - name: DB_USER
+            - name: DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  key: database-user
+                  key: database-admin
                   name: ${DB_SERVICE_NAME}
-            - name: DB_USER_ROOT
+            - name: DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-user-root
-                  name: ${DB_SERVICE_NAME}
-            - name: DB_USER_ROOT_PASS
-              valueFrom:
-                secretKeyRef:
-                  key: database-user-root-password
+                  key: database-admin-password
                   name: ${DB_SERVICE_NAME}
             - name: DB_USER_API
               valueFrom:

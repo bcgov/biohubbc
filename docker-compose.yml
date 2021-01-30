@@ -17,8 +17,8 @@ services:
       retries: 5
     environment:
       - NODE_ENV=${NODE_ENV}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_USER_PASS}
+      - POSTGRES_USER=${DB_ADMIN}
+      - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=${DB_PORT}
     networks:
@@ -132,8 +132,8 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_USER_PASS=${DB_USER_PASS}
+      - DB_ADMIN=${DB_ADMIN}
+      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
