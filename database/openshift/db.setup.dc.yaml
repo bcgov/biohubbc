@@ -67,15 +67,10 @@ objects:
                 secretKeyRef:
                   key: database-user
                   name: ${DB_SERVICE_NAME}
-            - name: DB_USER_ROOT
+            - name: DB_USER_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-user-root
-                  name: ${DB_SERVICE_NAME}
-            - name: DB_USER_ROOT_PASS
-              valueFrom:
-                secretKeyRef:
-                  key: database-user-root-password
+                  key: database-user-password
                   name: ${DB_SERVICE_NAME}
             - name: DB_USER_API
               valueFrom:
