@@ -26,7 +26,7 @@ parameters:
     value: 'postgresql'
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
-    name: POSTGRESQL_USER
+    name: POSTGRES_USER
     required: true
     value: 'postgres'
   - description: Admin Username for PostgreSQL user that will be used for accessing the database.
@@ -44,11 +44,11 @@ parameters:
     displayName: PostgreSQL Admin Connection Password
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-    name: POSTGRESQL_ADMIN_PASSWORD
+    name: POSTGRES_PASSWORD
     required: true
   - description: Name of the PostgreSQL database accessed.
     displayName: PostgreSQL Database Name
-    name: POSTGRESQL_DATABASE
+    name: POSTGRES_DB
     required: true
     value: 'biohubbc'
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
@@ -89,10 +89,10 @@ objects:
         as-copy-of: biohubbc-db
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
-      database-name: '${POSTGRESQL_DATABASE}'
+      database-name: '${POSTGRES_DB}'
       database-user-password: '${POSTGRESQL_PASSWORD}'
-      database-admin-password: '${POSTGRESQL_ADMIN_PASSWORD}'
-      database-user: '${POSTGRESQL_USER}'
+      database-admin-password: '${POSTGRES_PASSWORD}'
+      database-user: '${POSTGRES_USER}'
   - apiVersion: v1
     kind: Service
     metadata:
@@ -155,7 +155,7 @@ objects:
           containers:
             - capabilities: {}
               env:
-                - name: POSTGRESQL_USER
+                - name: POSTGRES_USER
                   valueFrom:
                     secretKeyRef:
                       key: database-user
@@ -165,21 +165,17 @@ objects:
                     secretKeyRef:
                       key: database-user-password
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_ADMIN_PASSWORD
+                - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-admin-password
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_DATABASE
+                - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: PGCRYPTO_EXTENSION
-                  value: 'Y'
-                - name: POSTGIS_EXTENSION
-                  value: 'Y'
-                - name: PGOPTIONS
+                - name: POSTGRES_INITDB_ARGS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
               imagePullPolicy: IfNotPresent
@@ -198,7 +194,7 @@ objects:
                     - '/bin/sh'
                     - '-i'
                     - '-c'
-                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
+                    - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
                 initialDelaySeconds: 5
                 timeoutSeconds: 1
               resources:
