@@ -30,8 +30,8 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgresql:latest
-            namespace: openshift
+            name: postgres-postgis:13.1
+            namespace: af2668-tools
           generation: 1
           importPolicy: {}
           referencePolicy:
