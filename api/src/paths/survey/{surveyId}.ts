@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { surveyResponseBody } from '../../openapi/schemas/survey';
@@ -66,14 +65,7 @@ GET.apiDoc = {
  */
 function getSurvey(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getSurveySQLStatement = getSurveySQL(Number(req.params.surveyId));
@@ -85,10 +77,11 @@ function getSurvey(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
-        getSurveySQLStatement.text,
-        getSurveySQLStatement.values
-      );
+      await connection.open();
+
+      const createResponse = await connection.query(getSurveySQLStatement.text, getSurveySQLStatement.values);
+
+      await connection.commit();
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 

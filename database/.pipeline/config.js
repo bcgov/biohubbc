@@ -16,6 +16,11 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
+// If this is a static build (to dev, test, or prod) then only run migrations, otherwise if this is a PR build run the
+// migrations and seeding.
+const dbSetupDockerfilePath =
+  (isStaticDeployment && './.docker/db/Dockerfile.migrate') || './.docker/db/Dockerfile.setup';
+
 const processOptions = (options) => {
   const result = { ...options };
 
@@ -51,7 +56,8 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    branch: branch
+    branch: branch,
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   dev: {
     namespace: 'af2668-dev',
@@ -62,7 +68,8 @@ const phases = {
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
-    env: 'dev'
+    env: 'dev',
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   test: {
     namespace: 'af2668-test',
@@ -73,7 +80,8 @@ const phases = {
     instance: `${name}-test`,
     version: `${version}`,
     tag: `test-${version}`,
-    env: 'test'
+    env: 'test',
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   prod: {
     namespace: 'af2668-prod',
@@ -84,7 +92,8 @@ const phases = {
     instance: `${name}-prod`,
     version: `${version}`,
     tag: `prod-${version}`,
-    env: 'prod'
+    env: 'prod',
+    dbSetupDockerfilePath: dbSetupDockerfilePath
   }
 };
 

@@ -56,9 +56,12 @@ initialize({
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
+    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
-  errorMiddleware: function (error, req, res) {
+  // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  errorMiddleware: function (error, req, res, next) {
     if (!error.status) {
       // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
       // log any unintentionally thrown errors (where no status has been set)

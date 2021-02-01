@@ -71,14 +71,7 @@ function createSurvey(): RequestHandler {
   return async (req, res) => {
     const sanitizedData = new PostSurveyObject(req.body);
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const postSurveySQLStatement = postSurveySQL(sanitizedData);
@@ -90,7 +83,11 @@ function createSurvey(): RequestHandler {
         };
       }
 
+      await connection.open();
+
       const createResponse = await connection.query(postSurveySQLStatement.text, postSurveySQLStatement.values);
+
+      await connection.commit();
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 

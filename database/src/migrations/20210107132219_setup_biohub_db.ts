@@ -5,7 +5,7 @@ import path from 'path';
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 const DB_USER_API = process.env.DB_USER_API;
-const PASSWORD = process.env.DB_PASS;
+const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 
 export async function up(knex: Knex): Promise<void> {
   const biohub_tables = fs.readFileSync(path.join(__dirname, '..', 'release.0.3', 'biohub.0.3.sql'));
@@ -36,8 +36,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_user_identity_source}
 
     create schema if not exists ${DB_SCHEMA_DAPI_V1} ;
-    create user "${DB_USER_API}" password '${PASSWORD}';
-    alter DEFAULT PRIVILEGES in SCHEMA ${DB_SCHEMA_DAPI_V1} grant ALL on tables to "${DB_USER_API}";
+    create user "${DB_USER_API}" password '${DB_USER_API_PASS}';
 
     ${biohub_dapi_views}
     ${api_set_context}

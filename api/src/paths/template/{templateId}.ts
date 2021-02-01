@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { templateResponseBody } from '../../openapi/schemas/template';
@@ -66,14 +65,7 @@ GET.apiDoc = {
  */
 function getTemplate(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getTemplateSQLStatement = getTemplateSQL(Number(req.params.templateId));
@@ -85,10 +77,11 @@ function getTemplate(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
-        getTemplateSQLStatement.text,
-        getTemplateSQLStatement.values
-      );
+      await connection.open();
+
+      const createResponse = await connection.query(getTemplateSQLStatement.text, getTemplateSQLStatement.values);
+
+      await connection.commit();
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 

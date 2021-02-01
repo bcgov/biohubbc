@@ -17,8 +17,8 @@ services:
       retries: 5
     environment:
       - NODE_ENV=${NODE_ENV}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=${DB_ADMIN}
+      - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=${DB_PORT}
     networks:
@@ -40,8 +40,8 @@ services:
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
+      - DB_USER_API=${DB_USER_API}
+      - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
@@ -132,12 +132,13 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
+      - DB_ADMIN=${DB_ADMIN}
+      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
       - DB_PORT=${DB_PORT}
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - DB_USER_API=${DB_USER_API}
+      - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

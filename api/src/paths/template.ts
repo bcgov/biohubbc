@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostTemplateObj } from '../models/template';
@@ -83,14 +82,7 @@ function createTemplate(): RequestHandler {
       };
     }
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      throw {
-        status: 503,
-        message: 'Failed to establish database connection'
-      };
-    }
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const createTemplateSQLStatement = postTemplateSQL(sanitizedData);
@@ -102,10 +94,11 @@ function createTemplate(): RequestHandler {
         };
       }
 
-      const createResponse: QueryResult = await connection.query(
-        createTemplateSQLStatement.text,
-        createTemplateSQLStatement.values
-      );
+      await connection.open();
+
+      const createResponse = await connection.query(createTemplateSQLStatement.text, createTemplateSQLStatement.values);
+
+      await connection.commit();
 
       const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
 

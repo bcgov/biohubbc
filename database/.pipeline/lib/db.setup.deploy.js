@@ -58,6 +58,8 @@ module.exports = (settings) => {
         CHANGE_ID: changeId,
         NODE_ENV: phases[phase].env || 'dev',
         DB_SERVICE_NAME: `${phases[phase].name}-postgresql${phases[phase].suffix}`,
+        DB_SCHEMA: 'biohub',
+        DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
         IMAGE: dbSetupImageStream.image.dockerImageReference
       }
     })
