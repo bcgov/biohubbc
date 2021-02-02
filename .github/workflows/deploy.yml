@@ -5,6 +5,10 @@ name: PR-Based Deploy on OpensShift
 on:
   pull_request:
     types: [opened, reopened, synchronize]
+    branches:
+      - dev
+      - test
+      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -15,10 +19,13 @@ jobs:
     steps:
       - name: Print Env Vars
         run: |
+          echo OC CLI Version: $(oc version)
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha }}
-          echo OC CLI Version: $(oc version)
+          echo GIt Event Name: ${{ github.event_name }}
+          echo GIt Event Action: ${{ github.event.action }}
+          echo Git Labels: "$LABELS"
 
   # Build the Database image
   buildDatabase:
@@ -155,6 +162,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabase
     steps:
@@ -179,8 +187,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm install
-          # npm ci
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -189,6 +196,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildDatabaseSetup
       - deployDatabase
@@ -215,7 +223,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy API image
   deployAPI:
@@ -224,6 +232,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPI
       - deployDatabase
@@ -250,7 +259,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Deploy App image
   deployAPP:
