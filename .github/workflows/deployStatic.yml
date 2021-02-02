@@ -57,7 +57,6 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm install
-	  # npm ci
           DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
 
   # Build the Database Setup image
