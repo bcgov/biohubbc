@@ -175,7 +175,7 @@ objects:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRES_INITDB_ARGS
+                - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
               imagePullPolicy: IfNotPresent
