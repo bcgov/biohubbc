@@ -228,7 +228,7 @@ parameters:
     description: |
       The number of StatefulSet replicas to use.
     displayName: REPLICAS
-    value: "1"
+    value: "2"
   - name: CPU_REQUEST
     description: |
       Starting amount of CPU the container can use.
