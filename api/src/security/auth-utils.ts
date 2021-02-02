@@ -129,29 +129,31 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
  * @returns {*} verifiedToken
  */
 const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
-  return verify(tokenString, secretOrPublicKey, { ignoreExpiration: TOKEN_IGNORE_EXPIRATION }, function (
-    verificationError: any,
-    verifiedToken: any
-  ): any {
-    if (verificationError) {
-      defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
-      return null;
+  return verify(
+    tokenString,
+    secretOrPublicKey,
+    { ignoreExpiration: TOKEN_IGNORE_EXPIRATION },
+    function (verificationError: any, verifiedToken: any): any {
+      if (verificationError) {
+        defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
+        return null;
+      }
+
+      // Verify that the token came from the expected issuer
+      // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
+      if (!KEYCLOAK_URL.includes(verifiedToken.iss)) {
+        defaultLog.warn({
+          label: 'verifyToken',
+          message: 'jwt verification error: issuer mismatch',
+          'found token issuer': verifiedToken.iss,
+          'expected to be a substring of': KEYCLOAK_URL
+        });
+        return null;
+      }
+
+      defaultLog.debug({ label: 'verifyToken', message: 'jwt verification success' });
+
+      return verifiedToken;
     }
-
-    // Verify that the token came from the expected issuer
-    // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
-    if (!KEYCLOAK_URL.includes(verifiedToken.iss)) {
-      defaultLog.warn({
-        label: 'verifyToken',
-        message: 'jwt verification error: issuer mismatch',
-        'found token issuer': verifiedToken.iss,
-        'expected to be a substring of': KEYCLOAK_URL
-      });
-      return null;
-    }
-
-    defaultLog.debug({ label: 'verifyToken', message: 'jwt verification success' });
-
-    return verifiedToken;
-  });
+  );
 };
