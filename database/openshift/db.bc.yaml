@@ -30,7 +30,7 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgres-postgis:13.1
+            name: patroni-postgres:13.1
             namespace: af2668-tools
           generation: 1
           importPolicy: {}

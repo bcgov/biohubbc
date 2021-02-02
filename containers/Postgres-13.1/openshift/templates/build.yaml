@@ -16,22 +16,22 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  name: postgres-postgis build
+  name: patroni-postgres build
 labels:
   app: ${NAME}
   phase: build
   app.kubernetes.io/component: database
-  app.kubernetes.io/name: postgres-postgis
+  app.kubernetes.io/name: patroni-postgres
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/version: "${PG_VERSION}"
 parameters:
   - name: NAME
-    value: "postgres-postgis"
+    value: "patroni-postgres"
   - name: OUT_VERSION
     description: Ouput version
     value: "13.1"
   - name: GIT_URI
-    value: "https://github.com/rstens/postgres-postgis.git"
+    value: "https://github.com/rstens/patroni-postgres.git"
   - name: GIT_REF
     value: "master"
   - name: PG_VERSION
