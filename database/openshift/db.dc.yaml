@@ -217,7 +217,7 @@ objects:
               - ReadWriteOnce
             resources:
               requests:
-                storage: ${PVC_SIZE}
+                storage: ${VOLUME_CAPACITY}
 parameters:
   - name: NAME
     description: |
@@ -261,7 +261,7 @@ parameters:
       The image tag used to specify which image you would like deployed.
       Don't use `latest`.
     value: "13.1"
-  - name: PVC_SIZE
+  - name: VOLUME_CAPACITY
     description: The size of the persistent volume to create.
     displayName: Persistent Volume Size
     value: 1Gi
@@ -269,3 +269,22 @@ parameters:
     value: netapp-file-standard
   - name: IMAGE_REGISTRY
     value: image-registry.openshift-image-registry.svc:5000
+  - description: The name of the OpenShift Service exposed for the database.
+    displayName: Database Service Name
+    name: DATABASE_SERVICE_NAME
+    required: true
+    value: 'postgresql'
+  - description: The OpenShift ImageStream name.
+    displayName: IMAGE_STREAM_NAME
+    name: IMAGE_STREAM_NAME
+    value: 'patroni-postgres'
+  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: '13.1'
+  - description: Name of the PostgreSQL database accessed.
+    displayName: PostgreSQL Database Name
+    name: POSTGRES_DB
+    required: true
+    value: 'biohubbc'
