@@ -3,27 +3,41 @@ import Knex from 'knex';
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_ADMIN = process.env.DB_ADMIN;
 
+const systemUsers = [
+  { identifier: 'aagahche', type: 'IDIR' },
+  { identifier: 'cgarrettjones', type: 'IDIR' },
+  { identifier: 'istest1', type: 'IDIR' },
+  { identifier: 'jrpopkin', type: 'IDIR' },
+  { identifier: 'jxdunsdo', type: 'IDIR' },
+  { identifier: 'mbaerg', type: 'IDIR' },
+  { identifier: 'nphura', type: 'IDIR' },
+  { identifier: 'opieross', type: 'IDIR' },
+  { identifier: 'postman', type: 'IDIR' },
+  { identifier: 'robmunro', type: 'IDIR' },
+  { identifier: 'rstens', type: 'IDIR' },
+  { identifier: 'tadekens', type: 'IDIR' }
+];
+
 /**
  * Insert system_user rows for each member of the development team.
  * This seed will only be necessary while there is no in-app functionality to manage users.
  */
 export async function seed(knex: Knex): Promise<void> {
+  // Remove the existing system users. Do not remove the `postgres` user which is required for the triggers to work and
+  // which is added as part of the setup migration.
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA};
 
-    ${getInsertSystemUserSQL('aagahche', 'IDIR')}
-    ${getInsertSystemUserSQL('cgarrettjones', 'IDIR')}
-    ${getInsertSystemUserSQL('istest1', 'IDIR')}
-    ${getInsertSystemUserSQL('jrpopkin', 'IDIR')}
-    ${getInsertSystemUserSQL('jxdunsdo', 'IDIR')}
-    ${getInsertSystemUserSQL('mbaerg', 'IDIR')}
-    ${getInsertSystemUserSQL('nphura', 'IDIR')}
-    ${getInsertSystemUserSQL('opieross', 'IDIR')}
-    ${getInsertSystemUserSQL('postman', 'IDIR')}
-    ${getInsertSystemUserSQL('robmunro', 'IDIR')}
-    ${getInsertSystemUserSQL('rstens', 'IDIR')}
-    ${getInsertSystemUserSQL('tadekens', 'IDIR')}
+    DELETE FROM system_user WHERE user_identifier IN (${systemUsers.map((user) => `'${user.identifier}'`).join(',')});
+  `);
+
+  // Seed the system users
+  await knex.raw(`
+    set schema '${DB_SCHEMA}';
+    set search_path = ${DB_SCHEMA};
+
+    ${systemUsers.map((user) => getInsertSystemUserSQL(user.identifier, user.type)).join(' ')}
   `);
 }
 

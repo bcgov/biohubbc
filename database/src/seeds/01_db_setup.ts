@@ -18,6 +18,19 @@ export async function seed(knex: Knex): Promise<void> {
     path.join(__dirname, '..', 'release.0.3', 'populate_funding_agency.sql')
   );
 
+  // Remove the existing rows from the code tables
+  await knex.raw(`
+    set schema '${DB_SCHEMA}';
+    set search_path = ${DB_SCHEMA};
+
+    DELETE FROM climate_change_initiative;
+    DELETE FROM management_action_type;
+    DELETE FROM management_action_type;
+    DELETE FROM land_based_investment_strategy;
+    DELETE FROM funding_agency;
+  `);
+
+  // Seed the code tables
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA};
