@@ -1,5 +1,5 @@
 import { Box, ThemeProvider, Typography } from '@material-ui/core';
-import { IChangeEvent, ISubmitEvent, AjvError, ErrorListProps } from '@rjsf/core';
+import { AjvError, ErrorListProps, FormValidation, IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
 import { IFormRecord, ITemplate } from 'interfaces/useBioHubApi-interfaces';
 import React, { useState } from 'react';
@@ -21,7 +21,8 @@ export interface IFormControlsComponentProps {
 export interface IFormContainerProps {
   record?: IFormRecord;
   template: ITemplate;
-  customValidation?: any;
+  customValidation?: (formData: any, errors: FormValidation) => FormValidation;
+  customErrorTransformer?: (errors: AjvError[]) => AjvError[];
   isDisabled?: boolean;
   liveValidation?: boolean;
   setFormRef?: (formRef: any) => void;
@@ -80,22 +81,6 @@ const getFormControls = (
   }
 };
 
-const transformErrors = (errors: AjvError[]) => {
-  const transformedErrors = errors.filter((error) => {
-    if (error.message === 'should be equal to one of the allowed values') {
-      return false;
-    }
-
-    if (error.message === 'should match exactly one schema in oneOf') {
-      return false;
-    }
-
-    return true;
-  });
-
-  return transformedErrors;
-};
-
 const FormContainer: React.FC<IFormContainerProps> = (props) => {
   const [formRef, setFormRef] = useState<any | null>(null);
 
@@ -106,6 +91,14 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
       {getFormControls(FormControlLocation.TOP, props.formControlsLocation, props.formControlsComponent, formRef)}
 
       <ThemeProvider theme={rjsfTheme}>
+        <Box mb={2}>
+          <Typography variant="subtitle2">
+            <Box color="#db3131" display="inline">
+              *
+            </Box>{' '}
+            indicates a required field
+          </Typography>
+        </Box>
         <Form
           ObjectFieldTemplate={ObjectFieldTemplate}
           FieldTemplate={FieldTemplate}
@@ -119,7 +112,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           showErrorList={true}
           validate={props.customValidation}
           autoComplete="off"
-          transformErrors={transformErrors}
+          transformErrors={props.customErrorTransformer}
           ErrorList={(errorProps) => {
             if (props.formErrorComponent) {
               return props.formErrorComponent(errorProps);
