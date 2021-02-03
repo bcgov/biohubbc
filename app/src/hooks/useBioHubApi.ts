@@ -7,23 +7,30 @@ import { useMemo } from 'react';
 const API_HOST = process.env.REACT_APP_API_HOST;
 const API_PORT = process.env.REACT_APP_API_PORT;
 
-const API_URL =
-  (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-biohubbc.apps.silver.devops.gov.bc.ca';
+const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || null;
 
+/**
+ * Checks if a url string starts with an `http(s)://` protocol, and adds `https://` if it does not.
+ *
+ * @param {string} url
+ * @return {*}  {string} the url which is guaranteed to have an `http(s)://` protocol.
+ */
 const ensureProtocol = (url: string): string => {
   return ((url.startsWith('http://') || url.startsWith('https://')) && url) || `https://${url}`;
 };
 
+/**
+ * Fetch the config object.
+ *
+ * Note: Only works if the app is being served via `app/server/index.js` (as in OpenShift).
+ *
+ * @throws an error if called when the app isn't being served via `app/server/index.js`
+ * @return {*}  {Promise<any>}
+ */
 const getConfig = async (): Promise<any> => {
   const { data } = await axios.get('/config/app');
 
   return data;
-};
-
-const getApiUrl = async (): Promise<string> => {
-  const data = await getConfig();
-
-  return ensureProtocol(data?.REACT_APP_API_HOST || API_URL);
 };
 
 /**
@@ -34,13 +41,22 @@ const getApiUrl = async (): Promise<string> => {
 const useApi = () => {
   const { keycloak } = useKeycloak();
   const instance = useMemo(async () => {
-    const apiUrl = await getApiUrl();
+    let baseURL;
+
+    if (API_URL) {
+      baseURL = API_URL;
+    } else {
+      const data = await getConfig();
+      baseURL = data?.REACT_APP_API_HOST;
+    }
+
+    const baseUrlWithProtocol = ensureProtocol(baseURL);
 
     return axios.create({
       headers: {
         Authorization: `Bearer ${keycloak?.token}`
       },
-      baseURL: apiUrl
+      baseURL: baseUrlWithProtocol
     });
   }, [keycloak]);
 
