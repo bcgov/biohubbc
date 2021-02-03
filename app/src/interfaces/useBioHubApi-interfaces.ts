@@ -17,7 +17,7 @@ export interface IFormRecord {
  */
 export interface ICreateActivity {
   tags: string[];
-  id: string;
+  id: number;
   form_data: any;
 }
 
@@ -35,7 +35,7 @@ export interface IActivity extends IFormRecord {
 }
 
 /**
- * Create new tempalte endpoint object.
+ * Create new template endpoint object.
  *
  * @export
  * @interface ITemplate
@@ -49,16 +49,26 @@ export interface ICreateTemplate {
 }
 
 /**
- * Tempalte object.
+ * Template object.
  *
  * @export
  * @interface ITemplate
  */
 export interface ITemplate {
-  id: string;
+  id: number;
   name: string;
   description: string;
   tags: string[];
   data_template: any;
   ui_template: any;
+}
+
+/**
+ * Create project response object.
+ *
+ * @export
+ * @interface ICreateProjectResponse
+ */
+export interface ICreateProjectResponse {
+  id: number;
 }

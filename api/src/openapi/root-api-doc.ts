@@ -1,4 +1,4 @@
-export const apiDoc = {
+export const rootAPIDoc = {
   openapi: '3.0.0',
   info: {
     version: '0.0.0',
@@ -6,7 +6,7 @@ export const apiDoc = {
     description: 'API for BioHubBC',
     license: {
       name: 'Apache 2.0',
-      url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+      url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
     }
   },
   servers: [

@@ -33,7 +33,8 @@ module.exports = (settings) => {
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         CERTIFICATE_URL: phases[phase].certificateURL,
         REPLICAS: phases[phase].replicas || 1,
-        REPLICA_MAX: phases[phase].maxReplicas || 1
+        REPLICA_MAX: phases[phase].maxReplicas || 1,
+        LOG_LEVEL: phases[phase].logLevel || 'info'
       }
     })
   );

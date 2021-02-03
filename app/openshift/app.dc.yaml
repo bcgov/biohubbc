@@ -40,7 +40,7 @@ parameters:
     value: '2Gi'
   - name: SSO_URL
     description: Key clock login url
-    value: 'https://oidc.gov.bc.ca'
+    value: 'https://oidc.gov.bc.ca/auth'
   - name: SSO_CLIENT_ID
     description: Client Id for application
     value: 'lucy'

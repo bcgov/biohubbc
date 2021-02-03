@@ -44,10 +44,37 @@ RJSF: https://react-jsonschema-form.readthedocs.io/en/latest/
 
 ## Writing Tests
 
-Any files that match `/src/**/*.@(test|spec).ts` will be considered tests.  
-See [Jest](https://jestjs.io/docs/en/getting-started) for documentation on writing tests.
+Any files that match `/src/**/*.@(test|spec).ts` will be considered tests.
+
+### Unit Tests
+
+Tests that assert a function, given some input, returns an expected output.
+
+_Note: These only apply if the function in question has NO react concepts (it is a pure function). If a function contains react conceps (state, hooks, etc) it will need to be tested in a [Dom Tests](#dom-tests) style, which has mechanisms to account for the rendering lifecycle, etc._
+
+#### Useful Documentation
+
+- https://jestjs.io/docs/en/getting-started
+
+### React Tests
+
+Tests that simulate the user experience, and make assertions about the state of the page and related variables.
+
+#### Useful Documentation
+
+- https://testing-library.com/docs/
+
+#### Relevant Sample Projects
+
+- https://github.com/bcgov/PIMS
+  - SplReportContainer.test.tsx
+  - useRouterFilter.test.tsx
+  - LayersControl.test.tsx
+  - etc...
 
 ### Snapshot Tests
+
+_Note: Snapshot tests are not useful in all situations, and should really only be used for components that are stable and unlikely to change much. For example: asserting the content of a footer bar._
 
 Snapshot tests are a special kind of jest test that asserts that a previously saved copy of the rendered component matches the current version of the rendered component.
 
@@ -55,7 +82,7 @@ These tests assert that the rendered UI of the component is correct, under whate
 
 These tests are run just like any other tests, but have 1 additional pre-requisite, which is generating the initial snapshot of the component. See [Running Tests](#running-tests).
 
-These snapshots should be saved in the repo.
+The snapshot files produced should be saved in the repo.
 
 <br />
 
@@ -75,6 +102,21 @@ These snapshots should be saved in the repo.
 
 ### `react` version
 
-There appears to be an issue between RJSF and react version 17+ that causes some of the RJSF form behaviour to work incorrectly. A result of some change to how events are bubbled up, introduced in react 17.x. Recommend keeping react at the latest 16.x version.
+There appears to be an issue between RJSF and react version 17+ that causes some of the RJSF form behaviour to work incorrectly. A result of some change to how events are bubbled up, introduced in react `17.x`.
+
+- The simplest solution for now is to keep react at the latest `16.x` version.
 
 - https://github.com/rjsf-team/react-jsonschema-form/issues/2104
+
+### `typescript` version
+
+There is a known issue between typescript `4.x` and `eslint` that can result in the following error when running the linter, via: `npm run lint`
+
+The simplest solution for now is to keep typescript at the latest `3.x` version.
+
+- There is some discussion here (among other places):  
+  https://stackoverflow.com/questions/62079477/line-0-parsing-error-cannot-read-property-map-of-undefined/63660413
+
+```
+0:0 error Parsing error: Cannot read property 'map' of undefined
+```

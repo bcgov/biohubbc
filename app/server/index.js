@@ -35,21 +35,31 @@ const request = require('request');
   const resourcePath = path.resolve(__dirname, '../build');
   // Setting express static
   app.use(express.static(resourcePath));
-  // Setting configure path
-  app.use('/config', (req, resp) => {
+
+  // App env config
+  app.use('/config/app', (req, resp) => {
     const config = {
-      apiHost: process.env.REACT_APP_API_HOST || 'localhost',
+      REACT_APP_API_HOST: process.env.REACT_APP_API_HOST || 'localhost',
       changeId: process.env.CHANGE_VERSION || 'NA',
       env: process.env.NODE_ENV || 'local',
-      version: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
-      sso: {
-        url: `${process.env.SSO_URL || ''}`,
-        clientId: `${process.env.SSO_CLIENT_ID || ''}`,
-        realm: `${process.env.SSO_REALM || ''}`
-      }
+      version: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`
     };
     resp.status(200).json(config);
   });
+
+  // App keycloak config
+  app.use('/config/keycloak', (req, resp) => {
+    const keycloak = {
+      'auth-server-url': process.env.SSO_URL || 'https://dev.oidc.gov.bc.ca/auth',
+      realm: process.env.SSO_REALM || '35r1iman',
+      resource: process.env.SSO_CLIENT_ID || 'biohubbc',
+      'ssl-required': 'external',
+      'public-client': true,
+      'confidential-port': 0
+    };
+    resp.status(200).json(keycloak);
+  });
+
   // Health check
   app.use('/healthcheck', (_, resp) => {
     // Request server api

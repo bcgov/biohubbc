@@ -1,11 +1,31 @@
 import { tags } from '../components/tags';
 
-const template = {
-  title: 'Template Object',
+/**
+ * Template schema interface.
+ *
+ * @export
+ * @interface ITemplateSchema
+ */
+export interface ITemplateSchema {
+  id: number;
+  name: string;
+  description: string;
+  tags: string[];
+  data_template: any;
+  ui_template: any;
+}
+
+/**
+ * Template endpoint post body openapi schema.
+ */
+export const templatePostBody = {
+  title: 'Template Post Object',
   type: 'object',
   // required: [],
   properties: {
-    tags: { ...tags },
+    tags: {
+      ...tags
+    },
     name: {
       description: 'Template name',
       type: 'string',
@@ -28,17 +48,16 @@ const template = {
   }
 };
 
-export const templatePostBody = {
-  ...template
-};
-
+/**
+ * Template endpoint response body openapi schema.
+ */
 export const templateResponseBody = {
-  ...template,
+  title: 'Template Response Object',
+  type: 'object',
+  required: ['id'],
   properties: {
     id: {
-      description: 'Template ID',
       type: 'number'
-    },
-    ...template.properties
+    }
   }
 };
