@@ -268,6 +268,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == false}}
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     needs:
       - buildAPP
     steps:
@@ -293,7 +294,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
 
   # Clean build/deployment artifacts
   clean:
@@ -306,6 +307,7 @@ jobs:
       - deployAPP
     env:
       BUILD_ID: ${{ github.event.number }}
+      BRANCH: ${{ github.base_ref }}
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -330,7 +332,7 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
 
       # Clean the api build/deployment artifacts
       - name: Clean API Artifacts
@@ -339,7 +341,7 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
 
       # Clean the app build/deployment artifacts
       - name: Clean APP Artifacts
@@ -348,4 +350,4 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
