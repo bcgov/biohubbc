@@ -84,6 +84,14 @@ const appTheme = createMuiTheme({
         fontSize: '2.5rem',
         marginLeft: '-.525rem'
       }
+    },
+    MuiFormLabel: {
+      asterisk: {
+        color: '#db3131',
+        '&$error': {
+          color: '#db3131'
+        }
+      }
     }
   }
 });
