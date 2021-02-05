@@ -4,6 +4,7 @@ import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@mater
 import { KeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
 import { AuthStateContext, AuthStateContextProvider, IAuthState } from 'contexts/authStateContext';
+import { ConfigContext, ConfigContextProvider } from 'contexts/configContext';
 import Keycloak, { KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -11,30 +12,42 @@ import appTheme from 'themes/appTheme';
 import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 const App: React.FC = () => {
-  //@ts-ignore
-  const keycloak: KeycloakInstance = new Keycloak(process.env.REACT_APP_KEYCLOAK_CONFIG || '/config/keycloak');
-
   return (
     <Box height="100vh" width="100vw" display="flex" overflow="hidden">
       <ThemeProvider theme={appTheme}>
-        <KeycloakProvider
-          keycloak={keycloak}
-          initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
-          LoadingComponent={<CircularProgress />}
-          onEvent={getKeycloakEventHandler(keycloak)}>
-          <AuthStateContextProvider>
-            <BrowserRouter>
-              <AuthStateContext.Consumer>
-                {(context: IAuthState) => {
-                  if (!context.ready) {
-                    return <CircularProgress />;
-                  }
-                  return <AppRouter />;
-                }}
-              </AuthStateContext.Consumer>
-            </BrowserRouter>
-          </AuthStateContextProvider>
-        </KeycloakProvider>
+        <ConfigContextProvider>
+          <ConfigContext.Consumer>
+            {(config) => {
+              if (!config) {
+                return <CircularProgress />;
+              }
+
+              //@ts-ignore
+              const keycloak: KeycloakInstance = new Keycloak(config.KEYCLOAK_CONFIG);
+
+              return (
+                <KeycloakProvider
+                  keycloak={keycloak}
+                  initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
+                  LoadingComponent={<CircularProgress />}
+                  onEvent={getKeycloakEventHandler(keycloak)}>
+                  <AuthStateContextProvider>
+                    <BrowserRouter>
+                      <AuthStateContext.Consumer>
+                        {(context: IAuthState) => {
+                          if (!context.ready) {
+                            return <CircularProgress />;
+                          }
+                          return <AppRouter />;
+                        }}
+                      </AuthStateContext.Consumer>
+                    </BrowserRouter>
+                  </AuthStateContextProvider>
+                </KeycloakProvider>
+              );
+            }}
+          </ConfigContext.Consumer>
+        </ConfigContextProvider>
       </ThemeProvider>
     </Box>
   );

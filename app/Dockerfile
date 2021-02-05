@@ -24,7 +24,7 @@ ENV PATH /opt/rh/rh-nodejs8/root/usr/bin:${HOME}/node_modules/.bin/:${HOME}/app.
 COPY . ./
 
 # Build app
-RUN npm run build-prod
+RUN npm run build
 
 EXPOSE 7100
 

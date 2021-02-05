@@ -91,7 +91,13 @@ The snapshot files produced should be saved in the repo.
 ## Environment Variables
 
 - With the exception of `NODE_ENV`, any environment variable that needs to be accessible by the react app (via `process.env.<var>`) must be prefixed with `REACT_APP_`. If it is not prefixed, react will not read it, and it will be `undefined` when you try to access it.
+
   - See: https://create-react-app.dev/docs/adding-custom-environment-variables
+
+  - Caveat: React only allows/supports `NODE_ENV:'development'|'test'|'production'`
+    - `react-scripts start` -> `NODE_ENV=development`
+    - `react-scripts test` -> `NODE_ENV=test`
+    - `react-scripts build` -> `NODE_ENV=production`
 
 ## .env
 
