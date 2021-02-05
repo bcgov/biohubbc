@@ -333,6 +333,12 @@ const CreateProjectPage: React.FC = () => {
                   <StepLabel>
                     <Typography variant="h4">{step.stepTitle}</Typography>
                     <Typography variant="h6">{step.stepSubTitle}</Typography>
+                    <Typography variant="subtitle2">
+                      <Box color="#db3131" display="inline">
+                        *
+                      </Box>{' '}
+                      indicates a required field
+                    </Typography>
                   </StepLabel>
                   <StepContent>
                     {step.stepContent}

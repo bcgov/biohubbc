@@ -136,20 +136,6 @@ const projectTemplate: ITemplate = {
           }
         }
       },
-      management_recovery_action: {
-        type: 'number',
-        title: 'Management Recovery Action',
-        'x-enum-code': {
-          table: 'management_action_type',
-          id_column: 'id',
-          text_column: 'name'
-        }
-      },
-      results: {
-        type: 'string',
-        title: 'Results',
-        maxLength: 2000
-      },
       caveats: {
         type: 'string',
         title: 'Caveats',
@@ -179,7 +165,6 @@ const projectTemplate: ITemplate = {
       },
       scientific_collection_permit_number: {}
     },
-    management_recovery_action: {},
     _location: {
       location_description: {
         'ui:widget': 'textarea'
@@ -199,9 +184,6 @@ const projectTemplate: ITemplate = {
         'ui:widget': 'date'
       }
     },
-    results: {
-      'ui:widget': 'textarea'
-    },
     caveats: {
       'ui:widget': 'textarea'
     },
@@ -218,12 +200,8 @@ const projectFundingAgencyTemplate: ITemplate = {
   tags: ['project'],
   data_template: {
     type: 'object',
-    required: ['funding_agency_project_id', 'funding_amount'],
+    required: ['funding_amount'],
     properties: {
-      funding_agency_project_id: {
-        type: 'string',
-        title: 'Funding Agency Project ID'
-      },
       funding_amount: {
         type: 'number',
         title: 'Funding Amount'
@@ -246,7 +224,6 @@ const projectFundingAgencyTemplate: ITemplate = {
     }
   },
   ui_template: {
-    funding_agency_project_id: {},
     funding_amount: {},
     _project_funding_dates: {
       'ui:column-xs': 12,
@@ -342,7 +319,7 @@ const projectManagementActionsTemplate: ITemplate = {
   description: 'Project Management Actions Template',
   tags: ['project'],
   data_template: {
-    title: 'Managemetn Actions',
+    title: 'Management Actions',
     type: 'object',
     properties: {}
   },
