@@ -1,14 +1,17 @@
 import AWS from 'aws-sdk';
-import { GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
-import { v4 as uuidv4 } from 'uuid';
+import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 import { MediaBase64 } from '../models/media';
+import { getLogger } from './logger';
 
-const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
-// const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-// const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
+const defaultLog = getLogger('file_utils.ts');
+const projectId = '3';
+
+const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
+const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 const S3 = new AWS.S3({
-  // endpoint: AWS_ENDPOINT.href,
+  endpoint: AWS_ENDPOINT.href,
   accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
   secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
   signatureVersion: 'v4',
@@ -25,10 +28,29 @@ const S3 = new AWS.S3({
  */
 export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
   if (!key) {
-    return null;
+    return {};
   }
 
   return S3.getObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
+}
+
+/**
+ * Get file list from S3, based on name prefix
+ * @param prefix
+ */
+export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutput> {
+  if (!prefix) {
+    return {};
+  }
+
+  const params = {
+    Bucket: OBJECT_STORE_BUCKET_NAME,
+    Prefix: prefix
+  };
+
+  defaultLog.debug('params:', params);
+
+  return S3.listObjects(params).promise();
 }
 
 /**
@@ -43,10 +65,18 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
  */
 export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData> {
   if (!media) {
-    return null;
+    return {
+      Location: '',
+      ETag: '',
+      Key: '',
+      Bucket: ''
+    };
   }
 
-  const key = `${uuidv4()}-${media.mediaName}`;
+  // This format creates a folder, but will not append a second file
+  const key = `${projectId}/${media.mediaName}`;
+
+  console.log('key: ', key);
 
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
@@ -66,7 +96,7 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
  */
 export async function getS3SignedURL(key: string): Promise<string> {
   if (!key) {
-    return null;
+    return '';
   }
 
   return S3.getSignedUrl('getObject', {
@@ -90,13 +120,19 @@ const base64DataURLRegex = new RegExp(/^data:(\w+\/\w+);base64,(.*)/);
  */
 export function parseBase64DataURLString(base64String: string): { contentType: string; contentString: string } {
   if (!base64String) {
-    return null;
+    return {
+      contentType: '',
+      contentString: ''
+    };
   }
 
   const matches = base64String.match(base64DataURLRegex);
 
   if (!matches || matches.length !== 3) {
-    return null;
+    return {
+      contentType: '',
+      contentString: ''
+    };
   }
 
   return { contentType: matches[1], contentString: matches[2] };

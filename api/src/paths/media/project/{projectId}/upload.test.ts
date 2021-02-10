@@ -1,0 +1,43 @@
+import { expect } from 'chai';
+//import request = require('supertest');
+import { MediaBase64 } from '../../../../models/media';
+
+describe('Unit Testing: POST /media/{projectId}/upload - Test MediaBase64 instantiation', () => {
+  it('should return empty MediaBase64 object if input JSON object is empty', function () {
+    const rawMedia: any = {};
+    const media: MediaBase64 = new MediaBase64(rawMedia);
+
+    expect(media).to.be.an('object');
+    expect(media.contentType).to.have.length(0);
+    expect(media.contentString).to.have.length(0);
+  });
+
+  it('should return empty MediaBase64 object if input JSON object contains corrupt encoded_file', function () {
+    const rawMedia: any = {
+      file_name: 'single_red_dot.png',
+      encoded_file: 'dat....ge/png;ba...4,iVBORw0KG...'
+    };
+    const media: MediaBase64 = new MediaBase64(rawMedia);
+
+    expect(media).to.be.an('object');
+    expect(media.contentType).to.have.length(0);
+    expect(media.contentString).to.have.length(0);
+  });
+
+  it('should return populated MediaBase64 object with expected values if input JSON object contains valid IMediaItem', function () {
+    const rawMedia: any = {
+      file_name: 'single_red_dot.png',
+      encoded_file:
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJgg'
+    };
+    const media: MediaBase64 = new MediaBase64(rawMedia);
+
+    expect(media).to.be.an('object');
+    expect(media.contentType).to.equal('image/png');
+    expect(media.contentString).to.equal(
+      'iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJgg'
+    );
+    expect(media.mediaBuffer.toString('base64')).to.equal(media.contentString);
+    expect(media.mediaName).to.equal(rawMedia.file_name);
+  });
+});

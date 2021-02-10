@@ -83,6 +83,10 @@ const ProjectsPage: React.FC = () => {
     const getProjects = async () => {
       const projectsResponse = await biohubApi.getProjects();
 
+      const mediaList = await biohubApi.getMediaList('1');
+
+      console.log('mediaList: ', mediaList);
+
       setProjects(() => {
         setIsLoading(false);
 
