@@ -26,11 +26,9 @@ export interface IProject {
   name: string;
   objectives: string;
   scientific_collection_permit_number: string;
-  management_recovery_action: string;
   location_description: string;
   start_date: string;
   end_date: string;
-  results: string;
   caveats: string;
   comments: string;
   coordinator_first_name: string;
@@ -64,6 +62,12 @@ export interface IFundingAgency {
   name: string;
   record_effective_date: string;
   record_end_date?: string;
+}
+
+export interface ISpecies {
+  id: number;
+  focal_species: string[];
+  ancillary_species: string[];
 }
 
 /**
@@ -128,6 +132,8 @@ export interface IProponent {
 /**
  * An interface representing a single project record, in its entirety.
  *
+ * TODO eventually use as the return type when fetching a project
+ *
  * @export
  * @interface IProjectRecord
  * @extends {IFormRecord}
@@ -146,11 +152,4 @@ export interface IProjectRecord extends IFormRecord {
   };
   region: IProjectRegion;
   proponent: IProponent;
-}
-
-// TODO this is an interim (incomplete) version of the final project post object
-export interface IProjectPostObject {
-  project: IProject;
-  funding: IProjectFundingAgency;
-  agency: IFundingAgency;
 }

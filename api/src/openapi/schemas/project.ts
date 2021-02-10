@@ -62,6 +62,28 @@ export const projectPostBody = {
       type: 'object',
       properties: {}
     },
+    species: {
+      title: 'Primary and Seconday Species of Interest',
+      type: 'object',
+      properties: {
+        focal_species: {
+          type: 'array',
+          description: 'Array of focal species',
+          items: {
+            type: 'string',
+            description: 'Species Name'
+          }
+        },
+        ancillary_species: {
+          type: 'array',
+          description: 'Array of ancillary species',
+          items: {
+            type: 'string',
+            description: 'Species Name'
+          }
+        }
+      }
+    },
     funding: {
       title: 'Funding Model Object',
       type: 'object',
