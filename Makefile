@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app app-ionic api help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app app-ionic api install test lint lint-fix format help
 
 # ------------------------------------------------------------------------------
 # Task Aliases
@@ -179,6 +179,96 @@ api: ## Executes into the workspace container.
 	@echo "Shelling into api container"
 	@echo "==============================================="
 	@docker-compose exec api bash
+
+# ------------------------------------------------------------------------------
+# Other Commands
+# ------------------------------------------------------------------------------
+
+install: ## Runs `npm install` for all projects
+	@echo "==============================================="
+	@echo "Running /api install"
+	@echo "==============================================="
+	@cd api && npm install && cd ..
+	@echo "==============================================="
+	@echo "Running /app install"
+	@echo "==============================================="
+	@cd app && npm install && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic install"
+	# @echo "==============================================="
+	# @cd app-ionic && npm install && cd ..
+	@echo "==============================================="
+	@echo "Running /database install"
+	@echo "==============================================="
+	@cd database && npm install && cd ..
+
+test: ## Runs `npm test` for api, app, and app-ionic projects
+	@echo "==============================================="
+	@echo "Running /api tests"
+	@echo "==============================================="
+	@cd api && npm test && cd ..
+	@echo "==============================================="
+	@echo "Running /app tests"
+	@echo "==============================================="
+	@cd app && npm test && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic tests"
+	# @echo "==============================================="
+	# @cd app-ionic && npm test && cd ..
+
+lint: ## Runs `npm lint` for all projects
+	@echo "==============================================="
+	@echo "Running /api lint"
+	@echo "==============================================="
+	@cd api && npm run lint && cd ..
+	@echo "==============================================="
+	@echo "Running /app lint"
+	@echo "==============================================="
+	@cd app && npm run lint && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic lint"
+	# @echo "==============================================="
+	# @cd app-ionic && npm lint && cd ..
+	@echo "==============================================="
+	@echo "Running /database lint"
+	@echo "==============================================="
+	@cd database && npm run lint && cd ..
+
+lint-fix: ## Runs `npm run lint:fix ` for all projects
+	@echo "==============================================="
+	@echo "Running /api lint:fix"
+	@echo "==============================================="
+	@cd api && npm run lint:fix && cd ..
+	@echo "==============================================="
+	@echo "Running /app lint:fix"
+	@echo "==============================================="
+	@cd app && npm run lint:fix && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic lint:fix"
+	# @echo "==============================================="
+	# @cd app-ionic && npm lint:fix && cd ..
+	@echo "==============================================="
+	@echo "Running /database lint:fix"
+	@echo "==============================================="
+	@cd database && npm run lint:fix && cd ..
+
+format: ## Runs `npm run format` for all projects
+	@echo "==============================================="
+	@echo "Running /api format"
+	@echo "==============================================="
+	@cd api && npm run format && cd ..
+	@echo "==============================================="
+	@echo "Running /app format"
+	@echo "==============================================="
+	@cd app && npm run format && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic format"
+	# @echo "==============================================="
+	# @cd app-ionic && npm format && cd ..
+	@echo "==============================================="
+	@echo "Running /database format"
+	@echo "==============================================="
+	@cd database && npm run format && cd ..
 
 # ------------------------------------------------------------------------------
 # Help Commands
