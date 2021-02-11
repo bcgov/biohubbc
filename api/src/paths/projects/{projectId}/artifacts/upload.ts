@@ -1,12 +1,14 @@
 'use strict';
 
 import { ManagedUpload } from 'aws-sdk/clients/s3';
+//import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../constants/roles';
 import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { IMediaItem, MediaBase64 } from '../../../../models/media';
+//import { getFileFromS3 } from '../../../../utils/file-utils';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/upload');
 
@@ -142,9 +144,7 @@ export function uploadMedia(): RequestHandler {
 
       s3UploadPromises.push(uploadFileToS3(media, metadata));
 
-      console.log('--------------- metadata', metadata);
+      return res.status(200).json(metadata);
     });
-
-    return res.status(200).json({ upload_status: 'ok' });
   };
 }

@@ -93,14 +93,19 @@ function getMediaList(): RequestHandler {
       file_name: '',
       encoded_file: ''
     };
+    
+  
 
     if (s3Object) {
       artifact = {
         file_name: req.params.fileName,
-        encoded_file: 'data:' + s3Object.ContentType + ';base64,' + 'tbd'
+        encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
       }
     }
+    let objectBody= s3Object.Body?.toString('base64');
+    console.log('objectBody' + objectBody);
 
-    return res.status(200).json({ s3Objeect: s3Object, artifact: artifact });
+
+    return res.status(200).json({artifact: artifact });
   };
 }
