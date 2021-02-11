@@ -72,8 +72,7 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
       Bucket: ''
     };
   }
-
-  // This format creates a folder, but will not append a second file
+  
   const key = `${projectId}/${media.mediaName}`;
 
   console.log('key: ', key);

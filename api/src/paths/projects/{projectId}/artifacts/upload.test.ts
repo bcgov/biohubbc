@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-//import request = require('supertest');
 import { MediaBase64 } from '../../../../models/media';
 
 describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test MediaBase64 instantiation', () => {

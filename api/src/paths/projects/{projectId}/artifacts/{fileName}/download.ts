@@ -71,8 +71,10 @@ GET.apiDoc = {
 
 function getMediaList(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug('started... req.params.projectId=' + req.params.projectId + ', req.params.fileName=' + req.params.fileName);
-    
+    defaultLog.debug(
+      'started... req.params.projectId=' + req.params.projectId + ', req.params.fileName=' + req.params.fileName
+    );
+
     if (!req.params.projectId) {
       throw {
         status: 400,
@@ -85,7 +87,7 @@ function getMediaList(): RequestHandler {
         status: 400,
         message: 'Missing required path param `fileName`'
       };
-    }    
+    }
 
     const s3Object: GetObjectOutput = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);
 
@@ -93,19 +95,14 @@ function getMediaList(): RequestHandler {
       file_name: '',
       encoded_file: ''
     };
-    
-  
 
     if (s3Object) {
       artifact = {
         file_name: req.params.fileName,
         encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
-      }
+      };
     }
-    let objectBody= s3Object.Body?.toString('base64');
-    console.log('objectBody' + objectBody);
 
-
-    return res.status(200).json({artifact: artifact });
+    return res.status(200).json({ artifact: artifact });
   };
 }
