@@ -10,7 +10,7 @@ import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/{fileName}/download');
 
-export const GET: Operation = [getMediaList()];
+export const GET: Operation = [getSingleMedia()];
 
 GET.apiDoc = {
   description: 'Retrieves the content of an artifact in a project by its file name.',
@@ -69,7 +69,7 @@ GET.apiDoc = {
   }
 };
 
-function getMediaList(): RequestHandler {
+function getSingleMedia(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug(
       'started... req.params.projectId=' + req.params.projectId + ', req.params.fileName=' + req.params.fileName
