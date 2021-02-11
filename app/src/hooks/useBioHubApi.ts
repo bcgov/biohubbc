@@ -132,7 +132,7 @@ export const useBiohubApi = () => {
   const getMediaList = async (projectId: string): Promise<IMedia[]> => {
     //const api = await apiPromise;
 
-    const { data } = await api.get('/api/media/project/' + projectId);
+    const { data } = await api.get('/api/projects/' + projectId + '/artifacts/list');
 
     const mediaKeyList: IMedia[] = [];
 
