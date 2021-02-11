@@ -18,8 +18,8 @@
     "seed": "knex seed:run --knexfile ./src/knexfile.ts",
     "lint": "eslint src/ --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "check": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\""
+    "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "dependencies": {
     "@types/csv-parse": "^1.2.2",

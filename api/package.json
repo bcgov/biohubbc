@@ -20,8 +20,8 @@
     "coverage": "nyc mocha",
     "lint": "eslint . --ignore-pattern 'node_modules' --ext .ts",
     "lint:fix": "eslint . --fix --ignore-pattern 'node_modules' --ext .ts",
-    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "check": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\""
+    "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "engines": {
     "node": ">= 10.0.0",

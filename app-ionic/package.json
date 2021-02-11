@@ -19,8 +19,8 @@
     "update-snapshots": "react-scripts test --env=jsdom-fourteen --ci --watchAll=false --updateSnapshot",
     "lint": "eslint src/ --ext .jsx,.js,.ts,.tsx",
     "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "check": "prettier --check --config ./.prettierrc \"./src/**/*.{js,jsx,ts,tsx,css,scss}\""
+    "format": "prettier --check --config ./.prettierrc \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
   },
   "engines": {
     "node": ">= 10.0.0",

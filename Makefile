@@ -270,6 +270,24 @@ format: ## Runs `npm run format` for all projects
 	@echo "==============================================="
 	@cd database && npm run format && cd ..
 
+format-fix: ## Runs `npm run format:fix` for all projects
+	@echo "==============================================="
+	@echo "Running /api format:fix"
+	@echo "==============================================="
+	@cd api && npm run format:fix && cd ..
+	@echo "==============================================="
+	@echo "Running /app format:fix"
+	@echo "==============================================="
+	@cd app && npm run format:fix && cd ..
+	# @echo "==============================================="
+	# @echo "Running /app-ionic format:fix"
+	# @echo "==============================================="
+	# @cd app-ionic && npm format:fix && cd ..
+	@echo "==============================================="
+	@echo "Running /database format:fix"
+	@echo "==============================================="
+	@cd database && npm run format:fix && cd ..
+
 # ------------------------------------------------------------------------------
 # Help Commands
 # ------------------------------------------------------------------------------
