@@ -2,7 +2,7 @@ import { expect } from 'chai';
 //import request = require('supertest');
 import { MediaBase64 } from '../../../../models/media';
 
-describe('Unit Testing: POST /media/{projectId}/upload - Test MediaBase64 instantiation', () => {
+describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test MediaBase64 instantiation', () => {
   it('should return empty MediaBase64 object if input JSON object is empty', function () {
     const rawMedia: any = {};
     const media: MediaBase64 = new MediaBase64(rawMedia);

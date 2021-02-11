@@ -8,12 +8,12 @@ import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { IMediaItem, MediaBase64 } from '../../../../models/media';
 
-const defaultLog = getLogger('/media/project/{projectId}/upload');
+const defaultLog = getLogger('/api/projects/{projectId}/artifacts/upload');
 
 export const POST: Operation = [uploadMedia()];
 POST.apiDoc = {
-  description: 'Create a new project in s3 with artifacts.',
-  tags: ['media'],
+  description: 'Upload project-specific artifacts.',
+  tags: ['artifacts'],
   security: [
     {
       Bearer: WRITE_ROLES
@@ -27,7 +27,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Project post request object.',
+    description: 'Artifacts upload post request object.',
     content: {
       'application/json': {
         schema: {
@@ -35,7 +35,7 @@ POST.apiDoc = {
           properties: {
             media: {
               type: 'array',
-              description: 'An array of media items to uplaod',
+              description: 'An array of artifacts to uplaod',
               items: {
                 type: 'object',
                 required: ['file_name', 'encoded_file'],
@@ -58,7 +58,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project post response media key array.',
+      description: 'Artifacts upload response.',
       content: {
         'application/json': {
           schema: {
@@ -74,8 +74,7 @@ POST.apiDoc = {
                   type: 'string',
                   description: 'The date the object was last modified'
                 }
-              },
-              required: ['mediaKey']
+              }
             }
           }
         }

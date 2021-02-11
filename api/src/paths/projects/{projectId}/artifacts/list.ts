@@ -2,17 +2,17 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../../../constants/roles';
-import { getFileListFromS3 } from '../../../utils/file-utils';
-import { getLogger } from '../../../utils/logger';
+import { WRITE_ROLES } from '../../../../constants/roles';
+import { getFileListFromS3 } from '../../../../utils/file-utils';
+import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/media/project/{projectId}');
+const defaultLog = getLogger('/api/projects/{projectId}/artifacts/list');
 
 export const GET: Operation = [getMediaList()];
 
 GET.apiDoc = {
-  description: 'Fetches a list of media items in a project.',
-  tags: ['media'],
+  description: 'Fetches a list of artifact descriptions in a project.',
+  tags: ['artifacts'],
   security: [
     {
       Bearer: WRITE_ROLES
@@ -27,7 +27,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project get response media key array.',
+      description: 'Project get response file description array.',
       content: {
         'application/json': {
           schema: {
@@ -35,16 +35,15 @@ GET.apiDoc = {
             items: {
               type: 'object',
               properties: {
-                mediaKey: {
-                  description: 'The name of the media object',
+                fileName: {
+                  description: 'The file name of the artifact',
                   type: 'string'
                 },
                 lastModified: {
                   description: 'The date the object was last modified',
                   type: 'string'
                 }
-              },
-              required: ['mediaKey']
+              }
             }
           }
         }
@@ -82,7 +81,7 @@ function getMediaList(): RequestHandler {
     if (Contents) {
       Contents.forEach(function (content: any) {
         const file = {
-          key: content.Key,
+          fileName: content.Key,
           lastModified: content.LastModified
         };
 
