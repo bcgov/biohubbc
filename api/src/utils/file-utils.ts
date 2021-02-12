@@ -2,11 +2,7 @@ import AWS from 'aws-sdk';
 import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 import { MediaBase64 } from '../models/media';
-import { getLogger } from './logger';
-
-const defaultLog = getLogger('file_utils.ts');
 const projectId = '3';
-
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
@@ -26,9 +22,9 @@ const S3 = new AWS.S3({
  * @param {string} key the unique key assigned to the file in S3 when it was originally uploaded
  * @returns {Promise<GetObjectOutput>} the response from S3 or null if required parameters are null
  */
-export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
+export async function getFileFromS3(key: string): Promise<GetObjectOutput | null> {
   if (!key) {
-    return {};
+    return null;
   }
 
   return S3.getObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
@@ -38,17 +34,15 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
  * Get file list from S3, based on name prefix
  * @param prefix
  */
-export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutput> {
+export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutput | null > {
   if (!prefix) {
-    return {};
+    return null;
   }
 
   const params = {
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Prefix: prefix
   };
-
-  defaultLog.debug('params:', params);
 
   return S3.listObjects(params).promise();
 }
@@ -63,19 +57,9 @@ export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutp
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */
-export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData> {
-  if (!media) {
-    return {
-      Location: '',
-      ETag: '',
-      Key: '',
-      Bucket: ''
-    };
-  }
+export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData > {
   
   const key = `${projectId}/${media.mediaName}`;
-
-  console.log('key: ', key);
 
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
@@ -93,9 +77,9 @@ export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}
  * @param {string} key S3 object key
  * @returns {Promise<string>} the response from S3 or null if required parameters are null
  */
-export async function getS3SignedURL(key: string): Promise<string> {
+export async function getS3SignedURL(key: string): Promise<string | null> {
   if (!key) {
-    return '';
+    return null;
   }
 
   return S3.getSignedUrl('getObject', {
@@ -117,21 +101,15 @@ const base64DataURLRegex = new RegExp(/^data:(\w+\/\w+);base64,(.*)/);
  * @return {{ contentType: string; contentString: string }} returns an object with the Data URL encoded strings
  * contentType and contentString, or null if string is invalid or encoded incorrectly.
  */
-export function parseBase64DataURLString(base64String: string): { contentType: string; contentString: string } {
+export function parseBase64DataURLString(base64String: string): { contentType: string; contentString: string } | null {
   if (!base64String) {
-    return {
-      contentType: '',
-      contentString: ''
-    };
+    return null;
   }
 
   const matches = base64String.match(base64DataURLRegex);
 
   if (!matches || matches.length !== 3) {
-    return {
-      contentType: '',
-      contentString: ''
-    };
+    return null;
   }
 
   return { contentType: matches[1], contentString: matches[2] };

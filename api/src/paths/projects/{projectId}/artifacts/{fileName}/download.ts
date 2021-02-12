@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
+//import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { IMediaItem } from '../../../../../models/media';
@@ -89,19 +89,22 @@ function getSingleMedia(): RequestHandler {
       };
     }
 
-    const s3Object: GetObjectOutput = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);
+    const s3Object = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);
+
+    if (!s3Object) {
+      return null;
+    }
 
     let artifact: IMediaItem = {
       file_name: '',
       encoded_file: ''
     };
 
-    if (s3Object) {
+
       artifact = {
         file_name: req.params.fileName,
         encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
       };
-    }
 
     return res.status(200).json({ artifact: artifact });
   };

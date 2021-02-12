@@ -103,9 +103,8 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res, next) => {
-    const debug_label = 'uploadMedia';
+    defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
 
-    defaultLog.debug({ label: debug_label, message: 'start:', body: req.body });
 
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
@@ -125,7 +124,7 @@ export function uploadMedia(): RequestHandler {
       try {
         media = new MediaBase64(rawMedia);
       } catch (error) {
-        defaultLog.debug({ label: debug_label, message: 'error', error });
+        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
         throw {
           status: 400,
           message: 'Included media was invalid/encoded incorrectly'
@@ -140,9 +139,19 @@ export function uploadMedia(): RequestHandler {
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      s3UploadPromises.push(uploadFileToS3(media, metadata));
+      defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata});
 
-      return res.status(200).json(metadata);
+      try {
+        s3UploadPromises.push(uploadFileToS3(media, metadata));
+      } catch (error) {
+        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+        throw {
+          status: 400,
+          message: 'Upload was not successful'
+        };
+      }
     });
-  };
+    const results = await Promise.all(s3UploadPromises);
+    return res.status(200).json(results);
+  }
 }

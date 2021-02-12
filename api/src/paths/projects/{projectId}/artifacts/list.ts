@@ -64,6 +64,14 @@ GET.apiDoc = {
 function getMediaList(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug('started... req.params.projectId=' + req.params.projectId);
+    defaultLog.debug('started... req.params.projectId=' + req.params.projectId);
+
+    console.log('----------req------------');
+    console.log(req);
+
+    defaultLog.debug({ label: 'Get media list', message: 'params',  });
+
+    //defaultLog.debug({ label: 'PostProjectObject', message: 'params', req });
 
     if (!req.params.projectId) {
       throw {
@@ -72,14 +80,22 @@ function getMediaList(): RequestHandler {
       };
     }
 
-    const { Contents } = await getFileListFromS3(req.params.projectId + '/');
+    const ContentsList = await getFileListFromS3(req.params.projectId + '/');
 
-    defaultLog.debug('Contents:', Contents);
+    defaultLog.debug({ label: 'getFileListFromS3:', message: 'Content', ContentsList });
 
     const fileList: any[] = [];
 
-    if (Contents) {
-      Contents.forEach(function (content: any) {
+    if(!ContentsList) {
+      throw {
+        status: 400,
+        message: 'Failed to get the content list'
+      };
+    }
+
+    const contents = ContentsList.Contents;
+
+    contents?.forEach(function (content) {
         const file = {
           fileName: content.Key,
           lastModified: content.LastModified
@@ -87,7 +103,8 @@ function getMediaList(): RequestHandler {
 
         fileList.push(file);
       });
-    }
+
+      
 
     defaultLog.debug('fileList: ', fileList);
 
