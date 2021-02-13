@@ -2,13 +2,9 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-//import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { IMediaItem } from '../../../../../models/media';
-import { getLogger } from '../../../../../utils/logger';
-
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/{fileName}/download');
 
 export const GET: Operation = [getSingleMedia()];
 
@@ -71,9 +67,6 @@ GET.apiDoc = {
 
 function getSingleMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug(
-      'started... req.params.projectId=' + req.params.projectId + ', req.params.fileName=' + req.params.fileName
-    );
 
     if (!req.params.projectId) {
       throw {

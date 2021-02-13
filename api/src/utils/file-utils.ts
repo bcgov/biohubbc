@@ -2,7 +2,7 @@ import AWS from 'aws-sdk';
 import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 import { MediaBase64 } from '../models/media';
-const projectId = '3';
+
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
@@ -58,14 +58,12 @@ export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutp
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */
 export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData > {
-  
-  const key = `${projectId}/${media.mediaName}`;
 
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Body: media.mediaBuffer,
     ContentType: media.contentType,
-    Key: key,
+    Key: media.mediaName,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
   }).promise();

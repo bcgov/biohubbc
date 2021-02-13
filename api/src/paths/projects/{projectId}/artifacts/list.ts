@@ -63,15 +63,8 @@ GET.apiDoc = {
 
 function getMediaList(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug('started... req.params.projectId=' + req.params.projectId);
-    defaultLog.debug('started... req.params.projectId=' + req.params.projectId);
 
-    console.log('----------req------------');
-    console.log(req);
-
-    defaultLog.debug({ label: 'Get media list', message: 'params',  });
-
-    //defaultLog.debug({ label: 'PostProjectObject', message: 'params', req });
+    defaultLog.debug({ label: 'Get artifact list', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
       throw {
@@ -105,8 +98,7 @@ function getMediaList(): RequestHandler {
       });
 
       
-
-    defaultLog.debug('fileList: ', fileList);
+    defaultLog.debug({ label: 'getMediaList', message: 'fileList', fileList});
 
     return res.status(200).json(fileList);
   };

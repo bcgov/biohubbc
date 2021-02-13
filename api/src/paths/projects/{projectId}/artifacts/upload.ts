@@ -93,7 +93,7 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads any media in the request to S3, adding their keys to the request, and calling next().
+ * Uploads any media in the request to S3, adding their keys to the request.
  *
  * Does nothing if no media is present in the request.
  *
@@ -102,13 +102,23 @@ POST.apiDoc = {
  * @returns {RequestHandler}
  */
 export function uploadMedia(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
 
 
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
-      return next();
+      throw {
+        status: 400,
+        message: 'Missing upload data'
+      };
+    }
+
+    if(!req.params.projectId || !req.params.projectId.length){
+      throw {
+        status: 400,
+        message: 'Missing projectId'
+      };
     }
 
     const rawMediaArray: IMediaItem[] = req.body.media;
@@ -123,6 +133,9 @@ export function uploadMedia(): RequestHandler {
       let media: MediaBase64;
       try {
         media = new MediaBase64(rawMedia);
+
+        //prefixing mediaName with projectId to create an effective folder structure
+        media.mediaName = req.params.projectId + '/' + media.mediaName;
       } catch (error) {
         defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
         throw {

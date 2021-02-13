@@ -53,7 +53,7 @@ export class PostActivityObject {
    * @memberof PostActivityObject
    */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostActivityObject', messaeg: 'params', obj });
+    defaultLog.debug({ label: 'PostActivityObject', message: 'params', obj });
 
     this.tags = (obj && obj.tags) || [];
 
