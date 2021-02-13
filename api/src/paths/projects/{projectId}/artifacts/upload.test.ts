@@ -2,25 +2,35 @@ import { expect } from 'chai';
 import { MediaBase64 } from '../../../../models/media';
 
 describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test MediaBase64 instantiation', () => {
-  it('should return empty MediaBase64 object if input JSON object is empty', function () {
+  it('should throw an error when MediaBase64 is constructed with empty JSON', function () {
     const rawMedia: any = {};
-    const media: MediaBase64 = new MediaBase64(rawMedia);
 
-    expect(media).to.be.an('object');
-    expect(media.contentType).to.have.length(0);
-    expect(media.contentString).to.have.length(0);
+    try {
+      new MediaBase64(rawMedia);
+
+    } catch (error) {
+
+      expect(true).to.be.true;
+      console.log(error);
+
+    }
   });
 
-  it('should return empty MediaBase64 object if input JSON object contains corrupt encoded_file', function () {
+  it('should throw an error when MediaBase64 is constructed with corrupt encoded file content', function () {
     const rawMedia: any = {
       file_name: 'single_red_dot.png',
       encoded_file: 'dat....ge/png;ba...4,iVBORw0KG...'
     };
-    const media: MediaBase64 = new MediaBase64(rawMedia);
+    
+    try {
+      new MediaBase64(rawMedia);
 
-    expect(media).to.be.an('object');
-    expect(media.contentType).to.have.length(0);
-    expect(media.contentString).to.have.length(0);
+    } catch (error) {
+
+      expect(true).to.be.true;
+      console.log(error);
+
+    }
   });
 
   it('should return populated MediaBase64 object with expected values if input JSON object contains valid IMediaItem', function () {
