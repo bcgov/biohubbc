@@ -7,12 +7,9 @@ describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test M
 
     try {
       new MediaBase64(rawMedia);
-
     } catch (error) {
-
       expect(true).to.be.true;
       console.log(error);
-
     }
   });
 
@@ -21,15 +18,12 @@ describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test M
       file_name: 'single_red_dot.png',
       encoded_file: 'dat....ge/png;ba...4,iVBORw0KG...'
     };
-    
+
     try {
       new MediaBase64(rawMedia);
-
     } catch (error) {
-
       expect(true).to.be.true;
       console.log(error);
-
     }
   });
 

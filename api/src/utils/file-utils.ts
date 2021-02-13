@@ -34,7 +34,7 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput | null
  * Get file list from S3, based on name prefix
  * @param prefix
  */
-export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutput | null > {
+export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutput | null> {
   if (!prefix) {
     return null;
   }
@@ -57,8 +57,7 @@ export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutp
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */
-export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData > {
-
+export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData> {
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Body: media.mediaBuffer,

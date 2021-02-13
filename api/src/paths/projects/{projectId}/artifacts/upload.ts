@@ -105,7 +105,6 @@ export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
 
-
     if (!req.body.media || !req.body.media.length) {
       // no media objects included, skipping media upload step
       throw {
@@ -114,7 +113,7 @@ export function uploadMedia(): RequestHandler {
       };
     }
 
-    if(!req.params.projectId || !req.params.projectId.length){
+    if (!req.params.projectId || !req.params.projectId.length) {
       throw {
         status: 400,
         message: 'Missing projectId'
@@ -152,7 +151,7 @@ export function uploadMedia(): RequestHandler {
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata});
+      defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
 
       try {
         s3UploadPromises.push(uploadFileToS3(media, metadata));
@@ -166,5 +165,5 @@ export function uploadMedia(): RequestHandler {
     });
     const results = await Promise.all(s3UploadPromises);
     return res.status(200).json(results);
-  }
+  };
 }

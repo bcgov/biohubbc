@@ -136,7 +136,7 @@ export const useBiohubApi = () => {
 
     const mediaKeyList: IMedia[] = [];
 
-    if(!data || !data.length) {
+    if (!data || !data.length) {
       return mediaKeyList;
     }
 
@@ -147,7 +147,7 @@ export const useBiohubApi = () => {
       };
       mediaKeyList.push(mediaKey);
     });
-  
+
     return mediaKeyList;
   };
   return {

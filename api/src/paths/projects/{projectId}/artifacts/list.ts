@@ -63,7 +63,6 @@ GET.apiDoc = {
 
 function getMediaList(): RequestHandler {
   return async (req, res) => {
-
     defaultLog.debug({ label: 'Get artifact list', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
@@ -79,7 +78,7 @@ function getMediaList(): RequestHandler {
 
     const fileList: any[] = [];
 
-    if(!ContentsList) {
+    if (!ContentsList) {
       throw {
         status: 400,
         message: 'Failed to get the content list'
@@ -89,16 +88,15 @@ function getMediaList(): RequestHandler {
     const contents = ContentsList.Contents;
 
     contents?.forEach(function (content) {
-        const file = {
-          fileName: content.Key,
-          lastModified: content.LastModified
-        };
+      const file = {
+        fileName: content.Key,
+        lastModified: content.LastModified
+      };
 
-        fileList.push(file);
-      });
+      fileList.push(file);
+    });
 
-      
-    defaultLog.debug({ label: 'getMediaList', message: 'fileList', fileList});
+    defaultLog.debug({ label: 'getMediaList', message: 'fileList', fileList });
 
     return res.status(200).json(fileList);
   };

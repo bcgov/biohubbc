@@ -67,7 +67,6 @@ GET.apiDoc = {
 
 function getSingleMedia(): RequestHandler {
   return async (req, res) => {
-
     if (!req.params.projectId) {
       throw {
         status: 400,
@@ -93,11 +92,10 @@ function getSingleMedia(): RequestHandler {
       encoded_file: ''
     };
 
-
-      artifact = {
-        file_name: req.params.fileName,
-        encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
-      };
+    artifact = {
+      file_name: req.params.fileName,
+      encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
+    };
 
     return res.status(200).json({ artifact: artifact });
   };
