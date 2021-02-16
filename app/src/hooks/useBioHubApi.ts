@@ -2,7 +2,13 @@ import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import { IProject, IProjectPostObject } from 'interfaces/project-interfaces';
-import { IActivity, ICreateActivity, ICreateProjectResponse, ITemplate } from 'interfaces/useBioHubApi-interfaces';
+import {
+  IActivity,
+  ICreateActivity,
+  ICreateProjectResponse,
+  ITemplate,
+  IMedia
+} from 'interfaces/useBioHubApi-interfaces';
 import { useContext, useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
@@ -23,7 +29,7 @@ const useApi = () => {
       },
       baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
     });
-  }, [keycloak]);
+  }, [config, keycloak]);
 
   return instance;
 };
@@ -117,6 +123,33 @@ export const useBiohubApi = () => {
     return data;
   };
 
+  /**
+   * Fetch the media list.
+   *
+   * @return {*} {Promise<IMedia[]>}
+   */
+
+  const getMediaList = async (projectId: string): Promise<IMedia[]> => {
+    //const api = await apiPromise;
+
+    const { data } = await api.get('/api/projects/${projectId}/artifacts/list');
+
+    const mediaKeyList: IMedia[] = [];
+
+    if (!data || !data.length) {
+      return mediaKeyList;
+    }
+
+    data.forEach((file: any) => {
+      const mediaKey: IMedia = {
+        file_name: file.key,
+        encoded_file: ''
+      };
+      mediaKeyList.push(mediaKey);
+    });
+
+    return mediaKeyList;
+  };
   return {
     getProjects,
     getProject,
@@ -124,6 +157,7 @@ export const useBiohubApi = () => {
     createProject,
     createActivity,
     getAllCodes,
-    getApiSpec
+    getApiSpec,
+    getMediaList
   };
 };

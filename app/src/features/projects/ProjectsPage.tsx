@@ -85,7 +85,6 @@ const ProjectsPage: React.FC = () => {
 
       setProjects(() => {
         setIsLoading(false);
-
         return projectsResponse;
       });
     };

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "579d910f-3a96-4f34-b12e-2c640fac3241",
+		"_postman_id": "05e96785-6e77-42b0-8a11-0d95788e2f81",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -1225,6 +1225,216 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "projects",
+			"item": [
+				{
+					"name": "{PROJECT_ID}",
+					"item": [
+						{
+							"name": "artifacts",
+							"item": [
+								{
+									"name": "upload",
+									"item": [
+										{
+											"name": "upload - single file test",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Successful POST request\", function () {",
+															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+															"});",
+															"",
+															"pm.test(\"Response time is less than 2000ms\", function () {",
+															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"media\": [\n        {\n            \"file_name\": \"single_red_dot.png\",\n            \"encoded_file\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJgg\"\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
+													"host": [
+														"{{BASEURL}}"
+													],
+													"path": [
+														"projects",
+														"{{PROJECT_ID}}",
+														"artifacts",
+														"upload"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "upload - multi file test",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Successful POST request\", function () {",
+															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+															"});",
+															"",
+															"pm.test(\"Response time is less than 2000ms\", function () {",
+															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"media\": [\n        {\n            \"file_name\": \"multi_red_dot3.png\",\n            \"encoded_file\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJgg\"\n        },\n        {\n            \"file_name\": \"multi_red_dot4.png\",\n            \"encoded_file\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJgg\"\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
+													"host": [
+														"{{BASEURL}}"
+													],
+													"path": [
+														"projects",
+														"{{PROJECT_ID}}",
+														"artifacts",
+														"upload"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "list",
+									"item": [
+										{
+											"name": "list test",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Successful GET request\", function () {",
+															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+															"});",
+															"",
+															"pm.test(\"Response time is less than 2000ms\", function () {",
+															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+															"});",
+															"",
+															"pm.test(\"response body is an array\", function () {",
+															"    pm.expect(pm.response.json()).to.be.an('array');",
+															"});"
+														],
+														"type": "text/javascript"
+													}
+												}
+											],
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/list",
+													"host": [
+														"{{BASEURL}}"
+													],
+													"path": [
+														"projects",
+														"{{PROJECT_ID}}",
+														"artifacts",
+														"list"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "{fileName}",
+									"item": [
+										{
+											"name": "download",
+											"item": [
+												{
+													"name": "download test",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"pm.test(\"Successful GET request\", function () {",
+																	"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+																	"});",
+																	"",
+																	"pm.test(\"Response time is less than 2000ms\", function () {",
+																	"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+																	"});",
+																	"",
+																	"pm.test(\"response body is an object\", function () {",
+																	"    pm.expect(pm.response.json()).to.be.an('object');",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/multi_red_dot4.png/download",
+															"host": [
+																"{{BASEURL}}"
+															],
+															"path": [
+																"projects",
+																"{{PROJECT_ID}}",
+																"artifacts",
+																"multi_red_dot4.png",
+																"download"
+															]
+														}
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
 				}
 			]
 		},
