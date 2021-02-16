@@ -33,6 +33,10 @@ export interface IProject {
   results: string;
   caveats: string;
   comments: string;
+  coordinator_first_name: string;
+  coordinator_last_name: string;
+  coordinator_email_address: string;
+  coordinator_agency_name: string;
 }
 
 /**
@@ -147,7 +151,6 @@ export interface IProjectRecord extends IFormRecord {
 // TODO this is an interim (incomplete) version of the final project post object
 export interface IProjectPostObject {
   project: IProject;
-  proponent: IProponent;
   funding: IProjectFundingAgency;
   agency: IFundingAgency;
 }

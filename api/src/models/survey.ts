@@ -35,7 +35,7 @@ export class PostSurveyObject {
    * @memberof PostSurveyObject
    */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostSurveyObject', messaeg: 'params', obj });
+    defaultLog.debug({ label: 'PostSurveyObject', message: 'params', obj });
 
     this.tags = (obj && obj.tags) || [];
   }

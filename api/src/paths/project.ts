@@ -83,14 +83,32 @@ function createProject(): RequestHandler {
         };
       }
 
-      let createProjectResponse;
+      let projectId;
 
       try {
         await connection.open();
 
-        createProjectResponse = await connection.query(postProjectSQLStatement.text, postProjectSQLStatement.values);
+        // Insert into project table
+        const createProjectResponse = await connection.query(
+          postProjectSQLStatement.text,
+          postProjectSQLStatement.values
+        );
 
-        // TODO populate other related tables that have the project id as a foreign key
+        const projectResult =
+          (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
+
+        if (!projectResult || !projectResult.id) {
+          throw {
+            status: 400,
+            message: 'Failed to insert into project table'
+          };
+        }
+
+        projectId = projectResult.id;
+
+        // TODO insert location
+        // TODO insert species
+        // TODO insert funding
 
         await connection.commit();
       } catch (error) {
@@ -98,9 +116,7 @@ function createProject(): RequestHandler {
         throw error;
       }
 
-      const result = (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
-
-      return res.status(200).json(result);
+      return res.status(200).json({ id: projectId });
     } catch (error) {
       defaultLog.debug({ label: 'createProject', message: 'error', error });
       throw error;
