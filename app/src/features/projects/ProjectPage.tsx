@@ -3,6 +3,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { DropzoneArea } from 'material-ui-dropzone';
 
 // export interface IFormControlsComponentProps {
 //   id: number;
@@ -93,6 +94,17 @@ const ProjectPage: React.FC = () => {
             }}
             onFormChange={handleChange}
             onFormSubmitSuccess={handleSubmitSuccess}></FormContainer> */}
+        </Box>
+        <Box>
+          <hr/>
+          <DropzoneArea
+            dropzoneText="Upload project artifacts here"
+            filesLimit={ 10 }
+            onChange={(e) => {
+            }}
+            showFileNames={true}
+            //useChipsForPreview={true}
+          />
         </Box>
       </Container>
     </Box>
