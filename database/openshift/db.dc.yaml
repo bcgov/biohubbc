@@ -215,37 +215,37 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-admin
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: PATRONI_SUPERUSER_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-admin-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: PATRONI_REPLICATION_USERNAME
                   valueFrom:
                     secretKeyRef:
                       key: replication-username
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: PATRONI_REPLICATION_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: replication-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
                       key: app-db-username
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: APP_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-user-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: APP_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: PATRONI_SCOPE
                   value: '${NAME}'
                 - name: PATRONI_NAME
