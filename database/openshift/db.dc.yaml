@@ -291,7 +291,7 @@ objects:
               volume.beta.kubernetes.io/storage-class: '${STORAGE_CLASS}'
             labels:
               app: '${NAME}'
-            name: postgresql
+            name: ${DATABASE_SERVICE_NAME}
           spec:
             storageClassName: '${STORAGE_CLASS}'
             accessModes:
