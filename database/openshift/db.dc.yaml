@@ -150,7 +150,7 @@ objects:
       creationTimestamp: null
       generation: 3
       labels:
-        app: '${DATABASE_SERVICE_NAME}'
+        app: '${NAME}'
         cluster-name: '${DATABASE_SERVICE_NAME}'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
@@ -178,7 +178,7 @@ objects:
                       - key: statefulset
                         operator: In
                         values:
-                          - '${NAME}'
+                          - '${DATABASE_SERVICE_NAME}'
                   topologyKey: kubernetes.io/hostname
           containers:
             - resources:
