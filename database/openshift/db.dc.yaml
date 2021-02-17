@@ -153,21 +153,21 @@ objects:
       labels:
         app: '${NAME}'
         cluster-name: '${NAME}'
-      name: '${NAME}'
+      name: '${DATABASE_SERVICE_NAME}'
     spec:
       podManagementPolicy: OrderedReady
       replicas: '${{REPLICAS}}'
       revisionHistoryLimit: 10
       selector:
         matchLabels:
-          statefulset: '${NAME}'
+          statefulset: '${DATABASE_SERVICE_NAME}'
       serviceName: '${NAME}'
       template:
         metadata:
           creationTimestamp: null
           labels:
             app: '${NAME}'
-            statefulset: '${NAME}'
+            statefulset: '${DATABASE_SERVICE_NAME}'
             cluster-name: '${NAME}'
             app.kubernetes.io/name: patroni
         spec:
