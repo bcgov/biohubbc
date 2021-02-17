@@ -6,7 +6,6 @@ labels:
   app.kubernetes.io/instance: '${NAME}'
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/name: patroni
-  phase: deploy
 metadata:
   name: biohubbc-db-dc
   annotations:
@@ -166,7 +165,7 @@ objects:
           labels:
             app: '${NAME}'
             statefulset: '${DATABASE_SERVICE_NAME}'
-            cluster-name: '${NAME}'
+            cluster-name: '${DATABASE_SERVICE_NAME}'
             app.kubernetes.io/name: patroni
         spec:
           affinity:
@@ -288,7 +287,7 @@ objects:
             annotations:
               volume.beta.kubernetes.io/storage-class: '${STORAGE_CLASS}'
             labels:
-              app: '${NAME}'
+              app: postgresql
             name: '${DATABASE_SERVICE_NAME}'
           spec:
             storageClassName: '${STORAGE_CLASS}'
