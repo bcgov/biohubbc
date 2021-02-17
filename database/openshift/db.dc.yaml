@@ -3,9 +3,9 @@ apiVersion: template.openshift.io/v1
 labels:
   app: '${NAME}'
   app.kubernetes.io/component: database
-  app.kubernetes.io/instance: '${NAME}'
+  app.kubernetes.io/instance: '${DATABASE_SERVICE_NAME}'
   app.kubernetes.io/managed-by: template
-  app.kubernetes.io/name: patroni
+  app.kubernetes.io/name: '${NAME}'
 metadata:
   name: biohubbc-db-dc
   annotations:
@@ -280,7 +280,7 @@ objects:
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccountName: '${NAME}'
+          serviceAccountName: biohubbc-db
           terminationGracePeriodSeconds: 0
       updateStrategy:
         type: RollingUpdate
