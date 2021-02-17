@@ -104,11 +104,13 @@ objects:
       annotations:
         template.openshift.io/expose-database-name: "{.data['database-name']}"
         template.openshift.io/expose-database-user-password: "{.data['database-user-password']}"
-        template.openshift.io/expose-app-database-user: "{.data['app-database-user']}"
+        template.openshift.io/expose-database-user: "{.data['database-user']}"
         template.openshift.io/expose-replication-password: "{.data['replication-password']}"
         template.openshift.io/expose-replication-username: "{.data['replication-username']}"
         template.openshift.io/expose-database-admin-password: "{.data['database-admin-password']}"
         template.openshift.io/expose-database-admin: "{.data['database-admin']}"
+        template.openshift.io/expose-database-user-api: "{.data['database-user-api']}"
+        template.openshift.io/expose-database-user-api-password: "{.data['database-user-api-password']}"
         as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
@@ -233,7 +235,7 @@ objects:
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-username
+                      key: database-user
                       name: '${DATABASE_SERVICE_NAME}'
                 - name: APP_PASSWORD
                   valueFrom:
