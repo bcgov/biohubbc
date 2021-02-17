@@ -129,8 +129,8 @@ objects:
       creationTimestamp: null
       labels:
         app: '${NAME}'
-        cluster-name: '${NAME}'
-      name: '${DATABASE_SERVICE_NAME}-master'
+        cluster-name: '${DATABASE_SERVICE_NAME}'
+      name: '${DATABASE_SERVICE_NAME}'
     spec:
       ports:
         - port: 5432
@@ -151,7 +151,7 @@ objects:
       generation: 3
       labels:
         app: '${DATABASE_SERVICE_NAME}'
-        cluster-name: '${NAME}'
+        cluster-name: '${DATABASE_SERVICE_NAME}'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
       podManagementPolicy: OrderedReady
@@ -210,7 +210,7 @@ objects:
                       fieldPath: metadata.namespace
                 - name: PATRONI_KUBERNETES_LABELS
                   value: >-
-                    {"cluster-name": "${NAME}", "app.kubernetes.io/name":
+                    {"cluster-name": "${DATABASE_SERVICE_NAME}", "app.kubernetes.io/name":
                     "patroni"}
                 - name: PATRONI_SUPERUSER_USERNAME
                   valueFrom:
