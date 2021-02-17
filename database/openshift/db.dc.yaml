@@ -126,12 +126,10 @@ objects:
     kind: Service
     metadata:
       creationTimestamp: null
-      annotations:
-        template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       labels:
         app: '${NAME}'
-        cluster-name: '${DATABASE_SERVICE_NAME}'
-      name: '${DATABASE_SERVICE_NAME}-master'
+        cluster-name: '${NAME}'
+      name: '${DATABASE_SERVICE_NAME}'
     spec:
       ports:
         - port: 5432
@@ -151,7 +149,7 @@ objects:
       creationTimestamp: null
       generation: 3
       labels:
-        app: '${NAME}'
+        app: '${DATABASE_SERVICE_NAME}'
         cluster-name: '${NAME}'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
@@ -161,7 +159,7 @@ objects:
       selector:
         matchLabels:
           statefulset: '${DATABASE_SERVICE_NAME}'
-      serviceName: '${NAME}'
+      serviceName: '${DATABASE_SERVICE_NAME}'
       template:
         metadata:
           creationTimestamp: null
@@ -217,37 +215,37 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-admin
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: PATRONI_SUPERUSER_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-admin-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: PATRONI_REPLICATION_USERNAME
                   valueFrom:
                     secretKeyRef:
                       key: replication-username
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: PATRONI_REPLICATION_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: replication-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
                       key: app-db-username
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: APP_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-user-password
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: APP_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: ${DB_SERVICE_NAME}
+                      name: '${DB_SERVICE_NAME}'
                 - name: PATRONI_SCOPE
                   value: '${NAME}'
                 - name: PATRONI_NAME
@@ -291,7 +289,7 @@ objects:
               volume.beta.kubernetes.io/storage-class: '${STORAGE_CLASS}'
             labels:
               app: '${NAME}'
-            name: ${DATABASE_SERVICE_NAME}
+            name: '${DATABASE_SERVICE_NAME}'
           spec:
             storageClassName: '${STORAGE_CLASS}'
             accessModes:
