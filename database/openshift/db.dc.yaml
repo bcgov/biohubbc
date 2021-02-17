@@ -103,23 +103,25 @@ objects:
     kind: Secret
     metadata:
       annotations:
-        template.openshift.io/expose-app-db-name: "{.data['app-db-name']}"
-        template.openshift.io/expose-app-db-password: "{.data['app-db-password']}"
-        template.openshift.io/expose-app-db-username: "{.data['app-db-username']}"
+        template.openshift.io/expose-database-name: "{.data['database-name']}"
+        template.openshift.io/expose-database-user-password: "{.data['database-user-password']}"
+        template.openshift.io/expose-app-database-user: "{.data['app-database-user']}"
         template.openshift.io/expose-replication-password: "{.data['replication-password']}"
         template.openshift.io/expose-replication-username: "{.data['replication-username']}"
-        template.openshift.io/expose-superuser-password: "{.data['superuser-password']}"
-        template.openshift.io/expose-superuser-username: "{.data['superuser-username']}"
+        template.openshift.io/expose-database-admin-password: "{.data['database-admin-password']}"
+        template.openshift.io/expose-database-admin: "{.data['database-admin']}"
         as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
-      app-db-name: ${POSTGRESQL_DATABASE}
-      app-db-password: ${POSTGRESQL_PASSWORD}
-      app-db-username: ${POSTGRESQL_USER}
+      database-name: ${POSTGRESQL_DATABASE}
+      database-user-password: ${POSTGRESQL_PASSWORD}
+      database-user: ${POSTGRESQL_USER}
       replication-password: ${POSTGRESQL_PASSWORD}
       replication-username: replication
-      superuser-password: ${POSTGRESQL_ADMIN_PASSWORD}
-      superuser-username: postgres
+      database-admin-password: ${POSTGRESQL_ADMIN_PASSWORD}
+      database-admin: postgres
+      database-user-api: biohub_api
+      database-user-api-password: ${POSTGRESQL_PASSWORD}
   - apiVersion: v1
     kind: Service
     metadata:
@@ -214,38 +216,38 @@ objects:
                 - name: PATRONI_SUPERUSER_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      key: superuser-username
-                      name: '${NAME}-creds'
+                      key: database-admin
+                      name: ${DB_SERVICE_NAME}
                 - name: PATRONI_SUPERUSER_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: superuser-password
-                      name: '${NAME}-creds'
+                      key: database-admin-password
+                      name: ${DB_SERVICE_NAME}
                 - name: PATRONI_REPLICATION_USERNAME
                   valueFrom:
                     secretKeyRef:
                       key: replication-username
-                      name: '${NAME}-creds'
+                      name: ${DB_SERVICE_NAME}
                 - name: PATRONI_REPLICATION_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: replication-password
-                      name: '${NAME}-creds'
+                      name: ${DB_SERVICE_NAME}
                 - name: APP_USER
                   valueFrom:
                     secretKeyRef:
                       key: app-db-username
-                      name: '${NAME}-creds'
+                      name: ${DB_SERVICE_NAME}
                 - name: APP_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-password
-                      name: '${NAME}-creds'
+                      key: database-user-password
+                      name: ${DB_SERVICE_NAME}
                 - name: APP_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-name
-                      name: '${NAME}-creds'
+                      key: database-name
+                      name: ${DB_SERVICE_NAME}
                 - name: PATRONI_SCOPE
                   value: '${NAME}'
                 - name: PATRONI_NAME
