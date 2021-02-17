@@ -20,6 +20,10 @@ export interface IProject {
   results: string;
   caveats: string;
   comments: string;
+  coordinator_first_name: string;
+  coordinator_last_name: string;
+  coordinator_email_address: string;
+  coordinator_agency_name: string;
 }
 
 // /**
@@ -112,19 +116,6 @@ export interface IProjectRegion {
 // export interface IProjectParticipation {}
 
 /**
- * An interface representing the project proponent table.
- *
- * @export
- * @interface IProponent
- */
-export interface IProponent {
-  id: number;
-  name: string;
-  record_effective_date: string;
-  record_end_date?: string;
-}
-
-/**
  * Model for the project table.
  *
  * @export
@@ -141,6 +132,10 @@ export class PostProjectObject {
   results: string;
   caveats: string;
   comments: string;
+  coordinator_first_name: string;
+  coordinator_last_name: string;
+  coordinator_email_address: string;
+  coordinator_agency_name: string;
 
   /**
    * Creates an instance of PostProjectObject.
@@ -149,7 +144,7 @@ export class PostProjectObject {
    * @memberof PostProjectObject
    */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostProjectObject', messaeg: 'params', obj });
+    defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
     this.name = (obj && obj.name) || null;
     this.objectives = (obj && obj.objectives) || null;
@@ -161,5 +156,9 @@ export class PostProjectObject {
     this.results = (obj && obj.results) || null;
     this.caveats = (obj && obj.caveats) || null;
     this.comments = (obj && obj.comments) || null;
+    this.coordinator_first_name = (obj && obj.coordinator_first_name) || null;
+    this.coordinator_last_name = (obj && obj.coordinator_last_name) || null;
+    this.coordinator_email_address = (obj && obj.coordinator_email_address) || null;
+    this.coordinator_agency_name = (obj && obj.coordinator_agency_name) || null;
   }
 }

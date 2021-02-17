@@ -49,6 +49,22 @@ describe('PostProjectObject', () => {
     it('sets comments', function () {
       expect(projectPostObject.comments).to.equal(null);
     });
+
+    it('sets coordinator_first_name', function () {
+      expect(projectPostObject.coordinator_first_name).to.equal(null);
+    });
+
+    it('sets coordinator_last_name', function () {
+      expect(projectPostObject.coordinator_last_name).to.equal(null);
+    });
+
+    it('sets coordinator_email_address', function () {
+      expect(projectPostObject.coordinator_email_address).to.equal(null);
+    });
+
+    it('sets coordinator_agency_name', function () {
+      expect(projectPostObject.coordinator_agency_name).to.equal(null);
+    });
   });
 
   describe('All values provided', () => {
@@ -64,7 +80,11 @@ describe('PostProjectObject', () => {
       end_date: 'end_date_test_data',
       results: 'results_test_data',
       caveats: 'caveats_test_data',
-      comments: 'comments_test_data'
+      comments: 'comments_test_data',
+      coordinator_first_name: 'coordinator_first_name',
+      coordinator_last_name: 'coordinator_last_name',
+      coordinator_email_address: 'coordinator_email_address',
+      coordinator_agency_name: 'coordinator_agency_name'
     };
 
     before(() => {

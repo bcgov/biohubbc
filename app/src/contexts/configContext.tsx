@@ -97,7 +97,6 @@ export const ConfigContextProvider: React.FC = (props) => {
     if (!config) {
       loadConfig();
     }
-  }, []);
-
+  }, [config]);
   return <ConfigContext.Provider value={config}>{props.children}</ConfigContext.Provider>;
 };

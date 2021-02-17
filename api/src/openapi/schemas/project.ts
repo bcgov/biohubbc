@@ -42,13 +42,20 @@ export const projectPostBody = {
         },
         comments: {
           type: 'string'
+        },
+        coordinator_first_name: {
+          type: 'string'
+        },
+        coordinator_last_name: {
+          type: 'string'
+        },
+        coordinator_email_address: {
+          type: 'string'
+        },
+        coordinator_agency_name: {
+          type: 'string'
         }
       }
-    },
-    proponent: {
-      title: 'Proponent Model Object',
-      type: 'object',
-      properties: {}
     },
     agency: {
       title: 'Agency Model Object',

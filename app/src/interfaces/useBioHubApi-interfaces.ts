@@ -72,3 +72,16 @@ export interface ITemplate {
 export interface ICreateProjectResponse {
   id: number;
 }
+
+/**
+ * Media object.
+ *
+ * @export
+ * @interface IMedia
+ */
+export interface IMedia {
+  media_date?: string;
+  description?: string;
+  file_name: string;
+  encoded_file: string;
+}
