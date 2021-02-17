@@ -130,7 +130,7 @@ objects:
       labels:
         app: '${NAME}'
         cluster-name: '${NAME}'
-      name: '${DATABASE_SERVICE_NAME}'
+      name: '${DATABASE_SERVICE_NAME}-master'
     spec:
       ports:
         - port: 5432
