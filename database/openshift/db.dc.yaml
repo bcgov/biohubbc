@@ -196,7 +196,7 @@ objects:
                   command:
                     - /usr/share/scripts/patroni/health_check.sh
               terminationMessagePath: /dev/termination-log
-              name: postgresql
+              name: biohubbc
               env:
                 - name: POD_IP
                   valueFrom:
@@ -280,7 +280,7 @@ objects:
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
-          serviceAccountName: biohubbc-db
+          serviceAccountName: default
           terminationGracePeriodSeconds: 0
       updateStrategy:
         type: RollingUpdate
