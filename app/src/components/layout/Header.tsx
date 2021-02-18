@@ -1,6 +1,6 @@
 import { AppBar, Button, Divider, Toolbar, Typography } from '@material-ui/core';
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const history = useHistory();

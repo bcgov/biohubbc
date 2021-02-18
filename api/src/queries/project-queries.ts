@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PostProjectObject } from '../models/project';
+import { PostProjectObject, PostSpeciesObject } from '../models/project';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('queries/project-queries');
@@ -55,6 +55,76 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
 
   defaultLog.debug({
     label: 'postProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a focal species row.
+ *
+ * @param {PostSpeciesObject} species
+ * @returns {SQLStatement} sql query object
+ */
+export const postFocalSpeciesSQL = (species: PostSpeciesObject, projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', postFocalSpeciesSQL, projectId });
+
+  if (!species || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO focal_species (
+        p_id,
+        name
+      ) VALUES (
+        ${projectId},
+        ${species.name}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postFocalSpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a ancillary species row.
+ *
+ * @param {PostSpeciesObject} species
+ * @returns {SQLStatement} sql query object
+ */
+export const postAncillarySpeciesSQL = (species: PostSpeciesObject, projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', postAncillarySpeciesSQL, projectId });
+
+  if (!species || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+        INSERT INTO ancillary_species (
+          p_id,
+          name
+        ) VALUES (
+          ${projectId},
+          ${species.name}
+        )
+        RETURNING
+          id;
+      `;
+
+  defaultLog.debug({
+    label: 'postAncillarySpeciesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

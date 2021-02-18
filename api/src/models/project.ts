@@ -162,3 +162,27 @@ export class PostProjectObject {
     this.coordinator_agency_name = (obj && obj.coordinator_agency_name) || null;
   }
 }
+
+/**
+ * Model for the focal and ancillary species table.
+ *
+ * @export
+ * @class PostSpeciesObject
+ */
+export class PostSpeciesObject {
+  name: string;
+  uniform_resource_locator: string;
+
+  /**
+   * Creates an instance of PostSpeciesObject.
+   *
+   * @param {*} [obj]
+   * @memberof PostSpeciesObject
+   */
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostSpeciesObject', message: 'params', obj });
+
+    this.name = (obj && obj.name) || null;
+    this.uniform_resource_locator = (obj && obj.uniform_resource_locator) || null;
+  }
+}

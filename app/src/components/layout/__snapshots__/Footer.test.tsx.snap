@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer renders correctly 1`] = `
+<div
+  className="MuiBox-root MuiBox-root-4 makeStyles-box-1"
+>
+  <p
+    className="MuiTypography-root makeStyles-typography-2 MuiTypography-body1"
+  >
+    <a
+      className="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-link-3 MuiTypography-colorPrimary"
+      href="http://www.gov.bc.ca/gov/content/home/disclaimer"
+      onBlur={[Function]}
+      onFocus={[Function]}
+    >
+      Disclaimer
+    </a>
+    <a
+      className="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-link-3 MuiTypography-colorPrimary"
+      href="http://www.gov.bc.ca/gov/content/home/privacy"
+      onBlur={[Function]}
+      onFocus={[Function]}
+    >
+      Privacy
+    </a>
+    <a
+      className="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-link-3 MuiTypography-colorPrimary"
+      href="http://www.gov.bc.ca/gov/content/home/accessible-government"
+      onBlur={[Function]}
+      onFocus={[Function]}
+    >
+      Accessibility
+    </a>
+    <a
+      className="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-link-3 MuiTypography-colorPrimary"
+      href="http://www.gov.bc.ca/gov/content/home/copyright"
+      onBlur={[Function]}
+      onFocus={[Function]}
+    >
+      Copyright
+    </a>
+  </p>
+</div>
+`;

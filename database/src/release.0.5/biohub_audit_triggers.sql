@@ -1,0 +1,38 @@
+ drop trigger if exists audit_land_based_investment_strategy on biohub.land_based_investment_strategy;
+ drop trigger if exists audit_climate_change_initiative on biohub.climate_change_initiative;
+ drop trigger if exists audit_project_funding_agency on biohub.project_funding_agency;
+ drop trigger if exists audit_funding_agency on biohub.funding_agency;
+ drop trigger if exists audit_management_action_type on biohub.management_action_type;
+ drop trigger if exists audit_project_management_actions on biohub.project_management_actions;
+ drop trigger if exists audit_project_participation on biohub.project_participation;
+ drop trigger if exists audit_project_role on biohub.project_role;
+ drop trigger if exists audit_project_region on biohub.project_region;
+ drop trigger if exists audit_proponent on biohub.proponent;
+ drop trigger if exists audit_system_user_role on biohub.system_user_role;
+ drop trigger if exists audit_user_identity_source on biohub.user_identity_source;
+ drop trigger if exists audit_system_role on biohub.system_role;
+ drop trigger if exists audit_project_climate_initiative on biohub.project_climate_initiative;
+ drop trigger if exists audit_system_user on biohub.system_user;
+ drop trigger if exists audit_project on biohub.project;
+ drop trigger if exists audit_ancillary_species on biohub.ancillary_species;
+ drop trigger if exists audit_focal_species on biohub.focal_species;
+
+ create trigger audit_land_based_investment_strategy before insert or update or delete on biohub.land_based_investment_strategy for each row execute procedure tr_audit_trigger();
+ create trigger audit_climate_change_initiative before insert or update or delete on biohub.climate_change_initiative for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_funding_agency before insert or update or delete on biohub.project_funding_agency for each row execute procedure tr_audit_trigger();
+ create trigger audit_funding_agency before insert or update or delete on biohub.funding_agency for each row execute procedure tr_audit_trigger();
+ create trigger audit_management_action_type before insert or update or delete on biohub.management_action_type for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_management_actions before insert or update or delete on biohub.project_management_actions for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_participation before insert or update or delete on biohub.project_participation for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_role before insert or update or delete on biohub.project_role for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
+ create trigger audit_proponent before insert or update or delete on biohub.proponent for each row execute procedure tr_audit_trigger();
+ create trigger audit_system_user_role before insert or update or delete on biohub.system_user_role for each row execute procedure tr_audit_trigger();
+ create trigger audit_user_identity_source before insert or update or delete on biohub.user_identity_source for each row execute procedure tr_audit_trigger();
+ create trigger audit_system_role before insert or update or delete on biohub.system_role for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_climate_initiative before insert or update or delete on biohub.project_climate_initiative for each row execute procedure tr_audit_trigger();
+ create trigger audit_system_user before insert or update or delete on biohub.system_user for each row execute procedure tr_audit_trigger();
+ create trigger audit_project before insert or update or delete on biohub.project for each row execute procedure tr_audit_trigger();
+ create trigger audit_ancillary_species before insert or update or delete on biohub.ancillary_species for each row execute procedure tr_audit_trigger();
+ create trigger audit_focal_species before insert or update or delete on biohub.focal_species for each row execute procedure tr_audit_trigger();
+
