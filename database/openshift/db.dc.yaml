@@ -177,6 +177,8 @@ objects:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
+                - name: PGDATA
+                  value: '/var/lib/postgresql/data/pgdata'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
@@ -211,9 +213,9 @@ objects:
                 privileged: false
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: '/var/lib/postgresql/data'
+                - mountPath: '/var/lib/postgresql/data/pgdata'
                   name: '${DATABASE_SERVICE_NAME}-data'
-                - mountPath: '/var/run/postgresql'
+                - mountPath: '/var/run/postgresql/pgdata'
                   name: '${DATABASE_SERVICE_NAME}-run'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
