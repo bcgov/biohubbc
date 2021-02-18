@@ -1,48 +1,27 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 labels:
-  app: '${NAME}'
-  app.kubernetes.io/component: database
-  app.kubernetes.io/instance: '${DATABASE_SERVICE_NAME}'
-  app.kubernetes.io/managed-by: template
-  app.kubernetes.io/name: '${NAME}'
+  template: postgres-postgis-template
 metadata:
+  creationTimestamp: null
   name: biohubbc-db-dc
-  annotations:
-    description: 'Patroni Postgresql database cluster, with persistent storage.'
-    iconClass: icon-postgresql
-    openshift.io/display-name: Patroni Postgresql (Persistent)
-    openshift.io/long-description: >-
-      This template deploys a patroni postgresql HA cluster with persistent
-      storage.
-    tags: postgresql
 parameters:
-  - name: NAME
-    displayName: Application Name
-    description: |
-      The name of the application for labelling all artifacts.
-    value: postgresql
-  - name: REPLICAS
-    displayName: REPLICAS
-    description: |
-      The number of StatefulSet replicas to use.
-    value: '3'
-  - name: IMAGE_STREAM_NAME
-    description: |
-      The Patroni image stream name
-    value: patroni-postgres
-  - name: IMAGE_STREAM_NAMESPACE
-    displayName: ImageStream Namespace
-    description: |
-      The OpenShift Namespace where the patroni and postgresql
-      ImageStream resides.
-    value: af2668-tools
-  - name: IMAGE_STREAM_VERSION
-    description: |
-      The image tag used to specify which image you would like deployed.
-      Don't use `latest`.
-    value: '12.5'
-  - name: DATABASE_SERVICE_NAME
+  - description: The name of the OpenShift Service exposed for the database.
+    displayName: Database Service Name
+    name: NAME
+    required: true
+    value: 'postgresql'
+  - description: The OpenShift ImageStream name.
+    displayName: IMAGE_STREAM_NAME
+    name: IMAGE_STREAM_NAME
+    value: 'postgres-postgis'
+  - description: The OpenShift Namespace where the ImageStream resides.
+    displayName: Namespace
+    name: IMAGE_STREAM_NAMESPACE
+    value: 'af2668-tools'
+  - description: The name of the OpenShift Service exposed for the database.
+    displayName: Database Service Name
+    name: DATABASE_SERVICE_NAME
     required: true
     value: 'postgresql'
   - description: Username for PostgreSQL user that will be used for accessing the database.
@@ -72,31 +51,24 @@ parameters:
     name: POSTGRESQL_DATABASE
     required: true
     value: 'biohubbc'
-  - name: VOLUME_CAPACITY
-    displayName: Persistent Volume Size
-    description: The size of the persistent volume to create.
-    value: 3Gi
-  - name: CPU_REQUEST
-    displayName: CPU REQUEST
-    description: |
-      Starting amount of CPU the container can use.
-    value: 500m
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: '3Gi'
+  - description: Version of PostgreSQL image to be used.
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: '12.5'
   - name: CPU_LIMIT
-    displayName: CPU Limit
-    description: Maximum amount of CPU the container can use.
-    value: '3'
-  - name: MEMORY_REQUEST
-    displayName: Memory Request
-    description: Starting amount of memory the container can use.
-    value: 2Gi
+    value: '500m'
   - name: MEMORY_LIMIT
-    displayName: Memory Limit
-    description: Maximum amount of memory the container can use.
-    value: 4Gi
-  - name: STORAGE_CLASS
-    value: netapp-file-standard
-  - name: IMAGE_REGISTRY
-    value: 'image-registry.openshift-image-registry.svc:5000'
+    value: '2Gi'
+  - name: CPU_REQUEST
+    value: '200m'
+  - name: MEMORY_REQUEST
+    value: '1.5Gi'
 objects:
   - apiVersion: v1
     kind: Secret
@@ -111,7 +83,7 @@ objects:
         template.openshift.io/expose-database-admin: "{.data['database-admin']}"
         template.openshift.io/expose-database-user-api: "{.data['database-user-api']}"
         template.openshift.io/expose-database-user-api-password: "{.data['database-user-api-password']}"
-        as-copy-of: biohubbc-creds
+        as-copy-of: biohubbc-db
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
       database-name: ${POSTGRESQL_DATABASE}
@@ -126,176 +98,141 @@ objects:
   - apiVersion: v1
     kind: Service
     metadata:
-      creationTimestamp: null
-      labels:
-        app: '${NAME}'
-        cluster-name: '${DATABASE_SERVICE_NAME}'
+      annotations:
+        template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       name: '${DATABASE_SERVICE_NAME}'
     spec:
       ports:
-        - port: 5432
+        - name: postgresql
+          nodePort: 0
+          port: 5432
           protocol: TCP
           targetPort: 5432
       selector:
-        cluster-name: '${DATABASE_SERVICE_NAME}'
-        role: master
-        app.kubernetes.io/name: patroni
+        name: '${DATABASE_SERVICE_NAME}'
       sessionAffinity: None
       type: ClusterIP
     status:
       loadBalancer: {}
-  - apiVersion: apps/v1
-    kind: StatefulSet
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
     metadata:
-      creationTimestamp: null
-      generation: 3
-      labels:
-        app: '${NAME}'
-        cluster-name: '${DATABASE_SERVICE_NAME}'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
-      podManagementPolicy: OrderedReady
-      replicas: '${{REPLICAS}}'
-      revisionHistoryLimit: 10
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: '${VOLUME_CAPACITY}'
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: '${IMAGE_STREAM_NAME}'
+      creationTimestamp:
+      labels:
+        shared: 'true'
+      annotations: {}
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: 'true'
+      name: '${DATABASE_SERVICE_NAME}'
+    spec:
+      replicas: 1
       selector:
-        matchLabels:
-          statefulset: '${DATABASE_SERVICE_NAME}'
-      serviceName: '${DATABASE_SERVICE_NAME}'
+        name: '${DATABASE_SERVICE_NAME}'
+      strategy:
+        type: Recreate
+        maxSurge: 50%
+        maxUnavailable: 0
       template:
         metadata:
-          creationTimestamp: null
           labels:
-            app: '${NAME}'
-            statefulset: '${DATABASE_SERVICE_NAME}'
-            cluster-name: '${DATABASE_SERVICE_NAME}'
-            app.kubernetes.io/name: patroni
+            name: '${DATABASE_SERVICE_NAME}'
         spec:
-          affinity:
-            podAntiAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-                - labelSelector:
-                    matchExpressions:
-                      - key: statefulset
-                        operator: In
-                        values:
-                          - '${DATABASE_SERVICE_NAME}'
-                  topologyKey: kubernetes.io/hostname
           containers:
-            - resources:
+            - capabilities: {}
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-password
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: POSTGRESQL_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-admin-password
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PGOPTIONS
+                  value: '-c maintenance_work_mem=128MB'
+              image: ' '
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                initialDelaySeconds: 30
+                tcpSocket:
+                  port: 5432
+                timeoutSeconds: 1
+              name: postgresql
+              ports:
+                - containerPort: 5432
+                  protocol: TCP
+              readinessProbe:
+                exec:
+                  command:
+                    - '/bin/sh'
+                    - '-i'
+                    - '-c'
+                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
+                initialDelaySeconds: 5
+                timeoutSeconds: 1
+              resources:
                 requests:
                   cpu: '${CPU_REQUEST}'
                   memory: '${MEMORY_REQUEST}'
                 limits:
                   cpu: '${CPU_LIMIT}'
                   memory: '${MEMORY_LIMIT}'
-              readinessProbe:
-                initialDelaySeconds: 5
-                timeoutSeconds: 5
-                failureThreshold: 4
-                exec:
-                  command:
-                    - /usr/share/scripts/patroni/health_check.sh
-              terminationMessagePath: /dev/termination-log
-              name: biohubbc
-              env:
-                - name: POD_IP
-                  valueFrom:
-                    fieldRef:
-                      apiVersion: v1
-                      fieldPath: status.podIP
-                - name: PATRONI_KUBERNETES_NAMESPACE
-                  valueFrom:
-                    fieldRef:
-                      apiVersion: v1
-                      fieldPath: metadata.namespace
-                - name: PATRONI_KUBERNETES_LABELS
-                  value: >-
-                    {"cluster-name": "${DATABASE_SERVICE_NAME}", "app.kubernetes.io/name":
-                    "patroni"}
-                - name: PATRONI_SUPERUSER_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-admin
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: PATRONI_SUPERUSER_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-admin-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: PATRONI_REPLICATION_USERNAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: replication-username
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: PATRONI_REPLICATION_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: replication-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: APP_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: APP_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: APP_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-name
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: PATRONI_SCOPE
-                  value: '${NAME}'
-                - name: PATRONI_NAME
-                  valueFrom:
-                    fieldRef:
-                      apiVersion: v1
-                      fieldPath: metadata.name
-                - name: PATRONI_LOG_LEVEL
-                  value: WARNING
-                - name: PATRONI_POSTGRESQL_DATA_DIR
-                  value: /home/postgres/pgdata/pgroot/data
-                - name: PATRONI_POSTGRESQL_PGPASS
-                  value: /tmp/pgpass
-                - name: PATRONI_POSTGRESQL_LISTEN
-                  value: '0.0.0.0:5432'
-                - name: PATRONI_RESTAPI_LISTEN
-                  value: '0.0.0.0:8008'
-              ports:
-                - containerPort: 8008
-                  protocol: TCP
-                - containerPort: 5432
-                  protocol: TCP
-              imagePullPolicy: Always
+              securityContext:
+                capabilities: {}
+                privileged: false
+              terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: /home/postgres/pgdata
-                  name: postgresql
-              terminationMessagePolicy: File
-              image: >-
-                ${IMAGE_REGISTRY}/${IMAGE_STREAM_NAMESPACE}/${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
+                - mountPath: '/var/lib/postgresql/data'
+                  name: '${DATABASE_SERVICE_NAME}-data'
+                - mountPath: '/var/run/postgresql'
+                  name: '${DATABASE_SERVICE_NAME}-run'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
-          schedulerName: default-scheduler
-          securityContext: {}
-          serviceAccountName: default
-          terminationGracePeriodSeconds: 0
-      updateStrategy:
-        type: RollingUpdate
-      volumeClaimTemplates:
-        - metadata:
-            annotations:
-              volume.beta.kubernetes.io/storage-class: '${STORAGE_CLASS}'
-            labels:
-              app: '${NAME}'
-            name: postgresql
-          spec:
-            storageClassName: '${STORAGE_CLASS}'
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: '${VOLUME_CAPACITY}'
-
+          volumes:
+            - name: '${DATABASE_SERVICE_NAME}-data'
+              persistentVolumeClaim:
+                claimName: '${DATABASE_SERVICE_NAME}'
+            - name: '${DATABASE_SERVICE_NAME}-run'
+              emptyDir: {}
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - postgresql
+            from:
+              kind: ImageStreamTag
+              name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
+              namespace: '${IMAGE_STREAM_NAMESPACE}'
+            lastTriggeredImage: ''
+          type: ImageChange
+        - type: ConfigChange
+    status: {}
