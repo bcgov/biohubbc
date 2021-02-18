@@ -25,7 +25,8 @@ module.exports = (settings) => {
       param: {
         NAME: name,
         SUFFIX: `${phases[phase].suffix}`,
-        TAG_NAME: `${phases[phase].tag}`
+        TAG_NAME: `${phases[phase].tag}`,
+        ENV_ID: `${changeId}`
       }
     })
   );

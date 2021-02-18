@@ -14,6 +14,8 @@ parameters:
     required: true
   - name: TAG_NAME
     required: true
+  - name: ENV_ID
+    required: true
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -21,6 +23,7 @@ objects:
       name: '${NAME}'
       labels:
         shared: 'true'
+        env-id: '${ENV_ID}'
       annotations: {}
     spec:
       lookupPolicy:
