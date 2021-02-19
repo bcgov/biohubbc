@@ -452,6 +452,52 @@ const projectCoordinatorTemplate: ITemplate = {
   }
 };
 
+const projectSpeciesTemplate: ITemplate = {
+  id: 3,
+  name: 'Project Species Template',
+  description: 'Project Species Template',
+  tags: ['project'],
+  data_template: {
+    type: 'object',
+    properties: {
+      focal_species: {
+        type: 'array',
+        title: 'Focal Species',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'species',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
+      },
+      ancillary_species: {
+        type: 'array',
+        title: 'Ancillary Species',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'species',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
+      }
+    }
+  },
+  ui_template: {
+    focal_species: {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    ancillary_species: {
+      'ui:widget': 'multi-select-autocomplete'
+    }
+  }
+};
+
 export {
   projectTemplate,
   projectFundingAgencyTemplate,
@@ -460,5 +506,6 @@ export {
   projectManagementActionsTemplate,
   projectManagementActionTypeTemplate,
   projectRegion,
-  projectCoordinatorTemplate
+  projectCoordinatorTemplate,
+  projectSpeciesTemplate
 };

@@ -20,6 +20,7 @@ import {
   fundingAgencyTemplate,
   projectCoordinatorTemplate,
   projectFundingAgencyTemplate,
+  projectSpeciesTemplate,
   projectTemplate
 } from 'constants/project-templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -97,6 +98,7 @@ const CreateProjectPage: React.FC = () => {
     { formTemplate: projectTemplate, formData: null },
     { formTemplate: projectCoordinatorTemplate, formData: null },
     { formTemplate: fundingAgencyTemplate, formData: null },
+    { formTemplate: projectSpeciesTemplate, formData: null },
     { formTemplate: projectFundingAgencyTemplate, formData: null }
   ]);
 
@@ -202,9 +204,13 @@ const CreateProjectPage: React.FC = () => {
           stepContent: getFormStep(2)
         },
         {
+          stepTitle: 'Project Species',
+          stepContent: getFormStep(3)
+        },
+        {
           stepTitle: 'Project Funding',
           stepSubTitle: 'Specify funding agencies for the project',
-          stepContent: getFormStep(3)
+          stepContent: getFormStep(4)
         }
       ]);
     };
@@ -263,11 +269,13 @@ const CreateProjectPage: React.FC = () => {
       const projectData = stripOutKeysAndFlatten(formStepState[0].formData);
       const coordinatorData = stripOutKeysAndFlatten(formStepState[1].formData);
       const agencyData = stripOutKeysAndFlatten(formStepState[2].formData);
-      const fundingData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const speciesData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const fundingData = stripOutKeysAndFlatten(formStepState[4].formData);
 
       const projectPostObject = {
         project: { ...projectData, ...coordinatorData },
         agency: agencyData,
+        species: speciesData,
         funding: fundingData
       };
 
@@ -329,7 +337,7 @@ const CreateProjectPage: React.FC = () => {
           </Box>
           <Box>
             <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
-              {steps.map((step, stepIndex) => (
+              {steps.map((step) => (
                 <Step key={step.stepTitle}>
                   <StepLabel>
                     <Typography variant="h4">{step.stepTitle}</Typography>

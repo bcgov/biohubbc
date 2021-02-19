@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { PostProjectObject } from '../models/project';
+import { PostProjectObject, PostSpeciesObject } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
-import { postProjectSQL } from '../queries/project-queries';
+import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postProjectSQL } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -69,9 +69,9 @@ POST.apiDoc = {
  */
 function createProject(): RequestHandler {
   return async (req, res) => {
-    const sanitizedProjectData = new PostProjectObject(req.body.project);
-
     const connection = getDBConnection(req['keycloak_token']);
+
+    const sanitizedProjectData = new PostProjectObject(req.body.project);
 
     try {
       const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
@@ -83,7 +83,7 @@ function createProject(): RequestHandler {
         };
       }
 
-      let projectId;
+      let projectId: number;
 
       try {
         await connection.open();
@@ -106,8 +106,75 @@ function createProject(): RequestHandler {
 
         projectId = projectResult.id;
 
+        // Handle focal species
+        await Promise.all(
+          req.body.species.focal_species.map(async (focalSpecies: string) => {
+            const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
+
+            const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
+
+            if (!postFocalSpeciesSQLStatement) {
+              throw {
+                status: 400,
+                message: 'Failed to build SQL statement'
+              };
+            }
+
+            // Insert into focal_species table
+            const createFocalSpeciesResponse = await connection.query(
+              postFocalSpeciesSQLStatement.text,
+              postFocalSpeciesSQLStatement.values
+            );
+
+            const focalSpeciesResult =
+              (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
+              null;
+
+            if (!focalSpeciesResult || !focalSpeciesResult.id) {
+              throw {
+                status: 400,
+                message: 'Failed to insert into focal_species table'
+              };
+            }
+          })
+        );
+
+        // Handle ancillary species
+        await Promise.all(
+          req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
+            const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
+
+            const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(sanitizedAncillarySpeciesData, projectId);
+
+            if (!postAncillarySpeciesSQLStatement) {
+              throw {
+                status: 400,
+                message: 'Failed to build SQL statement'
+              };
+            }
+
+            // Insert into ancillary_species table
+            const createAncillarySpeciesResponse = await connection.query(
+              postAncillarySpeciesSQLStatement.text,
+              postAncillarySpeciesSQLStatement.values
+            );
+
+            const ancillarySpeciesResult =
+              (createAncillarySpeciesResponse &&
+                createAncillarySpeciesResponse.rows &&
+                createAncillarySpeciesResponse.rows[0]) ||
+              null;
+
+            if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
+              throw {
+                status: 400,
+                message: 'Failed to insert into ancillary_species table'
+              };
+            }
+          })
+        );
+
         // TODO insert location
-        // TODO insert species
         // TODO insert funding
 
         await connection.commit();
