@@ -14,6 +14,7 @@ export interface IAllCodeSets {
   climate_change_initiative: object;
   land_based_investment_strategy: object;
   funding_agency: object;
+  region: object;
   species: object;
 }
 
@@ -53,6 +54,20 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     climate_change_initiative: (climate_change_initiative && climate_change_initiative.rows) || [],
     land_based_investment_strategy: (land_based_investment_strategy && land_based_investment_strategy.rows) || [],
     funding_agency: (funding_agency && funding_agency.rows) || [],
+    
+    // TODO Temporarily hard coded list of regions
+    region: [
+      { id: 1, description: 'West Coast' },
+      { id: 2, description: 'South Coast' },
+      { id: 3, description: 'Kootenays' },
+      { id: 4, description: 'Thompson-Okanagan' },
+      { id: 5, description: 'Cariboo' },
+      { id: 6, description: 'Skeena' },
+      { id: 7, description: 'Omineca' },
+      { id: 8, description: 'Northeast' },
+    ],
+
+
     // TODO Temporarily hard coded list of basic species values for demo purposes
     species: [
       { id: 1, description: 'Acuteleaf Small Limestone Moss [Seligeria acutifolia]' },

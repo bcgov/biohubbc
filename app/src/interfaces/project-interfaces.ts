@@ -64,6 +64,13 @@ export interface IFundingAgency {
   record_end_date?: string;
 }
 
+export interface ILocation {
+  id: number;
+  regions: string[];
+  location_description: string[];
+}
+
+
 export interface ISpecies {
   id: number;
   focal_species: string[];

@@ -18,6 +18,7 @@ import FormContainer from 'components/form/FormContainer';
 import { CreateProjectI18N } from 'constants/i18n';
 import {
   projectCoordinatorTemplate,
+  projectLocationTemplate,
   projectFundingAgencyTemplate,
   projectSpeciesTemplate,
   projectTemplate
@@ -96,6 +97,8 @@ const CreateProjectPage: React.FC = () => {
   const [formStepState, setFormStepState] = useState<IFormStepState[]>([
     { formTemplate: projectTemplate, formData: null },
     { formTemplate: projectCoordinatorTemplate, formData: null },
+    { formTemplate: fundingAgencyTemplate, formData: null },
+    { formTemplate: projectLocationTemplate, formData: null },
     { formTemplate: projectSpeciesTemplate, formData: null },
     { formTemplate: projectFundingAgencyTemplate, formData: null }
   ]);
@@ -198,13 +201,17 @@ const CreateProjectPage: React.FC = () => {
           stepContent: getFormStep(1)
         },
         {
-          stepTitle: 'Project Species',
+          stepTitle: 'Project Agency',
           stepContent: getFormStep(2)
+        },
+        {
+          stepTitle: 'Project Species',
+          stepContent: getFormStep(3)
         },
         {
           stepTitle: 'Project Funding',
           stepSubTitle: 'Specify funding agencies for the project',
-          stepContent: getFormStep(3)
+          stepContent: getFormStep(4)
         }
       ]);
     };
@@ -262,11 +269,13 @@ const CreateProjectPage: React.FC = () => {
     try {
       const projectData = stripOutKeysAndFlatten(formStepState[0].formData);
       const coordinatorData = stripOutKeysAndFlatten(formStepState[1].formData);
-      const speciesData = stripOutKeysAndFlatten(formStepState[2].formData);
-      const fundingData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const agencyData = stripOutKeysAndFlatten(formStepState[2].formData);
+      const speciesData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const fundingData = stripOutKeysAndFlatten(formStepState[4].formData);
 
       const projectPostObject = {
         project: { ...projectData, ...coordinatorData },
+        agency: agencyData,
         species: speciesData,
         funding: fundingData
       };

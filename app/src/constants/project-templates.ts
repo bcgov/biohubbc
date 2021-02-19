@@ -498,6 +498,52 @@ const projectSpeciesTemplate: ITemplate = {
   }
 };
 
+const projectLocationTemplate: ITemplate = {
+  id: 3,
+  name: 'Project Location Template',
+  description: 'Project Location Template',
+  tags: ['project'],
+  data_template: {
+    type: 'object',
+    properties: {
+      regions: {
+        type: 'array',
+        title: '',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'region',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
+      },
+      location: {
+        title: '',
+        type: 'object',
+        properties: {
+          location_description: {
+            type: 'string',
+            title: 'Location Description',
+            maxLength: 2000
+          }
+        }
+      },
+    }
+  },
+  ui_template: {
+    regions: {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    location: {
+        location_description: {
+          'ui:widget': 'textarea'
+        }
+    },
+  }
+};
+
 export {
   projectTemplate,
   projectFundingAgencyTemplate,
@@ -507,5 +553,6 @@ export {
   projectManagementActionTypeTemplate,
   projectRegion,
   projectCoordinatorTemplate,
+  projectLocationTemplate,
   projectSpeciesTemplate
 };
