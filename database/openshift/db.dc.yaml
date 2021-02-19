@@ -86,7 +86,7 @@ objects:
         template.openshift.io/expose-password: "{.data['database-user-password']}"
         template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
         template.openshift.io/expose-admin-username: "{.data['database-admin']}"
-        as-copy-of: biohubbc-db
+        as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
       database-name: '${POSTGRESQL_DATABASE}'
