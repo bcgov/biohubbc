@@ -14,8 +14,6 @@ parameters:
     required: true
   - name: TAG_NAME
     required: true
-  - name: ENV_ID
-    required: true
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -23,7 +21,6 @@ objects:
       name: '${NAME}'
       labels:
         shared: 'true'
-        env-id: '${ENV_ID}'
       annotations: {}
     spec:
       lookupPolicy:
@@ -33,8 +30,8 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgres-postgis:12.5
-            namespace: af2668-tools
+            name: postgis-postgres:12-31
+            namespace: 7068ad-tools
           generation: 1
           importPolicy: {}
           referencePolicy:

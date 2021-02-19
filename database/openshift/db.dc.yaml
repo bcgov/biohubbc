@@ -1,7 +1,7 @@
+apiVersion: v1
 kind: Template
-apiVersion: template.openshift.io/v1
 labels:
-  template: postgres-postgis-template
+  template: postgresql-persistent-template
 metadata:
   creationTimestamp: null
   name: biohubbc-db-dc
@@ -14,7 +14,7 @@ parameters:
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
-    value: 'postgres-postgis'
+    value: 'postgis-postgres'
   - description: The OpenShift Namespace where the ImageStream resides.
     displayName: Namespace
     name: IMAGE_STREAM_NAMESPACE
@@ -56,11 +56,19 @@ parameters:
     name: VOLUME_CAPACITY
     required: true
     value: '3Gi'
-  - description: Version of PostgreSQL image to be used.
+  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '12.5'
+    value: '12-31'
+  - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
+    displayName: Flag to enable pgcrypto PostgreSQL extension.
+    name: PGCRYPTO_EXTENSION
+    value: 'Y'
+  - description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
+    displayName: Flag to enable postgis PostgreSQL extension.
+    name: POSTGIS_EXTENSION
+    value: 'Y'
   - name: CPU_LIMIT
     value: '500m'
   - name: MEMORY_LIMIT
@@ -74,27 +82,17 @@ objects:
     kind: Secret
     metadata:
       annotations:
-        template.openshift.io/expose-database-name: "{.data['database-name']}"
-        template.openshift.io/expose-database-user-password: "{.data['database-user-password']}"
-        template.openshift.io/expose-database-user: "{.data['database-user']}"
-        template.openshift.io/expose-replication-password: "{.data['replication-password']}"
-        template.openshift.io/expose-replication-username: "{.data['replication-username']}"
-        template.openshift.io/expose-database-admin-password: "{.data['database-admin-password']}"
-        template.openshift.io/expose-database-admin: "{.data['database-admin']}"
-        template.openshift.io/expose-database-user-api: "{.data['database-user-api']}"
-        template.openshift.io/expose-database-user-api-password: "{.data['database-user-api-password']}"
+        template.openshift.io/expose-database_name: "{.data['database-name']}"
+        template.openshift.io/expose-password: "{.data['database-user-password']}"
+        template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
+        template.openshift.io/expose-admin-username: "{.data['database-admin']}"
         as-copy-of: biohubbc-db
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
-      database-name: ${POSTGRESQL_DATABASE}
-      database-user-password: ${POSTGRESQL_PASSWORD}
-      database-user: ${POSTGRESQL_USER}
-      replication-password: ${POSTGRESQL_PASSWORD}
-      replication-username: replication
-      database-admin-password: ${POSTGRESQL_ADMIN_PASSWORD}
-      database-admin: postgres
-      database-user-api: biohub_api
-      database-user-api-password: ${POSTGRESQL_PASSWORD}
+      database-name: '${POSTGRESQL_DATABASE}'
+      database-user-password: '${POSTGRESQL_PASSWORD}'
+      database-admin-password: '${POSTGRESQL_ADMIN_PASSWORD}'
+      database-user: '${POSTGRESQL_USER}'
   - apiVersion: v1
     kind: Service
     metadata:
@@ -157,12 +155,12 @@ objects:
           containers:
             - capabilities: {}
               env:
-                - name: POSTGRES_USER
+                - name: POSTGRESQL_USER
                   valueFrom:
                     secretKeyRef:
                       key: database-user
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRES_PASSWORD
+                - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-user-password
@@ -172,13 +170,15 @@ objects:
                     secretKeyRef:
                       key: database-admin-password
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRES_DB
+                - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: PGDATA
-                  value: '/var/lib/postgresql/data/pgdata'
+                - name: PGCRYPTO_EXTENSION
+                  value: 'Y'
+                - name: POSTGIS_EXTENSION
+                  value: 'Y'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
@@ -213,9 +213,9 @@ objects:
                 privileged: false
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: '/var/lib/postgresql/data/pgdata'
+                - mountPath: '/var/lib/pgsql/data'
                   name: '${DATABASE_SERVICE_NAME}-data'
-                - mountPath: '/var/run/postgresql/pgdata'
+                - mountPath: '/var/run/postgresql'
                   name: '${DATABASE_SERVICE_NAME}-run'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
