@@ -85,7 +85,7 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-user-password']}"
         template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
-        template.openshift.io/expose-admin-username: "{.data['database-admin']}"
+        template.openshift.io/expose-admin-username: "{.data['database-user']}"
         as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
@@ -196,9 +196,10 @@ objects:
                 exec:
                   command:
                     - '/bin/sh'
+                    - '-i'
                     - '-c'
-                    - psql -h 0.0.0.0 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
-                initialDelaySeconds: 20
+                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
+                initialDelaySeconds: 5
                 timeoutSeconds: 1
               resources:
                 requests:
