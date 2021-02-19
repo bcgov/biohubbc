@@ -70,5 +70,5 @@ module.exports = (settings) => {
   oc.applyRecommendedLabels(objects, isName, phase, `${changeId}`, instance);
   oc.applyAndDeploy(objects, phases[phase].instance);
 
-  wait(`pod/${dbSetupPodName}`, settings, 30);
+  wait(`pod/${dbSetupPodName}`, settings, 120);
 };

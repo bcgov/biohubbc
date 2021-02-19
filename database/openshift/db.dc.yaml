@@ -14,11 +14,11 @@ parameters:
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
-    value: 'postgresql'
+    value: 'postgis-postgres'
   - description: The OpenShift Namespace where the ImageStream resides.
     displayName: Namespace
     name: IMAGE_STREAM_NAMESPACE
-    value: 'openshift'
+    value: 'af2668-tools'
   - description: The name of the OpenShift Service exposed for the database.
     displayName: Database Service Name
     name: DATABASE_SERVICE_NAME
@@ -60,7 +60,7 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: '9.5'
+    value: '12-31'
   - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
     displayName: Flag to enable pgcrypto PostgreSQL extension.
     name: PGCRYPTO_EXTENSION
@@ -85,8 +85,8 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-user-password']}"
         template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
-        template.openshift.io/expose-admin-username: "{.data['database-admin']}"
-        as-copy-of: biohubbc-db
+        template.openshift.io/expose-admin-username: "{.data['database-user']}"
+        as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
       database-name: '${POSTGRESQL_DATABASE}'
@@ -176,9 +176,9 @@ objects:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
                 - name: PGCRYPTO_EXTENSION
-                  value: 'Y'
+                  value: 'N'
                 - name: POSTGIS_EXTENSION
-                  value: 'Y'
+                  value: 'N'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
