@@ -176,9 +176,9 @@ objects:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
                 - name: PGCRYPTO_EXTENSION
-                  value: 'Y'
+                  value: 'N'
                 - name: POSTGIS_EXTENSION
-                  value: 'Y'
+                  value: 'N'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
               image: ' '
