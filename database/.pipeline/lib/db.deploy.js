@@ -33,7 +33,7 @@ module.exports = (settings) => {
         POSTGRESQL_DATABASE: 'biohubbc',
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY:
-          `${name}-postgresql${phases[phase].suffix}` === `${name}-postgresql-dev-deploy` ? '3Gi' : '3Gi'
+          `${name}-postgresql${phases[phase].suffix}` === `${name}-postgresql-dev-deploy` ? '20Gi' : '3Gi'
       }
     })
   );
