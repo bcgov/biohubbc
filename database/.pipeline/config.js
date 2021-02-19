@@ -18,8 +18,8 @@ const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${ver
 
 // If this is a static build (to dev, test, or prod) then only run migrations, otherwise if this is a PR build run the
 // migrations and seeding.
-const dbSetupDockerfilePath =
-  (isStaticDeployment && './.docker/db/Dockerfile.migrate') || './.docker/db/Dockerfile.setup';
+const dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
+  // (isStaticDeployment && './.docker/db/Dockerfile.migrate') || './.docker/db/Dockerfile.setup';
 
 const processOptions = (options) => {
   const result = { ...options };
