@@ -57,11 +57,6 @@ export const projectPostBody = {
         }
       }
     },
-    agency: {
-      title: 'Agency Model Object',
-      type: 'object',
-      properties: {}
-    },
     species: {
       title: 'Primary and Seconday Species of Interest',
       type: 'object',
