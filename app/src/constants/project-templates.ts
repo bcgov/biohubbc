@@ -77,8 +77,16 @@ const projectTemplate: ITemplate = {
                     enum: [true]
                   },
                   indigenous_collaboration_nation: {
-                    type: 'string',
-                    title: 'Indigenous Nation'
+                    type: 'array',
+                    title: 'Indigenous Nations',
+                    items: {
+                      type: 'number',
+                      'x-enum-code': {
+                        table: 'indigenous_nations',
+                        id_column: 'id',
+                        text_column: 'description'
+                      }
+                    }
                   }
                 }
               }
@@ -146,7 +154,9 @@ const projectTemplate: ITemplate = {
       _isRequired: {
         'ui:widget': 'radio'
       },
-      indigenous_collaboration_nation: {}
+      indigenous_collaboration_nation: {
+        'ui:widget': 'multi-select-autocomplete'
+      }
     },
     _scientific_collection_permit: {
       _isRequired: {
@@ -189,98 +199,158 @@ const projectFundingAgencyTemplate: ITemplate = {
   tags: ['project'],
   data_template: {
     type: 'object',
-    required: ['funding_amount'],
+    required: [''],
     properties: {
-      funding_amount: {
-        type: 'number',
-        title: 'Funding Amount',
-        multipleOf: 0.01
+      funding_sources: {
+        type: 'array',
+        title: 'Funding Sources',
+        items: {
+          type: 'object',
+          properties: {
+            funding_source_name: {
+              type: 'string',
+              title: 'Funding Source Name'
+            },
+            funding_source_project_id: {
+              type: 'string',
+              title: 'Funding Source Project ID'
+            },
+            funding_amount: {
+              type: 'number',
+              title: 'Funding Amount',
+              multipleOf: 0.01
+            },
+            _funding_source_dates: {
+              type: 'object',
+              title: 'Funding Timeline',
+              properties: {
+                record_effective_date: {
+                  type: 'string',
+                  title: 'Start Date'
+                },
+                record_end_date: {
+                  type: 'string',
+                  title: 'End Date'
+                }
+              }
+            }
+          }
+        }
       },
-      _project_funding_dates: {
-        title: 'Funding Dates',
+      _partnerships: {
+        title: 'Partnerships',
         type: 'object',
-        required: ['funding_start_date'],
         properties: {
-          funding_start_date: {
-            type: 'string',
-            title: 'Start Date'
+          first_nations_partners: {
+            type: 'array',
+            title: 'First Nations Partners',
+            items: {
+              type: 'number',
+              'x-enum-code': {
+                table: 'stakeholder_partners',
+                id_column: 'id',
+                text_column: 'description'
+              }
+            }
           },
-          funding_end_date: {
-            type: 'string',
-            title: 'End Date'
+          stakeholder_partnerships: {
+            type: 'array',
+            title: 'Stakeholder Partners',
+            items: {
+              type: 'number',
+              'x-enum-code': {
+                table: 'stakeholder_partners',
+                id_column: 'id',
+                text_column: 'description'
+              }
+            }
           }
         }
       }
     }
   },
   ui_template: {
-    funding_amount: {},
-    _project_funding_dates: {
-      'ui:column-xs': 12,
-      'ui:column-sm': 6,
-      'x-date-range-validator': {
-        start: 'funding_start_date',
-        end: 'funding_end_date'
+    funding_sources: {
+      items: {
+        funding_source_name: {},
+        funding_source_project_id: {},
+        funding_amount: {},
+        _funding_source_dates: {
+          'ui:column-xs': 12,
+          'ui:column-sm': 6,
+          'x-date-range-validator': {
+            start: 'record_effective_date',
+            end: 'record_end_date'
+          },
+          record_effective_date: {
+            'ui:widget': 'date'
+          },
+          record_end_date: {
+            'ui:widget': 'date'
+          }
+        }
+      }
+    },
+    _partnerships: {
+      first_nations_partners: {
+        'ui:widget': 'multi-select-autocomplete'
       },
-      funding_start_date: {
-        'ui:widget': 'date'
-      },
-      funding_end_date: {
-        'ui:widget': 'date'
+      stakeholder_partnerships: {
+        'ui:widget': 'multi-select-autocomplete'
       }
     }
   }
 };
 
-const fundingAgencyTemplate: ITemplate = {
-  id: 2,
-  name: 'Project Agency Template',
-  description: 'Project Agency Template',
-  tags: ['project'],
-  data_template: {
-    title: 'Agency',
-    type: 'object',
-    required: ['name'],
-    properties: {
-      name: {
-        type: 'string',
-        title: 'Name'
-      },
-      _funding_coordinator_agency_name_dates: {
-        title: 'Agency Dates',
-        type: 'object',
-        required: ['record_effective_date', 'record_end_date'],
-        properties: {
-          record_effective_date: {
-            type: 'string',
-            title: 'Start Date'
-          },
-          record_end_date: {
-            type: 'string',
-            title: 'End Date'
-          }
-        }
-      }
-    }
-  },
-  ui_template: {
-    name: {},
-    _funding_coordinator_agency_name_dates: {
-      'ui:column-xs': 12,
-      'ui:column-sm': 6,
-      'x-date-range-validator': {
-        start: 'record_effective_date',
-        end: 'record_end_date'
-      },
-      record_effective_date: {
-        'ui:widget': 'date'
-      },
-      record_end_date: {
-        'ui:widget': 'date'
-      }
-    }
-  }
-};
+// const fundingAgencyTemplate: ITemplate = {
+//   id: 2,
+//   name: 'Project Agency Template',
+//   description: 'Project Agency Template',
+//   tags: ['project'],
+//   data_template: {
+//     title: 'Agency',
+//     type: 'object',
+//     required: ['name'],
+//     properties: {
+//       name: {
+//         type: 'string',
+//         title: 'Name'
+//       },
+//       _funding_coordinator_agency_name_dates: {
+//         title: 'Agency Dates',
+//         type: 'object',
+//         required: ['record_effective_date', 'record_end_date'],
+//         properties: {
+//           record_effective_date: {
+//             type: 'string',
+//             title: 'Start Date'
+//           },
+//           record_end_date: {
+//             type: 'string',
+//             title: 'End Date'
+//           }
+//         }
+//       }
+//     }
+//   },
+//   ui_template: {
+//     name: {},
+//     _funding_coordinator_agency_name_dates: {
+//       'ui:column-xs': 12,
+//       'ui:column-sm': 6,
+//       'x-date-range-validator': {
+//         start: 'record_effective_date',
+//         end: 'record_end_date'
+//       },
+//       record_effective_date: {
+//         'ui:widget': 'date'
+//       },
+//       record_end_date: {
+//         'ui:widget': 'date'
+//       }
+//     }
+//   }
+// };
 
 const projectLandBasedInvestmentStrategyTemplate: ITemplate = {
   id: 0,
@@ -515,7 +585,6 @@ const projectLocationTemplate: ITemplate = {
 export {
   projectTemplate,
   projectFundingAgencyTemplate,
-  fundingAgencyTemplate,
   projectLandBasedInvestmentStrategyTemplate,
   projectManagementActionsTemplate,
   projectManagementActionTypeTemplate,

@@ -78,7 +78,7 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it('it calls history.goBack() if the user clicks `Yes`', async () => {
+    it('it calls history.push() if the user clicks `Yes`', async () => {
       await act(async () => {
         mockBiohubApi().createProject.mockResolvedValue({
           id: 100
@@ -96,7 +96,7 @@ describe('CreateProjectPage', () => {
 
         expect(history.location.pathname).toEqual('/projects/create');
         fireEvent.click(AreYouSureYesButton);
-        expect(history.location.pathname).toEqual('/home');
+        expect(history.location.pathname).toEqual('/projects');
       });
     });
 

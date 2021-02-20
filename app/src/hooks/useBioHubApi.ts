@@ -6,6 +6,7 @@ import {
   IActivity,
   ICreateActivity,
   ICreateProjectResponse,
+  IGetAllCodesResponse,
   IMedia,
   IProjectPostObject,
   ITemplate
@@ -122,9 +123,9 @@ export const useBiohubApi = () => {
   /**
    * Fetch all code sets.
    *
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<IGetAllCodesResponse>}
    */
-  const getAllCodes = async (): Promise<any> => {
+  const getAllCodes = async (): Promise<IGetAllCodesResponse> => {
     const { data } = await api.get('/api/codes/');
 
     return data;
