@@ -1,7 +1,0 @@
-CREATE EXTENSION postgis;
-CREATE EXTENSION postgis_raster;
-CREATE EXTENSION postgis_topology;
-CREATE EXTENSION postgis_sfcgal;
-CREATE EXTENSION pgRouting;
-CREATE EXTENSION fuzzystrmatch;
-CREATE EXTENSION pgcrypto;
