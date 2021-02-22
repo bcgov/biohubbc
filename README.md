@@ -145,9 +145,7 @@ docker volume prune [OPTIONS]
 `docker logs <container id or name>`  
 Include `-f` to "follow" the container logs, showing logs in real time
 
-<br />
-
-### Troubleshooting
+## Troubleshooting
 
 If you get an error saying the `make` command is not found, you may need to install it first. Assuming you have
 chocolatey installed, you can just run `choco install make`.
