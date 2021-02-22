@@ -13,9 +13,7 @@ describe('MapContainer.test', () => {
   });
 
   test('MapContainer matches the snapshot', () => {
-    const { asFragment } = render(
-      <MapContainer mapId="myMap" classes={classes} />
-    );
+    const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} />);
 
     expect(asFragment()).toMatchSnapshot();
   });

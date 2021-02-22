@@ -9,7 +9,12 @@ export interface IMapContainerProps {
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   return (
-    <LeafletMapContainer className={props.classes.map} id={props.mapId} center={[55, -128]} zoom={9} scrollWheelZoom={true}>
+    <LeafletMapContainer
+      className={props.classes.map}
+      id={props.mapId}
+      center={[55, -128]}
+      zoom={9}
+      scrollWheelZoom={true}>
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
           <TileLayer
@@ -18,9 +23,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           />
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer checked name="BC Government">
-          <TileLayer
-            url='https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}'
-          />
+          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
       </LayersControl>
     </LeafletMapContainer>
