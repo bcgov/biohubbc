@@ -147,6 +147,20 @@ Include `-f` to "follow" the container logs, showing logs in real time
 
 <br />
 
+### Troubleshooting
+
+If you get an error saying the `make` command is not found, you may need to install it first. Assuming you have
+chocolatey installed, you can just run `choco install make`.
+
+While trying to run a make command such as `make web`, if you encounter an issue along the lines of:
+
+```
+E: Release file for http://deb.debian.org/debian/dists/buster-updates/InRelease is not valid yet (invalid for another 1d 1h 5min 13s). Updates for this repository will not be applied.
+```
+
+it may be possible that your system clock is out of date or not synced (dockerfile timezone has to match your machine timezone).
+In this case, make sure your timezone is correct and matches that of docker and restart your machine/terminal window and try again.
+
 ## Acknowledgements
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
