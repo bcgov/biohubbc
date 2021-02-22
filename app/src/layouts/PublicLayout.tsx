@@ -31,9 +31,8 @@ const PublicLayout: React.FC = (props) => {
         })}
       </main>
 
-      <footer>
-        <Footer />
-      </footer>
+      <Footer />
+
     </Box>
   );
 };

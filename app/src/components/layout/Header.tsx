@@ -1,26 +1,28 @@
-import { AppBar, Button, Divider, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Toolbar } from '@material-ui/core';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link } from "react-router-dom";
+
+import 'styles/Header.scss';
+import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
+import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 
 const Header: React.FC = () => {
-  const history = useHistory();
-
-  const navigateToProjectsPage = () => {
-    history.push('/projects');
-  };
-
   return (
     <AppBar position="static">
-      <Toolbar style={{ backgroundColor: '#003366' }}>
-        <Typography variant="h5" noWrap>
-          <b>BioHub</b>
-        </Typography>
+      <Toolbar className={'app-header'}>
+        <Link to="/projects" className={'brand'} color={'inherit'} aria-label="Go to BioHub Home">
+          <picture>
+            <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+            <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+            <img src={headerImageSmall} alt={'Government of British Columbia'} />
+          </picture>
+          BioHub
+        </Link>
       </Toolbar>
-      <Divider style={{ backgroundColor: '#fcba19', height: '2px', width: '100%' }}></Divider>
-      <Toolbar variant="dense" style={{ backgroundColor: '#38598A' }}>
-        <Button onClick={navigateToProjectsPage} style={{ color: '#ECFFFB' }}>
-          <Typography variant="h6">Projects</Typography>
-        </Button>
+      <Toolbar variant="dense" className={'main-nav'} role="navigation" aria-label="Main Navigation">
+        <Link to="/projects" color={'inherit'}>
+          Projects
+        </Link>
       </Toolbar>
     </AppBar>
   );

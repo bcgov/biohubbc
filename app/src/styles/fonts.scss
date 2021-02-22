@@ -1,21 +1,35 @@
 @font-face {
   font-family: 'BCSans';
   font-style: normal;
-  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff') format('woff');
+  font-weight: 400;
+  src: url('../assets/fonts/BCSans/BCSans-Regular.woff2') format('woff2'), /* Optimized for very modern browsers */
+  url('../assets/fonts/BCSans/BCSans-Regular.woff') format('woff'), local('BCSans'); /* Modern Browsers */
+  font-display: swap;
 }
+
 @font-face {
-  font-family: 'BCSans-Italic';
+  font-family: 'BCSans';
   font-style: italic;
-  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff') format('woff');
+  src: url('../assets/fonts/BCSans/BCSans-Italic.woff2') format('woff2'), /* Optimized for very modern browsers */
+  url('../assets/fonts/BCSans/BCSans-Italic.woff') format('woff'), local('BCSans'); /* Modern Browsers */
+  font-display: swap;
 }
+
 @font-face {
-  font-family: 'BCSans-Bold';
+  font-family: 'BCSans';
   font-weight: 700;
-  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff') format('woff');
+  src: url('../assets/fonts/BCSans/BCSans-Bold.woff2') format('woff2'), /* Optimized for very modern browsers */
+  url('../assets/fonts/BCSans/BCSans-Bold.woff') format('woff'), local('BCSans'); /* Modern Browsers */
+  font-display: swap;
 }
+
 @font-face {
-  font-family: 'BCSans-BoldItalic';
+  font-family: 'BCSans';
   font-style: italic;
   font-weight: 700;
-  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
+  src: url('../assets/fonts/BCSans/BCSans-BoldItalic.woff2') format('woff2'), /* Optimized for very modern browsers */
+  url('../assets/fonts/BCSans/BCSans-BoldItalic.woff') format('woff'), local('BCSans'); /* Modern Browsers */
+  font-display: swap;
 }
+
+$fontFamily: 'BCSans', Verdana, Arial, sans-serif;
