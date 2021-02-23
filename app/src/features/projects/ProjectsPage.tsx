@@ -8,11 +8,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow,
-  makeStyles
+  TableRow
 } from '@material-ui/core';
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import MapContainer from 'components/map/MapContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
@@ -58,16 +56,6 @@ const StyledTableCellEmpty = withStyles((theme: Theme) =>
     }
   })
 )(TableCell);
-
-const useStyles = makeStyles((theme: Theme) => ({
-  mapContainer: {
-    height: '600px'
-  },
-  map: {
-    height: '100%',
-    width: '100%'
-  }
-}));
 
 /**
  * Page to display a list of projects.
@@ -142,11 +130,6 @@ const ProjectsPage: React.FC = () => {
               </Table>
             </TableContainer>
           </Box>
-
-          <div className={classes.mapContainer}>
-            <MapContainer mapId="hey" classes={classes} />
-          </div>
-
         </Container>
       </Box>
     );
