@@ -17,13 +17,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
-
       <FeatureGroup>
         <MapEditControls
-          position='topleft'
-          onEdited={() => console.log("edited")}
-          onCreated={() => console.log("created")}
-          onDeleted={() => console.log("deleted")}
+          position="topleft"
+          onEdited={() => console.log('edited')}
+          onCreated={() => console.log('created')}
+          onDeleted={() => console.log('deleted')}
         />
       </FeatureGroup>
 
