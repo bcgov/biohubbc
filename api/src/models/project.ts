@@ -104,7 +104,7 @@ export interface IManagementActionType {
  */
 export interface IProjectRegion {
   id: number;
-  common_code: string;
+  region_name: string;
 }
 
 // /**
@@ -146,20 +146,20 @@ export class PostProjectObject {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
-    this.name = (obj && obj.name) || null;
-    this.objectives = (obj && obj.objectives) || null;
-    this.scientific_collection_permit_number = (obj && obj.scientific_collection_permit_number) || null;
-    this.management_recovery_action = (obj && obj.management_recovery_action) || null;
-    this.location_description = (obj && obj.location_description) || null;
-    this.start_date = (obj && obj.start_date) || null;
-    this.end_date = (obj && obj.end_date) || null;
-    this.results = (obj && obj.results) || null;
-    this.caveats = (obj && obj.caveats) || null;
-    this.comments = (obj && obj.comments) || null;
-    this.coordinator_first_name = (obj && obj.coordinator_first_name) || null;
-    this.coordinator_last_name = (obj && obj.coordinator_last_name) || null;
-    this.coordinator_email_address = (obj && obj.coordinator_email_address) || null;
-    this.coordinator_agency_name = (obj && obj.coordinator_agency_name) || null;
+    this.name = (obj && obj.project && obj.project.name) || null;
+    this.objectives = (obj && obj.project && obj.project.objectives) || null;
+    this.scientific_collection_permit_number = (obj && obj.project && obj.project.scientific_collection_permit_number) || null;
+    this.management_recovery_action = (obj && obj.project && obj.project.management_recovery_action) || null;
+    this.start_date = (obj && obj.project && obj.project.start_date) || null;
+    this.end_date = (obj && obj.project && obj.project.end_date) || null;
+    this.results = (obj && obj.project && obj.project.results) || null;
+    this.caveats = (obj && obj.project && obj.project.caveats) || null;
+    this.comments = (obj && obj.project && obj.project.comments) || null;
+    this.coordinator_first_name = (obj && obj.project && obj.project.coordinator_first_name) || null;
+    this.coordinator_last_name = (obj && obj.project && obj.project.coordinator_last_name) || null;
+    this.coordinator_email_address = (obj && obj.project && obj.project.coordinator_email_address) || null;
+    this.coordinator_agency_name = (obj && obj.project && obj.project.coordinator_agency_name) || null;
+    this.location_description = (obj && obj.location && obj.location.location_description) || null;
   }
 }
 
@@ -184,5 +184,29 @@ export class PostSpeciesObject {
 
     this.name = (obj && obj.name) || null;
     this.uniform_resource_locator = (obj && obj.uniform_resource_locator) || null;
+  }
+}
+
+
+
+/**
+ * Model for the project region table.
+ *
+ * @export
+ * @class PostProjectRegionObject
+ */
+export class PostProjectRegionObject {
+  region_name: string;
+
+  /**
+   * Creates an instance of PostProjectRegionObject.
+   *
+   * @param {*} [obj]
+   * @memberof PostProjectRegionObject
+   */
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostProjectRegionObject', message: 'params', obj });
+
+    this.region_name = (obj && obj.name) || null;
   }
 }

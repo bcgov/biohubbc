@@ -48,17 +48,6 @@ const projectTemplate: ITemplate = {
           }
         }
       },
-      _location: {
-        title: 'Location',
-        type: 'object',
-        properties: {
-          location_description: {
-            type: 'string',
-            title: 'Location Description',
-            maxLength: 2000
-          }
-        }
-      },
       _indigenous_collaboration: {
         type: 'object',
         properties: {
@@ -384,27 +373,6 @@ const projectManagementActionTypeTemplate: ITemplate = {
   }
 };
 
-const projectRegion: ITemplate = {
-  id: 0,
-  name: 'Project Region Template',
-  description: 'Project Region Template',
-  tags: ['project'],
-  data_template: {
-    title: 'Region',
-    type: 'object',
-    required: ['name', 'common_code'],
-    properties: {
-      common_code: {
-        type: 'string',
-        title: 'Common Code'
-      }
-    }
-  },
-  ui_template: {
-    common_code: {}
-  }
-};
-
 const projectCoordinatorTemplate: ITemplate = {
   id: 3,
   name: 'Project Coordinator Template',
@@ -551,7 +519,6 @@ export {
   projectLandBasedInvestmentStrategyTemplate,
   projectManagementActionsTemplate,
   projectManagementActionTypeTemplate,
-  projectRegion,
   projectCoordinatorTemplate,
   projectLocationTemplate,
   projectSpeciesTemplate

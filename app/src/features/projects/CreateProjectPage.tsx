@@ -192,25 +192,27 @@ const CreateProjectPage: React.FC = () => {
       setSteps([
         {
           stepTitle: 'Project Details',
-          stepSubTitle: 'General information and details about this project',
+          stepSubTitle: 'General information and details about this project.',
           stepContent: getFormStep(0)
         },
         {
           stepTitle: 'Project Coordinator',
-          stepSubTitle: 'Enter contact details for the project coordinator',
+          stepSubTitle: 'Enter contact details for the project coordinator.',
           stepContent: getFormStep(1)
         },
         {
-          stepTitle: 'Project Agency',
+          stepTitle: 'Location',
+          stepSubTitle: 'Specify project regions and boundary information.',
           stepContent: getFormStep(2)
         },
         {
           stepTitle: 'Project Species',
+          stepSubTitle: 'Information about species this project is inventoring or monitoring.',
           stepContent: getFormStep(3)
         },
         {
           stepTitle: 'Project Funding',
-          stepSubTitle: 'Specify funding agencies for the project',
+          stepSubTitle: 'Specify funding agencies for the project.',
           stepContent: getFormStep(4)
         }
       ]);

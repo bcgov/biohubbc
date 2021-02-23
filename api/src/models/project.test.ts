@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectObject } from './project';
+import { PostProjectObject, PostProjectRegionObject } from './project';
 
 describe('PostProjectObject', () => {
   describe('No values provided', () => {
@@ -71,20 +71,29 @@ describe('PostProjectObject', () => {
     let projectPostObject: PostProjectObject;
 
     const obj = {
-      name: 'name_test_data',
-      objectives: 'objectives_test_data',
-      scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
-      management_recovery_action: 'management_recovery_action_test_data',
-      location_description: 'location_description_test_data',
-      start_date: 'start_date_test_data',
-      end_date: 'end_date_test_data',
-      results: 'results_test_data',
-      caveats: 'caveats_test_data',
-      comments: 'comments_test_data',
-      coordinator_first_name: 'coordinator_first_name',
-      coordinator_last_name: 'coordinator_last_name',
-      coordinator_email_address: 'coordinator_email_address',
-      coordinator_agency_name: 'coordinator_agency_name'
+      project: {
+        name: 'name_test_data',
+        objectives: 'objectives_test_data',
+        scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
+        management_recovery_action: 'management_recovery_action_test_data',
+        start_date: 'start_date_test_data',
+        end_date: 'end_date_test_data',
+        results: 'results_test_data',
+        caveats: 'caveats_test_data',
+        comments: 'comments_test_data',
+        coordinator_first_name: 'coordinator_first_name',
+        coordinator_last_name: 'coordinator_last_name',
+        coordinator_email_address: 'coordinator_email_address',
+        coordinator_agency_name: 'coordinator_agency_name'
+      },
+      location: {
+        regions: [
+          'South Coast',
+          'Cariboo',
+          'Northeast'
+        ],
+        location_description: 'location_description_test_data'
+      }
     };
 
     before(() => {
@@ -131,6 +140,36 @@ describe('PostProjectObject', () => {
 
     it('sets comments', function () {
       expect(projectPostObject.comments).to.equal('comments_test_data');
+    });
+  });
+});
+
+describe('PostProjectRegionObject', () => {
+  describe('No value provided', () => {
+    let projectRegionPostProject: PostProjectRegionObject;
+
+    before(() => {
+      projectRegionPostProject = new PostProjectRegionObject(null);
+    });
+
+    it('sets region_name', function () {
+      expect(projectRegionPostProject.region_name).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectRegionPostProject: PostProjectRegionObject;
+
+    const obj = {
+      name: 'Northeast'
+    }
+
+    before(() => {
+      projectRegionPostProject = new PostProjectRegionObject(obj);
+    });
+
+    it('sets region_name', function () {
+      expect(projectRegionPostProject.region_name).to.equal('Northeast');
     });
   });
 });

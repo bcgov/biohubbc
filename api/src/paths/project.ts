@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { PostProjectObject, PostSpeciesObject } from '../models/project';
+import { PostProjectRegionObject, PostProjectObject, PostSpeciesObject } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
-import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postProjectSQL } from '../queries/project-queries';
+import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postProjectSQL, postProjectRegionSQL } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -71,7 +71,7 @@ function createProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedProjectData = new PostProjectObject(req.body.project);
+    const sanitizedProjectData = new PostProjectObject(req.body);
 
     try {
       const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
@@ -174,7 +174,38 @@ function createProject(): RequestHandler {
           })
         );
 
-        // TODO insert location
+        // Handle project regions
+        await Promise.all(
+          req.body.location.regions.map(async (region: string) => {
+            const sanitizedProjectRegionData = new PostProjectRegionObject({ name: region });
+            const postProjectRegionSQLStatement = postProjectRegionSQL(sanitizedProjectRegionData, projectId);
+
+            if (!postProjectRegionSQLStatement) {
+              throw {
+                status: 400,
+                message: 'Failed to build SQL statement'
+              };
+            }
+
+            // Insert into project_region table
+            const createProjectRegionResponse = await connection.query(
+              postProjectRegionSQLStatement.text,
+              postProjectRegionSQLStatement.values
+            );
+
+            const projectRegionResult =
+              (createProjectRegionResponse && createProjectRegionResponse.rows && createProjectRegionResponse.rows[0]) ||
+              null;
+
+            if (!projectRegionResult || !projectRegionResult.id) {
+              throw {
+                status: 400,
+                message: 'Failed to insert into project_region table'
+              };
+            }
+          })
+        );
+
         // TODO insert funding
 
         await connection.commit();
