@@ -1,1 +1,0 @@
-This is a sample deployment for PostgreSQL / Patroni. More docs to follow.
