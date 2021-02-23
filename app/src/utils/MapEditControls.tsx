@@ -67,13 +67,13 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     onMounted && onMounted(drawRef.current);
 
     return () => {
-      const { map } = props.leaflet;
+      const { mapContainer } = props.leaflet;
 
-      map.off(eventHandlers.onCreated, onDrawCreate);
+      mapContainer.off(eventHandlers.onCreated, onDrawCreate);
 
       for (const key in eventHandlers) {
         if (props[key]) {
-          map.off(eventHandlers[key], props[key]);
+          mapContainer.off(eventHandlers[key], props[key]);
         }
       }
     };
@@ -119,6 +119,6 @@ function createDrawElement(props: any, context: any) {
   }
 
   return new L.Control.Draw(options);
-};
+}
 
 export default MapEditControls;
