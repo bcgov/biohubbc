@@ -6,7 +6,7 @@ import { FeatureGroup, MapContainer } from 'react-leaflet';
 describe('MapEditControls.test', () => {
   const alert = jest.fn();
 
-  test('MapEditControls matches the snapshot', async () => {
+  test('MapEditControls successfully mounts the controls', async () => {
     render(
       <MapContainer>
         <FeatureGroup>
