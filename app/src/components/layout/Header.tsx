@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   return (
     <AppBar position="static">
       <Toolbar className={'app-header'}>
-        <Link to="/projects" className={'brand'} color={'inherit'} aria-label="Go to BioHub Home">
+        <Link to="/projects" className={'brand'} aria-label="Go to BioHub Home">
           <picture>
             <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
             <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>

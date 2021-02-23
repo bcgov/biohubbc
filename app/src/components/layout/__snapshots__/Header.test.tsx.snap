@@ -1,76 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Header renders correctly 1`] = `
+exports[`NotFoundPage renders correctly 1`] = `
 <header
   className="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
 >
   <div
-    className="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
-    style={
-      Object {
-        "backgroundColor": "#003366",
-      }
-    }
+    className="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
   >
-    <h5
-      className="MuiTypography-root MuiTypography-h5 MuiTypography-noWrap"
-    >
-      <b>
-        BioHub
-      </b>
-    </h5>
-  </div>
-  <hr
-    className="MuiDivider-root"
-    style={
-      Object {
-        "backgroundColor": "#fcba19",
-        "height": "2px",
-        "width": "100%",
-      }
-    }
-  />
-  <div
-    className="MuiToolbar-root MuiToolbar-dense MuiToolbar-gutters"
-    style={
-      Object {
-        "backgroundColor": "#38598A",
-      }
-    }
-  >
-    <button
-      className="MuiButtonBase-root MuiButton-root MuiButton-text"
-      disabled={false}
-      onBlur={[Function]}
+    <a
+      aria-label="Go to BioHub Home"
+      className="brand"
+      href="/projects"
       onClick={[Function]}
-      onDragLeave={[Function]}
-      onFocus={[Function]}
-      onKeyDown={[Function]}
-      onKeyUp={[Function]}
-      onMouseDown={[Function]}
-      onMouseLeave={[Function]}
-      onMouseUp={[Function]}
-      onTouchEnd={[Function]}
-      onTouchMove={[Function]}
-      onTouchStart={[Function]}
-      style={
-        Object {
-          "color": "#ECFFFB",
-        }
-      }
-      tabIndex={0}
-      type="button"
     >
-      <span
-        className="MuiButton-label"
-      >
-        <h6
-          className="MuiTypography-root MuiTypography-h6"
-        >
-          Projects
-        </h6>
-      </span>
-    </button>
+      <picture>
+        <source
+          media="(min-width: 1200px)"
+          srcSet="gov-bc-logo-horiz.png"
+        />
+        <source
+          media="(min-width: 600px)"
+          srcSet="gov-bc-logo-vert.png"
+        />
+        <img
+          alt="Government of British Columbia"
+          src="gov-bc-logo-vert.png"
+        />
+      </picture>
+      BioHub
+    </a>
+  </div>
+  <div
+    aria-label="Main Navigation"
+    className="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
+    role="navigation"
+  >
+    <a
+      color="inherit"
+      href="/projects"
+      onClick={[Function]}
+    >
+      Projects
+    </a>
   </div>
 </header>
 `;
