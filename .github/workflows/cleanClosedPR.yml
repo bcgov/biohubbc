@@ -10,7 +10,7 @@ jobs:
     name: Clean Deployment Artifacts for API and App in Dev and Tools environment
     runs-on: ubuntu-16.04
     # Only do this when the PR was not merged and only for dev
-    if: ${{ github.event.pull_request.merged != true && github.base_ref == 'dev'  }}
+    if: ${{ github.event.pull_request.merged != true && github.base_ref == 'dev' && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
     steps:
