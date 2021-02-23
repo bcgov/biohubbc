@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Container, Typography } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, Typography, makeStyles } from '@material-ui/core';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
@@ -37,6 +37,24 @@ import { DropzoneArea } from 'material-ui-dropzone';
 //   );
 // };
 
+const useStyles = makeStyles((theme) => ({
+  stepper: {
+    backgroundColor: 'transparent'
+  },
+  actionsContainer: {
+    marginBottom: theme.spacing(2)
+  },
+  actionButton: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  finishContainer: {
+    padding: theme.spacing(3),
+    backgroundColor: 'transparent'
+  }
+}));
+
+
 /**
  * Page to display a single Project.
  *
@@ -48,6 +66,8 @@ const ProjectPage: React.FC = () => {
   const urlParams = useParams();
 
   const biohubApi = useBiohubApi();
+
+  const classes = useStyles();
 
   // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
   const [project, setProject] = useState<IProject | null>(null);
@@ -103,8 +123,19 @@ const ProjectPage: React.FC = () => {
             onChange={(e) => {
             }}
             showFileNames={true}
-            //useChipsForPreview={true}
+            useChipsForPreview={true}
           />
+        </Box>
+        <Box>
+
+          <Button
+            variant="contained"
+            color="primary"
+            //onClick={handleNext}
+            className={classes.actionButton}>
+            <Typography variant="body1">Submit</Typography>
+          </Button>
+
         </Box>
       </Container>
     </Box>

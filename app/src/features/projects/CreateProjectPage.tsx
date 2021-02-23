@@ -114,7 +114,7 @@ const CreateProjectPage: React.FC = () => {
       const response = await biohubApi.getAllCodes();
 
       if (!response) {
-        // TODO error handling/user messaging - Cant create a project if requried code sets fail to fetch
+        // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
       }
 
       setCodes(() => {
