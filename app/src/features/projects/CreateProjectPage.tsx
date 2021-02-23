@@ -17,14 +17,15 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import FormContainer from 'components/form/FormContainer';
 import { CreateProjectI18N } from 'constants/i18n';
 import {
-  fundingAgencyTemplate,
+  projectCoordinatorTemplate,
   projectFundingAgencyTemplate,
-  projectProponentTemplate,
+  projectSpeciesTemplate,
   projectTemplate
 } from 'constants/project-templates';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import { autoParseCustomValidators, getCustomValidator } from 'rjsf/business-rules/customValidation';
 import { stripOutKeysAndFlatten } from 'utils/JsonUtils';
 import { populateTemplateWithCodes } from 'utils/TemplateUtils';
@@ -94,8 +95,8 @@ const CreateProjectPage: React.FC = () => {
   // Tracks various pieces of state for each form
   const [formStepState, setFormStepState] = useState<IFormStepState[]>([
     { formTemplate: projectTemplate, formData: null },
-    { formTemplate: projectProponentTemplate, formData: null },
-    { formTemplate: fundingAgencyTemplate, formData: null },
+    { formTemplate: projectCoordinatorTemplate, formData: null },
+    { formTemplate: projectSpeciesTemplate, formData: null },
     { formTemplate: projectFundingAgencyTemplate, formData: null }
   ]);
 
@@ -178,6 +179,7 @@ const CreateProjectPage: React.FC = () => {
             });
           }}
           customValidation={getCustomValidator(autoParseCustomValidators(formStepState[index].formTemplate))}
+          customErrorTransformer={getCustomErrorTransformer()}
           onFormSubmitSuccess={handleSaveAndNext}
         />
       );
@@ -196,7 +198,7 @@ const CreateProjectPage: React.FC = () => {
           stepContent: getFormStep(1)
         },
         {
-          stepTitle: 'Project Agency',
+          stepTitle: 'Project Species',
           stepContent: getFormStep(2)
         },
         {
@@ -259,14 +261,13 @@ const CreateProjectPage: React.FC = () => {
   const handleSubmit = async () => {
     try {
       const projectData = stripOutKeysAndFlatten(formStepState[0].formData);
-      const proponentData = stripOutKeysAndFlatten(formStepState[1].formData);
-      const agencyData = stripOutKeysAndFlatten(formStepState[2].formData);
+      const coordinatorData = stripOutKeysAndFlatten(formStepState[1].formData);
+      const speciesData = stripOutKeysAndFlatten(formStepState[2].formData);
       const fundingData = stripOutKeysAndFlatten(formStepState[3].formData);
 
       const projectPostObject = {
-        project: projectData,
-        proponent: proponentData,
-        agency: agencyData,
+        project: { ...projectData, ...coordinatorData },
+        species: speciesData,
         funding: fundingData
       };
 
@@ -328,17 +329,11 @@ const CreateProjectPage: React.FC = () => {
           </Box>
           <Box>
             <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
-              {steps.map((step, stepIndex) => (
+              {steps.map((step) => (
                 <Step key={step.stepTitle}>
                   <StepLabel>
                     <Typography variant="h4">{step.stepTitle}</Typography>
                     <Typography variant="h6">{step.stepSubTitle}</Typography>
-                    <Typography variant="subtitle2">
-                      <Box color="#db3131" display="inline">
-                        *
-                      </Box>{' '}
-                      indicates a required field
-                    </Typography>
                   </StepLabel>
                   <StepContent>
                     {step.stepContent}

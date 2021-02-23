@@ -1,13 +1,14 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
-import { IProject, IProjectPostObject } from 'interfaces/project-interfaces';
+import { IProject } from 'interfaces/project-interfaces';
 import {
   IActivity,
   ICreateActivity,
   ICreateProjectResponse,
-  ITemplate,
-  IMedia
+  IMedia,
+  IProjectPostObject,
+  ITemplate
 } from 'interfaces/useBioHubApi-interfaces';
 import { useContext, useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
@@ -132,7 +133,7 @@ export const useBiohubApi = () => {
   const getMediaList = async (projectId: string): Promise<IMedia[]> => {
     //const api = await apiPromise;
 
-    const { data } = await api.get('/api/projects/${projectId}/artifacts/list');
+    const { data } = await api.get(`/api/projects/${projectId}/artifacts/list`);
 
     const mediaKeyList: IMedia[] = [];
 

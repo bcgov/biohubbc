@@ -64,7 +64,7 @@ export class PostTemplateObj implements Partial<ITemplateSchema> {
    * @memberof ActivityPostRequestBody
    */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostTemplateObj', messaeg: 'params', obj });
+    defaultLog.debug({ label: 'PostTemplateObj', message: 'params', obj });
 
     this.name = (obj && obj.name) || [];
     this.description = (obj && obj.description) || [];

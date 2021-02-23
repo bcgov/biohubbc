@@ -49,7 +49,7 @@ const ProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  // TODO this is using IProject in the mean time, but will eventually need something likw IProjectRecord
+  // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
   const [project, setProject] = useState<IProject | null>(null);
 
   useEffect(() => {

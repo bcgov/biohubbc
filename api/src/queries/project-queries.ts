@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PostProjectObject } from '../models/project';
+import { PostProjectObject, PostSpeciesObject } from '../models/project';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('queries/project-queries');
@@ -28,7 +28,11 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
       end_date,
       results,
       caveats,
-      comments
+      comments,
+      coordinator_first_name,
+      coordinator_last_name,
+      coordinator_email_address,
+      coordinator_agency_name
     ) VALUES (
       ${project.name},
       ${project.objectives},
@@ -39,7 +43,11 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
       ${project.end_date},
       ${project.results},
       ${project.caveats},
-      ${project.comments}
+      ${project.comments},
+      ${project.coordinator_first_name},
+      ${project.coordinator_last_name},
+      ${project.coordinator_email_address},
+      ${project.coordinator_agency_name}
     )
     RETURNING
       id;
@@ -47,6 +55,76 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
 
   defaultLog.debug({
     label: 'postProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a focal species row.
+ *
+ * @param {PostSpeciesObject} species
+ * @returns {SQLStatement} sql query object
+ */
+export const postFocalSpeciesSQL = (species: PostSpeciesObject, projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', postFocalSpeciesSQL, projectId });
+
+  if (!species || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO focal_species (
+        p_id,
+        name
+      ) VALUES (
+        ${projectId},
+        ${species.name}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postFocalSpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a ancillary species row.
+ *
+ * @param {PostSpeciesObject} species
+ * @returns {SQLStatement} sql query object
+ */
+export const postAncillarySpeciesSQL = (species: PostSpeciesObject, projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', postAncillarySpeciesSQL, projectId });
+
+  if (!species || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+        INSERT INTO ancillary_species (
+          p_id,
+          name
+        ) VALUES (
+          ${projectId},
+          ${species.name}
+        )
+        RETURNING
+          id;
+      `;
+
+  defaultLog.debug({
+    label: 'postAncillarySpeciesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -82,6 +160,10 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       results,
       caveats,
       comments,
+      coordinator_first_name,
+      coordinator_last_name,
+      coordinator_email_address,
+      coordinator_agency_name,
       create_date,
       create_user,
       update_date,

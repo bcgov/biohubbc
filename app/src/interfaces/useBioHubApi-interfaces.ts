@@ -1,3 +1,5 @@
+import { IProject, IProjectFundingAgency, ISpecies } from './project-interfaces';
+
 /**
  * The parent type that an object must conform to, at a minimum, to be rendered via the FormContainer.tsx
  *
@@ -61,6 +63,20 @@ export interface ITemplate {
   tags: string[];
   data_template: any;
   ui_template: any;
+}
+
+/**
+ * Create project post body.
+ *
+ * TODO this is an interim (incomplete) version of the final project post object
+ *
+ * @export
+ * @interface IProjectPostObject
+ */
+export interface IProjectPostObject {
+  project: IProject;
+  funding: IProjectFundingAgency;
+  species: ISpecies;
 }
 
 /**

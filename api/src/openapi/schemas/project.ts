@@ -42,18 +42,42 @@ export const projectPostBody = {
         },
         comments: {
           type: 'string'
+        },
+        coordinator_first_name: {
+          type: 'string'
+        },
+        coordinator_last_name: {
+          type: 'string'
+        },
+        coordinator_email_address: {
+          type: 'string'
+        },
+        coordinator_agency_name: {
+          type: 'string'
         }
       }
     },
-    proponent: {
-      title: 'Proponent Model Object',
+    species: {
+      title: 'Primary and Seconday Species of Interest',
       type: 'object',
-      properties: {}
-    },
-    agency: {
-      title: 'Agency Model Object',
-      type: 'object',
-      properties: {}
+      properties: {
+        focal_species: {
+          type: 'array',
+          description: 'Array of focal species',
+          items: {
+            type: 'string',
+            description: 'Species Name'
+          }
+        },
+        ancillary_species: {
+          type: 'array',
+          description: 'Array of ancillary species',
+          items: {
+            type: 'string',
+            description: 'Species Name'
+          }
+        }
+      }
     },
     funding: {
       title: 'Funding Model Object',

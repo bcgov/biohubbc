@@ -204,7 +204,8 @@ const projectFundingAgencyTemplate: ITemplate = {
     properties: {
       funding_amount: {
         type: 'number',
-        title: 'Funding Amount'
+        title: 'Funding Amount',
+        multipleOf: 0.01
       },
       _project_funding_dates: {
         title: 'Funding Dates',
@@ -256,7 +257,7 @@ const fundingAgencyTemplate: ITemplate = {
         type: 'string',
         title: 'Name'
       },
-      _funding_agency_dates: {
+      _funding_coordinator_agency_name_dates: {
         title: 'Agency Dates',
         type: 'object',
         required: ['record_effective_date', 'record_end_date'],
@@ -275,7 +276,7 @@ const fundingAgencyTemplate: ITemplate = {
   },
   ui_template: {
     name: {},
-    _funding_agency_dates: {
+    _funding_coordinator_agency_name_dates: {
       'ui:column-xs': 12,
       'ui:column-sm': 6,
       'x-date-range-validator': {
@@ -404,51 +405,95 @@ const projectRegion: ITemplate = {
   }
 };
 
-const projectProponentTemplate: ITemplate = {
+const projectCoordinatorTemplate: ITemplate = {
   id: 3,
-  name: 'Project Proponent Template',
-  description: 'Project Proponent Template',
+  name: 'Project Coordinator Template',
+  description: 'Project Coordinator Template',
   tags: ['project'],
   data_template: {
     type: 'object',
-    required: ['name'],
+    required: ['coordinator_email_address', 'coordinator_agency_name'],
     properties: {
-      name: {
-        type: 'string',
-        title: 'Name'
-      },
-      _proponent_dates: {
-        title: 'Proponent Dates',
+      _coordinator_names: {
+        title: 'Coordinator Name',
         type: 'object',
-        required: ['record_effective_date'],
+        required: ['coordinator_first_name', 'coordinator_last_name'],
         properties: {
-          record_effective_date: {
+          coordinator_first_name: {
             type: 'string',
-            title: 'Start Date'
+            title: 'First Name'
           },
-          record_end_date: {
+          coordinator_last_name: {
             type: 'string',
-            title: 'End Date'
+            title: 'Last Name'
           }
         }
+      },
+      coordinator_email_address: {
+        type: 'string',
+        title: 'Email Address',
+        format: 'email'
+      },
+      coordinator_agency_name: {
+        type: 'string',
+        title: 'Agency'
       }
     }
   },
   ui_template: {
-    name: {},
-    _proponent_dates: {
+    _coordinator_names: {
       'ui:column-xs': 12,
       'ui:column-sm': 6,
-      'x-date-range-validator': {
-        start: 'record_effective_date',
-        end: 'record_end_date'
+      coordinator_first_name: {},
+      coordinator_last_name: {}
+    },
+    coordinator_email_address: {},
+    coordinator_agency_name: {}
+  }
+};
+
+const projectSpeciesTemplate: ITemplate = {
+  id: 3,
+  name: 'Project Species Template',
+  description: 'Project Species Template',
+  tags: ['project'],
+  data_template: {
+    type: 'object',
+    properties: {
+      focal_species: {
+        type: 'array',
+        title: 'Focal Species',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'species',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
       },
-      record_effective_date: {
-        'ui:widget': 'date'
-      },
-      record_end_date: {
-        'ui:widget': 'date'
+      ancillary_species: {
+        type: 'array',
+        title: 'Ancillary Species',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'species',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
       }
+    }
+  },
+  ui_template: {
+    focal_species: {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    ancillary_species: {
+      'ui:widget': 'multi-select-autocomplete'
     }
   }
 };
@@ -461,5 +506,6 @@ export {
   projectManagementActionsTemplate,
   projectManagementActionTypeTemplate,
   projectRegion,
-  projectProponentTemplate
+  projectCoordinatorTemplate,
+  projectSpeciesTemplate
 };

@@ -25,7 +25,6 @@ export async function seed(knex: Knex): Promise<void> {
 
     DELETE FROM climate_change_initiative;
     DELETE FROM management_action_type;
-    DELETE FROM management_action_type;
     DELETE FROM land_based_investment_strategy;
     DELETE FROM funding_agency;
   `);

@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Header renders correctly 1`] = `
+<header
+  className="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
+>
+  <div
+    className="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+    style={
+      Object {
+        "backgroundColor": "#003366",
+      }
+    }
+  >
+    <h5
+      className="MuiTypography-root MuiTypography-h5 MuiTypography-noWrap"
+    >
+      <b>
+        BioHub
+      </b>
+    </h5>
+  </div>
+  <hr
+    className="MuiDivider-root"
+    style={
+      Object {
+        "backgroundColor": "#fcba19",
+        "height": "2px",
+        "width": "100%",
+      }
+    }
+  />
+  <div
+    className="MuiToolbar-root MuiToolbar-dense MuiToolbar-gutters"
+    style={
+      Object {
+        "backgroundColor": "#38598A",
+      }
+    }
+  >
+    <button
+      className="MuiButtonBase-root MuiButton-root MuiButton-text"
+      disabled={false}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onDragLeave={[Function]}
+      onFocus={[Function]}
+      onKeyDown={[Function]}
+      onKeyUp={[Function]}
+      onMouseDown={[Function]}
+      onMouseLeave={[Function]}
+      onMouseUp={[Function]}
+      onTouchEnd={[Function]}
+      onTouchMove={[Function]}
+      onTouchStart={[Function]}
+      style={
+        Object {
+          "color": "#ECFFFB",
+        }
+      }
+      tabIndex={0}
+      type="button"
+    >
+      <span
+        className="MuiButton-label"
+      >
+        <h6
+          className="MuiTypography-root MuiTypography-h6"
+        >
+          Projects
+        </h6>
+      </span>
+    </button>
+  </div>
+</header>
+`;

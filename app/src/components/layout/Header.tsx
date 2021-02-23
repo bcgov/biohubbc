@@ -1,7 +1,14 @@
-import { Link, Typography, AppBar, Divider, Toolbar } from '@material-ui/core';
+import { AppBar, Button, Divider, Toolbar, Typography } from '@material-ui/core';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 const Header: React.FC = () => {
+  const history = useHistory();
+
+  const navigateToProjectsPage = () => {
+    history.push('/projects');
+  };
+
   return (
     <AppBar position="static">
       <Toolbar style={{ backgroundColor: '#003366' }}>
@@ -11,9 +18,9 @@ const Header: React.FC = () => {
       </Toolbar>
       <Divider style={{ backgroundColor: '#fcba19', height: '2px', width: '100%' }}></Divider>
       <Toolbar variant="dense" style={{ backgroundColor: '#38598A' }}>
-        <Link href="/projects" variant="h5" style={{ color: '#ECFFFB' }}>
-          Projects
-        </Link>
+        <Button onClick={navigateToProjectsPage} style={{ color: '#ECFFFB' }}>
+          <Typography variant="h6">Projects</Typography>
+        </Button>
       </Toolbar>
     </AppBar>
   );
