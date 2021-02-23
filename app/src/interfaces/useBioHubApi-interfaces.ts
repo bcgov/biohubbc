@@ -1,4 +1,4 @@
-import { IFundingAgency, IProject, IProjectFundingAgency, ILocation, ISpecies } from './project-interfaces';
+import { IProject, IProjectFundingAgency, IProjectRegion, ISpecies } from './project-interfaces';
 
 /**
  * The parent type that an object must conform to, at a minimum, to be rendered via the FormContainer.tsx
@@ -76,7 +76,7 @@ export interface ITemplate {
 export interface IProjectPostObject {
   project: IProject;
   funding: IProjectFundingAgency;
-  location: ILocation;
+  location: IProjectRegion;
   species: ISpecies;
 }
 
