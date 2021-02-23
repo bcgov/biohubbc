@@ -18,7 +18,7 @@ const eventHandlers = {
   onEditStop: 'draw:editstop',
   onDeleted: 'draw:deleted',
   onDeleteStart: 'draw:deletestart',
-  onDeleteStop: 'draw:deletestop'
+  onDeleteStop: 'draw:deletestop',
 };
 
 export interface IMapEditControlsProps {
@@ -52,7 +52,9 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt: any) => {
-        let handlers = Object.keys(eventHandlers).filter((handler) => eventHandlers[handler] === evt.type);
+        let handlers = Object.keys(eventHandlers).filter(
+          (handler) => eventHandlers[handler] === evt.type
+        );
         if (handlers.length === 1) {
           let handler = handlers[0];
           props[handler] && props[handler](evt);
@@ -65,17 +67,21 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     onMounted && onMounted(drawRef.current);
 
     return () => {
-      const { mapContainer } = props.leaflet;
+      if (!props.leaflet) {
+        return;
+      }
 
-      mapContainer.off(eventHandlers.onCreated, onDrawCreate);
+      const { map } = props.leaflet;
+
+      map.off(eventHandlers.onCreated, onDrawCreate);
 
       for (const key in eventHandlers) {
         if (props[key]) {
-          mapContainer.off(eventHandlers[key], props[key]);
+          map.off(eventHandlers[key], props[key]);
         }
       }
     };
-  }, [context, onDrawCreate, props]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -93,10 +99,10 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     const { onMounted } = props;
     onMounted && onMounted(drawRef.current);
-  }, [context, props, props.draw, props.edit, props.position]);
+  }, [props.draw, props.edit, props.position]);
 
   return null;
-};
+}
 
 function createDrawElement(props: any, context: any) {
   const { layerContainer } = context;
@@ -104,8 +110,8 @@ function createDrawElement(props: any, context: any) {
   const options = {
     edit: {
       ...edit,
-      featureGroup: layerContainer
-    }
+      featureGroup: layerContainer,
+    },
   };
 
   if (draw) {
@@ -117,6 +123,6 @@ function createDrawElement(props: any, context: any) {
   }
 
   return new L.Control.Draw(options);
-}
+};
 
 export default MapEditControls;
