@@ -32,7 +32,6 @@ const PublicLayout: React.FC = (props) => {
       </main>
 
       <Footer />
-
     </Box>
   );
 };

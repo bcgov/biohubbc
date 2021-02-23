@@ -1,6 +1,6 @@
 import { AppBar, Toolbar } from '@material-ui/core';
 import React from 'react';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 import 'styles/Header.scss';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
