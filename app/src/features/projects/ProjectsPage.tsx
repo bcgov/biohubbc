@@ -63,7 +63,6 @@ const StyledTableCellEmpty = withStyles((theme: Theme) =>
  * @return {*}
  */
 const ProjectsPage: React.FC = () => {
-  const classes = useStyles();
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
