@@ -18,12 +18,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       zoom={9}
       scrollWheelZoom={true}>
       <FeatureGroup>
-        <MapEditControls
-          position="topright"
-          onEdited={() => console.log('edited')}
-          onCreated={() => console.log('created')}
-          onDeleted={() => console.log('deleted')}
-        />
+        <MapEditControls position="topright" />
       </FeatureGroup>
 
       <LayersControl position="bottomright">
