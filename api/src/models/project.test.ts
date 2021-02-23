@@ -87,11 +87,7 @@ describe('PostProjectObject', () => {
         coordinator_agency_name: 'coordinator_agency_name'
       },
       location: {
-        regions: [
-          'South Coast',
-          'Cariboo',
-          'Northeast'
-        ],
+        regions: ['South Coast', 'Cariboo', 'Northeast'],
         location_description: 'location_description_test_data'
       }
     };
@@ -162,7 +158,7 @@ describe('PostProjectRegionObject', () => {
 
     const obj = {
       name: 'Northeast'
-    }
+    };
 
     before(() => {
       projectRegionPostProject = new PostProjectRegionObject(obj);

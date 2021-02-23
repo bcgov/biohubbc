@@ -497,7 +497,7 @@ const projectLocationTemplate: ITemplate = {
             maxLength: 2000
           }
         }
-      },
+      }
     }
   },
   ui_template: {
@@ -505,10 +505,10 @@ const projectLocationTemplate: ITemplate = {
       'ui:widget': 'multi-select-autocomplete'
     },
     location: {
-        location_description: {
-          'ui:widget': 'textarea'
-        }
-    },
+      location_description: {
+        'ui:widget': 'textarea'
+      }
+    }
   }
 };
 

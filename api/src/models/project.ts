@@ -148,7 +148,8 @@ export class PostProjectObject {
 
     this.name = (obj && obj.project && obj.project.name) || null;
     this.objectives = (obj && obj.project && obj.project.objectives) || null;
-    this.scientific_collection_permit_number = (obj && obj.project && obj.project.scientific_collection_permit_number) || null;
+    this.scientific_collection_permit_number =
+      (obj && obj.project && obj.project.scientific_collection_permit_number) || null;
     this.management_recovery_action = (obj && obj.project && obj.project.management_recovery_action) || null;
     this.start_date = (obj && obj.project && obj.project.start_date) || null;
     this.end_date = (obj && obj.project && obj.project.end_date) || null;
@@ -186,8 +187,6 @@ export class PostSpeciesObject {
     this.uniform_resource_locator = (obj && obj.uniform_resource_locator) || null;
   }
 }
-
-
 
 /**
  * Model for the project region table.

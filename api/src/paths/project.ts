@@ -4,7 +4,12 @@ import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { PostProjectRegionObject, PostProjectObject, PostSpeciesObject } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
-import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postProjectSQL, postProjectRegionSQL } from '../queries/project-queries';
+import {
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL,
+  postProjectSQL,
+  postProjectRegionSQL
+} from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -194,7 +199,9 @@ function createProject(): RequestHandler {
             );
 
             const projectRegionResult =
-              (createProjectRegionResponse && createProjectRegionResponse.rows && createProjectRegionResponse.rows[0]) ||
+              (createProjectRegionResponse &&
+                createProjectRegionResponse.rows &&
+                createProjectRegionResponse.rows[0]) ||
               null;
 
             if (!projectRegionResult || !projectRegionResult.id) {

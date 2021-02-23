@@ -224,7 +224,10 @@ export const getProjectsSQL = (): SQLStatement | null => {
  * @param {PostProjectRegionObject} projectRegion
  * @returns {SQLStatement} sql query object
  */
-export const postProjectRegionSQL = (projectRegion: PostProjectRegionObject, projectId: number): SQLStatement | null => {
+export const postProjectRegionSQL = (
+  projectRegion: PostProjectRegionObject,
+  projectId: number
+): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectRegionSQL', message: 'params', postProjectRegionSQL, projectId });
 
   if (!projectRegion || !projectId) {

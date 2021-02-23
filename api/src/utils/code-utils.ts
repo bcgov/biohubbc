@@ -54,7 +54,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     climate_change_initiative: (climate_change_initiative && climate_change_initiative.rows) || [],
     land_based_investment_strategy: (land_based_investment_strategy && land_based_investment_strategy.rows) || [],
     funding_agency: (funding_agency && funding_agency.rows) || [],
-    
+
     // TODO Temporarily hard coded list of regions
     region: [
       { id: 1, description: 'West Coast' },
@@ -64,9 +64,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
       { id: 5, description: 'Cariboo' },
       { id: 6, description: 'Skeena' },
       { id: 7, description: 'Omineca' },
-      { id: 8, description: 'Northeast' },
+      { id: 8, description: 'Northeast' }
     ],
-
 
     // TODO Temporarily hard coded list of basic species values for demo purposes
     species: [

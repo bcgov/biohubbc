@@ -51,7 +51,6 @@ export interface IProjectFundingAgency {
   funding_end_date: string;
 }
 
-
 export interface ISpecies {
   id: number;
   focal_species: string[];
