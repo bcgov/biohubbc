@@ -1,6 +1,8 @@
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
-import { MapContainer as LeafletMapContainer, TileLayer, LayersControl } from 'react-leaflet';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup } from 'react-leaflet';
+import MapEditControls from 'utils/MapEditControls';
 
 export interface IMapContainerProps {
   classes?: any;
@@ -15,6 +17,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
+
+      <FeatureGroup>
+        <MapEditControls
+          position='topleft'
+          onEdited={() => console.log("edited")}
+          onCreated={() => console.log("created")}
+          onDeleted={() => console.log("deleted")}
+        />
+      </FeatureGroup>
+
       <LayersControl position="topright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
           <TileLayer
@@ -22,7 +34,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
         </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer checked name="BC Government">
+        <LayersControl.BaseLayer name="BC Government">
           <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
       </LayersControl>
