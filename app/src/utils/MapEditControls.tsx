@@ -69,13 +69,13 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
         return;
       }
 
-      const { map } = props.leaflet;
+      const { map: mapContainer } = props.leaflet;
 
-      map.off(eventHandlers.onCreated, onDrawCreate);
+      mapContainer.off(eventHandlers.onCreated, onDrawCreate);
 
       for (const key in eventHandlers) {
         if (props[key]) {
-          map.off(eventHandlers[key], props[key]);
+          mapContainer.off(eventHandlers[key], props[key]);
         }
       }
     };

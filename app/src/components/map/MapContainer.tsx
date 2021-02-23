@@ -19,14 +19,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       scrollWheelZoom={true}>
       <FeatureGroup>
         <MapEditControls
-          position="topleft"
+          position="topright"
           onEdited={() => console.log('edited')}
           onCreated={() => console.log('created')}
           onDeleted={() => console.log('deleted')}
         />
       </FeatureGroup>
 
-      <LayersControl position="topright">
+      <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
           <TileLayer
             attribution='&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'

@@ -77,6 +77,10 @@ exports[`MapContainer.test MapContainer matches the snapshot 1`] = `
             −
           </a>
         </div>
+      </div>
+      <div
+        class="leaflet-top leaflet-right"
+      >
         <div
           class="leaflet-draw leaflet-control"
         >
@@ -193,7 +197,10 @@ exports[`MapContainer.test MapContainer matches the snapshot 1`] = `
         </div>
       </div>
       <div
-        class="leaflet-top leaflet-right"
+        class="leaflet-bottom leaflet-left"
+      />
+      <div
+        class="leaflet-bottom leaflet-right"
       >
         <div
           aria-haspopup="true"
@@ -245,13 +252,6 @@ exports[`MapContainer.test MapContainer matches the snapshot 1`] = `
             />
           </section>
         </div>
-      </div>
-      <div
-        class="leaflet-bottom leaflet-left"
-      />
-      <div
-        class="leaflet-bottom leaflet-right"
-      >
         <div
           class="leaflet-control-attribution leaflet-control"
         >
