@@ -18,7 +18,8 @@ const eventHandlers = {
   onEditStop: 'draw:editstop',
   onDeleted: 'draw:deleted',
   onDeleteStart: 'draw:deletestart',
-  onDeleteStop: 'draw:deletestop'
+  onDeleteStop: 'draw:deletestop',
+  onMounted: 'draw:mounted'
 };
 
 export interface IMapEditControlsProps {
@@ -42,6 +43,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   const onDrawCreate = (e: any) => {
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
+
     container.addLayer(e.layer);
     onCreated && onCreated(e);
   };
@@ -63,22 +65,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     map.on(eventHandlers.onCreated, onDrawCreate);
 
     onMounted && onMounted(drawRef.current);
-
-    return () => {
-      if (!props.leaflet) {
-        return;
-      }
-
-      const { map: mapContainer } = props.leaflet;
-
-      mapContainer.off(eventHandlers.onCreated, onDrawCreate);
-
-      for (const key in eventHandlers) {
-        if (props[key]) {
-          mapContainer.off(eventHandlers[key], props[key]);
-        }
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -89,6 +75,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     ) {
       return;
     }
+
     const { map } = context;
 
     drawRef.current.remove(map);
@@ -96,6 +83,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     drawRef.current.addTo(map);
 
     const { onMounted } = props;
+
     onMounted && onMounted(drawRef.current);
   }, [props.draw, props.edit, props.position]);
 

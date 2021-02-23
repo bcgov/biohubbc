@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import MapEditControls from './MapEditControls';
 import { FeatureGroup, MapContainer } from 'react-leaflet';
 
 describe('MapEditControls.test', () => {
   const alert = jest.fn();
 
-  test('MapEditControls successfully mounts the controls', async () => {
+  test('MapEditControls successfully mounts the controls', () => {
     render(
       <MapContainer>
         <FeatureGroup>
@@ -14,8 +14,6 @@ describe('MapEditControls.test', () => {
         </FeatureGroup>
       </MapContainer>
     );
-
-    await waitFor(() => {});
 
     expect(alert).toHaveBeenCalledWith('mounted');
   });
