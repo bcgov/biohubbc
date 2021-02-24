@@ -48,17 +48,6 @@ const projectTemplate: ITemplate = {
           }
         }
       },
-      _location: {
-        title: 'Location',
-        type: 'object',
-        properties: {
-          location_description: {
-            type: 'string',
-            title: 'Location Description',
-            maxLength: 2000
-          }
-        }
-      },
       _indigenous_collaboration: {
         type: 'object',
         properties: {
@@ -384,27 +373,6 @@ const projectManagementActionTypeTemplate: ITemplate = {
   }
 };
 
-const projectRegion: ITemplate = {
-  id: 0,
-  name: 'Project Region Template',
-  description: 'Project Region Template',
-  tags: ['project'],
-  data_template: {
-    title: 'Region',
-    type: 'object',
-    required: ['name', 'common_code'],
-    properties: {
-      common_code: {
-        type: 'string',
-        title: 'Common Code'
-      }
-    }
-  },
-  ui_template: {
-    common_code: {}
-  }
-};
-
 const projectCoordinatorTemplate: ITemplate = {
   id: 3,
   name: 'Project Coordinator Template',
@@ -498,6 +466,52 @@ const projectSpeciesTemplate: ITemplate = {
   }
 };
 
+const projectLocationTemplate: ITemplate = {
+  id: 3,
+  name: 'Project Location Template',
+  description: 'Project Location Template',
+  tags: ['project'],
+  data_template: {
+    type: 'object',
+    properties: {
+      regions: {
+        type: 'array',
+        title: '',
+        items: {
+          type: 'string',
+          'x-enum-code': {
+            table: 'region',
+            id_column: 'description', // TODO should be a unique identifier
+            text_column: 'description'
+          }
+        },
+        uniqueItems: true
+      },
+      location: {
+        title: '',
+        type: 'object',
+        properties: {
+          location_description: {
+            type: 'string',
+            title: 'Location Description',
+            maxLength: 2000
+          }
+        }
+      }
+    }
+  },
+  ui_template: {
+    regions: {
+      'ui:widget': 'multi-select-autocomplete'
+    },
+    location: {
+      location_description: {
+        'ui:widget': 'textarea'
+      }
+    }
+  }
+};
+
 export {
   projectTemplate,
   projectFundingAgencyTemplate,
@@ -505,7 +519,7 @@ export {
   projectLandBasedInvestmentStrategyTemplate,
   projectManagementActionsTemplate,
   projectManagementActionTypeTemplate,
-  projectRegion,
   projectCoordinatorTemplate,
+  projectLocationTemplate,
   projectSpeciesTemplate
 };

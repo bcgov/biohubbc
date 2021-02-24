@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PostProjectObject, PostSpeciesObject } from '../models/project';
+import { PostProjectObject, PostSpeciesObject, PostProjectRegionObject } from '../models/project';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('queries/project-queries');
@@ -194,7 +194,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 export const getProjectsSQL = (): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectsSQL', message: 'SQL statement - retrieve projects' });
 
-  // TODO these fields were chosen arbitarily based on having a small
+  // TODO these fields were chosen arbitrarily based on having a small
   const sqlStatement = SQL`
     SELECT
       id,
@@ -210,6 +210,45 @@ export const getProjectsSQL = (): SQLStatement | null => {
 
   defaultLog.debug({
     label: 'getProjectsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a project region row.
+ *
+ * @param {PostProjectRegionObject} projectRegion
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectRegionSQL = (
+  projectRegion: PostProjectRegionObject,
+  projectId: number
+): SQLStatement | null => {
+  defaultLog.debug({ label: 'postProjectRegionSQL', message: 'params', postProjectRegionSQL, projectId });
+
+  if (!projectRegion || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+
+      INSERT INTO project_region (
+        p_id,
+        region_name
+      ) VALUES (
+        ${projectId},
+        ${projectRegion.region_name}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectRegionSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
