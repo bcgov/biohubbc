@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent, getByText, getByRole } from '@testing-library/react';
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
 
@@ -69,5 +69,24 @@ describe('MapContainer.test', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('MapContainer draws a marker successfully on the map and updates the geometry', () => {
+    const { container } = render(
+      <MapContainer
+        mapId="myMap"
+        classes={classes}
+        geometryState={{ geometry, setGeometry }}
+      />
+    );
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Draw a marker'));
+
+    //@ts-ignore
+    // Click on existing geometry on map to place a marker in that location
+    fireEvent.click(getByRole(container, 'presentation'));
+
+    expect(setGeometry).toHaveBeenCalled();
   });
 });

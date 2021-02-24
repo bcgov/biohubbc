@@ -50,7 +50,6 @@ describe('MapEditControls.test', () => {
           <MapEditControls
             geometry={geometry}
             position="topright"
-            onMounted={() => alert('mounted')}
             draw={{
               rectangle: false
             }}
