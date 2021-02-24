@@ -7,21 +7,27 @@ import { Feature } from 'geojson';
 describe('MapEditControls.test', () => {
   const alert = jest.fn();
 
-  const geometry: Feature[] = [{
-    "type": "Feature",
-    "id": "myGeo",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [
-        [
-          [-128, 55], [-128, 55.5], [-128, 56], [-126, 58], [-128, 55]
+  const geometry: Feature[] = [
+    {
+      type: 'Feature',
+      id: 'myGeo',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-128, 55],
+            [-128, 55.5],
+            [-128, 56],
+            [-126, 58],
+            [-128, 55]
+          ]
         ]
-      ]
-    },
-    "properties": {
-      "name": "Biohub Islands"
+      },
+      properties: {
+        name: 'Biohub Islands'
+      }
     }
-  }];
+  ];
 
   test('MapEditControls successfully mounts the controls', () => {
     render(

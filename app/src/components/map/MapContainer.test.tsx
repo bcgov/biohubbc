@@ -13,21 +13,27 @@ describe('MapContainer.test', () => {
     });
   });
 
-  const geometry: Feature[] = [{
-    "type": "Feature",
-    "id": "myGeo",
-    "geometry": {
-      "type": "Polygon",
-      "coordinates": [
-        [
-          [-128, 55], [-128, 55.5], [-128, 56], [-126, 58], [-128, 55]
+  const geometry: Feature[] = [
+    {
+      type: 'Feature',
+      id: 'myGeo',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-128, 55],
+            [-128, 55.5],
+            [-128, 56],
+            [-126, 58],
+            [-128, 55]
+          ]
         ]
-      ]
-    },
-    "properties": {
-      "name": "Biohub Islands"
+      },
+      properties: {
+        name: 'Biohub Islands'
+      }
     }
-  }];
+  ];
   const setGeometry = jest.fn();
 
   test('MapContainer matches the snapshot with geometries being passed in', () => {
@@ -39,17 +45,19 @@ describe('MapContainer.test', () => {
   });
 
   test('MapContainer matches the snapshot with non editable geos being passed in', () => {
-    const nonEditableGeometries: Feature[] = [{
-      "type": "Feature",
-      "id": "nonEditableGeo",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [125.6, 10.1]
-      },
-      "properties": {
-        "name": "Biodiversity Land"
+    const nonEditableGeometries: Feature[] = [
+      {
+        type: 'Feature',
+        id: 'nonEditableGeo',
+        geometry: {
+          type: 'Point',
+          coordinates: [125.6, 10.1]
+        },
+        properties: {
+          name: 'Biodiversity Land'
+        }
       }
-    }];
+    ];
 
     const { asFragment } = render(
       <MapContainer

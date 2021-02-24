@@ -17,7 +17,7 @@ import '@testing-library/jest-dom/extend-expect';
 const createElementNSOrig = global.document.createElementNS;
 
 global.document.createElementNS = (namespaceURI, qualifiedName) => {
-  if (namespaceURI==='https://www.w3.org/2000/svg' && qualifiedName==='svg') {
+  if (namespaceURI === 'https://www.w3.org/2000/svg' && qualifiedName === 'svg') {
     const element = createElementNSOrig.apply(this, arguments);
     element.createSVGRect = () => {
       // This is intentional
@@ -27,4 +27,4 @@ global.document.createElementNS = (namespaceURI, qualifiedName) => {
   }
 
   return createElementNSOrig.apply(this, arguments);
-}
+};

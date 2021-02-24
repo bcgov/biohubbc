@@ -14,7 +14,12 @@ export interface IMapContainerProps {
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const { classes, mapId, geometryState: { geometry, setGeometry }, nonEditableGeometries } = props;
+  const {
+    classes,
+    mapId,
+    geometryState: { geometry, setGeometry },
+    nonEditableGeometries
+  } = props;
 
   const handleCreated = (e: any) => {
     const newGeo: Feature = e.layer.toGeoJSON();
@@ -34,12 +39,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   return (
-    <LeafletMapContainer
-      className={classes?.map}
-      id={mapId}
-      center={[55, -128]}
-      zoom={9}
-      scrollWheelZoom={true}>
+    <LeafletMapContainer className={classes?.map} id={mapId} center={[55, -128]} zoom={9} scrollWheelZoom={true}>
       <FeatureGroup>
         <MapEditControls position="topright" onCreated={handleCreated} geometry={geometry} />
       </FeatureGroup>
