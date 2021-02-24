@@ -20,16 +20,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const newGeo: Feature = e.layer.toGeoJSON();
 
     // @ts-ignore
-    setGeometry((geometry: Feature[]) => {
-      const geoExists = geometry.some((existingGeo: Feature) => {
+    setGeometry((geo: Feature[]) => {
+      const geoExists = geo.some((existingGeo: Feature) => {
         return booleanEqual(existingGeo, newGeo);
       });
 
       if (geoExists) {
-        return geometry;
+        return geo;
       }
 
-      return [...geometry, newGeo];
+      return [...geo, newGeo];
     });
   };
 
