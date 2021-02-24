@@ -482,7 +482,7 @@ const projectLocationTemplate: ITemplate = {
           'x-enum-code': {
             table: 'region',
             id_column: 'description', // TODO should be a unique identifier
-            text_column: 'description',
+            text_column: 'description'
           }
         },
         uniqueItems: true
