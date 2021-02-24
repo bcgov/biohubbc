@@ -15,7 +15,7 @@ jobs:
   checkEnv:
     name: Check Env variables
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Print Env Vars
         run: |
