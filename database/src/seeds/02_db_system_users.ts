@@ -15,7 +15,8 @@ const systemUsers = [
   { identifier: 'postman', type: 'IDIR' },
   { identifier: 'robmunro', type: 'IDIR' },
   { identifier: 'rstens', type: 'IDIR' },
-  { identifier: 'tadekens', type: 'IDIR' }
+  { identifier: 'tadekens', type: 'IDIR' },
+  { identifier: 'sdevalap', type: 'IDIR' }
 ];
 
 /**
