@@ -39,7 +39,7 @@ describe('MapEditControls.test', () => {
     );
 
     //@ts-ignore
-    expect(getByText(container, "Draw a rectangle")).toBeInTheDocument();
+    expect(getByText(container, 'Draw a rectangle')).toBeInTheDocument();
     expect(alert).toHaveBeenCalledWith('mounted');
   });
 
@@ -60,6 +60,6 @@ describe('MapEditControls.test', () => {
     );
 
     //@ts-ignore
-    expect(queryByText(container, "Draw a rectangle")).toBeNull();
+    expect(queryByText(container, 'Draw a rectangle')).toBeNull();
   });
 });
