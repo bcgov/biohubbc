@@ -145,39 +145,44 @@ function createProject(): RequestHandler {
         );
 
         // Handle ancillary species
-        await Promise.all(
-          req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
-            const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
+        if (req.body.species?.ancillary_species && Array.isArray(req.body.species?.ancillary_species)) {
+          await Promise.all(
+            req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
+              const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
 
-            const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(sanitizedAncillarySpeciesData, projectId);
+              const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(
+                sanitizedAncillarySpeciesData,
+                projectId
+              );
 
-            if (!postAncillarySpeciesSQLStatement) {
-              throw {
-                status: 400,
-                message: 'Failed to build SQL statement'
-              };
-            }
+              if (!postAncillarySpeciesSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
 
-            // Insert into ancillary_species table
-            const createAncillarySpeciesResponse = await connection.query(
-              postAncillarySpeciesSQLStatement.text,
-              postAncillarySpeciesSQLStatement.values
-            );
+              // Insert into ancillary_species table
+              const createAncillarySpeciesResponse = await connection.query(
+                postAncillarySpeciesSQLStatement.text,
+                postAncillarySpeciesSQLStatement.values
+              );
 
-            const ancillarySpeciesResult =
-              (createAncillarySpeciesResponse &&
-                createAncillarySpeciesResponse.rows &&
-                createAncillarySpeciesResponse.rows[0]) ||
-              null;
+              const ancillarySpeciesResult =
+                (createAncillarySpeciesResponse &&
+                  createAncillarySpeciesResponse.rows &&
+                  createAncillarySpeciesResponse.rows[0]) ||
+                null;
 
-            if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
-              throw {
-                status: 400,
-                message: 'Failed to insert into ancillary_species table'
-              };
-            }
-          })
-        );
+              if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into ancillary_species table'
+                };
+              }
+            })
+          );
+        }
 
         // Handle project regions
         await Promise.all(

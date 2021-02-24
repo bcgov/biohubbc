@@ -194,7 +194,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 export const getProjectsSQL = (): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectsSQL', message: 'SQL statement - retrieve projects' });
 
-  // TODO these fields were chosen arbitarily based on having a small
+  // TODO these fields were chosen arbitrarily based on having a small
   const sqlStatement = SQL`
     SELECT
       id,
