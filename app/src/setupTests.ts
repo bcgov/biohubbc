@@ -16,10 +16,10 @@ import '@testing-library/jest-dom/extend-expect';
 */
 const createElementNSOrig = global.document.createElementNS;
 
-global.document.createElementNS = (namespaceURI, qualifiedName) => {
-  if (namespaceURI === 'https://www.w3.org/2000/svg' && qualifiedName === 'svg') {
+global.document.createElementNS = function(namespaceURI, qualifiedName) {
+  if (namespaceURI === 'http://www.w3.org/2000/svg' && qualifiedName === 'svg') {
     const element = createElementNSOrig.apply(this, arguments);
-    element.createSVGRect = () => {
+    element.createSVGRect = function() {
       // This is intentional
     };
 
