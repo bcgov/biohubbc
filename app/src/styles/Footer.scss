@@ -1,0 +1,48 @@
+@import 'colours.scss';
+
+$footerNavSpacing: 1rem;
+
+.app-footer {
+  background-color: $BCgovBlue;
+  border-top: 2px solid $BCgovGold;
+  color: $appFootercolor;
+}
+
+.app-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-footer li + li {
+  margin-left: $footerNavSpacing;
+  padding-left: $footerNavSpacing;
+  border-left: 1px solid #4b5e7e;
+}
+
+.app-footer a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.875rem;
+
+  &:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  // &:focus {
+  //   outline: 4px solid #3B99FC;
+  //   outline-offset: 1px;
+  // }
+}
+
+.app-footer nav {
+  align-items: center;
+}
+
+.app-footer-toolbar {
+  min-height: 46px !important;
+}

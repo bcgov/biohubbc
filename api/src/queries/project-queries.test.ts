@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectObject } from '../models/project';
-import { getProjectSQL, getProjectsSQL, postProjectSQL } from './project-queries';
+import { PostProjectObject, PostProjectRegionObject } from '../models/project';
+import { getProjectSQL, getProjectsSQL, postProjectSQL, postProjectRegionSQL } from './project-queries';
 
 describe('postProjectSQL', () => {
   describe('Null project param provided', () => {
@@ -63,6 +63,47 @@ describe('getProjectSQL', () => {
 describe('getProjectsSQL', () => {
   it('returns a SQLStatement', () => {
     const response = getProjectsSQL();
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectRegionSQL', () => {
+  describe('invalid parameters', () => {
+    it('Null region provided', () => {
+      // force the function to accept a null project region object
+      const projectId = 1;
+      const response = postProjectRegionSQL((null as unknown) as PostProjectRegionObject, projectId);
+
+      expect(response).to.be.null;
+    });
+
+    it('Null region and null projectId provided - should return null', () => {
+      // force the function to accept a null value
+      const response = postProjectRegionSQL((null as unknown) as PostProjectRegionObject, (null as unknown) as number);
+
+      expect(response).to.be.null;
+    });
+
+    it('Valid region with null projectId - should return null', () => {
+      // force the function to accept a null value
+      const response = postProjectRegionSQL((null as unknown) as PostProjectRegionObject, (null as unknown) as number);
+
+      expect(response).to.be.null;
+    });
+  });
+});
+
+describe('valid parameters', () => {
+  it('Valid project region params provided - returns a SQLStatement', () => {
+    const projectId = 1;
+    const obj = {
+      region_name: 'Kootenays'
+    };
+
+    const postProjectRegionObject = new PostProjectRegionObject(obj);
+
+    const response = postProjectRegionSQL(postProjectRegionObject, projectId);
 
     expect(response).to.not.be.null;
   });

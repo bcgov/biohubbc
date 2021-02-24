@@ -58,7 +58,7 @@ export const projectPostBody = {
       }
     },
     species: {
-      title: 'Primary and Seconday Species of Interest',
+      title: 'Primary and Secondary Species of Interest',
       type: 'object',
       properties: {
         focal_species: {
@@ -75,6 +75,24 @@ export const projectPostBody = {
           items: {
             type: 'string',
             description: 'Species Name'
+          }
+        }
+      }
+    },
+    location: {
+      title: 'Location',
+      type: 'object',
+      properties: {
+        location_description: {
+          type: 'string',
+          description: 'Location description'
+        },
+        regions: {
+          type: 'array',
+          description: 'Array of regions',
+          items: {
+            type: 'string',
+            description: 'Region name'
           }
         }
       }

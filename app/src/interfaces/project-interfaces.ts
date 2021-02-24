@@ -51,19 +51,6 @@ export interface IProjectFundingAgency {
   funding_end_date: string;
 }
 
-/**
- * An interface representing the funding angency table.
- *
- * @export
- * @interface IFundingAgency
- */
-export interface IFundingAgency {
-  id: number;
-  name: string;
-  record_effective_date: string;
-  record_end_date?: string;
-}
-
 export interface ISpecies {
   id: number;
   focal_species: string[];
@@ -143,7 +130,6 @@ export interface IProjectRecord extends IFormRecord {
   project: IProject;
   fundingAgency: {
     fundingAgency: IProjectFundingAgency;
-    agency: IFundingAgency;
     landBasedClimateStrategy: ILandBasedInvestmentStrategy;
   };
   managementActions: {

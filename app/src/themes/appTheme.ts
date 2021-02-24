@@ -6,7 +6,7 @@ const appTheme = createMuiTheme({
     // https://material-ui.com/customization/palette/
     primary: {
       light: '#5469a4',
-      main: '#223f75', // BC ID: corporate blue
+      main: '#003366', // BC ID: corporate blue
       dark: '#001949',
       contrastText: '#ffffff'
     },
@@ -23,31 +23,23 @@ const appTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: ['BCSans', '"Noto Sans"', '"Helvetica Neue"', 'Arial', 'sans-serif'].join(',')
+    fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
+    fontSize: 16
   },
   overrides: {
     MuiTypography: {
       // https://material-ui.com/api/typography/
       h1: {
-        fontSize: '3rem'
+        fontSize: '2rem',
+        fontWeight: 700
       },
       h2: {
-        fontSize: '2.5rem',
+        fontSize: '1.5rem',
         fontWeight: 700
       },
       h3: {
-        fontSize: '2rem',
-        fontWeight: 600
-      },
-      h4: {
-        fontSize: '1.5rem',
-        fontWeight: 600
-      },
-      h5: {
-        fontSize: '1.25rem'
-      },
-      h6: {
-        fontSize: '1rem'
+        fontSize: '1.25rem',
+        fontWeight: 700
       }
     },
     MuiCircularProgress: {
