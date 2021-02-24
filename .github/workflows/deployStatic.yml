@@ -26,12 +26,13 @@ jobs:
           echo Git Event Name: ${{ github.event_name }}
           echo Git Event Action: ${{ github.event.action }}
           echo Git Labels: "$LABELS"
+          echo PR in Draft: ${{ github.event.pull_request.draft }}
 
   # Build the Database image
   buildDatabase:
     name: Build Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -63,7 +64,7 @@ jobs:
   buildDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -96,7 +97,7 @@ jobs:
   buildAPI:
     name: Build API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -129,7 +130,7 @@ jobs:
   buildAPP:
     name: Build App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -162,7 +163,7 @@ jobs:
   deployDatabase:
     name: Deploy Database Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -197,7 +198,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -233,7 +234,7 @@ jobs:
   deployAPI:
     name: Deploy API Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -269,7 +270,7 @@ jobs:
   deployAPP:
     name: Deploy App Image
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -304,7 +305,7 @@ jobs:
   clean:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-16.04
-    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' || github.base_ref == 'test') }}
+    if: ${{ github.event.pull_request.merged == true && (github.base_ref == 'dev' || github.base_ref == 'test') && github.event.pull_request.draft == false }}
     needs:
       - deployDatabase
       - deployDatabaseSetup
