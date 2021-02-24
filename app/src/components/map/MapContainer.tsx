@@ -1,25 +1,52 @@
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup } from 'react-leaflet';
+import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup, GeoJSON } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
+import { Feature } from 'geojson';
+import booleanEqual from '@turf/boolean-equal';
 
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
+  geometryState: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
+  nonEditableGeometries?: Feature[];
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
+  const { classes, mapId, geometryState: { geometry, setGeometry }, nonEditableGeometries } = props;
+
+  const handleCreated = (e: any) => {
+    const newGeo: Feature = e.layer.toGeoJSON();
+
+    // @ts-ignore
+    setGeometry((geometry: Feature[]) => {
+      const geoExists = geometry.some((existingGeo: Feature) => {
+        return booleanEqual(existingGeo, newGeo);
+      });
+
+      if (geoExists) {
+        return geometry;
+      }
+
+      return [...geometry, newGeo];
+    });
+  };
+
   return (
     <LeafletMapContainer
-      className={props.classes.map}
-      id={props.mapId}
+      className={classes?.map}
+      id={mapId}
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
       <FeatureGroup>
-        <MapEditControls position="topright" />
+        <MapEditControls position="topright" onCreated={handleCreated} geometry={geometry} />
       </FeatureGroup>
+
+      {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
+        <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo} />
+      ))}
 
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
