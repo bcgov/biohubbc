@@ -73,11 +73,7 @@ describe('MapContainer.test', () => {
 
   test('MapContainer draws a marker successfully on the map and updates the geometry', () => {
     const { container } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        geometryState={{ geometry, setGeometry }}
-      />
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
     //@ts-ignore
