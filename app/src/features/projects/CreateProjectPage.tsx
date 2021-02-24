@@ -18,6 +18,7 @@ import FormContainer from 'components/form/FormContainer';
 import { CreateProjectI18N } from 'constants/i18n';
 import {
   projectCoordinatorTemplate,
+  projectLocationTemplate,
   projectFundingAgencyTemplate,
   projectSpeciesTemplate,
   projectTemplate
@@ -96,6 +97,7 @@ const CreateProjectPage: React.FC = () => {
   const [formStepState, setFormStepState] = useState<IFormStepState[]>([
     { formTemplate: projectTemplate, formData: null },
     { formTemplate: projectCoordinatorTemplate, formData: null },
+    { formTemplate: projectLocationTemplate, formData: null },
     { formTemplate: projectSpeciesTemplate, formData: null },
     { formTemplate: projectFundingAgencyTemplate, formData: null }
   ]);
@@ -189,22 +191,28 @@ const CreateProjectPage: React.FC = () => {
       setSteps([
         {
           stepTitle: 'Project Details',
-          stepSubTitle: 'General information and details about this project',
+          stepSubTitle: 'General information and details about this project.',
           stepContent: getFormStep(0)
         },
         {
           stepTitle: 'Project Coordinator',
-          stepSubTitle: 'Enter contact details for the project coordinator',
+          stepSubTitle: 'Enter contact details for the project coordinator.',
           stepContent: getFormStep(1)
         },
         {
-          stepTitle: 'Project Species',
+          stepTitle: 'Location',
+          stepSubTitle: 'Specify project regions and boundary information.',
           stepContent: getFormStep(2)
         },
         {
-          stepTitle: 'Project Funding',
-          stepSubTitle: 'Specify funding agencies for the project',
+          stepTitle: 'Project Species',
+          stepSubTitle: 'Information about species this project is inventoring or monitoring.',
           stepContent: getFormStep(3)
+        },
+        {
+          stepTitle: 'Project Funding',
+          stepSubTitle: 'Specify funding agencies for the project.',
+          stepContent: getFormStep(4)
         }
       ]);
     };
@@ -262,11 +270,13 @@ const CreateProjectPage: React.FC = () => {
     try {
       const projectData = stripOutKeysAndFlatten(formStepState[0].formData);
       const coordinatorData = stripOutKeysAndFlatten(formStepState[1].formData);
-      const speciesData = stripOutKeysAndFlatten(formStepState[2].formData);
-      const fundingData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const locationData = stripOutKeysAndFlatten(formStepState[2].formData);
+      const speciesData = stripOutKeysAndFlatten(formStepState[3].formData);
+      const fundingData = stripOutKeysAndFlatten(formStepState[4].formData);
 
       const projectPostObject = {
         project: { ...projectData, ...coordinatorData },
+        location: locationData,
         species: speciesData,
         funding: fundingData
       };

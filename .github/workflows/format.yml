@@ -8,7 +8,7 @@ on:
 # TODO add app-ionic when it is ready
 jobs:
   format:
-    name: Running Formater
+    name: Running Formatter
     runs-on: ubuntu-16.04
     steps:
       - uses: actions/checkout@v1
@@ -33,7 +33,7 @@ jobs:
         working-directory: database
         run: npm install
 
-      - name: Run database formater
+      - name: Run database formatter
         working-directory: database
         run: CI=true npm run format
 
