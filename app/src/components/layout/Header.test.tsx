@@ -1,16 +1,20 @@
+import { createMemoryHistory } from 'history';
 import React from 'react';
+import { Router } from 'react-router-dom';
 import renderer from 'react-test-renderer';
 import Header from './Header';
 
-jest.mock('react-router-dom', () => ({
-  useHistory: () => ({
-    push: jest.fn()
-  })
-}));
+const history = createMemoryHistory();
 
-describe('Header', () => {
+describe('NotFoundPage', () => {
   it('renders correctly', () => {
-    const tree = renderer.create(<Header />).toJSON();
+    const tree = renderer
+      .create(
+        <Router history={history}>
+          <Header />
+        </Router>
+      )
+      .toJSON();
 
     expect(tree).toMatchSnapshot();
   });
