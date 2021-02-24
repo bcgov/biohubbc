@@ -112,37 +112,39 @@ function createProject(): RequestHandler {
         projectId = projectResult.id;
 
         // Handle focal species
-        await Promise.all(
-          req.body.species.focal_species.map(async (focalSpecies: string) => {
-            const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
+        if (req.body.species?.focal_species && Array.isArray(req.body.species?.focal_species)) {
+          await Promise.all(
+            req.body.species.focal_species.map(async (focalSpecies: string) => {
+              const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
 
-            const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
+              const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
 
-            if (!postFocalSpeciesSQLStatement) {
-              throw {
-                status: 400,
-                message: 'Failed to build SQL statement'
-              };
-            }
+              if (!postFocalSpeciesSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
 
-            // Insert into focal_species table
-            const createFocalSpeciesResponse = await connection.query(
-              postFocalSpeciesSQLStatement.text,
-              postFocalSpeciesSQLStatement.values
-            );
+              // Insert into focal_species table
+              const createFocalSpeciesResponse = await connection.query(
+                postFocalSpeciesSQLStatement.text,
+                postFocalSpeciesSQLStatement.values
+              );
 
-            const focalSpeciesResult =
-              (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
-              null;
+              const focalSpeciesResult =
+                (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
+                null;
 
-            if (!focalSpeciesResult || !focalSpeciesResult.id) {
-              throw {
-                status: 400,
-                message: 'Failed to insert into focal_species table'
-              };
-            }
-          })
-        );
+              if (!focalSpeciesResult || !focalSpeciesResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into focal_species table'
+                };
+              }
+            })
+          );
+        }
 
         // Handle ancillary species
         if (req.body.species?.ancillary_species && Array.isArray(req.body.species?.ancillary_species)) {
@@ -185,38 +187,40 @@ function createProject(): RequestHandler {
         }
 
         // Handle project regions
-        await Promise.all(
-          req.body.location.regions.map(async (region: string) => {
-            const sanitizedProjectRegionData = new PostProjectRegionObject({ name: region });
-            const postProjectRegionSQLStatement = postProjectRegionSQL(sanitizedProjectRegionData, projectId);
+        if (req.body.location?.regions && Array.isArray(req.body.location?.regions)) {
+          await Promise.all(
+            req.body.location.regions.map(async (region: string) => {
+              const sanitizedProjectRegionData = new PostProjectRegionObject({ name: region });
+              const postProjectRegionSQLStatement = postProjectRegionSQL(sanitizedProjectRegionData, projectId);
 
-            if (!postProjectRegionSQLStatement) {
-              throw {
-                status: 400,
-                message: 'Failed to build SQL statement'
-              };
-            }
+              if (!postProjectRegionSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
 
-            // Insert into project_region table
-            const createProjectRegionResponse = await connection.query(
-              postProjectRegionSQLStatement.text,
-              postProjectRegionSQLStatement.values
-            );
+              // Insert into project_region table
+              const createProjectRegionResponse = await connection.query(
+                postProjectRegionSQLStatement.text,
+                postProjectRegionSQLStatement.values
+              );
 
-            const projectRegionResult =
-              (createProjectRegionResponse &&
-                createProjectRegionResponse.rows &&
-                createProjectRegionResponse.rows[0]) ||
-              null;
+              const projectRegionResult =
+                (createProjectRegionResponse &&
+                  createProjectRegionResponse.rows &&
+                  createProjectRegionResponse.rows[0]) ||
+                null;
 
-            if (!projectRegionResult || !projectRegionResult.id) {
-              throw {
-                status: 400,
-                message: 'Failed to insert into project_region table'
-              };
-            }
-          })
-        );
+              if (!projectRegionResult || !projectRegionResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into project_region table'
+                };
+              }
+            })
+          );
+        }
 
         // TODO insert funding
 
