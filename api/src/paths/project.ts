@@ -2,9 +2,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { PostProjectObject, PostSpeciesObject } from '../models/project';
+import { PostProjectRegionObject, PostProjectObject, PostSpeciesObject } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
-import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postProjectSQL } from '../queries/project-queries';
+import {
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL,
+  postProjectSQL,
+  postProjectRegionSQL
+} from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -71,7 +76,7 @@ function createProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedProjectData = new PostProjectObject(req.body.project);
+    const sanitizedProjectData = new PostProjectObject(req.body);
 
     try {
       const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
@@ -107,74 +112,116 @@ function createProject(): RequestHandler {
         projectId = projectResult.id;
 
         // Handle focal species
-        await Promise.all(
-          req.body.species.focal_species.map(async (focalSpecies: string) => {
-            const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
+        if (req.body.species?.focal_species && Array.isArray(req.body.species?.focal_species)) {
+          await Promise.all(
+            req.body.species.focal_species.map(async (focalSpecies: string) => {
+              const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
 
-            const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
+              const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
 
-            if (!postFocalSpeciesSQLStatement) {
-              throw {
-                status: 400,
-                message: 'Failed to build SQL statement'
-              };
-            }
+              if (!postFocalSpeciesSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
 
-            // Insert into focal_species table
-            const createFocalSpeciesResponse = await connection.query(
-              postFocalSpeciesSQLStatement.text,
-              postFocalSpeciesSQLStatement.values
-            );
+              // Insert into focal_species table
+              const createFocalSpeciesResponse = await connection.query(
+                postFocalSpeciesSQLStatement.text,
+                postFocalSpeciesSQLStatement.values
+              );
 
-            const focalSpeciesResult =
-              (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
-              null;
+              const focalSpeciesResult =
+                (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
+                null;
 
-            if (!focalSpeciesResult || !focalSpeciesResult.id) {
-              throw {
-                status: 400,
-                message: 'Failed to insert into focal_species table'
-              };
-            }
-          })
-        );
+              if (!focalSpeciesResult || !focalSpeciesResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into focal_species table'
+                };
+              }
+            })
+          );
+        }
 
         // Handle ancillary species
-        await Promise.all(
-          req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
-            const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
+        if (req.body.species?.ancillary_species && Array.isArray(req.body.species?.ancillary_species)) {
+          await Promise.all(
+            req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
+              const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
 
-            const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(sanitizedAncillarySpeciesData, projectId);
+              const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(
+                sanitizedAncillarySpeciesData,
+                projectId
+              );
 
-            if (!postAncillarySpeciesSQLStatement) {
-              throw {
-                status: 400,
-                message: 'Failed to build SQL statement'
-              };
-            }
+              if (!postAncillarySpeciesSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
 
-            // Insert into ancillary_species table
-            const createAncillarySpeciesResponse = await connection.query(
-              postAncillarySpeciesSQLStatement.text,
-              postAncillarySpeciesSQLStatement.values
-            );
+              // Insert into ancillary_species table
+              const createAncillarySpeciesResponse = await connection.query(
+                postAncillarySpeciesSQLStatement.text,
+                postAncillarySpeciesSQLStatement.values
+              );
 
-            const ancillarySpeciesResult =
-              (createAncillarySpeciesResponse &&
-                createAncillarySpeciesResponse.rows &&
-                createAncillarySpeciesResponse.rows[0]) ||
-              null;
+              const ancillarySpeciesResult =
+                (createAncillarySpeciesResponse &&
+                  createAncillarySpeciesResponse.rows &&
+                  createAncillarySpeciesResponse.rows[0]) ||
+                null;
 
-            if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
-              throw {
-                status: 400,
-                message: 'Failed to insert into ancillary_species table'
-              };
-            }
-          })
-        );
+              if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into ancillary_species table'
+                };
+              }
+            })
+          );
+        }
 
-        // TODO insert location
+        // Handle project regions
+        if (req.body.location?.regions && Array.isArray(req.body.location?.regions)) {
+          await Promise.all(
+            req.body.location.regions.map(async (region: string) => {
+              const sanitizedProjectRegionData = new PostProjectRegionObject({ name: region });
+              const postProjectRegionSQLStatement = postProjectRegionSQL(sanitizedProjectRegionData, projectId);
+
+              if (!postProjectRegionSQLStatement) {
+                throw {
+                  status: 400,
+                  message: 'Failed to build SQL statement'
+                };
+              }
+
+              // Insert into project_region table
+              const createProjectRegionResponse = await connection.query(
+                postProjectRegionSQLStatement.text,
+                postProjectRegionSQLStatement.values
+              );
+
+              const projectRegionResult =
+                (createProjectRegionResponse &&
+                  createProjectRegionResponse.rows &&
+                  createProjectRegionResponse.rows[0]) ||
+                null;
+
+              if (!projectRegionResult || !projectRegionResult.id) {
+                throw {
+                  status: 400,
+                  message: 'Failed to insert into project_region table'
+                };
+              }
+            })
+          );
+        }
+
         // TODO insert funding
 
         await connection.commit();
