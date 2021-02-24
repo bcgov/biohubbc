@@ -476,7 +476,7 @@ const projectLocationTemplate: ITemplate = {
     properties: {
       regions: {
         type: 'array',
-        title: '',
+        title: 'Regions',
         items: {
           type: 'string',
           'x-enum-code': {
