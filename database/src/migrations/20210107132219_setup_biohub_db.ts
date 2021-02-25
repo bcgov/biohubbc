@@ -24,9 +24,20 @@ export async function up(knex: Knex): Promise<void> {
   const populate_user_identity_source = fs.readFileSync(
     path.join(__dirname, '..', 'release.0.3', 'populate_user_identity_source.sql')
   );
+  const populate_climate_change_initiatives = fs.readFileSync(
+    path.join(__dirname, '..', 'release.0.3', 'populate_climate_change_initiatives.sql')
+  );
+  const populate_management_action_type = fs.readFileSync(
+    path.join(__dirname, '..', 'release.0.3', 'populate_management_action_type.sql')
+  );
+  const populate_land_based_investment_strategy = fs.readFileSync(
+    path.join(__dirname, '..', 'release.0.3', 'populate_land_based_investment_strategy.sql')
+  );
+  const populate_funding_agency = fs.readFileSync(
+    path.join(__dirname, '..', 'release.0.3', 'populate_funding_agency.sql')
+  );
 
   await knex.raw(`
-
     REVOKE ALL PRIVILEGES ON SCHEMA public FROM PUBLIC;
 
     create schema if not exists ${DB_SCHEMA};
@@ -52,7 +63,10 @@ export async function up(knex: Knex): Promise<void> {
     alter DEFAULT PRIVILEGES in SCHEMA ${DB_SCHEMA_DAPI_V1} grant ALL on tables to "${DB_USER_API}";
     alter role "${DB_USER_API}" set search_path to ${DB_SCHEMA_DAPI_V1}, ${DB_SCHEMA};
 
-
+    ${populate_climate_change_initiatives}
+    ${populate_management_action_type}
+    ${populate_land_based_investment_strategy}
+    ${populate_funding_agency}
   `);
 }
 
@@ -60,8 +74,6 @@ export async function down(knex: Knex): Promise<void> {
   const db_setup_down = fs.readFileSync(path.join(__dirname, '..', 'release.0.3', 'db_setup_down.sql'));
 
   await knex.raw(`
-
     ${db_setup_down}
-
   `);
 }

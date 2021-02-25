@@ -6,9 +6,22 @@
 | ---------- | ------- | ------------------------------------ | -------------------- |
 | node       | 10.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
 | npm        | 6.x.x   | https://www.npmjs.com/               | Node Package Manager |
-| PostgreSQL | 9.6     | https://www.postgresql.org/download/ | PSQL database        |
+| PostgreSQL | 12.5    | https://www.postgresql.org/download/ | PSQL database        |
+| PostGIS    | 3       | https://postgis.net/                 | GIS (spatial) tools  |
 
 <br />
+
+# Knex Migrations/Seeds
+
+## Migrations
+
+An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
+
+## Seeds
+
+A set of scripts that populate the database tables with any ephemeral values required for the app to function during development. This can include dummy data so that when the app is running locally, you don't have to manually create a bunch of data in order to experience the app as it would be in a real environment.
+
+Seeds will run in alphanumeric order, so if the order of seeds is important, consider prefixing the file name with a number.
 
 # Port forward to remote database
 
