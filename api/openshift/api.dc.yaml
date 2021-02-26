@@ -76,7 +76,8 @@ objects:
         openshift.io/generated-by: OpenShiftWebConsole
       creationTimestamp: null
       generation: 0
-      labels: null
+      labels:
+        role: api
       name: ${NAME}${SUFFIX}
     spec:
       replicas: '${{REPLICAS}}'
@@ -101,6 +102,7 @@ objects:
           creationTimestamp: null
           labels:
             deploymentConfig: ${NAME}${SUFFIX}
+            role: api
         spec:
           containers:
             - env:
