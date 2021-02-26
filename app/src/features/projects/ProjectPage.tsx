@@ -4,6 +4,9 @@ import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { DropzoneArea } from 'material-ui-dropzone';
+import { UploadProjectArtifactsI18N } from 'constants/i18n';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+
 
 // export interface IFormControlsComponentProps {
 //   id: number;
@@ -54,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
 /**
  * Page to display a single Project.
  *
@@ -69,8 +71,43 @@ const ProjectPage: React.FC = () => {
 
   const classes = useStyles();
 
+  const [files, setFiles] = useState<File[] | null>(null);
+
+  // Whether or not to show the text dialog
+  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: UploadProjectArtifactsI18N.uploadErrorTitle,
+    dialogText: UploadProjectArtifactsI18N.uploadErrorText,
+    open: false,
+    onClose: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    },
+    onOk: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    }
+  });
+
   // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
   const [project, setProject] = useState<IProject | null>(null);
+
+  const handleUpload = async () => {
+    const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
+    };
+
+    if (files && files.length > 0) {
+      try {
+        const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
+
+        if (!uploadResponse) {
+          // TODO do something to handle upload error
+          showErrorDialog({ dialogError: 'Server responded with null.' });
+        }
+      } catch (error) {
+        showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
+      }
+    }
+
+  };
 
   useEffect(() => {
     const getProject = async () => {
@@ -87,7 +124,7 @@ const ProjectPage: React.FC = () => {
     if (!project) {
       getProject();
     }
-  }, [urlParams, biohubApi, project]);
+  }, [urlParams, biohubApi, project, files]);
 
   // const handleChange = () => {};
 
@@ -116,26 +153,22 @@ const ProjectPage: React.FC = () => {
             onFormSubmitSuccess={handleSubmitSuccess}></FormContainer> */}
         </Box>
         <Box>
-          <hr/>
+          <hr />
+          <ErrorDialog {...openErrorDialogProps} />
           <DropzoneArea
-            dropzoneText="Upload project artifacts here"
-            filesLimit={ 10 }
+            dropzoneText="Select files"
+            filesLimit={10}
             onChange={(e) => {
+              setFiles(e);
             }}
             showFileNames={true}
             useChipsForPreview={true}
           />
         </Box>
         <Box>
-
-          <Button
-            variant="contained"
-            color="primary"
-            //onClick={handleNext}
-            className={classes.actionButton}>
-            <Typography variant="body1">Submit</Typography>
+          <Button variant="contained" color="primary" onClick={handleUpload} className={classes.actionButton}>
+            <Typography variant="body1">Upload</Typography>
           </Button>
-
         </Box>
       </Container>
     </Box>

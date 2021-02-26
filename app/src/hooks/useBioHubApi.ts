@@ -8,7 +8,9 @@ import {
   ICreateProjectResponse,
   IMedia,
   IProjectPostObject,
-  ITemplate
+  ITemplate,
+  IUploadProjectArtifactsResponse
+  //IUploadProjectArtifactsResponse
 } from 'interfaces/useBioHubApi-interfaces';
 import { useContext, useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
@@ -74,6 +76,36 @@ export const useBiohubApi = () => {
    */
   const createProject = async (project: IProjectPostObject): Promise<ICreateProjectResponse> => {
     const { data } = await api.post('/api/project', project);
+
+    return data;
+  };
+
+  /**
+   * Upload project artifacts.
+   *
+   * @param projectId
+   * @param files
+   * @return {*} {Promise<IUploadProjectArtifactsResponse>}
+   */
+  const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<IUploadProjectArtifactsResponse> => {
+
+    const req_message = {
+      media: await Promise.all(
+        files.map(async (file: File) => {
+          const base64string = Buffer.from(await file.arrayBuffer()).toString('base64');
+
+          return {
+            file_name: file.name,
+            encoded_file: `data:${file.type};base64,${base64string}`
+          };
+        })
+      )
+    };
+
+
+    console.log('Req message: ', req_message);
+
+    const { data } = await api.post(`/api/projects/${projectId}/artifacts/upload`, req_message);
 
     return data;
   };
@@ -159,6 +191,7 @@ export const useBiohubApi = () => {
     createActivity,
     getAllCodes,
     getApiSpec,
-    getMediaList
+    getMediaList,
+    uploadProjectArtifacts
   };
 };
