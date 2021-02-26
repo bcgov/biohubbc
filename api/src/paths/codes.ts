@@ -29,25 +29,130 @@ GET.apiDoc = {
               management_action_type: {
                 type: 'array',
                 items: {
-                  type: 'object'
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
                 }
               },
               climate_change_initiative: {
                 type: 'array',
                 items: {
-                  type: 'object'
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
                 }
               },
-              land_based_investment_strategy: {
+              first_nations: {
                 type: 'array',
                 items: {
-                  type: 'object'
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
                 }
               },
-              funding_agency: {
+              funding_source: {
                 type: 'array',
                 items: {
-                  type: 'object'
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              investment_action_category: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    fs_id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              project_activity: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              project_type: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              region: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              species: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
                 }
               }
             }
