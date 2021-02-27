@@ -6,7 +6,8 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../constants/roles';
 import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
-import { IMediaItem, MediaBase64 } from '../../../../models/media';
+
+
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/upload');
 
@@ -29,26 +30,16 @@ POST.apiDoc = {
   requestBody: {
     description: 'Artifacts upload post request object.',
     content: {
-      'application/json': {
+      'multipart/form-data': {
         schema: {
           type: 'object',
           properties: {
             media: {
               type: 'array',
-              description: 'An array of artifacts to uplaod',
+              description: 'An array of artifacts to upload',
               items: {
-                type: 'object',
-                required: ['file_name', 'encoded_file'],
-                properties: {
-                  file_name: {
-                    type: 'string',
-                    description: 'The name of the file'
-                  },
-                  encoded_file: {
-                    type: 'string',
-                    description: 'The base64 encoded file content'
-                  }
-                }
+                type: 'string',
+                format: 'binary'
               }
             }
           }
@@ -103,9 +94,11 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'uploadMedia', body: req.body });
 
-    if (!req.body.media || !req.body.media.length) {
+    defaultLog.debug({ label: 'uploadMedia', message: 'files.length', files: req?.files?.length });
+
+
+    if (!req.files || !req.files.length) {
       // no media objects included, skipping media upload step
       throw {
         status: 400,
@@ -120,33 +113,20 @@ export function uploadMedia(): RequestHandler {
       };
     }
 
-    const rawMediaArray: IMediaItem[] = req.body.media;
+    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
-    rawMediaArray.forEach((rawMedia: IMediaItem) => {
-      if (!rawMedia) {
+    rawMediaArray.forEach((file: Express.Multer.File) => {
+      if (!file) {
         return;
       }
+      const key = req.params.projectId + '/' + file.originalname;
 
-      let media: MediaBase64;
-      try {
-        media = new MediaBase64(rawMedia);
 
-        //prefixing mediaName with projectId to create an effective folder structure
-        media.mediaName = req.params.projectId + '/' + media.mediaName;
-      } catch (error) {
-        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
-        throw {
-          status: 400,
-          message: 'Included media was invalid/encoded incorrectly'
-        };
-      }
 
       const metadata = {
-        filename: media.mediaName || '',
-        description: media.mediaDescription || '',
-        date: media.mediaDate || '',
+        filename: key,
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
@@ -154,7 +134,7 @@ export function uploadMedia(): RequestHandler {
       defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
 
       try {
-        s3UploadPromises.push(uploadFileToS3(media, metadata));
+        s3UploadPromises.push(uploadFileToS3(file, metadata));
       } catch (error) {
         defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
         throw {
