@@ -88,24 +88,10 @@ export const useBiohubApi = () => {
    * @return {*} {Promise<IUploadProjectArtifactsResponse>}
    */
   const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<IUploadProjectArtifactsResponse> => {
-    // const req_message = {
-    //   media: await Promise.all(
-    //     files.map(async (file: File) => {
-    //       const base64string = Buffer.from(await file.arrayBuffer()).toString('base64');
-
-    //       return {
-    //         file_name: file.name,
-    //         encoded_file: `data:${file.type};base64,${base64string}`
-    //       };
-    //     })
-    //   )
-    // };
 
     const req_message = new FormData();
 
     files.forEach((file)=> req_message.append("media", file));
-
-    //defaultLog.debug({ label: 'uploadMedia', message: 'body', body: req.body });
 
     console.log('Req message: ', req_message);
 
