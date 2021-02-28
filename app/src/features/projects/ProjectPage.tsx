@@ -1,11 +1,12 @@
-import { Box, Button, CircularProgress, Container, Typography, makeStyles } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, makeStyles, Typography } from '@material-ui/core';
+//import { AttachFile } from '@material-ui/icons';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { UploadProjectArtifactsI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
+import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { DropzoneArea } from 'material-ui-dropzone';
-import { UploadProjectArtifactsI18N } from 'constants/i18n';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 
 
 // export interface IFormControlsComponentProps {
@@ -71,7 +72,9 @@ const ProjectPage: React.FC = () => {
 
   const classes = useStyles();
 
-  const [files, setFiles] = useState<File[] | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [dropzoneText, setDropzoneText] = useState<string>('Select files');
+  const [dropzoneInstanceKey, setDropzoneInstanceKey] = useState<number>(0);
 
   // Whether or not to show the text dialog
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
@@ -96,17 +99,40 @@ const ProjectPage: React.FC = () => {
 
     if (files && files.length > 0) {
       try {
+
+        setDropzoneText('Uploading ...');
         const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
 
         if (!uploadResponse) {
-          // TODO do something to handle upload error
+          setDropzoneText('Failed to upload, please try again');
           showErrorDialog({ dialogError: 'Server responded with null.' });
+        } else{
+          setDropzoneText('Success. ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' uploaded');
+
+          // clear the files state
+          setFiles([]);
+
+          // implement the hack to reset the internal state of dropzone
+          // https://github.com/react-dropzone/react-dropzone/issues/881
+          setDropzoneInstanceKey(dropzoneInstanceKey > 0 ? 0 : 1);
         }
+
+
       } catch (error) {
         showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
       }
+    } else {
+      setDropzoneText('Select files');
     }
 
+  };
+
+  const handleDeleteFile = async (f: File) => {
+    let newFiles = files;
+
+    setFiles(newFiles.filter(function(elem: File) {
+        return elem != f;
+    }));
   };
 
   useEffect(() => {
@@ -152,17 +178,22 @@ const ProjectPage: React.FC = () => {
             onFormChange={handleChange}
             onFormSubmitSuccess={handleSubmitSuccess}></FormContainer> */}
         </Box>
-        <Box>
+        <Box key={dropzoneInstanceKey}>
           <hr />
           <ErrorDialog {...openErrorDialogProps} />
           <DropzoneArea
-            dropzoneText="Select files"
+            dropzoneText={dropzoneText}
             filesLimit={10}
+            //fileObjects={files}
             onChange={(e) => {
               setFiles(e);
             }}
+            onDelete={(f) => {
+              handleDeleteFile(f);
+            }}
             showFileNames={true}
             useChipsForPreview={true}
+            showAlerts={['error']}
           />
         </Box>
         <Box>
