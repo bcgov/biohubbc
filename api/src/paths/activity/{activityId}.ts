@@ -23,6 +23,9 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'activityId',
+      schema: {
+        type: 'number'
+      },
       required: true
     }
   ],

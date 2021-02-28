@@ -23,6 +23,9 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
       required: true
     }
   ],
