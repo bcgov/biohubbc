@@ -23,7 +23,6 @@ describe('postProjectSQL', () => {
         location_description: 'location_description_test_data',
         start_date: 'start_date_test_data',
         end_date: 'end_date_test_data',
-        results: 'results_test_data',
         caveats: 'caveats_test_data',
         comments: 'comments_test_data',
         coordinator_first_name: 'coordinator_first_name',

@@ -38,10 +38,6 @@ describe('PostProjectObject', () => {
       expect(projectPostObject.end_date).to.equal(null);
     });
 
-    it('sets results', function () {
-      expect(projectPostObject.results).to.equal(null);
-    });
-
     it('sets caveats', function () {
       expect(projectPostObject.caveats).to.equal(null);
     });
@@ -78,7 +74,6 @@ describe('PostProjectObject', () => {
         management_recovery_action: 'management_recovery_action_test_data',
         start_date: 'start_date_test_data',
         end_date: 'end_date_test_data',
-        results: 'results_test_data',
         caveats: 'caveats_test_data',
         comments: 'comments_test_data',
         coordinator_first_name: 'coordinator_first_name',
@@ -124,10 +119,6 @@ describe('PostProjectObject', () => {
 
     it('sets end_date', function () {
       expect(projectPostObject.end_date).to.equal('end_date_test_data');
-    });
-
-    it('sets results', function () {
-      expect(projectPostObject.results).to.equal('results_test_data');
     });
 
     it('sets caveats', function () {
