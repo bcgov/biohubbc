@@ -8,8 +8,7 @@ import {
   ICreateProjectResponse,
   IMedia,
   IProjectPostObject,
-  ITemplate,
-  IUploadProjectArtifactsResponse
+  ITemplate
 } from 'interfaces/useBioHubApi-interfaces';
 import { useContext, useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
