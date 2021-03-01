@@ -34,9 +34,6 @@ export const projectPostBody = {
         end_date: {
           type: 'string'
         },
-        results: {
-          type: 'string'
-        },
         caveats: {
           type: 'string'
         },
