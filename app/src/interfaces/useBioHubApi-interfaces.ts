@@ -108,7 +108,4 @@ export interface IMedia {
  */
 export interface IUploadProjectArtifactsResponse {
   Key: string;
-  // success: string;
-  // error_code?: number;
-  // error_message?: string;
 }

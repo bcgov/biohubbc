@@ -139,9 +139,6 @@ export function uploadMedia(): RequestHandler {
     });
     const results = await Promise.all(s3UploadPromises);
     defaultLog.debug({ label: 'uploadMedia', message: 'results', results });
-    //return res.status(200).json(results.keys);
-
-    //return await res['Keys'] = results.map((result) => result.Key);
 
     return res.status(200).json(results.map((result) => result.Key));
   };
