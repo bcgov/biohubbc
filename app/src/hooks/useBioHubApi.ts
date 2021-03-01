@@ -86,7 +86,7 @@ export const useBiohubApi = () => {
    * @param files
    * @return {*} {Promise<IUploadProjectArtifactsResponse>}
    */
-  const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<IUploadProjectArtifactsResponse> => {
+  const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<string[]> => {
     const req_message = new FormData();
 
     files.forEach((file) => req_message.append('media', file));
