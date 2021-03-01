@@ -91,8 +91,6 @@ export const useBiohubApi = () => {
 
     files.forEach((file) => req_message.append('media', file));
 
-    console.log('Req message: ', req_message);
-
     const { data } = await api.post(`/api/projects/${projectId}/artifacts/upload`, req_message);
 
     return data;
