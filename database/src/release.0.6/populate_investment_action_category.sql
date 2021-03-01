@@ -40,3 +40,10 @@ insert into investment_action_category (fs_id, record_effective_date, name) valu
 insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Together for Wildlife'), now(), 'Action 22');
 insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Together for Wildlife'), now(), 'Action 23');
 insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Together for Wildlife'), now(), 'Action 24');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Caribou Recovery Program'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Habitat Conservation Trust Fund'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Fish and Wildlife Compensation Program'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Ministry of Forests, Lands, Natural Resource Operations, and Rural Development'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Ministry of Environment and Climate Change Strategy'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'Fresh Water Fisheries Society'), now(), 'Not Applicable');
+insert into investment_action_category (fs_id, record_effective_date, name) values ((select id from funding_source where name = 'BC Hydro'), now(), 'Not Applicable');
