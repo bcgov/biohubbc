@@ -104,17 +104,17 @@ const useStyles = makeStyles({
   }
 });
 
-const MultiAutocompleteField2: React.FC<IMultiAutocompleteField> = (props) => {
+const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (props) => {
   const classes = useStyles();
 
   const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
 
-  const getExistingValue = (values: any): IMultiAutocompleteFieldOption[] => {
+  const getExistingValue = (existingValues: any[]): IMultiAutocompleteFieldOption[] => {
     if (!values) {
       return [];
     }
 
-    return props.options.filter((option) => values.includes(option.value));
+    return props.options.filter((option) => existingValues.includes(option.value));
   };
 
   const handleGetOptionSelected = (
@@ -182,4 +182,4 @@ const MultiAutocompleteField2: React.FC<IMultiAutocompleteField> = (props) => {
   );
 };
 
-export default MultiAutocompleteField2;
+export default MultiAutocompleteFieldVariableSize;
