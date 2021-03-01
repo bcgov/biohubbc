@@ -15,6 +15,9 @@ const PORT = Number(process.env.API_PORT);
 
 const BODY_SIZE_LIMIT: string = process.env.BODY_SIZE_LIMIT || '50mb';
 
+// The maximum size allowed for all the files being uploaded at once.  This number is in bytes.
+const MULTI_FILE_SIZE_LIMIT: number = 10485760; //10MB
+
 // Get initial express app
 const app: express.Express = express();
 
@@ -42,7 +45,10 @@ initialize({
   promiseMode: true, // allow endpoint handlers to return promises
   consumesMiddleware: {
     'application/json': bodyParser.json({ limit: BODY_SIZE_LIMIT }),
-    'multipart/form-data': multer({ storage: multer.memoryStorage() }).array('media', 10),
+    'multipart/form-data': multer({
+      storage: multer.memoryStorage(),
+      limits:{ fileSize: MULTI_FILE_SIZE_LIMIT }
+    }).array('media', 10),
     'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: BODY_SIZE_LIMIT, extended: true })
   },
   securityHandlers: {
