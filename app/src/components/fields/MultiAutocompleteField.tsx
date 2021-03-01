@@ -21,12 +21,12 @@ export interface IMultiAutocompleteField {
 const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
   const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
 
-  const getExistingValue = (values: any): IMultiAutocompleteFieldOption[] => {
-    if (!values) {
+  const getExistingValue = (existingValues: any[]): IMultiAutocompleteFieldOption[] => {
+    if (!existingValues) {
       return [];
     }
 
-    return props.options.filter((option) => values.includes(option.value));
+    return props.options.filter((option) => existingValues.includes(option.value));
   };
 
   const handleGetOptionSelected = (

@@ -1,19 +1,5 @@
 import { ITemplate } from 'interfaces/useBioHubApi-interfaces';
 
-// Relations of the database tables (via foreign keys)
-// project
-//   project_climate_initiative
-//   project_funding_agency
-//     funding_agency
-//     land_based_investment_strategy
-//   project_management_actions
-//     management_action_type
-//   project_participation
-//     system_user
-//     project_role
-//   project_region
-//   proponent
-
 const projectTemplate: ITemplate = {
   id: 0,
   name: 'Project Template',
@@ -301,56 +287,6 @@ const projectFundingAgencyTemplate: ITemplate = {
     }
   }
 };
-
-// const fundingAgencyTemplate: ITemplate = {
-//   id: 2,
-//   name: 'Project Agency Template',
-//   description: 'Project Agency Template',
-//   tags: ['project'],
-//   data_template: {
-//     title: 'Agency',
-//     type: 'object',
-//     required: ['name'],
-//     properties: {
-//       name: {
-//         type: 'string',
-//         title: 'Name'
-//       },
-//       _funding_coordinator_agency_name_dates: {
-//         title: 'Agency Dates',
-//         type: 'object',
-//         required: ['record_effective_date', 'record_end_date'],
-//         properties: {
-//           record_effective_date: {
-//             type: 'string',
-//             title: 'Start Date'
-//           },
-//           record_end_date: {
-//             type: 'string',
-//             title: 'End Date'
-//           }
-//         }
-//       }
-//     }
-//   },
-//   ui_template: {
-//     name: {},
-//     _funding_coordinator_agency_name_dates: {
-//       'ui:column-xs': 12,
-//       'ui:column-sm': 6,
-//       'x-date-range-validator': {
-//         start: 'record_effective_date',
-//         end: 'record_end_date'
-//       },
-//       record_effective_date: {
-//         'ui:widget': 'date'
-//       },
-//       record_end_date: {
-//         'ui:widget': 'date'
-//       }
-//     }
-//   }
-// };
 
 const projectLandBasedInvestmentStrategyTemplate: ITemplate = {
   id: 0,

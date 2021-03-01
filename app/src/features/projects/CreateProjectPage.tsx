@@ -248,23 +248,21 @@ const CreateProjectPage: React.FC = () => {
     }
   }, [codes, steps]);
 
-  const handleSaveAndNext = (values: any) => {
-    setSteps((steps) => {
-      let updatedSteps = [...steps];
+  const updateSteps = (values: any) => {
+    setSteps((currentSteps) => {
+      let updatedSteps = [...currentSteps];
       updatedSteps[activeStep].stepValues = values;
       return updatedSteps;
     });
+  };
 
+  const handleSaveAndNext = (values: any) => {
+    updateSteps(values);
     goToNextStep();
   };
 
   const handleSaveAndBack = (values: any) => {
-    setSteps((steps) => {
-      let updatedSteps = [...steps];
-      updatedSteps[activeStep].stepValues = values;
-      return updatedSteps;
-    });
-
+    updateSteps(values);
     goToPreviousStep();
   };
 

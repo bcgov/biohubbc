@@ -1,7 +1,6 @@
 import { Checkbox, TextField } from '@material-ui/core';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { makeStyles } from '@material-ui/core/styles';
 import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
@@ -55,10 +54,8 @@ function useResetCache(data: any) {
 const ListboxComponent = React.forwardRef<HTMLDivElement>(function ListboxComponent(props, ref) {
   const { children, ...other } = props;
   const itemData = React.Children.toArray(children);
-  const theme = useTheme();
-  const smUp = useMediaQuery(theme.breakpoints.up('sm'), { noSsr: true });
   const itemCount = itemData.length;
-  const itemSize = smUp ? 54 : 54;
+  const itemSize = 54;
 
   const getChildSize = (child: React.ReactNode) => {
     if (React.isValidElement(child) && child.type === ListSubheader) {
@@ -107,13 +104,6 @@ const useStyles = makeStyles({
   }
 });
 
-// const renderGroup = (params: AutocompleteRenderGroupParams) => [
-//   <ListSubheader key={params.key} component="div">
-//     {params.group}
-//   </ListSubheader>,
-//   params.children
-// ];
-
 const MultiAutocompleteField2: React.FC<IMultiAutocompleteField> = (props) => {
   const classes = useStyles();
 
@@ -148,12 +138,9 @@ const MultiAutocompleteField2: React.FC<IMultiAutocompleteField> = (props) => {
       options={props.options}
       getOptionLabel={(option) => option.label}
       getOptionSelected={handleGetOptionSelected}
-      // filterOptions={createFilterOptions({ limit: props.filterLimit })}
       disableCloseOnSelect
       disableListWrap
       classes={classes}
-      // renderGroup={renderGroup}
-      // groupBy={(option) => option && option[0] && option[0].toUpperCase()}
       onChange={(event, option) => {
         setFieldValue(
           props.id,
