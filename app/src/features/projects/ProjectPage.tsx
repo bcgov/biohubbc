@@ -99,27 +99,27 @@ const ProjectPage: React.FC = () => {
     if (!files) {
       setDropzoneText('Select files');
       return;
-    } else {
-      try {
-        setDropzoneText('Uploading ...');
-        const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
+    }
 
-        if (!uploadResponse) {
-          setDropzoneText('Failed to upload, please try again');
-          showErrorDialog({ dialogError: 'Server responded with null.' });
-        } else {
-          setDropzoneText('Success. ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' uploaded');
+    try {
+      setDropzoneText('Uploading ...');
+      const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
 
-          // clear the files state
-          setFiles([]);
+      if (!uploadResponse) {
+        setDropzoneText('Failed to upload, please try again');
+        showErrorDialog({ dialogError: 'Server responded with null.' });
+      } else {
+        setDropzoneText('Success. ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' uploaded');
 
-          // implement the hack to reset the internal state of dropzone
-          // https://github.com/react-dropzone/react-dropzone/issues/881
-          setDropzoneInstanceKey(dropzoneInstanceKey > 0 ? 0 : 1);
-        }
-      } catch (error) {
-        showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
+        // clear the files state
+        setFiles([]);
+
+        // implement the hack to reset the internal state of dropzone
+        // https://github.com/react-dropzone/react-dropzone/issues/881
+        setDropzoneInstanceKey(dropzoneInstanceKey > 0 ? 0 : 1);
       }
+    } catch (error) {
+      showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
     }
   };
 

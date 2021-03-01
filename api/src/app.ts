@@ -16,7 +16,7 @@ const PORT = Number(process.env.API_PORT);
 const BODY_SIZE_LIMIT: string = process.env.BODY_SIZE_LIMIT || '50mb';
 
 // The maximum size allowed for all the files being uploaded at once.  This number is in bytes.
-const MULTI_FILE_SIZE_LIMIT = 10485760; //10MB
+const MULTI_FILE_SIZE_LIMIT = 52428800; //50MB
 
 // Get initial express app
 const app: express.Express = express();
