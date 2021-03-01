@@ -1,3 +1,4 @@
+import multer from 'multer';
 import bodyParser from 'body-parser';
 import express from 'express';
 import { initialize } from 'express-openapi';
@@ -41,6 +42,7 @@ initialize({
   promiseMode: true, // allow endpoint handlers to return promises
   consumesMiddleware: {
     'application/json': bodyParser.json({ limit: BODY_SIZE_LIMIT }),
+    'multipart/form-data': multer({ storage: multer.memoryStorage() }).array('media', 10),
     'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: BODY_SIZE_LIMIT, extended: true })
   },
   securityHandlers: {

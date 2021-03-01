@@ -1,6 +1,10 @@
-import { Box, CircularProgress, Container, Typography } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, makeStyles, Typography } from '@material-ui/core';
+//import { AttachFile } from '@material-ui/icons';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { UploadProjectArtifactsI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
+import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
@@ -36,6 +40,23 @@ import { useParams } from 'react-router';
 //   );
 // };
 
+const useStyles = makeStyles((theme) => ({
+  stepper: {
+    backgroundColor: 'transparent'
+  },
+  actionsContainer: {
+    marginBottom: theme.spacing(2)
+  },
+  actionButton: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1)
+  },
+  finishContainer: {
+    padding: theme.spacing(3),
+    backgroundColor: 'transparent'
+  }
+}));
+
 /**
  * Page to display a single Project.
  *
@@ -48,8 +69,68 @@ const ProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
+  const classes = useStyles();
+
+  const [files, setFiles] = useState<File[]>([]);
+  const [dropzoneText, setDropzoneText] = useState<string>('Select files');
+  const [dropzoneInstanceKey, setDropzoneInstanceKey] = useState<number>(0);
+
+  // Whether or not to show the text dialog
+  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: UploadProjectArtifactsI18N.uploadErrorTitle,
+    dialogText: UploadProjectArtifactsI18N.uploadErrorText,
+    open: false,
+    onClose: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    },
+    onOk: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    }
+  });
+
   // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
   const [project, setProject] = useState<IProject | null>(null);
+
+  const handleUpload = async () => {
+    const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
+    };
+
+    if (files && files.length > 0) {
+      try {
+        setDropzoneText('Uploading ...');
+        const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
+
+        if (!uploadResponse) {
+          setDropzoneText('Failed to upload, please try again');
+          showErrorDialog({ dialogError: 'Server responded with null.' });
+        } else {
+          setDropzoneText('Success. ' + files.length + ' file' + (files.length > 1 ? 's' : '') + ' uploaded');
+
+          // clear the files state
+          setFiles([]);
+
+          // implement the hack to reset the internal state of dropzone
+          // https://github.com/react-dropzone/react-dropzone/issues/881
+          setDropzoneInstanceKey(dropzoneInstanceKey > 0 ? 0 : 1);
+        }
+      } catch (error) {
+        showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
+      }
+    } else {
+      setDropzoneText('Select files');
+    }
+  };
+
+  const handleDeleteFile = async (f: File) => {
+    let newFiles = files;
+
+    setFiles(
+      newFiles.filter(function (elem: File) {
+        return elem !== f;
+      })
+    );
+  };
 
   useEffect(() => {
     const getProject = async () => {
@@ -66,7 +147,7 @@ const ProjectPage: React.FC = () => {
     if (!project) {
       getProject();
     }
-  }, [urlParams, biohubApi, project]);
+  }, [urlParams, biohubApi, project, files]);
 
   // const handleChange = () => {};
 
@@ -93,6 +174,29 @@ const ProjectPage: React.FC = () => {
             }}
             onFormChange={handleChange}
             onFormSubmitSuccess={handleSubmitSuccess}></FormContainer> */}
+        </Box>
+        <Box key={dropzoneInstanceKey}>
+          <hr />
+          <ErrorDialog {...openErrorDialogProps} />
+          <DropzoneArea
+            dropzoneText={dropzoneText}
+            filesLimit={10}
+            //fileObjects={files}
+            onChange={(e) => {
+              setFiles(e);
+            }}
+            onDelete={(f) => {
+              handleDeleteFile(f);
+            }}
+            showFileNames={true}
+            useChipsForPreview={true}
+            showAlerts={['error']}
+          />
+        </Box>
+        <Box>
+          <Button variant="contained" color="primary" onClick={handleUpload} className={classes.actionButton}>
+            <Typography variant="body1">Upload</Typography>
+          </Button>
         </Box>
       </Container>
     </Box>
