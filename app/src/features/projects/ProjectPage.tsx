@@ -96,7 +96,7 @@ const ProjectPage: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
     };
 
-    if (!files) {
+    if (!files || !files.length) {
       setDropzoneText('Select files');
       return;
     }
