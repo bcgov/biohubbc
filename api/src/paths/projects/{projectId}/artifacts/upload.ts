@@ -141,8 +141,6 @@ export function uploadMedia(): RequestHandler {
     defaultLog.debug({ label: 'uploadMedia', message: 'results', results });
     //return res.status(200).json(results.keys);
 
-
-
     //return await res['Keys'] = results.map((result) => result.Key);
 
     return res.status(200).json(results.map((result) => result.Key));

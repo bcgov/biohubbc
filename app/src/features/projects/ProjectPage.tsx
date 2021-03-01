@@ -96,7 +96,10 @@ const ProjectPage: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
     };
 
-    if (files && files.length > 0) {
+    if (!files) {
+      setDropzoneText('Select files');
+      return;
+    } else {
       try {
         setDropzoneText('Uploading ...');
         const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
@@ -117,8 +120,6 @@ const ProjectPage: React.FC = () => {
       } catch (error) {
         showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
       }
-    } else {
-      setDropzoneText('Select files');
     }
   };
 
