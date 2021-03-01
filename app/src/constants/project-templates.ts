@@ -435,8 +435,8 @@ const projectSpeciesTemplate: ITemplate = {
           type: 'string',
           'x-enum-code': {
             table: 'species',
-            id_column: 'description', // TODO should be a unique identifier
-            text_column: 'description'
+            id_column: 'name', // TODO should be a unique identifier
+            text_column: 'name'
           }
         },
         uniqueItems: true
@@ -448,8 +448,8 @@ const projectSpeciesTemplate: ITemplate = {
           type: 'string',
           'x-enum-code': {
             table: 'species',
-            id_column: 'description', // TODO should be a unique identifier
-            text_column: 'description'
+            id_column: 'name', // TODO should be a unique identifier
+            text_column: 'name'
           }
         },
         uniqueItems: true
@@ -481,8 +481,8 @@ const projectLocationTemplate: ITemplate = {
           type: 'string',
           'x-enum-code': {
             table: 'region',
-            id_column: 'description', // TODO should be a unique identifier
-            text_column: 'description'
+            id_column: 'name', // TODO should be a unique identifier
+            text_column: 'name'
           }
         },
         uniqueItems: true
