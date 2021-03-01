@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project');
@@ -136,6 +137,7 @@ export class PostProjectObject {
   coordinator_last_name: string;
   coordinator_email_address: string;
   coordinator_agency_name: string;
+  geometry: Feature[]
 
   /**
    * Creates an instance of PostProjectObject.
@@ -161,6 +163,7 @@ export class PostProjectObject {
     this.coordinator_email_address = (obj && obj.project && obj.project.coordinator_email_address) || null;
     this.coordinator_agency_name = (obj && obj.project && obj.project.coordinator_agency_name) || null;
     this.location_description = (obj && obj.location && obj.location.location_description) || null;
+    this.geometry = (obj && obj.project && obj.project.geometry) || null;
   }
 }
 

@@ -1,6 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostProjectObject, PostSpeciesObject, PostProjectRegionObject } from '../models/project';
 import { getLogger } from '../utils/logger';
+import { Feature } from 'geojson';
 
 const defaultLog = getLogger('queries/project-queries');
 
@@ -26,13 +27,13 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
       location_description,
       start_date,
       end_date,
-      results,
       caveats,
       comments,
       coordinator_first_name,
       coordinator_last_name,
       coordinator_email_address,
-      coordinator_agency_name
+      coordinator_agency_name,
+      geog
     ) VALUES (
       ${project.name},
       ${project.objectives},
@@ -41,17 +42,39 @@ export const postProjectSQL = (project: PostProjectObject): SQLStatement | null 
       ${project.location_description},
       ${project.start_date},
       ${project.end_date},
-      ${project.results},
       ${project.caveats},
       ${project.comments},
       ${project.coordinator_first_name},
       ${project.coordinator_last_name},
       ${project.coordinator_email_address},
       ${project.coordinator_agency_name}
+  `;
+
+  if (project.geometry && project.geometry.length) {
+    const geometryCollectionSQL = generateGeometryCollectionSQL(project.geometry);
+
+    sqlStatement.append(SQL`
+      ,public.geography(
+        public.ST_Force2D(
+          public.ST_SetSRID(
+    `);
+
+    sqlStatement.append(geometryCollectionSQL);
+
+    sqlStatement.append(SQL`
+      , 4326)))
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,null
+    `);
+  }
+
+  sqlStatement.append(SQL`
     )
     RETURNING
       id;
-  `;
+  `);
 
   defaultLog.debug({
     label: 'postProjectSQL',
@@ -235,7 +258,6 @@ export const postProjectRegionSQL = (
   }
 
   const sqlStatement: SQLStatement = SQL`
-
       INSERT INTO project_region (
         p_id,
         region_name
@@ -256,3 +278,30 @@ export const postProjectRegionSQL = (
 
   return sqlStatement;
 };
+
+function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
+  if (geometry.length === 1) {
+    const geo = JSON.stringify(geometry[0].geometry);
+
+    return SQL`public.ST_GeomFromGeoJSON(${geo})`;
+  }
+
+  const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(`;
+
+  geometry.forEach((geom: Feature, index: number) => {
+    const geo = JSON.stringify(geom.geometry);
+
+    // as long as it is not the last geometry, keep adding to the ST_collect
+    if (index !== geometry.length - 1) {
+      sqlStatement.append(SQL`
+        public.ST_GeomFromGeoJSON(${geo}),
+      `);
+    } else {
+      sqlStatement.append(SQL`
+        public.ST_GeomFromGeoJSON(${geo})))
+      `);
+    }
+  });
+
+  return sqlStatement;
+}
