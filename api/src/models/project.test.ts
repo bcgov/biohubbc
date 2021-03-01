@@ -15,7 +15,7 @@ describe('PostProjectData', () => {
     });
 
     it('sets objectives', function () {
-      expect(projectPostData.objectives).to.equal(null);
+      expect(projectPostData.objectives).to.equal('');
     });
 
     it('sets scientific_collection_permit_number', function () {
