@@ -165,13 +165,8 @@ const ProjectsPage: React.FC = () => {
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.focal_species_name_list}</TableCell>
                       <TableCell>{row.regions_name_list}</TableCell>
-                      <TableCell>
-                        {row.start_date}
-                      </TableCell>
-                      <TableCell>
-                        {row.end_date}
-                      </TableCell>
-
+                      <TableCell>{row.start_date}</TableCell>
+                      <TableCell>{row.end_date}</TableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>

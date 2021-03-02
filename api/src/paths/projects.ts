@@ -107,8 +107,6 @@ function getProjects(): RequestHandler {
 export function _extractProjects(rows: any[]): any[] {
   const projects: any[] = [];
 
-  defaultLog.debug({ label: 'Projects in the API', message: 'extract projects', rows });
-
   if (rows != null) {
     rows.forEach((row) => {
       const project: any = {
@@ -119,7 +117,6 @@ export function _extractProjects(rows: any[]): any[] {
         start_date: row.start_date,
         end_date: row.end_date,
         location_description: row.location_description
-
       };
 
       projects.push(project);
