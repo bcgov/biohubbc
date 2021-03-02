@@ -153,18 +153,25 @@ const ProjectsPage: React.FC = () => {
                 <TableHead>
                   <TableRow>
                     <StyledTableCell>Project Name</StyledTableCell>
-                    <StyledTableCell>Dates</StyledTableCell>
+                    <StyledTableCell>Species</StyledTableCell>
                     <StyledTableCell>Location</StyledTableCell>
+                    <StyledTableCell>Start Date</StyledTableCell>
+                    <StyledTableCell>End Date</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {projects.map((row) => (
                     <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
                       <TableCell>{row.name}</TableCell>
-                      <TableCell>
-                        {row.start_date} - {row.end_date}
-                      </TableCell>
+                      <TableCell>"Focal species 1, Focal Species 2 "</TableCell>
                       <TableCell>{row.location_description}</TableCell>
+                      <TableCell>
+                        {row.start_date}
+                      </TableCell>
+                      <TableCell>
+                        {row.end_date}
+                      </TableCell>
+
                     </StyledTableRow>
                   ))}
                 </TableBody>
