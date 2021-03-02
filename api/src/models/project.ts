@@ -115,94 +115,197 @@ export interface IProjectRegion {
 // export interface IProjectParticipation {}
 
 /**
- * Model for the project table.
+ * Processes all POST /project request data.
  *
  * @export
  * @class PostProjectObject
  */
 export class PostProjectObject {
+  coordinator: PostCoordinatorData;
+  permit: PostPermitData;
+  project: PostProjectData;
+  location: PostLocationData;
+  species: PostSpeciesData;
+  funding: PostFundingData;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
+
+    this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
+    this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
+    this.project = (obj?.project && new PostProjectData(obj.project)) || null;
+    this.species = (obj?.project && new PostSpeciesData(obj.species)) || null;
+    this.location = (obj?.location && new PostLocationData(obj.location)) || null;
+    this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
+  }
+}
+
+/**
+ * Processes POST /project coordinator data
+ *
+ * @export
+ * @class PostCoordinatorData
+ */
+export class PostCoordinatorData {
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  coordinator_agency: string;
+  share_contact_details: boolean;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostCoordinatorData', message: 'params', obj });
+
+    this.first_name = obj?.first_name || null;
+    this.last_name = obj?.last_name || null;
+    this.email_address = obj?.email_address || null;
+    this.coordinator_agency = obj?.coordinator_agency || null;
+    this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
+  }
+}
+
+export interface IPostPermit {
+  permit_number: string;
+  sampling_conducted: boolean;
+}
+
+/**
+ * Processes POST /project permit data
+ *
+ * @export
+ * @class PostPermitData
+ */
+export class PostPermitData {
+  permits: IPostPermit[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostPermitData', message: 'params', obj });
+
+    this.permits =
+      (obj?.permits?.length &&
+        obj.permits.map((item: any) => {
+          return {
+            permit_number: item.permit_number,
+            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+          };
+        })) ||
+      [];
+  }
+}
+
+/**
+ * Processes POST /project project data.
+ *
+ * @export
+ * @class PostProjectData
+ */
+export class PostProjectData {
   name: string;
+  type: string;
   objectives: string;
   scientific_collection_permit_number: string;
   management_recovery_action: string;
-  location_description: string;
   start_date: string;
   end_date: string;
   caveats: string;
   comments: string;
-  coordinator_first_name: string;
-  coordinator_last_name: string;
-  coordinator_email_address: string;
-  coordinator_agency_name: string;
 
-  /**
-   * Creates an instance of PostProjectObject.
-   *
-   * @param {*} [obj]
-   * @memberof PostProjectObject
-   */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
+    defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
-    this.name = (obj && obj.project && obj.project.name) || null;
-    this.objectives = (obj && obj.project && obj.project.objectives) || null;
-    this.scientific_collection_permit_number =
-      (obj && obj.project && obj.project.scientific_collection_permit_number) || null;
-    this.management_recovery_action = (obj && obj.project && obj.project.management_recovery_action) || null;
-    this.start_date = (obj && obj.project && obj.project.start_date) || null;
-    this.end_date = (obj && obj.project && obj.project.end_date) || null;
-    this.caveats = (obj && obj.project && obj.project.caveats) || null;
-    this.comments = (obj && obj.project && obj.project.comments) || null;
-    this.coordinator_first_name = (obj && obj.project && obj.project.coordinator_first_name) || null;
-    this.coordinator_last_name = (obj && obj.project && obj.project.coordinator_last_name) || null;
-    this.coordinator_email_address = (obj && obj.project && obj.project.coordinator_email_address) || null;
-    this.coordinator_agency_name = (obj && obj.project && obj.project.coordinator_agency_name) || null;
-    this.location_description = (obj && obj.location && obj.location.location_description) || null;
+    this.name = obj?.project_name || null;
+    this.type = obj?.type || null;
+    this.objectives = obj?.objectives || '';
+    this.scientific_collection_permit_number = obj?.scientific_collection_permit_number || null;
+    this.management_recovery_action = obj?.management_recovery_action || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
+    this.caveats = obj?.caveats || null;
+    this.comments = obj?.comments || null;
   }
 }
 
 /**
- * Model for the focal and ancillary species table.
+ * Processes POST /project location data
  *
  * @export
- * @class PostSpeciesObject
+ * @class PostLocationData
  */
-export class PostSpeciesObject {
-  name: string;
-  uniform_resource_locator: string;
+export class PostLocationData {
+  location_description: string;
+  regions: string[];
 
-  /**
-   * Creates an instance of PostSpeciesObject.
-   *
-   * @param {*} [obj]
-   * @memberof PostSpeciesObject
-   */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostSpeciesObject', message: 'params', obj });
+    defaultLog.debug({ label: 'PostLocationData', message: 'params', obj });
 
-    this.name = (obj && obj.name) || null;
-    this.uniform_resource_locator = (obj && obj.uniform_resource_locator) || null;
+    this.location_description = (obj && obj.location_description) || null;
+    this.regions = (obj?.regions?.length && obj.regions) || [];
   }
 }
 
 /**
- * Model for the project region table.
+ * Processes POST /project species data
  *
  * @export
- * @class PostProjectRegionObject
+ * @class PostSpeciesData
  */
-export class PostProjectRegionObject {
-  region_name: string;
+export class PostSpeciesData {
+  focal_species: string[];
+  ancillary_species: string[];
 
-  /**
-   * Creates an instance of PostProjectRegionObject.
-   *
-   * @param {*} [obj]
-   * @memberof PostProjectRegionObject
-   */
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostProjectRegionObject', message: 'params', obj });
+    defaultLog.debug({ label: 'PostSpeciesData', message: 'params', obj });
 
-    this.region_name = (obj && obj.name) || null;
+    this.focal_species = (obj?.focal_species.length && obj?.focal_species) || [];
+    this.ancillary_species = (obj?.ancillary_species.length && obj?.ancillary_species) || [];
+  }
+}
+
+/**
+ * A single project funding agency.
+ *
+ * @See PostFundingData
+ *
+ * @export
+ * @class PostLocationData
+ */
+export class PostFundingSource {
+  agency_name: string;
+  investment_action_category: number;
+  agency_project_id: string;
+  funding_amount: number;
+  start_date: string;
+  end_date: string;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
+
+    this.agency_name = obj?.agency_name || null;
+    this.investment_action_category = obj?.investment_action_category || null;
+    this.agency_project_id = obj?.agency_project_id || null;
+    this.funding_amount = obj?.funding_amount || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
+  }
+}
+
+/**
+ * Processes POST /project location data
+ *
+ * @export
+ * @class PostLocationData
+ */
+export class PostFundingData {
+  funding_agencies: PostFundingSource[];
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
+
+    this.funding_agencies =
+      (obj?.funding_agencies.length && obj.funding_agencies.map((item: any) => new PostFundingSource(item))) || [];
+    this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
+    this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
   }
 }

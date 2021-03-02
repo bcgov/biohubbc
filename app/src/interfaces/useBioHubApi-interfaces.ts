@@ -1,4 +1,9 @@
-import { IProject, IProjectFundingAgency, IProjectRegion, ISpecies } from './project-interfaces';
+import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
+import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
+import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
+import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
+import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
+import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
 /**
  * The parent type that an object must conform to, at a minimum, to be rendered via the FormContainer.tsx
@@ -68,16 +73,16 @@ export interface ITemplate {
 /**
  * Create project post body.
  *
- * TODO this is an interim (incomplete) version of the final project post object
- *
  * @export
  * @interface IProjectPostObject
  */
 export interface IProjectPostObject {
-  project: IProject;
-  funding: IProjectFundingAgency;
-  location: IProjectRegion;
-  species: ISpecies;
+  coordinator: IProjectCoordinatorForm;
+  permit: IProjectPermitForm;
+  project: IProjectDetailsForm;
+  species: IProjectSpeciesForm;
+  location: IProjectLocationForm;
+  funding: IProjectFundingForm;
 }
 
 /**
@@ -108,4 +113,22 @@ export interface IMedia {
  */
 export interface IUploadProjectArtifactsResponse {
   Key: string;
+}
+
+/**
+ * Get all codes response object.
+ *
+ * @export
+ * @interface IGetAllCodesResponse
+ */
+export interface IGetAllCodesResponse {
+  management_action_type: { id: number; name: string }[];
+  climate_change_initiative: { id: number; name: string }[];
+  first_nations: { id: number; name: string }[];
+  funding_source: { id: number; name: string }[];
+  investment_action_category: { id: number; fs_id: number; name: string }[];
+  project_activity: { id: number; name: string }[];
+  project_type: { id: number; name: string }[];
+  region: { id: number; name: string }[];
+  species: { id: number; name: string }[];
 }

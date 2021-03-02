@@ -2,13 +2,13 @@ import { WidgetProps } from '@rjsf/core';
 import { cleanup, render } from '@testing-library/react';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import MultiSelectAutoComplete from './MultiSelectAutoComplete';
+import MultiSelectAutocomplete from './MultiSelectAutocomplete';
 
 const renderContainer = (props: WidgetProps) => {
-  return render(<MultiSelectAutoComplete {...props} />);
+  return render(<MultiSelectAutocomplete {...props} />);
 };
 
-describe('MultiSelectAutoComplete', () => {
+describe('MultiSelectAutocomplete', () => {
   afterEach(() => {
     cleanup();
   });

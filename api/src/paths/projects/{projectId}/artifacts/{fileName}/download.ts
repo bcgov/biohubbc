@@ -20,11 +20,17 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
       required: true
     },
     {
       in: 'path',
       name: 'fileName',
+      schema: {
+        type: 'string'
+      },
       required: true
     }
   ],

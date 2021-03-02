@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Divider,
   makeStyles,
   Paper,
   Step,
@@ -14,27 +15,43 @@ import {
 import { ArrowBack } from '@material-ui/icons';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import FormContainer from 'components/form/FormContainer';
 import { CreateProjectI18N } from 'constants/i18n';
-import {
-  projectCoordinatorTemplate,
-  projectLocationTemplate,
-  projectFundingAgencyTemplate,
-  projectSpeciesTemplate,
-  projectTemplate
-} from 'constants/project-templates';
+import ProjectCoordinatorForm, {
+  ProjectCoordinatorInitialValues,
+  ProjectCoordinatorYupSchema
+} from 'features/projects/components/ProjectCoordinatorForm';
+import ProjectDetailsForm, {
+  ProjectDetailsFormInitialValues,
+  ProjectDetailsFormYupSchema
+} from 'features/projects/components/ProjectDetailsForm';
+import ProjectFundingForm, {
+  ProjectFundingFormInitialValues,
+  ProjectFundingFormYupSchema
+} from 'features/projects/components/ProjectFundingForm';
+import ProjectPermitForm, {
+  ProjectPermitFormInitialValues,
+  ProjectPermitFormYupSchema
+} from 'features/projects/components/ProjectPermitForm';
+import ProjectSpeciesForm, {
+  ProjectSpeciesFormInitialValues,
+  ProjectSpeciesFormYupSchema
+} from 'features/projects/components/ProjectSpeciesForm';
+import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodesResponse, IProjectPostObject } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
-import { autoParseCustomValidators, getCustomValidator } from 'rjsf/business-rules/customValidation';
-import { stripOutKeysAndFlatten } from 'utils/JsonUtils';
-import { populateTemplateWithCodes } from 'utils/TemplateUtils';
+import ProjectLocationForm, {
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from './components/ProjectLocationForm';
 
 export interface ICreateProjectStep {
   stepTitle: string;
   stepSubTitle?: string;
   stepContent: any;
+  stepValues: any;
+  stepValidation?: any;
 }
 
 export interface IFormStepState {
@@ -47,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'transparent'
   },
   actionsContainer: {
+    marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2)
   },
   actionButton: {
@@ -65,17 +83,17 @@ const useStyles = makeStyles((theme) => ({
  * @return {*}
  */
 const CreateProjectPage: React.FC = () => {
+  const classes = useStyles();
+
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
 
-  const classes = useStyles();
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(true);
-  const [isLoadingTemplates, setIsLoadingTemplates] = useState(true);
-
   // Tracks the current stepper step
   const [activeStep, setActiveStep] = useState(0);
+
+  // Steps for the create project workflow
+  const [steps, setSteps] = useState<ICreateProjectStep[]>([]);
 
   // Whether or not to show the 'Are you sure you want to cancel' dialog
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
@@ -93,163 +111,158 @@ const CreateProjectPage: React.FC = () => {
     }
   });
 
-  // Tracks various pieces of state for each form
-  const [formStepState, setFormStepState] = useState<IFormStepState[]>([
-    { formTemplate: projectTemplate, formData: null },
-    { formTemplate: projectCoordinatorTemplate, formData: null },
-    { formTemplate: projectLocationTemplate, formData: null },
-    { formTemplate: projectSpeciesTemplate, formData: null },
-    { formTemplate: projectFundingAgencyTemplate, formData: null }
-  ]);
+  const [codes, setCodes] = useState<IGetAllCodesResponse>();
 
-  const [formRefs, setFormRefs] = useState<any[]>([null, null, null, null]);
-
-  // Codes used in form steps
-  const [codes, setCodes] = useState(null);
-
-  // Steps for the create project workflow
-  const [steps, setSteps] = useState<ICreateProjectStep[]>([]);
+  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
   // Get code sets
+  // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
   useEffect(() => {
     const getAllCodes = async () => {
       const response = await biohubApi.getAllCodes();
 
       if (!response) {
-        // TODO error handling/user messaging - Cant create a project if requried code sets fail to fetch
+        // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
       }
 
       setCodes(() => {
         setIsLoadingCodes(false);
-
         return response;
       });
     };
 
-    if (isLoadingCodes) {
+    if (!isLoadingCodes && !codes) {
       getAllCodes();
+      setIsLoadingCodes(true);
     }
-  }, [biohubApi, isLoadingCodes]);
-
-  // Populate template `x-enum-code` enums from code sets
-  useEffect(() => {
-    const addCodesToFormStepTemplates = () => {
-      setFormStepState((currentState) => {
-        setIsLoadingTemplates(false);
-
-        // For each form step state, traverse each template and populate any matching code set enums
-        return currentState.map((stepState: IFormStepState) => {
-          const updatedFormTemplate = populateTemplateWithCodes(codes, stepState.formTemplate);
-          return { ...stepState, formTemplate: updatedFormTemplate };
-        });
-      });
-    };
-
-    if (!isLoadingCodes && isLoadingTemplates) {
-      addCodesToFormStepTemplates();
-    }
-  }, [isLoadingCodes, isLoadingTemplates, codes]);
+  }, [biohubApi, isLoadingCodes, codes]);
 
   // Define steps
   useEffect(() => {
-    const handleSaveAndNext = (event: any) => {
-      setFormStepState((currentFormStepState) => {
-        const newFormStepState = [...currentFormStepState];
-        newFormStepState[activeStep] = {
-          ...newFormStepState[activeStep],
-          formData: event.formData
-        };
-
-        return newFormStepState;
-      });
-
-      goToNextStep();
-    };
-
-    const getFormStep = (index: number) => {
-      return (
-        <FormContainer
-          record={formStepState[index].formData}
-          template={formStepState[index].formTemplate}
-          setFormRef={(formRef) => {
-            // Save a reference to the form, which will be used for triggering validation, and getting information about
-            // the state of the form.
-            setFormRefs((currentFormRefs) => {
-              const newFormRefs = [...currentFormRefs];
-              newFormRefs[index] = formRef;
-              return newFormRefs;
-            });
-          }}
-          customValidation={getCustomValidator(autoParseCustomValidators(formStepState[index].formTemplate))}
-          customErrorTransformer={getCustomErrorTransformer()}
-          onFormSubmitSuccess={handleSaveAndNext}
-        />
-      );
-    };
-
     const setFormSteps = () => {
       setSteps([
         {
-          stepTitle: 'Project Details',
-          stepSubTitle: 'General information and details about this project.',
-          stepContent: getFormStep(0)
+          stepTitle: 'Project Coordinator',
+          stepSubTitle: 'Enter contact details for the project coordinator',
+          stepContent: <ProjectCoordinatorForm />,
+          stepValues: ProjectCoordinatorInitialValues,
+          stepValidation: ProjectCoordinatorYupSchema
         },
         {
-          stepTitle: 'Project Coordinator',
-          stepSubTitle: 'Enter contact details for the project coordinator.',
-          stepContent: getFormStep(1)
+          stepTitle: 'Permits',
+          stepSubTitle: 'Enter permits associated with this project',
+          stepContent: <ProjectPermitForm />,
+          stepValues: ProjectPermitFormInitialValues,
+          stepValidation: ProjectPermitFormYupSchema
+        },
+        {
+          stepTitle: 'General Information',
+          stepSubTitle: 'General information and details about this project',
+          stepContent: (
+            <ProjectDetailsForm
+              project_type={
+                codes?.project_type?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              project_activity={
+                codes?.project_activity?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              climate_change_initiative={
+                codes?.climate_change_initiative?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          stepValues: ProjectDetailsFormInitialValues,
+          stepValidation: ProjectDetailsFormYupSchema
         },
         {
           stepTitle: 'Location',
-          stepSubTitle: 'Specify project regions and boundary information.',
-          stepContent: getFormStep(2)
+          stepSubTitle: 'Specify project regions and boundary information',
+          stepContent: (
+            <ProjectLocationForm
+              region={
+                codes?.region?.map((item) => {
+                  return { value: item.name, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          stepValues: ProjectLocationFormInitialValues,
+          stepValidation: ProjectLocationFormYupSchema
         },
         {
-          stepTitle: 'Project Species',
-          stepSubTitle: 'Information about species this project is inventoring or monitoring.',
-          stepContent: getFormStep(3)
+          stepTitle: 'Species',
+          stepSubTitle: 'Information about species this project is inventorying or monitoring',
+          stepContent: (
+            <ProjectSpeciesForm
+              species={
+                codes?.species?.map((item) => {
+                  return { value: item.name, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          stepValues: ProjectSpeciesFormInitialValues,
+          stepValidation: ProjectSpeciesFormYupSchema
         },
         {
-          stepTitle: 'Project Funding',
-          stepSubTitle: 'Specify funding agencies for the project.',
-          stepContent: getFormStep(4)
+          stepTitle: 'Funding and Partnerships',
+          stepSubTitle: 'Specify funding and partnerships for the project',
+          stepContent: (
+            <ProjectFundingForm
+              funding_sources={
+                codes?.funding_source?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              investment_action_category={
+                codes?.investment_action_category?.map((item) => {
+                  return { value: item.id, fs_id: item.fs_id, label: item.name };
+                }) || []
+              }
+              first_nations={
+                codes?.first_nations?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              stakeholder_partnerships={
+                codes?.funding_source?.map((item) => {
+                  return { value: item.name, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          stepValues: ProjectFundingFormInitialValues,
+          stepValidation: ProjectFundingFormYupSchema
         }
       ]);
     };
 
-    if (!isLoadingCodes && !isLoadingTemplates) {
+    if (codes && !steps?.length) {
       setFormSteps();
     }
-  }, [isLoadingCodes, isLoadingTemplates, formStepState, activeStep]);
+  }, [codes, steps]);
 
-  const handleCancel = () => {
-    setOpenCancelDialog(true);
-  };
-
-  /**
-   * Submit the form, which will trigger the validation.
-   *
-   * If the validation fails, the `onFormError` prop will be called, if one was provided to the FormContainer.
-   * If the validation passes, the `onFormSubmitSuccess` prop will be called, if one was provided to the FormContainer.
-   */
-  const handleNext = () => {
-    formRefs[activeStep].submit();
-  };
-
-  /**
-   * Save the form data, and go to the previous step.
-   */
-  const handleSaveAndBack = () => {
-    setFormStepState((currentFormStepState) => {
-      const newFormStepState = [...currentFormStepState];
-      newFormStepState[activeStep] = {
-        ...newFormStepState[activeStep],
-        formData: formRefs[activeStep].state.formData
-      };
-
-      return newFormStepState;
+  const updateSteps = (values: any) => {
+    setSteps((currentSteps) => {
+      let updatedSteps = [...currentSteps];
+      updatedSteps[activeStep].stepValues = values;
+      return updatedSteps;
     });
+  };
 
+  const handleSaveAndNext = (values: any) => {
+    updateSteps(values);
+    goToNextStep();
+  };
+
+  const handleSaveAndBack = (values: any) => {
+    updateSteps(values);
     goToPreviousStep();
   };
 
@@ -261,6 +274,22 @@ const CreateProjectPage: React.FC = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const handleCancel = () => {
+    setOpenCancelDialog(true);
+  };
+
+  const handleYesNoDialogClose = () => {
+    setOpenCancelDialog(false);
+  };
+
+  const handleDialogNo = () => {
+    setOpenCancelDialog(false);
+  };
+
+  const handleDialogYes = () => {
+    history.push('/projects');
+  };
+
   /**
    * Handle project creation.
    *
@@ -268,14 +297,17 @@ const CreateProjectPage: React.FC = () => {
    */
   const handleSubmit = async () => {
     try {
-      const projectData = stripOutKeysAndFlatten(formStepState[0].formData);
-      const coordinatorData = stripOutKeysAndFlatten(formStepState[1].formData);
-      const locationData = stripOutKeysAndFlatten(formStepState[2].formData);
-      const speciesData = stripOutKeysAndFlatten(formStepState[3].formData);
-      const fundingData = stripOutKeysAndFlatten(formStepState[4].formData);
+      const coordinatorData = steps[0].stepValues;
+      const permitData = steps[1].stepValues;
+      const generalData = steps[2].stepValues;
+      const locationData = steps[3].stepValues;
+      const speciesData = steps[4].stepValues;
+      const fundingData = steps[5].stepValues;
 
-      const projectPostObject = {
-        project: { ...projectData, ...coordinatorData },
+      const projectPostObject: IProjectPostObject = {
+        coordinator: coordinatorData,
+        permit: permitData,
+        project: generalData,
         location: locationData,
         species: speciesData,
         funding: fundingData
@@ -288,31 +320,17 @@ const CreateProjectPage: React.FC = () => {
         return;
       }
 
-      const createdProjectID: number = response.id;
-
-      history.push(`/projects/${createdProjectID}`);
+      history.push(`/projects/${response.id}`);
     } catch (error) {
       showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
     }
-  };
-
-  const handleYesNoDialogClose = () => {
-    setOpenCancelDialog(false);
-  };
-
-  const handleDialogNo = () => {
-    setOpenCancelDialog(false);
-  };
-
-  const handleDialogYes = () => {
-    history.goBack();
   };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  if (isLoadingCodes || isLoadingTemplates || !steps?.length) {
+  if (!steps?.length) {
     return <CircularProgress />;
   }
 
@@ -342,34 +360,51 @@ const CreateProjectPage: React.FC = () => {
               {steps.map((step) => (
                 <Step key={step.stepTitle}>
                   <StepLabel>
-                    <Typography variant="h4">{step.stepTitle}</Typography>
-                    <Typography variant="h6">{step.stepSubTitle}</Typography>
+                    <Typography variant="h2">{step.stepTitle}</Typography>
+                    <Typography variant="subtitle2">{step.stepSubTitle}</Typography>
                   </StepLabel>
                   <StepContent>
-                    {step.stepContent}
-                    <Box display="flex" justifyContent="space-between" className={classes.actionsContainer}>
-                      <Box>
-                        <Button variant="contained" onClick={handleCancel} className={classes.actionButton}>
-                          <Typography variant="body1">Cancel</Typography>
-                        </Button>
-                      </Box>
-                      <Box>
-                        <Button
-                          disabled={activeStep === 0}
-                          variant="contained"
-                          onClick={handleSaveAndBack}
-                          className={classes.actionButton}>
-                          <Typography variant="body1">Previous</Typography>
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={handleNext}
-                          className={classes.actionButton}>
-                          <Typography variant="body1">Next</Typography>
-                        </Button>
-                      </Box>
-                    </Box>
+                    <Formik
+                      initialValues={step.stepValues}
+                      validationSchema={step.stepValidation}
+                      validateOnBlur={true}
+                      validateOnChange={false}
+                      onSubmit={async (values, helper) => {
+                        handleSaveAndNext(values);
+                      }}>
+                      {(props) => (
+                        <>
+                          {step.stepContent}
+                          <Box my={2}>
+                            <Divider />
+                          </Box>
+                          <Box display="flex" justifyContent="space-between" className={classes.actionsContainer}>
+                            <Box>
+                              <Button variant="contained" onClick={handleCancel} className={classes.actionButton}>
+                                <Typography variant="body1">Cancel</Typography>
+                              </Button>
+                            </Box>
+                            <Box>
+                              <Button
+                                disabled={activeStep === 0}
+                                variant="contained"
+                                onClick={() => handleSaveAndBack(props.values)}
+                                className={classes.actionButton}>
+                                <Typography variant="body1">Previous</Typography>
+                              </Button>
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                onClick={props.submitForm}
+                                className={classes.actionButton}>
+                                <Typography variant="body1">Next</Typography>
+                              </Button>
+                            </Box>
+                          </Box>
+                        </>
+                      )}
+                    </Formik>
                   </StepContent>
                 </Step>
               ))}

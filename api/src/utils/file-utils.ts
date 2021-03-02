@@ -89,7 +89,7 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
 }
 
 // Regex matches a Data URL base64 encoded string, and has matching groups for the content type and raw encoded string
-const base64DataURLRegex = new RegExp(/^data:(\w+\/\w+);base64,(.*)/);
+const base64DataURLRegex = new RegExp(/^data:(\w*\/\w+);base64,(.*)/);
 
 /**
  * Takes a Data URL base64 encoded string, and parses out the contentType (`image/jpeg`, `file/png`, etc) and the
