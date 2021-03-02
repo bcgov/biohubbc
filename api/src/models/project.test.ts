@@ -53,7 +53,6 @@ describe('PostProjectData', () => {
       management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
-      results: 'results_test_data',
       caveats: 'caveats_test_data',
       comments: 'comments_test_data'
     };
