@@ -39,7 +39,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   };
 
   return (
-    <LeafletMapContainer className={classes?.map} id={mapId} center={[55, -128]} zoom={9} scrollWheelZoom={true}>
+    <LeafletMapContainer
+      className={classes?.map}
+      style={{ height: '100%' }}
+      id={mapId}
+      center={[55, -128]}
+      zoom={9}
+      scrollWheelZoom={true}>
       <FeatureGroup>
         <MapEditControls position="topright" onCreated={handleCreated} geometry={geometry} />
       </FeatureGroup>

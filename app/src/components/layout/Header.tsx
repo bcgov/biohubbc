@@ -23,6 +23,10 @@ const Header: React.FC = () => {
         <Link to="/projects" color={'inherit'}>
           Projects
         </Link>
+        {/* Temporary map link for demo */}
+        <Link to="/map" color={'inherit'}>
+          Map
+        </Link>
       </Toolbar>
     </AppBar>
   );
