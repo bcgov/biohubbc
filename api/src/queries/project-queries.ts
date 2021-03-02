@@ -209,8 +209,8 @@ export const getProjectsSQL = (): SQLStatement | null => {
       to_char(p.start_date,'MM/DD/YYYY') as start_date,
       to_char(p.end_date,'MM/DD/YYYY') as end_date,
       p.location_description,
-      string_agg(pr.region_name, ', ') as regions_name_list,
-      string_agg(pfs.name, ', ') as focal_species_name_list
+      string_agg(DISTINCT pr.region_name, ', ') as regions_name_list,
+      string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
     from
       project as p
     left outer join project_region as pr
@@ -224,9 +224,7 @@ export const getProjectsSQL = (): SQLStatement | null => {
       p.management_recovery_action,
       p.start_date,
       p.end_date,
-      p.location_description,
-      pr.region_name,
-      pfs.name ;
+      p.location_description;
   `;
 
   defaultLog.debug({
