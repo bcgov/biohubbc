@@ -17,7 +17,6 @@ export interface IProject {
   location_description: string;
   start_date: string;
   end_date: string;
-  results: string;
   caveats: string;
   comments: string;
   coordinator_first_name: string;
@@ -129,7 +128,6 @@ export class PostProjectObject {
   location_description: string;
   start_date: string;
   end_date: string;
-  results: string;
   caveats: string;
   comments: string;
   coordinator_first_name: string;
@@ -153,7 +151,6 @@ export class PostProjectObject {
     this.management_recovery_action = (obj && obj.project && obj.project.management_recovery_action) || null;
     this.start_date = (obj && obj.project && obj.project.start_date) || null;
     this.end_date = (obj && obj.project && obj.project.end_date) || null;
-    this.results = (obj && obj.project && obj.project.results) || null;
     this.caveats = (obj && obj.project && obj.project.caveats) || null;
     this.comments = (obj && obj.project && obj.project.comments) || null;
     this.coordinator_first_name = (obj && obj.project && obj.project.coordinator_first_name) || null;
