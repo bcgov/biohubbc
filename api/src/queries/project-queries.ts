@@ -202,15 +202,29 @@ export const getProjectsSQL = (): SQLStatement | null => {
   // TODO these fields were chosen arbitrarily based on having a small
   const sqlStatement = SQL`
     SELECT
-      id,
-      name,
-      scientific_collection_permit_number,
-      management_recovery_action,
-      to_char(start_date,'MM/DD/YYYY') as start_date,
-      to_char(end_date,'MM/DD/YYYY') as end_date,
-      location_description
+      p.id,
+      p.name,
+      p.scientific_collection_permit_number,
+      p.management_recovery_action,
+      to_char(p.start_date,'MM/DD/YYYY') as start_date,
+      to_char(p.end_date,'MM/DD/YYYY') as end_date,
+      p.location_description,
+      string_agg(DISTINCT pr.region_name, ', ') as regions_name_list,
+      string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
     from
-      project;
+      project as p
+    left outer join project_region as pr
+      on p.id = pr.p_id
+    left outer join focal_species as pfs
+      on p.id = pfs.p_id
+    group by
+      p.id,
+      p.name,
+      p.scientific_collection_permit_number,
+      p.management_recovery_action,
+      p.start_date,
+      p.end_date,
+      p.location_description;
   `;
 
   defaultLog.debug({
