@@ -35,6 +35,8 @@ export interface IProject {
   coordinator_last_name: string;
   coordinator_email_address: string;
   coordinator_agency_name: string;
+  focal_species_name_list: string;
+  regions_name_list: string;
 }
 
 /**
