@@ -102,3 +102,10 @@ export interface IMedia {
   file_name: string;
   encoded_file: string;
 }
+
+/**
+ * Upload project artifacts response object.
+ */
+export interface IUploadProjectArtifactsResponse {
+  Key: string;
+}

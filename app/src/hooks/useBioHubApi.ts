@@ -79,6 +79,23 @@ export const useBiohubApi = () => {
   };
 
   /**
+   * Upload project artifacts.
+   *
+   * @param projectId
+   * @param files
+   * @return {*} {Promise<IUploadProjectArtifactsResponse>}
+   */
+  const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<string[]> => {
+    const req_message = new FormData();
+
+    files.forEach((file) => req_message.append('media', file));
+
+    const { data } = await api.post(`/api/projects/${projectId}/artifacts/upload`, req_message);
+
+    return data;
+  };
+
+  /**
    * Get a template based on its ID.
    *
    * @param {templateId} templateId
@@ -159,6 +176,7 @@ export const useBiohubApi = () => {
     createActivity,
     getAllCodes,
     getApiSpec,
-    getMediaList
+    getMediaList,
+    uploadProjectArtifacts
   };
 };
