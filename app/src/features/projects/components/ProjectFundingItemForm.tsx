@@ -19,10 +19,10 @@ import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocomple
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 import * as yup from 'yup';
-import { IInvestmentActionCategory } from './ProjectFundingForm';
+import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 
 export interface IProjectFundingFormArrayItem {
-  agency_name: number;
+  agency_id: number;
   investment_action_category: number;
   agency_project_id: string;
   funding_amount: number;
@@ -31,7 +31,7 @@ export interface IProjectFundingFormArrayItem {
 }
 
 export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayItem = {
-  agency_name: 0,
+  agency_id: 0,
   investment_action_category: 0,
   agency_project_id: '',
   funding_amount: 0,
@@ -40,7 +40,7 @@ export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayI
 };
 
 export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
-  agency_name: yup.number().min(1).required('Required'),
+  agency_id: yup.number().min(1).required('Required'),
   investment_action_category: yup.number(),
   agency_project_id: yup.string(),
   funding_amount: yup.number().required('Required'),
@@ -60,7 +60,7 @@ export interface IProjectFundingItemFormProps {
   onSubmit: (values: IProjectFundingFormArrayItem, helper: FormikHelpers<IProjectFundingFormArrayItem>) => void;
   initialValues: IProjectFundingFormArrayItem;
   funding_sources: IMultiAutocompleteFieldOption[];
-  investment_action_category: IInvestmentActionCategory[];
+  investment_action_category: IInvestmentActionCategoryOption[];
 }
 
 /**
@@ -81,12 +81,10 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
       validateOnChange={false}
       onSubmit={props.onSubmit}>
       {({ values, touched, errors, handleChange, handleSubmit, resetForm, setFieldValue }) => {
-        // Only show investment_action_category if certain agency_name values are selected
-        // Toggle investment_action_category label and dropdown values based on chosen agency_name
+        // Only show investment_action_category if certain agency_id values are selected
+        // Toggle investment_action_category label and dropdown values based on chosen agency_id
         const investment_action_category_label =
-          (values.agency_name === 1 && 'Investment Action') ||
-          (values.agency_name === 2 && 'Investment Category') ||
-          null;
+          (values.agency_id === 1 && 'Investment Action') || (values.agency_id === 2 && 'Investment Category') || null;
 
         return (
           <>
@@ -104,24 +102,24 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                      <InputLabel id="agency_name-label" shrink={true}>
+                      <InputLabel id="agency_id-label" shrink={true}>
                         Agency Name
                       </InputLabel>
                       <Select
-                        id="agency_name"
-                        name="agency_name"
-                        labelId="agency_name-label"
+                        id="agency_id"
+                        name="agency_id"
+                        labelId="agency_id-label"
                         label="Agency Name"
-                        value={values.agency_name}
+                        value={values.agency_id}
                         onChange={(event) => {
                           handleChange(event);
-                          // investment_action_category is dependent on agency_name, so reset it if agency_name changes
+                          // investment_action_category is dependent on agency_id, so reset it if agency_id changes
                           setFieldValue(
                             'investment_action_category',
                             ProjectFundingFormArrayItemInitialValues.investment_action_category
                           );
 
-                          // If an agency_name with a `Not Applicable` investment_action_category is chosen, auto select
+                          // If an agency_id with a `Not Applicable` investment_action_category is chosen, auto select
                           // it for the user.
                           if (event.target.value !== 1 && event.target.value !== 2) {
                             setFieldValue(
@@ -131,7 +129,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                             );
                           }
                         }}
-                        error={touched.agency_name && Boolean(errors.agency_name)}
+                        error={touched.agency_id && Boolean(errors.agency_id)}
                         displayEmpty
                         inputProps={{ 'aria-label': 'Agency Name' }}
                         input={<OutlinedInput notched label="Agency Name" />}>
@@ -141,7 +139,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           </MenuItem>
                         ))}
                       </Select>
-                      <FormHelperText>{errors.agency_name}</FormHelperText>
+                      <FormHelperText>{errors.agency_id}</FormHelperText>
                     </FormControl>
                   </Grid>
                   {investment_action_category_label && (
@@ -162,8 +160,8 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           inputProps={{ 'aria-label': `${investment_action_category_label}` }}
                           input={<OutlinedInput notched label={investment_action_category_label} />}>
                           {props.investment_action_category
-                            // Only show the investment action categories whose fs_id matches the agency_name id
-                            .filter((item) => item.fs_id === values.agency_name)
+                            // Only show the investment action categories whose fs_id matches the agency_id id
+                            .filter((item) => item.fs_id === values.agency_id)
                             .map((item) => (
                               <MenuItem key={item.value} value={item.value}>
                                 {item.label}
