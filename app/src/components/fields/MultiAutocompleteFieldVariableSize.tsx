@@ -20,7 +20,6 @@ export interface IMultiAutocompleteField {
   options: IMultiAutocompleteFieldOption[];
   required?: boolean;
   filterLimit?: number;
-  formikProps: any;
 }
 
 function renderRow(props: ListChildComponentProps) {

@@ -1,54 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`NotFoundPage renders correctly 1`] = `
-<header
-  className="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
->
-  <div
-    className="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
+<DocumentFragment>
+  <header
+    class="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
   >
-    <a
-      aria-label="Go to BioHub Home"
-      className="brand"
-      href="/projects"
-      onClick={[Function]}
+    <div
+      class="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
     >
-      <picture>
-        <source
-          media="(min-width: 1200px)"
-          srcSet="gov-bc-logo-horiz.png"
-        />
-        <source
-          media="(min-width: 600px)"
-          srcSet="gov-bc-logo-vert.png"
-        />
-        <img
-          alt="Government of British Columbia"
-          src="gov-bc-logo-vert.png"
-        />
-      </picture>
-      BioHub
-    </a>
-  </div>
-  <div
-    aria-label="Main Navigation"
-    className="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
-    role="navigation"
-  >
-    <a
-      color="inherit"
-      href="/projects"
-      onClick={[Function]}
+      <a
+        aria-label="Go to BioHub Home"
+        class="brand"
+        href="/projects"
+      >
+        <picture>
+          <source
+            media="(min-width: 1200px)"
+            srcset="gov-bc-logo-horiz.png"
+          />
+          <source
+            media="(min-width: 600px)"
+            srcset="gov-bc-logo-vert.png"
+          />
+          <img
+            alt="Government of British Columbia"
+            src="gov-bc-logo-vert.png"
+          />
+        </picture>
+        BioHub
+      </a>
+    </div>
+    <div
+      aria-label="Main Navigation"
+      class="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
+      role="navigation"
     >
-      Projects
-    </a>
-    <a
-      color="inherit"
-      href="/map"
-      onClick={[Function]}
-    >
-      Map
-    </a>
-  </div>
-</header>
+      <a
+        color="inherit"
+        href="/projects"
+      >
+        Projects
+      </a>
+      <a
+        color="inherit"
+        href="/map"
+      >
+        Map
+      </a>
+    </div>
+  </header>
+</DocumentFragment>
 `;

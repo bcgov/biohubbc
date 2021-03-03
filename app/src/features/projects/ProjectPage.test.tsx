@@ -1,10 +1,10 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import { Router } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import ProjectPage from './ProjectPage';
 import { IProject } from 'interfaces/project-interfaces';
+import React from 'react';
+import { Router } from 'react-router';
+import ProjectPage from './ProjectPage';
 
 const history = createMemoryHistory();
 
@@ -17,24 +17,24 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('ProjectPage.test', () => {
+describe('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().getProject.mockClear();
   });
 
   it('renders blank project page', () => {
-    const tree = renderer.create(
+    const { asFragment } = render(
       <Router history={history}>
         <ProjectPage />
       </Router>
     );
 
-    expect(tree.toJSON()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders project page with mock data', () => {
-    const tree = renderer.create(
+    const { asFragment } = render(
       <Router history={history}>
         <ProjectPage />
       </Router>
@@ -53,11 +53,13 @@ describe('ProjectPage.test', () => {
       coordinator_first_name: 'Madonna',
       coordinator_last_name: 'Hunt',
       coordinator_email_address: 'robulic@mailinator.com',
-      coordinator_agency_name: 'Willa Coleman'
+      coordinator_agency_name: 'Willa Coleman',
+      focal_species_name_list: 'species 1',
+      regions_name_list: 'region 1'
     });
 
     // TODO test snapshot of a populated project page
 
-    expect(tree).toBeDefined();
+    expect(asFragment()).toBeDefined();
   });
 });

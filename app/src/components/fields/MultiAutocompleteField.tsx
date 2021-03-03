@@ -15,7 +15,6 @@ export interface IMultiAutocompleteField {
   options: IMultiAutocompleteFieldOption[];
   required?: boolean;
   filterLimit?: number;
-  formikProps: any;
 }
 
 const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
