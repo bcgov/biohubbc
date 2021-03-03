@@ -10,7 +10,7 @@ const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 // Custom type to support this widget
-export type AutoCompleteMultiSelectOption = { label: string; value: any };
+export type AutocompleteMultiSelectOption = { label: string; value: any };
 
 /**
  * A widget that supports a multi-select dropdown field with search filtering.
@@ -58,18 +58,18 @@ export type AutoCompleteMultiSelectOption = { label: string; value: any };
  * @param {WidgetProps} props standard RJSF widget props
  * @return {*}
  */
-const MultiSelectAutoComplete = (props: WidgetProps) => {
+const MultiSelectAutocomplete = (props: WidgetProps) => {
   const enumDisabled = props.options.enumDisabled;
-  const enumOptions = props.options.enumOptions as AutoCompleteMultiSelectOption[];
+  const enumOptions = props.options.enumOptions as AutocompleteMultiSelectOption[];
 
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
    * widget.
    *
    * @param {React.ChangeEvent<{}>} event
-   * @param {AutoCompleteMultiSelectOption[]} value
+   * @param {AutocompleteMultiSelectOption[]} value
    */
-  const handleOnChange = (event: React.ChangeEvent<{}>, value: AutoCompleteMultiSelectOption[]): void => {
+  const handleOnChange = (event: React.ChangeEvent<{}>, value: AutocompleteMultiSelectOption[]): void => {
     const newValue: any[] = [];
     value.forEach((item) => newValue.push(item.value));
 
@@ -79,13 +79,13 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   /**
    * Custom comparator to determine if a given option is selected.
    *
-   * @param {AutoCompleteMultiSelectOption} option
-   * @param {AutoCompleteMultiSelectOption} value
+   * @param {AutocompleteMultiSelectOption} option
+   * @param {AutocompleteMultiSelectOption} value
    * @return {*}  {boolean}
    */
   const handleGetOptionSelected = (
-    option: AutoCompleteMultiSelectOption,
-    value: AutoCompleteMultiSelectOption
+    option: AutocompleteMultiSelectOption,
+    value: AutocompleteMultiSelectOption
   ): boolean => {
     if (!option?.value || !value?.value) {
       return false;
@@ -97,9 +97,9 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   /**
    * Parses an existing array of values into an array of options.
    *
-   * @return {*}  {AutoCompleteMultiSelectOption[]}
+   * @return {*}  {AutocompleteMultiSelectOption[]}
    */
-  const getExistingValue = (): AutoCompleteMultiSelectOption[] => {
+  const getExistingValue = (): AutocompleteMultiSelectOption[] => {
     if (!props.value) {
       return [];
     }
@@ -149,4 +149,4 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
   );
 };
 
-export default MultiSelectAutoComplete;
+export default MultiSelectAutocomplete;

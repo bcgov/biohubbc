@@ -46,7 +46,7 @@ CREATE TABLE stakeholder_partnership
         NO MINVALUE
         NO MAXVALUE
         NO CYCLE),
-    "name"         varchar(50)   NOT NULL,
+    "name"         varchar(300)   NOT NULL,
     p_id           integer       NOT NULL,
     create_date    timestamp(6)  NOT NULL DEFAULT now(),
     create_user    integer       NOT NULL,
@@ -232,6 +232,7 @@ CREATE UNIQUE INDEX fs_nuk2 ON funding_source
 
 CREATE UNIQUE INDEX lac_nuk1 ON investment_action_category  
 	("name",
+	fs_id,
 	 (record_end_date is NULL)) where record_end_date is null
 ;
 

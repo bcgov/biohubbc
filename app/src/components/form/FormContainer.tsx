@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
-import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
+import MultiSelectAutocomplete from 'rjsf/widgets/MultiSelectAutocomplete';
 import rjsfTheme from 'themes/rjsfTheme';
 
 export enum FormControlLocation {
@@ -105,7 +105,7 @@ const FormContainer: React.FC<IFormContainerProps> = (props) => {
           FieldTemplate={FieldTemplate}
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={{
-            'multi-select-autocomplete': MultiSelectAutoComplete
+            'multi-select-autocomplete': MultiSelectAutocomplete
           }}
           key={props?.record?.id || props?.template?.id}
           disabled={isDisabled}

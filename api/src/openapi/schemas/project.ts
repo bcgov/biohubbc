@@ -8,10 +8,51 @@ export const projectPostBody = {
   type: 'object',
   required: ['project'],
   properties: {
-    project: {
-      title: 'Project Model Object',
+    coordinator: {
+      title: 'Project coordinator',
       type: 'object',
-      // required: [],
+      properties: {
+        first_name: {
+          type: 'string'
+        },
+        last_name: {
+          type: 'string'
+        },
+        email_address: {
+          type: 'string'
+        },
+        coordinator_agency: {
+          type: 'string'
+        },
+        share_contact_details: {
+          type: 'string'
+        }
+      }
+    },
+    permit: {
+      title: 'Project permits',
+      type: 'object',
+      properties: {
+        permits: {
+          type: 'array',
+          items: {
+            title: 'Project permit',
+            type: 'object',
+            properties: {
+              permit_number: {
+                type: 'string'
+              },
+              sampling_conducted: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
+    project: {
+      title: 'Project details',
+      type: 'object',
       properties: {
         name: {
           type: 'string'
@@ -29,13 +70,12 @@ export const projectPostBody = {
           type: 'string'
         },
         start_date: {
-          type: 'string'
+          type: 'string',
+          description: 'ISO 8601 date string'
         },
         end_date: {
-          type: 'string'
-        },
-        results: {
-          type: 'string'
+          type: 'string',
+          description: 'ISO 8601 date string'
         },
         caveats: {
           type: 'string'
@@ -57,28 +97,6 @@ export const projectPostBody = {
         }
       }
     },
-    species: {
-      title: 'Primary and Secondary Species of Interest',
-      type: 'object',
-      properties: {
-        focal_species: {
-          type: 'array',
-          description: 'Array of focal species',
-          items: {
-            type: 'string',
-            description: 'Species Name'
-          }
-        },
-        ancillary_species: {
-          type: 'array',
-          description: 'Array of ancillary species',
-          items: {
-            type: 'string',
-            description: 'Species Name'
-          }
-        }
-      }
-    },
     location: {
       title: 'Location',
       type: 'object',
@@ -89,7 +107,7 @@ export const projectPostBody = {
         },
         regions: {
           type: 'array',
-          description: 'Array of regions',
+          description: 'Array of region names',
           items: {
             type: 'string',
             description: 'Region name'
@@ -97,10 +115,74 @@ export const projectPostBody = {
         }
       }
     },
-    funding: {
-      title: 'Funding Model Object',
+    species: {
+      title: 'Primary and Secondary Species of Interest',
       type: 'object',
-      properties: {}
+      properties: {
+        focal_species: {
+          type: 'array',
+          description: 'Array of focal species',
+          items: {
+            type: 'string',
+            description: 'Species ID'
+          }
+        },
+        ancillary_species: {
+          type: 'array',
+          description: 'Array of ancillary species',
+          items: {
+            type: 'string',
+            description: 'Species ID'
+          }
+        }
+      }
+    },
+    funding: {
+      title: 'Project funding sources',
+      type: 'object',
+      properties: {
+        funding_agencies: {
+          type: 'array',
+          items: {
+            title: 'Project funding agency',
+            type: 'object',
+            properties: {
+              agency_id: {
+                type: 'number'
+              },
+              investment_action_category: {
+                type: 'number'
+              },
+              agency_project_id: {
+                type: 'string'
+              },
+              funding_amount: {
+                type: 'number'
+              },
+              start_date: {
+                type: 'string',
+                description: 'ISO 8601 date string'
+              },
+              end_date: {
+                type: 'string',
+                description: 'ISO 8601 date string'
+              }
+            }
+          }
+        },
+        indigenous_partnerships: {
+          type: 'array',
+          items: {
+            type: 'number'
+          }
+        },
+        stakeholder_partnerships: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        }
+      }
     }
   }
 };

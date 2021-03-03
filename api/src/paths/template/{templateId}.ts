@@ -23,6 +23,9 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'templateId',
+      schema: {
+        type: 'number'
+      },
       required: true
     }
   ],

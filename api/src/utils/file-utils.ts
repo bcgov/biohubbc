@@ -1,7 +1,6 @@
 import AWS from 'aws-sdk';
 import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
-import { MediaBase64 } from '../models/media';
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
@@ -57,12 +56,15 @@ export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutp
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */
-export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData> {
+export async function uploadFileToS3(
+  file: Express.Multer.File,
+  metadata: Metadata = {}
+): Promise<ManagedUpload.SendData> {
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
-    Body: media.mediaBuffer,
-    ContentType: media.contentType,
-    Key: media.mediaName,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+    Key: metadata.filename,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
   }).promise();
@@ -87,7 +89,7 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
 }
 
 // Regex matches a Data URL base64 encoded string, and has matching groups for the content type and raw encoded string
-const base64DataURLRegex = new RegExp(/^data:(\w+\/\w+);base64,(.*)/);
+const base64DataURLRegex = new RegExp(/^data:(\w*\/\w+);base64,(.*)/);
 
 /**
  * Takes a Data URL base64 encoded string, and parses out the contentType (`image/jpeg`, `file/png`, etc) and the
