@@ -1,4 +1,4 @@
-import renderer from 'react-test-renderer';
+import { render } from '@testing-library/react';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
@@ -18,8 +18,7 @@ const ProjectCoordinatorFilledValues = {
 
 describe('Project Coordinator Form', () => {
   it('renders correctly the empty component correctly', () => {
-    const emptyComponent = renderer
-      .create(
+    const {asFragment} = render(
         <Formik
           initialValues={ProjectCoordinatorInitialValues}
           validationSchema={ProjectCoordinatorYupSchema}
@@ -30,15 +29,13 @@ describe('Project Coordinator Form', () => {
           }}>
           {() => <ProjectCoordinatorForm />}
         </Formik>
-      )
-      .toJSON();
+      );
 
-    expect(emptyComponent).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly the filled component correctly', () => {
-    const filledComponent = renderer
-      .create(
+    const {asFragment} = render(
         <Formik
           initialValues={ProjectCoordinatorFilledValues}
           validationSchema={ProjectCoordinatorYupSchema}
@@ -49,9 +46,8 @@ describe('Project Coordinator Form', () => {
           }}>
           {() => <ProjectCoordinatorForm />}
         </Formik>
-      )
-      .toJSON();
+      );
 
-    expect(filledComponent).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 });
