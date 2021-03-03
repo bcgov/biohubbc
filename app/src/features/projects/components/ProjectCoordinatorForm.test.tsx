@@ -1,62 +1,47 @@
+import { render } from '@testing-library/react';
+import ProjectCoordinatorForm, {
+  ProjectCoordinatorInitialValues,
+  ProjectCoordinatorYupSchema
+} from 'features/projects/components/ProjectCoordinatorForm';
+import { Formik } from 'formik';
 import React from 'react';
-//import { findByText as render } from '@testing-library/react';
-import renderer from 'react-test-renderer';
-//import { createMemoryHistory } from 'history';
-import { Router } from 'react-router';
-import ProjectCoordinatorForm from './ProjectCoordinatorForm';
-import ProjectCoordinatorInitialValues from './ProjectCoordinatorForm';
-import ProjectCoordinatorYupSchema from './ProjectCoordinatorForm';
+import { act } from 'react-dom/test-utils';
 
-<Formik
-  initialValues={ProjectCoordinatorInitialValues}
-  validationSchema={ProjectCoordinatorYupSchema}
-  validateOnBlur={true}
-  validateOnChange={false}
-   onSubmit={async (values, helper) => {
-     //handleSaveAndNext(values);
-   }}>
-  {(props) => <ProjectCoordinatorForm />}
-</Formik>
+const handleSaveAndNext = jest.fn();
 
 const renderContainer = () => {
   return render(
-    <Router history={history}>
-      <ProjectCoordinatorForm />,
-    </Router>
+    <Formik
+      initialValues={ProjectCoordinatorInitialValues}
+      validationSchema={ProjectCoordinatorYupSchema}
+      validateOnBlur={true}
+      validateOnChange={false}
+      onSubmit={async (values, helper) => {
+        handleSaveAndNext(values);
+      }}>
+      {(props) => (
+        <ProjectCoordinatorForm />)}
+    </Formik>
   );
 };
 
-const history = createMemoryHistory();
+describe('ProjectCoordinatorForm', () => {
+  it('shows the first name input label', async () => {
+    await act(async () => {
+      const { findByText } = renderContainer();
+      const PageTitle = await findByText('First Name');
 
-describe('ProjectPage.test', () => {
-  it('renders blank project page', () => {
-    const tree = renderer.create(
-      <Router history={history}>
-        <ProjectCoordinatorForm />
-      </Router>
-    );
+      expect(PageTitle).toBeVisible();
 
-
-    history.push('/home');
-    history.push('/projects/create');
-    const { findByText} = renderContainer();
-    const FindFirstName = await findByText('first name');
-    expect(FindFirstName).toBeVisible();
-
-    expect(tree.toJSON()).toMatchSnapshot();
+      expect(handleSaveAndNext).not.toHaveBeenCalled();
+    });
   });
 
-  it('renders project page with mock data', () => {
-    const tree = renderer.create(
-      <Router history={history}>
-        <ProjectCoordinatorForm />
-      </Router>
-    );
+  it('matches the snapshot', async () => {
+    await act(async () => {
+      const { baseElement } = renderContainer();
 
-    // TODO test snapshot of a populated project page
-
-    const AreYouSureTitle = await findByText('Cancel Create Project');
-
-    expect(tree).toBeDefined();
+      expect(baseElement).toMatchSnapshot();
+    });
   });
 });
