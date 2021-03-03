@@ -18,35 +18,35 @@ const ProjectCoordinatorFilledValues = {
 
 describe('Project Coordinator Form', () => {
   it('renders correctly the empty component correctly', () => {
-    const {asFragment} = render(
-        <Formik
-          initialValues={ProjectCoordinatorInitialValues}
-          validationSchema={ProjectCoordinatorYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async (values) => {
-            handleSaveAndNext(values);
-          }}>
-          {() => <ProjectCoordinatorForm />}
-        </Formik>
-      );
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectCoordinatorInitialValues}
+        validationSchema={ProjectCoordinatorYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <ProjectCoordinatorForm />}
+      </Formik>
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly the filled component correctly', () => {
-    const {asFragment} = render(
-        <Formik
-          initialValues={ProjectCoordinatorFilledValues}
-          validationSchema={ProjectCoordinatorYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={async (values, helper) => {
-            handleSaveAndNext(values);
-          }}>
-          {() => <ProjectCoordinatorForm />}
-        </Formik>
-      );
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectCoordinatorFilledValues}
+        validationSchema={ProjectCoordinatorYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values, helper) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <ProjectCoordinatorForm />}
+      </Formik>
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });
