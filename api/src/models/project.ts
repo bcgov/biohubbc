@@ -24,6 +24,7 @@ export interface IProject {
   coordinator_last_name: string;
   coordinator_email_address: string;
   coordinator_agency_name: string;
+  geometry: Feature[];
   focal_species_name_list: string;
   regions_name_list?: string;
 }
@@ -212,7 +213,6 @@ export class PostProjectData {
   end_date: string;
   caveats: string;
   comments: string;
-  geometry: Feature[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
@@ -226,7 +226,6 @@ export class PostProjectData {
     this.end_date = obj?.end_date || null;
     this.caveats = obj?.caveats || null;
     this.comments = obj?.comments || null;
-    this.geometry = (obj && obj.project && obj.project.geometry) || null;
   }
 }
 
@@ -239,12 +238,14 @@ export class PostProjectData {
 export class PostLocationData {
   location_description: string;
   regions: string[];
+  geometry: Feature[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostLocationData', message: 'params', obj });
 
     this.location_description = (obj && obj.location_description) || null;
     this.regions = (obj?.regions?.length && obj.regions) || [];
+    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }
 
