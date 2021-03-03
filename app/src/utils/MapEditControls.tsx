@@ -126,7 +126,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     const { onMounted } = props;
 
     onMounted && onMounted(drawRef.current);
-  }, [props.draw, props.edit, props.position]);
+  }, []);
 
   return null;
 };
