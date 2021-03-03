@@ -25,13 +25,13 @@ export const ProjectFundingFormInitialValues: IProjectFundingForm = {
 
 export const ProjectFundingFormYupSchema = yup.object().shape({});
 
-export interface IInvestmentActionCategory extends IMultiAutocompleteFieldOption {
+export interface IInvestmentActionCategoryOption extends IMultiAutocompleteFieldOption {
   fs_id: number;
 }
 
 export interface IProjectFundingFormProps {
   funding_sources: IMultiAutocompleteFieldOption[];
-  investment_action_category: IInvestmentActionCategory[];
+  investment_action_category: IInvestmentActionCategoryOption[];
   first_nations: IMultiAutocompleteFieldOption[];
   stakeholder_partnerships: IMultiAutocompleteFieldOption[];
 }
@@ -59,6 +59,8 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
         <Grid item>
           <Button
             variant="outlined"
+            title="Add Funding Agency"
+            aria-label="Add Funding Agency"
             onClick={() => {
               setCurrentProjectFundingFormArrayItem({
                 index: values.funding_agencies.length,
@@ -109,9 +111,14 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Box m={3}>
                           <Grid container item spacing={3} xs={12}>
                             <Grid container item spacing={3} xs={12} justify="space-between">
-                              <Grid item>{fundingAgency.agency_name}</Grid>
+                              <Grid item>
+                                <Typography variant="h3">
+                                  {getCodeValueNameByID(props.funding_sources, fundingAgency.agency_id)}
+                                </Typography>
+                              </Grid>
                               <Grid item>
                                 <IconButton
+                                  title="Edit Funding Source"
                                   aria-label="Edit Funding Source"
                                   onClick={() => {
                                     setCurrentProjectFundingFormArrayItem({
@@ -123,6 +130,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                   <Edit />
                                 </IconButton>
                                 <IconButton
+                                  title="Delete Funding Source"
                                   aria-label="Delete Funding Source"
                                   onClick={() => arrayHelpers.remove(index)}>
                                   <Delete />
@@ -204,3 +212,11 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
 };
 
 export default ProjectFundingForm;
+
+export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId: number): string => {
+  if (!codeSet?.length || !codeValueId) {
+    return '';
+  }
+
+  return codeSet.find((item) => item.value === codeValueId)?.label || '';
+};

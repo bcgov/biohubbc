@@ -272,7 +272,7 @@ export class PostSpeciesData {
  * @class PostLocationData
  */
 export class PostFundingSource {
-  agency_name: string;
+  agency_id: number;
   investment_action_category: number;
   agency_project_id: string;
   funding_amount: number;
@@ -282,7 +282,7 @@ export class PostFundingSource {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingSource', message: 'params', obj });
 
-    this.agency_name = obj?.agency_name || null;
+    this.agency_id = obj?.agency_id || null;
     this.investment_action_category = obj?.investment_action_category || null;
     this.agency_project_id = obj?.agency_project_id || null;
     this.funding_amount = obj?.funding_amount || null;
