@@ -154,7 +154,7 @@ describe('PostLocationData', () => {
     });
 
     it('sets the geometry', function () {
-      expect(projectLocationData.geometry.properties.name).to.equal('Biohub Islands');
+      expect(projectLocationData.geometry).to.eql(obj.geometry);
     });
   });
 });
