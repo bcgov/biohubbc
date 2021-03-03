@@ -106,7 +106,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     map.on(eventHandlers.onCreated, onDrawCreate);
 
     onMounted && onMounted(drawRef.current);
-  }, [context, onDrawCreate, onMountCreate, props]);
+  }, []);
 
   useEffect(() => {
     if (
@@ -126,7 +126,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     const { onMounted } = props;
 
     onMounted && onMounted(drawRef.current);
-  }, [context, props, props.draw, props.edit, props.position]);
+  }, [props.draw, props.edit, props.position]);
 
   return null;
 };

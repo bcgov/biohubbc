@@ -5,7 +5,7 @@ exports[`MapContainer.test MapContainer matches the snapshot with geometries bei
   <div
     class="leaflet-container leaflet-grab leaflet-touch-drag"
     id="myMap"
-    style="position: relative;"
+    style="height: 100%; position: relative;"
     tabindex="0"
   >
     <div
@@ -302,7 +302,7 @@ exports[`MapContainer.test MapContainer matches the snapshot with non editable g
   <div
     class="leaflet-container leaflet-grab leaflet-touch-drag"
     id="myMap"
-    style="position: relative;"
+    style="height: 100%; position: relative;"
     tabindex="0"
   >
     <div
