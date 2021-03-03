@@ -114,7 +114,7 @@ describe('PostLocationData', () => {
     });
 
     it('sets geometry', function () {
-      expect(projectLocationData.geometry).to.equal([]);
+      expect(projectLocationData.geometry).to.eql([]);
     });
   });
 
@@ -126,16 +126,18 @@ describe('PostLocationData', () => {
       location_description: 'a location description',
       geometry: [
         {
-          "type": "Polygon",
-          "coordinates": [[
-            [-128, 55],
-            [-128, 55.5],
-            [-128, 56],
-            [-126, 58],
-            [-128, 55]
-          ]],
-          "properties": {
-            "name": "Biohub Islands"
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
           }
         }
       ]
