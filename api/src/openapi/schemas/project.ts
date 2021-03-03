@@ -147,7 +147,7 @@ export const projectPostBody = {
             title: 'Project funding agency',
             type: 'object',
             properties: {
-              agency_name: {
+              agency_id: {
                 type: 'number'
               },
               investment_action_category: {
