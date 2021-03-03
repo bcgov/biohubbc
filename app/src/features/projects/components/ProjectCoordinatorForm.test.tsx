@@ -1,47 +1,57 @@
-import { render } from '@testing-library/react';
+import renderer from 'react-test-renderer';
 import ProjectCoordinatorForm, {
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import { Formik } from 'formik';
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 
 const handleSaveAndNext = jest.fn();
 
-const renderContainer = () => {
-  return render(
-    <Formik
-      initialValues={ProjectCoordinatorInitialValues}
-      validationSchema={ProjectCoordinatorYupSchema}
-      validateOnBlur={true}
-      validateOnChange={false}
-      onSubmit={async (values, helper) => {
-        handleSaveAndNext(values);
-      }}>
-      {(props) => (
-        <ProjectCoordinatorForm />)}
-    </Formik>
-  );
+const ProjectCoordinatorFilledValues = {
+  first_name: 'Nerea',
+  last_name: 'Oneal',
+  email_address: 'quxu@mailinator.com',
+  coordinator_agency: 'Qui anim qui laboris',
+  share_contact_details: 'true'
 };
 
-describe('ProjectCoordinatorForm', () => {
-  it('shows the first name input label', async () => {
-    await act(async () => {
-      const { findByText } = renderContainer();
-      const PageTitle = await findByText('First Name');
+describe('Project Coordinator Form', () => {
+  it('renders correctly the empty component correctly', () => {
+    const emptyComponent = renderer
+      .create(
+        <Formik
+          initialValues={ProjectCoordinatorInitialValues}
+          validationSchema={ProjectCoordinatorYupSchema}
+          validateOnBlur={true}
+          validateOnChange={false}
+          onSubmit={async (values) => {
+            handleSaveAndNext(values);
+          }}>
+          {() => <ProjectCoordinatorForm />}
+        </Formik>
+      )
+      .toJSON();
 
-      expect(PageTitle).toBeVisible();
-
-      expect(handleSaveAndNext).not.toHaveBeenCalled();
-    });
+    expect(emptyComponent).toMatchSnapshot();
   });
 
-  it('matches the snapshot', async () => {
-    await act(async () => {
-      const { baseElement } = renderContainer();
+  it('renders correctly the filled component correctly', () => {
+    const filledComponent = renderer
+      .create(
+        <Formik
+          initialValues={ProjectCoordinatorFilledValues}
+          validationSchema={ProjectCoordinatorYupSchema}
+          validateOnBlur={true}
+          validateOnChange={false}
+          onSubmit={async (values, helper) => {
+            handleSaveAndNext(values);
+          }}>
+          {() => <ProjectCoordinatorForm />}
+        </Formik>
+      )
+      .toJSON();
 
-      expect(baseElement).toMatchSnapshot();
-    });
+    expect(filledComponent).toMatchSnapshot();
   });
 });
