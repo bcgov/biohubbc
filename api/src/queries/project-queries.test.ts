@@ -84,7 +84,7 @@ describe('postProjectSQL', () => {
     });
 
     it('returns a SQLStatement with multiple geometries inserted correctly', () => {
-      const locationDataWithGeo = {
+      const locationDataWithGeos = {
         ...locationData,
         geometry: [
           {
@@ -120,7 +120,7 @@ describe('postProjectSQL', () => {
         ]
       };
 
-      const postLocationData = new PostLocationData(locationDataWithGeo);
+      const postLocationData = new PostLocationData(locationDataWithGeos);
       const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
 
       expect(response).to.not.be.null;
