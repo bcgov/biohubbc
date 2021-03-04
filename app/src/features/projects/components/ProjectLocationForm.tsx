@@ -1,11 +1,23 @@
-import { Grid, TextField } from '@material-ui/core';
+import { Grid, TextField, Box, Typography, Button } from '@material-ui/core';
 import {
   default as MultiAutocompleteFieldVariableSize,
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
 import * as yup from 'yup';
+//@ts-ignore
+import { kml } from '@tmcw/togeojson';
+import bbox from '@turf/bbox';
+import MapContainer from 'components/map/MapContainer';
+import { Feature } from 'geojson';
+
+const useStyles = makeStyles({
+  bold: {
+    fontWeight: 'bold'
+  }
+});
 
 export interface IProjectLocationForm {
   regions: string[];
@@ -32,9 +44,28 @@ export interface IProjectLocationFormProps {
  * @return {*}
  */
 const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
+  const classes = useStyles();
+
   const formikProps = useFormikContext<IProjectLocationForm>();
 
   const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+
+  const [uploadedKml, setUploadedKml] = useState<Document>();
+  const [bounds, setBounds] = useState<any>([]);
+  const [geometry, setGeometry] = useState<Feature[]>([]);
+
+  const handleSpatialUpload = async (e: any) => {
+    const file = e.target.files[0];
+    const fileAsString = await file.text().then((xmlString: string) => {
+      return xmlString;
+    });
+    const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
+    const geojson = kml(domKml);
+    const bboxCoords = bbox(geojson);
+
+    setBounds([[bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]]);
+    setUploadedKml(domKml);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -59,6 +90,28 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               shrink: true
             }}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography className={classes.bold}>Project Boundary</Typography>
+          <Box display="flex" mt={3}>
+            <Button
+              variant="outlined"
+              component="label"
+              size="medium"
+              color="primary"
+              style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
+              <input type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
+              Upload Shapefile
+            </Button>
+          </Box>
+          <Box mt={5} height={500}>
+            <MapContainer
+              mapId="1"
+              geometryState={{ geometry, setGeometry }}
+              uploadedKml={uploadedKml}
+              bounds={bounds}
+            />
+          </Box>
         </Grid>
       </Grid>
     </form>

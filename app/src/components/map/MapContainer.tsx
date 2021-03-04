@@ -1,16 +1,33 @@
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup, GeoJSON } from 'react-leaflet';
+import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup, GeoJSON, useMap } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
 import { Feature } from 'geojson';
 import booleanEqual from '@turf/boolean-equal';
+import ReactLeafletKml from "react-leaflet-kml";
+import { LatLngBoundsExpression } from 'leaflet';
+
+export interface IMapBoundsProps {
+  bounds: LatLngBoundsExpression;
+}
+
+const MapBounds: React.FC<IMapBoundsProps> = (props) => {
+  const map = useMap();
+  const { bounds } = props;
+
+  map.fitBounds(bounds);
+
+  return null;
+};
 
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   geometryState: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: Feature[];
+  uploadedKml?: any;
+  bounds?: any;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -18,7 +35,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     classes,
     mapId,
     geometryState: { geometry, setGeometry },
-    nonEditableGeometries
+    nonEditableGeometries,
+    uploadedKml,
+    bounds
   } = props;
 
   const handleCreated = (e: any) => {
@@ -46,6 +65,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
+      {bounds && bounds.length && <MapBounds bounds={bounds} />}
+
       <FeatureGroup>
         <MapEditControls position="topright" onCreated={handleCreated} geometry={geometry} />
       </FeatureGroup>
@@ -53,6 +74,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
         <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo} />
       ))}
+
+      {uploadedKml && <ReactLeafletKml kml={uploadedKml} />}
 
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
