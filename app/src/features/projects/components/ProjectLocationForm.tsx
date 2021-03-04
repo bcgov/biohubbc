@@ -40,13 +40,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'regions'}
-            label={'Regions'}
-            options={props.region}
-            required={true}
-            formikProps={formikProps}
-          />
+          <MultiAutocompleteFieldVariableSize id={'regions'} label={'Regions'} options={props.region} required={true} />
         </Grid>
         <Grid item xs={12}>
           <TextField

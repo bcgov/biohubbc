@@ -13,8 +13,8 @@ import ProjectFundingItemForm, {
 
 export interface IProjectFundingForm {
   funding_agencies: IProjectFundingFormArrayItem[];
-  indigenous_partnerships: IMultiAutocompleteFieldOption[];
-  stakeholder_partnerships: IMultiAutocompleteFieldOption[];
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
 }
 
 export const ProjectFundingFormInitialValues: IProjectFundingForm = {
@@ -194,7 +194,6 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
             label={'Indigenous Partnerships'}
             options={props.first_nations}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
         <Grid item xs={12}>
@@ -203,7 +202,6 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
             label={'Stakeholder Partnerships'}
             options={props.stakeholder_partnerships}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
       </Grid>
