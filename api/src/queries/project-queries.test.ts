@@ -68,7 +68,7 @@ describe('postProjectSQL', () => {
               ]
             },
             properties: {
-              name: 'Biohub Islands 1'
+              name: 'Biohub Islands'
             }
           }
         ]
