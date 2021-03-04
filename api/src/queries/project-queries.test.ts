@@ -48,13 +48,13 @@ describe('postProjectSQL', () => {
       expect(response).to.not.be.null;
     });
 
-    it('returns a SQLStatment with the geometries inserted correctly', () => {
+    it('returns a SQLStatement with a single geometry inserted correctly', () => {
       const locationDataWithGeo = {
         ...locationData,
         geometry: [
           {
             type: 'Feature',
-            id: 'myGeo1',
+            id: 'myGeo',
             geometry: {
               type: 'Polygon',
               coordinates: [
@@ -80,6 +80,55 @@ describe('postProjectSQL', () => {
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(
         '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+      );
+    });
+
+    it('returns a SQLStatement with multiple geometries inserted correctly', () => {
+      const locationDataWithGeo = {
+        ...locationData,
+        geometry: [
+          {
+            type: 'Feature',
+            id: 'myGeo1',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-128, 55],
+                  [-128, 55.5],
+                  [-128, 56],
+                  [-126, 58],
+                  [-128, 55]
+                ]
+              ]
+            },
+            properties: {
+              name: 'Biohub Islands 1'
+            }
+          },
+          {
+            type: 'Feature',
+            id: 'myGeo2',
+            geometry: {
+              type: 'Point',
+              coordinates: [-128, 55]
+            },
+            properties: {
+              name: 'Biohub Islands 2'
+            }
+          }
+        ]
+      };
+
+      const postLocationData = new PostLocationData(locationDataWithGeo);
+      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include(
+        '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+      );
+      expect(response?.values).to.deep.include(
+        '{"type":"Point","coordinates":[-128,55]}'
       );
     });
   });
