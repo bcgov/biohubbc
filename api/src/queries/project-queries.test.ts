@@ -53,20 +53,22 @@ describe('postProjectSQL', () => {
         ...locationData,
         geometry: [
           {
-            "type": "Feature",
-            "id": "myGeo1",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [[
-                [-128, 55],
-                [-128, 55.5],
-                [-128, 56],
-                [-126, 58],
-                [-128, 55]
-              ]]
+            type: 'Feature',
+            id: 'myGeo1',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-128, 55],
+                  [-128, 55.5],
+                  [-128, 56],
+                  [-126, 58],
+                  [-128, 55]
+                ]
+              ]
             },
-            "properties": {
-              "name": "Biohub Islands 1"
+            properties: {
+              name: 'Biohub Islands 1'
             }
           }
         ]
@@ -76,9 +78,11 @@ describe('postProjectSQL', () => {
       const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
 
       expect(response).to.not.be.null;
-      expect(response?.values.includes(
-        '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
-      )).to.not.be.null;
+      expect(
+        response?.values.includes(
+          '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+        )
+      ).to.not.be.null;
     });
   });
 });
