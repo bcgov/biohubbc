@@ -127,9 +127,7 @@ describe('postProjectSQL', () => {
       expect(response?.values).to.deep.include(
         '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
       );
-      expect(response?.values).to.deep.include(
-        '{"type":"Point","coordinates":[-128,55]}'
-      );
+      expect(response?.values).to.deep.include('{"type":"Point","coordinates":[-128,55]}');
     });
   });
 });
