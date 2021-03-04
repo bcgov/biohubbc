@@ -173,8 +173,6 @@ const ProjectsPage: React.FC = () => {
               </Table>
             </TableContainer>
           </Box>
-
-          
         </Container>
       </Box>
     );
