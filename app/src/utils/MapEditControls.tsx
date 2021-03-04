@@ -96,7 +96,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     }
 
     props.geometry?.forEach((geometry: Feature) => {
-      console.log(geometry);
       L.geoJSON(geometry, {
         onEachFeature: function (feature: any, layer: any) {
           onMountCreate(layer);
