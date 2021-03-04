@@ -19,7 +19,7 @@ const project_type: IMultiAutocompleteFieldOption[] = [
   },
   {
     value: 'type_3',
-    label: 'type 4'
+    label: 'type 3'
   }
 ];
 
@@ -34,7 +34,7 @@ const project_activity: IMultiAutocompleteFieldOption[] = [
   },
   {
     value: 3,
-    label: 'activity 4'
+    label: 'activity 3'
   }
 ];
 
@@ -62,7 +62,13 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm project_type={project_type} project_activity={project_activity} climate_change_initiative={climate_change_initiative} />}
+        {() => (
+          <ProjectDetailsForm
+            project_type={project_type}
+            project_activity={project_activity}
+            climate_change_initiative={climate_change_initiative}
+          />
+        )}
       </Formik>
     );
 
@@ -86,7 +92,13 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectDetailsForm project_type={project_type} project_activity={project_activity} climate_change_initiative={climate_change_initiative} />}
+        {() => (
+          <ProjectDetailsForm
+            project_type={project_type}
+            project_activity={project_activity}
+            climate_change_initiative={climate_change_initiative}
+          />
+        )}
       </Formik>
     );
 

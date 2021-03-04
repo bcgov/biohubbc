@@ -605,7 +605,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
                 <span
                   class="MuiChip-label"
                 >
-                  activity 4
+                  activity 3
                 </span>
                 <svg
                   aria-hidden="true"
