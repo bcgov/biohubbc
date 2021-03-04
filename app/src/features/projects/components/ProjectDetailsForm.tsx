@@ -115,7 +115,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
             id={'climate_change_initiatives'}
-            label={'Climage Change Initiatives'}
+            label={'Climate Change Initiatives'}
             options={props.climate_change_initiative}
             required={false}
           />
