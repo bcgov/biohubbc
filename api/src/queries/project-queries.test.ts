@@ -14,38 +14,120 @@ describe('postProjectSQL', () => {
   });
 
   describe('Valid project param provided', () => {
+    const projectData = {
+      name: 'name_test_data',
+      objectives: 'objectives_test_data',
+      scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
+      management_recovery_action: 'management_recovery_action_test_data',
+      start_date: 'start_date_test_data',
+      end_date: 'end_date_test_data',
+      caveats: 'caveats_test_data',
+      comments: 'comments_test_data'
+    };
+
+    const coordinatorData = {
+      first_name: 'coordinator_first_name',
+      last_name: 'coordinator_last_name',
+      email_address: 'coordinator_email_address@email.com',
+      coordinator_agency: 'coordinator_agency_name',
+      share_contact_details: false
+    };
+
+    const locationData = {
+      location_description: 'a location description',
+      regions: ['Valid Region']
+    };
+
+    const postProjectData = new PostProjectData(projectData);
+    const postCoordinatorData = new PostCoordinatorData(coordinatorData);
+
     it('returns a SQLStatement', () => {
-      const projectData = {
-        name: 'name_test_data',
-        objectives: 'objectives_test_data',
-        scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
-        management_recovery_action: 'management_recovery_action_test_data',
-        start_date: 'start_date_test_data',
-        end_date: 'end_date_test_data',
-        caveats: 'caveats_test_data',
-        comments: 'comments_test_data'
-      };
-
-      const coordinatorData = {
-        first_name: 'coordinator_first_name',
-        last_name: 'coordinator_last_name',
-        email_address: 'coordinator_email_address@email.com',
-        coordinator_agency: 'coordinator_agency_name',
-        share_contact_details: false
-      };
-
-      const locationData = {
-        location_description: 'a location description',
-        regions: ['Valid Region']
-      };
-
-      const postProjectData = new PostProjectData(projectData);
-      const postCoordinatorData = new PostCoordinatorData(coordinatorData);
       const postLocationData = new PostLocationData(locationData);
-
       const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
 
       expect(response).to.not.be.null;
+    });
+
+    it('returns a SQLStatement with a single geometry inserted correctly', () => {
+      const locationDataWithGeo = {
+        ...locationData,
+        geometry: [
+          {
+            type: 'Feature',
+            id: 'myGeo',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-128, 55],
+                  [-128, 55.5],
+                  [-128, 56],
+                  [-126, 58],
+                  [-128, 55]
+                ]
+              ]
+            },
+            properties: {
+              name: 'Biohub Islands'
+            }
+          }
+        ]
+      };
+
+      const postLocationData = new PostLocationData(locationDataWithGeo);
+      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include(
+        '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+      );
+    });
+
+    it('returns a SQLStatement with multiple geometries inserted correctly', () => {
+      const locationDataWithGeos = {
+        ...locationData,
+        geometry: [
+          {
+            type: 'Feature',
+            id: 'myGeo1',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-128, 55],
+                  [-128, 55.5],
+                  [-128, 56],
+                  [-126, 58],
+                  [-128, 55]
+                ]
+              ]
+            },
+            properties: {
+              name: 'Biohub Islands 1'
+            }
+          },
+          {
+            type: 'Feature',
+            id: 'myGeo2',
+            geometry: {
+              type: 'Point',
+              coordinates: [-128, 55]
+            },
+            properties: {
+              name: 'Biohub Islands 2'
+            }
+          }
+        ]
+      };
+
+      const postLocationData = new PostLocationData(locationDataWithGeos);
+      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include(
+        '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+      );
+      expect(response?.values).to.deep.include('{"type":"Point","coordinates":[-128,55]}');
     });
   });
 });

@@ -112,6 +112,10 @@ describe('PostLocationData', () => {
     it('sets location_description', function () {
       expect(projectLocationData.location_description).to.equal(null);
     });
+
+    it('sets geometry', function () {
+      expect(projectLocationData.geometry).to.eql([]);
+    });
   });
 
   describe('All values provided', () => {
@@ -119,7 +123,24 @@ describe('PostLocationData', () => {
 
     const obj = {
       regions: ['Northeast'],
-      location_description: 'a location description'
+      location_description: 'a location description',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ]
     };
 
     before(() => {
@@ -132,6 +153,10 @@ describe('PostLocationData', () => {
 
     it('sets location_description', function () {
       expect(projectLocationData.location_description).to.equal('a location description');
+    });
+
+    it('sets the geometry', function () {
+      expect(projectLocationData.geometry).to.eql(obj.geometry);
     });
   });
 });

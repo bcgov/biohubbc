@@ -38,7 +38,7 @@ export async function up(knex: Knex): Promise<void> {
   );
 
   await knex.raw(`
-    REVOKE ALL PRIVILEGES ON SCHEMA public FROM PUBLIC;
+    REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
     create schema if not exists ${DB_SCHEMA};
     set search_path = ${DB_SCHEMA};
