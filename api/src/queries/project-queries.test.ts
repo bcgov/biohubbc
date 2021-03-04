@@ -78,11 +78,9 @@ describe('postProjectSQL', () => {
       const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
 
       expect(response).to.not.be.null;
-      expect(
-        response?.values.includes(
-          '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
-        )
-      ).to.not.be.null;
+      expect(response?.values).to.deep.include(
+        '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+      );
     });
   });
 });
