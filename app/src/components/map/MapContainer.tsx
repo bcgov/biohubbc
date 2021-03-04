@@ -1,7 +1,14 @@
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureGroup, GeoJSON, useMap } from 'react-leaflet';
+import {
+  MapContainer as LeafletMapContainer,
+  TileLayer,
+  LayersControl,
+  FeatureGroup,
+  GeoJSON,
+  useMap
+} from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
 import { Feature } from 'geojson';
 import booleanEqual from '@turf/boolean-equal';
@@ -29,13 +36,7 @@ export interface IMapContainerProps {
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const {
-    classes,
-    mapId,
-    geometryState,
-    nonEditableGeometries,
-    bounds
-  } = props;
+  const { classes, mapId, geometryState, nonEditableGeometries, bounds } = props;
 
   const handleCreated = (e: any) => {
     const newGeo: Feature = e.layer.toGeoJSON();

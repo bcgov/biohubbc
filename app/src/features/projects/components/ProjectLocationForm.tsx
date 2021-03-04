@@ -62,7 +62,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     const geojson = kml(domKml);
     const bboxCoords = bbox(geojson);
 
-    setBounds([[bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]]);
+    setBounds([
+      [bboxCoords[1], bboxCoords[0]],
+      [bboxCoords[3], bboxCoords[2]]
+    ]);
     setGeometry(geojson.features);
   };
 
@@ -104,9 +107,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             </Button>
           </Box>
           <Box mt={5} height={500}>
-            {!geometry.length && (
-              <MapContainer mapId="project_location_form_map" />
-            )}
+            {!geometry.length && <MapContainer mapId="project_location_form_map" />}
             {geometry.length && (
               <MapContainer
                 mapId="project_location_form_map"
