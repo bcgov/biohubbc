@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectPage renders blank project page 1`] = `
+exports[`ProjectAttachments renders correctly 1`] = `
 <DocumentFragment>
   <div
     class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"

@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectDetails renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <h2
+      class="MuiTypography-root MuiTypography-h2"
+    >
+      Project Details
+    </h2>
+  </div>
+  <div
+    class="MuiBox-root MuiBox-root-2"
+  >
+    <div
+      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-3"
+      >
+        Project details component 1 placeholder
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiBox-root MuiBox-root-4"
+  >
+    <div
+      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-5"
+      >
+        Project details component 2 placeholder
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

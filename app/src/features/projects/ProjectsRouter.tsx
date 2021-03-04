@@ -1,14 +1,13 @@
 import MapContainer from 'components/map/MapContainer';
 import CreateProjectPage from 'features/projects/CreateProjectPage';
-import EditProjectPage from 'features/projects/EditProjectPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectsPage from 'features/projects/ProjectsPage';
+import ProjectPage from 'features/projects/view/ProjectPage';
 import { Feature } from 'geojson';
 import React, { useState } from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
-import ProjectPage from './ProjectPage';
 
 interface IProjectsRouterProps {
   classes: any;
@@ -31,18 +30,26 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         component={CreateProjectPage}
         componentProps={props}
       />
+      <Redirect exact from="/projects/:id?" to="/projects/:id?/details" />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?"
+        path="/projects/:id?/details"
         component={ProjectPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/edit"
-        component={EditProjectPage}
+        path="/projects/:id?/surveys"
+        component={ProjectPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/attachments"
+        component={ProjectPage}
         componentProps={props}
       />
       {/* Temporary map route for demo */}
