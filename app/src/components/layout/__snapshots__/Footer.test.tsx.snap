@@ -1,44 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Footer renders correctly 1`] = `
-<footer
-  className="app-footer"
->
-  <div
-    aria-label="Footer"
-    className="MuiToolbar-root MuiToolbar-regular app-footer-toolbar MuiToolbar-gutters"
-    role="navigation"
+<DocumentFragment>
+  <footer
+    class="app-footer"
   >
-    <ul>
-      <li>
-        <a
-          href="https://www.gov.bc.ca/gov/content/home/disclaimer"
-        >
-          Disclaimer
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://www.gov.bc.ca/gov/content/home/privacy"
-        >
-          Privacy
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://www.gov.bc.ca/gov/content/home/accessible-government"
-        >
-          Accessibility
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://www.gov.bc.ca/gov/content/home/copyright"
-        >
-          Copyright
-        </a>
-      </li>
-    </ul>
-  </div>
-</footer>
+    <div
+      aria-label="Footer"
+      class="MuiToolbar-root MuiToolbar-regular app-footer-toolbar MuiToolbar-gutters"
+      role="navigation"
+    >
+      <ul>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+          >
+            Disclaimer
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/privacy"
+          >
+            Privacy
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+          >
+            Accessibility
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/copyright"
+          >
+            Copyright
+          </a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+</DocumentFragment>
 `;

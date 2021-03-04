@@ -7,8 +7,8 @@ import React from 'react';
 import * as yup from 'yup';
 
 export interface IProjectSpeciesForm {
-  focal_species: IMultiAutocompleteFieldOption[];
-  ancillary_species: IMultiAutocompleteFieldOption[];
+  focal_species: string[];
+  ancillary_species: string[];
 }
 
 export const ProjectSpeciesFormInitialValues: IProjectSpeciesForm = {
@@ -40,7 +40,6 @@ const ProjectSpeciesForm: React.FC<IProjectSpeciesFormProps> = (props) => {
             label={'Focal Species'}
             options={props.species}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
         <Grid item xs={12}>
@@ -49,7 +48,6 @@ const ProjectSpeciesForm: React.FC<IProjectSpeciesFormProps> = (props) => {
             label={'Ancillary Species'}
             options={props.species}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
       </Grid>
