@@ -18,8 +18,8 @@ import * as yup from 'yup';
 export interface IProjectDetailsForm {
   project_name: string;
   project_type: string;
-  project_activities: IMultiAutocompleteFieldOption[];
-  climate_change_initiatives: IMultiAutocompleteFieldOption[];
+  project_activities: number[];
+  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
 }
@@ -110,7 +110,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             label={'Project Activities'}
             options={props.project_activity}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
         <Grid item xs={12}>
@@ -119,7 +118,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             label={'Climage Change Initiatives'}
             options={props.climate_change_initiative}
             required={false}
-            formikProps={formikProps}
           />
         </Grid>
         <Grid container item xs={12} spacing={3}>
