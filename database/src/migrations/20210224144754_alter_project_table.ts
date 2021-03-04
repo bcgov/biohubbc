@@ -52,7 +52,7 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
-    set search_path = ${DB_SCHEMA},public;
+    set search_path = ${DB_SCHEMA};
 
     ALTER TABLE project DROP COLUMN geom;
     ALTER TABLE project DROP COLUMN geog;

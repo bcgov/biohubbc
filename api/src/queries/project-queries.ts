@@ -7,6 +7,7 @@ import {
   PostProjectObject
 } from '../models/project';
 import { getLogger } from '../utils/logger';
+import { Feature } from 'geojson';
 
 const defaultLog = getLogger('queries/project-queries');
 
@@ -39,7 +40,8 @@ export const postProjectSQL = (
       coordinator_first_name,
       coordinator_last_name,
       coordinator_email_address,
-      coordinator_agency_name
+      coordinator_agency_name,
+      geog
     ) VALUES (
       ${project.name},
       ${project.objectives},
@@ -54,10 +56,33 @@ export const postProjectSQL = (
       ${project.last_name},
       ${project.email_address},
       ${project.coordinator_agency}
+  `;
+
+  if (project.geometry && project.geometry.length) {
+    const geometryCollectionSQL = generateGeometryCollectionSQL(project.geometry);
+
+    sqlStatement.append(SQL`
+      ,public.geography(
+        public.ST_Force2D(
+          public.ST_SetSRID(
+    `);
+
+    sqlStatement.append(geometryCollectionSQL);
+
+    sqlStatement.append(SQL`
+      , 4326)))
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,null
+    `);
+  }
+
+  sqlStatement.append(SQL`
     )
     RETURNING
       id;
-  `;
+  `);
 
   defaultLog.debug({
     label: 'postProjectSQL',
@@ -403,3 +428,33 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
 
   return sqlStatement;
 };
+
+/*
+  Function to generate the SQL for insertion of a geometry collection
+*/
+function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
+  if (geometry.length === 1) {
+    const geo = JSON.stringify(geometry[0].geometry);
+
+    return SQL`public.ST_GeomFromGeoJSON(${geo})`;
+  }
+
+  const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(`;
+
+  geometry.forEach((geom: Feature, index: number) => {
+    const geo = JSON.stringify(geom.geometry);
+
+    // as long as it is not the last geometry, keep adding to the ST_collect
+    if (index !== geometry.length - 1) {
+      sqlStatement.append(SQL`
+        public.ST_GeomFromGeoJSON(${geo}),
+      `);
+    } else {
+      sqlStatement.append(SQL`
+        public.ST_GeomFromGeoJSON(${geo})))
+      `);
+    }
+  });
+
+  return sqlStatement;
+}
