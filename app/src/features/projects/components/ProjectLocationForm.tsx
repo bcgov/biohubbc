@@ -50,7 +50,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const { values, touched, errors, handleChange, handleSubmit } = formikProps;
 
-  const [uploadedKml, setUploadedKml] = useState<Document>();
   const [bounds, setBounds] = useState<any>([]);
   const [geometry, setGeometry] = useState<Feature[]>([]);
 
@@ -64,7 +63,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     const bboxCoords = bbox(geojson);
 
     setBounds([[bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]]);
-    setUploadedKml(domKml);
+    setGeometry(geojson.features);
   };
 
   return (
@@ -101,16 +100,20 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               color="primary"
               style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
               <input type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
-              Upload Shapefile
+              Upload KML
             </Button>
           </Box>
           <Box mt={5} height={500}>
-            <MapContainer
-              mapId="1"
-              geometryState={{ geometry, setGeometry }}
-              uploadedKml={uploadedKml}
-              bounds={bounds}
-            />
+            {!geometry.length && (
+              <MapContainer mapId="project_location_form_map" />
+            )}
+            {geometry.length && (
+              <MapContainer
+                mapId="project_location_form_map"
+                geometryState={{ geometry, setGeometry }}
+                bounds={bounds}
+              />
+            )}
           </Box>
         </Grid>
       </Grid>

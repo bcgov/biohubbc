@@ -47,7 +47,7 @@ export interface IMapEditControlsProps {
   edit?: any;
   position?: any;
   leaflet?: any;
-  geometry: Feature[];
+  geometry?: Feature[];
 }
 
 const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
@@ -95,7 +95,8 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
       });
     }
 
-    props.geometry.forEach((geometry: Feature) => {
+    props.geometry?.forEach((geometry: Feature) => {
+      console.log(geometry);
       L.geoJSON(geometry, {
         onEachFeature: function (feature: any, layer: any) {
           onMountCreate(layer);

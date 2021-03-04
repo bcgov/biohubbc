@@ -5,7 +5,6 @@ import { MapContainer as LeafletMapContainer, TileLayer, LayersControl, FeatureG
 import MapEditControls from 'utils/MapEditControls';
 import { Feature } from 'geojson';
 import booleanEqual from '@turf/boolean-equal';
-import ReactLeafletKml from "react-leaflet-kml";
 import { LatLngBoundsExpression } from 'leaflet';
 
 export interface IMapBoundsProps {
@@ -24,19 +23,17 @@ const MapBounds: React.FC<IMapBoundsProps> = (props) => {
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
-  geometryState: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
+  geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: Feature[];
-  uploadedKml?: any;
-  bounds?: any;
+  bounds?: LatLngBoundsExpression;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const {
     classes,
     mapId,
-    geometryState: { geometry, setGeometry },
+    geometryState,
     nonEditableGeometries,
-    uploadedKml,
     bounds
   } = props;
 
@@ -44,7 +41,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     const newGeo: Feature = e.layer.toGeoJSON();
 
     // @ts-ignore
-    setGeometry((geo: Feature[]) => {
+    geometryState?.setGeometry((geo: Feature[]) => {
       const geoExists = geo.some((existingGeo: Feature) => {
         return booleanEqual(existingGeo, newGeo);
       });
@@ -65,17 +62,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
-      {bounds && bounds.length && <MapBounds bounds={bounds} />}
+      {bounds && <MapBounds bounds={bounds} />}
 
       <FeatureGroup>
-        <MapEditControls position="topright" onCreated={handleCreated} geometry={geometry} />
+        <MapEditControls position="topright" onCreated={handleCreated} geometry={geometryState?.geometry} />
       </FeatureGroup>
 
       {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
         <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo} />
       ))}
-
-      {uploadedKml && <ReactLeafletKml kml={uploadedKml} />}
 
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">

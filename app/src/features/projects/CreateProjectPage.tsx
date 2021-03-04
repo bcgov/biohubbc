@@ -16,22 +16,22 @@ import { ArrowBack } from '@material-ui/icons';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectI18N } from 'constants/i18n';
-import ProjectCoordinatorForm, {
-  ProjectCoordinatorInitialValues,
-  ProjectCoordinatorYupSchema
-} from 'features/projects/components/ProjectCoordinatorForm';
-import ProjectDetailsForm, {
-  ProjectDetailsFormInitialValues,
-  ProjectDetailsFormYupSchema
-} from 'features/projects/components/ProjectDetailsForm';
+// import ProjectCoordinatorForm, {
+//   ProjectCoordinatorInitialValues,
+//   ProjectCoordinatorYupSchema
+// } from 'features/projects/components/ProjectCoordinatorForm';
+// import ProjectDetailsForm, {
+//   ProjectDetailsFormInitialValues,
+//   ProjectDetailsFormYupSchema
+// } from 'features/projects/components/ProjectDetailsForm';
 import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
-import ProjectPermitForm, {
-  ProjectPermitFormInitialValues,
-  ProjectPermitFormYupSchema
-} from 'features/projects/components/ProjectPermitForm';
+// import ProjectPermitForm, {
+//   ProjectPermitFormInitialValues,
+//   ProjectPermitFormYupSchema
+// } from 'features/projects/components/ProjectPermitForm';
 import ProjectSpeciesForm, {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
@@ -141,45 +141,45 @@ const CreateProjectPage: React.FC = () => {
   useEffect(() => {
     const setFormSteps = () => {
       setSteps([
-        {
-          stepTitle: 'Project Coordinator',
-          stepSubTitle: 'Enter contact details for the project coordinator',
-          stepContent: <ProjectCoordinatorForm />,
-          stepValues: ProjectCoordinatorInitialValues,
-          stepValidation: ProjectCoordinatorYupSchema
-        },
-        {
-          stepTitle: 'Permits',
-          stepSubTitle: 'Enter permits associated with this project',
-          stepContent: <ProjectPermitForm />,
-          stepValues: ProjectPermitFormInitialValues,
-          stepValidation: ProjectPermitFormYupSchema
-        },
-        {
-          stepTitle: 'General Information',
-          stepSubTitle: 'General information and details about this project',
-          stepContent: (
-            <ProjectDetailsForm
-              project_type={
-                codes?.project_type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              project_activity={
-                codes?.project_activity?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              climate_change_initiative={
-                codes?.climate_change_initiative?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectDetailsFormInitialValues,
-          stepValidation: ProjectDetailsFormYupSchema
-        },
+        // {
+        //   stepTitle: 'Project Coordinator',
+        //   stepSubTitle: 'Enter contact details for the project coordinator',
+        //   stepContent: <ProjectCoordinatorForm />,
+        //   stepValues: ProjectCoordinatorInitialValues,
+        //   stepValidation: ProjectCoordinatorYupSchema
+        // },
+        // {
+        //   stepTitle: 'Permits',
+        //   stepSubTitle: 'Enter permits associated with this project',
+        //   stepContent: <ProjectPermitForm />,
+        //   stepValues: ProjectPermitFormInitialValues,
+        //   stepValidation: ProjectPermitFormYupSchema
+        // },
+        // {
+        //   stepTitle: 'General Information',
+        //   stepSubTitle: 'General information and details about this project',
+        //   stepContent: (
+        //     <ProjectDetailsForm
+        //       project_type={
+        //         codes?.project_type?.map((item) => {
+        //           return { value: item.id, label: item.name };
+        //         }) || []
+        //       }
+        //       project_activity={
+        //         codes?.project_activity?.map((item) => {
+        //           return { value: item.id, label: item.name };
+        //         }) || []
+        //       }
+        //       climate_change_initiative={
+        //         codes?.climate_change_initiative?.map((item) => {
+        //           return { value: item.id, label: item.name };
+        //         }) || []
+        //       }
+        //     />
+        //   ),
+        //   stepValues: ProjectDetailsFormInitialValues,
+        //   stepValidation: ProjectDetailsFormYupSchema
+        // },
         {
           stepTitle: 'Location',
           stepSubTitle: 'Specify project regions and boundary information',
