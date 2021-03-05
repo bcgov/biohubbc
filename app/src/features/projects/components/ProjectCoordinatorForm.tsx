@@ -1,8 +1,14 @@
+//import AutocompleteField from 'components/fields/AutocompleteField';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import {
   FormControl,
   FormControlLabel,
   FormHelperText,
+  InputLabel,
   FormLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
   Grid,
   Radio,
   RadioGroup,
@@ -18,6 +24,11 @@ export interface IProjectCoordinatorForm {
   email_address: string;
   coordinator_agency: string;
   share_contact_details: string;
+}
+
+export interface IProjectCoordinatorFormProps {
+  //coordinator_agency: string;
+  coordinator_agency: IMultiAutocompleteFieldOption[];
 }
 
 export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
@@ -41,7 +52,7 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-const ProjectCoordinatorForm: React.FC = () => {
+const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<IProjectCoordinatorForm>();
 
   return (
@@ -97,23 +108,43 @@ const ProjectCoordinatorForm: React.FC = () => {
           }}
         />
       </Grid>
+      {/* <Grid item xs={12}>
+          <AutocompleteField
+            id={'coordinator_agency'}
+            name='Coordinator Agency'
+            label={'Coordinator Agency'}
+            variant='Outlined'
+            options={[{label:'a'},{label:'b'},{label:'c'}]}
+            required={false}
+          />
+      </Grid> */}
       <Grid item xs={12}>
-        <TextField
-          fullWidth
-          required={true}
-          id="coordinator_agency"
-          name="coordinator_agency"
-          label="Agency"
-          variant="outlined"
-          value={values.coordinator_agency}
-          onChange={handleChange}
-          error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
-          helperText={errors.coordinator_agency}
-          InputLabelProps={{
-            shrink: true
-          }}
-        />
+        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+          <InputLabel id="coordinator_agency-label" shrink={true}>
+            Coordinator Agency
+          </InputLabel>
+          <Select
+            id="coordinator_agency"
+            name="coordinator_agency"
+            labelId="coordinator_agency-label"
+            label="Coordinator agency"
+            value={values.coordinator_agency}
+            labelWidth={300}
+            onChange={handleChange}
+            error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Project Type' }}
+            input={<OutlinedInput notched label="Project Type" />}>
+            {props.coordinator_agency.map((item) => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{errors.coordinator_agency}</FormHelperText>
+        </FormControl>
       </Grid>
+
       <Grid item xs={12}>
         <FormControl
           required={true}
