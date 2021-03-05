@@ -2,8 +2,10 @@ import React from 'react';
 import { render, fireEvent, getByText, getByRole } from '@testing-library/react';
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
+import bbox from '@turf/bbox';
+import { LatLngBoundsExpression } from 'leaflet';
 
-describe('MapContainer.test', () => {
+describe('MapContainer', () => {
   const classes = jest.fn().mockImplementation(() => {
     return jest.fn().mockReturnValue({
       map: {
@@ -36,7 +38,7 @@ describe('MapContainer.test', () => {
   ];
   const setGeometry = jest.fn();
 
-  test('MapContainer matches the snapshot with geometries being passed in', () => {
+  test('matches the snapshot with geometries being passed in', () => {
     const { asFragment } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
@@ -44,7 +46,7 @@ describe('MapContainer.test', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test('MapContainer matches the snapshot with non editable geos being passed in', () => {
+  test('matches the snapshot with non editable geos being passed in', () => {
     const nonEditableGeometries: Feature[] = [
       {
         type: 'Feature',
@@ -71,7 +73,7 @@ describe('MapContainer.test', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test('MapContainer draws a marker successfully on the map and updates the geometry', () => {
+  test('draws a marker successfully on the map and updates the geometry', () => {
     const { container } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
@@ -84,5 +86,24 @@ describe('MapContainer.test', () => {
     fireEvent.click(getByRole(container, 'presentation'));
 
     expect(setGeometry).toHaveBeenCalled();
+  });
+
+  test('sets the bounds of the geo being passed in successfully', () => {
+    const bboxCoords = bbox(geometry[0]);
+    const bounds: LatLngBoundsExpression = ([
+      [bboxCoords[1], bboxCoords[0]],
+      [bboxCoords[3], bboxCoords[2]]
+    ]);
+
+    const { asFragment } = render(
+      <MapContainer
+        mapId="myMap"
+        classes={classes}
+        geometryState={{ geometry, setGeometry }}
+        bounds={bounds}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });
