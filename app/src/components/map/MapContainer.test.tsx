@@ -90,18 +90,13 @@ describe('MapContainer', () => {
 
   test('sets the bounds of the geo being passed in successfully', () => {
     const bboxCoords = bbox(geometry[0]);
-    const bounds: LatLngBoundsExpression = ([
+    const bounds: LatLngBoundsExpression = [
       [bboxCoords[1], bboxCoords[0]],
       [bboxCoords[3], bboxCoords[2]]
-    ]);
+    ];
 
     const { asFragment } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        geometryState={{ geometry, setGeometry }}
-        bounds={bounds}
-      />
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} bounds={bounds} />
     );
 
     expect(asFragment()).toMatchSnapshot();
