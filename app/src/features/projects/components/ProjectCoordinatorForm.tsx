@@ -1,5 +1,5 @@
 //import AutocompleteField from 'components/fields/AutocompleteField';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+//import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import {
   FormControl,
   FormControlLabel,
@@ -27,8 +27,7 @@ export interface IProjectCoordinatorForm {
 }
 
 export interface IProjectCoordinatorFormProps {
-  //coordinator_agency: string;
-  coordinator_agency: IMultiAutocompleteFieldOption[];
+  coordinator_agency: string[];
 }
 
 export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
@@ -136,7 +135,34 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             inputProps={{ 'aria-label': 'Project Type' }}
             input={<OutlinedInput notched label="Project Type" />}>
             {props.coordinator_agency.map((item) => (
-              <MenuItem key={item.value} value={item.value}>
+              <MenuItem key={item.label} value={item.label}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{errors.coordinator_agency}</FormHelperText>
+        </FormControl>
+      </Grid>
+
+      <Grid item xs={12}>
+        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+          <InputLabel id="coordinator_agency-label" shrink={true}>
+            Coordinator Agency AC
+          </InputLabel>
+          <Select
+            id="coordinator_agency"
+            name="coordinator_agency"
+            labelId="coordinator_agency-label"
+            label="Coordinator agency"
+            value={values.coordinator_agency}
+            labelWidth={300}
+            onChange={handleChange}
+            error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Project Type' }}
+            input={<OutlinedInput notched label="Project Type" />}>
+            {props.coordinator_agency.map((item) => (
+              <MenuItem key={item.label} value={item.label}>
                 {item.label}
               </MenuItem>
             ))}
