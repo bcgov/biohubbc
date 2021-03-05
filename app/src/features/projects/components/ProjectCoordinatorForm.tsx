@@ -1,14 +1,10 @@
-//import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField from 'components/fields/AutocompleteField';
 //import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  InputLabel,
   FormLabel,
-  Select,
-  MenuItem,
-  OutlinedInput,
   Grid,
   Radio,
   RadioGroup,
@@ -107,68 +103,18 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           }}
         />
       </Grid>
-      {/* <Grid item xs={12}>
-          <AutocompleteField
-            id={'coordinator_agency'}
-            name='Coordinator Agency'
-            label={'Coordinator Agency'}
-            variant='Outlined'
-            options={[{label:'a'},{label:'b'},{label:'c'}]}
-            required={false}
-          />
-      </Grid> */}
-      <Grid item xs={12}>
-        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-          <InputLabel id="coordinator_agency-label" shrink={true}>
-            Coordinator Agency
-          </InputLabel>
-          <Select
-            id="coordinator_agency"
-            name="coordinator_agency"
-            labelId="coordinator_agency-label"
-            label="Coordinator agency"
-            value={values.coordinator_agency}
-            labelWidth={300}
-            onChange={handleChange}
-            error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Project Type' }}
-            input={<OutlinedInput notched label="Project Type" />}>
-            {props.coordinator_agency.map((item) => (
-              <MenuItem key={item.label} value={item.label}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{errors.coordinator_agency}</FormHelperText>
-        </FormControl>
-      </Grid>
 
       <Grid item xs={12}>
-        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-          <InputLabel id="coordinator_agency-label" shrink={true}>
-            Coordinator Agency AC
-          </InputLabel>
-          <Select
-            id="coordinator_agency"
-            name="coordinator_agency"
-            labelId="coordinator_agency-label"
-            label="Coordinator agency"
+
+        <AutocompleteField
+            id='coordinator_agency'
+            name='Coordinator Agency'
+            label={'Coordinator Agency'}
             value={values.coordinator_agency}
-            labelWidth={300}
-            onChange={handleChange}
-            error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Project Type' }}
-            input={<OutlinedInput notched label="Project Type" />}>
-            {props.coordinator_agency.map((item) => (
-              <MenuItem key={item.label} value={item.label}>
-                {item.label}
-              </MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>{errors.coordinator_agency}</FormHelperText>
-        </FormControl>
+            options={props.coordinator_agency}
+            required={true}
+          />
+
       </Grid>
 
       <Grid item xs={12}>
