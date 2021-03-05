@@ -148,7 +148,7 @@ const CreateProjectPage: React.FC = () => {
             <ProjectCoordinatorForm
               coordinator_agency={
                 codes?.coordinator_agency?.map((item) => {
-                  return { value: item.id, label: item.name };
+                  return item.name;
                 }) || []
               }
             />

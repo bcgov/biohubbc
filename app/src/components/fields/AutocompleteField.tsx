@@ -1,5 +1,4 @@
-import { Checkbox, TextField } from '@material-ui/core';
-import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
+import { MenuItem, TextField } from '@material-ui/core';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -11,21 +10,15 @@ import React from 'react';
 export interface IAutocompleteField {
   id: string;
   label: string;
+  name: string;
+  value: string;
   options: string[];
   required?: boolean;
   filterLimit?: number;
 }
 
 const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
-  const { values, touched, errors, setFieldValue } = useFormikContext<string>();
-scrollTo
-  const getExistingValue = (existingValues: any[]): string[] => {
-    if (!existingValues) {
-      return [];
-    }
-
-    return props.options.filter((option) => existingValues.includes(option));
-  };
+  const { touched, errors, setFieldValue } = useFormikContext<string>();
 
   const handleGetOptionSelected = (
     option: string,
@@ -40,32 +33,30 @@ scrollTo
 
   return (
     <Autocomplete
-      multiple
-      autoHighlight={true}
-      value={getExistingValue(values[props.id])}
+      freeSolo
+      includeInputInList
+      clearOnBlur
+      blurOnSelect
+      handleHomeEndKeys
       id={props.id}
+      value={props.value}
       options={props.options}
       getOptionLabel={(option) => option}
       getOptionSelected={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
-      disableCloseOnSelect
       onChange={(event, option) => {
         setFieldValue(
           props.id,
-          option.map((item) => item)
+          option
         );
       }}
       renderOption={(option, { selected }) => {
-        const disabled: any = props.options && props.options?.indexOf(option) !== -1;
         return (
           <>
-            <Checkbox
-              icon={<CheckBoxOutlineBlank fontSize="small" />}
-              checkedIcon={<CheckBox fontSize="small" />}
+            <MenuItem
               style={{ marginRight: 8 }}
-              checked={selected}
-              disabled={disabled}
               value={option}
+              selected={selected}
             />
             {option}
           </>
@@ -83,6 +74,12 @@ scrollTo
           placeholder={'Begin typing to filter results...'}
           InputLabelProps={{
             shrink: true
+          }}
+          onChange={(event) => {
+            setFieldValue(
+              props.id,
+              event.target.value
+            );
           }}
         />
       )}
