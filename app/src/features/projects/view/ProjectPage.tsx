@@ -14,9 +14,9 @@ import {
 } from '@material-ui/core';
 import { AssignmentOutlined, DescriptionOutlined, InfoOutlined } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import ProjectSurveys from 'features/projects/view/ProjectAttachments';
+import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
-import ProjectAttachments from 'features/projects/view/ProjectSurveys';
+import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
