@@ -108,7 +108,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           </Box>
           <Box mt={5} height={500}>
             {!geometry.length && <MapContainer mapId="project_location_form_map" />}
-            {geometry.length && (
+            {geometry.length > 0 && (
               <MapContainer
                 mapId="project_location_form_map"
                 geometryState={{ geometry, setGeometry }}

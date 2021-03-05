@@ -460,7 +460,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               </div>
             </div>
           </div>
-          0
         </div>
       </div>
     </div>
@@ -930,7 +929,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
             </div>
           </div>
-          0
         </div>
       </div>
     </div>
