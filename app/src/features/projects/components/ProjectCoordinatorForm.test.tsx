@@ -8,11 +8,7 @@ import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const agencies = [
-  'Agency 1',
-  'Agency 2',
-  'Agency 3'
-];
+const agencies = ['Agency 1', 'Agency 2', 'Agency 3'];
 
 const projectCoordinatorFilledValues = {
   first_name: 'Nerea',
