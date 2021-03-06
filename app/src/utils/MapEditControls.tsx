@@ -68,8 +68,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     container.addLayer(e.layer);
 
-    console.log(container.getLayers());
-
     container.getLayers().forEach((layer: any) => {
       updatedGeos.push(layer.toGeoJSON());
     });
