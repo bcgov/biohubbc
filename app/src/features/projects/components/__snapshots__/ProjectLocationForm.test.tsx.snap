@@ -178,6 +178,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               class="MuiButton-label"
             >
               <input
+                data-testid="file-upload"
                 hidden=""
                 type="file"
               />
@@ -190,6 +191,9 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         </div>
         <div
           class="MuiBox-root MuiBox-root-8"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-9"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -570,10 +574,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
                 >
                   <span>
                     Regions *
@@ -612,10 +616,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
               >
                 <span>
                   Location Description
@@ -629,12 +633,12 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-9 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-10 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-15"
+          class="MuiBox-root MuiBox-root-16"
         >
           <label
             aria-disabled="false"
@@ -647,6 +651,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               class="MuiButton-label"
             >
               <input
+                data-testid="file-upload"
                 hidden=""
                 type="file"
               />
@@ -658,7 +663,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-17"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-18"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -685,21 +693,36 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/161/73"
-                      style="width: 256px; height: 256px; left: -245px; top: -242px;"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
+                      style="width: 256px; height: 256px; left: -33px; top: -4px;"
                     />
                   </div>
                 </div>
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-shadow leaflet-zoom-hide"
+                  src="marker-shadow.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 0px; top: 0px;"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-overlay-pane"
               />
               <div
                 class="leaflet-pane leaflet-marker-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  src="marker-icon.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; z-index: 0; left: 0px; top: 0px; z-index: 0; z-index: 0;"
+                  tabindex="0"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -718,7 +741,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 >
                   <a
                     aria-label="Zoom in"
-                    class="leaflet-control-zoom-in"
+                    class="leaflet-control-zoom-in leaflet-disabled"
                     href="#"
                     role="button"
                     title="Zoom in"
@@ -826,9 +849,9 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                       class="leaflet-draw-toolbar leaflet-bar"
                     >
                       <a
-                        class="leaflet-draw-edit-edit leaflet-disabled"
+                        class="leaflet-draw-edit-edit"
                         href="#"
-                        title="No layers to edit"
+                        title="Edit layers"
                       >
                         <span
                           class="sr-only"
@@ -837,9 +860,9 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         </span>
                       </a>
                       <a
-                        class="leaflet-draw-edit-remove leaflet-disabled"
+                        class="leaflet-draw-edit-remove"
                         href="#"
-                        title="No layers to delete"
+                        title="Delete layers"
                       >
                         <span
                           class="sr-only"
@@ -880,7 +903,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
+                            name="leaflet-base-layers_74"
                             type="radio"
                           />
                           <span>
@@ -892,7 +915,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
+                            name="leaflet-base-layers_74"
                             type="radio"
                           />
                           <span>
