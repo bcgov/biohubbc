@@ -20,10 +20,7 @@ export interface IAutocompleteField {
 const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
   const { touched, errors, setFieldValue } = useFormikContext<string>();
 
-  const handleGetOptionSelected = (
-    option: string,
-    value: string
-  ): boolean => {
+  const handleGetOptionSelected = (option: string, value: string): boolean => {
     if (!option || !value) {
       return false;
     }
@@ -45,19 +42,12 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
       getOptionSelected={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       onChange={(event, option) => {
-        setFieldValue(
-          props.id,
-          option
-        );
+        setFieldValue(props.id, option);
       }}
       renderOption={(option, { selected }) => {
         return (
           <>
-            <MenuItem
-              style={{ marginRight: 8 }}
-              value={option}
-              selected={selected}
-            />
+            <MenuItem style={{ marginRight: 8 }} value={option} selected={selected} />
             {option}
           </>
         );
@@ -76,10 +66,7 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
             shrink: true
           }}
           onChange={(event) => {
-            setFieldValue(
-              props.id,
-              event.target.value
-            );
+            setFieldValue(props.id, event.target.value);
           }}
         />
       )}
