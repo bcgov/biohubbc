@@ -149,7 +149,6 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
     <div
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
-      id='coordinator_agency'
       <div
         aria-expanded="false"
         class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
@@ -519,7 +518,6 @@ exports[`Project Coordinator Form renders correctly the filled component correct
     <div
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
-      id='coordinator_agency'
       <div
         aria-expanded="false"
         class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
