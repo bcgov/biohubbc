@@ -3,10 +3,6 @@ import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete
 import { useFormikContext } from 'formik';
 import React from 'react';
 
-// export interface IAutocompleteFieldOption {
-//   label: string;
-// }
-
 export interface IAutocompleteField {
   id: string;
   label: string;
