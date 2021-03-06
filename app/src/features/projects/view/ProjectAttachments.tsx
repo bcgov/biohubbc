@@ -1,6 +1,5 @@
-import { Box, Button, CircularProgress, Container, makeStyles, Typography } from '@material-ui/core';
-//import { AttachFile } from '@material-ui/icons';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { Box, Button, CircularProgress, makeStyles, Paper, Typography } from '@material-ui/core';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { UploadProjectArtifactsI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
@@ -8,63 +7,34 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-// export interface IFormControlsComponentProps {
-//   id: number;
-//   isDisabled?: boolean;
-// }
-
-// const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props) => {
-//   const history = useHistory();
-
-//   const navigateToEditProjectPage = (id: number) => {
-//     history.push(`/projects/${id}/edit`);
-//   };
-
-//   return (
-//     <>
-//       <Grid container spacing={3}>
-//         <Grid container item spacing={3}>
-//           <Grid item>
-//             <Button variant="text" color="primary" startIcon={<ArrowBack />} onClick={() => history.goBack()}>
-//               Back to Projects
-//             </Button>
-//           </Grid>
-//           <Grid item>
-//             <Button variant="contained" color="primary" onClick={() => navigateToEditProjectPage(props.id)}>
-//               Edit
-//             </Button>
-//           </Grid>
-//         </Grid>
-//       </Grid>
-//     </>
-//   );
-// };
-
 const useStyles = makeStyles((theme) => ({
-  stepper: {
-    backgroundColor: 'transparent'
+  breadCrumbLink: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
   },
-  actionsContainer: {
-    marginBottom: theme.spacing(2)
+  breadCrumbLinkIcon: {
+    marginRight: '0.25rem'
   },
   actionButton: {
     marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
-  },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
   }
 }));
 
+export interface IProjectAttachmentsProps {
+  projectData: any;
+}
+
 /**
- * Page to display a single Project.
- *
- * // TODO WIP
+ * Project attachments content for a project.
  *
  * @return {*}
  */
-const ProjectPage: React.FC = () => {
+const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const urlParams = useParams();
 
   const biohubApi = useBiohubApi();
@@ -150,58 +120,48 @@ const ProjectPage: React.FC = () => {
     }
   }, [urlParams, biohubApi, project, files]);
 
-  // const handleChange = () => {};
-
-  // const handleSubmitSuccess = () => {};
-
   if (!project) {
     return <CircularProgress></CircularProgress>;
   }
 
   return (
-    <Box my={3}>
-      <Container>
-        <Box mb={3}>
-          <Typography variant="h2">{`Project ${project.id}`}</Typography>
-        </Box>
-        <Box>
-          {JSON.stringify(project, null, 2)}
-          {/* <FormContainer
-            isDisabled={true}
-            record={project}
-            template={projectTemplate}
-            formControlsComponent={(props) => {
-              return <FormControlsComponent id={project.id} isDisabled={true} {...props} />;
-            }}
-            onFormChange={handleChange}
-            onFormSubmitSuccess={handleSubmitSuccess}></FormContainer> */}
-        </Box>
-        <Box key={dropzoneInstanceKey}>
-          <hr />
-          <ErrorDialog {...openErrorDialogProps} />
-          <DropzoneArea
-            dropzoneText={dropzoneText}
-            filesLimit={10}
-            //fileObjects={files}
-            onChange={(e) => {
-              setFiles(e);
-            }}
-            onDelete={(f) => {
-              handleDeleteFile(f);
-            }}
-            showFileNames={true}
-            useChipsForPreview={true}
-            showAlerts={['error']}
-          />
-        </Box>
-        <Box>
-          <Button variant="contained" color="primary" onClick={handleUpload} className={classes.actionButton}>
-            <Typography variant="body1">Upload</Typography>
-          </Button>
-        </Box>
-      </Container>
-    </Box>
+    <>
+      <Box mb={5}>
+        <Typography variant="h2">Project Attachments</Typography>
+      </Box>
+      <Box mb={3}>
+        <Paper>
+          <Box p={3}>Project attachments component 1 placeholder</Box>
+        </Paper>
+      </Box>
+      <Box mb={3}>
+        <Paper>
+          <Box p={3}>
+            <Box key={dropzoneInstanceKey}>
+              <DropzoneArea
+                dropzoneText={dropzoneText}
+                filesLimit={10}
+                onChange={(e) => {
+                  setFiles(e);
+                }}
+                onDelete={(f) => {
+                  handleDeleteFile(f);
+                }}
+                showFileNames={true}
+                useChipsForPreview={true}
+                showAlerts={['error']}
+              />
+            </Box>
+            <Box>
+              <Button variant="contained" color="primary" onClick={handleUpload} className={classes.actionButton}>
+                <Typography variant="body1">Upload</Typography>
+              </Button>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+    </>
   );
 };
 
-export default ProjectPage;
+export default ProjectAttachments;

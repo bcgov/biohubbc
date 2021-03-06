@@ -4,6 +4,7 @@ exports[`NotFoundPage renders correctly 1`] = `
 <DocumentFragment>
   <header
     class="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
+    style="box-shadow: none;"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
