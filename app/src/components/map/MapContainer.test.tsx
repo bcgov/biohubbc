@@ -3,7 +3,6 @@ import { render, fireEvent, getByText, getByRole } from '@testing-library/react'
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
-import { LatLngBoundsExpression } from 'leaflet';
 
 describe('MapContainer', () => {
   const classes = jest.fn().mockImplementation(() => {
@@ -90,7 +89,7 @@ describe('MapContainer', () => {
 
   test('sets the bounds of the geo being passed in successfully', () => {
     const bboxCoords = bbox(geometry[0]);
-    const bounds: LatLngBoundsExpression = [
+    const bounds = [
       [bboxCoords[1], bboxCoords[0]],
       [bboxCoords[3], bboxCoords[2]]
     ];
