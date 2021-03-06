@@ -102,6 +102,12 @@ describe('ProjectLocationForm', () => {
 
     //@ts-ignore
     expect(getByText(container, 'You must upload a KML file, please try again.')).toBeInTheDocument();
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Upload KML'));
+
+    //@ts-ignore
+    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
   });
 
   it('displays the uploaded geo on the map when the spatial upload succeeds', async () => {
