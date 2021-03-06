@@ -1,4 +1,4 @@
-import { getByTestId, render, fireEvent, waitFor } from '@testing-library/react';
+import { getByTestId, render, fireEvent, waitFor, getByText } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -20,8 +20,6 @@ const region: IMultiAutocompleteFieldOption[] = [
 ];
 
 describe('ProjectLocationForm', () => {
-  const setGeometry = jest.fn();
-
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
       <Formik
@@ -69,11 +67,10 @@ describe('ProjectLocationForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('handles the spatial upload correctly', async () => {
-    const setGeometry = jest.fn();
-    const file = new File([''], 'testfile.kml', {
+  it('displays an error when the spatial upload is attempted with an incorrect file type', async () => {
+    const file = new File([''], 'testfile.json', {
       lastModified: 1614369038812,
-      type: ''
+      type: 'application/json'
     });
 
     const { container } = render(
@@ -88,7 +85,7 @@ describe('ProjectLocationForm', () => {
     );
 
     File.prototype.text = jest.fn().mockImplementation(() => {
-      return Promise.resolve('<xml>some test file contents</xml>');
+      return Promise.resolve('some test file contents');
     });
 
     //@ts-ignore
@@ -98,6 +95,7 @@ describe('ProjectLocationForm', () => {
 
     await waitFor(() => {});
 
-    expect(setGeometry).toHaveBeenCalled();
+    //@ts-ignore
+    expect(getByText(container, 'You must upload a KML file, please try again.')).toBeInTheDocument();
   });
 });
