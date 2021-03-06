@@ -1,4 +1,4 @@
-import { getByTestId, render, fireEvent, waitFor, getByText } from '@testing-library/react';
+import { getByTestId, render, fireEvent, waitFor, getByText, queryByText } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -7,6 +7,11 @@ import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from './ProjectLocationForm';
+import { kml } from '@tmcw/togeojson';
+
+jest.mock('@tmcw/togeojson', () => ({
+  kml: jest.fn()
+}));
 
 const region: IMultiAutocompleteFieldOption[] = [
   {
@@ -97,5 +102,57 @@ describe('ProjectLocationForm', () => {
 
     //@ts-ignore
     expect(getByText(container, 'You must upload a KML file, please try again.')).toBeInTheDocument();
+  });
+
+  it('displays the uploaded geo on the map when the spatial upload succeeds', async () => {
+    kml.mockReturnValueOnce({
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }
+      ]
+    });
+
+    File.prototype.text = jest.fn().mockImplementation(() => {
+      return Promise.resolve('<kml>some test file contents</kml>');
+    });
+
+    DOMParser.prototype.parseFromString = jest.fn().mockImplementation(() => {
+      return new Document();
+    });
+
+    const file = new File([''], 'testfile.kml', {
+      lastModified: 1614369038812,
+      type: 'application/vnd.google-earth.kml+xml'
+    });
+
+    const { container, asFragment } = render(
+      <Formik
+        initialValues={ProjectLocationFormInitialValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => <ProjectLocationForm region={region} />}
+      </Formik>
+    );
+
+    //@ts-ignore
+    const inputField = getByTestId(container, 'file-upload');
+
+    fireEvent.change(inputField, { target: { files: [file] } });
+
+    await waitFor(() => {});
+
+    //@ts-ignore
+    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
   });
 });
