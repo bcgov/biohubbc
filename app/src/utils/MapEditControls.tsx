@@ -59,36 +59,50 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   drawRef.current = createDrawElement(props, context);
 
   /*
-    Used to draw geometries that are drawn using the controls on the map
+    Used to save state of geometries based on change to layers on map
+  */
+  const updateGeosBasedOnLayers = (container: any) => {
+    const updatedGeos: Feature[] = [];
+
+    container.getLayers().forEach((layer: any) => {
+      updatedGeos.push(layer.toGeoJSON());
+    });
+
+    props.setGeometry([...updatedGeos]);
+  };
+
+  /*
+    Used to draw geometries using the controls on the map
   */
   const onDrawCreate = (e: any) => {
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
-    const updatedGeos: Feature[] = [];
 
     container.addLayer(e.layer);
-
-    container.getLayers().forEach((layer: any) => {
-      updatedGeos.push(layer.toGeoJSON());
-    });
-
-    props.setGeometry([...updatedGeos]);
-
+    updateGeosBasedOnLayers(container);
     onCreated && onCreated(e);
   };
 
+  /*
+    Used to edit geometries using the controls on the map
+  */
   const onDrawEdit = (e: any) => {
     const { onEdited } = props;
     const container = context.layerContainer || context.map;
-    const updatedGeos: Feature[] = [];
 
-    container.getLayers().forEach((layer: any) => {
-      updatedGeos.push(layer.toGeoJSON());
-    });
-
-    props.setGeometry([...updatedGeos]);
-
+    updateGeosBasedOnLayers(container);
     onEdited && onEdited(e);
+  };
+
+  /*
+    Used to delete geometries using the controls on the map
+  */
+  const onDrawDelete = (e: any) => {
+    const { onDeleted } = props;
+    const container = context.layerContainer || context.map;
+
+    updateGeosBasedOnLayers(container);
+    onDeleted && onDeleted(e);
   };
 
   /*
@@ -111,6 +125,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     map.on(eventHandlers.onCreated, onDrawCreate);
     map.on(eventHandlers.onEdited, onDrawEdit);
+    map.on(eventHandlers.onDeleted, onDrawDelete);
 
     onMounted && onMounted(drawRef.current);
   }, []);

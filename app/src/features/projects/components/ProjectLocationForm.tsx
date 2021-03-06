@@ -86,16 +86,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
     const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
     const geojson = kml(domKml);
-    const allGeosFeatureCollection = {
-      type: 'FeatureCollection',
-      features: [...values.geometry, { ...geojson.features[0] }]
-    };
-    const bboxCoords = bbox(allGeosFeatureCollection);
 
-    setBounds([
-      [bboxCoords[1], bboxCoords[0]],
-      [bboxCoords[3], bboxCoords[2]]
-    ]);
     setFieldValue('geometry', [...geojson.features, ...values.geometry]);
   };
 
