@@ -58,7 +58,7 @@ describe('ProjectLocationForm', () => {
   });
 
   it.only('handles the spatial upload correctly', async () => {
-    const file = new File([""], "testfile.kml", {
+    const file = new File([''], 'testfile.kml', {
       lastModified: 1614369038812,
       type: ''
     });
@@ -74,7 +74,7 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-     File.prototype.text = jest.fn().mockImplementation(() => {
+    File.prototype.text = jest.fn().mockImplementation(() => {
       return Promise.resolve('<xml>some test file contents</xml>');
     });
 

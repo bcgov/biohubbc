@@ -19,7 +19,7 @@ export interface IMapBoundsProps {
 const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
   const { bounds } = props;
-  
+
   if (bounds && bounds.length) {
     map.fitBounds(bounds);
   }

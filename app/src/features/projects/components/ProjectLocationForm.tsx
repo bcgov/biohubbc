@@ -61,10 +61,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     }
 
     const allGeosFeatureCollection = {
-      "type": "FeatureCollection",
-      "features": [
-        ...values.geometry
-      ]
+      type: 'FeatureCollection',
+      features: [...values.geometry]
     };
     const bboxCoords = bbox(allGeosFeatureCollection);
 
@@ -80,10 +78,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       return xmlString;
     });
 
-    if (
-      file?.type !== 'application/vnd.google-earth.kml+xml' &&
-      !fileAsString?.includes('</kml>')
-    ) {
+    if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
       setUploadError('You must upload a KML file, please try again.');
 
       return;
@@ -92,11 +87,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
     const geojson = kml(domKml);
     const allGeosFeatureCollection = {
-      "type": "FeatureCollection",
-      "features": [
-        ...values.geometry,
-        { ...geojson.features[0] }
-      ]
+      type: 'FeatureCollection',
+      features: [...values.geometry, { ...geojson.features[0] }]
     };
     const bboxCoords = bbox(allGeosFeatureCollection);
 
@@ -145,14 +137,15 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               Upload KML
             </Button>
           </Box>
-          <Box mt={2}>
-            {uploadError && (<Typography style={{ color: '#db3131' }}>{uploadError}</Typography>)}
-          </Box>
+          <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
           <Box mt={5} height={500}>
             <MapContainer
               mapId="project_location_form_map"
               //@ts-ignore
-              geometryState={{ geometry: values.geometry, setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo) }}
+              geometryState={{
+                geometry: values.geometry,
+                setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
+              }}
               bounds={bounds}
             />
           </Box>
