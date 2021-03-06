@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, getByText, getByRole } from '@testing-library/react';
+import { render, fireEvent, getByText, getByRole, waitFor } from '@testing-library/react';
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
@@ -99,5 +99,37 @@ describe('MapContainer', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('editing geometries works as expected', async () => {
+    const { container } = render(
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
+    );
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Edit layers'));
+
+    await waitFor(() => {});
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Save'));
+
+    expect(setGeometry).toHaveBeenCalledWith(geometry);
+  });
+
+  test('deletes geometries currently present on the map successfully', async () => {
+    const { container } = render(
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
+    );
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Delete layers'));
+
+    await waitFor(() => {});
+
+    //@ts-ignore
+    fireEvent.click(getByText(container, 'Clear All'));
+
+    expect(setGeometry).toHaveBeenCalledWith([]);
   });
 });
