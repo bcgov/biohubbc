@@ -246,7 +246,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                   alt=""
                   class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
                   src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 0px; top: 0px; z-index: 0;"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 0px; top: 0px; z-index: 0; z-index: 0;"
                   tabindex="0"
                 />
               </div>

@@ -101,7 +101,7 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test('editing geometries works as expected', async () => {
+  test('edits geometries as expected', async () => {
     const { container } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
