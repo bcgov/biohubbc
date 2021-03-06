@@ -5,7 +5,7 @@ import {
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as yup from 'yup';
 //@ts-ignore
 import { kml } from '@tmcw/togeojson';
@@ -22,11 +22,13 @@ const useStyles = makeStyles({
 export interface IProjectLocationForm {
   regions: string[];
   location_description: string;
+  geometry: Feature[];
 }
 
 export const ProjectLocationFormInitialValues: IProjectLocationForm = {
   regions: [],
-  location_description: ''
+  location_description: '',
+  geometry: []
 };
 
 export const ProjectLocationFormYupSchema = yup.object().shape({
@@ -48,25 +50,61 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
-  const [geometry, setGeometry] = useState<Feature[]>([]);
+  const [uploadError, setUploadError] = useState('');
 
-  const handleSpatialUpload = async (e: any) => {
-    const file = e.target.files[0];
-    const fileAsString = await file.text().then((xmlString: string) => {
-      return xmlString;
-    });
-    const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
-    const geojson = kml(domKml);
-    const bboxCoords = bbox(geojson);
+  useEffect(() => {
+    if (!values.geometry.length) {
+      return;
+    }
+
+    const allGeosFeatureCollection = {
+      "type": "FeatureCollection",
+      "features": [
+        ...values.geometry
+      ]
+    };
+    const bboxCoords = bbox(allGeosFeatureCollection);
 
     setBounds([
       [bboxCoords[1], bboxCoords[0]],
       [bboxCoords[3], bboxCoords[2]]
     ]);
-    setGeometry(geojson.features);
+  }, [values.geometry]);
+
+  const handleSpatialUpload = async (e: any) => {
+    const file = e.target.files[0];
+    const fileAsString = await file?.text().then((xmlString: string) => {
+      return xmlString;
+    });
+
+    if (
+      file?.type !== 'application/vnd.google-earth.kml+xml' &&
+      !fileAsString?.includes('</kml>')
+    ) {
+      setUploadError('You must upload a KML file, please try again.');
+
+      return;
+    }
+
+    const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
+    const geojson = kml(domKml);
+    const allGeosFeatureCollection = {
+      "type": "FeatureCollection",
+      "features": [
+        ...values.geometry,
+        { ...geojson.features[0] }
+      ]
+    };
+    const bboxCoords = bbox(allGeosFeatureCollection);
+
+    setBounds([
+      [bboxCoords[1], bboxCoords[0]],
+      [bboxCoords[3], bboxCoords[2]]
+    ]);
+    setFieldValue('geometry', [...geojson.features, ...values.geometry]);
   };
 
   return (
@@ -101,20 +139,22 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               component="label"
               size="medium"
               color="primary"
+              onClick={() => setUploadError('')}
               style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
-              <input type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
+              <input data-testid="file-upload" type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
               Upload KML
             </Button>
           </Box>
+          <Box mt={2}>
+            {uploadError && (<Typography style={{ color: '#db3131' }}>{uploadError}</Typography>)}
+          </Box>
           <Box mt={5} height={500}>
-            {!geometry.length && <MapContainer mapId="project_location_form_map" />}
-            {geometry.length > 0 && (
-              <MapContainer
-                mapId="project_location_form_map"
-                geometryState={{ geometry, setGeometry }}
-                bounds={bounds}
-              />
-            )}
+            <MapContainer
+              mapId="project_location_form_map"
+              //@ts-ignore
+              geometryState={{ geometry: values.geometry, setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo) }}
+              bounds={bounds}
+            />
           </Box>
         </Grid>
       </Grid>

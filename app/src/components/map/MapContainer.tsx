@@ -11,18 +11,18 @@ import {
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
 import { Feature } from 'geojson';
-import booleanEqual from '@turf/boolean-equal';
-import { LatLngBoundsExpression } from 'leaflet';
 
 export interface IMapBoundsProps {
-  bounds: LatLngBoundsExpression;
+  bounds?: any[];
 }
 
 const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
   const { bounds } = props;
-
-  map.fitBounds(bounds);
+  
+  if (bounds && bounds.length) {
+    map.fitBounds(bounds);
+  }
 
   return null;
 };
@@ -32,28 +32,11 @@ export interface IMapContainerProps {
   mapId: string;
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: Feature[];
-  bounds?: LatLngBoundsExpression;
+  bounds?: any[];
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const { classes, mapId, geometryState, nonEditableGeometries, bounds } = props;
-
-  const handleCreated = (e: any) => {
-    const newGeo: Feature = e.layer.toGeoJSON();
-
-    // @ts-ignore
-    geometryState?.setGeometry((geo: Feature[]) => {
-      const geoExists = geo.some((existingGeo: Feature) => {
-        return booleanEqual(existingGeo, newGeo);
-      });
-
-      if (geoExists) {
-        return geo;
-      }
-
-      return [...geo, newGeo];
-    });
-  };
 
   return (
     <LeafletMapContainer
@@ -63,10 +46,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={9}
       scrollWheelZoom={true}>
-      {bounds && <MapBounds bounds={bounds} />}
+      <MapBounds bounds={bounds} />
 
       <FeatureGroup>
-        <MapEditControls position="topright" onCreated={handleCreated} geometry={geometryState?.geometry} />
+        <MapEditControls
+          position="topright"
+          geometry={geometryState?.geometry}
+          setGeometry={geometryState?.setGeometry}
+        />
       </FeatureGroup>
 
       {nonEditableGeometries?.map((nonEditableGeo: Feature) => (

@@ -48,6 +48,7 @@ export interface IMapEditControlsProps {
   position?: any;
   leaflet?: any;
   geometry?: Feature[];
+  setGeometry?: (geometry: Feature[]) => void;
 }
 
 const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
@@ -58,23 +59,38 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   drawRef.current = createDrawElement(props, context);
 
   /*
-    Used to draw geometries that are passed into the map container component
-  */
-  const onMountCreate = (layer: any) => {
-    const container = context.layerContainer || context.map;
-
-    container.addLayer(layer);
-  };
-
-  /*
     Used to draw geometries that are drawn using the controls on the map
   */
   const onDrawCreate = (e: any) => {
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
+    const updatedGeos: Feature[] = [];
 
     container.addLayer(e.layer);
+
+    console.log(container.getLayers());
+
+    container.getLayers().forEach((layer: any) => {
+      updatedGeos.push(layer.toGeoJSON());
+    });
+
+    props.setGeometry([...updatedGeos]);
+
     onCreated && onCreated(e);
+  };
+
+  const onDrawEdit = (e: any) => {
+    const { onEdited } = props;
+    const container = context.layerContainer || context.map;
+    const updatedGeos: Feature[] = [];
+
+    container.getLayers().forEach((layer: any) => {
+      updatedGeos.push(layer.toGeoJSON());
+    });
+
+    props.setGeometry([...updatedGeos]);
+
+    onEdited && onEdited(e);
   };
 
   /*
@@ -95,18 +111,28 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
       });
     }
 
-    props.geometry?.forEach((geometry: Feature) => {
-      L.geoJSON(geometry, {
-        onEachFeature: function (feature: any, layer: any) {
-          onMountCreate(layer);
-        }
-      });
-    });
-
     map.on(eventHandlers.onCreated, onDrawCreate);
+    map.on(eventHandlers.onEdited, onDrawEdit);
 
     onMounted && onMounted(drawRef.current);
   }, []);
+
+  useEffect(() => {
+    const container = context.layerContainer || context.map;
+
+    container.clearLayers();
+
+    /*
+      Used to draw geometries that are passed into the map container component
+    */
+    props.geometry?.forEach((geometry: Feature) => {
+      L.geoJSON(geometry, {
+        onEachFeature: function (feature: any, layer: any) {
+          container.addLayer(layer);
+        }
+      });
+    });
+  }, [props.geometry]);
 
   useEffect(() => {
     if (
