@@ -252,7 +252,6 @@ const CreateProjectPage: React.FC = () => {
     setSteps((currentSteps) => {
       let updatedSteps = [...currentSteps];
       updatedSteps[activeStep].stepValues = values;
-
       return updatedSteps;
     });
   };
