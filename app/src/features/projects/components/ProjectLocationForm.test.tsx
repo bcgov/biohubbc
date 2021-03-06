@@ -40,7 +40,19 @@ describe('ProjectLocationForm', () => {
   it('renders correctly with existing location values', () => {
     const existingFormValues: IProjectLocationForm = {
       regions: ['region 1', 'region 2'],
-      location_description: 'a location description'
+      location_description: 'a location description',
+      geometry: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }
+      ]
     };
 
     const { asFragment } = render(
@@ -57,7 +69,8 @@ describe('ProjectLocationForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it.only('handles the spatial upload correctly', async () => {
+  it('handles the spatial upload correctly', async () => {
+    const setGeometry = jest.fn();
     const file = new File([''], 'testfile.kml', {
       lastModified: 1614369038812,
       type: ''
