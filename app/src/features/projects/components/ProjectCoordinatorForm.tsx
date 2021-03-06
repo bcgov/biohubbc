@@ -104,7 +104,6 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
       </Grid>
 
       <Grid item xs={12}>
-        id='coordinator_agency'
         <AutocompleteField
           id="coordinator_agency"
           name="Coordinator Agency"
