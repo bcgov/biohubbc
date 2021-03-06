@@ -1,5 +1,4 @@
 import AutocompleteField from 'components/fields/AutocompleteField';
-//import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import {
   FormControl,
   FormControlLabel,
@@ -105,7 +104,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
       </Grid>
 
       <Grid item xs={12}>
-
+        id='coordinator_agency'
         <AutocompleteField
             id='coordinator_agency'
             name='Coordinator Agency'
