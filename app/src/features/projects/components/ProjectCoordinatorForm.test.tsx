@@ -8,11 +8,13 @@ import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const ProjectCoordinatorFilledValues = {
+const agencies = ['Agency 1', 'Agency 2', 'Agency 3'];
+
+const projectCoordinatorFilledValues = {
   first_name: 'Nerea',
   last_name: 'Oneal',
   email_address: 'quxu@mailinator.com',
-  coordinator_agency: 'Qui anim qui laboris',
+  coordinator_agency: 'Agency 3',
   share_contact_details: 'true'
 };
 
@@ -27,7 +29,7 @@ describe('Project Coordinator Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProjectCoordinatorForm />}
+        {() => <ProjectCoordinatorForm coordinator_agency={[]} />}
       </Formik>
     );
 
@@ -37,14 +39,14 @@ describe('Project Coordinator Form', () => {
   it('renders correctly the filled component correctly', () => {
     const { asFragment } = render(
       <Formik
-        initialValues={ProjectCoordinatorFilledValues}
+        initialValues={projectCoordinatorFilledValues}
         validationSchema={ProjectCoordinatorYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async (values, helper) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProjectCoordinatorForm />}
+        {() => <ProjectCoordinatorForm coordinator_agency={agencies} />}
       </Formik>
     );
 

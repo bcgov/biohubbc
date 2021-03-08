@@ -122,6 +122,7 @@ export interface IUploadProjectArtifactsResponse {
  * @interface IGetAllCodesResponse
  */
 export interface IGetAllCodesResponse {
+  coordinator_agency: { id: number; name: string }[];
   management_action_type: { id: number; name: string }[];
   climate_change_initiative: { id: number; name: string }[];
   first_nations: { id: number; name: string }[];

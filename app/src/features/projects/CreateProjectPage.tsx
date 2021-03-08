@@ -144,7 +144,15 @@ const CreateProjectPage: React.FC = () => {
         {
           stepTitle: 'Project Coordinator',
           stepSubTitle: 'Enter contact details for the project coordinator',
-          stepContent: <ProjectCoordinatorForm />,
+          stepContent: (
+            <ProjectCoordinatorForm
+              coordinator_agency={
+                codes?.coordinator_agency?.map((item) => {
+                  return item.name;
+                }) || []
+              }
+            />
+          ),
           stepValues: ProjectCoordinatorInitialValues,
           stepValidation: ProjectCoordinatorYupSchema
         },
