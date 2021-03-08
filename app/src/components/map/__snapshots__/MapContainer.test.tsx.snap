@@ -27,8 +27,8 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/161/73"
-              style="width: 256px; height: 256px; left: -245px; top: -242px;"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
         </div>
@@ -324,8 +324,8 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/161/73"
-              style="width: 256px; height: 256px; left: -245px; top: -242px;"
+              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
         </div>
@@ -337,7 +337,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
           alt=""
           class="leaflet-marker-shadow leaflet-zoom-hide"
           src="marker-shadow.png"
-          style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 92333px; top: 20382px;"
+          style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
         />
       </div>
       <div
@@ -373,7 +373,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
           alt=""
           class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
           src="marker-icon.png"
-          style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 92333px; top: 20382px; z-index: 20382;"
+          style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
           tabindex="0"
         />
       </div>
