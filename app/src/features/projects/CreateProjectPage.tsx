@@ -19,38 +19,49 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectI18N } from 'constants/i18n';
 import ProjectCoordinatorForm, {
+  IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import ProjectDetailsForm, {
+  IProjectDetailsForm,
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from 'features/projects/components/ProjectDetailsForm';
 import ProjectFundingForm, {
+  IProjectFundingForm,
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
-import ProjectPermitForm, {
-  ProjectPermitFormInitialValues,
-  ProjectPermitFormYupSchema
-} from 'features/projects/components/ProjectPermitForm';
-import ProjectSpeciesForm, {
-  ProjectSpeciesFormInitialValues,
-  ProjectSpeciesFormYupSchema
-} from 'features/projects/components/ProjectSpeciesForm';
 import ProjectLocationForm, {
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
 import ProjectObjectivesForm, {
+  IProjectObjectivesForm,
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
+import ProjectPermitForm, {
+  IProjectPermitForm,
+  ProjectPermitFormInitialValues,
+  ProjectPermitFormYupSchema
+} from 'features/projects/components/ProjectPermitForm';
+import ProjectSpeciesForm, {
+  IProjectSpeciesForm,
+  ProjectSpeciesFormInitialValues,
+  ProjectSpeciesFormYupSchema
+} from 'features/projects/components/ProjectSpeciesForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodesResponse, IProjectPostObject } from 'interfaces/useBioHubApi-interfaces';
+import {
+  IGetAllCodesResponse,
+  IPartialProjectPostObject,
+  IProjectPostObject
+} from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { IProjectLocationForm } from './components/ProjectLocationForm';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -92,6 +103,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const NUM_PARTIAL_PROJECT_STEPS = 2;
+const NUM_ALL_PROJECT_STEPS = 7;
+
 /**
  * Page for creating a new project.
  *
@@ -104,11 +118,18 @@ const CreateProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  // Tracks the current stepper step
+  const [codes, setCodes] = useState<IGetAllCodesResponse>();
+
+  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+
+  // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
-  // Steps for the create project workflow
-  const [steps, setSteps] = useState<ICreateProjectStep[]>([]);
+  // The number of steps listed in the UI based on the current state of the component/forms
+  const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_PARTIAL_PROJECT_STEPS);
+
+  // All possible step forms, and their current state
+  const [stepForms, setStepForms] = useState<ICreateProjectStep[]>([]);
 
   // Whether or not to show the 'Are you sure you want to cancel' dialog
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
@@ -125,10 +146,6 @@ const CreateProjectPage: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
     }
   });
-
-  const [codes, setCodes] = useState<IGetAllCodesResponse>();
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
@@ -152,137 +169,159 @@ const CreateProjectPage: React.FC = () => {
     }
   }, [biohubApi, isLoadingCodes, codes]);
 
-  // Define steps
+  // Initialize the forms for each step of the workflow
   useEffect(() => {
-    const setFormSteps = () => {
-      setSteps([
-        {
-          stepTitle: 'Project Coordinator',
-          stepSubTitle: 'Enter contact details for the project coordinator',
-          stepContent: (
-            <ProjectCoordinatorForm
-              coordinator_agency={
-                codes?.coordinator_agency?.map((item) => {
-                  return item.name;
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectCoordinatorInitialValues,
-          stepValidation: ProjectCoordinatorYupSchema
-        },
-        {
-          stepTitle: 'Permits',
-          stepSubTitle: 'Enter permits associated with this project',
-          stepContent: <ProjectPermitForm />,
-          stepValues: ProjectPermitFormInitialValues,
-          stepValidation: ProjectPermitFormYupSchema
-        },
-        {
-          stepTitle: 'General Information',
-          stepSubTitle: 'General information and details about this project',
-          stepContent: (
-            <ProjectDetailsForm
-              project_type={
-                codes?.project_type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              project_activity={
-                codes?.project_activity?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              climate_change_initiative={
-                codes?.climate_change_initiative?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectDetailsFormInitialValues,
-          stepValidation: ProjectDetailsFormYupSchema
-        },
-        {
-          stepTitle: 'Objectives',
-          stepSubTitle: 'Enter the objectives and potential caveats for this project',
-          stepContent: <ProjectObjectivesForm />,
-          stepValues: ProjectObjectivesFormInitialValues,
-          stepValidation: ProjectObjectivesFormYupSchema
-        },
-        {
-          stepTitle: 'Location',
-          stepSubTitle: 'Specify project regions and boundary information',
-          stepContent: (
-            <ProjectLocationForm
-              region={
-                codes?.region?.map((item) => {
-                  return { value: item.name, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectLocationFormInitialValues,
-          stepValidation: ProjectLocationFormYupSchema
-        },
-        {
-          stepTitle: 'Species',
-          stepSubTitle: 'Information about species this project is inventorying or monitoring',
-          stepContent: (
-            <ProjectSpeciesForm
-              species={
-                codes?.species?.map((item) => {
-                  return { value: item.name, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectSpeciesFormInitialValues,
-          stepValidation: ProjectSpeciesFormYupSchema
-        },
-        {
-          stepTitle: 'Funding and Partnerships',
-          stepSubTitle: 'Specify funding and partnerships for the project',
-          stepContent: (
-            <ProjectFundingForm
-              funding_sources={
-                codes?.funding_source?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              investment_action_category={
-                codes?.investment_action_category?.map((item) => {
-                  return { value: item.id, fs_id: item.fs_id, label: item.name };
-                }) || []
-              }
-              first_nations={
-                codes?.first_nations?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              stakeholder_partnerships={
-                codes?.funding_source?.map((item) => {
-                  return { value: item.name, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectFundingFormInitialValues,
-          stepValidation: ProjectFundingFormYupSchema
-        }
-      ]);
-    };
-
-    if (codes && !steps?.length) {
-      setFormSteps();
+    if (!codes) {
+      return;
     }
-  }, [codes, steps]);
+
+    if (stepForms.length) {
+      return;
+    }
+
+    setStepForms([
+      {
+        stepTitle: 'Project Coordinator',
+        stepSubTitle: 'Enter contact details for the project coordinator',
+        stepContent: (
+          <ProjectCoordinatorForm
+            coordinator_agency={
+              codes?.coordinator_agency?.map((item) => {
+                return item.name;
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectCoordinatorInitialValues,
+        stepValidation: ProjectCoordinatorYupSchema
+      },
+      {
+        stepTitle: 'Permits',
+        stepSubTitle: 'Enter permits associated with this project',
+        stepContent: (
+          <ProjectPermitForm
+            onValuesChange={(values) => {
+              if (isAtLeastOnePermitMarkedSamplingConducted(values)) {
+                setNumberOfSteps(NUM_ALL_PROJECT_STEPS);
+              } else {
+                setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
+              }
+            }}
+          />
+        ),
+        stepValues: ProjectPermitFormInitialValues,
+        stepValidation: ProjectPermitFormYupSchema
+      },
+      {
+        stepTitle: 'General Information',
+        stepSubTitle: 'General information and details about this project',
+        stepContent: (
+          <ProjectDetailsForm
+            project_type={
+              codes?.project_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            project_activity={
+              codes?.project_activity?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            climate_change_initiative={
+              codes?.climate_change_initiative?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectDetailsFormInitialValues,
+        stepValidation: ProjectDetailsFormYupSchema
+      },
+      {
+        stepTitle: 'Objectives',
+        stepSubTitle: 'Enter the objectives and potential caveats for this project',
+        stepContent: <ProjectObjectivesForm />,
+        stepValues: ProjectObjectivesFormInitialValues,
+        stepValidation: ProjectObjectivesFormYupSchema
+      },
+      {
+        stepTitle: 'Location',
+        stepSubTitle: 'Specify project regions and boundary information',
+        stepContent: (
+          <ProjectLocationForm
+            region={
+              codes?.region?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectLocationFormInitialValues,
+        stepValidation: ProjectLocationFormYupSchema
+      },
+      {
+        stepTitle: 'Species',
+        stepSubTitle: 'Information about species this project is inventorying or monitoring',
+        stepContent: (
+          <ProjectSpeciesForm
+            species={
+              codes?.species?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectSpeciesFormInitialValues,
+        stepValidation: ProjectSpeciesFormYupSchema
+      },
+      {
+        stepTitle: 'Funding and Partnerships',
+        stepSubTitle: 'Specify funding and partnerships for the project',
+        stepContent: (
+          <ProjectFundingForm
+            funding_sources={
+              codes?.funding_source?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            investment_action_category={
+              codes?.investment_action_category?.map((item) => {
+                return { value: item.id, fs_id: item.fs_id, label: item.name };
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            stakeholder_partnerships={
+              codes?.funding_source?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectFundingFormInitialValues,
+        stepValidation: ProjectFundingFormYupSchema
+      }
+    ]);
+  }, [codes, stepForms]);
+
+  /**
+   * Return true if there exists at least 1 permit, which has been marked as having conducted sampling, false otherwise.
+   *
+   * @param {IProjectPermitForm} permitFormValues
+   * @return {boolean} {boolean}
+   */
+  const isAtLeastOnePermitMarkedSamplingConducted = (permitFormValues: IProjectPermitForm): boolean => {
+    return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
+  };
 
   const updateSteps = (values: any) => {
-    setSteps((currentSteps) => {
-      let updatedSteps = [...currentSteps];
-      updatedSteps[activeStep].stepValues = values;
-      return updatedSteps;
+    setStepForms((currentStepForms) => {
+      let updatedStepForms = [...currentStepForms];
+      updatedStepForms[activeStep].stepValues = values;
+      return updatedStepForms;
     });
   };
 
@@ -321,48 +360,160 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
-   * Handle project creation.
-   *
-   * Format the data to match the API request, and send to the API.
+   * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
     try {
-      const coordinatorData = steps[0].stepValues;
-      const permitData = steps[1].stepValues;
-      const generalData = steps[2].stepValues;
-      const objectivesData = steps[3].stepValues;
-      const locationData = steps[4].stepValues;
-      const speciesData = steps[5].stepValues;
-      const fundingData = steps[6].stepValues;
+      const coordinatorData = stepForms[0].stepValues as IProjectCoordinatorForm;
+      const permitData = stepForms[1].stepValues as IProjectPermitForm;
+      const generalData = stepForms[2].stepValues as IProjectDetailsForm;
+      const objectivesData = stepForms[3].stepValues as IProjectObjectivesForm;
+      const locationData = stepForms[4].stepValues as IProjectLocationForm;
+      const speciesData = stepForms[5].stepValues as IProjectSpeciesForm;
+      const fundingData = stepForms[6].stepValues as IProjectFundingForm;
 
-      const projectPostObject: IProjectPostObject = {
-        coordinator: coordinatorData,
-        permit: permitData,
-        project: generalData,
-        objectives: objectivesData,
-        location: locationData,
-        species: speciesData,
-        funding: fundingData
-      };
-
-      const response = await biohubApi.createProject(projectPostObject);
-
-      if (!response || !response.id) {
-        showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
-        return;
+      if (!isAtLeastOnePermitMarkedSamplingConducted(permitData)) {
+        await createPartialProject({
+          coordinator: coordinatorData,
+          permit: permitData
+        });
+      } else {
+        await createProject({
+          coordinator: coordinatorData,
+          permit: permitData,
+          project: generalData,
+          objectives: objectivesData,
+          location: locationData,
+          species: speciesData,
+          funding: fundingData
+        });
       }
-
-      history.push(`/projects/${response.id}`);
     } catch (error) {
       showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
     }
+  };
+
+  /**
+   * Creates a new partial-project record
+   *
+   * @param {IPartialProjectPostObject} partialProjectPostObject
+   * @return {*}
+   */
+  const createPartialProject = async (partialProjectPostObject: IPartialProjectPostObject) => {
+    // TODO update this api call
+    const response = await biohubApi.createPartialProject(partialProjectPostObject);
+
+    if (!response || !response.id) {
+      showErrorDialog({ dialogError: 'The response from the server was null.' });
+      return;
+    }
+
+    history.push(`/projects/${response.id}`);
+  };
+
+  /**
+   * Creates a new project record
+   *
+   * @param {IProjectPostObject} projectPostObject
+   * @return {*}
+   */
+  const createProject = async (projectPostObject: IProjectPostObject) => {
+    const response = await biohubApi.createProject(projectPostObject);
+
+    if (!response || !response.id) {
+      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+      return;
+    }
+
+    history.push(`/projects/${response.id}`);
   };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  if (!steps?.length) {
+  /**
+   * Build an array of form steps, based on the current value of `numberOfSteps`
+   *
+   * Example: if `numberOfSteps=4`, then return an array of 4 `<Step>` items, one for each of the  first 4 elements of
+   * the `formSteps` array.
+   *
+   * @return {*}
+   */
+  const getProjectSteps = () => {
+    const stepsToRender = [];
+
+    for (let index = 0; index < numberOfSteps; index++) {
+      stepsToRender.push(
+        <Step key={stepForms[index].stepTitle}>
+          <StepLabel>
+            <Box>
+              <Typography variant="h2" className={classes.stepTitle}>
+                {stepForms[index].stepTitle}
+              </Typography>
+              <Typography variant="subtitle2">{stepForms[index].stepSubTitle}</Typography>
+            </Box>
+          </StepLabel>
+          <StepContent>
+            <Box my={3}>
+              <Formik
+                initialValues={stepForms[index].stepValues}
+                validationSchema={stepForms[index].stepValidation}
+                validateOnBlur={true}
+                validateOnChange={false}
+                onSubmit={(values) => {
+                  handleSaveAndNext(values);
+                }}>
+                {(props) => (
+                  <>
+                    {stepForms[index].stepContent}
+                    <Box my={4}>
+                      <Divider />
+                    </Box>
+                    <Box display="flex" justifyContent="space-between">
+                      <Box>
+                        {activeStep !== 0 && (
+                          <Button
+                            disabled={!activeStep}
+                            variant="outlined"
+                            color="primary"
+                            onClick={() => handleSaveAndBack(props.values)}
+                            className={classes.actionButton}>
+                            Previous
+                          </Button>
+                        )}
+                      </Box>
+                      <Box>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                          onClick={props.submitForm}
+                          className={classes.actionButton}>
+                          Next
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={handleCancel}
+                          className={classes.actionButton}>
+                          Cancel
+                        </Button>
+                      </Box>
+                    </Box>
+                  </>
+                )}
+              </Formik>
+            </Box>
+          </StepContent>
+        </Step>
+      );
+    }
+
+    return stepsToRender;
+  };
+
+  if (!stepForms.length) {
     return <CircularProgress />;
   }
 
@@ -395,74 +546,9 @@ const CreateProjectPage: React.FC = () => {
           </Box>
           <Box>
             <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
-              {steps.map((step) => (
-                <Step key={step.stepTitle}>
-                  <StepLabel>
-                    <Box>
-                      <Typography variant="h2" className={classes.stepTitle}>
-                        {step.stepTitle}
-                      </Typography>
-                      <Typography variant="subtitle2">{step.stepSubTitle}</Typography>
-                    </Box>
-                  </StepLabel>
-                  <StepContent>
-                    <Box my={3}>
-                      <Formik
-                        initialValues={step.stepValues}
-                        validationSchema={step.stepValidation}
-                        validateOnBlur={true}
-                        validateOnChange={false}
-                        onSubmit={async (values, helper) => {
-                          handleSaveAndNext(values);
-                        }}>
-                        {(props) => (
-                          <>
-                            {step.stepContent}
-                            <Box my={4}>
-                              <Divider />
-                            </Box>
-                            <Box display="flex" justifyContent="space-between">
-                              <Box>
-                                {activeStep === 0 ? (
-                                  ' '
-                                ) : (
-                                  <Button
-                                    disabled={activeStep === 0}
-                                    variant="outlined"
-                                    color="primary"
-                                    onClick={() => handleSaveAndBack(props.values)}
-                                    className={classes.actionButton}>
-                                    Previous
-                                  </Button>
-                                )}
-                              </Box>
-                              <Box>
-                                <Button
-                                  type="submit"
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={props.submitForm}
-                                  className={classes.actionButton}>
-                                  Next
-                                </Button>
-                                <Button
-                                  variant="outlined"
-                                  color="primary"
-                                  onClick={handleCancel}
-                                  className={classes.actionButton}>
-                                  Cancel
-                                </Button>
-                              </Box>
-                            </Box>
-                          </>
-                        )}
-                      </Formik>
-                    </Box>
-                  </StepContent>
-                </Step>
-              ))}
+              {getProjectSteps()}
             </Stepper>
-            {activeStep === steps.length && (
+            {activeStep === numberOfSteps && (
               <Paper square elevation={0} className={classes.finishContainer}>
                 <Box mb={3}>
                   <Typography variant="h3">All steps complete!</Typography>

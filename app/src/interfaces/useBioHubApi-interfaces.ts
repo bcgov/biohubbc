@@ -88,12 +88,33 @@ export interface IProjectPostObject {
 }
 
 /**
+ * Create partial-project post body.
+ *
+ * @export
+ * @interface IPartialProjectPostObject
+ */
+export interface IPartialProjectPostObject {
+  coordinator: IProjectCoordinatorForm;
+  permit: IProjectPermitForm;
+}
+
+/**
  * Create project response object.
  *
  * @export
  * @interface ICreateProjectResponse
  */
 export interface ICreateProjectResponse {
+  id: number;
+}
+
+/**
+ * Create partial-project response object.
+ *
+ * @export
+ * @interface ICreatePartialProjectResponse
+ */
+export interface ICreatePartialProjectResponse {
   id: number;
 }
 

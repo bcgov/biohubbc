@@ -298,150 +298,142 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
             class="MuiBox-root MuiBox-root-10"
           >
             <div
-              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+              class="MuiBox-root MuiBox-root-11"
             >
               <div
-                class="MuiBox-root MuiBox-root-11"
+                class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+                  class="MuiBox-root MuiBox-root-12"
                 >
                   <div
-                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
                   >
                     <div
-                      class="MuiGrid-root MuiGrid-item"
-                    >
-                      <h3
-                        class="MuiTypography-root MuiTypography-h3"
-                      >
-                        agency 1
-                      </h3>
-                    </div>
-                    <div
-                      class="MuiGrid-root MuiGrid-item"
-                    >
-                      <button
-                        aria-label="Edit Funding Source"
-                        class="MuiButtonBase-root MuiIconButton-root"
-                        tabindex="0"
-                        title="Edit Funding Source"
-                        type="button"
-                      >
-                        <span
-                          class="MuiIconButton-label"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                            />
-                          </svg>
-                        </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
-                      </button>
-                      <button
-                        aria-label="Delete Funding Source"
-                        class="MuiButtonBase-root MuiIconButton-root"
-                        tabindex="0"
-                        title="Delete Funding Source"
-                        type="button"
-                      >
-                        <span
-                          class="MuiIconButton-label"
-                        >
-                          <svg
-                            aria-hidden="true"
-                            class="MuiSvgIcon-root"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                            />
-                          </svg>
-                        </span>
-                        <span
-                          class="MuiTouchRipple-root"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-                  >
-                    <div
-                      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item"
+                      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
                     >
                       <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                        class="MuiGrid-root MuiGrid-item"
                       >
-                        <div
-                          class="MuiBox-root MuiBox-root-12"
+                        <h3
+                          class="MuiTypography-root MuiTypography-h3"
+                        >
+                          agency 1
+                        </h3>
+                      </div>
+                      <div
+                        class="MuiGrid-root MuiGrid-item"
+                      >
+                        <button
+                          aria-label="Edit Funding Source"
+                          class="MuiButtonBase-root MuiIconButton-root"
+                          tabindex="0"
+                          title="Edit Funding Source"
+                          type="button"
+                        >
+                          <span
+                            class="MuiIconButton-label"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="MuiSvgIcon-root"
+                              focusable="false"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                              />
+                            </svg>
+                          </span>
+                          <span
+                            class="MuiTouchRipple-root"
+                          />
+                        </button>
+                        <button
+                          aria-label="Delete Funding Source"
+                          class="MuiButtonBase-root MuiIconButton-root"
+                          tabindex="0"
+                          title="Delete Funding Source"
+                          type="button"
+                        >
+                          <span
+                            class="MuiIconButton-label"
+                          >
+                            <svg
+                              aria-hidden="true"
+                              class="MuiSvgIcon-root"
+                              focusable="false"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                              />
+                            </svg>
+                          </span>
+                          <span
+                            class="MuiTouchRipple-root"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+                    >
+                      <div
+                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                      >
+                        <p
+                          class="MuiTypography-root MuiTypography-body2"
                         >
                           Funding Amount
-                        </div>
+                        </p>
+                        <p
+                          class="MuiTypography-root MuiTypography-body1"
+                        >
+                          222
+                        </p>
                       </div>
                       <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
                       >
-                        <div
-                          class="MuiBox-root MuiBox-root-13"
+                        <p
+                          class="MuiTypography-root MuiTypography-body2"
                         >
                           Start Date / End Date
-                        </div>
+                        </p>
+                        <p
+                          class="MuiTypography-root MuiTypography-body1"
+                        >
+                          March 14, 2021 - April 14, 2021
+                        </p>
                       </div>
                       <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
                       >
-                        <div
-                          class="MuiBox-root MuiBox-root-14"
+                        <p
+                          class="MuiTypography-root MuiTypography-body2"
                         >
                           Agency Project ID
-                        </div>
+                        </p>
+                        <p
+                          class="MuiTypography-root MuiTypography-body1"
+                        >
+                          111
+                        </p>
                       </div>
                       <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
                       >
-                        <div
-                          class="MuiBox-root MuiBox-root-15"
+                        <p
+                          class="MuiTypography-root MuiTypography-body2"
                         >
                           Investment Action/Category
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6 MuiGrid-grid-md-8"
-                  >
-                    <div
-                      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item"
-                    >
-                      <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                      >
-                        222
-                      </div>
-                      <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                      >
-                        2021-03-14 / 2021-04-14
-                      </div>
-                      <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                      >
-                        111
-                      </div>
-                      <div
-                        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                      >
-                        1
+                        </p>
+                        <p
+                          class="MuiTypography-root MuiTypography-body1"
+                        >
+                          1
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -584,10 +576,10 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
                 >
                   <span>
                     Indigenous Partnerships
@@ -687,10 +679,10 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-19"
+                  class="PrivateNotchedOutline-legendLabelled-16"
                 >
                   <span>
                     Stakeholder Partnerships

@@ -40,7 +40,7 @@ export const projectPostBody = {
             type: 'object',
             properties: {
               permit_number: {
-                type: 'string'
+                type: 'number'
               },
               sampling_conducted: {
                 type: 'string'

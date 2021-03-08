@@ -10,14 +10,14 @@ import {
   Select,
   TextField
 } from '@material-ui/core';
-import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import { FieldArray, useFormikContext } from 'formik';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as yup from 'yup';
 
 export interface IProjectPermitFormArrayItem {
-  permit_number: string;
+  permit_number: number;
   sampling_conducted: string;
 }
 
@@ -26,7 +26,7 @@ export interface IProjectPermitForm {
 }
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
-  permit_number: '',
+  permit_number: ('' as unknown) as number,
   sampling_conducted: 'false'
 };
 
@@ -37,19 +37,35 @@ export const ProjectPermitFormInitialValues: IProjectPermitForm = {
 export const ProjectPermitFormYupSchema = yup.object().shape({
   permits: yup.array().of(
     yup.object().shape({
-      permit_number: yup.string().required('Required'),
+      permit_number: yup
+        .number()
+        .transform((value) => (isNaN(value) && null) || value)
+        .typeError('Must be a number')
+        .min(0, 'Must be a positive number')
+        .required('Required'),
       sampling_conducted: yup.string().required('Required')
     })
   )
 });
+
+export interface IProjectPermitFormProps {
+  /**
+   * Emits every time a form value changes.
+   */
+  onValuesChange?: (values: IProjectPermitForm) => void;
+}
 
 /**
  * Create project - Permit section
  *
  * @return {*}
  */
-const ProjectPermitForm: React.FC = () => {
+const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta } = useFormikContext<IProjectPermitForm>();
+
+  useEffect(() => {
+    props?.onValuesChange?.(values);
+  }, [values, props]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -58,7 +74,7 @@ const ProjectPermitForm: React.FC = () => {
         render={(arrayHelpers) => (
           <Box>
             <Grid container direction="row" spacing={3}>
-              {values.permits.map((permit, index) => {
+              {values.permits?.map((permit, index) => {
                 const permitNumberMeta = getFieldMeta(`permits.[${index}].permit_number`);
                 const samplingConductedMeta = getFieldMeta(`permits.[${index}].sampling_conducted`);
                 return (
