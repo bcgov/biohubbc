@@ -131,7 +131,13 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               disabled={isLoading}
               onClick={() => setUploadError('')}
               style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
-              <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
+              <input
+                key={uuidv4()}
+                data-testid="file-upload"
+                type="file"
+                hidden
+                onChange={(e) => handleSpatialUpload(e)}
+              />
               Upload KML
             </Button>
           </Box>
