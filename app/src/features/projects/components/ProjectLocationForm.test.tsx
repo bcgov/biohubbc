@@ -116,11 +116,14 @@ describe('ProjectLocationForm', () => {
         {
           type: 'Feature',
           geometry: {
-            type: 'Point',
-            coordinates: [125.6, 10.1]
+            type: 'Polygon',
+            coordinates: [
+             [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
+               [100.0, 1.0], [100.0, 0.0] ]
+             ]
           },
           properties: {
-            name: 'Dinagat Islands'
+           "name": "Biohub island",
           }
         }
       ]
