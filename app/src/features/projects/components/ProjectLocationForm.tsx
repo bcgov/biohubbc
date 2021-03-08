@@ -60,6 +60,14 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   useEffect(() => {
     setIsLoading(false);
 
+    /*
+      If no geometries, we do not need to set bounds
+
+      If there is only one geometry and it is a point, we cannot do the bound setting
+      because leaflet does not know how to handle that and tries to zoom in way too much
+
+      If there are multiple points or a polygon and a point, this is not an issue
+    */
     if (!values.geometry.length || (values.geometry.length === 1 && values.geometry[0].geometry.type === 'Point')) {
       return;
     }
