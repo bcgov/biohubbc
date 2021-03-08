@@ -12,6 +12,7 @@ import { kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
+import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles({
   bold: {
@@ -54,8 +55,11 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(false);
+
     if (!values.geometry.length) {
       return;
     }
@@ -73,6 +77,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   }, [values.geometry]);
 
   const handleSpatialUpload = async (e: any) => {
+    setIsLoading(true);
+
     const file = e.target.files[0];
     const fileAsString = await file?.text().then((xmlString: string) => {
       return xmlString;
@@ -122,9 +128,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               component="label"
               size="medium"
               color="primary"
+              disabled={isLoading}
               onClick={() => setUploadError('')}
               style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
-              <input data-testid="file-upload" type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
+              <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleSpatialUpload(e)} />
               Upload KML
             </Button>
           </Box>
