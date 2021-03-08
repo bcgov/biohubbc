@@ -1,3 +1,4 @@
+import AutocompleteField from 'components/fields/AutocompleteField';
 import {
   FormControl,
   FormControlLabel,
@@ -18,6 +19,10 @@ export interface IProjectCoordinatorForm {
   email_address: string;
   coordinator_agency: string;
   share_contact_details: string;
+}
+
+export interface IProjectCoordinatorFormProps {
+  coordinator_agency: string[];
 }
 
 export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
@@ -41,7 +46,7 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-const ProjectCoordinatorForm: React.FC = () => {
+const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<IProjectCoordinatorForm>();
 
   return (
@@ -97,23 +102,18 @@ const ProjectCoordinatorForm: React.FC = () => {
           }}
         />
       </Grid>
+
       <Grid item xs={12}>
-        <TextField
-          fullWidth
-          required={true}
+        <AutocompleteField
           id="coordinator_agency"
-          name="coordinator_agency"
-          label="Agency"
-          variant="outlined"
+          name="Coordinator Agency"
+          label={'Coordinator Agency'}
           value={values.coordinator_agency}
-          onChange={handleChange}
-          error={touched.coordinator_agency && Boolean(errors.coordinator_agency)}
-          helperText={errors.coordinator_agency}
-          InputLabelProps={{
-            shrink: true
-          }}
+          options={props.coordinator_agency}
+          required={true}
         />
       </Grid>
+
       <Grid item xs={12}>
         <FormControl
           required={true}

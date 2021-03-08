@@ -18,6 +18,7 @@ export interface IAllCodeSets {
   investment_action_category: object;
   project_activity: object;
   project_type: object;
+  coordinator_agency: object;
   region: object;
   species: object;
 }
@@ -76,8 +77,17 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
       { id: 1, name: 'Fisheries' },
       { id: 2, name: 'Wildlife' },
       { id: 3, name: 'Aquatic Habitat' },
-      { id: 4, name: 'Terestrial Habitat' }
+      { id: 4, name: 'Terrestrial Habitat' }
     ],
+    // TODO Temporarily hard coded list of coordinator_agencies
+    coordinator_agency: [
+      { id: 1, name: 'Agency 1' },
+      { id: 2, name: 'Agency 2' },
+      { id: 3, name: 'Agency 3' },
+      { id: 4, name: 'Agency 4' },
+      { id: 4, name: 'Agency 5' }
+    ],
+
     // TODO Temporarily hard coded list of regions
     region: [
       { id: 1, name: 'West Coast' },
