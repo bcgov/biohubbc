@@ -19,7 +19,7 @@ export const ProjectObjectivesFormYupSchema = yup.object().shape({
 });
 
 /**
- * Create project - Location section
+ * Create project - Objectives section
  *
  * @return {*}
  */
