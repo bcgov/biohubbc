@@ -36,15 +36,19 @@ import ProjectSpeciesForm, {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
+import ProjectLocationForm, {
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
+import ProjectObjectivesForm, {
+  ProjectObjectivesFormInitialValues,
+  ProjectObjectivesFormYupSchema
+} from 'features/projects/components/ProjectObjectivesForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodesResponse, IProjectPostObject } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import ProjectLocationForm, {
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from './components/ProjectLocationForm';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -187,6 +191,13 @@ const CreateProjectPage: React.FC = () => {
           ),
           stepValues: ProjectDetailsFormInitialValues,
           stepValidation: ProjectDetailsFormYupSchema
+        },
+        {
+          stepTitle: 'Objectives',
+          stepSubTitle: 'Enter the objectives and potential caveats for this project',
+          stepContent: <ProjectObjectivesForm />,
+          stepValues: ProjectObjectivesFormInitialValues,
+          stepValidation: ProjectObjectivesFormYupSchema
         },
         {
           stepTitle: 'Location',
