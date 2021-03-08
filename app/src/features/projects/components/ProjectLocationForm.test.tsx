@@ -118,12 +118,17 @@ describe('ProjectLocationForm', () => {
           geometry: {
             type: 'Polygon',
             coordinates: [
-             [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-               [100.0, 1.0], [100.0, 0.0] ]
-             ]
+              [
+                [100.0, 0.0],
+                [101.0, 0.0],
+                [101.0, 1.0],
+                [100.0, 1.0],
+                [100.0, 0.0]
+              ]
+            ]
           },
           properties: {
-           "name": "Biohub island",
+            name: 'Biohub island'
           }
         }
       ]
