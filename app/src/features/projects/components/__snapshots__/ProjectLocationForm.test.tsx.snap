@@ -220,36 +220,44 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
-                      style="width: 256px; height: 256px; left: -33px; top: -4px;"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              >
-                <img
-                  alt=""
-                  class="leaflet-marker-shadow leaflet-zoom-hide"
-                  src="marker-shadow.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 0px; top: 0px;"
-                />
-              </div>
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
               />
               <div
-                class="leaflet-pane leaflet-marker-pane"
+                class="leaflet-pane leaflet-overlay-pane"
               >
-                <img
-                  alt=""
-                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                  src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 0px; top: 0px; z-index: 0; z-index: 0;"
-                  tabindex="0"
-                />
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g>
+                    <path
+                      class="leaflet-interactive"
+                      d="M0 0"
+                      fill="#3388ff"
+                      fill-opacity="0.2"
+                      fill-rule="evenodd"
+                      stroke="#3388ff"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-opacity="1"
+                      stroke-width="4"
+                    />
+                  </g>
+                </svg>
               </div>
+              <div
+                class="leaflet-pane leaflet-marker-pane"
+              />
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -268,7 +276,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                 >
                   <a
                     aria-label="Zoom in"
-                    class="leaflet-control-zoom-in leaflet-disabled"
+                    class="leaflet-control-zoom-in"
                     href="#"
                     role="button"
                     title="Zoom in"
@@ -430,7 +438,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_120"
+                            name="leaflet-base-layers_121"
                             type="radio"
                           />
                           <span>
@@ -442,7 +450,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_120"
+                            name="leaflet-base-layers_121"
                             type="radio"
                           />
                           <span>
@@ -1179,36 +1187,44 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
-                      style="width: 256px; height: 256px; left: -33px; top: -4px;"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              >
-                <img
-                  alt=""
-                  class="leaflet-marker-shadow leaflet-zoom-hide"
-                  src="marker-shadow.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 0px; top: 0px;"
-                />
-              </div>
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
               />
               <div
-                class="leaflet-pane leaflet-marker-pane"
+                class="leaflet-pane leaflet-overlay-pane"
               >
-                <img
-                  alt=""
-                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                  src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; z-index: 0; left: 0px; top: 0px; z-index: 0; z-index: 0;"
-                  tabindex="0"
-                />
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g>
+                    <path
+                      class="leaflet-interactive"
+                      d="M0 0"
+                      fill="#3388ff"
+                      fill-opacity="0.2"
+                      fill-rule="evenodd"
+                      stroke="#3388ff"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-opacity="1"
+                      stroke-width="4"
+                    />
+                  </g>
+                </svg>
               </div>
+              <div
+                class="leaflet-pane leaflet-marker-pane"
+              />
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -1227,7 +1243,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 >
                   <a
                     aria-label="Zoom in"
-                    class="leaflet-control-zoom-in leaflet-disabled"
+                    class="leaflet-control-zoom-in"
                     href="#"
                     role="button"
                     title="Zoom in"
@@ -1389,7 +1405,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_74"
+                            name="leaflet-base-layers_75"
                             type="radio"
                           />
                           <span>
@@ -1401,7 +1417,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_74"
+                            name="leaflet-base-layers_75"
                             type="radio"
                           />
                           <span>

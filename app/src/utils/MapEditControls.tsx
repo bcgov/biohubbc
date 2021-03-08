@@ -65,7 +65,11 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     const updatedGeos: Feature[] = [];
 
     container.getLayers().forEach((layer: any) => {
-      updatedGeos.push(layer.toGeoJSON());
+      const layerGeoJSON = layer._mRadius
+        ? { ...layer.toGeoJSON(), properties: { ...layer.toGeoJSON().properties, radius: layer.getRadius() } }
+        : layer.toGeoJSON();
+
+      updatedGeos.push(layerGeoJSON);
     });
 
     props.setGeometry([...updatedGeos]);
@@ -132,6 +136,11 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
   useEffect(() => {
     const container = context.layerContainer || context.map;
+    const markerStyle = {
+      radius: 10,
+      weight: 4,
+      stroke: true
+    };
 
     container.clearLayers();
 
@@ -140,6 +149,13 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     */
     props.geometry?.forEach((geometry: Feature) => {
       L.geoJSON(geometry, {
+        pointToLayer: (feature: any, latLng: any) => {
+          if (feature.properties.radius) {
+            return L.circle(latLng, { radius: feature.properties.radius });
+          } else {
+            return L.circleMarker(latLng, markerStyle);
+          }
+        },
         onEachFeature: function (feature: any, layer: any) {
           container.addLayer(layer);
         }

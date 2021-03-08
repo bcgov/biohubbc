@@ -60,7 +60,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   useEffect(() => {
     setIsLoading(false);
 
-    if (!values.geometry.length) {
+    if (!values.geometry.length || (values.geometry.length === 1 && values.geometry[0].geometry.type === 'Point')) {
       return;
     }
 
