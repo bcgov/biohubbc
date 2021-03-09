@@ -1,13 +1,15 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData, PostCoordinatorData } from '../models/project';
+import { PostProjectData, PostLocationData, PostCoordinatorData, PostObjectivesData } from '../models/project';
 import { getProjectSQL, getProjectsSQL, postProjectSQL, postProjectRegionSQL } from './project-queries';
 
 describe('postProjectSQL', () => {
   describe('Null project param provided', () => {
     it('returns null', () => {
       // force the function to accept a null value
-      const response = postProjectSQL((null as unknown) as PostProjectData & PostLocationData & PostCoordinatorData);
+      const response = postProjectSQL(
+        (null as unknown) as PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
+      );
 
       expect(response).to.be.null;
     });
@@ -38,12 +40,23 @@ describe('postProjectSQL', () => {
       regions: ['Valid Region']
     };
 
+    const objectivesData = {
+      objectives: 'an objective',
+      caveats: 'a caveat maybe'
+    };
+
     const postProjectData = new PostProjectData(projectData);
     const postCoordinatorData = new PostCoordinatorData(coordinatorData);
+    const postObjectivesData = new PostObjectivesData(objectivesData);
 
     it('returns a SQLStatement', () => {
       const postLocationData = new PostLocationData(locationData);
-      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+      const response = postProjectSQL({
+        ...postProjectData,
+        ...postCoordinatorData,
+        ...postLocationData,
+        ...postObjectivesData
+      });
 
       expect(response).to.not.be.null;
     });
@@ -75,7 +88,12 @@ describe('postProjectSQL', () => {
       };
 
       const postLocationData = new PostLocationData(locationDataWithGeo);
-      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+      const response = postProjectSQL({
+        ...postProjectData,
+        ...postCoordinatorData,
+        ...postLocationData,
+        ...postObjectivesData
+      });
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(
@@ -121,7 +139,12 @@ describe('postProjectSQL', () => {
       };
 
       const postLocationData = new PostLocationData(locationDataWithGeos);
-      const response = postProjectSQL({ ...postProjectData, ...postCoordinatorData, ...postLocationData });
+      const response = postProjectSQL({
+        ...postProjectData,
+        ...postCoordinatorData,
+        ...postLocationData,
+        ...postObjectivesData
+      });
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(

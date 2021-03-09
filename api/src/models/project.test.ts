@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData } from './project';
+import { PostProjectData, PostLocationData, PostObjectivesData } from './project';
 
 describe('PostProjectData', () => {
   describe('No values provided', () => {
@@ -12,10 +12,6 @@ describe('PostProjectData', () => {
 
     it('sets name', function () {
       expect(projectPostData.name).to.equal(null);
-    });
-
-    it('sets objectives', function () {
-      expect(projectPostData.objectives).to.equal('');
     });
 
     it('sets scientific_collection_permit_number', function () {
@@ -34,10 +30,6 @@ describe('PostProjectData', () => {
       expect(projectPostData.end_date).to.equal(null);
     });
 
-    it('sets caveats', function () {
-      expect(projectPostData.caveats).to.equal(null);
-    });
-
     it('sets comments', function () {
       expect(projectPostData.comments).to.equal(null);
     });
@@ -48,12 +40,10 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      objectives: 'objectives_test_data',
       scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
       management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
-      caveats: 'caveats_test_data',
       comments: 'comments_test_data'
     };
 
@@ -63,10 +53,6 @@ describe('PostProjectData', () => {
 
     it('sets name', function () {
       expect(projectPostData.name).to.equal('name_test_data');
-    });
-
-    it('sets objectives', function () {
-      expect(projectPostData.objectives).to.equal('objectives_test_data');
     });
 
     it('sets scientific_collection_permit_number', function () {
@@ -87,18 +73,53 @@ describe('PostProjectData', () => {
       expect(projectPostData.end_date).to.equal('end_date_test_data');
     });
 
-    it('sets caveats', function () {
-      expect(projectPostData.caveats).to.equal('caveats_test_data');
-    });
-
     it('sets comments', function () {
       expect(projectPostData.comments).to.equal('comments_test_data');
     });
   });
 });
 
+describe('PostObjectivesData', () => {
+  describe('No values provided', () => {
+    let projectObjectivesData: PostObjectivesData;
+
+    before(() => {
+      projectObjectivesData = new PostObjectivesData(null);
+    });
+
+    it('sets objectives', function () {
+      expect(projectObjectivesData.objectives).to.equal('');
+    });
+
+    it('sets caveats', function () {
+      expect(projectObjectivesData.caveats).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectObjectivesData: PostObjectivesData;
+
+    const obj = {
+      objectives: 'these are the project objectives',
+      caveats: 'these are some interesting caveats'
+    };
+
+    before(() => {
+      projectObjectivesData = new PostObjectivesData(obj);
+    });
+
+    it('sets objectives', function () {
+      expect(projectObjectivesData.objectives).to.equal(obj.objectives);
+    });
+
+    it('sets caveats', function () {
+      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
 describe('PostLocationData', () => {
-  describe('No value provided', () => {
+  describe('No values provided', () => {
     let projectLocationData: PostLocationData;
 
     before(() => {
