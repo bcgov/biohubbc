@@ -27,8 +27,6 @@ export const postProjectSQL = (
     return null;
   }
 
-  console.log(project);
-
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project (
       name,
