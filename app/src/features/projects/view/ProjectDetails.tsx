@@ -15,10 +15,6 @@ export interface IProjectDetailsProps {
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   const projectData = props.projectData;
-
-  // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
-  //const [project ] = useState<IProject | null>(null);
-
   return (
     <>
       <Box mb={5}>
