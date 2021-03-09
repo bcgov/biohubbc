@@ -1,11 +1,8 @@
 import { Box, Grid, IconButton, Paper, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-//import React, { useState } from 'react';
 import React from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
-//import { IProject } from 'interfaces/project-interfaces';
-//import { useParams } from 'react-router';
 
 export interface IProjectDetailsProps {
   projectData: any;
