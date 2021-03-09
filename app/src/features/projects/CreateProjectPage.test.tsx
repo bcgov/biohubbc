@@ -54,7 +54,7 @@ describe('CreateProjectPage', () => {
   });
 
   describe('Are you sure? Dialog', () => {
-    it('shows warning dialog if the user clicks the `Back to Projects` button', async () => {
+    it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
       await act(async () => {
         mockBiohubApi().createProject.mockResolvedValue({
           id: 100
@@ -65,7 +65,7 @@ describe('CreateProjectPage', () => {
         history.push('/home');
         history.push('/projects/create');
         const { findByText, getByRole } = renderContainer();
-        const BackToProjectsButton = await findByText('back to projects', { exact: false });
+        const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
         fireEvent.click(BackToProjectsButton);
         const AreYouSureTitle = await findByText('Cancel Create Project');
@@ -89,7 +89,7 @@ describe('CreateProjectPage', () => {
         history.push('/home');
         history.push('/projects/create');
         const { findByText, getByRole } = renderContainer();
-        const BackToProjectsButton = await findByText('back to projects', { exact: false });
+        const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
         fireEvent.click(BackToProjectsButton);
         const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
@@ -111,7 +111,7 @@ describe('CreateProjectPage', () => {
         history.push('/home');
         history.push('/projects/create');
         const { findByText, getByRole } = renderContainer();
-        const BackToProjectsButton = await findByText('back to projects', { exact: false });
+        const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
         fireEvent.click(BackToProjectsButton);
         const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No', { exact: false });
