@@ -63,8 +63,8 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="indigenous_partnerships"
               id="indigenous_partnerships-label"
             >
@@ -80,7 +80,6 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="indigenous_partnerships"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -144,7 +143,7 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                  class="PrivateNotchedOutline-legendLabelled-7"
                 >
                   <span>
                     Indigenous Partnerships
@@ -167,8 +166,8 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
@@ -184,7 +183,6 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="stakeholder_partnerships"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -248,7 +246,7 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                  class="PrivateNotchedOutline-legendLabelled-7"
                 >
                   <span>
                     Stakeholder Partnerships
@@ -526,7 +524,6 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="indigenous_partnerships"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -613,8 +610,8 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
@@ -630,7 +627,6 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="stakeholder_partnerships"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -694,7 +690,7 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                 class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                  class="PrivateNotchedOutline-legendLabelled-19"
                 >
                   <span>
                     Stakeholder Partnerships

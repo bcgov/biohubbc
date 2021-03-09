@@ -73,16 +73,11 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             onChange={handleChange}
             error={touched.project_name && Boolean(errors.project_name)}
             helperText={errors.project_name}
-            InputLabelProps={{
-              shrink: true
-            }}
           />
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="project_type-label" shrink={true}>
-              Project Type
-            </InputLabel>
+            <InputLabel id="project_type-label">Project Type</InputLabel>
             <Select
               id="project_type"
               name="project_type"

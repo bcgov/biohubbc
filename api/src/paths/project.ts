@@ -85,6 +85,7 @@ function createProject(): RequestHandler {
       const postProjectSQLStatement = postProjectSQL({
         ...sanitizedProjectPostData.project,
         ...sanitizedProjectPostData.location,
+        ...sanitizedProjectPostData.objectives,
         ...sanitizedProjectPostData.coordinator
       });
 

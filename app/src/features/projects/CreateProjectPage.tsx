@@ -36,15 +36,19 @@ import ProjectSpeciesForm, {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
+import ProjectLocationForm, {
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
+import ProjectObjectivesForm, {
+  ProjectObjectivesFormInitialValues,
+  ProjectObjectivesFormYupSchema
+} from 'features/projects/components/ProjectObjectivesForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodesResponse, IProjectPostObject } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import ProjectLocationForm, {
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from './components/ProjectLocationForm';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -189,6 +193,13 @@ const CreateProjectPage: React.FC = () => {
           stepValidation: ProjectDetailsFormYupSchema
         },
         {
+          stepTitle: 'Objectives',
+          stepSubTitle: 'Enter the objectives and potential caveats for this project',
+          stepContent: <ProjectObjectivesForm />,
+          stepValues: ProjectObjectivesFormInitialValues,
+          stepValidation: ProjectObjectivesFormYupSchema
+        },
+        {
           stepTitle: 'Location',
           stepSubTitle: 'Specify project regions and boundary information',
           stepContent: (
@@ -308,14 +319,16 @@ const CreateProjectPage: React.FC = () => {
       const coordinatorData = steps[0].stepValues;
       const permitData = steps[1].stepValues;
       const generalData = steps[2].stepValues;
-      const locationData = steps[3].stepValues;
-      const speciesData = steps[4].stepValues;
-      const fundingData = steps[5].stepValues;
+      const objectivesData = steps[3].stepValues;
+      const locationData = steps[4].stepValues;
+      const speciesData = steps[5].stepValues;
+      const fundingData = steps[6].stepValues;
 
       const projectPostObject: IProjectPostObject = {
         coordinator: coordinatorData,
         permit: permitData,
         project: generalData,
+        objectives: objectivesData,
         location: locationData,
         species: speciesData,
         funding: fundingData

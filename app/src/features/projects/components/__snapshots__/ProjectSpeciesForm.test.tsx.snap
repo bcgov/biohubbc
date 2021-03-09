@@ -18,8 +18,8 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="focal_species"
               id="focal_species-label"
             >
@@ -35,7 +35,6 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="focal_species"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -99,7 +98,7 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                  class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
                     Focal Species
@@ -122,8 +121,8 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="ancillary_species"
               id="ancillary_species-label"
             >
@@ -139,7 +138,6 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="ancillary_species"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -203,7 +201,7 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                  class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
                     Ancillary Species
@@ -237,8 +235,8 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="focal_species"
               id="focal_species-label"
             >
@@ -254,7 +252,6 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="focal_species"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -318,7 +315,7 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
                 class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                  class="PrivateNotchedOutline-legendLabelled-9"
                 >
                   <span>
                     Focal Species
@@ -341,8 +338,8 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="ancillary_species"
               id="ancillary_species-label"
             >
@@ -358,7 +355,6 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="ancillary_species"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -422,7 +418,7 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
                 class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                  class="PrivateNotchedOutline-legendLabelled-9"
                 >
                   <span>
                     Ancillary Species

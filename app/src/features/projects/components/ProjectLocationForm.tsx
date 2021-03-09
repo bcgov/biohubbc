@@ -123,9 +123,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             onChange={handleChange}
             error={touched.location_description && Boolean(errors.location_description)}
             helperText={errors.location_description}
-            InputLabelProps={{
-              shrink: true
-            }}
           />
         </Grid>
         <Grid item xs={12}>

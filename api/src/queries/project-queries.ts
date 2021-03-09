@@ -4,6 +4,7 @@ import {
   PostFundingSource,
   PostLocationData,
   PostProjectData,
+  PostObjectivesData,
   PostProjectObject
 } from '../models/project';
 import { getLogger } from '../utils/logger';
@@ -18,7 +19,7 @@ const defaultLog = getLogger('queries/project-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postProjectSQL = (
-  project: PostProjectData & PostLocationData & PostCoordinatorData
+  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 

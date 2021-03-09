@@ -13,8 +13,8 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink="false"
             for="project_name"
             id="project_name-label"
           >
@@ -43,7 +43,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Project Name *
@@ -61,8 +61,8 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink="false"
             id="project_type-label"
           >
             Project Type
@@ -137,8 +137,8 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="project_activities"
               id="project_activities-label"
             >
@@ -154,7 +154,6 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="project_activities"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -218,7 +217,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="PrivateNotchedOutline-legendLabelled-3"
                 >
                   <span>
                     Project Activities
@@ -241,8 +240,8 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="climate_change_initiatives"
               id="climate_change_initiatives-label"
             >
@@ -258,7 +257,6 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="climate_change_initiatives"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -322,7 +320,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="PrivateNotchedOutline-legendLabelled-3"
                 >
                   <span>
                     Climate Change Initiatives
@@ -625,7 +623,6 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="project_activities"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
@@ -773,7 +770,6 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="climate_change_initiatives"
-                placeholder="Begin typing to filter results..."
                 spellcheck="false"
                 type="text"
                 value=""
