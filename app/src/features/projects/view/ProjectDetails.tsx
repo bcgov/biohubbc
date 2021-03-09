@@ -26,7 +26,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             <Grid container spacing={3}>
               <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
                 <Grid item>
-                  <Typography variant="h3">Project objectives</Typography>
+                  <Typography variant="h3">Project Objectives</Typography>
                 </Grid>
                 <Grid item>
                   <IconButton title="Edit General Information" aria-label="Edit General Information">
