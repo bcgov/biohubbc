@@ -18,8 +18,8 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="regions"
               id="regions-label"
             >
@@ -41,7 +41,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="regions"
-                placeholder="Begin typing to filter results..."
                 required=""
                 spellcheck="false"
                 type="text"
@@ -106,7 +105,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                 class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                  class="PrivateNotchedOutline-legendLabelled-32"
                 >
                   <span>
                     Regions *
@@ -124,8 +123,8 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
             for="location_description"
             id="location_description-label"
           >
@@ -146,7 +145,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                class="PrivateNotchedOutline-legendLabelled-32"
               >
                 <span>
                   Location Description
@@ -512,8 +511,8 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="regions"
               id="regions-label"
             >
@@ -535,7 +534,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="regions"
-                placeholder="Begin typing to filter results..."
                 required=""
                 spellcheck="false"
                 type="text"
@@ -600,7 +598,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                 class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-5 PrivateNotchedOutline-legendNotched-6"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Regions *
@@ -618,8 +616,8 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
             for="location_description"
             id="location_description-label"
           >
@@ -640,7 +638,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-5 PrivateNotchedOutline-legendNotched-6"
+                class="PrivateNotchedOutline-legendLabelled-5"
               >
                 <span>
                   Location Description
@@ -983,8 +981,8 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="regions"
               id="regions-label"
             >
@@ -1006,7 +1004,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="regions"
-                placeholder="Begin typing to filter results..."
                 required=""
                 spellcheck="false"
                 type="text"
@@ -1071,7 +1068,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                  class="PrivateNotchedOutline-legendLabelled-14"
                 >
                   <span>
                     Regions *

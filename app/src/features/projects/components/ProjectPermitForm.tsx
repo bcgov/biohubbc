@@ -74,16 +74,11 @@ const ProjectPermitForm: React.FC = () => {
                         onChange={handleChange}
                         error={permitNumberMeta.touched && Boolean(permitNumberMeta.error)}
                         helperText={permitNumberMeta.error}
-                        InputLabelProps={{
-                          shrink: true
-                        }}
                       />
                     </Grid>
                     <Grid item xs={12} md={4}>
                       <FormControl variant="outlined" style={{ width: '100%' }}>
-                        <InputLabel id="sampling_conducted" shrink={true}>
-                          Sampling Conducted
-                        </InputLabel>
+                        <InputLabel id="sampling_conducted">Sampling Conducted</InputLabel>
                         <Select
                           id={`permits.[${index}].sampling_conducted`}
                           name={`permits.[${index}].sampling_conducted`}

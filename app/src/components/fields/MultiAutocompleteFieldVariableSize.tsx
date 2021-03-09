@@ -171,10 +171,6 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           fullWidth
           error={touched[props.id] && Boolean(errors[props.id])}
           helperText={errors[props.id]}
-          placeholder={'Begin typing to filter results...'}
-          InputLabelProps={{
-            shrink: true
-          }}
         />
       )}
     />

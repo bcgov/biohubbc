@@ -57,10 +57,6 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
           fullWidth
           error={touched[props.id] && Boolean(errors[props.id])}
           helperText={errors[props.id]}
-          placeholder={'Begin typing to filter results...'}
-          InputLabelProps={{
-            shrink: true
-          }}
           onChange={(event) => {
             setFieldValue(props.id, event.target.value);
           }}

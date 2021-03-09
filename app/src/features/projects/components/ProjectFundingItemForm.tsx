@@ -102,9 +102,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                      <InputLabel id="agency_id-label" shrink={true}>
-                        Agency Name
-                      </InputLabel>
+                      <InputLabel id="agency_id-label">Agency Name</InputLabel>
                       <Select
                         id="agency_id"
                         name="agency_id"
@@ -145,7 +143,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                   {investment_action_category_label && (
                     <Grid item xs={12}>
                       <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
-                        <InputLabel id="investment_action_category-label" shrink={true}>
+                        <InputLabel id="investment_action_category-label">
                           {investment_action_category_label}
                         </InputLabel>
                         <Select
@@ -184,9 +182,6 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       onChange={handleChange}
                       error={touched.agency_project_id && Boolean(errors.agency_project_id)}
                       helperText={errors.agency_project_id}
-                      InputLabelProps={{
-                        shrink: true
-                      }}
                     />
                   </Grid>
                   <Grid item xs={12}>
