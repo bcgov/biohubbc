@@ -27,13 +27,13 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={3}>
         <Paper>
           <Box m={3}>
-            <Grid container item spacing={3} xs={12}>
-              <Grid container item spacing={3} xs={12} justify="space-between" alignItems="center">
+            <Grid container spacing={3}>
+              <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
                 <Grid item>
                   <Typography variant="h3">Project objectives</Typography>
                 </Grid>
                 <Grid item>
-                  <IconButton title="Edit General Information" aria-label="Edit General Information" onClick={() => {}}>
+                  <IconButton title="Edit General Information" aria-label="Edit General Information">
                     <Typography variant="caption">
                       <Edit fontSize="inherit" /> EDIT
                     </Typography>
@@ -70,7 +70,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                   <Typography variant="h3">General Information</Typography>
                 </Grid>
                 <Grid item>
-                  <IconButton title="Edit General Information" aria-label="Edit General Information" onClick={() => {}}>
+                  <IconButton title="Edit General Information" aria-label="Edit General Information">
                     <Typography variant="caption">
                       <Edit fontSize="inherit" /> EDIT
                     </Typography>
