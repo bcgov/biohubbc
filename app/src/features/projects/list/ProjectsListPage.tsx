@@ -62,7 +62,7 @@ const StyledTableCellEmpty = withStyles((theme: Theme) =>
  *
  * @return {*}
  */
-const ProjectsPage: React.FC = () => {
+const ProjectsListPage: React.FC = () => {
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
@@ -179,4 +179,4 @@ const ProjectsPage: React.FC = () => {
   }
 };
 
-export default ProjectsPage;
+export default ProjectsListPage;
