@@ -74,7 +74,6 @@ export const useBiohubApi = () => {
    * @return {*}  {Promise<ICreateProjectResponse>}
    */
   const createProject = async (project: IProjectPostObject): Promise<ICreateProjectResponse> => {
-    console.log(project);
     const { data } = await api.post('/api/project', project);
 
     return data;
