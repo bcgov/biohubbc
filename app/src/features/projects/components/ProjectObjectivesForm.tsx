@@ -45,9 +45,6 @@ const ProjectObjectivesForm = () => {
             onChange={handleChange}
             error={touched.objectives && Boolean(errors.objectives)}
             helperText={errors.objectives}
-            InputLabelProps={{
-              shrink: true
-            }}
           />
         </Grid>
 
@@ -64,9 +61,6 @@ const ProjectObjectivesForm = () => {
             onChange={handleChange}
             error={touched.caveats && Boolean(errors.caveats)}
             helperText={errors.caveats}
-            InputLabelProps={{
-              shrink: true
-            }}
           />
         </Grid>
       </Grid>
