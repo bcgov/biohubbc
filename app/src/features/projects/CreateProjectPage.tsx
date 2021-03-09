@@ -324,14 +324,16 @@ const CreateProjectPage: React.FC = () => {
       const coordinatorData = steps[0].stepValues;
       const permitData = steps[1].stepValues;
       const generalData = steps[2].stepValues;
-      const locationData = steps[3].stepValues;
-      const speciesData = steps[4].stepValues;
-      const fundingData = steps[5].stepValues;
+      const objectivesData = steps[3].stepValues;
+      const locationData = steps[4].stepValues;
+      const speciesData = steps[5].stepValues;
+      const fundingData = steps[6].stepValues;
 
       const projectPostObject: IProjectPostObject = {
         coordinator: coordinatorData,
         permit: permitData,
         project: generalData,
+        objectives: objectivesData,
         location: locationData,
         species: speciesData,
         funding: fundingData

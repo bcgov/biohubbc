@@ -2,6 +2,7 @@ import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoo
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
+import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
 import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
@@ -80,6 +81,7 @@ export interface IProjectPostObject {
   coordinator: IProjectCoordinatorForm;
   permit: IProjectPermitForm;
   project: IProjectDetailsForm;
+  objectives: IProjectObjectivesForm;
   species: IProjectSpeciesForm;
   location: IProjectLocationForm;
   funding: IProjectFundingForm;
