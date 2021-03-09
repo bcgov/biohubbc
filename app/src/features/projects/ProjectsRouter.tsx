@@ -1,7 +1,7 @@
 import MapContainer from 'components/map/MapContainer';
 import CreateProjectPage from 'features/projects/CreateProjectPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
-import ProjectsPage from 'features/projects/ProjectsPage';
+import ProjectsPage from 'features/projects/ProjectsListPage';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import { Feature } from 'geojson';
 import React, { useState } from 'react';

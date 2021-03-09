@@ -42,13 +42,20 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
               </Grid>
               <Grid container item spacing={2} xs={12}>
                 <Grid item xs={12}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                  dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                  aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                  officia deserunt mollit anim id est laborum.
                 </Grid>
                 <Grid item xs={12}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                  dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                  aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
+                  officia deserunt mollit anim id est laborum.
                 </Grid>
-                <Grid item xs={12}>
-                </Grid>
+                <Grid item xs={12}></Grid>
               </Grid>
             </Grid>
           </Box>
@@ -57,8 +64,8 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={3}>
         <Paper>
           <Box m={3}>
-            <Grid container item spacing={3} xs={12}>
-              <Grid container item spacing={3} xs={12} justify="space-between" alignItems="center">
+            <Grid container spacing={3}>
+              <Grid container item xs={12} justify="space-between" alignItems="center">
                 <Grid item>
                   <Typography variant="h3">General Information</Typography>
                 </Grid>
@@ -71,7 +78,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                 </Grid>
               </Grid>
               <Grid container item xs={12}>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Box mr={1} display="inline" color="text.disabled">
                     <Typography variant="caption">Project Name</Typography>
                   </Box>
@@ -79,7 +86,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                     <Typography variant="subtitle1">{projectData.name}</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Box mr={1} display="inline" color="text.disabled">
                     <Typography variant="caption">Type</Typography>
                   </Box>
@@ -87,15 +94,21 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                     <Typography variant="subtitle1">Placeholder</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Box mr={1} display="inline" color="text.disabled">
                     <Typography variant="caption">Timeline</Typography>
                   </Box>
                   <Box mr={1} display="inline">
-                    <Typography variant="subtitle1">{getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, projectData.start_date, projectData.end_date)}</Typography>
+                    <Typography variant="subtitle1">
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        projectData.start_date,
+                        projectData.end_date
+                      )}
+                    </Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Box mr={1} display="inline" color="text.disabled">
                     <Typography variant="caption">Activities</Typography>
                   </Box>
@@ -103,7 +116,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                     <Typography variant="subtitle1">Placeholder</Typography>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={6} md={4}>
                   <Box mr={1} display="inline" color="text.disabled">
                     <Typography variant="caption">Climate Change Initiatives</Typography>
                   </Box>

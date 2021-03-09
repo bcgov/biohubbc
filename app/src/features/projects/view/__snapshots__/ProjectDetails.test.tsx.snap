@@ -20,7 +20,74 @@ exports[`ProjectDetails renders correctly 1`] = `
       <div
         class="MuiBox-root MuiBox-root-3"
       >
-        Project details component 1 placeholder
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <h3
+                class="MuiTypography-root MuiTypography-h3"
+              >
+                Project objectives
+              </h3>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <button
+                aria-label="Edit General Information"
+                class="MuiButtonBase-root MuiIconButton-root"
+                tabindex="0"
+                title="Edit General Information"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <span
+                    class="MuiTypography-root MuiTypography-caption"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                     EDIT
+                  </span>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            >
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -33,7 +100,169 @@ exports[`ProjectDetails renders correctly 1`] = `
       <div
         class="MuiBox-root MuiBox-root-5"
       >
-        Project details component 2 placeholder
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <h3
+                class="MuiTypography-root MuiTypography-h3"
+              >
+                General Information
+              </h3>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <button
+                aria-label="Edit General Information"
+                class="MuiButtonBase-root MuiIconButton-root"
+                tabindex="0"
+                title="Edit General Information"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <span
+                    class="MuiTypography-root MuiTypography-caption"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                     EDIT
+                  </span>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-6"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  Project Name
+                </span>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-7"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1"
+                />
+              </div>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-8"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  Type
+                </span>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-9"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1"
+                >
+                  Placeholder
+                </h6>
+              </div>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-10"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  Timeline
+                </span>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-11"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1"
+                >
+                  Mar 9, 2021
+                </h6>
+              </div>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-12"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  Activities
+                </span>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-13"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1"
+                >
+                  Placeholder
+                </h6>
+              </div>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-14"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  Climate Change Initiatives
+                </span>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-15"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle1"
+                >
+                  Placeholder
+                </h6>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
