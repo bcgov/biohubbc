@@ -128,6 +128,7 @@ export class PostProjectObject {
   coordinator: PostCoordinatorData;
   permit: PostPermitData;
   project: PostProjectData;
+  objectives: PostObjectivesData;
   location: PostLocationData;
   species: PostSpeciesData;
   funding: PostFundingData;
@@ -139,6 +140,7 @@ export class PostProjectObject {
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
     this.species = (obj?.project && new PostSpeciesData(obj.species)) || null;
+    this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
   }
@@ -206,12 +208,10 @@ export class PostPermitData {
 export class PostProjectData {
   name: string;
   type: string;
-  objectives: string;
   scientific_collection_permit_number: string;
   management_recovery_action: string;
   start_date: string;
   end_date: string;
-  caveats: string;
   comments: string;
 
   constructor(obj?: any) {
@@ -219,13 +219,29 @@ export class PostProjectData {
 
     this.name = obj?.project_name || null;
     this.type = obj?.type || null;
-    this.objectives = obj?.objectives || '';
     this.scientific_collection_permit_number = obj?.scientific_collection_permit_number || null;
     this.management_recovery_action = obj?.management_recovery_action || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.caveats = obj?.caveats || null;
     this.comments = obj?.comments || null;
+  }
+}
+
+/**
+ * Processes POST /project objectives data
+ *
+ * @export
+ * @class PostObjectivesData
+ */
+export class PostObjectivesData {
+  objectives: string;
+  caveats: string;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
+
+    this.objectives = obj?.objectives || '';
+    this.caveats = obj?.caveats || null;
   }
 }
 
