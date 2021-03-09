@@ -63,9 +63,6 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           onChange={handleChange}
           error={touched.first_name && Boolean(errors.first_name)}
           helperText={errors.first_name}
-          InputLabelProps={{
-            shrink: true
-          }}
         />
       </Grid>
       <Grid item xs={12} md={6}>
@@ -80,9 +77,6 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           onChange={handleChange}
           error={touched.last_name && Boolean(errors.last_name)}
           helperText={errors.last_name}
-          InputLabelProps={{
-            shrink: true
-          }}
         />
       </Grid>
       <Grid item xs={12}>
@@ -97,9 +91,6 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           onChange={handleChange}
           error={touched.email_address && Boolean(errors.email_address)}
           helperText={errors.email_address}
-          InputLabelProps={{
-            shrink: true
-          }}
         />
       </Grid>
 

@@ -12,8 +12,8 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-          data-shrink="true"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+          data-shrink="false"
           for="first_name"
           id="first_name-label"
         >
@@ -42,7 +42,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+              class="PrivateNotchedOutline-legendLabelled-3"
             >
               <span>
                 First Name *
@@ -59,8 +59,8 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-          data-shrink="true"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+          data-shrink="false"
           for="last_name"
           id="last_name-label"
         >
@@ -89,7 +89,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+              class="PrivateNotchedOutline-legendLabelled-3"
             >
               <span>
                 Last Name *
@@ -106,8 +106,8 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
         <label
-          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-          data-shrink="true"
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+          data-shrink="false"
           for="email_address"
           id="email_address-label"
         >
@@ -136,7 +136,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+              class="PrivateNotchedOutline-legendLabelled-3"
             >
               <span>
                 Business Email Address *
@@ -158,8 +158,8 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink="false"
             for="coordinator_agency"
             id="coordinator_agency-label"
           >
@@ -181,7 +181,6 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
               id="coordinator_agency"
-              placeholder="Begin typing to filter results..."
               required=""
               spellcheck="false"
               type="text"
@@ -221,7 +220,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Coordinator Agency *
@@ -550,7 +549,6 @@ exports[`Project Coordinator Form renders correctly the filled component correct
               autocomplete="off"
               class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
               id="coordinator_agency"
-              placeholder="Begin typing to filter results..."
               required=""
               spellcheck="false"
               type="text"

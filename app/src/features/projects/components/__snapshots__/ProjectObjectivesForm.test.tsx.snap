@@ -13,8 +13,8 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink="false"
             for="objectives"
             id="objectives-label"
           >
@@ -42,7 +42,7 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
               class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Objectives *
@@ -59,8 +59,8 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-            data-shrink="true"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
             for="caveats"
             id="caveats-label"
           >
@@ -81,7 +81,7 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
               class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Caveats (Optional)
