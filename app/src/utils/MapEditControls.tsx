@@ -47,7 +47,8 @@ export interface IMapEditControlsProps {
   edit?: any;
   position?: any;
   leaflet?: any;
-  geometry: Feature[];
+  geometry?: Feature[];
+  setGeometry?: (geometry: Feature[]) => void;
 }
 
 const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
@@ -58,23 +59,54 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   drawRef.current = createDrawElement(props, context);
 
   /*
-    Used to draw geometries that are passed into the map container component
+    Used to save state of geometries based on change to layers on map
   */
-  const onMountCreate = (layer: any) => {
-    const container = context.layerContainer || context.map;
+  const updateGeosBasedOnLayers = (container: any) => {
+    const updatedGeos: Feature[] = [];
 
-    container.addLayer(layer);
+    container.getLayers().forEach((layer: any) => {
+      const layerGeoJSON = layer._mRadius
+        ? { ...layer.toGeoJSON(), properties: { ...layer.toGeoJSON().properties, radius: layer.getRadius() } }
+        : layer.toGeoJSON();
+
+      updatedGeos.push(layerGeoJSON);
+    });
+
+    props.setGeometry([...updatedGeos]);
   };
 
   /*
-    Used to draw geometries that are drawn using the controls on the map
+    Used to draw geometries using the controls on the map
   */
   const onDrawCreate = (e: any) => {
     const { onCreated } = props;
     const container = context.layerContainer || context.map;
 
     container.addLayer(e.layer);
+    updateGeosBasedOnLayers(container);
     onCreated && onCreated(e);
+  };
+
+  /*
+    Used to edit geometries using the controls on the map
+  */
+  const onDrawEdit = (e: any) => {
+    const { onEdited } = props;
+    const container = context.layerContainer || context.map;
+
+    updateGeosBasedOnLayers(container);
+    onEdited && onEdited(e);
+  };
+
+  /*
+    Used to delete geometries using the controls on the map
+  */
+  const onDrawDelete = (e: any) => {
+    const { onDeleted } = props;
+    const container = context.layerContainer || context.map;
+
+    updateGeosBasedOnLayers(container);
+    onDeleted && onDeleted(e);
   };
 
   /*
@@ -95,18 +127,41 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
       });
     }
 
-    props.geometry.forEach((geometry: Feature) => {
-      L.geoJSON(geometry, {
-        onEachFeature: function (feature: any, layer: any) {
-          onMountCreate(layer);
-        }
-      });
-    });
-
     map.on(eventHandlers.onCreated, onDrawCreate);
+    map.on(eventHandlers.onEdited, onDrawEdit);
+    map.on(eventHandlers.onDeleted, onDrawDelete);
 
     onMounted && onMounted(drawRef.current);
   }, []);
+
+  useEffect(() => {
+    const container = context.layerContainer || context.map;
+    const markerStyle = {
+      radius: 10,
+      weight: 4,
+      stroke: true
+    };
+
+    container.clearLayers();
+
+    /*
+      Used to draw geometries that are passed into the map container component
+    */
+    props.geometry?.forEach((geometry: Feature) => {
+      L.geoJSON(geometry, {
+        pointToLayer: (feature: any, latLng: any) => {
+          if (feature.properties.radius) {
+            return L.circle(latLng, { radius: feature.properties.radius });
+          } else {
+            return L.circleMarker(latLng, markerStyle);
+          }
+        },
+        onEachFeature: function (feature: any, layer: any) {
+          container.addLayer(layer);
+        }
+      });
+    });
+  }, [props.geometry]);
 
   useEffect(() => {
     if (
