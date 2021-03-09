@@ -65,7 +65,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Paper>
           <Box m={3}>
             <Grid container spacing={3}>
-              <Grid container item xs={12} justify="space-between" alignItems="center">
+              <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
                 <Grid item>
                   <Typography variant="h3">General Information</Typography>
                 </Grid>
@@ -77,28 +77,28 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                   </IconButton>
                 </Grid>
               </Grid>
-              <Grid container item xs={12}>
+              <Grid container item spacing={3} xs={12}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Box mr={1} display="inline" color="text.disabled">
+                  <Box color="text.disabled">
                     <Typography variant="caption">Project Name</Typography>
                   </Box>
-                  <Box mr={1} display="inline">
+                  <Box>
                     <Typography variant="subtitle1">{projectData.name}</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Box mr={1} display="inline" color="text.disabled">
+                  <Box color="text.disabled">
                     <Typography variant="caption">Type</Typography>
                   </Box>
-                  <Box mr={1} display="inline">
+                  <Box>
                     <Typography variant="subtitle1">Placeholder</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Box mr={1} display="inline" color="text.disabled">
+                  <Box color="text.disabled">
                     <Typography variant="caption">Timeline</Typography>
                   </Box>
-                  <Box mr={1} display="inline">
+                  <Box>
                     <Typography variant="subtitle1">
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
@@ -109,18 +109,18 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Box mr={1} display="inline" color="text.disabled">
+                  <Box color="text.disabled">
                     <Typography variant="caption">Activities</Typography>
                   </Box>
-                  <Box mr={1} display="inline">
+                  <Box>
                     <Typography variant="subtitle1">Placeholder</Typography>
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Box mr={1} display="inline" color="text.disabled">
+                  <Box color="text.disabled">
                     <Typography variant="caption">Climate Change Initiatives</Typography>
                   </Box>
-                  <Box mr={1} display="inline">
+                  <Box>
                     <Typography variant="subtitle1">Placeholder</Typography>
                   </Box>
                 </Grid>
