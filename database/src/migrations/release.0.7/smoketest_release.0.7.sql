@@ -10,6 +10,9 @@ insert into system_user (uis_id, user_identifier, record_effective_date, create_
 select count(1) from audit_log;
 
 -- following to be run as biohub_api user
+set role biohub_api;
+set search_path to biohub_dapi_v1, biohub, public, topology;
+
 select api_set_context('myIDIR', null);
 
 do $$
