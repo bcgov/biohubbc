@@ -1,17 +1,16 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import ProjectDetails from './ProjectDetails';
+import GeneralInformation from './GeneralInformation';
 
 const projectData = {
   name: 'Test Project Name',
-  objectives: 'Et ad et in culpa si',
   start_date: '1998-10-10',
   end_date: '2021-02-26'
 };
 
-describe('ProjectDetails', () => {
+describe('GeneralInformation', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(<ProjectDetails projectData={projectData} />);
+    const { asFragment } = render(<GeneralInformation projectData={projectData} />);
 
     expect(asFragment()).toMatchSnapshot();
   });

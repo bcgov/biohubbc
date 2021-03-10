@@ -1,5 +1,7 @@
 import { Box, Paper, Typography } from '@material-ui/core';
 import React from 'react';
+import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
+import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 
 export interface IProjectDetailsProps {
   projectData: any;
@@ -10,7 +12,9 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const ProjectDetails: React.FC<IProjectDetailsProps> = () => {
+const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
+  const { projectData } = props;
+
   return (
     <>
       <Box mb={5}>
@@ -18,12 +22,15 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = () => {
       </Box>
       <Box mb={3}>
         <Paper>
-          <Box p={3}>Project details component 1 placeholder</Box>
+          <ProjectObjectives projectData={projectData}></ProjectObjectives>
         </Paper>
       </Box>
+
       <Box mb={3}>
         <Paper>
-          <Box p={3}>Project details component 2 placeholder</Box>
+          <Box m={3}>
+            <GeneralInformation projectData={projectData}></GeneralInformation>
+          </Box>
         </Paper>
       </Box>
     </>
