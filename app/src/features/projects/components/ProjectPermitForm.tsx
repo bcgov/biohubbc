@@ -95,7 +95,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                         />
                       </Box>
                       <Box flexBasis="30%" pl={1}>
-                        <FormControl variant="outlined" style={{ width: '100%' }}>
+                        <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
                           <InputLabel id="sampling_conducted">Sampling Conducted</InputLabel>
                           <Select
                             id={`permits.[${index}].sampling_conducted`}
@@ -106,7 +106,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                             onChange={handleChange}
                             error={samplingConductedMeta.touched && Boolean(samplingConductedMeta.error)}
                             displayEmpty
-                            inputProps={{ 'aria-label': 'Investment Category' }}>
+                            inputProps={{ 'aria-label': 'Sampling Conducted', 'data-testid': 'sampling_conducted' }}>
                             <MenuItem key={1} value="false">
                               No
                             </MenuItem>

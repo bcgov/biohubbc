@@ -1,69 +1,861 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`CreateProjectPage adds the extra create project steps if at least 1 permit is marked as having conducted sampling 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-40"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-41"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-42"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthMd"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-43"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-35 MuiTypography-colorPrimary"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-36 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                  />
+                </svg>
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Cancel and Exit
+                </p>
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-44"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Create Project
+        </h1>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-45"
+      >
+        <hr
+          class="MuiDivider-root"
+        />
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-46"
+      >
+        <div
+          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-38 MuiPaper-elevation0"
+        >
+          <div
+            class="MuiStep-root MuiStep-vertical MuiStep-completed"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root MuiStepIcon-completed"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm-2 17l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiStepLabel-completed MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-47"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Project Coordinator
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter contact details for the project coordinator
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              icon="1"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical MuiStepConnector-active"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root MuiStepIcon-active"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    2
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-66"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Permits
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter permits associated with this project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              icon="2"
+            >
+              <div
+                class="MuiCollapse-container MuiStepContent-transition MuiCollapse-entered"
+                style="min-height: 0px; height: auto; transition-duration: 0ms;"
+              >
+                <div
+                  class="MuiCollapse-wrapper"
+                >
+                  <div
+                    class="MuiCollapse-wrapperInner"
+                  >
+                    <div
+                      class="MuiBox-root MuiBox-root-67"
+                    >
+                      <form>
+                        <div
+                          class="MuiBox-root MuiBox-root-68"
+                        >
+                          <div
+                            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+                          >
+                            <div
+                              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                            >
+                              <div
+                                class="MuiBox-root MuiBox-root-69"
+                              >
+                                <div
+                                  class="MuiBox-root MuiBox-root-70"
+                                >
+                                  <div
+                                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                                  >
+                                    <label
+                                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                                      data-shrink="true"
+                                      for="permits.[0].permit_number"
+                                      id="permits.[0].permit_number-label"
+                                    >
+                                      Permit Number
+                                      <span
+                                        aria-hidden="true"
+                                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                                      >
+                                         *
+                                      </span>
+                                    </label>
+                                    <div
+                                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                                    >
+                                      <input
+                                        aria-invalid="false"
+                                        class="MuiInputBase-input MuiOutlinedInput-input"
+                                        id="permits.[0].permit_number"
+                                        name="permits.[0].permit_number"
+                                        required=""
+                                        type="text"
+                                        value="12345"
+                                      />
+                                      <fieldset
+                                        aria-hidden="true"
+                                        class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                                      >
+                                        <legend
+                                          class="PrivateNotchedOutline-legendLabelled-52 PrivateNotchedOutline-legendNotched-53"
+                                        >
+                                          <span>
+                                            Permit Number *
+                                          </span>
+                                        </legend>
+                                      </fieldset>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="MuiBox-root MuiBox-root-71"
+                                >
+                                  <div
+                                    class="MuiFormControl-root"
+                                    style="width: 100%;"
+                                  >
+                                    <label
+                                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                                      data-shrink="true"
+                                      id="sampling_conducted"
+                                    >
+                                      Sampling Conducted
+                                      <span
+                                        aria-hidden="true"
+                                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                                      >
+                                         *
+                                      </span>
+                                    </label>
+                                    <div
+                                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                                    >
+                                      <div
+                                        aria-haspopup="listbox"
+                                        aria-label="Sampling Conducted"
+                                        aria-labelledby="sampling_conducted permits.[0].sampling_conducted"
+                                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                                        id="permits.[0].sampling_conducted"
+                                        role="button"
+                                        tabindex="0"
+                                      >
+                                        Yes
+                                      </div>
+                                      <input
+                                        aria-hidden="true"
+                                        class="MuiSelect-nativeInput"
+                                        data-testid="sampling_conducted"
+                                        name="permits.[0].sampling_conducted"
+                                        required=""
+                                        tabindex="-1"
+                                        value="true"
+                                      />
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M7 10l5 5 5-5z"
+                                        />
+                                      </svg>
+                                      <fieldset
+                                        aria-hidden="true"
+                                        class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                                      >
+                                        <legend
+                                          class="PrivateNotchedOutline-legendLabelled-52 PrivateNotchedOutline-legendNotched-53"
+                                        >
+                                          <span>
+                                            Sampling Conducted
+                                          </span>
+                                        </legend>
+                                      </fieldset>
+                                    </div>
+                                    <p
+                                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                                    />
+                                  </div>
+                                </div>
+                                <div
+                                  class="MuiBox-root MuiBox-root-72"
+                                >
+                                  <button
+                                    aria-label="delete"
+                                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                                    tabindex="0"
+                                    type="button"
+                                  >
+                                    <span
+                                      class="MuiIconButton-label"
+                                    >
+                                      <svg
+                                        role="presentation"
+                                        style="width: 1.5rem; height: 1.5rem;"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                                          style="fill: currentColor;"
+                                        />
+                                      </svg>
+                                    </span>
+                                    <span
+                                      class="MuiTouchRipple-root"
+                                    />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="MuiBox-root MuiBox-root-73"
+                          >
+                            <button
+                              aria-label="Add Another"
+                              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                              tabindex="0"
+                              type="button"
+                            >
+                              <span
+                                class="MuiButton-label"
+                              >
+                                Add Another
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </button>
+                          </div>
+                        </div>
+                      </form>
+                      <div
+                        class="MuiBox-root MuiBox-root-74"
+                      >
+                        <hr
+                          class="MuiDivider-root"
+                        />
+                      </div>
+                      <div
+                        class="MuiBox-root MuiBox-root-75"
+                      >
+                        <div
+                          class="MuiBox-root MuiBox-root-76"
+                        >
+                          <button
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-34 MuiButton-outlinedPrimary"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              class="MuiButton-label"
+                            >
+                              Previous
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                        </div>
+                        <div
+                          class="MuiBox-root MuiBox-root-77"
+                        >
+                          <button
+                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-34 MuiButton-containedPrimary"
+                            tabindex="0"
+                            type="submit"
+                          >
+                            <span
+                              class="MuiButton-label"
+                            >
+                              Next
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                          <button
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-34 MuiButton-outlinedPrimary"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              class="MuiButton-label"
+                            >
+                              Cancel
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    3
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-78"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      General Information
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      General information and details about this project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="3"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    4
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-79"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Objectives
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter the objectives and potential caveats for this project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="4"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    5
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-80"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Location
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Specify project regions and boundary information
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="5"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    6
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-81"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Species
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Information about species this project is inventorying or monitoring
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="6"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    7
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-82"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
+                      Funding and Partnerships
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Specify funding and partnerships for the project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root MuiStepContent-last"
+              disabled=""
+              icon="7"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  ,
+</DocumentFragment>
+`;
+
 exports[`CreateProjectPage renders the initial default page correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-6"
-  />
-  <div
     class="MuiBox-root MuiBox-root-7"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-8"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-9"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthLg"
+      class="MuiContainer-root MuiContainer-maxWidthMd"
     >
-      <div
-        class="MuiBox-root MuiBox-root-8"
-      >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-          tabindex="0"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-                />
-              </svg>
-            </span>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-            >
-              Back to Projects
-            </p>
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-      <div
-        class="MuiBox-root MuiBox-root-9"
-      >
-        <h2
-          class="MuiTypography-root MuiTypography-h2"
-        >
-          Create Project
-        </h2>
-      </div>
       <div
         class="MuiBox-root MuiBox-root-10"
       >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-2 MuiTypography-colorPrimary"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-3 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                  />
+                </svg>
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Cancel and Exit
+                </p>
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Create Project
+        </h1>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-12"
+      >
+        <hr
+          class="MuiDivider-root"
+        />
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-13"
+      >
         <div
-          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-1 MuiPaper-elevation0"
+          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-5 MuiPaper-elevation0"
         >
           <div
             class="MuiStep-root MuiStep-vertical"
@@ -101,16 +893,20 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                 <span
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
                 >
-                  <h2
-                    class="MuiTypography-root MuiTypography-h2"
+                  <div
+                    class="MuiBox-root MuiBox-root-14"
                   >
-                    Project Coordinator
-                  </h2>
-                  <h6
-                    class="MuiTypography-root MuiTypography-subtitle2"
-                  >
-                    Enter contact details for the project coordinator
-                  </h6>
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Project Coordinator
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter contact details for the project coordinator
+                    </h6>
+                  </div>
                 </span>
               </span>
             </span>
@@ -128,158 +924,15 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   <div
                     class="MuiCollapse-wrapperInner"
                   >
-                    <form>
-                      <div
-                        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-                      >
+                    <div
+                      class="MuiBox-root MuiBox-root-15"
+                    >
+                      <form>
                         <div
-                          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+                          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
                         >
                           <div
-                            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                          >
-                            <label
-                              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                              data-shrink="false"
-                              for="first_name"
-                              id="first_name-label"
-                            >
-                              First Name
-                              <span
-                                aria-hidden="true"
-                                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                              >
-                                 *
-                              </span>
-                            </label>
-                            <div
-                              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                            >
-                              <input
-                                aria-invalid="false"
-                                class="MuiInputBase-input MuiOutlinedInput-input"
-                                id="first_name"
-                                name="first_name"
-                                required=""
-                                type="text"
-                                value=""
-                              />
-                              <fieldset
-                                aria-hidden="true"
-                                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-                              >
-                                <legend
-                                  class="PrivateNotchedOutline-legendLabelled-13"
-                                >
-                                  <span>
-                                    First Name *
-                                  </span>
-                                </legend>
-                              </fieldset>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
-                        >
-                          <div
-                            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                          >
-                            <label
-                              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                              data-shrink="false"
-                              for="last_name"
-                              id="last_name-label"
-                            >
-                              Last Name
-                              <span
-                                aria-hidden="true"
-                                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                              >
-                                 *
-                              </span>
-                            </label>
-                            <div
-                              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                            >
-                              <input
-                                aria-invalid="false"
-                                class="MuiInputBase-input MuiOutlinedInput-input"
-                                id="last_name"
-                                name="last_name"
-                                required=""
-                                type="text"
-                                value=""
-                              />
-                              <fieldset
-                                aria-hidden="true"
-                                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-                              >
-                                <legend
-                                  class="PrivateNotchedOutline-legendLabelled-13"
-                                >
-                                  <span>
-                                    Last Name *
-                                  </span>
-                                </legend>
-                              </fieldset>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                        >
-                          <div
-                            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                          >
-                            <label
-                              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                              data-shrink="false"
-                              for="email_address"
-                              id="email_address-label"
-                            >
-                              Business Email Address
-                              <span
-                                aria-hidden="true"
-                                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                              >
-                                 *
-                              </span>
-                            </label>
-                            <div
-                              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                            >
-                              <input
-                                aria-invalid="false"
-                                class="MuiInputBase-input MuiOutlinedInput-input"
-                                id="email_address"
-                                name="email_address"
-                                required=""
-                                type="text"
-                                value=""
-                              />
-                              <fieldset
-                                aria-hidden="true"
-                                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-                              >
-                                <legend
-                                  class="PrivateNotchedOutline-legendLabelled-13"
-                                >
-                                  <span>
-                                    Business Email Address *
-                                  </span>
-                                </legend>
-                              </fieldset>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                        >
-                          <div
-                            aria-expanded="false"
-                            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
-                            role="combobox"
+                            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
                           >
                             <div
                               class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -287,10 +940,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                               <label
                                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                                 data-shrink="false"
-                                for="coordinator_agency"
-                                id="coordinator_agency-label"
+                                for="first_name"
+                                id="first_name-label"
                               >
-                                Coordinator Agency
+                                First Name
                                 <span
                                   aria-hidden="true"
                                   class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -299,269 +952,400 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                 </span>
                               </label>
                               <div
-                                class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                               >
                                 <input
-                                  aria-autocomplete="list"
                                   aria-invalid="false"
-                                  autocapitalize="none"
-                                  autocomplete="off"
-                                  class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                                  id="coordinator_agency"
+                                  class="MuiInputBase-input MuiOutlinedInput-input"
+                                  id="first_name"
+                                  name="first_name"
                                   required=""
-                                  spellcheck="false"
                                   type="text"
                                   value=""
                                 />
-                                <div
-                                  class="MuiAutocomplete-endAdornment"
-                                >
-                                  <button
-                                    aria-label="Clear"
-                                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                                    tabindex="-1"
-                                    title="Clear"
-                                    type="button"
-                                  >
-                                    <span
-                                      class="MuiIconButton-label"
-                                    >
-                                      <svg
-                                        aria-hidden="true"
-                                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                        focusable="false"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                        />
-                                      </svg>
-                                    </span>
-                                    <span
-                                      class="MuiTouchRipple-root"
-                                    />
-                                  </button>
-                                </div>
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-13"
+                                    class="PrivateNotchedOutline-legendLabelled-19"
                                   >
                                     <span>
-                                      Coordinator Agency *
+                                      First Name *
                                     </span>
                                   </legend>
                                 </fieldset>
                               </div>
                             </div>
                           </div>
-                        </div>
-                        <div
-                          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                        >
-                          <fieldset
-                            class="MuiFormControl-root"
+                          <div
+                            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
                           >
-                            <legend
-                              class="MuiFormLabel-root Mui-required"
-                            >
-                              Share Contact Details
-                              <span
-                                aria-hidden="true"
-                                class="MuiFormLabel-asterisk"
-                              >
-                                 *
-                              </span>
-                            </legend>
                             <div
-                              aria-label="Share Contact Details"
-                              class="MuiFormGroup-root"
-                              role="radiogroup"
+                              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                             >
                               <label
-                                class="MuiFormControlLabel-root"
+                                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                                data-shrink="false"
+                                for="last_name"
+                                id="last_name-label"
                               >
+                                Last Name
                                 <span
-                                  aria-disabled="false"
-                                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorSecondary PrivateSwitchBase-checked-16 Mui-checked MuiIconButton-colorSecondary"
+                                  aria-hidden="true"
+                                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
                                 >
-                                  <span
-                                    class="MuiIconButton-label"
-                                  >
-                                    <input
-                                      checked=""
-                                      class="PrivateSwitchBase-input-18"
-                                      name="share_contact_details"
-                                      required=""
-                                      type="radio"
-                                      value="false"
-                                    />
-                                    <div
-                                      class="PrivateRadioButtonIcon-root-19 PrivateRadioButtonIcon-checked-21"
-                                    >
-                                      <svg
-                                        aria-hidden="true"
-                                        class="MuiSvgIcon-root"
-                                        focusable="false"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                        />
-                                      </svg>
-                                      <svg
-                                        aria-hidden="true"
-                                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
-                                        focusable="false"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                        />
-                                      </svg>
-                                    </div>
-                                  </span>
-                                  <span
-                                    class="MuiTouchRipple-root"
-                                  />
-                                </span>
-                                <span
-                                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                                >
-                                  No
+                                   *
                                 </span>
                               </label>
-                              <label
-                                class="MuiFormControlLabel-root"
+                              <div
+                                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                               >
-                                <span
-                                  aria-disabled="false"
-                                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorSecondary MuiIconButton-colorSecondary"
+                                <input
+                                  aria-invalid="false"
+                                  class="MuiInputBase-input MuiOutlinedInput-input"
+                                  id="last_name"
+                                  name="last_name"
+                                  required=""
+                                  type="text"
+                                  value=""
+                                />
+                                <fieldset
+                                  aria-hidden="true"
+                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
                                 >
-                                  <span
-                                    class="MuiIconButton-label"
+                                  <legend
+                                    class="PrivateNotchedOutline-legendLabelled-19"
                                   >
-                                    <input
-                                      class="PrivateSwitchBase-input-18"
-                                      name="share_contact_details"
-                                      required=""
-                                      type="radio"
-                                      value="true"
-                                    />
-                                    <div
-                                      class="PrivateRadioButtonIcon-root-19"
-                                    >
-                                      <svg
-                                        aria-hidden="true"
-                                        class="MuiSvgIcon-root"
-                                        focusable="false"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                        />
-                                      </svg>
-                                      <svg
-                                        aria-hidden="true"
-                                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
-                                        focusable="false"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                        />
-                                      </svg>
-                                    </div>
-                                  </span>
-                                  <span
-                                    class="MuiTouchRipple-root"
-                                  />
-                                </span>
-                                <span
-                                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                                >
-                                  Yes
-                                </span>
-                              </label>
-                              <p
-                                class="MuiFormHelperText-root Mui-required"
-                              />
+                                    <span>
+                                      Last Name *
+                                    </span>
+                                  </legend>
+                                </fieldset>
+                              </div>
                             </div>
-                          </fieldset>
+                          </div>
+                          <div
+                            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                          >
+                            <div
+                              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                            >
+                              <label
+                                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                                data-shrink="false"
+                                for="email_address"
+                                id="email_address-label"
+                              >
+                                Business Email Address
+                                <span
+                                  aria-hidden="true"
+                                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                                >
+                                   *
+                                </span>
+                              </label>
+                              <div
+                                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                              >
+                                <input
+                                  aria-invalid="false"
+                                  class="MuiInputBase-input MuiOutlinedInput-input"
+                                  id="email_address"
+                                  name="email_address"
+                                  required=""
+                                  type="text"
+                                  value=""
+                                />
+                                <fieldset
+                                  aria-hidden="true"
+                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                >
+                                  <legend
+                                    class="PrivateNotchedOutline-legendLabelled-19"
+                                  >
+                                    <span>
+                                      Business Email Address *
+                                    </span>
+                                  </legend>
+                                </fieldset>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                          >
+                            <div
+                              aria-expanded="false"
+                              class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+                              role="combobox"
+                            >
+                              <div
+                                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                              >
+                                <label
+                                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                                  data-shrink="false"
+                                  for="coordinator_agency"
+                                  id="coordinator_agency-label"
+                                >
+                                  Coordinator Agency
+                                  <span
+                                    aria-hidden="true"
+                                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                                  >
+                                     *
+                                  </span>
+                                </label>
+                                <div
+                                  class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                                >
+                                  <input
+                                    aria-autocomplete="list"
+                                    aria-invalid="false"
+                                    autocapitalize="none"
+                                    autocomplete="off"
+                                    class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                                    id="coordinator_agency"
+                                    required=""
+                                    spellcheck="false"
+                                    type="text"
+                                    value=""
+                                  />
+                                  <div
+                                    class="MuiAutocomplete-endAdornment"
+                                  >
+                                    <button
+                                      aria-label="Clear"
+                                      class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                                      tabindex="-1"
+                                      title="Clear"
+                                      type="button"
+                                    >
+                                      <span
+                                        class="MuiIconButton-label"
+                                      >
+                                        <svg
+                                          aria-hidden="true"
+                                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                          focusable="false"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path
+                                            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                          />
+                                        </svg>
+                                      </span>
+                                      <span
+                                        class="MuiTouchRipple-root"
+                                      />
+                                    </button>
+                                  </div>
+                                  <fieldset
+                                    aria-hidden="true"
+                                    class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                  >
+                                    <legend
+                                      class="PrivateNotchedOutline-legendLabelled-19"
+                                    >
+                                      <span>
+                                        Coordinator Agency *
+                                      </span>
+                                    </legend>
+                                  </fieldset>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                          >
+                            <fieldset
+                              class="MuiFormControl-root"
+                            >
+                              <legend
+                                class="MuiFormLabel-root makeStyles-legend-16 Mui-required"
+                              >
+                                Share Contact Details
+                                <span
+                                  aria-hidden="true"
+                                  class="MuiFormLabel-asterisk"
+                                >
+                                   *
+                                </span>
+                              </legend>
+                              <p
+                                class="MuiTypography-root MuiTypography-body1"
+                              >
+                                Do you want the project coordinator contact information visible to the public?
+                              </p>
+                              <div
+                                class="MuiBox-root MuiBox-root-21"
+                              >
+                                <div
+                                  aria-label="Share Contact Details"
+                                  class="MuiFormGroup-root"
+                                  role="radiogroup"
+                                >
+                                  <label
+                                    class="MuiFormControlLabel-root"
+                                  >
+                                    <span
+                                      aria-disabled="false"
+                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-23 Mui-checked MuiIconButton-colorPrimary"
+                                    >
+                                      <span
+                                        class="MuiIconButton-label"
+                                      >
+                                        <input
+                                          checked=""
+                                          class="PrivateSwitchBase-input-25"
+                                          name="share_contact_details"
+                                          required=""
+                                          type="radio"
+                                          value="false"
+                                        />
+                                        <div
+                                          class="PrivateRadioButtonIcon-root-26 PrivateRadioButtonIcon-checked-28"
+                                        >
+                                          <svg
+                                            aria-hidden="true"
+                                            class="MuiSvgIcon-root"
+                                            focusable="false"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                            />
+                                          </svg>
+                                          <svg
+                                            aria-hidden="true"
+                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
+                                            focusable="false"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      </span>
+                                      <span
+                                        class="MuiTouchRipple-root"
+                                      />
+                                    </span>
+                                    <span
+                                      class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                                    >
+                                      No
+                                    </span>
+                                  </label>
+                                  <label
+                                    class="MuiFormControlLabel-root"
+                                  >
+                                    <span
+                                      aria-disabled="false"
+                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                                    >
+                                      <span
+                                        class="MuiIconButton-label"
+                                      >
+                                        <input
+                                          class="PrivateSwitchBase-input-25"
+                                          name="share_contact_details"
+                                          required=""
+                                          type="radio"
+                                          value="true"
+                                        />
+                                        <div
+                                          class="PrivateRadioButtonIcon-root-26"
+                                        >
+                                          <svg
+                                            aria-hidden="true"
+                                            class="MuiSvgIcon-root"
+                                            focusable="false"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                            />
+                                          </svg>
+                                          <svg
+                                            aria-hidden="true"
+                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
+                                            focusable="false"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                            />
+                                          </svg>
+                                        </div>
+                                      </span>
+                                      <span
+                                        class="MuiTouchRipple-root"
+                                      />
+                                    </span>
+                                    <span
+                                      class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                                    >
+                                      Yes
+                                    </span>
+                                  </label>
+                                  <p
+                                    class="MuiFormHelperText-root Mui-required"
+                                  />
+                                </div>
+                              </div>
+                            </fieldset>
+                          </div>
                         </div>
-                      </div>
-                    </form>
-                    <div
-                      class="MuiBox-root MuiBox-root-22"
-                    >
-                      <hr
-                        class="MuiDivider-root"
-                      />
-                    </div>
-                    <div
-                      class="MuiBox-root MuiBox-root-23 makeStyles-actionsContainer-2"
-                    >
+                      </form>
                       <div
-                        class="MuiBox-root MuiBox-root-24"
+                        class="MuiBox-root MuiBox-root-29"
                       >
-                        <button
-                          class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-3"
-                          tabindex="0"
-                          type="button"
-                        >
-                          <span
-                            class="MuiButton-label"
-                          >
-                            <p
-                              class="MuiTypography-root MuiTypography-body1"
-                            >
-                              Cancel
-                            </p>
-                          </span>
-                          <span
-                            class="MuiTouchRipple-root"
-                          />
-                        </button>
+                        <hr
+                          class="MuiDivider-root"
+                        />
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-25"
+                        class="MuiBox-root MuiBox-root-30"
                       >
-                        <button
-                          class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-3 Mui-disabled Mui-disabled"
-                          disabled=""
-                          tabindex="-1"
-                          type="button"
+                        <div
+                          class="MuiBox-root MuiBox-root-31"
+                        />
+                        <div
+                          class="MuiBox-root MuiBox-root-32"
                         >
-                          <span
-                            class="MuiButton-label"
+                          <button
+                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
+                            tabindex="0"
+                            type="submit"
                           >
-                            <p
-                              class="MuiTypography-root MuiTypography-body1"
-                            >
-                              Previous
-                            </p>
-                          </span>
-                        </button>
-                        <button
-                          class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-3 MuiButton-containedPrimary"
-                          tabindex="0"
-                          type="submit"
-                        >
-                          <span
-                            class="MuiButton-label"
-                          >
-                            <p
-                              class="MuiTypography-root MuiTypography-body1"
+                            <span
+                              class="MuiButton-label"
                             >
                               Next
-                            </p>
-                          </span>
-                          <span
-                            class="MuiTouchRipple-root"
-                          />
-                        </button>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                          <button
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+                            tabindex="0"
+                            type="button"
+                          >
+                            <span
+                              class="MuiButton-label"
+                            >
+                              Cancel
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -612,16 +1396,20 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                 <span
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
-                  <h2
-                    class="MuiTypography-root MuiTypography-h2"
+                  <div
+                    class="MuiBox-root MuiBox-root-33"
                   >
-                    Permits
-                  </h2>
-                  <h6
-                    class="MuiTypography-root MuiTypography-subtitle2"
-                  >
-                    Enter permits associated with this project
-                  </h6>
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Permits
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter permits associated with this project
+                    </h6>
+                  </div>
                 </span>
               </span>
             </span>
