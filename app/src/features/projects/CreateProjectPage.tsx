@@ -1,9 +1,11 @@
 import {
   Box,
+  Breadcrumbs,
   Button,
   CircularProgress,
   Container,
   Divider,
+  Link,
   makeStyles,
   Paper,
   Step,
@@ -64,20 +66,29 @@ export interface IFormStepState {
 }
 
 const useStyles = makeStyles((theme) => ({
-  stepper: {
-    backgroundColor: 'transparent'
-  },
-  actionsContainer: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2)
-  },
   actionButton: {
-    marginTop: theme.spacing(1),
-    marginRight: theme.spacing(1)
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  },
+  breadCrumbLink: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
+  },
+  breadCrumbLinkIcon: {
+    marginRight: '0.25rem'
   },
   finishContainer: {
     padding: theme.spacing(3),
     backgroundColor: 'transparent'
+  },
+  stepper: {
+    backgroundColor: 'transparent'
+  },
+  stepTitle: {
+    marginBottom: '0.45rem'
   }
 }));
 
@@ -367,65 +378,86 @@ const CreateProjectPage: React.FC = () => {
       />
       <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
-        <Container>
-          <Box mb={2}>
-            <Button variant="text" color="primary" startIcon={<ArrowBack />} onClick={handleCancel}>
-              <Typography variant="body1">Back to Projects</Typography>
-            </Button>
+        <Container maxWidth="md">
+          <Box mb={3}>
+            <Breadcrumbs>
+              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                <ArrowBack color="primary" fontSize="small" className={classes.breadCrumbLinkIcon} />
+                <Typography variant="body2">Cancel and Exit</Typography>
+              </Link>
+            </Breadcrumbs>
           </Box>
           <Box mb={2}>
-            <Typography variant="h2">Create Project</Typography>
+            <Typography variant="h1">Create Project</Typography>
+          </Box>
+          <Box mt={5} mb={2}>
+            <Divider />
           </Box>
           <Box>
             <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
               {steps.map((step) => (
                 <Step key={step.stepTitle}>
                   <StepLabel>
-                    <Typography variant="h2">{step.stepTitle}</Typography>
-                    <Typography variant="subtitle2">{step.stepSubTitle}</Typography>
+                    <Box>
+                      <Typography variant="h2" className={classes.stepTitle}>
+                        {step.stepTitle}
+                      </Typography>
+                      <Typography variant="subtitle2">{step.stepSubTitle}</Typography>
+                    </Box>
                   </StepLabel>
                   <StepContent>
-                    <Formik
-                      initialValues={step.stepValues}
-                      validationSchema={step.stepValidation}
-                      validateOnBlur={true}
-                      validateOnChange={false}
-                      onSubmit={async (values, helper) => {
-                        handleSaveAndNext(values);
-                      }}>
-                      {(props) => (
-                        <>
-                          {step.stepContent}
-                          <Box my={2}>
-                            <Divider />
-                          </Box>
-                          <Box display="flex" justifyContent="space-between" className={classes.actionsContainer}>
-                            <Box>
-                              <Button variant="contained" onClick={handleCancel} className={classes.actionButton}>
-                                <Typography variant="body1">Cancel</Typography>
-                              </Button>
+                    <Box my={3}>
+                      <Formik
+                        initialValues={step.stepValues}
+                        validationSchema={step.stepValidation}
+                        validateOnBlur={true}
+                        validateOnChange={false}
+                        onSubmit={async (values, helper) => {
+                          handleSaveAndNext(values);
+                        }}>
+                        {(props) => (
+                          <>
+                            {step.stepContent}
+                            <Box my={4}>
+                              <Divider />
                             </Box>
-                            <Box>
-                              <Button
-                                disabled={activeStep === 0}
-                                variant="contained"
-                                onClick={() => handleSaveAndBack(props.values)}
-                                className={classes.actionButton}>
-                                <Typography variant="body1">Previous</Typography>
-                              </Button>
-                              <Button
-                                type="submit"
-                                variant="contained"
-                                color="primary"
-                                onClick={props.submitForm}
-                                className={classes.actionButton}>
-                                <Typography variant="body1">Next</Typography>
-                              </Button>
+                            <Box display="flex" justifyContent="space-between">
+                              <Box>
+                                {activeStep === 0 ? (
+                                  ' '
+                                ) : (
+                                  <Button
+                                    disabled={activeStep === 0}
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => handleSaveAndBack(props.values)}
+                                    className={classes.actionButton}>
+                                    Previous
+                                  </Button>
+                                )}
+                              </Box>
+                              <Box>
+                                <Button
+                                  type="submit"
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={props.submitForm}
+                                  className={classes.actionButton}>
+                                  Next
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  color="primary"
+                                  onClick={handleCancel}
+                                  className={classes.actionButton}>
+                                  Cancel
+                                </Button>
+                              </Box>
                             </Box>
-                          </Box>
-                        </>
-                      )}
-                    </Formik>
+                          </>
+                        )}
+                      </Formik>
+                    </Box>
                   </StepContent>
                 </Step>
               ))}
@@ -435,7 +467,7 @@ const CreateProjectPage: React.FC = () => {
                 <Box mb={3}>
                   <Typography variant="h3">All steps complete!</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between" className={classes.actionsContainer}>
+                <Box display="flex" justifyContent="space-between">
                   <Box>
                     <Button variant="contained" onClick={handleCancel} className={classes.actionButton}>
                       <Typography variant="body1">Cancel</Typography>
