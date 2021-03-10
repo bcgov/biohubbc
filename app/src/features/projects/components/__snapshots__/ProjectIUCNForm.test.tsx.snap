@@ -104,7 +104,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                   data-shrink="false"
-                  id="sub-classification-1"
+                  id="subClassification1"
                 >
                   Sub-classification
                 </label>
@@ -113,7 +113,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Sub-classification-1"
+                    aria-label="subClassification1"
                     aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="classificationDetails.[0].subClassification1"
@@ -183,7 +183,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                   data-shrink="false"
-                  id="classification"
+                  id="subClassification2"
                 >
                   Sub-classification
                 </label>
@@ -192,7 +192,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Sub-classification-2"
+                    aria-label="subClassification2"
                     aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="classificationDetails.[0].subClassification2"
@@ -395,7 +395,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
                   data-shrink="true"
-                  id="sub-classification-1"
+                  id="subClassification1"
                 >
                   Sub-classification
                 </label>
@@ -404,7 +404,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Sub-classification-1"
+                    aria-label="subClassification1"
                     aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="classificationDetails.[0].subClassification1"
@@ -472,7 +472,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
                   data-shrink="true"
-                  id="classification"
+                  id="subClassification2"
                 >
                   Sub-classification
                 </label>
@@ -481,7 +481,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Sub-classification-2"
+                    aria-label="subClassification2"
                     aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="classificationDetails.[0].subClassification2"
