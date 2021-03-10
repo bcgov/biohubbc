@@ -5,8 +5,8 @@ import ProjectsListPage from './ProjectsListPage';
 
 // https://stackoverflow.com/questions/58524183/how-to-mock-history-push-with-the-new-react-router-hooks-using-jest/59451956
 
-describe('ProjectsListPage.test', () => {
-  test('ProjectsListPage renders with the create project button', () => {
+describe('ProjectsListPage', () => {
+  test('renders with the create project button', () => {
     const { baseElement } = render(
       <MemoryRouter>
         <ProjectsListPage />
