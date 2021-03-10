@@ -1,8 +1,7 @@
-import { Box, Grid, IconButton, Paper, Typography } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import { Box, Paper, Typography } from '@material-ui/core';
 import React from 'react';
-import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
+import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 
 export interface IProjectDetailsProps {
   projectData: any;
@@ -22,106 +21,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Box>
       <Box mb={3}>
         <Paper>
-          <Box m={3}>
-            <Grid container spacing={3}>
-              <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-                <Grid item>
-                  <Typography variant="h3">Project Objectives</Typography>
-                </Grid>
-                <Grid item>
-                  <IconButton title="Edit General Information" aria-label="Edit General Information">
-                    <Typography variant="caption">
-                      <Edit fontSize="inherit" /> EDIT
-                    </Typography>
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Grid container item spacing={2} xs={12}>
-                <Grid item xs={12}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                  aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                  officia deserunt mollit anim id est laborum.
-                </Grid>
-                <Grid item xs={12}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                  aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                  officia deserunt mollit anim id est laborum.
-                </Grid>
-                <Grid item xs={12}></Grid>
-              </Grid>
-            </Grid>
-          </Box>
+          <ProjectObjectives projectData={projectData}></ProjectObjectives>
         </Paper>
       </Box>
+
       <Box mb={3}>
         <Paper>
           <Box m={3}>
-            <Grid container spacing={3}>
-              <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-                <Grid item>
-                  <Typography variant="h3">General Information</Typography>
-                </Grid>
-                <Grid item>
-                  <IconButton title="Edit General Information" aria-label="Edit General Information">
-                    <Typography variant="caption">
-                      <Edit fontSize="inherit" /> EDIT
-                    </Typography>
-                  </IconButton>
-                </Grid>
-              </Grid>
-              <Grid container item spacing={3} xs={12}>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Project Name</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">{projectData.name}</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Type</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">Placeholder</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Timeline</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        projectData.start_date,
-                        projectData.end_date
-                      )}
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Activities</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">Placeholder</Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Climate Change Initiatives</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1">Placeholder</Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Grid>
+            <GeneralInformation projectData={projectData}></GeneralInformation>
           </Box>
         </Paper>
       </Box>
