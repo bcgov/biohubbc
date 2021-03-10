@@ -604,7 +604,7 @@ CREATE TABLE project(
     coordinator_email_address     varchar(500)               NOT NULL,
     coordinator_agency_name       varchar(300)               NOT NULL,
     coordinator_public            character(1)               NOT NULL,
-    geometry                      geometry(polygon, 3005),
+    geometry                      geometry(geometry, 3005),
     geography                     geography(geometry),
     create_date                   timestamp(6)               DEFAULT now() NOT NULL,
     create_user                   integer                    NOT NULL,
