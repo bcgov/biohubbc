@@ -89,7 +89,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               error={touched.project_type && Boolean(errors.project_type)}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}
-              input={<OutlinedInput notched label="Project Type" />}>
+              input={<OutlinedInput label="Project Type" />}>
               {props.project_type.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}
