@@ -95,38 +95,41 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props: any) => {
                           <FormHelperText>{classificationMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
-                      {['subClassification1', 'subClassification2'].map((subClassification: string, subClassIndex: number) => {
-                        const subClassificationMeta = subClassIndex === 0 ? subClassification1Meta : subClassification2Meta;
+                      {['subClassification1', 'subClassification2'].map(
+                        (subClassification: string, subClassIndex: number) => {
+                          const subClassificationMeta =
+                            subClassIndex === 0 ? subClassification1Meta : subClassification2Meta;
 
-                        return (
-                          <Fragment key={subClassIndex}>
-                            <Box pt={2} pl={2} pr={2}>
-                              <Icon path={mdiArrowRight} size={1} />
-                            </Box>
-                            <Box flexBasis="35%">
-                              <FormControl variant="outlined" style={{ width: '100%' }}>
-                                <InputLabel id={subClassification}>Sub-classification</InputLabel>
-                                <Select
-                                  id={`classificationDetails.[${index}].${subClassification}`}
-                                  name={`classificationDetails.[${index}].${subClassification}`}
-                                  labelId={subClassification}
-                                  label="Sub-classification"
-                                  value={classificationDetail[subClassification]}
-                                  onChange={handleChange}
-                                  error={subClassificationMeta.touched && Boolean(subClassificationMeta.error)}
-                                  inputProps={{ 'aria-label': subClassification }}>
-                                  {props.subClassifications.map((item: any) => (
-                                    <MenuItem key={item.value} value={item.value}>
-                                      {item.label}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                                <FormHelperText>{subClassificationMeta.error}</FormHelperText>
-                              </FormControl>
-                            </Box>
-                          </Fragment>
-                        )
-                      })}
+                          return (
+                            <Fragment key={subClassIndex}>
+                              <Box pt={2} pl={2} pr={2}>
+                                <Icon path={mdiArrowRight} size={1} />
+                              </Box>
+                              <Box flexBasis="35%">
+                                <FormControl variant="outlined" style={{ width: '100%' }}>
+                                  <InputLabel id={subClassification}>Sub-classification</InputLabel>
+                                  <Select
+                                    id={`classificationDetails.[${index}].${subClassification}`}
+                                    name={`classificationDetails.[${index}].${subClassification}`}
+                                    labelId={subClassification}
+                                    label="Sub-classification"
+                                    value={classificationDetail[subClassification]}
+                                    onChange={handleChange}
+                                    error={subClassificationMeta.touched && Boolean(subClassificationMeta.error)}
+                                    inputProps={{ 'aria-label': subClassification }}>
+                                    {props.subClassifications.map((item: any) => (
+                                      <MenuItem key={item.value} value={item.value}>
+                                        {item.label}
+                                      </MenuItem>
+                                    ))}
+                                  </Select>
+                                  <FormHelperText>{subClassificationMeta.error}</FormHelperText>
+                                </FormControl>
+                              </Box>
+                            </Fragment>
+                          );
+                        }
+                      )}
                       <Box pt={0.5} pl={1}>
                         <IconButton color="primary" aria-label="delete" onClick={() => arrayHelpers.remove(index)}>
                           <Icon path={mdiTrashCanOutline} size={1} />
