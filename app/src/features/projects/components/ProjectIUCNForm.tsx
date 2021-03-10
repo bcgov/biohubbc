@@ -96,6 +96,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props: any) => {
                       </Box>
                       {['subClassification1', 'subClassification2'].map((subClassification: string, subClassIndex: number) => {
                         const subClassificationMeta = subClassIndex === 0 ? subClassification1Meta : subClassification2Meta;
+
                         return (
                           <Fragment key={subClassIndex}>
                             <Box pt={2} pl={2} pr={2}>
