@@ -555,16 +555,25 @@ const CreateProjectPage: React.FC = () => {
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Box>
-                    <Button variant="contained" onClick={handleCancel} className={classes.actionButton}>
-                      <Typography variant="body1">Cancel</Typography>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={goToPreviousStep}
+                      className={classes.actionButton}>
+                      Previous
                     </Button>
                   </Box>
                   <Box>
-                    <Button variant="contained" onClick={goToPreviousStep} className={classes.actionButton}>
-                      <Typography variant="body1">previous</Typography>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSubmit}
+                      className={classes.actionButton}>
+                      Create Project
                     </Button>
-                    <Button variant="contained" color="primary" onClick={handleSubmit} className={classes.actionButton}>
-                      <Typography variant="body1">Create Project</Typography>
+                    <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+                      Cancel
                     </Button>
                   </Box>
                 </Box>
