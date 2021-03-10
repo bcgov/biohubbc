@@ -161,32 +161,6 @@ const CreateProjectPage: React.FC = () => {
     const setFormSteps = () => {
       setSteps([
         {
-          stepTitle: 'IUCN Classification',
-          stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
-          stepContent: (
-            <ProjectIUCNForm
-              classifications={
-                [
-                  { id: 1, name: 'Class 1' },
-                  { id: 2, name: 'Class 2' }
-                ].map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              subClassifications={
-                [
-                  { id: 1, name: 'Sub-class 1' },
-                  { id: 2, name: 'Sub-class 2' }
-                ].map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          ),
-          stepValues: ProjectIUCNFormInitialValues,
-          stepValidation: ProjectIUCNFormYupSchema
-        },
-        {
           stepTitle: 'Project Coordinator',
           stepSubTitle: 'Enter contact details for the project coordinator',
           stepContent: (
@@ -270,7 +244,32 @@ const CreateProjectPage: React.FC = () => {
           stepValues: ProjectSpeciesFormInitialValues,
           stepValidation: ProjectSpeciesFormYupSchema
         },
-
+        {
+          stepTitle: 'IUCN Classification',
+          stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
+          stepContent: (
+            <ProjectIUCNForm
+              classifications={
+                [
+                  { id: 1, name: 'Class 1' },
+                  { id: 2, name: 'Class 2' }
+                ].map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              subClassifications={
+                [
+                  { id: 1, name: 'Sub-class 1' },
+                  { id: 2, name: 'Sub-class 2' }
+                ].map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          stepValues: ProjectIUCNFormInitialValues,
+          stepValidation: ProjectIUCNFormYupSchema
+        },
         {
           stepTitle: 'Funding and Partnerships',
           stepSubTitle: 'Specify funding and partnerships for the project',
@@ -313,8 +312,6 @@ const CreateProjectPage: React.FC = () => {
     setSteps((currentSteps) => {
       let updatedSteps = [...currentSteps];
       updatedSteps[activeStep].stepValues = values;
-
-      console.log(updatedSteps);
       return updatedSteps;
     });
   };
