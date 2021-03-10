@@ -81,8 +81,8 @@ const appTheme = createMuiTheme({
         paddingLeft: '3rem'
       },
       iconContainer: {
-        width: '2.5rem',
-        height: '2.5rem',
+        width: '3rem',
+        height: '3rem',
         paddingRight: 0,
         borderRadius: '1.25rem'
       }
