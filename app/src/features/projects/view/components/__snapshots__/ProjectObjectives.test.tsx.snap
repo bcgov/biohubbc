@@ -61,7 +61,7 @@ exports[`ProjectObjectives renders correctly 1`] = `
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation  ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip exLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation  ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip exEt ad et in culpa si
+          Et ad et in culpa si
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"

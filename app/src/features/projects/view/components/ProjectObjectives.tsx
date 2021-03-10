@@ -12,17 +12,17 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const ProjectObjectives: React.FC<IProjectDetailsProps> = (props) => {
-  const projectData = props.projectData.objectives;
+  const objectives = props.projectData.objectives;
 
-  const objectives =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
-    'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-    'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
-    ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex' +
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
-    'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-    'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
-    ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex';
+  // const objectives =
+  //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
+  //   'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
+  //   'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
+  //   ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex' +
+  //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
+  //   'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
+  //   'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
+  //   ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex';
   return (
     <>
       <Box m={3}>
@@ -42,7 +42,6 @@ const ProjectObjectives: React.FC<IProjectDetailsProps> = (props) => {
           <Grid container item spacing={2} xs={12}>
             <Grid item xs={12}>
               {objectives}
-              {projectData}
             </Grid>
             <Grid item xs={12}></Grid>
           </Grid>
