@@ -132,6 +132,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     map.on(eventHandlers.onDeleted, onDrawDelete);
 
     onMounted && onMounted(drawRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -161,6 +162,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
         }
       });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.geometry]);
 
   useEffect(() => {
@@ -181,6 +183,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     const { onMounted } = props;
 
     onMounted && onMounted(drawRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.draw, props.edit, props.position]);
 
   return null;

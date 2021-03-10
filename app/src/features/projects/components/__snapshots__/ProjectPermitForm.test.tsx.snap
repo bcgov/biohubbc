@@ -70,18 +70,24 @@ exports[`ProjectPermitForm renders correctly with default empty values 1`] = `
                 style="width: 100%;"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                   data-shrink="true"
                   id="sampling_conducted"
                 >
                   Sampling Conducted
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <div
                   class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Investment Category"
+                    aria-label="Sampling Conducted"
                     aria-labelledby="sampling_conducted permits.[0].sampling_conducted"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="permits.[0].sampling_conducted"
@@ -93,7 +99,9 @@ exports[`ProjectPermitForm renders correctly with default empty values 1`] = `
                   <input
                     aria-hidden="true"
                     class="MuiSelect-nativeInput"
+                    data-testid="sampling_conducted"
                     name="permits.[0].sampling_conducted"
+                    required=""
                     tabindex="-1"
                     value="false"
                   />
@@ -121,7 +129,7 @@ exports[`ProjectPermitForm renders correctly with default empty values 1`] = `
                   </fieldset>
                 </div>
                 <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
                 />
               </div>
             </div>
@@ -250,18 +258,24 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                 style="width: 100%;"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                   data-shrink="true"
                   id="sampling_conducted"
                 >
                   Sampling Conducted
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <div
                   class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Investment Category"
+                    aria-label="Sampling Conducted"
                     aria-labelledby="sampling_conducted permits.[0].sampling_conducted"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="permits.[0].sampling_conducted"
@@ -273,7 +287,9 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   <input
                     aria-hidden="true"
                     class="MuiSelect-nativeInput"
+                    data-testid="sampling_conducted"
                     name="permits.[0].sampling_conducted"
+                    required=""
                     tabindex="-1"
                     value="true"
                   />
@@ -301,7 +317,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   </fieldset>
                 </div>
                 <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
                 />
               </div>
             </div>
@@ -396,18 +412,24 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                 style="width: 100%;"
               >
                 <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                   data-shrink="true"
                   id="sampling_conducted"
                 >
                   Sampling Conducted
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                  >
+                     *
+                  </span>
                 </label>
                 <div
                   class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-label="Investment Category"
+                    aria-label="Sampling Conducted"
                     aria-labelledby="sampling_conducted permits.[1].sampling_conducted"
                     class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                     id="permits.[1].sampling_conducted"
@@ -419,7 +441,9 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   <input
                     aria-hidden="true"
                     class="MuiSelect-nativeInput"
+                    data-testid="sampling_conducted"
                     name="permits.[1].sampling_conducted"
+                    required=""
                     tabindex="-1"
                     value="false"
                   />
@@ -447,7 +471,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   </fieldset>
                 </div>
                 <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
                 />
               </div>
             </div>

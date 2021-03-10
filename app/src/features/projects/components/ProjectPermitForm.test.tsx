@@ -27,11 +27,11 @@ describe('ProjectPermitForm', () => {
     const existingFormValues: IProjectPermitForm = {
       permits: [
         {
-          permit_number: '123',
+          permit_number: 123,
           sampling_conducted: 'true'
         },
         {
-          permit_number: '3213123123',
+          permit_number: 3213123123,
           sampling_conducted: 'false'
         }
       ]
