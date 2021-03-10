@@ -13,7 +13,8 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
-  const projectData = props.projectData;
+  const { projectData } = props;
+
   return (
     <>
       <Box mb={5}>
