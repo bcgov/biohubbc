@@ -232,8 +232,8 @@ export const getProjectsSQL = (): SQLStatement | null => {
       p.name,
       p.scientific_collection_permit_number,
       p.management_recovery_action,
-      to_char(p.start_date,'MM/DD/YYYY') as start_date,
-      to_char(p.end_date,'MM/DD/YYYY') as end_date,
+      p.start_date,
+      p.end_date,
       p.location_description,
       string_agg(DISTINCT pr.region_name, ', ') as regions_name_list,
       string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list

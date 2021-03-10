@@ -15,6 +15,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProject } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import { DATE_FORMAT } from 'constants/dateFormats';
+import { getFormattedDate } from 'utils/Utils';
 
 /**
  * Table styling
@@ -62,7 +64,7 @@ const StyledTableCellEmpty = withStyles((theme: Theme) =>
  *
  * @return {*}
  */
-const ProjectsPage: React.FC = () => {
+const ProjectsListPage: React.FC = () => {
   const history = useHistory();
 
   const biohubApi = useBiohubApi();
@@ -165,8 +167,8 @@ const ProjectsPage: React.FC = () => {
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.focal_species_name_list}</TableCell>
                       <TableCell>{row.regions_name_list}</TableCell>
-                      <TableCell>{row.start_date}</TableCell>
-                      <TableCell>{row.end_date}</TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>
@@ -179,4 +181,4 @@ const ProjectsPage: React.FC = () => {
   }
 };
 
-export default ProjectsPage;
+export default ProjectsListPage;

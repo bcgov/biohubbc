@@ -53,7 +53,7 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
   const dateMoment = moment(date);
 
   if (!dateMoment.isValid()) {
-    //startDate was invalid
+    //date was invalid
     return '';
   }
 

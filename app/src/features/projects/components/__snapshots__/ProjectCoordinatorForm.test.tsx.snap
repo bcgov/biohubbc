@@ -39,10 +39,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3"
+              class="PrivateNotchedOutline-legendLabelled-4"
             >
               <span>
                 First Name *
@@ -86,10 +86,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3"
+              class="PrivateNotchedOutline-legendLabelled-4"
             >
               <span>
                 Last Name *
@@ -133,10 +133,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-3"
+              class="PrivateNotchedOutline-legendLabelled-4"
             >
               <span>
                 Business Email Address *
@@ -217,10 +217,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             </div>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Coordinator Agency *
@@ -238,7 +238,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         class="MuiFormControl-root"
       >
         <legend
-          class="MuiFormLabel-root Mui-required"
+          class="MuiFormLabel-root makeStyles-legend-1 Mui-required"
         >
           Share Contact Details
           <span
@@ -248,119 +248,128 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
              *
           </span>
         </legend>
-        <div
-          aria-label="Share Contact Details"
-          class="MuiFormGroup-root"
-          role="radiogroup"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
         >
-          <label
-            class="MuiFormControlLabel-root"
+          Do you want the project coordinator contact information visible to the public?
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-6"
+        >
+          <div
+            aria-label="Share Contact Details"
+            class="MuiFormGroup-root"
+            role="radiogroup"
           >
-            <span
-              aria-disabled="false"
-              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorSecondary PrivateSwitchBase-checked-6 Mui-checked MuiIconButton-colorSecondary"
+            <label
+              class="MuiFormControlLabel-root"
             >
               <span
-                class="MuiIconButton-label"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-8 Mui-checked MuiIconButton-colorPrimary"
               >
-                <input
-                  checked=""
-                  class="PrivateSwitchBase-input-8"
-                  name="share_contact_details"
-                  required=""
-                  type="radio"
-                  value="false"
-                />
-                <div
-                  class="PrivateRadioButtonIcon-root-9 PrivateRadioButtonIcon-checked-11"
+                <span
+                  class="MuiIconButton-label"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-10"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="false"
+                  />
+                  <div
+                    class="PrivateRadioButtonIcon-root-11 PrivateRadioButtonIcon-checked-13"
                   >
-                    <path
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                    />
-                  </svg>
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
               </span>
               <span
-                class="MuiTouchRipple-root"
-              />
-            </span>
-            <span
-              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-            >
-              No
-            </span>
-          </label>
-          <label
-            class="MuiFormControlLabel-root"
-          >
-            <span
-              aria-disabled="false"
-              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorSecondary MuiIconButton-colorSecondary"
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                No
+              </span>
+            </label>
+            <label
+              class="MuiFormControlLabel-root"
             >
               <span
-                class="MuiIconButton-label"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
               >
-                <input
-                  class="PrivateSwitchBase-input-8"
-                  name="share_contact_details"
-                  required=""
-                  type="radio"
-                  value="true"
-                />
-                <div
-                  class="PrivateRadioButtonIcon-root-9"
+                <span
+                  class="MuiIconButton-label"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
+                  <input
+                    class="PrivateSwitchBase-input-10"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="true"
+                  />
+                  <div
+                    class="PrivateRadioButtonIcon-root-11"
                   >
-                    <path
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                    />
-                  </svg>
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
               </span>
               <span
-                class="MuiTouchRipple-root"
-              />
-            </span>
-            <span
-              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-            >
-              Yes
-            </span>
-          </label>
-          <p
-            class="MuiFormHelperText-root Mui-required"
-          />
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                Yes
+              </span>
+            </label>
+            <p
+              class="MuiFormHelperText-root Mui-required"
+            />
+          </div>
         </div>
       </fieldset>
     </div>
@@ -407,10 +416,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+              class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
             >
               <span>
                 First Name *
@@ -454,10 +463,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+              class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
             >
               <span>
                 Last Name *
@@ -501,10 +510,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+              class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
             >
               <span>
                 Business Email Address *
@@ -585,10 +594,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             </div>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
               >
                 <span>
                   Coordinator Agency *
@@ -606,7 +615,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
         class="MuiFormControl-root"
       >
         <legend
-          class="MuiFormLabel-root Mui-required"
+          class="MuiFormLabel-root makeStyles-legend-14 Mui-required"
         >
           Share Contact Details
           <span
@@ -616,119 +625,128 @@ exports[`Project Coordinator Form renders correctly the filled component correct
              *
           </span>
         </legend>
-        <div
-          aria-label="Share Contact Details"
-          class="MuiFormGroup-root"
-          role="radiogroup"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
         >
-          <label
-            class="MuiFormControlLabel-root"
+          Do you want the project coordinator contact information visible to the public?
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-19"
+        >
+          <div
+            aria-label="Share Contact Details"
+            class="MuiFormGroup-root"
+            role="radiogroup"
           >
-            <span
-              aria-disabled="false"
-              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorSecondary MuiIconButton-colorSecondary"
+            <label
+              class="MuiFormControlLabel-root"
             >
               <span
-                class="MuiIconButton-label"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
               >
-                <input
-                  class="PrivateSwitchBase-input-19"
-                  name="share_contact_details"
-                  required=""
-                  type="radio"
-                  value="false"
-                />
-                <div
-                  class="PrivateRadioButtonIcon-root-20"
+                <span
+                  class="MuiIconButton-label"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
+                  <input
+                    class="PrivateSwitchBase-input-23"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="false"
+                  />
+                  <div
+                    class="PrivateRadioButtonIcon-root-24"
                   >
-                    <path
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                    />
-                  </svg>
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
               </span>
               <span
-                class="MuiTouchRipple-root"
-              />
-            </span>
-            <span
-              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-            >
-              No
-            </span>
-          </label>
-          <label
-            class="MuiFormControlLabel-root"
-          >
-            <span
-              aria-disabled="false"
-              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorSecondary PrivateSwitchBase-checked-17 Mui-checked MuiIconButton-colorSecondary"
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                No
+              </span>
+            </label>
+            <label
+              class="MuiFormControlLabel-root"
             >
               <span
-                class="MuiIconButton-label"
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-21 Mui-checked MuiIconButton-colorPrimary"
               >
-                <input
-                  checked=""
-                  class="PrivateSwitchBase-input-19"
-                  name="share_contact_details"
-                  required=""
-                  type="radio"
-                  value="true"
-                />
-                <div
-                  class="PrivateRadioButtonIcon-root-20 PrivateRadioButtonIcon-checked-22"
+                <span
+                  class="MuiIconButton-label"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-23"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="true"
+                  />
+                  <div
+                    class="PrivateRadioButtonIcon-root-24 PrivateRadioButtonIcon-checked-26"
                   >
-                    <path
-                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                    />
-                  </svg>
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
               </span>
               <span
-                class="MuiTouchRipple-root"
-              />
-            </span>
-            <span
-              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-            >
-              Yes
-            </span>
-          </label>
-          <p
-            class="MuiFormHelperText-root Mui-required"
-          />
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                Yes
+              </span>
+            </label>
+            <p
+              class="MuiFormHelperText-root Mui-required"
+            />
+          </div>
         </div>
       </fieldset>
     </div>
