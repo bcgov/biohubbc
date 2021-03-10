@@ -1,7 +1,7 @@
 import MapContainer from 'components/map/MapContainer';
 import CreateProjectPage from 'features/projects/CreateProjectPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
-import ProjectsPage from 'features/projects/ProjectsPage';
+import ProjectsListPage from 'features/projects/list/ProjectsListPage';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import { Feature } from 'geojson';
 import React, { useState } from 'react';
@@ -22,7 +22,13 @@ interface IProjectsRouterProps {
 const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
   return (
     <Switch>
-      <PrivateRoute exact layout={ProjectsLayout} path="/projects" component={ProjectsPage} componentProps={props} />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects"
+        component={ProjectsListPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
