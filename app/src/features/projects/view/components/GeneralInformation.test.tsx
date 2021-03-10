@@ -10,7 +10,7 @@ const projectData = {
 
 describe('GeneralInformation', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(<GeneralInformation projectData={{ projectData }} />);
+    const { asFragment } = render(<GeneralInformation projectData={projectData} />);
 
     expect(asFragment()).toMatchSnapshot();
   });

@@ -72,7 +72,9 @@ exports[`GeneralInformation renders correctly 1`] = `
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
-          />
+          >
+            Test Project Name
+          </h6>
         </div>
       </div>
       <div
@@ -115,7 +117,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            Mar 10, 2021
+            Oct 10, 1998 - Feb 26, 2021
           </h6>
         </div>
       </div>

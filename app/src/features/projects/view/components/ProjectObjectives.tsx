@@ -11,18 +11,9 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const ProjectObjectives: React.FC<IProjectDetailsProps> = (props) => {
-  const objectives = props.projectData.objectives;
+const ProjectObjectives: React.FC<IProjectDetailsProps> = (props: any) => {
+  const { projectData: { objectives } } = props;
 
-  // const objectives =
-  //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
-  //   'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-  //   'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
-  //   ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex' +
-  //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, ' +
-  //   'sed do eiusmod tempor incididunt ut labore et dolore magna ' +
-  //   'aliqua. Ut enim ad minim veniam, quis nostrud exercitation ' +
-  //   ' ullamco laboris nisi ut aliquip ex laboris nisi ut aliquip ex';
   return (
     <>
       <Box m={3}>

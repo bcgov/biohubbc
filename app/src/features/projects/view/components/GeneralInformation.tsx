@@ -13,8 +13,9 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
-  const projectData = props.projectData;
+const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
+  const { projectData: { name, start_date, end_date } } = props;
+
   return (
     <>
       <Grid container spacing={3}>
@@ -36,7 +37,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="caption">Project Name</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{projectData.name}</Typography>
+              <Typography variant="subtitle1">{name}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -55,8 +56,8 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="subtitle1">
                 {getFormattedDateRangeString(
                   DATE_FORMAT.ShortMediumDateFormat,
-                  projectData.start_date,
-                  projectData.end_date
+                  start_date,
+                  end_date
                 )}
               </Typography>
             </Box>
