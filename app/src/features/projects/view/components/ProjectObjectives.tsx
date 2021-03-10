@@ -12,7 +12,9 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const ProjectObjectives: React.FC<IProjectDetailsProps> = (props: any) => {
-  const { projectData: { objectives } } = props;
+  const {
+    projectData: { objectives }
+  } = props;
 
   return (
     <>
