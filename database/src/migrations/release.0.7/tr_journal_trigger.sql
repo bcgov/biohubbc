@@ -29,13 +29,11 @@ begin
   end if;
 
   insert into audit_log(system_user_id,
-    create_at,
     table_name,
     operation,
     before_value,
     after_value) 
   values (v_user_id,
-    now(),
     tg_table_schema || '.' || tg_table_name,
     tg_op,
     old_row,

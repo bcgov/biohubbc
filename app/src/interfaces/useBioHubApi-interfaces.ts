@@ -1,6 +1,7 @@
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
+import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
@@ -84,7 +85,19 @@ export interface IProjectPostObject {
   objectives: IProjectObjectivesForm;
   species: IProjectSpeciesForm;
   location: IProjectLocationForm;
+  iucn: IProjectIUCNForm;
   funding: IProjectFundingForm;
+}
+
+/**
+ * Create partial-project post body.
+ *
+ * @export
+ * @interface IPartialProjectPostObject
+ */
+export interface IPartialProjectPostObject {
+  coordinator: IProjectCoordinatorForm;
+  permit: IProjectPermitForm;
 }
 
 /**
@@ -94,6 +107,16 @@ export interface IProjectPostObject {
  * @interface ICreateProjectResponse
  */
 export interface ICreateProjectResponse {
+  id: number;
+}
+
+/**
+ * Create partial-project response object.
+ *
+ * @export
+ * @interface ICreatePartialProjectResponse
+ */
+export interface ICreatePartialProjectResponse {
   id: number;
 }
 

@@ -57,195 +57,33 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
             Enter Funding Source Details
           </p>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiBox-root MuiBox-root-1"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  id="agency_id-label"
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
                 >
-                  Agency Name
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Agency Name"
-                    aria-labelledby="agency_id-label agency_id"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_id"
-                    role="button"
-                    tabindex="0"
-                  >
-                    <span>
-                      ​
-                    </span>
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="agency_id"
-                    required=""
-                    tabindex="-1"
-                    value="0"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
-                    >
-                      <span>
-                        Agency Name
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-                />
+                  Agency Details
+                </h3>
               </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                  data-shrink="false"
-                  for="agency_project_id"
-                  id="agency_project_id-label"
-                >
-                  Agency Project ID
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                >
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_project_id"
-                    name="agency_project_id"
-                    type="text"
-                    value=""
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-3"
-                    >
-                      <span>
-                        Agency Project ID
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="funding_amount"
-                  id="funding_amount-label"
-                >
-                  Funding Amount
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
-                >
-                  <div
-                    class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                  >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                    >
-                      $
-                    </p>
-                  </div>
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
-                    id="funding_amount"
-                    name="funding_amount"
-                    required=""
-                    type="number"
-                    value="0"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
-                    >
-                      <span>
-                        Funding Amount
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-                    data-shrink="true"
-                    for="start_date"
-                    id="start_date-label"
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                    data-shrink="false"
+                    id="agency_id-label"
                   >
-                    Start Date
+                    Agency Name
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -257,25 +95,89 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Agency Name"
+                      aria-labelledby="agency_id-label agency_id"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="agency_id"
+                      role="button"
+                      tabindex="0"
+                    >
+                      <span>
+                        ​
+                      </span>
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="agency_id"
+                      required=""
+                      tabindex="-1"
+                      value=""
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-4"
+                      >
+                        <span>
+                          Agency Name
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                    data-shrink="false"
+                    for="agency_project_id"
+                    id="agency_project_id-label"
+                  >
+                    Agency Project ID
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                  >
                     <input
                       aria-invalid="false"
                       class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="start_date"
-                      name="start_date"
-                      required=""
-                      type="date"
+                      id="agency_project_id"
+                      name="agency_project_id"
+                      type="text"
                       value=""
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                        class="PrivateNotchedOutline-legendLabelled-4"
                       >
                         <span>
-                          Start Date
-                           *
+                          Agency Project ID
                         </span>
                       </legend>
                     </fieldset>
@@ -283,18 +185,27 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
+                >
+                  Funding Details
+                </h3>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
                     data-shrink="true"
-                    for="end_date"
-                    id="end_date-label"
+                    for="funding_amount"
+                    id="funding_amount-label"
                   >
-                    End Date
+                    Funding Amount
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -304,30 +215,141 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
                   >
+                    <div
+                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                      >
+                        $
+                      </p>
+                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="end_date"
-                      name="end_date"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      id="funding_amount"
+                      name="funding_amount"
                       required=""
-                      type="date"
+                      type="number"
                       value=""
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                        class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
                       >
                         <span>
-                          End Date
+                          Funding Amount
                            *
                         </span>
                       </legend>
                     </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+                      data-shrink="true"
+                      for="start_date"
+                      id="start_date-label"
+                    >
+                      Start Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="start_date"
+                        name="start_date"
+                        required=""
+                        type="date"
+                        value=""
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                        >
+                          <span>
+                            Start Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+                      data-shrink="true"
+                      for="end_date"
+                      id="end_date-label"
+                    >
+                      End Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="end_date"
+                        name="end_date"
+                        required=""
+                        type="date"
+                        value=""
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                        >
+                          <span>
+                            End Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -442,256 +464,33 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
             Enter Funding Source Details
           </p>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiBox-root MuiBox-root-6"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  id="agency_id-label"
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
                 >
-                  Agency Name
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Agency Name"
-                    aria-labelledby="agency_id-label agency_id"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_id"
-                    role="button"
-                    tabindex="0"
-                  >
-                    agency 1
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="agency_id"
-                    required=""
-                    tabindex="-1"
-                    value="1"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
-                    >
-                      <span>
-                        Agency Name
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-                />
+                  Agency Details
+                </h3>
               </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  id="investment_action_category-label"
-                >
-                  Investment Action
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Investment Action"
-                    aria-labelledby="investment_action_category-label investment_action_category"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="investment_action_category"
-                    role="button"
-                    tabindex="0"
-                  >
-                    action 1
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="investment_action_category"
-                    tabindex="-1"
-                    value="1"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
-                    >
-                      <span>
-                        Investment Action
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  for="agency_project_id"
-                  id="agency_project_id-label"
-                >
-                  Agency Project ID
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                >
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_project_id"
-                    name="agency_project_id"
-                    type="text"
-                    value="111"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
-                    >
-                      <span>
-                        Agency Project ID
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="funding_amount"
-                  id="funding_amount-label"
-                >
-                  Funding Amount
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
-                >
-                  <div
-                    class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                  >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                    >
-                      $
-                    </p>
-                  </div>
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
-                    id="funding_amount"
-                    name="funding_amount"
-                    required=""
-                    type="number"
-                    value="222"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
-                    >
-                      <span>
-                        Funding Amount
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="start_date"
-                    id="start_date-label"
+                    id="agency_id-label"
                   >
-                    Start Date
+                    Agency Name
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -703,44 +502,66 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Agency Name"
+                      aria-labelledby="agency_id-label agency_id"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="agency_id"
+                      role="button"
+                      tabindex="0"
+                    >
+                      agency 1
+                    </div>
                     <input
-                      aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="start_date"
-                      name="start_date"
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="agency_id"
                       required=""
-                      type="date"
-                      value="2021-03-14"
+                      tabindex="-1"
+                      value="1"
                     />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
                       >
                         <span>
-                          Start Date
-                           *
+                          Agency Name
                         </span>
                       </legend>
                     </fieldset>
                   </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                  />
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="end_date"
-                    id="end_date-label"
+                    id="investment_action_category-label"
                   >
-                    End Date
+                    Investment Action
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -752,28 +573,259 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Investment Action"
+                      aria-labelledby="investment_action_category-label investment_action_category"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="investment_action_category"
+                      role="button"
+                      tabindex="0"
+                    >
+                      action 1
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="investment_action_category"
+                      required=""
+                      tabindex="-1"
+                      value="1"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                      >
+                        <span>
+                          Investment Action
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    for="agency_project_id"
+                    id="agency_project_id-label"
+                  >
+                    Agency Project ID
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                  >
                     <input
                       aria-invalid="false"
                       class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="end_date"
-                      name="end_date"
-                      required=""
-                      type="date"
-                      value="2021-04-14"
+                      id="agency_project_id"
+                      name="agency_project_id"
+                      type="text"
+                      value="111"
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
                       >
                         <span>
-                          End Date
+                          Agency Project ID
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
+                >
+                  Funding Details
+                </h3>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                    data-shrink="true"
+                    for="funding_amount"
+                    id="funding_amount-label"
+                  >
+                    Funding Amount
+                    <span
+                      aria-hidden="true"
+                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                    >
+                       
+                      *
+                    </span>
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                  >
+                    <div
+                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                      >
+                        $
+                      </p>
+                    </div>
+                    <input
+                      aria-invalid="false"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      id="funding_amount"
+                      name="funding_amount"
+                      required=""
+                      type="number"
+                      value="222"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                      >
+                        <span>
+                          Funding Amount
                            *
                         </span>
                       </legend>
                     </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="start_date"
+                      id="start_date-label"
+                    >
+                      Start Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="start_date"
+                        name="start_date"
+                        required=""
+                        type="date"
+                        value="2021-03-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        >
+                          <span>
+                            Start Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="end_date"
+                      id="end_date-label"
+                    >
+                      End Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="end_date"
+                        name="end_date"
+                        required=""
+                        type="date"
+                        value="2021-04-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        >
+                          <span>
+                            End Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -888,256 +940,33 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
             Enter Funding Source Details
           </p>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiBox-root MuiBox-root-11"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  id="agency_id-label"
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
                 >
-                  Agency Name
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Agency Name"
-                    aria-labelledby="agency_id-label agency_id"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_id"
-                    role="button"
-                    tabindex="0"
-                  >
-                    agency 2
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="agency_id"
-                    required=""
-                    tabindex="-1"
-                    value="2"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-                    >
-                      <span>
-                        Agency Name
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-                />
+                  Agency Details
+                </h3>
               </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  id="investment_action_category-label"
-                >
-                  Investment Category
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Investment Category"
-                    aria-labelledby="investment_action_category-label investment_action_category"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="investment_action_category"
-                    role="button"
-                    tabindex="0"
-                  >
-                    category 1
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="investment_action_category"
-                    tabindex="-1"
-                    value="2"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-                    >
-                      <span>
-                        Investment Category
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  for="agency_project_id"
-                  id="agency_project_id-label"
-                >
-                  Agency Project ID
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                >
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_project_id"
-                    name="agency_project_id"
-                    type="text"
-                    value="333"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-                    >
-                      <span>
-                        Agency Project ID
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="funding_amount"
-                  id="funding_amount-label"
-                >
-                  Funding Amount
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
-                >
-                  <div
-                    class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                  >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                    >
-                      $
-                    </p>
-                  </div>
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
-                    id="funding_amount"
-                    name="funding_amount"
-                    required=""
-                    type="number"
-                    value="444"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-                    >
-                      <span>
-                        Funding Amount
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="start_date"
-                    id="start_date-label"
+                    id="agency_id-label"
                   >
-                    Start Date
+                    Agency Name
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -1149,44 +978,66 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Agency Name"
+                      aria-labelledby="agency_id-label agency_id"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="agency_id"
+                      role="button"
+                      tabindex="0"
+                    >
+                      agency 2
+                    </div>
                     <input
-                      aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="start_date"
-                      name="start_date"
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="agency_id"
                       required=""
-                      type="date"
-                      value="2021-03-14"
+                      tabindex="-1"
+                      value="2"
                     />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
                       >
                         <span>
-                          Start Date
-                           *
+                          Agency Name
                         </span>
                       </legend>
                     </fieldset>
                   </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                  />
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="end_date"
-                    id="end_date-label"
+                    id="investment_action_category-label"
                   >
-                    End Date
+                    Investment Category
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -1198,28 +1049,259 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Investment Category"
+                      aria-labelledby="investment_action_category-label investment_action_category"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="investment_action_category"
+                      role="button"
+                      tabindex="0"
+                    >
+                      category 1
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="investment_action_category"
+                      required=""
+                      tabindex="-1"
+                      value="2"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                      >
+                        <span>
+                          Investment Category
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    for="agency_project_id"
+                    id="agency_project_id-label"
+                  >
+                    Agency Project ID
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                  >
                     <input
                       aria-invalid="false"
                       class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="end_date"
-                      name="end_date"
-                      required=""
-                      type="date"
-                      value="2021-04-14"
+                      id="agency_project_id"
+                      name="agency_project_id"
+                      type="text"
+                      value="333"
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
                       >
                         <span>
-                          End Date
+                          Agency Project ID
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
+                >
+                  Funding Details
+                </h3>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                    data-shrink="true"
+                    for="funding_amount"
+                    id="funding_amount-label"
+                  >
+                    Funding Amount
+                    <span
+                      aria-hidden="true"
+                      class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                    >
+                       
+                      *
+                    </span>
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                  >
+                    <div
+                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                      >
+                        $
+                      </p>
+                    </div>
+                    <input
+                      aria-invalid="false"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      id="funding_amount"
+                      name="funding_amount"
+                      required=""
+                      type="number"
+                      value="444"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                      >
+                        <span>
+                          Funding Amount
                            *
                         </span>
                       </legend>
                     </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="start_date"
+                      id="start_date-label"
+                    >
+                      Start Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="start_date"
+                        name="start_date"
+                        required=""
+                        type="date"
+                        value="2021-03-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        >
+                          <span>
+                            Start Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="end_date"
+                      id="end_date-label"
+                    >
+                      End Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="end_date"
+                        name="end_date"
+                        required=""
+                        type="date"
+                        value="2021-04-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        >
+                          <span>
+                            End Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1334,193 +1416,33 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
             Enter Funding Source Details
           </p>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            class="MuiBox-root MuiBox-root-16"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
-                class="MuiFormControl-root MuiFormControl-fullWidth"
-                style="width: 100%;"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  id="agency_id-label"
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
                 >
-                  Agency Name
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="Agency Name"
-                    aria-labelledby="agency_id-label agency_id"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_id"
-                    role="button"
-                    tabindex="0"
-                  >
-                    agency 3
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="agency_id"
-                    required=""
-                    tabindex="-1"
-                    value="3"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                    >
-                      <span>
-                        Agency Name
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-                />
+                  Agency Details
+                </h3>
               </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
               <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  for="agency_project_id"
-                  id="agency_project_id-label"
-                >
-                  Agency Project ID
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                >
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input"
-                    id="agency_project_id"
-                    name="agency_project_id"
-                    type="text"
-                    value="555"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                    >
-                      <span>
-                        Agency Project ID
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="funding_amount"
-                  id="funding_amount-label"
-                >
-                  Funding Amount
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
-                >
-                  <div
-                    class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                  >
-                    <p
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                    >
-                      $
-                    </p>
-                  </div>
-                  <input
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
-                    id="funding_amount"
-                    name="funding_amount"
-                    required=""
-                    type="number"
-                    value="666"
-                  />
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                    >
-                      <span>
-                        Funding Amount
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  style="width: 100%;"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="start_date"
-                    id="start_date-label"
+                    id="agency_id-label"
                   >
-                    Start Date
+                    Agency Name
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -1532,25 +1454,87 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   <div
                     class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Agency Name"
+                      aria-labelledby="agency_id-label agency_id"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="agency_id"
+                      role="button"
+                      tabindex="0"
+                    >
+                      agency 3
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="agency_id"
+                      required=""
+                      tabindex="-1"
+                      value="3"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                      >
+                        <span>
+                          Agency Name
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    for="agency_project_id"
+                    id="agency_project_id-label"
+                  >
+                    Agency Project ID
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                  >
                     <input
                       aria-invalid="false"
                       class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="start_date"
-                      name="start_date"
-                      required=""
-                      type="date"
-                      value="2021-03-14"
+                      id="agency_project_id"
+                      name="agency_project_id"
+                      type="text"
+                      value="555"
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
                       >
                         <span>
-                          Start Date
-                           *
+                          Agency Project ID
                         </span>
                       </legend>
                     </fieldset>
@@ -1558,18 +1542,27 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
+                >
+                  Funding Details
+                </h3>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiFormControl-root MuiTextField-root"
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                     data-shrink="true"
-                    for="end_date"
-                    id="end_date-label"
+                    for="funding_amount"
+                    id="funding_amount-label"
                   >
-                    End Date
+                    Funding Amount
                     <span
                       aria-hidden="true"
                       class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -1579,30 +1572,141 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
                   >
+                    <div
+                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                      >
+                        $
+                      </p>
+                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="end_date"
-                      name="end_date"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      id="funding_amount"
+                      name="funding_amount"
                       required=""
-                      type="date"
-                      value="2021-04-14"
+                      type="number"
+                      value="666"
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
                       >
                         <span>
-                          End Date
+                          Funding Amount
                            *
                         </span>
                       </legend>
                     </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="start_date"
+                      id="start_date-label"
+                    >
+                      Start Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="start_date"
+                        name="start_date"
+                        required=""
+                        type="date"
+                        value="2021-03-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                        >
+                          <span>
+                            Start Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item"
+                >
+                  <div
+                    class="MuiFormControl-root MuiTextField-root"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="end_date"
+                      id="end_date-label"
+                    >
+                      End Date
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         
+                        *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="end_date"
+                        name="end_date"
+                        required=""
+                        type="date"
+                        value="2021-04-14"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                        >
+                          <span>
+                            End Date
+                             *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
                   </div>
                 </div>
               </div>

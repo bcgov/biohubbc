@@ -16,10 +16,12 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-// If this is a static build (to dev, test, or prod) then only run migrations, otherwise if this is a PR build run the
-// migrations and seeding.
-const dbSetupDockerfilePath =
-  (isStaticDeployment && './.docker/db/Dockerfile.migrate') || './.docker/db/Dockerfile.setup';
+// Default: run both seeding and migrations
+let dbSetupDockerfilePath = './.docker/db/Dockerfile.setup';
+if (isStaticDeployment && options.branch === 'prod') {
+  // If this is static build to prod, then only run the migrations
+  dbSetupDockerfilePath = './.docker/db/Dockerfile.migrate';
+}
 
 const processOptions = (options) => {
   const result = { ...options };

@@ -44,7 +44,6 @@ describe('ProjectPage', () => {
         id: 1,
         name: 'Test Project Name',
         objectives: 'Et ad et in culpa si',
-        scientific_collection_permit_number: '',
         location_description: '',
         start_date: '1998-10-10',
         end_date: '2021-02-26',
