@@ -40,7 +40,7 @@ export const projectPostBody = {
             type: 'object',
             properties: {
               permit_number: {
-                type: 'number'
+                type: 'string'
               },
               sampling_conducted: {
                 type: 'string'
@@ -58,9 +58,6 @@ export const projectPostBody = {
           type: 'string'
         },
         objectives: {
-          type: 'string'
-        },
-        scientific_collection_permit_number: {
           type: 'string'
         },
         management_recovery_action: {

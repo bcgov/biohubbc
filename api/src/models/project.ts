@@ -11,9 +11,9 @@ const defaultLog = getLogger('models/project');
  */
 export interface IProject {
   id: number;
+  pt_id: number;
   name: string;
   objectives: string;
-  scientific_collection_permit_number: string;
   management_recovery_action: string;
   location_description: string;
   start_date: string;
@@ -52,7 +52,7 @@ export interface IProjectFundingAgency {
 }
 
 /**
- * An interface representing the funding angency table.
+ * An interface representing the funding agency table.
  *
  * @export
  * @interface IFundingAgency
@@ -171,7 +171,7 @@ export class PostCoordinatorData {
 }
 
 export interface IPostPermit {
-  permit_number: number;
+  permit_number: string;
   sampling_conducted: boolean;
 }
 
@@ -207,8 +207,7 @@ export class PostPermitData {
  */
 export class PostProjectData {
   name: string;
-  type: string;
-  scientific_collection_permit_number: string;
+  type: number;
   management_recovery_action: string;
   start_date: string;
   end_date: string;
@@ -218,8 +217,7 @@ export class PostProjectData {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.type || null;
-    this.scientific_collection_permit_number = obj?.scientific_collection_permit_number || null;
+    this.type = obj?.project_type;
     this.management_recovery_action = obj?.management_recovery_action || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;

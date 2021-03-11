@@ -5,7 +5,8 @@ import {
   PostLocationData,
   PostProjectData,
   PostObjectivesData,
-  PostProjectObject
+  PostProjectObject,
+  PostPermitData
 } from '../models/project';
 import { getLogger } from '../utils/logger';
 import { Feature } from 'geojson';
@@ -19,7 +20,7 @@ const defaultLog = getLogger('queries/project-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postProjectSQL = (
-  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
+  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData & PostPermitData
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 
@@ -29,9 +30,9 @@ export const postProjectSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project (
+      pt_id,
       name,
       objectives,
-      scientific_collection_permit_number,
       management_recovery_action,
       location_description,
       start_date,
@@ -42,11 +43,12 @@ export const postProjectSQL = (
       coordinator_last_name,
       coordinator_email_address,
       coordinator_agency_name,
-      geog
+      coordinator_public,
+      geography
     ) VALUES (
+      ${project.type},
       ${project.name},
       ${project.objectives},
-      ${project.scientific_collection_permit_number},
       ${project.management_recovery_action},
       ${project.location_description},
       ${project.start_date},
@@ -56,7 +58,8 @@ export const postProjectSQL = (
       ${project.first_name},
       ${project.last_name},
       ${project.email_address},
-      ${project.coordinator_agency}
+      ${project.coordinator_agency},
+      ${project.share_contact_details}
   `;
 
   if (project.geometry && project.geometry.length) {
@@ -182,9 +185,9 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   const sqlStatement = SQL`
     SELECT
       id,
+      pt_id,
       name,
       objectives,
-      scientific_collection_permit_number,
       management_recovery_action,
       location_description,
       start_date,
@@ -195,6 +198,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       coordinator_last_name,
       coordinator_email_address,
       coordinator_agency_name,
+      coordinator_public,
       create_date,
       create_user,
       update_date,
@@ -230,12 +234,11 @@ export const getProjectsSQL = (): SQLStatement | null => {
     SELECT
       p.id,
       p.name,
-      p.scientific_collection_permit_number,
       p.management_recovery_action,
       p.start_date,
       p.end_date,
       p.location_description,
-      string_agg(DISTINCT pr.region_name, ', ') as regions_name_list,
+      string_agg(DISTINCT pr.name, ', ') as regions_name_list,
       string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
     from
       project as p
@@ -246,7 +249,6 @@ export const getProjectsSQL = (): SQLStatement | null => {
     group by
       p.id,
       p.name,
-      p.scientific_collection_permit_number,
       p.management_recovery_action,
       p.start_date,
       p.end_date,
@@ -279,7 +281,7 @@ export const postProjectRegionSQL = (region: string, projectId: number): SQLStat
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_region (
         p_id,
-        region_name
+        name
       ) VALUES (
         ${projectId},
         ${region}
@@ -380,7 +382,7 @@ export const postProjectStakeholderPartnershipSQL = (
     `;
 
   defaultLog.debug({
-    label: 'postProjectStakeholderPartnershipSQL',
+    label: 'postPermitNumberWithSamplingSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -459,3 +461,52 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
 
   return sqlStatement;
 }
+
+/**
+ * SQL query to insert a project permit row.
+ *
+ * @param permit_number
+ * @param projectId
+ * @param sampling_conducted
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectPermitSQL = (
+  permit_number: string,
+  projectId: number,
+  sampling_conducted: boolean
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectPermitSQL',
+    message: 'params',
+    permit_number,
+    projectId
+  });
+
+  if (!permit_number || !projectId) {
+    return null;
+  }
+
+  // TODO model is missing agency name
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_permit (
+        p_id,
+        number,
+        sampling_conducted
+      ) VALUES (
+        ${projectId},
+        ${permit_number},
+        ${sampling_conducted}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectPermitWithSamplingSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

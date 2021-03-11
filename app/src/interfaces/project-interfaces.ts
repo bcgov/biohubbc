@@ -25,7 +25,6 @@ export interface IProject {
   id: number;
   name: string;
   objectives: string;
-  scientific_collection_permit_number: string;
   location_description: string;
   start_date: string;
   end_date: string;
