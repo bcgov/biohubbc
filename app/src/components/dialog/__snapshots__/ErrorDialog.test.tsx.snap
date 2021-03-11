@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorDialog matches the snapshot with an error message 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-2"
+  />
+</DocumentFragment>
+`;
+
+exports[`ErrorDialog matches the snapshot with no error message 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  />
+</DocumentFragment>
+`;
