@@ -42,6 +42,10 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
+import ProjectIUCNForm, {
+  ProjectIUCNFormInitialValues,
+  ProjectIUCNFormYupSchema
+} from 'features/projects/components/ProjectIUCNForm';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitFormInitialValues,
@@ -104,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NUM_PARTIAL_PROJECT_STEPS = 2;
-const NUM_ALL_PROJECT_STEPS = 7;
+const NUM_ALL_PROJECT_STEPS = 8;
 
 /**
  * Page for creating a new project.
@@ -273,6 +277,32 @@ const CreateProjectPage: React.FC = () => {
         ),
         stepValues: ProjectSpeciesFormInitialValues,
         stepValidation: ProjectSpeciesFormYupSchema
+      },
+      {
+        stepTitle: 'IUCN Classification',
+        stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
+        stepContent: (
+          <ProjectIUCNForm
+            classifications={
+              [
+                { id: 1, name: 'Class 1' },
+                { id: 2, name: 'Class 2' }
+              ].map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            subClassifications={
+              [
+                { id: 1, name: 'Sub-class 1' },
+                { id: 2, name: 'Sub-class 2' }
+              ].map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        ),
+        stepValues: ProjectIUCNFormInitialValues,
+        stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding and Partnerships',

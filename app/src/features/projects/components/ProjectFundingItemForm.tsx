@@ -12,7 +12,6 @@ import {
   InputAdornment,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   TextField,
   Typography
@@ -143,8 +142,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           }}
                           error={touched.agency_id && Boolean(errors.agency_id)}
                           displayEmpty
-                          inputProps={{ 'aria-label': 'Agency Name' }}
-                          input={<OutlinedInput notched label="Agency Name" />}>
+                          inputProps={{ 'aria-label': 'Agency Name' }}>
                           {props.funding_sources.map((item) => (
                             <MenuItem key={item.value} value={item.value}>
                               {item.label}
@@ -169,8 +167,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                             onChange={handleChange}
                             error={touched.investment_action_category && Boolean(errors.investment_action_category)}
                             displayEmpty
-                            inputProps={{ 'aria-label': `${investment_action_category_label}` }}
-                            input={<OutlinedInput notched label={investment_action_category_label} />}>
+                            inputProps={{ 'aria-label': `${investment_action_category_label}` }}>
                             {props.investment_action_category
                               // Only show the investment action categories whose fs_id matches the agency_id id
                               .filter((item) => item.fs_id === values.agency_id)

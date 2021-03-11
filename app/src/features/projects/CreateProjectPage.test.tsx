@@ -87,6 +87,8 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Species')).toBeVisible();
 
+      expect(getByText('IUCN Classification')).toBeVisible();
+
       expect(getByText('Funding and Partnerships')).toBeVisible();
 
       expect(asFragment()).toMatchSnapshot();
