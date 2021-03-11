@@ -351,7 +351,6 @@ const CreateProjectPage: React.FC = () => {
     setStepForms((currentStepForms) => {
       let updatedStepForms = [...currentStepForms];
       updatedStepForms[activeStep].stepValues = values;
-      console.log(updatedStepForms);
       return updatedStepForms;
     });
   };
