@@ -7,7 +7,13 @@ import {
   PostObjectivesData,
   PostPermitData
 } from '../models/project';
-import { getProjectSQL, getProjectsSQL, postProjectSQL, postProjectRegionSQL } from './project-queries';
+import {
+  getProjectSQL,
+  getProjectsSQL,
+  postProjectSQL,
+  postProjectRegionSQL,
+  postProjectPermitSQL
+} from './project-queries';
 
 describe('postProjectSQL', () => {
   describe('Null project param provided', () => {
@@ -200,8 +206,31 @@ describe('getProjectsSQL', () => {
   });
 });
 
+describe('postProjectPermitSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when no permit number', () => {
+      const response = postProjectPermitSQL((null as unknown) as string, 1, true);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns null when no project id', () => {
+      const response = postProjectPermitSQL('123', (null as unknown) as number, true);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postProjectPermitSQL('123', 123, true);
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include('123');
+    });
+  });
+});
+
 describe('postProjectRegionSQL', () => {
-  describe('invalid parameters', () => {
+  describe('with invalid parameters', () => {
     it('Null region provided', () => {
       // force the function to accept a null project region object
       const projectId = 1;
