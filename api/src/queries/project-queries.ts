@@ -462,7 +462,6 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
   return sqlStatement;
 }
 
-
 /**
  * SQL query to insert a project stakeholder partnership row.
  *
@@ -471,7 +470,7 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
  * @param sampling_conducted
  * @returns {SQLStatement} sql query object
  */
- export const postProjectPermitSQL = (
+export const postProjectPermitSQL = (
   permit_number: string,
   projectId: number,
   sampling_conducted: boolean
@@ -511,4 +510,3 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
 
   return sqlStatement;
 };
-
