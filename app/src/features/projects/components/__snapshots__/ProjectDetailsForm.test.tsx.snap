@@ -112,7 +112,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Project Type

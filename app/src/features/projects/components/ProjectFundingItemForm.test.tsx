@@ -41,11 +41,6 @@ const investment_action_category: IInvestmentActionCategoryOption[] = [
 ];
 
 describe('ProjectFundingItemForm', () => {
-  beforeAll(() => {
-    // ignore un-fixable warning about initial agency_id select value being 0 when it expects it to be > 1
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
   it('renders correctly with default empty values', () => {
     const { baseElement } = render(
       <div id="root">
