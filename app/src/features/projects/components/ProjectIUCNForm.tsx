@@ -162,7 +162,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props: any) => {
                 color="primary"
                 aria-label="Add Another"
                 onClick={() => arrayHelpers.push(ProjectIUCNFormArrayItemInitialValues)}>
-                Add Another
+                Add Classification
               </Button>
             </Box>
           </Box>
