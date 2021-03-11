@@ -108,7 +108,7 @@ const appTheme = createMuiTheme({
         marginLeft: '1.5rem',
         paddingTop: '1rem',
         paddingBottom: 0,
-        paddingLeft: '4rem'
+        paddingLeft: '4.5rem'
       }
     },
     MuiStepConnector: {
