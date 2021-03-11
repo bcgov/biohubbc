@@ -45,39 +45,7 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Permits')).toBeVisible();
 
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  it('adds the extra create project steps if at least 1 permit is marked as having conducted sampling', async () => {
-    mockBiohubApi().getAllCodes.mockResolvedValue({
-      coordinator_agency: [{ id: 1, name: 'code 1' }]
-    });
-    const { findByText, asFragment, getByText, getByTestId, getByLabelText } = renderContainer();
-
-    // wait for project coordinator form to load
-    expect(await findByText('First Name')).toBeVisible();
-
-    fireEvent.change(getByLabelText('First Name *'), { target: { value: 'first name' } });
-    fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'last name' } });
-    fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'email@email.com' } });
-    fireEvent.change(getByLabelText('Coordinator Agency *'), { target: { value: 'agency name' } });
-
-    fireEvent.click(getByText('Next'));
-
-    // wait for permit form to load
-    expect(await findByText('Add Another')).toBeVisible();
-
-    fireEvent.change(getByLabelText('Permit Number *'), { target: { value: 12345 } });
-    fireEvent.change(getByTestId('sampling_conducted'), { target: { value: 'true' } });
-
-    // wait for forms to load
-    await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
-
-      expect(getByText('Project Coordinator')).toBeVisible();
-
-      expect(getByText('Permits')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
@@ -90,6 +58,61 @@ describe('CreateProjectPage', () => {
       expect(getByText('IUCN Classification')).toBeVisible();
 
       expect(getByText('Funding and Partnerships')).toBeVisible();
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('removes the extra project steps if all permits are marked as having not conducted sampling', async () => {
+    mockBiohubApi().getAllCodes.mockResolvedValue({
+      coordinator_agency: [{ id: 1, name: 'code 1' }]
+    });
+    const { findByText, asFragment, getByText, getByTestId, getByLabelText } = renderContainer();
+
+    // wait for initial page to load
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+
+      expect(getByText('Permits')).toBeVisible();
+
+      expect(getByText('General Information')).toBeVisible();
+
+      expect(getByText('General Information')).toBeVisible();
+
+      expect(getByText('Objectives')).toBeVisible();
+
+      expect(getByText('Location')).toBeVisible();
+
+      expect(getByText('Species')).toBeVisible();
+
+      expect(getByText('IUCN Classification')).toBeVisible();
+
+      expect(getByText('Funding and Partnerships')).toBeVisible();
+    });
+
+    // populate coordinator form
+    fireEvent.change(getByLabelText('First Name *'), { target: { value: 'first name' } });
+    fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'last name' } });
+    fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'email@email.com' } });
+    fireEvent.change(getByLabelText('Coordinator Agency *'), { target: { value: 'agency name' } });
+
+    // go to next step
+    fireEvent.click(getByText('Next'));
+
+    // wait for permit form to load
+    expect(await findByText('Add Permit')).toBeVisible();
+
+    fireEvent.click(getByText('Add Permit'));
+
+    // add a permit, but mark sampling conducted as false
+    fireEvent.change(getByLabelText('Permit Number *'), { target: { value: 12345 } });
+    fireEvent.change(getByTestId('sampling_conducted'), { target: { value: 'false' } });
+
+    // wait for forms to load
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+
+      expect(getByText('Permits')).toBeVisible();
 
       expect(asFragment()).toMatchSnapshot();
     });

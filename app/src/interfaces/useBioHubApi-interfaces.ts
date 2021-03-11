@@ -90,14 +90,14 @@ export interface IProjectPostObject {
 }
 
 /**
- * Create partial-project post body.
+ * Create project post body when no sampling was conducted.
  *
  * @export
- * @interface IPartialProjectPostObject
+ * @interface IPermitNoSamplingPostObject
  */
-export interface IPartialProjectPostObject {
-  coordinator: IProjectCoordinatorForm;
+export interface IPermitNoSamplingPostObject {
   permit: IProjectPermitForm;
+  coordinator: IProjectCoordinatorForm;
 }
 
 /**
@@ -111,13 +111,13 @@ export interface ICreateProjectResponse {
 }
 
 /**
- * Create partial-project response object.
+ * Create project response object in which no sampling was conducted.
  *
  * @export
- * @interface ICreatePartialProjectResponse
+ * @interface ICreatePermitNoSamplingResponse
  */
-export interface ICreatePartialProjectResponse {
-  id: number;
+export interface ICreatePermitNoSamplingResponse {
+  ids: number[];
 }
 
 /**
