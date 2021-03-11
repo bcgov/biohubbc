@@ -19,7 +19,6 @@ describe('postProjectSQL', () => {
     const projectData = {
       name: 'name_test_data',
       objectives: 'objectives_test_data',
-      scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
       management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
