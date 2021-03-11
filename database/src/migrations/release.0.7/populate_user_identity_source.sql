@@ -10,3 +10,4 @@ insert into system_user (uis_id, user_identifier, record_effective_date, create_
   select id, 'postgres', now(), now(), 1 from user_identity_source 
     where name = 'DATABASE'
     and record_end_date is null;
+    
