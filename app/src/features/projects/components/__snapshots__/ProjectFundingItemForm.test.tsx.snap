@@ -131,7 +131,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                       class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                        class="PrivateNotchedOutline-legendLabelled-4"
                       >
                         <span>
                           Agency Name

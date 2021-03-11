@@ -109,16 +109,16 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                   Sub-classification
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
                 >
                   <div
+                    aria-disabled="true"
                     aria-haspopup="listbox"
                     aria-label="subClassification1"
                     aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
                     id="classificationDetails.[0].subClassification1"
                     role="button"
-                    tabindex="0"
                   >
                     <span>
                       ​
@@ -133,7 +133,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                   />
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
                     focusable="false"
                     viewBox="0 0 24 24"
                   >
@@ -188,16 +188,16 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                   Sub-classification
                 </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
                 >
                   <div
+                    aria-disabled="true"
                     aria-haspopup="listbox"
                     aria-label="subClassification2"
                     aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
                     id="classificationDetails.[0].subClassification2"
                     role="button"
-                    tabindex="0"
                   >
                     <span>
                       ​
@@ -212,7 +212,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
                   />
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
                     focusable="false"
                     viewBox="0 0 24 24"
                   >
