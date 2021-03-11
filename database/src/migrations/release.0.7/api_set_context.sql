@@ -51,4 +51,3 @@ exception
 end;
 $$;
 
-grant execute on function api_set_context(idir_user_id system_user.user_identifier%type, bceid_user_id system_user.user_identifier%type) to biohub_api;

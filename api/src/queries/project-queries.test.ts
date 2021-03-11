@@ -1,14 +1,30 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData, PostCoordinatorData, PostObjectivesData } from '../models/project';
-import { getProjectSQL, getProjectsSQL, postProjectSQL, postProjectRegionSQL } from './project-queries';
+import {
+  PostProjectData,
+  PostLocationData,
+  PostCoordinatorData,
+  PostObjectivesData,
+  PostPermitData
+} from '../models/project';
+import {
+  getProjectSQL,
+  getProjectsSQL,
+  postProjectSQL,
+  postProjectRegionSQL,
+  postProjectPermitSQL
+} from './project-queries';
 
 describe('postProjectSQL', () => {
   describe('Null project param provided', () => {
     it('returns null', () => {
       // force the function to accept a null value
       const response = postProjectSQL(
-        (null as unknown) as PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
+        (null as unknown) as PostProjectData &
+          PostLocationData &
+          PostCoordinatorData &
+          PostObjectivesData &
+          PostPermitData
       );
 
       expect(response).to.be.null;
@@ -19,7 +35,6 @@ describe('postProjectSQL', () => {
     const projectData = {
       name: 'name_test_data',
       objectives: 'objectives_test_data',
-      scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
       management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
@@ -45,9 +60,15 @@ describe('postProjectSQL', () => {
       caveats: 'a caveat maybe'
     };
 
+    const permitData = {
+      permit_number: '123',
+      sampling_conducted: true
+    };
+
     const postProjectData = new PostProjectData(projectData);
     const postCoordinatorData = new PostCoordinatorData(coordinatorData);
     const postObjectivesData = new PostObjectivesData(objectivesData);
+    const postPermitData = new PostPermitData(permitData);
 
     it('returns a SQLStatement', () => {
       const postLocationData = new PostLocationData(locationData);
@@ -55,7 +76,8 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData
+        ...postObjectivesData,
+        ...postPermitData
       });
 
       expect(response).to.not.be.null;
@@ -92,7 +114,8 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData
+        ...postObjectivesData,
+        ...postPermitData
       });
 
       expect(response).to.not.be.null;
@@ -143,7 +166,8 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData
+        ...postObjectivesData,
+        ...postPermitData
       });
 
       expect(response).to.not.be.null;
@@ -182,8 +206,31 @@ describe('getProjectsSQL', () => {
   });
 });
 
+describe('postProjectPermitSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when no permit number', () => {
+      const response = postProjectPermitSQL((null as unknown) as string, 1, true);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns null when no project id', () => {
+      const response = postProjectPermitSQL('123', (null as unknown) as number, true);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postProjectPermitSQL('123', 123, true);
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include('123');
+    });
+  });
+});
+
 describe('postProjectRegionSQL', () => {
-  describe('invalid parameters', () => {
+  describe('with invalid parameters', () => {
     it('Null region provided', () => {
       // force the function to accept a null project region object
       const projectId = 1;

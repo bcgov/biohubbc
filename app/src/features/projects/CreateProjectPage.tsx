@@ -34,6 +34,7 @@ import ProjectFundingForm, {
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
 import ProjectLocationForm, {
+  IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
@@ -43,6 +44,7 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
 import ProjectIUCNForm, {
+  IProjectIUCNForm,
   ProjectIUCNFormInitialValues,
   ProjectIUCNFormYupSchema
 } from 'features/projects/components/ProjectIUCNForm';
@@ -65,7 +67,6 @@ import {
 } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { IProjectLocationForm } from './components/ProjectLocationForm';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -400,7 +401,8 @@ const CreateProjectPage: React.FC = () => {
       const objectivesData = stepForms[3].stepValues as IProjectObjectivesForm;
       const locationData = stepForms[4].stepValues as IProjectLocationForm;
       const speciesData = stepForms[5].stepValues as IProjectSpeciesForm;
-      const fundingData = stepForms[6].stepValues as IProjectFundingForm;
+      const iucnData = stepForms[6].stepValues as IProjectIUCNForm;
+      const fundingData = stepForms[7].stepValues as IProjectFundingForm;
 
       if (!isAtLeastOnePermitMarkedSamplingConducted(permitData)) {
         await createPartialProject({
@@ -415,6 +417,7 @@ const CreateProjectPage: React.FC = () => {
           objectives: objectivesData,
           location: locationData,
           species: speciesData,
+          iucn: iucnData,
           funding: fundingData
         });
       }

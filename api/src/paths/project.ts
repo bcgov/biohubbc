@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { PostFundingSource, PostProjectObject } from '../models/project';
+import { PostFundingSource, PostProjectObject, IPostPermit } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
@@ -11,7 +11,8 @@ import {
   postProjectIndigenousNationSQL,
   postProjectRegionSQL,
   postProjectSQL,
-  postProjectStakeholderPartnershipSQL
+  postProjectStakeholderPartnershipSQL,
+  postProjectPermitSQL
 } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
@@ -84,6 +85,7 @@ function createProject(): RequestHandler {
     try {
       const postProjectSQLStatement = postProjectSQL({
         ...sanitizedProjectPostData.project,
+        ...sanitizedProjectPostData.permit,
         ...sanitizedProjectPostData.location,
         ...sanitizedProjectPostData.objectives,
         ...sanitizedProjectPostData.coordinator
@@ -156,6 +158,13 @@ function createProject(): RequestHandler {
         await Promise.all(
           sanitizedProjectPostData.funding.stakeholder_partnerships.map((stakeholderPartner: string) =>
             insertStakeholderPartnership(stakeholderPartner, projectId, connection)
+          )
+        );
+
+        // Handle project permits
+        await Promise.all(
+          sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
+            insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
           )
         );
 
@@ -333,6 +342,35 @@ export const insertStakeholderPartnership = async (
     throw {
       status: 400,
       message: 'Failed to insert into stakeholder_partnership table'
+    };
+  }
+
+  return result.id;
+};
+
+export const insertPermitNumber = async (
+  permit_number: string,
+  project_id: number,
+  sampling_conducted: boolean,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
+
+  if (!sqlStatement) {
+    throw {
+      status: 400,
+      message: 'Failed to build SQL statement'
+    };
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw {
+      status: 400,
+      message: 'Failed to insert into project_permit table'
     };
   }
 

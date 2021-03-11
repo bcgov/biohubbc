@@ -14,10 +14,6 @@ describe('PostProjectData', () => {
       expect(projectPostData.name).to.equal(null);
     });
 
-    it('sets scientific_collection_permit_number', function () {
-      expect(projectPostData.scientific_collection_permit_number).to.equal(null);
-    });
-
     it('sets management_recovery_action', function () {
       expect(projectPostData.management_recovery_action).to.equal(null);
     });
@@ -40,7 +36,6 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      scientific_collection_permit_number: 'scientific_collection_permit_number_test_data',
       management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
@@ -53,12 +48,6 @@ describe('PostProjectData', () => {
 
     it('sets name', function () {
       expect(projectPostData.name).to.equal('name_test_data');
-    });
-
-    it('sets scientific_collection_permit_number', function () {
-      expect(projectPostData.scientific_collection_permit_number).to.equal(
-        'scientific_collection_permit_number_test_data'
-      );
     });
 
     it('sets management_recovery_action', function () {
