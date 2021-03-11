@@ -760,6 +760,72 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
                     >
+                      IUCN Classification
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Lorem ipsum dolor sit amet, consectur whatever whatever
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="7"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    8
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-83"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                    >
                       Funding and Partnerships
                     </h2>
                     <h6
@@ -774,7 +840,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
             <div
               class="MuiStepContent-root MuiStepContent-last"
               disabled=""
-              icon="7"
+              icon="8"
             />
           </div>
         </div>
