@@ -3,7 +3,7 @@ import React from 'react';
 import { ErrorDialog } from './ErrorDialog';
 
 describe('ErrorDialog', () => {
-  it('matches the snapshot with no error message', async () => {
+  it('matches the snapshot with no error message', () => {
     const { baseElement } = render(
       <div id="root">
         <ErrorDialog

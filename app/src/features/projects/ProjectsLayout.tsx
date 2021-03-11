@@ -15,17 +15,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface IProjectsLayoutProps {
-  classes: any;
-}
-
 /**
  * Layout for all project pages.
  *
  * @param {*} props
  * @return {*}
  */
-const ProjectsLayout: React.FC<IProjectsLayoutProps> = (props: any) => {
+const ProjectsLayout: React.FC = (props: any) => {
   const classes = useStyles();
 
   return (
