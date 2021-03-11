@@ -184,6 +184,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   const sqlStatement = SQL`
     SELECT
       id,
+      pt_id,
       name,
       objectives,
       management_recovery_action,
@@ -196,6 +197,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       coordinator_last_name,
       coordinator_email_address,
       coordinator_agency_name,
+      coordinator_public,
       create_date,
       create_user,
       update_date,
@@ -235,7 +237,7 @@ export const getProjectsSQL = (): SQLStatement | null => {
       p.start_date,
       p.end_date,
       p.location_description,
-      string_agg(DISTINCT pr.region_name, ', ') as regions_name_list,
+      string_agg(DISTINCT pr.name, ', ') as regions_name_list,
       string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
     from
       project as p
@@ -278,7 +280,7 @@ export const postProjectRegionSQL = (region: string, projectId: number): SQLStat
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_region (
         p_id,
-        region_name
+        name
       ) VALUES (
         ${projectId},
         ${region}
