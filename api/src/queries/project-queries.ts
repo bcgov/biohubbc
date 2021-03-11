@@ -29,9 +29,9 @@ export const postProjectSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project (
+      pt_id,
       name,
       objectives,
-      scientific_collection_permit_number,
       management_recovery_action,
       location_description,
       start_date,
@@ -42,11 +42,12 @@ export const postProjectSQL = (
       coordinator_last_name,
       coordinator_email_address,
       coordinator_agency_name,
-      geog
+      coordinator_public,
+      geography
     ) VALUES (
+      ${project.type},
       ${project.name},
       ${project.objectives},
-      ${project.scientific_collection_permit_number},
       ${project.management_recovery_action},
       ${project.location_description},
       ${project.start_date},
@@ -56,7 +57,8 @@ export const postProjectSQL = (
       ${project.first_name},
       ${project.last_name},
       ${project.email_address},
-      ${project.coordinator_agency}
+      ${project.coordinator_agency},
+      ${project.share_contact_details}
   `;
 
   if (project.geometry && project.geometry.length) {
@@ -184,7 +186,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       id,
       name,
       objectives,
-      scientific_collection_permit_number,
       management_recovery_action,
       location_description,
       start_date,
@@ -230,7 +231,6 @@ export const getProjectsSQL = (): SQLStatement | null => {
     SELECT
       p.id,
       p.name,
-      p.scientific_collection_permit_number,
       p.management_recovery_action,
       p.start_date,
       p.end_date,
@@ -246,7 +246,6 @@ export const getProjectsSQL = (): SQLStatement | null => {
     group by
       p.id,
       p.name,
-      p.scientific_collection_permit_number,
       p.management_recovery_action,
       p.start_date,
       p.end_date,

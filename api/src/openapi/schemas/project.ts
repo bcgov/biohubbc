@@ -60,9 +60,6 @@ export const projectPostBody = {
         objectives: {
           type: 'string'
         },
-        scientific_collection_permit_number: {
-          type: 'string'
-        },
         management_recovery_action: {
           type: 'string'
         },
