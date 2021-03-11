@@ -463,7 +463,7 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
 }
 
 /**
- * SQL query to insert a project stakeholder partnership row.
+ * SQL query to insert a project permit row.
  *
  * @param permit_number
  * @param projectId
