@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Monday, March 08, 2021 15:52:34
+-- Date Created : Wednesday, March 10, 2021 16:57:57
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -263,7 +263,7 @@ CREATE TABLE funding_source(
     record_end_date          date,
     record_effective_date    date            NOT NULL,
     description              varchar(250),
-    project_id_optional      character(1)    NOT NULL,
+    project_id_optional      boolean,
     create_date              timestamp(6)    DEFAULT now() NOT NULL,
     create_user              integer         NOT NULL,
     update_date              timestamp(6),
@@ -589,28 +589,28 @@ COMMENT ON TABLE no_sample_permit IS 'Provides a record of scientific permits fo
 --
 
 CREATE TABLE project(
-    id                            integer                    GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    pt_id                         integer                    NOT NULL,
-    name                          varchar(50)                NOT NULL,
-    objectives                    varchar(3000)              NOT NULL,
+    id                            integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    pt_id                         integer                     NOT NULL,
+    name                          varchar(50)                 NOT NULL,
+    objectives                    varchar(3000)               NOT NULL,
     management_recovery_action    character(1),
     location_description          varchar(3000),
-    start_date                    date                       NOT NULL,
+    start_date                    date                        NOT NULL,
     end_date                      date,
     caveats                       varchar(3000),
     comments                      varchar(3000),
-    coordinator_first_name        varchar(50)                NOT NULL,
-    coordinator_last_name         varchar(50)                NOT NULL,
-    coordinator_email_address     varchar(500)               NOT NULL,
-    coordinator_agency_name       varchar(300)               NOT NULL,
-    coordinator_public            character(1)               NOT NULL,
+    coordinator_first_name        varchar(50)                 NOT NULL,
+    coordinator_last_name         varchar(50)                 NOT NULL,
+    coordinator_email_address     varchar(500)                NOT NULL,
+    coordinator_agency_name       varchar(300)                NOT NULL,
+    coordinator_public            boolean                     NOT NULL,
     geometry                      geometry(geometry, 3005),
     geography                     geography(geometry),
-    create_date                   timestamp(6)               DEFAULT now() NOT NULL,
-    create_user                   integer                    NOT NULL,
+    create_date                   timestamp(6)                DEFAULT now() NOT NULL,
+    create_user                   integer                     NOT NULL,
     update_date                   timestamp(6),
     update_user                   integer,
-    revision_count                integer                    DEFAULT 0 NOT NULL,
+    revision_count                integer                     DEFAULT 0 NOT NULL,
     CONSTRAINT "PK45" PRIMARY KEY (id)
 )
 ;
@@ -943,7 +943,7 @@ CREATE TABLE project_permit(
     id                    integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     p_id                  integer         NOT NULL,
     number                varchar(100)    NOT NULL,
-    sampling_conducted    character(1)    NOT NULL,
+    sampling_conducted    boolean         NOT NULL,
     issue_date            date,
     end_date              date,
     create_date           timestamp(6)    DEFAULT now() NOT NULL,
@@ -1318,7 +1318,7 @@ COMMENT ON TABLE user_identity_source IS 'The source of the user identifier. Exa
 -- INDEX: a_nuk1 
 --
 
-CREATE UNIQUE INDEX a_nuk1 ON activity(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX a_nuk1 ON activity(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: as_uk1 
@@ -1336,13 +1336,13 @@ CREATE INDEX "Ref4544" ON ancillary_species(p_id)
 -- INDEX: cci_nuk1 
 --
 
-CREATE UNIQUE INDEX cci_nuk1 ON climate_change_initiative(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX cci_nuk1 ON climate_change_initiative(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: cci_nuk1_1 
 --
 
-CREATE UNIQUE INDEX cci_nuk1_1 ON first_nations(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX cci_nuk1_1 ON first_nations(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: fs_uk1 
@@ -1360,13 +1360,13 @@ CREATE INDEX "Ref4543" ON focal_species(p_id)
 -- INDEX: fs_nuk2 
 --
 
-CREATE UNIQUE INDEX fs_nuk2 ON funding_source(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX fs_nuk2 ON funding_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: iac_nuk1 
 --
 
-CREATE UNIQUE INDEX iac_nuk1 ON investment_action_category(fs_id, name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX iac_nuk1 ON investment_action_category(fs_id, name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref7345" 
@@ -1378,13 +1378,13 @@ CREATE INDEX "Ref7345" ON investment_action_category(fs_id)
 -- INDEX: iucn_nuk1 
 --
 
-CREATE UNIQUE INDEX iucn_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX iucn_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: iac1_nuk1 
 --
 
-CREATE UNIQUE INDEX iac1_nuk1 ON iucn_conservation_action_level_2_subclassification(iucn_id, name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX iac1_nuk1 ON iucn_conservation_action_level_2_subclassification(iucn_id, name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref13764" 
@@ -1396,7 +1396,7 @@ CREATE INDEX "Ref13764" ON iucn_conservation_action_level_2_subclassification(iu
 -- INDEX: iac2_nuk1 
 --
 
-CREATE UNIQUE INDEX iac2_nuk1 ON iucn_conservation_action_level_3_subclassification(iucn1_id, name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX iac2_nuk1 ON iucn_conservation_action_level_3_subclassification(iucn1_id, name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref13965" 
@@ -1408,7 +1408,7 @@ CREATE INDEX "Ref13965" ON iucn_conservation_action_level_3_subclassification(iu
 -- INDEX: mat_nuk1 
 --
 
-CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: nsp_uk1 
@@ -1582,13 +1582,13 @@ CREATE INDEX "Ref4524" ON project_region(p_id)
 -- INDEX: pr_nuk1 
 --
 
-CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: pt_nuk1 
 --
 
-CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: sp_uk1 
@@ -1606,13 +1606,13 @@ CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 -- INDEX: sr_nuk1 
 --
 
-CREATE UNIQUE INDEX sr_nuk1 ON system_role(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX sr_nuk1 ON system_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: su_nuk1 
 --
 
-CREATE UNIQUE INDEX su_nuk1 ON system_user(user_identifier, uis_id, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX su_nuk1 ON system_user(user_identifier, uis_id, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref12041" 
@@ -1642,7 +1642,7 @@ CREATE INDEX "Ref7922" ON system_user_role(sr_id)
 -- INDEX: uis_nuk1 
 --
 
-CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is null)) where record_end_date is null
+CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- TABLE: ancillary_species 

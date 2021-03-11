@@ -37,7 +37,7 @@ begin
     , 'coordinator_last_name'
     , 'coordinator_email_address'
     , 'coordinator_agency_name'
-    , 'Y'
+    , TRUE
     , ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)
     ) returning id into __id;
 
@@ -50,6 +50,7 @@ begin
   insert into project_permit (p_id, number, sampling_conducted) values (__id, random(), 'Y');
   insert into project_management_actions (p_id, mat_id) values (__id, (select id from management_action_type where name = 'Recovery Action'));
   insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (__id, (select id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test');
+  --insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date) values (__id, 43, '$1,000.00', now(), now());
   insert into project_iucn_action_classificaton (p_id, iucn2_id) values (__id, (select id from iucn_conservation_action_level_2_subclassification where name = 'Species Stewardship'));
 end
 $$;

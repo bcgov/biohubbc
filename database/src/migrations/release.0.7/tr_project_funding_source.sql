@@ -22,7 +22,7 @@ begin
     select project_id_optional into __project_id_optional from funding_source
       where id = (select fs_id from investment_action_category where id = new.iac_id);
 
-    if __project_id_optional = 'N' then
+    if not __project_id_optional then
       raise exception 'The funding source project id is not optional for the selected funding source.';
     end if;
   end if;
