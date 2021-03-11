@@ -171,7 +171,7 @@ export class PostCoordinatorData {
 }
 
 export interface IPostPermit {
-  permit_number: string;
+  permit_number: number;
   sampling_conducted: boolean;
 }
 

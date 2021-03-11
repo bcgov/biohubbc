@@ -5,9 +5,11 @@ import { IProject } from 'interfaces/project-interfaces';
 import {
   IActivity,
   ICreateActivity,
+  ICreatePartialProjectResponse,
   ICreateProjectResponse,
   IGetAllCodesResponse,
   IMedia,
+  IPartialProjectPostObject,
   IProjectPostObject,
   ITemplate
 } from 'interfaces/useBioHubApi-interfaces';
@@ -75,6 +77,18 @@ export const useBiohubApi = () => {
    */
   const createProject = async (project: IProjectPostObject): Promise<ICreateProjectResponse> => {
     const { data } = await api.post('/api/project', project);
+
+    return data;
+  };
+
+  /**
+   * Create a new partial project.
+   *
+   * @param {IpartialProjectPostObject} project
+   * @return {*}  {Promise<ICreatePartialProjectResponse>}
+   */
+  const createPartialProject = async (project: IPartialProjectPostObject): Promise<ICreatePartialProjectResponse> => {
+    const { data } = await api.post('/api/project/partial', project);
 
     return data;
   };
@@ -169,11 +183,13 @@ export const useBiohubApi = () => {
 
     return mediaKeyList;
   };
+
   return {
     getProjects,
     getProject,
     getTemplate,
     createProject,
+    createPartialProject,
     createActivity,
     getAllCodes,
     getApiSpec,

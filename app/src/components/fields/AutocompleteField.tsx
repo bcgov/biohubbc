@@ -1,4 +1,4 @@
-import { MenuItem, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -16,14 +16,6 @@ export interface IAutocompleteField {
 const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
   const { touched, errors, setFieldValue } = useFormikContext<string>();
 
-  const handleGetOptionSelected = (option: string, value: string): boolean => {
-    if (!option || !value) {
-      return false;
-    }
-
-    return option === value;
-  };
-
   return (
     <Autocomplete
       freeSolo
@@ -35,18 +27,9 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
       value={props.value}
       options={props.options}
       getOptionLabel={(option) => option}
-      getOptionSelected={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       onChange={(event, option) => {
         setFieldValue(props.id, option);
-      }}
-      renderOption={(option, { selected }) => {
-        return (
-          <>
-            <MenuItem style={{ marginRight: 8 }} value={option} selected={selected} />
-            {option}
-          </>
-        );
       }}
       renderInput={(params) => (
         <TextField

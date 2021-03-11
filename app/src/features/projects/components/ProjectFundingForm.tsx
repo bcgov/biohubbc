@@ -3,8 +3,10 @@ import { Delete, Edit } from '@material-ui/icons';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_FORMAT } from 'constants/dateFormats';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useState } from 'react';
+import { getFormattedDateRangeString } from 'utils/Utils';
 import * as yup from 'yup';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
@@ -107,80 +109,65 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   )}
                   {values.funding_agencies.map((fundingAgency, index) => {
                     return (
-                      <Paper key={index}>
-                        <Box m={3}>
-                          <Grid container item spacing={3} xs={12}>
-                            <Grid container item spacing={3} xs={12} justify="space-between">
-                              <Grid item>
-                                <Typography variant="h3">
-                                  {getCodeValueNameByID(props.funding_sources, fundingAgency.agency_id)}
-                                </Typography>
-                              </Grid>
-                              <Grid item>
-                                <IconButton
-                                  title="Edit Funding Source"
-                                  aria-label="Edit Funding Source"
-                                  onClick={() => {
-                                    setCurrentProjectFundingFormArrayItem({
-                                      index: index,
-                                      values: values.funding_agencies[index]
-                                    });
-                                    setIsModalOpen(true);
-                                  }}>
-                                  <Edit />
-                                </IconButton>
-                                <IconButton
-                                  title="Delete Funding Source"
-                                  aria-label="Delete Funding Source"
-                                  onClick={() => arrayHelpers.remove(index)}>
-                                  <Delete />
-                                </IconButton>
-                              </Grid>
-                            </Grid>
-                            <Grid item sm={6} md={4}>
-                              <Grid container item spacing={2} direction="row">
-                                <Grid item xs={12}>
-                                  <Box mr={3} display="inline">
-                                    Funding Amount
-                                  </Box>
+                      <Box mb={3} key={index}>
+                        <Paper>
+                          <Box m={3}>
+                            <Grid container item spacing={3}>
+                              <Grid container item spacing={3} justify="space-between" alignItems="center">
+                                <Grid item>
+                                  <Typography variant="h3">
+                                    {getCodeValueNameByID(props.funding_sources, fundingAgency.agency_id)}
+                                  </Typography>
                                 </Grid>
-                                <Grid item xs={12}>
-                                  <Box mr={3} display="inline">
-                                    Start Date / End Date
-                                  </Box>
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <Box mr={3} display="inline">
-                                    Agency Project ID
-                                  </Box>
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <Box mr={3} display="inline">
-                                    Investment Action/Category
-                                  </Box>
+                                <Grid item>
+                                  <IconButton
+                                    title="Edit Funding Source"
+                                    aria-label="Edit Funding Source"
+                                    onClick={() => {
+                                      setCurrentProjectFundingFormArrayItem({
+                                        index: index,
+                                        values: values.funding_agencies[index]
+                                      });
+                                      setIsModalOpen(true);
+                                    }}>
+                                    <Edit />
+                                  </IconButton>
+                                  <IconButton
+                                    title="Delete Funding Source"
+                                    aria-label="Delete Funding Source"
+                                    onClick={() => arrayHelpers.remove(index)}>
+                                    <Delete />
+                                  </IconButton>
                                 </Grid>
                               </Grid>
-                            </Grid>
-                            <Grid item sm={6} md={8}>
-                              <Grid container item spacing={2} direction="row">
-                                <Grid item xs={12}>
-                                  {fundingAgency.funding_amount}
+                              <Grid container item spacing={3} xs={12}>
+                                <Grid item xs={12} sm={6} md={4}>
+                                  <Typography variant="body2">Funding Amount</Typography>
+                                  <Typography variant="body1">{fundingAgency.funding_amount}</Typography>
                                 </Grid>
-                                <Grid item xs={12}>
-                                  {fundingAgency.start_date}
-                                  {fundingAgency.end_date && ` / ${fundingAgency.end_date}`}
+                                <Grid item xs={12} sm={6} md={4}>
+                                  <Typography variant="body2">Start Date / End Date</Typography>
+                                  <Typography variant="body1">
+                                    {getFormattedDateRangeString(
+                                      DATE_FORMAT.MediumDateFormat,
+                                      fundingAgency.start_date,
+                                      fundingAgency.end_date
+                                    )}
+                                  </Typography>
                                 </Grid>
-                                <Grid item xs={12}>
-                                  {fundingAgency.agency_project_id}
+                                <Grid item xs={12} sm={6} md={4}>
+                                  <Typography variant="body2">Agency Project ID</Typography>
+                                  <Typography variant="body1">{fundingAgency.agency_project_id}</Typography>
                                 </Grid>
-                                <Grid item xs={12}>
-                                  {fundingAgency.investment_action_category}
+                                <Grid item xs={12} sm={6} md={4}>
+                                  <Typography variant="body2">Investment Action/Category</Typography>
+                                  <Typography variant="body1">{fundingAgency.investment_action_category}</Typography>
                                 </Grid>
                               </Grid>
                             </Grid>
-                          </Grid>
-                        </Box>
-                      </Paper>
+                          </Box>
+                        </Paper>
+                      </Box>
                     );
                   })}
                 </Box>
