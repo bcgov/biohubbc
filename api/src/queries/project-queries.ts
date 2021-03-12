@@ -5,7 +5,8 @@ import {
   PostLocationData,
   PostProjectData,
   PostObjectivesData,
-  PostProjectObject
+  PostProjectObject,
+  PostPermitData
 } from '../models/project';
 import { getLogger } from '../utils/logger';
 import { Feature } from 'geojson';
@@ -19,7 +20,7 @@ const defaultLog = getLogger('queries/project-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postProjectSQL = (
-  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
+  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData & PostPermitData
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 
