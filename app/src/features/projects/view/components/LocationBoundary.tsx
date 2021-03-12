@@ -18,8 +18,6 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
     projectWithDetailsData: { location }
   } = props;
 
-  console.log('geometry', location.geometry);
-
   return (
     <>
       <Grid container spacing={3}>
@@ -57,7 +55,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
               <MapContainer
                 mapId="project_location_form_map"
                 hideDrawControls={true}
-                nonEditableGeometries={[JSON.parse(location.geometry)]}
+                nonEditableGeometries={location.geometry}
               />
             </Box>
           </Grid>

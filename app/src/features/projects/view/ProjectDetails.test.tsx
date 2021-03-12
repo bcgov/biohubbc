@@ -16,7 +16,16 @@ const projectWithDetailsData: IProjectWithDetails = {
   location: {
     location_description: 'here and there',
     regions: [],
-    geometry: []
+    geometry: [{
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [125.6, 10.1]
+      },
+      properties: {
+        name: 'Dinagat Islands'
+      }
+    }]
   },
   objectives: {
     objectives: 'Et ad et in culpa si',

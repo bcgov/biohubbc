@@ -335,7 +335,7 @@ export class GetLocationData {
           return item.name;
         })) ||
       [];
-    this.geometry = (projectData?.geometry?.length && projectData.geometry) || [];
+    this.geometry = (projectData?.geometry?.length && [JSON.parse(projectData.geometry)]) || [];
   }
 }
 
