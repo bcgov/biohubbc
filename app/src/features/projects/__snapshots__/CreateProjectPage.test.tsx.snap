@@ -1,21 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreateProjectPage adds the extra create project steps if at least 1 permit is marked as having conducted sampling 1`] = `
+exports[`CreateProjectPage removes the extra project steps if all permits are marked as having not conducted sampling 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-40"
+    class="MuiBox-root MuiBox-root-46"
   />
   <div
-    class="MuiBox-root MuiBox-root-41"
+    class="MuiBox-root MuiBox-root-47"
   />
   <div
-    class="MuiBox-root MuiBox-root-42"
+    class="MuiBox-root MuiBox-root-48"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-43"
+        class="MuiBox-root MuiBox-root-49"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -28,11 +28,11 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-35 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-41 MuiTypography-colorPrimary"
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-36 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-42 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -51,7 +51,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-44"
+        class="MuiBox-root MuiBox-root-50"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -60,17 +60,17 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-45"
+        class="MuiBox-root MuiBox-root-51"
       >
         <hr
           class="MuiDivider-root"
         />
       </div>
       <div
-        class="MuiBox-root MuiBox-root-46"
+        class="MuiBox-root MuiBox-root-52"
       >
         <div
-          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-38 MuiPaper-elevation0"
+          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-44 MuiPaper-elevation0"
         >
           <div
             class="MuiStep-root MuiStep-vertical MuiStep-completed"
@@ -99,10 +99,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-completed MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-47"
+                    class="MuiBox-root MuiBox-root-53"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-45 MuiTypography-h2"
                     >
                       Project Coordinator
                     </h2>
@@ -164,10 +164,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-66"
+                    class="MuiBox-root MuiBox-root-72"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-45 MuiTypography-h2"
                     >
                       Permits
                     </h2>
@@ -181,7 +181,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
               </span>
             </span>
             <div
-              class="MuiStepContent-root"
+              class="MuiStepContent-root MuiStepContent-last"
               icon="2"
             >
               <div
@@ -195,11 +195,11 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                     class="MuiCollapse-wrapperInner"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-67"
+                      class="MuiBox-root MuiBox-root-79"
                     >
                       <form>
                         <div
-                          class="MuiBox-root MuiBox-root-68"
+                          class="MuiBox-root MuiBox-root-80"
                         >
                           <div
                             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -208,10 +208,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                             >
                               <div
-                                class="MuiBox-root MuiBox-root-69"
+                                class="MuiBox-root MuiBox-root-86"
                               >
                                 <div
-                                  class="MuiBox-root MuiBox-root-70"
+                                  class="MuiBox-root MuiBox-root-87"
                                 >
                                   <div
                                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -244,10 +244,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                       />
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-52 PrivateNotchedOutline-legendNotched-53"
+                                          class="PrivateNotchedOutline-legendLabelled-90 PrivateNotchedOutline-legendNotched-91"
                                         >
                                           <span>
                                             Permit Number *
@@ -258,7 +258,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-71"
+                                  class="MuiBox-root MuiBox-root-92"
                                 >
                                   <div
                                     class="MuiFormControl-root"
@@ -282,14 +282,14 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                     >
                                       <div
                                         aria-haspopup="listbox"
-                                        aria-label="Sampling Conducted"
+                                        aria-label="sampling conducted"
                                         aria-labelledby="sampling_conducted permits.[0].sampling_conducted"
                                         class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                                         id="permits.[0].sampling_conducted"
                                         role="button"
                                         tabindex="0"
                                       >
-                                        Yes
+                                        No
                                       </div>
                                       <input
                                         aria-hidden="true"
@@ -298,7 +298,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                         name="permits.[0].sampling_conducted"
                                         required=""
                                         tabindex="-1"
-                                        value="true"
+                                        value="false"
                                       />
                                       <svg
                                         aria-hidden="true"
@@ -312,10 +312,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                       </svg>
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-52 PrivateNotchedOutline-legendNotched-53"
+                                          class="PrivateNotchedOutline-legendLabelled-90 PrivateNotchedOutline-legendNotched-91"
                                         >
                                           <span>
                                             Sampling Conducted
@@ -329,10 +329,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-72"
+                                  class="MuiBox-root MuiBox-root-93"
                                 >
                                   <button
-                                    aria-label="delete"
+                                    aria-label="remove permit"
                                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
                                     tabindex="0"
                                     type="button"
@@ -360,10 +360,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-73"
+                            class="MuiBox-root MuiBox-root-81"
                           >
                             <button
-                              aria-label="Add Another"
+                              aria-label="add permit"
                               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
                               tabindex="0"
                               type="button"
@@ -371,7 +371,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                               <span
                                 class="MuiButton-label"
                               >
-                                Add Another
+                                Add Permit
                               </span>
                               <span
                                 class="MuiTouchRipple-root"
@@ -381,20 +381,20 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                         </div>
                       </form>
                       <div
-                        class="MuiBox-root MuiBox-root-74"
+                        class="MuiBox-root MuiBox-root-82"
                       >
                         <hr
                           class="MuiDivider-root"
                         />
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-75"
+                        class="MuiBox-root MuiBox-root-83"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root-76"
+                          class="MuiBox-root MuiBox-root-84"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-34 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-40 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -409,10 +409,10 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                           </button>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root-77"
+                          class="MuiBox-root MuiBox-root-85"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-34 MuiButton-containedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-40 MuiButton-containedPrimary"
                             tabindex="0"
                             type="submit"
                           >
@@ -426,7 +426,7 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                             />
                           </button>
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-34 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-40 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -446,402 +446,6 @@ exports[`CreateProjectPage adds the extra create project steps if at least 1 per
                 </div>
               </div>
             </div>
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    3
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-78"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      General Information
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      General information and details about this project
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root"
-              disabled=""
-              icon="3"
-            />
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    4
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-79"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      Objectives
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      Enter the objectives and potential caveats for this project
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root"
-              disabled=""
-              icon="4"
-            />
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    5
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-80"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      Location
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      Specify project regions and boundary information
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root"
-              disabled=""
-              icon="5"
-            />
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    6
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-81"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      Species
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      Information about species this project is inventorying or monitoring
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root"
-              disabled=""
-              icon="6"
-            />
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    7
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-82"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      IUCN Classification
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      Lorem ipsum dolor sit amet, consectur whatever whatever
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root"
-              disabled=""
-              icon="7"
-            />
-          </div>
-          <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
-          >
-            <span
-              class="MuiStepConnector-line MuiStepConnector-lineVertical"
-            />
-          </div>
-          <div
-            class="MuiStep-root MuiStep-vertical"
-          >
-            <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
-            >
-              <span
-                class="MuiStepLabel-iconContainer"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="12"
-                  />
-                  <text
-                    class="MuiStepIcon-text"
-                    text-anchor="middle"
-                    x="12"
-                    y="16"
-                  >
-                    8
-                  </text>
-                </svg>
-              </span>
-              <span
-                class="MuiStepLabel-labelContainer"
-              >
-                <span
-                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                >
-                  <div
-                    class="MuiBox-root MuiBox-root-83"
-                  >
-                    <h2
-                      class="MuiTypography-root makeStyles-stepTitle-39 MuiTypography-h2"
-                    >
-                      Funding and Partnerships
-                    </h2>
-                    <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
-                    >
-                      Specify funding and partnerships for the project
-                    </h6>
-                  </div>
-                </span>
-              </span>
-            </span>
-            <div
-              class="MuiStepContent-root MuiStepContent-last"
-              disabled=""
-              icon="8"
-            />
           </div>
         </div>
       </div>
@@ -1480,9 +1084,405 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
               </span>
             </span>
             <div
-              class="MuiStepContent-root MuiStepContent-last"
+              class="MuiStepContent-root"
               disabled=""
               icon="2"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    3
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-34"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      General Information
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      General information and details about this project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="3"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    4
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-35"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Objectives
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Enter the objectives and potential caveats for this project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="4"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    5
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-36"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Location
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Specify project regions and boundary information
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="5"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    6
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-37"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Species
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Information about species this project is inventorying or monitoring
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="6"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    7
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-38"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      IUCN Classification
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Lorem ipsum dolor sit amet, consectur whatever whatever
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="7"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    8
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-39"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Funding and Partnerships
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Specify funding and partnerships for the project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root MuiStepContent-last"
+              disabled=""
+              icon="8"
             />
           </div>
         </div>

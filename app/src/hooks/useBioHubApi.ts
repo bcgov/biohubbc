@@ -5,11 +5,11 @@ import { IProject, IProjectWithDetails } from 'interfaces/project-interfaces';
 import {
   IActivity,
   ICreateActivity,
-  ICreatePartialProjectResponse,
+  ICreatePermitNoSamplingResponse,
   ICreateProjectResponse,
   IGetAllCodesResponse,
   IMedia,
-  IPartialProjectPostObject,
+  IPermitNoSamplingPostObject,
   IProjectPostObject,
   ITemplate
 } from 'interfaces/useBioHubApi-interfaces';
@@ -82,13 +82,15 @@ export const useBiohubApi = () => {
   };
 
   /**
-   * Create a new partial project.
+   * Create a new project in which no sampling was conducted.
    *
-   * @param {IpartialProjectPostObject} project
-   * @return {*}  {Promise<ICreatePartialProjectResponse>}
+   * @param {IPermitNoSamplingPostObject} project
+   * @return {*}  {Promise<ICreatePermitNoSamplingResponse>}
    */
-  const createPartialProject = async (project: IPartialProjectPostObject): Promise<ICreatePartialProjectResponse> => {
-    const { data } = await api.post('/api/project/partial', project);
+  const createPermitNoSampling = async (
+    project: IPermitNoSamplingPostObject
+  ): Promise<ICreatePermitNoSamplingResponse> => {
+    const { data } = await api.post('/api/permit-no-sampling', project);
 
     return data;
   };
@@ -189,7 +191,7 @@ export const useBiohubApi = () => {
     getProject,
     getTemplate,
     createProject,
-    createPartialProject,
+    createPermitNoSampling,
     createActivity,
     getAllCodes,
     getApiSpec,

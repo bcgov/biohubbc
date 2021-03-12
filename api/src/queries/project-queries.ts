@@ -5,8 +5,7 @@ import {
   PostLocationData,
   PostProjectData,
   PostObjectivesData,
-  PostProjectObject,
-  PostPermitData
+  PostProjectObject
 } from '../models/project';
 import { getLogger } from '../utils/logger';
 import { Feature } from 'geojson';
@@ -16,11 +15,11 @@ const defaultLog = getLogger('queries/project-queries');
 /**
  * SQL query to insert a project row.
  *
- * @param {(PostProjectData & PostLocationData)} project
+ * @param {(PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData)} project
  * @returns {SQLStatement} sql query object
  */
 export const postProjectSQL = (
-  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData & PostPermitData
+  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 
@@ -382,6 +381,7 @@ export const postProjectPermitSQL = (
     label: 'postProjectPermitSQL',
     message: 'params',
     permit_number,
+    sampling_conducted,
     projectId
   });
 
@@ -389,7 +389,6 @@ export const postProjectPermitSQL = (
     return null;
   }
 
-  // TODO model is missing agency name
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_permit (
         p_id,
@@ -405,7 +404,7 @@ export const postProjectPermitSQL = (
     `;
 
   defaultLog.debug({
-    label: 'postProjectPermitWithSamplingSQL',
+    label: 'postProjectPermitSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
