@@ -93,10 +93,6 @@ function getProjectWithDetails(): RequestHandler {
 
       await connection.commit();
 
-      connection.release();
-
-      await connection.commit();
-
       const getProjectData = (projectData && projectData.rows && new GetProjectData(projectData.rows[0])) || null;
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
       const getLocationData =

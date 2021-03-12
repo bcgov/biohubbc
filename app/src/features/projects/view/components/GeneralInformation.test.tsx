@@ -7,6 +7,7 @@ const projectWithDetailsData: IProjectWithDetails = {
   id: 1,
   project: {
     project_name: 'Test Project Name',
+    project_type_name: 'Type name',
     project_type: '1',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
