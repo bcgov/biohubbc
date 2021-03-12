@@ -95,7 +95,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            Placeholder
+            Type name
           </h6>
         </div>
       </div>

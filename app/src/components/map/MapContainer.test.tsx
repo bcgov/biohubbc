@@ -72,6 +72,12 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  test('matches the snapshot with draw controls hidden', () => {
+    const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} hideDrawControls={true} />);
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   test('draws a marker successfully on the map and updates the geometry', () => {
     const { container } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />

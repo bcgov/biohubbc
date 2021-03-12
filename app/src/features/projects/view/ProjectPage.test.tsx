@@ -1,7 +1,7 @@
 import { cleanup, render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProject } from 'interfaces/project-interfaces';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Router } from 'react-router';
@@ -11,7 +11,7 @@ const history = createMemoryHistory({ initialEntries: ['/projects/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
-  getProject: jest.fn<Promise<IProject>, [number]>()
+  getProject: jest.fn<Promise<IProjectWithDetails>, [number]>()
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -42,19 +42,23 @@ describe('ProjectPage', () => {
     await act(async () => {
       mockBiohubApi().getProject.mockResolvedValue({
         id: 1,
-        name: 'Test Project Name',
-        objectives: 'Et ad et in culpa si',
-        location_description: '',
-        start_date: '1998-10-10',
-        end_date: '2021-02-26',
-        caveats: 'Impedit sint vel au',
-        comments: 'Nisi sed omnis fugia',
-        coordinator_first_name: 'Madonna',
-        coordinator_last_name: 'Hunt',
-        coordinator_email_address: 'robulic@mailinator.com',
-        coordinator_agency_name: 'Willa Coleman',
-        focal_species_name_list: 'species 1, species 2',
-        regions_name_list: 'region 1, region 2, region 3'
+        project: {
+          project_name: 'Test Project Name',
+          project_type: '1',
+          start_date: '1998-10-10',
+          end_date: '2021-02-26',
+          climate_change_initiatives: [],
+          project_activities: []
+        },
+        location: {
+          location_description: 'here and there',
+          regions: [],
+          geometry: []
+        },
+        objectives: {
+          objectives: 'Et ad et in culpa si',
+          caveats: 'sjwer bds'
+        }
       });
 
       const { asFragment, findByText } = render(

@@ -2,14 +2,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { GetObjectivesData, GetProjectData, GetLocationData } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
-import { getProjectSQL } from '../../queries/project-queries';
+import { getProjectSQL, getRegionsByProjectSQL } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}', 'POST'), getProject()];
+export const GET: Operation = [logRequest('paths/project/{projectId}', 'POST'), getProjectWithDetails()];
 
 GET.apiDoc = {
   description: 'Fetch a project by its ID.',
@@ -66,14 +67,15 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProject(): RequestHandler {
+function getProjectWithDetails(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
+      const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
 
-      if (!getProjectSQLStatement) {
+      if (!getProjectSQLStatement || !getRegionsByProjectSQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -82,11 +84,33 @@ function getProject(): RequestHandler {
 
       await connection.open();
 
-      const createResponse = await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
+      const [projectData, regionsData] = await Promise.all([
+        await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
+        await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values)
+      ]);
+
+      defaultLog.debug({ label: 'getProjectWithDetails', message: 'test' });
 
       await connection.commit();
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      const getProjectData = (projectData && projectData.rows && new GetProjectData(projectData.rows[0])) || null;
+      const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
+      const getLocationData =
+        (projectData &&
+          projectData.rows &&
+          regionsData &&
+          regionsData.rows &&
+          new GetLocationData(projectData.rows[0], regionsData.rows)) ||
+        null;
+
+      const result = {
+        id: req.params.projectId,
+        project: getProjectData,
+        objectives: getObjectivesData,
+        location: getLocationData
+      };
+
+      defaultLog.debug('result:', result);
 
       return res.status(200).json(result);
     } catch (error) {

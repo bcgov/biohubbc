@@ -1,19 +1,7 @@
 import { IFormRecord } from './useBioHubApi-interfaces';
-
-// TODO everything on this page is a WIP
-
-// project
-//   project_climate_initiative
-//   project_funding_agency
-//     funding_agency
-//     land_based_investment_strategy
-//   project_management_actions
-//     management_action_type
-//   project_participation
-//     system_user
-//     project_role
-//   project_region
-//   proponent
+import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
+import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
+import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 
 /**
  * An interface representing the project table.
@@ -36,6 +24,19 @@ export interface IProject {
   coordinator_agency_name: string;
   focal_species_name_list: string;
   regions_name_list: string;
+}
+
+/**
+ * An interface representing the project table.
+ *
+ * @export
+ * @interface IProject
+ */
+export interface IProjectWithDetails {
+  id: number;
+  project: IProjectDetailsForm;
+  objectives: IProjectObjectivesForm;
+  location: IProjectLocationForm;
 }
 
 /**

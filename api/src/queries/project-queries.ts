@@ -168,103 +168,6 @@ export const postAncillarySpeciesSQL = (species: string, projectId: number): SQL
 };
 
 /**
- * SQL query to get a single project.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
-
-  // TODO pull the record wtih the latest revision_count?
-  const sqlStatement = SQL`
-    SELECT
-      id,
-      pt_id,
-      name,
-      objectives,
-      management_recovery_action,
-      location_description,
-      start_date,
-      end_date,
-      caveats,
-      comments,
-      coordinator_first_name,
-      coordinator_last_name,
-      coordinator_email_address,
-      coordinator_agency_name,
-      coordinator_public,
-      create_date,
-      create_user,
-      update_date,
-      update_user,
-      revision_count
-    from
-      project
-    where
-      id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'getProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get all projects.
- *
- * @param {string} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getProjectsSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectsSQL', message: 'getProjectsSQL' });
-
-  // TODO these fields were chosen arbitrarily based on having a small
-  const sqlStatement = SQL`
-    SELECT
-      p.id,
-      p.name,
-      p.management_recovery_action,
-      p.start_date,
-      p.end_date,
-      p.location_description,
-      string_agg(DISTINCT pr.name, ', ') as regions_name_list,
-      string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
-    from
-      project as p
-    left outer join project_region as pr
-      on p.id = pr.p_id
-    left outer join focal_species as pfs
-      on p.id = pfs.p_id
-    group by
-      p.id,
-      p.name,
-      p.management_recovery_action,
-      p.start_date,
-      p.end_date,
-      p.location_description;
-  `;
-
-  defaultLog.debug({
-    label: 'getProjectsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to insert a project region row.
  *
  * @param {string} region
@@ -502,6 +405,142 @@ export const postProjectPermitSQL = (
 
   defaultLog.debug({
     label: 'postProjectPermitSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get a single project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  // TODO pull the record wtih the latest revision_count?
+  const sqlStatement = SQL`
+    SELECT
+      project.id,
+      project.pt_id,
+      project_type.name as pt_name,
+      project.name,
+      project.objectives,
+      project.management_recovery_action,
+      project.location_description,
+      project.start_date,
+      project.end_date,
+      project.caveats,
+      project.comments,
+      project.coordinator_first_name,
+      project.coordinator_last_name,
+      project.coordinator_email_address,
+      project.coordinator_agency_name,
+      project.coordinator_public,
+      public.ST_asGeoJSON(project.geography) as geometry,
+      project.create_date,
+      project.create_user,
+      project.update_date,
+      project.update_user,
+      project.revision_count
+    from
+      project
+    left outer join
+      project_type
+        on project.pt_id = project_type.id
+    where
+      project.id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get all projects.
+ *
+ * @param {string} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectListSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectListSQL', message: 'getProjectListSQL' });
+
+  // TODO these fields were chosen arbitrarily based on having a small
+  const sqlStatement = SQL`
+    SELECT
+      p.id,
+      p.name,
+      p.management_recovery_action,
+      p.start_date,
+      p.end_date,
+      p.location_description,
+      string_agg(DISTINCT pr.name, ', ') as regions_name_list,
+      string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
+    from
+      project as p
+    left outer join project_region as pr
+      on p.id = pr.p_id
+    left outer join focal_species as pfs
+      on p.id = pfs.p_id
+    group by
+      p.id,
+      p.name,
+      p.management_recovery_action,
+      p.start_date,
+      p.end_date,
+      p.location_description;
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get all projects.
+ *
+ * @param {string} projectId
+ * @returns {SQLStatement} sql query object
+ */
+
+export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getRegionsByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  // TODO these fields were chosen arbitrarily based on having a small
+  const sqlStatement = SQL`
+    SELECT
+      id,
+      name
+    from
+      project_region
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getRegionsByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

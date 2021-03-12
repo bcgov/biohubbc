@@ -2,7 +2,7 @@ import { Box, Button, CircularProgress, makeStyles, Paper, Typography } from '@m
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { UploadProjectArtifactsI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProject } from 'interfaces/project-interfaces';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface IProjectAttachmentsProps {
-  projectData: any;
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**
@@ -59,7 +59,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   });
 
   // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
-  const [project, setProject] = useState<IProject | null>(null);
+  const [project, setProject] = useState<IProjectWithDetails | null>(null);
 
   const handleUpload = async () => {
     const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
