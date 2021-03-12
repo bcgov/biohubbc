@@ -3,7 +3,6 @@ import { IProjectDetailsForm } from 'features/projects/components/ProjectDetails
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 
-
 /**
  * An interface representing the project table.
  *

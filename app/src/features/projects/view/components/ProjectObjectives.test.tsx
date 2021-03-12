@@ -3,8 +3,6 @@ import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 
-
-
 const projectWithDetailsData: IProjectWithDetails = {
   id: 1,
   project: {
