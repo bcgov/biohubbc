@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData, PostObjectivesData } from './project';
+import { PostProjectData, PostLocationData, PostObjectivesData, PostIUCNData } from './project';
 
 describe('PostProjectData', () => {
   describe('No values provided', () => {
@@ -103,6 +103,40 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
+describe('PostIUCNData', () => {
+  describe('No values provided', () => {
+    let projectIUCNData: PostIUCNData;
+
+    before(() => {
+      projectIUCNData = new PostIUCNData(null);
+    });
+
+    it('sets classification details', function () {
+      expect(projectIUCNData.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectIUCNData: PostIUCNData;
+
+    const obj = {
+      classificationDetails: [{
+        classification: 1,
+        subClassification1: 2,
+        subClassification2: 3
+      }]
+    };
+
+    before(() => {
+      projectIUCNData = new PostIUCNData(obj);
+    });
+
+    it('sets classification details', function () {
+      expect(projectIUCNData.classificationDetails).to.eql(obj.classificationDetails);
     });
   });
 });
