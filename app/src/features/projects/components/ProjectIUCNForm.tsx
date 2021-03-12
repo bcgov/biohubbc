@@ -25,9 +25,6 @@ const useStyles = makeStyles((theme) => ({
   iucnInput: {
     flex: '0 0 auto',
     width: '33.333%'
-  },
-  ['@media (max-width:800px)']: {
-    // Insert Media Queries Here
   }
 }));
 
@@ -50,6 +47,14 @@ export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = 
 export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
   classificationDetails: [ProjectIUCNFormArrayItemInitialValues]
 };
+
+export interface IIUCNSubClassification1Option extends IMultiAutocompleteFieldOption {
+  iucn_id: number;
+}
+
+export interface IIUCNSubClassification2Option extends IMultiAutocompleteFieldOption {
+  iucn1_id: number;
+}
 
 export const ProjectIUCNFormYupSchema = yup.object().shape({
   classificationDetails: yup.array().of(
