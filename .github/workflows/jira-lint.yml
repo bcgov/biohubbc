@@ -1,0 +1,16 @@
+name: jira-lint
+on: [pull_request]
+
+jobs:
+  jira-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cleartax/jira-lint@master
+        name: jira-lint
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          jira-token: ${{ secrets.JIRA_TOKEN }}
+          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          skip-branches: '^(prod|test\/v\d+)$'
+          skip-comments: true
+          pr-threshold: 1000
