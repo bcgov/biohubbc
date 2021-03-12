@@ -446,6 +446,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       project.coordinator_email_address,
       project.coordinator_agency_name,
       project.coordinator_public,
+      project.geography,
       project.create_date,
       project.create_user,
       project.update_date,

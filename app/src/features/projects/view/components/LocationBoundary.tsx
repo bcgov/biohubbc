@@ -17,6 +17,8 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
     projectWithDetailsData: { location }
   } = props;
 
+  console.log('geometry', location.geometry);
+
   return (
     <>
       <Grid container spacing={3}>
@@ -38,7 +40,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Region(s)</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{location.regions}</Typography>
+              <Typography variant="subtitle1">{location.regions.join(", ")}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
