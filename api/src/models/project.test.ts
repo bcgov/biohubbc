@@ -124,11 +124,13 @@ describe('PostIUCNData', () => {
     let projectIUCNData: PostIUCNData;
 
     const obj = {
-      classificationDetails: [{
-        classification: 1,
-        subClassification1: 2,
-        subClassification2: 3
-      }]
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 2,
+          subClassification2: 3
+        }
+      ]
     };
 
     before(() => {
