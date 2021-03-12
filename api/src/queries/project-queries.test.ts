@@ -1,12 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import {
-  PostProjectData,
-  PostLocationData,
-  PostCoordinatorData,
-  PostObjectivesData,
-  PostPermitData
-} from '../models/project';
+import { PostProjectData, PostLocationData, PostCoordinatorData, PostObjectivesData } from '../models/project';
 import {
   getProjectSQL,
   getProjectsSQL,
@@ -21,11 +15,7 @@ describe('postProjectSQL', () => {
     it('returns null', () => {
       // force the function to accept a null value
       const response = postProjectSQL(
-        (null as unknown) as PostProjectData &
-          PostLocationData &
-          PostCoordinatorData &
-          PostObjectivesData &
-          PostPermitData
+        (null as unknown) as PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
       );
 
       expect(response).to.be.null;
@@ -61,15 +51,9 @@ describe('postProjectSQL', () => {
       caveats: 'a caveat maybe'
     };
 
-    const permitData = {
-      permit_number: '123',
-      sampling_conducted: true
-    };
-
     const postProjectData = new PostProjectData(projectData);
     const postCoordinatorData = new PostCoordinatorData(coordinatorData);
     const postObjectivesData = new PostObjectivesData(objectivesData);
-    const postPermitData = new PostPermitData(permitData);
 
     it('returns a SQLStatement', () => {
       const postLocationData = new PostLocationData(locationData);
@@ -77,8 +61,7 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData,
-        ...postPermitData
+        ...postObjectivesData
       });
 
       expect(response).to.not.be.null;
@@ -115,8 +98,7 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData,
-        ...postPermitData
+        ...postObjectivesData
       });
 
       expect(response).to.not.be.null;
@@ -167,8 +149,7 @@ describe('postProjectSQL', () => {
         ...postProjectData,
         ...postCoordinatorData,
         ...postLocationData,
-        ...postObjectivesData,
-        ...postPermitData
+        ...postObjectivesData
       });
 
       expect(response).to.not.be.null;

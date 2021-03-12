@@ -6,7 +6,7 @@
 export const projectPostBody = {
   title: 'Project Post Object',
   type: 'object',
-  required: ['project'],
+  required: ['coordinator', 'permit', 'project', 'location', 'species', 'funding'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -25,7 +25,8 @@ export const projectPostBody = {
           type: 'string'
         },
         share_contact_details: {
-          type: 'string'
+          type: 'string',
+          enum: ['true', 'false']
         }
       }
     },

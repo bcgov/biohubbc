@@ -62,7 +62,7 @@ import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   IGetAllCodesResponse,
-  IPartialProjectPostObject,
+  IPermitNoSamplingPostObject,
   IProjectPostObject
 } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
@@ -131,7 +131,7 @@ const CreateProjectPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   // The number of steps listed in the UI based on the current state of the component/forms
-  const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_PARTIAL_PROJECT_STEPS);
+  const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_ALL_PROJECT_STEPS);
 
   // All possible step forms, and their current state
   const [stepForms, setStepForms] = useState<ICreateProjectStep[]>([]);
@@ -206,7 +206,7 @@ const CreateProjectPage: React.FC = () => {
         stepContent: (
           <ProjectPermitForm
             onValuesChange={(values) => {
-              if (isAtLeastOnePermitMarkedSamplingConducted(values)) {
+              if (isSamplingConducted(values)) {
                 setNumberOfSteps(NUM_ALL_PROJECT_STEPS);
               } else {
                 setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
@@ -338,12 +338,16 @@ const CreateProjectPage: React.FC = () => {
   }, [codes, stepForms]);
 
   /**
-   * Return true if there exists at least 1 permit, which has been marked as having conducted sampling, false otherwise.
+   * Return true if the user has indicated that sampling has been conducted.
    *
    * @param {IProjectPermitForm} permitFormValues
    * @return {boolean} {boolean}
    */
-  const isAtLeastOnePermitMarkedSamplingConducted = (permitFormValues: IProjectPermitForm): boolean => {
+  const isSamplingConducted = (permitFormValues: IProjectPermitForm): boolean => {
+    if (!permitFormValues.permits.length) {
+      return true;
+    }
+
     return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
   };
 
@@ -403,8 +407,8 @@ const CreateProjectPage: React.FC = () => {
       const iucnData = stepForms[6].stepValues as IProjectIUCNForm;
       const fundingData = stepForms[7].stepValues as IProjectFundingForm;
 
-      if (!isAtLeastOnePermitMarkedSamplingConducted(permitData)) {
-        await createPartialProject({
+      if (!isSamplingConducted(permitData)) {
+        await createPermitNoSampling({
           coordinator: coordinatorData,
           permit: permitData
         });
@@ -426,21 +430,20 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
-   * Creates a new partial-project record
+   * Creates a new project record in which no sampling was conducted
    *
-   * @param {IPartialProjectPostObject} partialProjectPostObject
+   * @param {IPermitNoSamplingPostObject} projectNoSamplingPostObject
    * @return {*}
    */
-  const createPartialProject = async (partialProjectPostObject: IPartialProjectPostObject) => {
-    // TODO update this api call
-    const response = await biohubApi.createPartialProject(partialProjectPostObject);
+  const createPermitNoSampling = async (projectNoSamplingPostObject: IPermitNoSamplingPostObject) => {
+    const response = await biohubApi.createPermitNoSampling(projectNoSamplingPostObject);
 
-    if (!response || !response.id) {
-      showErrorDialog({ dialogError: 'The response from the server was null.' });
+    if (!response?.ids?.length) {
+      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
       return;
     }
 
-    history.push(`/projects/${response.id}`);
+    history.push(`/projects`);
   };
 
   /**
@@ -452,7 +455,7 @@ const CreateProjectPage: React.FC = () => {
   const createProject = async (projectPostObject: IProjectPostObject) => {
     const response = await biohubApi.createProject(projectPostObject);
 
-    if (!response || !response.id) {
+    if (!response?.id) {
       showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
