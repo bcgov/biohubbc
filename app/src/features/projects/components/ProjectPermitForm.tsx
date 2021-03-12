@@ -17,7 +17,7 @@ import React, { useEffect } from 'react';
 import * as yup from 'yup';
 
 export interface IProjectPermitFormArrayItem {
-  permit_number: number;
+  permit_number: string;
   sampling_conducted: string;
 }
 
@@ -26,23 +26,18 @@ export interface IProjectPermitForm {
 }
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
-  permit_number: ('' as unknown) as number,
-  sampling_conducted: 'false'
+  permit_number: '',
+  sampling_conducted: 'true'
 };
 
 export const ProjectPermitFormInitialValues: IProjectPermitForm = {
-  permits: [ProjectPermitFormArrayItemInitialValues]
+  permits: []
 };
 
 export const ProjectPermitFormYupSchema = yup.object().shape({
   permits: yup.array().of(
     yup.object().shape({
-      permit_number: yup
-        .number()
-        .transform((value) => (isNaN(value) && null) || value)
-        .typeError('Must be a number')
-        .min(0, 'Must be a positive number')
-        .required('Required'),
+      permit_number: yup.string().required('Required'),
       sampling_conducted: yup.string().required('Required')
     })
   )
@@ -106,7 +101,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                             onChange={handleChange}
                             error={samplingConductedMeta.touched && Boolean(samplingConductedMeta.error)}
                             displayEmpty
-                            inputProps={{ 'aria-label': 'Sampling Conducted', 'data-testid': 'sampling_conducted' }}>
+                            inputProps={{ 'aria-label': 'sampling conducted', 'data-testid': 'sampling_conducted' }}>
                             <MenuItem key={1} value="false">
                               No
                             </MenuItem>
@@ -118,7 +113,10 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                         </FormControl>
                       </Box>
                       <Box pt={0.5} pl={1}>
-                        <IconButton color="primary" aria-label="delete" onClick={() => arrayHelpers.remove(index)}>
+                        <IconButton
+                          color="primary"
+                          aria-label="remove permit"
+                          onClick={() => arrayHelpers.remove(index)}>
                           <Icon path={mdiTrashCanOutline} size={1} />
                         </IconButton>
                       </Box>
@@ -132,9 +130,9 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                 type="button"
                 variant="outlined"
                 color="primary"
-                aria-label="Add Another"
+                aria-label="add permit"
                 onClick={() => arrayHelpers.push(ProjectPermitFormArrayItemInitialValues)}>
-                Add Another
+                Add Permit
               </Button>
             </Box>
           </Box>

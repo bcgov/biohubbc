@@ -1,162 +1,23 @@
 {
 	"info": {
-		"_postman_id": "5ce44b42-c065-453a-bfe3-d48f2f12658d",
+		"_postman_id": "ef2fe398-c57a-46e0-ba72-7c12b6db38ee",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "misc",
-			"item": [
-				{
-					"name": "/version",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASEURL}}/version",
-							"host": [
-								"{{BASEURL}}"
-							],
-							"path": [
-								"version"
-							]
-						},
-						"description": "Get api version information.\r\n\r\nCan be used as a health check to see if the API is running."
-					},
-					"response": [
-						{
-							"name": "Fetched api version information",
-							"originalRequest": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/misc/version",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"misc",
-										"version"
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"version\": \"eu esse sint aliqua Lorem\",\n \"environment\": \"est qui nostrud\"\n}"
-						}
-					]
-				}
-			]
-		},
-		{
 			"name": "project",
 			"item": [
 				{
-					"name": "/project (WIP)",
+					"name": "{projectId}",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"// Set the `PROJECT_ID` environment variable to the `id` value returned by the last `POST project` request\r",
-									"var response = JSON.parse(responseBody);\r",
-									"pm.environment.set(\"PROJECT_ID\", response.id);\r",
-									"\r",
 									"pm.test(\"Successful POST request\", function () {\r",
 									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-								"key": "Authorization",
-								"value": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"coordinator\": {\r\n        \"first_name\": \"first name\",\r\n        \"last_name\": \"last name\",\r\n        \"email_address\": \"email@email.com\",\r\n        \"coordinator_agency\": \"coordinator agency\",\r\n        \"share_contact_details\": \"false\"\r\n    },\r\n    \"permit\": {\r\n        \"permits\": [\r\n            {\r\n                \"permit_number\": \"55555\",\r\n                \"sampling_conducted\": \"true\"\r\n            }\r\n        ]\r\n    },\r\n    \"project\": {\r\n        \"project_name\": \"project name\",\r\n        \"project_type\": 3,\r\n        \"project_activities\": [\r\n            2,\r\n            4\r\n        ],\r\n        \"climate_change_initiatives\": [\r\n            2,\r\n            3\r\n        ],\r\n        \"start_date\": \"2021-03-08\",\r\n        \"end_date\": \"2021-03-26\"\r\n    },\r\n    \"location\": {\r\n        \"regions\": [\r\n            \"West Coast\",\r\n            \"Kootenays\"\r\n        ],\r\n        \"location_description\": \"A location description\",\r\n        \"geometry\": [\r\n            {\r\n                \"type\": \"Feature\",\r\n                \"id\": \"myGeo1\",\r\n                \"geometry\": {\r\n                    \"type\": \"Polygon\",\r\n                    \"coordinates\": [[\r\n                        [-128, 55],\r\n                        [-128, 55.5],\r\n                        [-128, 56],\r\n                        [-126, 58],\r\n                        [-128, 55]\r\n                    ]]\r\n                },\r\n                \"properties\": {\r\n                    \"name\": \"Biohub Islands 1\"\r\n                }\r\n            },\r\n            {\r\n                \"type\": \"Feature\",\r\n                \"id\": \"myGeo2\",\r\n                \"geometry\": {\r\n                    \"type\": \"Polygon\",\r\n                    \"coordinates\": [[\r\n                        [-128.5, 55.5],\r\n                        [-128.5, 56.0],\r\n                        [-128.5, 56.5],\r\n                        [-126.5, 58.5],\r\n                        [-128.5, 55.5]\r\n                    ]]\r\n                },\r\n                \"properties\": {\r\n                    \"name\": \"Biohub Islands 2\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"species\": {\r\n        \"focal_species\": [\r\n            \"Acuteleaf Small Limestone Moss [Seligeria acutifolia]\",\r\n            \"American Badger [Taxidea taxus]\"\r\n        ],\r\n        \"ancillary_species\": [\r\n            \"Black Tern [Chlidonias niger]\",\r\n            \"Blue Shark [Prionace glauca]\"\r\n        ]\r\n    },\r\n    \"funding\": {\r\n        \"funding_agencies\": [\r\n            {\r\n                \"agency_id\": 1,\r\n                \"investment_action_category\": 23,\r\n                \"agency_project_id\": \"11111\",\r\n                \"funding_amount\": 222,\r\n                \"start_date\": \"2021-03-09\",\r\n                \"end_date\": \"2021-03-26\"\r\n            }\r\n        ],\r\n        \"indigenous_partnerships\": [\r\n            1,\r\n            3\r\n        ],\r\n        \"stakeholder_partnerships\": [\r\n            \"Fish and Wildlife Compensation Program\",\r\n            \"Habitat Conservation Trust Fund\"\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BASEURL}}/project",
-							"host": [
-								"{{BASEURL}}"
-							],
-							"path": [
-								"project"
-							]
-						},
-						"description": "Create a new project."
-					},
-					"response": []
-				},
-				{
-					"name": "/project/{projectId}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Response time is less than 1000ms\", function () {\r",
@@ -200,121 +61,6 @@
 						"description": "Get a single project by its ID."
 					},
 					"response": []
-				},
-				{
-					"name": "/projects",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-								"key": "Authorization",
-								"value": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{BASEURL}}/projects",
-							"host": [
-								"{{BASEURL}}"
-							],
-							"path": [
-								"projects"
-							]
-						},
-						"description": "Get all projects."
-					},
-					"response": [
-						{
-							"name": "Created",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"activityType\": \"irure in est dolor\",\n \"activitySubType\": \"dolore adipisicing\",\n \"date\": \"ipsum aute\",\n \"locationAndGeometry\": \"dolor amet\"\n}"
-						},
-						{
-							"name": "Unauthorized user",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"activityType\": \"<string>\",\n    \"activityTypeData\": \"<object>\",\n    \"activitySubType\": \"<string>\",\n    \"activitySubTypeData\": \"<object>\",\n    \"date\": \"<date>\",\n    \"locationAndGeometry\": {\n        \"anchorPointY\": \"<integer>\",\n        \"anchorPointX\": \"<integer>\",\n        \"area\": \"<integer>\",\n        \"geometry\": \"<object>\",\n        \"jurisdiction\": \"<string>\",\n        \"agency\": \"<string>\",\n        \"observer1FirstName\": \"<string>\",\n        \"observer1LastName\": \"<string>\",\n        \"locationComment\": \"<string>\",\n        \"generalComment\": \"<string>\",\n        \"photoTaken\": \"<boolean>\"\n    },\n    \"deviceRequestUID\": \"<string>\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/activity",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"activity"
-									]
-								}
-							},
-							"status": "Unauthorized",
-							"code": 401,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n \"message\": \"Duis deserunt\",\n \"errors\": [\n  \"laborum\",\n  \"reprehenderit culpa sit do\"\n ]\n}"
-						}
-					]
 				}
 			]
 		},
@@ -322,27 +68,31 @@
 			"name": "projects",
 			"item": [
 				{
-					"name": "{PROJECT_ID}",
+					"name": "{projectId}",
 					"item": [
 						{
 							"name": "artifacts",
 							"item": [
 								{
-									"name": "upload",
+									"name": "{fileName}",
 									"item": [
 										{
-											"name": "upload - single file test",
+											"name": "download",
 											"event": [
 												{
 													"listen": "test",
 													"script": {
 														"exec": [
-															"pm.test(\"Successful POST request\", function () {",
-															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
+															"pm.test(\"Successful GET request\", function () {",
+															"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
 															"});",
 															"",
 															"pm.test(\"Response time is less than 2000ms\", function () {",
 															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+															"});",
+															"",
+															"pm.test(\"response body is an object\", function () {",
+															"    pm.expect(pm.response.json()).to.be.an('object');",
 															"});"
 														],
 														"type": "text/javascript"
@@ -350,6 +100,174 @@
 												}
 											],
 											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/multi_red_dot4.png/download",
+													"host": [
+														"{{BASEURL}}"
+													],
+													"path": [
+														"projects",
+														"{{PROJECT_ID}}",
+														"artifacts",
+														"multi_red_dot4.png",
+														"download"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "list",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successful GET request\", function () {",
+													"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 2000ms\", function () {",
+													"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+													"});",
+													"",
+													"pm.test(\"response body is an array\", function () {",
+													"    pm.expect(pm.response.json()).to.be.an('array');",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/list",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"projects",
+												"{{PROJECT_ID}}",
+												"artifacts",
+												"list"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "upload",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Successful POST request\", function () {",
+													"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 2000ms\", function () {",
+													"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/x-www-form-urlencoded",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "media",
+													"type": "file",
+													"src": "/Users/anissa/Desktop/BioHub docs/Upload_files/CSV_sample_11kb.csv"
+												}
+											],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"projects",
+												"{{PROJECT_ID}}",
+												"artifacts",
+												"upload"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "multiple files",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/x-www-form-urlencoded",
+														"type": "text"
+													}
+												],
+												"body": {
+													"mode": "formdata",
+													"formdata": [
+														{
+															"key": "media",
+															"type": "file",
+															"src": [
+																"/C:/Users/Nick/Desktop/c4611_sample_explain.pdf",
+																"/C:/Users/Nick/Desktop/small_image.jpg"
+															]
+														}
+													],
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
+													"host": [
+														"{{BASEURL}}"
+													],
+													"path": [
+														"projects",
+														"{{PROJECT_ID}}",
+														"artifacts",
+														"upload"
+													]
+												}
+											},
+											"_postman_previewlanguage": null,
+											"header": null,
+											"cookie": [],
+											"body": null
+										},
+										{
+											"name": "single file",
+											"originalRequest": {
 												"method": "POST",
 												"header": [
 													{
@@ -386,161 +304,10 @@
 													]
 												}
 											},
-											"response": []
-										},
-										{
-											"name": "upload - multi file test",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Successful POST request\", function () {",
-															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
-															"});",
-															"",
-															"pm.test(\"Response time is less than 2000ms\", function () {",
-															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "POST",
-												"header": [],
-												"body": {
-													"mode": "formdata",
-													"formdata": [
-														{
-															"key": "media",
-															"type": "file",
-															"src": [
-																"/Users/anissa/Desktop/BioHub docs/Upload_files/CSV_sample_11kb.csv",
-																"/Users/anissa/Desktop/BioHub docs/Upload_files/DOC_sample_200kb.doc",
-																"/Users/anissa/Desktop/BioHub docs/Upload_files/KML_Samples.kml"
-															]
-														}
-													],
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
-													"host": [
-														"{{BASEURL}}"
-													],
-													"path": [
-														"projects",
-														"{{PROJECT_ID}}",
-														"artifacts",
-														"upload"
-													]
-												}
-											},
-											"response": []
-										}
-									]
-								},
-								{
-									"name": "list",
-									"item": [
-										{
-											"name": "list test",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Successful GET request\", function () {",
-															"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
-															"});",
-															"",
-															"pm.test(\"Response time is less than 2000ms\", function () {",
-															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
-															"});",
-															"",
-															"pm.test(\"response body is an array\", function () {",
-															"    pm.expect(pm.response.json()).to.be.an('array');",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
-											"request": {
-												"method": "GET",
-												"header": [],
-												"url": {
-													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/list",
-													"host": [
-														"{{BASEURL}}"
-													],
-													"path": [
-														"projects",
-														"{{PROJECT_ID}}",
-														"artifacts",
-														"list"
-													]
-												}
-											},
-											"response": []
-										}
-									]
-								},
-								{
-									"name": "{fileName}",
-									"item": [
-										{
-											"name": "download",
-											"item": [
-												{
-													"name": "download test",
-													"event": [
-														{
-															"listen": "test",
-															"script": {
-																"exec": [
-																	"pm.test(\"Successful GET request\", function () {",
-																	"    pm.expect(pm.response.code).to.be.oneOf([200,201,202]);",
-																	"});",
-																	"",
-																	"pm.test(\"Response time is less than 2000ms\", function () {",
-																	"    pm.expect(pm.response.responseTime).to.be.below(2000);",
-																	"});",
-																	"",
-																	"pm.test(\"response body is an object\", function () {",
-																	"    pm.expect(pm.response.json()).to.be.an('object');",
-																	"});"
-																],
-																"type": "text/javascript"
-															}
-														}
-													],
-													"request": {
-														"method": "GET",
-														"header": [],
-														"url": {
-															"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/multi_red_dot4.png/download",
-															"host": [
-																"{{BASEURL}}"
-															],
-															"path": [
-																"projects",
-																"{{PROJECT_ID}}",
-																"artifacts",
-																"multi_red_dot4.png",
-																"download"
-															]
-														}
-													},
-													"response": []
-												}
-											]
+											"_postman_previewlanguage": null,
+											"header": null,
+											"cookie": [],
+											"body": null
 										}
 									]
 								}
@@ -549,6 +316,282 @@
 					]
 				}
 			]
+		},
+		{
+			"name": "codes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{BASEURL}}/codes",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"codes"
+					]
+				},
+				"description": "Create a new project."
+			},
+			"response": []
+		},
+		{
+			"name": "permit-no-sampling",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate random 5 digit number\r",
+							"pm.globals.set('randomNumber', Math.floor(Math.random() * 100000));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"coordinator\": {\r\n        \"first_name\": \"first name\",\r\n        \"last_name\": \"last name\",\r\n        \"email_address\": \"email@email.com\",\r\n        \"coordinator_agency\": \"coordinator agency\",\r\n        \"share_contact_details\": \"false\"\r\n    },\r\n    \"permit\": {\r\n        \"permits\": [\r\n            {\r\n                \"permit_number\": \"{{randomNumber}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/permit-no-sampling",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"permit-no-sampling"
+					]
+				},
+				"description": "Create a new project."
+			},
+			"response": []
+		},
+		{
+			"name": "project",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set the `PROJECT_ID` environment variable to the `id` value returned by the last `POST project` request\r",
+							"var response = JSON.parse(responseBody);\r",
+							"pm.environment.set(\"PROJECT_ID\", response.id);\r",
+							"\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate random 5 digit number\r",
+							"pm.globals.set('randomNumber', Math.floor(Math.random() * 100000));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"coordinator\": {\r\n        \"first_name\": \"first name\",\r\n        \"last_name\": \"last name\",\r\n        \"email_address\": \"email@email.com\",\r\n        \"coordinator_agency\": \"coordinator agency\",\r\n        \"share_contact_details\": \"false\"\r\n    },\r\n    \"permit\": {\r\n        \"permits\": [\r\n            {\r\n                \"permit_number\": \"{{randomNumber}}\",\r\n                \"sampling_conducted\": \"true\"\r\n            }\r\n        ]\r\n    },\r\n    \"project\": {\r\n        \"project_name\": \"project name\",\r\n        \"project_type\": 3,\r\n        \"project_activities\": [\r\n            2,\r\n            4\r\n        ],\r\n        \"climate_change_initiatives\": [\r\n            2,\r\n            3\r\n        ],\r\n        \"start_date\": \"2021-03-08\",\r\n        \"end_date\": \"2021-03-26\"\r\n    },\r\n    \"location\": {\r\n        \"regions\": [\r\n            \"West Coast\",\r\n            \"Kootenays\"\r\n        ],\r\n        \"location_description\": \"A location description\",\r\n        \"geometry\": [\r\n            {\r\n                \"type\": \"Feature\",\r\n                \"id\": \"myGeo1\",\r\n                \"geometry\": {\r\n                    \"type\": \"Polygon\",\r\n                    \"coordinates\": [[\r\n                        [-128, 55],\r\n                        [-128, 55.5],\r\n                        [-128, 56],\r\n                        [-126, 58],\r\n                        [-128, 55]\r\n                    ]]\r\n                },\r\n                \"properties\": {\r\n                    \"name\": \"Biohub Islands 1\"\r\n                }\r\n            },\r\n            {\r\n                \"type\": \"Feature\",\r\n                \"id\": \"myGeo2\",\r\n                \"geometry\": {\r\n                    \"type\": \"Polygon\",\r\n                    \"coordinates\": [[\r\n                        [-128.5, 55.5],\r\n                        [-128.5, 56.0],\r\n                        [-128.5, 56.5],\r\n                        [-126.5, 58.5],\r\n                        [-128.5, 55.5]\r\n                    ]]\r\n                },\r\n                \"properties\": {\r\n                    \"name\": \"Biohub Islands 2\"\r\n                }\r\n            }\r\n        ]\r\n    },\r\n    \"species\": {\r\n        \"focal_species\": [\r\n            \"Acuteleaf Small Limestone Moss [Seligeria acutifolia]\",\r\n            \"American Badger [Taxidea taxus]\"\r\n        ],\r\n        \"ancillary_species\": [\r\n            \"Black Tern [Chlidonias niger]\",\r\n            \"Blue Shark [Prionace glauca]\"\r\n        ]\r\n    },\r\n    \"funding\": {\r\n        \"funding_agencies\": [\r\n            {\r\n                \"agency_id\": 1,\r\n                \"investment_action_category\": 23,\r\n                \"agency_project_id\": \"11111\",\r\n                \"funding_amount\": 222,\r\n                \"start_date\": \"2021-03-09\",\r\n                \"end_date\": \"2021-03-26\"\r\n            }\r\n        ],\r\n        \"indigenous_partnerships\": [\r\n            1,\r\n            3\r\n        ],\r\n        \"stakeholder_partnerships\": [\r\n            \"Fish and Wildlife Compensation Program\",\r\n            \"Habitat Conservation Trust Fund\"\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASEURL}}/project",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"project"
+					]
+				},
+				"description": "Create a new project."
+			},
+			"response": []
+		},
+		{
+			"name": "projects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
+						"key": "Authorization",
+						"value": ""
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{BASEURL}}/projects",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"projects"
+					]
+				},
+				"description": "Get all projects."
+			},
+			"response": []
+		},
+		{
+			"name": "version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASEURL}}/version",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"version"
+					]
+				},
+				"description": "Get api version information.\r\n\r\nCan be used as a health check to see if the API is running."
+			},
+			"response": []
 		},
 		{
 			"name": "token",

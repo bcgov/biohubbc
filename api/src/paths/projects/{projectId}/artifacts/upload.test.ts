@@ -1,16 +1,11 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { MediaBase64 } from '../../../../models/media';
 
 describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test MediaBase64 instantiation', () => {
   it('should throw an error when MediaBase64 is constructed with empty JSON', function () {
     const rawMedia: any = {};
 
-    try {
-      new MediaBase64(rawMedia);
-    } catch (error) {
-      expect(true).to.be.true;
-      console.log(error);
-    }
+    assert.throws(() => new MediaBase64(rawMedia));
   });
 
   it('should throw an error when MediaBase64 is constructed with corrupt encoded file content', function () {
@@ -19,12 +14,7 @@ describe('Unit Testing: POST /api/projects/{projectId}/artifacts/upload - Test M
       encoded_file: 'dat....ge/png;ba...4,iVBORw0KG...'
     };
 
-    try {
-      new MediaBase64(rawMedia);
-    } catch (error) {
-      expect(true).to.be.true;
-      console.log(error);
-    }
+    assert.throws(() => new MediaBase64(rawMedia));
   });
 
   it('should return populated MediaBase64 object with expected values if input JSON object contains valid IMediaItem', function () {
