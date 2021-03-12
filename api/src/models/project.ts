@@ -29,14 +29,6 @@ export interface IProject {
   regions_name_list?: string;
 }
 
-// /**
-//  * An interface representing the project climate initiative table.
-//  *
-//  * @export
-//  * @interface IProjectClimateInitiative
-//  */
-// export interface IProjectClimateInitiative {}
-
 /**
  * An interface representing the project funding agency table.
  *
@@ -110,14 +102,6 @@ export interface IProjectRegion {
   region_name: string;
 }
 
-// /**
-//  * An interface representing the project participation table.
-//  *
-//  * @export
-//  * @interface IProjectParticipation
-//  */
-// export interface IProjectParticipation {}
-
 /**
  * Processes all POST /project request data.
  *
@@ -131,6 +115,7 @@ export class PostProjectObject {
   objectives: PostObjectivesData;
   location: PostLocationData;
   species: PostSpeciesData;
+  iucn: PostIUCNData;
   funding: PostFundingData;
 
   constructor(obj?: any) {
@@ -143,6 +128,7 @@ export class PostProjectObject {
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
+    this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
   }
 }
 
@@ -306,6 +292,37 @@ export class PostLocationData {
     this.location_description = (obj && obj.location_description) || null;
     this.regions = (obj?.regions?.length && obj.regions) || [];
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+  }
+}
+
+export interface IPostIUCN {
+  classification: number;
+  subClassification1: number;
+  subClassification2: number;
+}
+
+/**
+ * Processes POST /project IUCN data
+ *
+ * @export
+ * @class PostIUCNData
+ */
+export class PostIUCNData {
+  classificationDetails: IPostIUCN[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostIUCNData', message: 'params', obj });
+
+    this.classificationDetails =
+      (obj?.classificationDetails?.length &&
+        obj.classificationDetails.map((item: any) => {
+          return {
+            classification: item.classification,
+            subClassification1: item.subClassification1,
+            subClassification2: item.subClassification2
+          };
+        })) ||
+      [];
   }
 }
 

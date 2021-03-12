@@ -548,3 +548,44 @@ export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null =
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to insert a project IUCN row.
+ *
+ * @param iucn_id
+ * @param project_id
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectIUCNSQL',
+    message: 'params',
+    iucn_id,
+    project_id
+  });
+
+  if (!iucn_id || !project_id) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_iucn_action_classificaton (
+        iucn2_id,
+        p_id
+      ) VALUES (
+        ${iucn_id},
+        ${project_id}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectIUCNSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
