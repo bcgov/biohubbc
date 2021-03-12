@@ -9,6 +9,7 @@ import * as yup from 'yup';
 export interface IProjectDetailsForm {
   project_name: string;
   project_type: string;
+  project_type_name?: string;
   project_activities: number[];
   climate_change_initiatives: number[];
   start_date: string;

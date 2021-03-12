@@ -1,9 +1,10 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 
-export interface IProjectDetailsProps {
-  projectData: any;
+export interface IProjectObjectivesProps {
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**
@@ -11,9 +12,9 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const ProjectObjectives: React.FC<IProjectDetailsProps> = (props: any) => {
+const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
   const {
-    projectData: { objectives }
+    projectWithDetailsData: { objectives }
   } = props;
 
   return (
@@ -34,7 +35,7 @@ const ProjectObjectives: React.FC<IProjectDetailsProps> = (props: any) => {
           </Grid>
           <Grid container item spacing={2} xs={12}>
             <Grid item xs={12}>
-              {objectives}
+              {objectives.objectives}
             </Grid>
             <Grid item xs={12}></Grid>
           </Grid>

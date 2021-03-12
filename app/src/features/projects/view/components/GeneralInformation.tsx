@@ -3,9 +3,10 @@ import { Edit } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import React from 'react';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 
 export interface IProjectDetailsProps {
-  projectData: any;
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**
@@ -15,7 +16,7 @@ export interface IProjectDetailsProps {
  */
 const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
   const {
-    projectData: { name, start_date, end_date }
+    projectWithDetailsData: { project }
   } = props;
 
   return (
@@ -39,7 +40,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Project Name</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{name}</Typography>
+              <Typography variant="subtitle1">{project.project_name}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -47,7 +48,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Type</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">Placeholder</Typography>
+              <Typography variant="subtitle1">{project.project_type_name}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -56,7 +57,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
             </Box>
             <Box>
               <Typography variant="subtitle1">
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, start_date, end_date)}
+                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date, project.end_date)}
               </Typography>
             </Box>
           </Grid>

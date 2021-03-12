@@ -3,9 +3,10 @@ import React from 'react';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 
 export interface IProjectDetailsProps {
-  projectData: any;
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**
@@ -14,7 +15,7 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
-  const { projectData } = props;
+  const { projectWithDetailsData } = props;
 
   return (
     <>
@@ -23,14 +24,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Box>
       <Box mb={3}>
         <Paper>
-          <ProjectObjectives projectData={projectData}></ProjectObjectives>
+          <ProjectObjectives projectWithDetailsData={projectWithDetailsData}></ProjectObjectives>
         </Paper>
       </Box>
 
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <GeneralInformation projectData={projectData}></GeneralInformation>
+            <GeneralInformation projectWithDetailsData={projectWithDetailsData}></GeneralInformation>
           </Box>
         </Paper>
       </Box>
@@ -38,7 +39,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <LocationBoundary projectData={projectData}></LocationBoundary>
+            <LocationBoundary projectWithDetailsData={projectWithDetailsData}></LocationBoundary>
           </Box>
         </Paper>
       </Box>
