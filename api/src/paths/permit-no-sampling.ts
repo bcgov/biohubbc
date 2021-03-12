@@ -85,7 +85,7 @@ function createNoSamplePermits(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(result);
+      return res.status(200).json({ ids: result });
     } catch (error) {
       await connection.rollback();
       defaultLog.debug({ label: 'createNoSamplePermits', message: 'error', error });

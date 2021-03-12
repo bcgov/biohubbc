@@ -47,8 +47,6 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('General Information')).toBeVisible();
 
-      expect(getByText('General Information')).toBeVisible();
-
       expect(getByText('Objectives')).toBeVisible();
 
       expect(getByText('Location')).toBeVisible();
@@ -67,15 +65,13 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().getAllCodes.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'code 1' }]
     });
-    const { findByText, asFragment, getByText, getByTestId, getByLabelText } = renderContainer();
+    const { findByText, asFragment, queryByText, getByText, getByTestId, getByLabelText } = renderContainer();
 
     // wait for initial page to load
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
 
       expect(getByText('Permits')).toBeVisible();
-
-      expect(getByText('General Information')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
@@ -113,6 +109,18 @@ describe('CreateProjectPage', () => {
       expect(getByText('Project Coordinator')).toBeVisible();
 
       expect(getByText('Permits')).toBeVisible();
+
+      expect(queryByText('General Information')).toBeNull();
+
+      expect(queryByText('Objectives')).toBeNull();
+
+      expect(queryByText('Location')).toBeNull();
+
+      expect(queryByText('Species')).toBeNull();
+
+      expect(queryByText('IUCN Classification')).toBeNull();
+
+      expect(queryByText('Funding and Partnerships')).toBeNull();
 
       expect(asFragment()).toMatchSnapshot();
     });
