@@ -5,8 +5,7 @@ import {
   PostLocationData,
   PostProjectData,
   PostObjectivesData,
-  PostProjectObject,
-  PostPermitData
+  PostProjectObject
 } from '../models/project';
 import { getLogger } from '../utils/logger';
 import { Feature } from 'geojson';
@@ -20,7 +19,7 @@ const defaultLog = getLogger('queries/project-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postProjectSQL = (
-  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData & PostPermitData
+  project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
 
@@ -503,6 +502,50 @@ export const postProjectPermitSQL = (
 
   defaultLog.debug({
     label: 'postProjectPermitWithSamplingSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a project IUCN row.
+ *
+ * @param iucn_id
+ * @param project_id
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectIUCNSQL = (
+  iucn_id: number,
+  project_id: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectIUCNSQL',
+    message: 'params',
+    iucn_id,
+    project_id
+  });
+
+  if (!iucn_id || !project_id) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_iucn_action_classificaton (
+        iucn2_id,
+        p_id
+      ) VALUES (
+        ${iucn_id},
+        ${project_id}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectIUCNSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

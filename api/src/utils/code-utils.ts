@@ -4,7 +4,10 @@ import {
   getFirstNationsSQL,
   getFundingSourceSQL,
   getInvestmentActionCategorySQL,
-  getManagementActionTypeSQL
+  getManagementActionTypeSQL,
+  getIUCNConservationActionLevel1ClassificationSQL,
+  getIUCNConservationActionLevel2SubclassificationSQL,
+  getIUCNConservationActionLevel3SubclassificationSQL
 } from '../queries/code-queries';
 import { getLogger } from '../utils/logger';
 
@@ -21,6 +24,9 @@ export interface IAllCodeSets {
   coordinator_agency: object;
   region: object;
   species: object;
+  iucn_conservation_action_level_1_classification: object;
+  iucn_conservation_action_level_2_subclassification: object;
+  iucn_conservation_action_level_3_subclassification: object;
 }
 
 /**
@@ -43,13 +49,19 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     climate_change_initiative,
     first_nations,
     funding_source,
-    investment_action_category
+    investment_action_category,
+    iucn_conservation_action_level_1_classification,
+    iucn_conservation_action_level_2_subclassification,
+    iucn_conservation_action_level_3_subclassification
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getClimateChangeInitiativeSQL().text),
     await connection.query(getFirstNationsSQL().text),
     await connection.query(getFundingSourceSQL().text),
-    await connection.query(getInvestmentActionCategorySQL().text)
+    await connection.query(getInvestmentActionCategorySQL().text),
+    await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
+    await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
+    await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text)
   ]);
 
   await connection.commit();
@@ -62,6 +74,9 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     first_nations: (first_nations && first_nations.rows) || [],
     funding_source: (funding_source && funding_source.rows) || [],
     investment_action_category: (investment_action_category && investment_action_category.rows) || [],
+    iucn_conservation_action_level_1_classification: (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
+    iucn_conservation_action_level_2_subclassification: (iucn_conservation_action_level_2_subclassification && iucn_conservation_action_level_2_subclassification.rows) || [],
+    iucn_conservation_action_level_3_subclassification: (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) || [],
     // TODO Temporarily hard coded list of project activities
     project_activity: [
       { id: 1, name: 'Reconnaissance' },
