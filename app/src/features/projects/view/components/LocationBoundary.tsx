@@ -2,6 +2,7 @@ import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
+import MapContainer from 'components/map/MapContainer';
 
 export interface IProjectDetailsProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -40,7 +41,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Region(s)</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{location.regions.join(", ")}</Typography>
+              <Typography variant="subtitle1">{location.regions.join(', ')}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -49,6 +50,15 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
             </Box>
             <Box>
               <Typography variant="subtitle1">{location.location_description}</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            <Box mt={5} height={500}>
+              <MapContainer
+                mapId="project_location_form_map"
+                hideDrawControls={true}
+                nonEditableGeometries={[JSON.parse(location.geometry)]}
+              />
             </Box>
           </Grid>
         </Grid>

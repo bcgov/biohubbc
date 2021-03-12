@@ -335,11 +335,7 @@ export class GetLocationData {
           return item.name;
         })) ||
       [];
-      this.geometry = (projectData?.geography?.length && projectData.geography) || [];
-      console.log('ProjectData', projectData);
-
-    // TODO need to extract geometry into Feature[]
-    //this.geometry = (projectData?.geometry?.length && obj.geometry) || [];
+    this.geometry = (projectData?.geometry?.length && projectData.geometry) || [];
   }
 }
 

@@ -33,10 +33,25 @@ export interface IMapContainerProps {
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: Feature[];
   bounds?: any[];
+  hideDrawControls?: boolean;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const { classes, mapId, geometryState, nonEditableGeometries, bounds } = props;
+  const { classes, mapId, geometryState, nonEditableGeometries, bounds, hideDrawControls } = props;
+  let shownDrawControls: any = {};
+  let showEditControls: any = {};
+
+  if (hideDrawControls) {
+    shownDrawControls.rectangle = false;
+    shownDrawControls.circle = false;
+    shownDrawControls.polygon = false;
+    shownDrawControls.polyline = false;
+    shownDrawControls.circlemarker = false;
+    shownDrawControls.marker = false;
+
+    showEditControls.edit = false;
+    showEditControls.remove = false;
+  }
 
   return (
     <LeafletMapContainer
@@ -51,6 +66,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <FeatureGroup>
         <MapEditControls
           position="topright"
+          draw={hideDrawControls ? shownDrawControls : undefined}
+          edit={hideDrawControls ? showEditControls : undefined}
           geometry={geometryState?.geometry}
           setGeometry={geometryState?.setGeometry}
         />
