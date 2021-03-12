@@ -1,8 +1,9 @@
 import { Box, Paper, Typography } from '@material-ui/core';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 
 export interface IProjectSurveysProps {
-  projectData: any;
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**

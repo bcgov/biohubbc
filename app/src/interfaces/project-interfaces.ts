@@ -1,4 +1,12 @@
 import { IFormRecord } from './useBioHubApi-interfaces';
+//import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
+import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
+//import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
+//import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
+import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
+import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
+//import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
+//import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
 // TODO everything on this page is a WIP
 
@@ -36,6 +44,24 @@ export interface IProject {
   coordinator_agency_name: string;
   focal_species_name_list: string;
   regions_name_list: string;
+}
+
+/**
+ * An interface representing the project table.
+ *
+ * @export
+ * @interface IProject
+ */
+export interface IProjectWithDetails {
+  id: number;
+  //coordinator: IProjectCoordinatorForm;
+  //permit: IProjectPermitForm;
+  project: IProjectDetailsForm;
+  objectives: IProjectObjectivesForm;
+  //species: IProjectSpeciesForm;
+  location: IProjectLocationForm;
+  //iucn: IProjectIUCNForm;
+  //funding: IProjectFundingForm;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
 import { ConfigContext } from 'contexts/configContext';
-import { IProject } from 'interfaces/project-interfaces';
+import { IProject, IProjectWithDetails } from 'interfaces/project-interfaces';
 import {
   IActivity,
   ICreateActivity,
@@ -57,13 +57,26 @@ export const useBiohubApi = () => {
     return data;
   };
 
+  //   /**
+  //    * Get a project based on its ID.
+  //    *
+  //    * @param {projectId} projectId
+  //    * @return {*}  {Promise<IProject>}
+  //    */
+  //   const getProject = async (projectId: number): Promise<IProject> => {
+  //     const { data } = await api.get(`/api/project/${projectId}`);
+
+  //     return data;
+  //   };
+  // };
+
   /**
-   * Get a project based on its ID.
+   * Get a project details based on its ID.
    *
    * @param {projectId} projectId
    * @return {*}  {Promise<IProject>}
    */
-  const getProject = async (projectId: number): Promise<IProject> => {
+  const getProject = async (projectId: number): Promise<IProjectWithDetails> => {
     const { data } = await api.get(`/api/project/${projectId}`);
 
     return data;

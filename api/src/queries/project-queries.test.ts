@@ -9,7 +9,7 @@ import {
 } from '../models/project';
 import {
   getProjectSQL,
-  getProjectsSQL,
+  getProjectListSQL,
   postProjectSQL,
   postProjectRegionSQL,
   postProjectPermitSQL
@@ -200,7 +200,7 @@ describe('getProjectSQL', () => {
 
 describe('getProjectsSQL', () => {
   it('returns a SQLStatement', () => {
-    const response = getProjectsSQL();
+    const response = getProjectListSQL();
 
     expect(response).to.not.be.null;
   });

@@ -18,7 +18,7 @@ import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProject } from 'interfaces/project-interfaces';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -51,26 +51,26 @@ const ProjectPage: React.FC = () => {
   const classes = useStyles();
 
   // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
-  const [project, setProject] = useState<IProject | null>(null);
+  const [projectWithDetails, setProjectWithDetails] = useState<IProjectWithDetails | null>(null);
 
   useEffect(() => {
     const getProject = async () => {
-      const projectResponse = await biohubApi.getProject(urlParams['id']);
+      const projectWithDetailsResponse = await biohubApi.getProject(urlParams['id']);
 
-      if (!projectResponse) {
+      if (!projectWithDetailsResponse) {
         // TODO error handling/messaging
         return;
       }
 
-      setProject(projectResponse);
+      setProjectWithDetails(projectWithDetailsResponse);
     };
 
-    if (!project) {
+    if (!projectWithDetails) {
       getProject();
     }
-  }, [urlParams, biohubApi, project]);
+  }, [urlParams, biohubApi, projectWithDetails]);
 
-  if (!project) {
+  if (!projectWithDetails) {
     return <CircularProgress></CircularProgress>;
   }
 
@@ -85,16 +85,20 @@ const ProjectPage: React.FC = () => {
                   <Typography variant="body2">Projects</Typography>
                 </Link>
                 <Link to="details" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{project.name}</Typography>
+                  <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
                 </Link>
               </Breadcrumbs>
             </Box>
             <Box mb={1}>
-              <Typography variant="h1">{project.name}</Typography>
+              <Typography variant="h1">{projectWithDetails.project.project_name}</Typography>
             </Box>
             <Box mb={3} display="flex">
               <Typography variant="subtitle2">
-                {getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, project.start_date, project.end_date)}
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.MediumDateFormat,
+                  projectWithDetails.project.start_date,
+                  projectWithDetails.project.end_date
+                )}
               </Typography>
               <Divider orientation="vertical" flexItem style={{ margin: '0 0.6rem' }} />
               <Typography variant="subtitle2">TODO Set Project Regions</Typography>
@@ -140,9 +144,11 @@ const ProjectPage: React.FC = () => {
               </List>
             </Box>
             <Box width="100%">
-              {location.pathname.includes('/details') && <ProjectDetails projectData={project} />}
-              {location.pathname.includes('/surveys') && <ProjectSurveys projectData={project} />}
-              {location.pathname.includes('/attachments') && <ProjectAttachments projectData={project} />}
+              {location.pathname.includes('/details') && <ProjectDetails projectWithDetailsData={projectWithDetails} />}
+              {location.pathname.includes('/surveys') && <ProjectSurveys projectWithDetailsData={projectWithDetails} />}
+              {location.pathname.includes('/attachments') && (
+                <ProjectAttachments projectWithDetailsData={projectWithDetails} />
+              )}
             </Box>
           </Box>
         </Container>

@@ -3,13 +3,13 @@ import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { projectResponseBody } from '../openapi/schemas/project';
-import { getProjectsListSQL } from '../queries/project-queries';
+import { getProjectListSQL } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/projects');
 
-export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjectsList()];
+export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjectList()];
 
 GET.apiDoc = {
   description: 'Get all Projects.',
@@ -59,14 +59,14 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjectsList(): RequestHandler {
+function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectsListSQLStatement = getProjectsListSQL();
+      const getProjectListSQLStatement = getProjectListSQL();
 
-      if (!getProjectsListSQLStatement) {
+      if (!getProjectListSQLStatement) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -75,21 +75,24 @@ function getProjectsList(): RequestHandler {
 
       await connection.open();
 
-      const getProjectsListResponse = await connection.query(getProjectsListSQLStatement.text, getProjectsListSQLStatement.values);
+      const getProjectListResponse = await connection.query(
+        getProjectListSQLStatement.text,
+        getProjectListSQLStatement.values
+      );
 
       await connection.commit();
 
       let rows: any[] = [];
 
-      if (getProjectsListResponse && getProjectsListResponse.rows) {
-        rows = getProjectsListResponse.rows;
+      if (getProjectListResponse && getProjectListResponse.rows) {
+        rows = getProjectListResponse.rows;
       }
 
       const result: any[] = _extractProjects(rows);
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectsList', message: 'error', error });
+      defaultLog.debug({ label: 'getProjectList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

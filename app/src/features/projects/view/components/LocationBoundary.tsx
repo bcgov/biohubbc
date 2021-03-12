@@ -1,9 +1,10 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
+import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 
 export interface IProjectDetailsProps {
-  projectData: any;
+  projectWithDetailsData: IProjectWithDetails;
 }
 
 /**
@@ -13,7 +14,7 @@ export interface IProjectDetailsProps {
  */
 const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
   const {
-    projectData: { location_description }
+    projectWithDetailsData: { location }
   } = props;
 
   return (
@@ -37,15 +38,15 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Region(s)</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">Placeholder</Typography>
+              <Typography variant="subtitle1">{location.regions}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
             <Box color="text.disabled">
-              <Typography variant="caption">Location Description </Typography>
+              <Typography variant="caption">Location Description</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{location_description}</Typography>
+              <Typography variant="subtitle1">{location.location_description}</Typography>
             </Box>
           </Grid>
         </Grid>

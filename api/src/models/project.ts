@@ -226,6 +226,34 @@ export class PostProjectData {
 }
 
 /**
+ * Pre-processes GET /projects/{id} project data
+ *
+ * @export
+ * @class GetProjectData
+ */
+export class GetProjectData {
+  project_name: string;
+  project_type: number;
+  project_type_name: string;
+  management_recovery_action: string;
+  start_date: string;
+  end_date: string;
+  comments: string;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', obj });
+
+    this.project_name = obj?.name || null;
+    this.project_type = obj?.pt_id || null;
+    this.project_type_name = obj?.pt_name || null;
+    this.management_recovery_action = obj?.management_recovery_action || null;
+    this.start_date = obj?.start_date || null;
+    this.end_date = obj?.end_date || null;
+    this.comments = obj?.comments || null;
+  }
+}
+
+/**
  * Processes POST /project objectives data
  *
  * @export
@@ -237,6 +265,24 @@ export class PostObjectivesData {
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
+
+    this.objectives = obj?.objectives || '';
+    this.caveats = obj?.caveats || null;
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{id} objectives data
+ *
+ * @export
+ * @class GetObjectivesData
+ */
+export class GetObjectivesData {
+  objectives: string;
+  caveats: string;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
     this.caveats = obj?.caveats || null;
@@ -260,6 +306,38 @@ export class PostLocationData {
     this.location_description = (obj && obj.location_description) || null;
     this.regions = (obj?.regions?.length && obj.regions) || [];
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{id}
+ *
+ * @export
+ * @class GetLocationData
+ */
+export class GetLocationData {
+  location_description: string;
+  regions: string[];
+  geometry?: Feature[];
+
+  constructor(projectData?: any, regionsData?: any[]) {
+    defaultLog.debug({
+      label: 'GetLocationData',
+      message: 'params',
+      projectData: projectData,
+      regionsData: regionsData
+    });
+
+    this.location_description = (projectData && projectData.location_description) || null;
+    this.regions =
+      (regionsData &&
+        regionsData.map((item: any) => {
+          return item.name;
+        })) ||
+      [];
+
+    // TODO need to extract geometry into Feature[]
+    //this.geometry = (projectData?.geometry?.length && obj.geometry) || [];
   }
 }
 
