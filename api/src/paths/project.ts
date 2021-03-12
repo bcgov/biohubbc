@@ -88,7 +88,8 @@ function createProject(): RequestHandler {
         ...sanitizedProjectPostData.project,
         ...sanitizedProjectPostData.location,
         ...sanitizedProjectPostData.objectives,
-        ...sanitizedProjectPostData.coordinator
+        ...sanitizedProjectPostData.coordinator,
+        ...sanitizedProjectPostData.permit
       });
 
       if (!postProjectSQLStatement) {
