@@ -110,7 +110,7 @@ describe('ProjectLocationForm', () => {
     expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
   });
 
-  it('displays the uploaded geometry on the map when the spatial upload succeeds', async () => {
+  it('displays the uploaded geo on the map when the spatial upload succeeds', async () => {
     kml.mockReturnValueOnce({
       features: [
         {
