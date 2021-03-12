@@ -29,4 +29,4 @@ jobs:
           column-to-move-to-when-review-requested: Peer Review
           column-to-move-to-when-changes-requested: In Progress
           column-to-move-to-when-merged: Client Review
-        jira-issue-id: ${{ steps.extract_jira.outputs.jiraid }}
+          jira-issue-id: ${{ steps.extract_jira.outputs.jiraid }}
