@@ -4,242 +4,215 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-1"
+      class="MuiBox-root MuiBox-root-3"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+        class="MuiGrid-root MuiGrid-container"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-2"
+            class="MuiBox-root MuiBox-root-4"
           >
             <div
-              class="MuiBox-root MuiBox-root-3"
+              class="MuiBox-root MuiBox-root-5 makeStyles-iucnInputContainer-1"
             >
               <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
+                class="MuiBox-root MuiBox-root-6 makeStyles-iucnInput-2"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                  data-shrink="false"
-                  id="classification"
-                >
-                  Classification
-                </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
                 >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                    data-shrink="false"
+                    id="classification"
+                  >
+                    Classification
+                  </label>
                   <div
-                    aria-haspopup="listbox"
-                    aria-label="Classification"
-                    aria-labelledby="classification classificationDetails.[0].classification"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="classificationDetails.[0].classification"
-                    role="button"
-                    tabindex="0"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
-                    <span>
-                      ​
-                    </span>
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].classification"
-                    tabindex="-1"
-                    value=""
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-4 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-6"
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Classification"
+                      aria-labelledby="classification classificationDetails.[0].classification"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="classificationDetails.[0].classification"
+                      role="button"
+                      tabindex="0"
                     >
                       <span>
-                        Classification
+                        ​
                       </span>
-                    </legend>
-                  </fieldset>
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].classification"
+                      tabindex="-1"
+                      value=""
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-9"
+                      >
+                        <span>
+                          Classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained"
+                  />
                 </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained"
-                />
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-11 makeStyles-iucnInput-2"
+              >
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                    data-shrink="false"
+                    id="subClassification1"
+                  >
+                    Sub-classification
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
+                  >
+                    <div
+                      aria-disabled="true"
+                      aria-haspopup="listbox"
+                      aria-label="subClassification1"
+                      aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
+                      id="classificationDetails.[0].subClassification1"
+                      role="button"
+                    >
+                      <span>
+                        ​
+                      </span>
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].subClassification1"
+                      tabindex="-1"
+                      value=""
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-9"
+                      >
+                        <span>
+                          Sub-classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-12 makeStyles-iucnInput-2"
+              >
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                    data-shrink="false"
+                    id="subClassification2"
+                  >
+                    Sub-classification
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
+                  >
+                    <div
+                      aria-disabled="true"
+                      aria-haspopup="listbox"
+                      aria-label="subClassification2"
+                      aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
+                      id="classificationDetails.[0].subClassification2"
+                      role="button"
+                    >
+                      <span>
+                        ​
+                      </span>
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].subClassification2"
+                      tabindex="-1"
+                      value=""
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-9"
+                      >
+                        <span>
+                          Sub-classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained"
+                  />
+                </div>
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-8"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-9"
-            >
-              <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                  data-shrink="false"
-                  id="subClassification1"
-                >
-                  Sub-classification
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
-                >
-                  <div
-                    aria-disabled="true"
-                    aria-haspopup="listbox"
-                    aria-label="subClassification1"
-                    aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
-                    id="classificationDetails.[0].subClassification1"
-                    role="button"
-                  >
-                    <span>
-                      ​
-                    </span>
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].subClassification1"
-                    tabindex="-1"
-                    value=""
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-4 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-6"
-                    >
-                      <span>
-                        Sub-classification
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-10"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-11"
-            >
-              <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                  data-shrink="false"
-                  id="subClassification2"
-                >
-                  Sub-classification
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
-                >
-                  <div
-                    aria-disabled="true"
-                    aria-haspopup="listbox"
-                    aria-label="subClassification2"
-                    aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
-                    id="classificationDetails.[0].subClassification2"
-                    role="button"
-                  >
-                    <span>
-                      ​
-                    </span>
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].subClassification2"
-                    tabindex="-1"
-                    value=""
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-4 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-6"
-                    >
-                      <span>
-                        Sub-classification
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-12"
+              class="MuiBox-root MuiBox-root-13"
             >
               <button
                 aria-label="delete"
@@ -270,7 +243,7 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-13"
+        class="MuiBox-root MuiBox-root-14"
       >
         <button
           aria-label="Add Another"
@@ -297,236 +270,209 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-14"
+      class="MuiBox-root MuiBox-root-17"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+        class="MuiGrid-root MuiGrid-container"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-15"
+            class="MuiBox-root MuiBox-root-18"
           >
             <div
-              class="MuiBox-root MuiBox-root-16"
+              class="MuiBox-root MuiBox-root-19 makeStyles-iucnInputContainer-15"
             >
               <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
+                class="MuiBox-root MuiBox-root-20 makeStyles-iucnInput-16"
               >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  id="classification"
-                >
-                  Classification
-                </label>
                 <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
                 >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    id="classification"
+                  >
+                    Classification
+                  </label>
                   <div
-                    aria-haspopup="listbox"
-                    aria-label="Classification"
-                    aria-labelledby="classification classificationDetails.[0].classification"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="classificationDetails.[0].classification"
-                    role="button"
-                    tabindex="0"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                   >
-                    Class 1
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].classification"
-                    tabindex="-1"
-                    value="class_1"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="Classification"
+                      aria-labelledby="classification classificationDetails.[0].classification"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="classificationDetails.[0].classification"
+                      role="button"
+                      tabindex="0"
                     >
-                      <span>
-                        Classification
-                      </span>
-                    </legend>
-                  </fieldset>
+                      Class 1
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].classification"
+                      tabindex="-1"
+                      value="1"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                      >
+                        <span>
+                          Classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  />
                 </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
-                />
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-25 makeStyles-iucnInput-16"
+              >
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    id="subClassification1"
+                  >
+                    Sub-classification
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="subClassification1"
+                      aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="classificationDetails.[0].subClassification1"
+                      role="button"
+                      tabindex="0"
+                    >
+                      A Sub-class 1
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].subClassification1"
+                      tabindex="-1"
+                      value="3"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                      >
+                        <span>
+                          Sub-classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  />
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-26 makeStyles-iucnInput-16"
+              >
+                <div
+                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                    data-shrink="true"
+                    id="subClassification2"
+                  >
+                    Sub-classification
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                  >
+                    <div
+                      aria-haspopup="listbox"
+                      aria-label="subClassification2"
+                      aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
+                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                      id="classificationDetails.[0].subClassification2"
+                      role="button"
+                      tabindex="0"
+                    >
+                      A Sub-class 2
+                    </div>
+                    <input
+                      aria-hidden="true"
+                      class="MuiSelect-nativeInput"
+                      name="classificationDetails.[0].subClassification2"
+                      tabindex="-1"
+                      value="5"
+                    />
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                      >
+                        <span>
+                          Sub-classification
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                  <p
+                    class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+                  />
+                </div>
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-21"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-22"
-            >
-              <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  id="subClassification1"
-                >
-                  Sub-classification
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="subClassification1"
-                    aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="classificationDetails.[0].subClassification1"
-                    role="button"
-                    tabindex="0"
-                  >
-                    Sub-class 1
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].subClassification1"
-                    tabindex="-1"
-                    value="subclass_1"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
-                    >
-                      <span>
-                        Sub-classification
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-23"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-24"
-            >
-              <div
-                class="MuiFormControl-root"
-                style="width: 100%;"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                  data-shrink="true"
-                  id="subClassification2"
-                >
-                  Sub-classification
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                >
-                  <div
-                    aria-haspopup="listbox"
-                    aria-label="subClassification2"
-                    aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
-                    class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                    id="classificationDetails.[0].subClassification2"
-                    role="button"
-                    tabindex="0"
-                  >
-                    Sub-class 2
-                  </div>
-                  <input
-                    aria-hidden="true"
-                    class="MuiSelect-nativeInput"
-                    name="classificationDetails.[0].subClassification2"
-                    tabindex="-1"
-                    value="subclass_2"
-                  />
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
-                    >
-                      <span>
-                        Sub-classification
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-                <p
-                  class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
-                />
-              </div>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-25"
+              class="MuiBox-root MuiBox-root-27"
             >
               <button
                 aria-label="delete"
@@ -557,7 +503,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-26"
+        class="MuiBox-root MuiBox-root-28"
       >
         <button
           aria-label="Add Another"

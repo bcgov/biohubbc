@@ -5,28 +5,45 @@ import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocomple
 import ProjectIUCNForm, {
   IProjectIUCNForm,
   ProjectIUCNFormInitialValues,
-  ProjectIUCNFormYupSchema
+  ProjectIUCNFormYupSchema,
+  IIUCNSubClassification1Option,
+  IIUCNSubClassification2Option
 } from './ProjectIUCNForm';
 
 const classifications: IMultiAutocompleteFieldOption[] = [
   {
-    value: 'class_1',
+    value: 1,
     label: 'Class 1'
   },
   {
-    value: 'class_2',
+    value: 2,
     label: 'Class 2'
   }
 ];
 
-const subClassifications: IMultiAutocompleteFieldOption[] = [
+const subClassifications1: IIUCNSubClassification1Option[] = [
   {
-    value: 'subclass_1',
-    label: 'Sub-class 1'
+    value: 3,
+    iucn_id: 1,
+    label: 'A Sub-class 1'
   },
   {
-    value: 'subclass_2',
-    label: 'Sub-class 2'
+    value: 4,
+    iucn_id: 2,
+    label: 'A Sub-class 1 again'
+  }
+];
+
+const subClassifications2: IIUCNSubClassification2Option[] = [
+  {
+    value: 5,
+    iucn1_id: 3,
+    label: 'A Sub-class 2'
+  },
+  {
+    value: 6,
+    iucn1_id: 4,
+    label: 'A Sub-class 2 again'
   }
 ];
 
@@ -39,7 +56,13 @@ describe('ProjectIUCNForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectIUCNForm classifications={classifications} subClassifications={subClassifications} />}
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
       </Formik>
     );
 
@@ -50,9 +73,9 @@ describe('ProjectIUCNForm', () => {
     const existingFormValues: IProjectIUCNForm = {
       classificationDetails: [
         {
-          classification: 'class_1',
-          subClassification1: 'subclass_1',
-          subClassification2: 'subclass_2'
+          classification: 1,
+          subClassification1: 3,
+          subClassification2: 5
         }
       ]
     };
@@ -64,7 +87,13 @@ describe('ProjectIUCNForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectIUCNForm classifications={classifications} subClassifications={subClassifications} />}
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
       </Formik>
     );
 

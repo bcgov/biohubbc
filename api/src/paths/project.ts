@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { PostFundingSource, PostProjectObject, IPostPermit } from '../models/project';
+import { PostFundingSource, PostProjectObject, IPostPermit, IPostIUCN } from '../models/project';
 import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
@@ -12,7 +12,8 @@ import {
   postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL,
-  postProjectPermitSQL
+  postProjectPermitSQL,
+  postProjectIUCNSQL
 } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
@@ -164,6 +165,13 @@ function createProject(): RequestHandler {
         await Promise.all(
           sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
             insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+          )
+        );
+
+        // Handle project IUCN classifications
+        await Promise.all(
+          sanitizedProjectPostData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
+            insertClassificationDetail(classificationDetail.subClassification2, projectId, connection)
           )
         );
 
@@ -370,6 +378,34 @@ export const insertPermitNumber = async (
     throw {
       status: 400,
       message: 'Failed to insert into project_permit table'
+    };
+  }
+
+  return result.id;
+};
+
+export const insertClassificationDetail = async (
+  iucn_id: number,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectIUCNSQL(iucn_id, project_id);
+
+  if (!sqlStatement) {
+    throw {
+      status: 400,
+      message: 'Failed to build SQL statement'
+    };
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw {
+      status: 400,
+      message: 'Failed to insert into project_iucn_action_classification table'
     };
   }
 

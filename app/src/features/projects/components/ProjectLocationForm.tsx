@@ -94,7 +94,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
     if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
       setUploadError('You must upload a KML file, please try again.');
-
+      setIsLoading(false);
       return;
     }
 

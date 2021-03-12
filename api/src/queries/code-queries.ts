@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 /**
- * SQL query to fetch managemetn action type codes.
+ * SQL query to fetch management action type codes.
  *
  * @returns {SQLStatement} sql query object
  */
@@ -35,3 +35,27 @@ export const getFundingSourceSQL = (): SQLStatement => SQL`SELECT id, name from 
  */
 export const getInvestmentActionCategorySQL = (): SQLStatement =>
   SQL`SELECT id, fs_id, name from investment_action_category;`;
+
+/**
+ * SQL query to fetch IUCN conservation action level 1 classification codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement =>
+  SQL`SELECT id, name from iucn_conservation_action_level_1_classification;`;
+
+/**
+ * SQL query to fetch IUCN conservation action level 2 sub-classification codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatement =>
+  SQL`SELECT id, iucn_id, name from iucn_conservation_action_level_2_subclassification;`;
+
+/**
+ * SQL query to fetch IUCN conservation action level 3 sub-classification codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatement =>
+  SQL`SELECT id, iucn1_id, name from iucn_conservation_action_level_3_subclassification;`;

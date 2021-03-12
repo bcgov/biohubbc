@@ -285,19 +285,18 @@ const CreateProjectPage: React.FC = () => {
         stepContent: (
           <ProjectIUCNForm
             classifications={
-              [
-                { id: 1, name: 'Class 1' },
-                { id: 2, name: 'Class 2' }
-              ].map((item) => {
+              codes?.iucn_conservation_action_level_1_classification?.map((item) => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            subClassifications={
-              [
-                { id: 1, name: 'Sub-class 1' },
-                { id: 2, name: 'Sub-class 2' }
-              ].map((item) => {
-                return { value: item.id, label: item.name };
+            subClassifications1={
+              codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
+                return { value: item.id, iucn_id: item.iucn_id, label: item.name };
+              }) || []
+            }
+            subClassifications2={
+              codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
+                return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
               }) || []
             }
           />

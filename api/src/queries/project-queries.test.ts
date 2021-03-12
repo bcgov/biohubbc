@@ -6,7 +6,8 @@ import {
   getProjectsSQL,
   postProjectSQL,
   postProjectRegionSQL,
-  postProjectPermitSQL
+  postProjectPermitSQL,
+  postProjectIUCNSQL
 } from './project-queries';
 
 describe('postProjectSQL', () => {
@@ -200,12 +201,39 @@ describe('postProjectPermitSQL', () => {
 
       expect(response).to.be.null;
     });
+  });
 
+  describe('with valid parameters', () => {
     it('returns a SQLStatement when all fields are passed in as expected', () => {
       const response = postProjectPermitSQL('123', 123, true);
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include('123');
+    });
+  });
+});
+
+describe('postProjectIUCNSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when no iucn id', () => {
+      const response = postProjectIUCNSQL((null as unknown) as number, 1);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns null when no project id', () => {
+      const response = postProjectIUCNSQL(1, (null as unknown) as number);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('with valid parameters', () => {
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postProjectIUCNSQL(1, 123);
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include(123);
     });
   });
 });
