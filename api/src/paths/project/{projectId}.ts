@@ -118,10 +118,8 @@ function getProjectWithDetails(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      throw {
-        status: 400,
-        message: 'failed to fetch project with details'
-      };
+      defaultLog.debug({ label: 'getProject', message: 'error', error });
+      throw error;
     } finally {
       connection.release();
     }
