@@ -517,10 +517,7 @@ export const postProjectPermitSQL = (
  * @param project_id
  * @returns {SQLStatement} sql query object
  */
-export const postProjectIUCNSQL = (
-  iucn_id: number,
-  project_id: number
-): SQLStatement | null => {
+export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectIUCNSQL',
     message: 'params',

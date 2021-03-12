@@ -157,7 +157,7 @@ export interface IGetAllCodesResponse {
   project_type: { id: number; name: string }[];
   region: { id: number; name: string }[];
   species: { id: number; name: string }[];
-  iucn_conservation_action_level_1_classification: { id: number, name: string }[];
-  iucn_conservation_action_level_2_subclassification: { id: number, iucn_id: number, name: string }[];
-  iucn_conservation_action_level_3_subclassification: { id: number, iucn1_id: number, name: string }[];
+  iucn_conservation_action_level_1_classification: { id: number; name: string }[];
+  iucn_conservation_action_level_2_subclassification: { id: number; iucn_id: number; name: string }[];
+  iucn_conservation_action_level_3_subclassification: { id: number; iucn1_id: number; name: string }[];
 }

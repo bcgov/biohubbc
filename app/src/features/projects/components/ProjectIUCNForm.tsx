@@ -20,13 +20,13 @@ import * as yup from 'yup';
 const useStyles = makeStyles((theme) => ({
   iucnInputContainer: {
     flex: '1 1 auto',
-    overflowX: 'hidden',
+    overflowX: 'hidden'
   },
   iucnInput: {
     flex: '0 0 auto',
-    width: '33.333%',
+    width: '33.333%'
   },
-  ["@media (max-width:800px)"]: {
+  ['@media (max-width:800px)']: {
     // Insert Media Queries Here
   }
 }));
@@ -135,13 +135,13 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props: any) => {
                               error={subClassification1Meta.touched && Boolean(subClassification1Meta.error)}
                               inputProps={{ 'aria-label': 'subClassification1' }}>
                               {props.subClassifications1
-                              // Only show the sub-classification 1 categories whose iucn_id matches the classification id
-                              .filter((item: any) => item.iucn_id === classificationDetail.classification)
-                              .map((item: any) => (
-                                <MenuItem key={item.value} value={item.value}>
-                                  {item.label}
-                                </MenuItem>
-                              ))}
+                                // Only show the sub-classification 1 categories whose iucn_id matches the classification id
+                                .filter((item: any) => item.iucn_id === classificationDetail.classification)
+                                .map((item: any) => (
+                                  <MenuItem key={item.value} value={item.value}>
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
                             </Select>
                             <FormHelperText>{subClassification1Meta.error}</FormHelperText>
                           </FormControl>
@@ -160,13 +160,13 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props: any) => {
                               error={subClassification2Meta.touched && Boolean(subClassification2Meta.error)}
                               inputProps={{ 'aria-label': 'subClassification2' }}>
                               {props.subClassifications2
-                              // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn_id
-                              .filter((item: any) => item.iucn1_id === classificationDetail.subClassification1)
-                              .map((item: any) => (
-                                <MenuItem key={item.value} value={item.value}>
-                                  {item.label}
-                                </MenuItem>
-                              ))}
+                                // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn_id
+                                .filter((item: any) => item.iucn1_id === classificationDetail.subClassification1)
+                                .map((item: any) => (
+                                  <MenuItem key={item.value} value={item.value}>
+                                    {item.label}
+                                  </MenuItem>
+                                ))}
                             </Select>
                             <FormHelperText>{subClassification2Meta.error}</FormHelperText>
                           </FormControl>

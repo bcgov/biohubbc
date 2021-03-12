@@ -74,9 +74,14 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     first_nations: (first_nations && first_nations.rows) || [],
     funding_source: (funding_source && funding_source.rows) || [],
     investment_action_category: (investment_action_category && investment_action_category.rows) || [],
-    iucn_conservation_action_level_1_classification: (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
-    iucn_conservation_action_level_2_subclassification: (iucn_conservation_action_level_2_subclassification && iucn_conservation_action_level_2_subclassification.rows) || [],
-    iucn_conservation_action_level_3_subclassification: (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) || [],
+    iucn_conservation_action_level_1_classification:
+      (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
+    iucn_conservation_action_level_2_subclassification:
+      (iucn_conservation_action_level_2_subclassification && iucn_conservation_action_level_2_subclassification.rows) ||
+      [],
+    iucn_conservation_action_level_3_subclassification:
+      (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
+      [],
     // TODO Temporarily hard coded list of project activities
     project_activity: [
       { id: 1, name: 'Reconnaissance' },

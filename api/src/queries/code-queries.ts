@@ -38,7 +38,7 @@ export const getInvestmentActionCategorySQL = (): SQLStatement =>
 
 /**
  * SQL query to fetch IUCN conservation action level 1 classification codes.
- * 
+ *
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement =>
@@ -46,7 +46,7 @@ export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement
 
 /**
  * SQL query to fetch IUCN conservation action level 2 sub-classification codes.
- * 
+ *
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatement =>
@@ -54,7 +54,7 @@ export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatem
 
 /**
  * SQL query to fetch IUCN conservation action level 3 sub-classification codes.
- * 
+ *
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatement =>
