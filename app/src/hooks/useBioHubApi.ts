@@ -57,19 +57,6 @@ export const useBiohubApi = () => {
     return data;
   };
 
-  //   /**
-  //    * Get a project based on its ID.
-  //    *
-  //    * @param {projectId} projectId
-  //    * @return {*}  {Promise<IProject>}
-  //    */
-  //   const getProject = async (projectId: number): Promise<IProject> => {
-  //     const { data } = await api.get(`/api/project/${projectId}`);
-
-  //     return data;
-  //   };
-  // };
-
   /**
    * Get a project details based on its ID.
    *

@@ -118,7 +118,6 @@ function getProjectWithDetails(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'getProjectWithDetails', message: 'error', error });
       throw error;
     } finally {
       connection.release();

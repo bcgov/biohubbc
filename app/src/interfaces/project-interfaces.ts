@@ -1,27 +1,8 @@
 import { IFormRecord } from './useBioHubApi-interfaces';
-//import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
-//import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
-//import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-//import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-//import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
-// TODO everything on this page is a WIP
-
-// project
-//   project_climate_initiative
-//   project_funding_agency
-//     funding_agency
-//     land_based_investment_strategy
-//   project_management_actions
-//     management_action_type
-//   project_participation
-//     system_user
-//     project_role
-//   project_region
-//   proponent
 
 /**
  * An interface representing the project table.
@@ -54,14 +35,9 @@ export interface IProject {
  */
 export interface IProjectWithDetails {
   id: number;
-  //coordinator: IProjectCoordinatorForm;
-  //permit: IProjectPermitForm;
   project: IProjectDetailsForm;
   objectives: IProjectObjectivesForm;
-  //species: IProjectSpeciesForm;
   location: IProjectLocationForm;
-  //iucn: IProjectIUCNForm;
-  //funding: IProjectFundingForm;
 }
 
 /**
