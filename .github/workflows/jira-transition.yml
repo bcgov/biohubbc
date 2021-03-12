@@ -1,0 +1,29 @@
+name: jira-transition
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+    branches:
+      - dev
+
+jobs:
+  steps:
+    name: Extract Jira ID
+    shell: bash
+    run: echo "##[set-output name=jiraid;]$([[ ${GITHUB_REF#refs/heads/} =~ ([A-Za-z]{4}[\- ]?[0-9]{3,4}) ]] && tr ' ' '-' <<< ${BASH_REMATCH[1]^^})"
+    id: extract_jira
+
+    name: Jira Login
+    uses: atlassian/gajira-login@master
+    env:
+      JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+      JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+    name: Set Transition
+    uses: tuanddd/jira-automate-transition@v1.0.5
+    with:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      column-to-move-to-when-review-requested: Peer Review
+      column-to-move-to-when-changes-requested: In Progress
+      column-to-move-to-when-merged: Client Review
+      jira-issue-id: ${{ steps.extract_jira.outputs.jiraid }}
