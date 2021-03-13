@@ -33,7 +33,8 @@ const useApi = () => {
       },
       baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
     });
-  }, [config, keycloak?.token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config, keycloak, keycloak?.token]);
 
   return instance;
 };

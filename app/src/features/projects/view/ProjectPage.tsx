@@ -19,6 +19,7 @@ import ProjectDetails from 'features/projects/view/ProjectDetails';
 import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -50,27 +51,51 @@ const ProjectPage: React.FC = () => {
 
   const classes = useStyles();
 
-  // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
+  const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IProjectWithDetails | null>(null);
+
+  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  const [codes, setCodes] = useState<IGetAllCodesResponse>();
+
+  useEffect(() => {
+    const getCodes = async () => {
+      const codesResponse = await biohubApi.getAllCodes();
+
+      if (!codesResponse) {
+        // TODO error handling/messaging
+        return;
+      }
+
+      setCodes(codesResponse);
+    };
+
+    if (!isLoadingCodes && !codes) {
+      getCodes();
+      setIsLoadingCodes(true);
+    }
+  }, [urlParams, biohubApi, isLoadingCodes, codes]);
 
   useEffect(() => {
     const getProject = async () => {
+      const codesResponse = await biohubApi.getAllCodes();
       const projectWithDetailsResponse = await biohubApi.getProject(urlParams['id']);
 
-      if (!projectWithDetailsResponse) {
+      if (!projectWithDetailsResponse || !codesResponse) {
         // TODO error handling/messaging
         return;
       }
 
       setProjectWithDetails(projectWithDetailsResponse);
+      setCodes(codesResponse);
     };
 
-    if (!projectWithDetails) {
+    if (!isLoadingProject && !projectWithDetails) {
       getProject();
+      setIsLoadingProject(true);
     }
-  }, [urlParams, biohubApi, projectWithDetails]);
+  }, [urlParams, biohubApi, isLoadingProject, projectWithDetails]);
 
-  if (!projectWithDetails) {
+  if (!codes || !projectWithDetails) {
     return <CircularProgress></CircularProgress>;
   }
 
@@ -144,7 +169,9 @@ const ProjectPage: React.FC = () => {
               </List>
             </Box>
             <Box width="100%">
-              {location.pathname.includes('/details') && <ProjectDetails projectWithDetailsData={projectWithDetails} />}
+              {location.pathname.includes('/details') && (
+                <ProjectDetails projectWithDetailsData={projectWithDetails} codes={codes} />
+              )}
               {location.pathname.includes('/surveys') && <ProjectSurveys projectWithDetailsData={projectWithDetails} />}
               {location.pathname.includes('/attachments') && (
                 <ProjectAttachments projectWithDetailsData={projectWithDetails} />

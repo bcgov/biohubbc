@@ -227,8 +227,8 @@ const CreateProjectPage: React.FC = () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            project_activity={
-              codes?.project_activity?.map((item) => {
+            activity={
+              codes?.activity?.map((item) => {
                 return { value: item.id, label: item.name };
               }) || []
             }

@@ -23,7 +23,7 @@ const project_type: IMultiAutocompleteFieldOption[] = [
   }
 ];
 
-const project_activity: IMultiAutocompleteFieldOption[] = [
+const activity: IMultiAutocompleteFieldOption[] = [
   {
     value: 1,
     label: 'activity 1'
@@ -65,7 +65,7 @@ describe('ProjectDetailsForm', () => {
         {() => (
           <ProjectDetailsForm
             project_type={project_type}
-            project_activity={project_activity}
+            activity={activity}
             climate_change_initiative={climate_change_initiative}
           />
         )}
@@ -95,7 +95,7 @@ describe('ProjectDetailsForm', () => {
         {() => (
           <ProjectDetailsForm
             project_type={project_type}
-            project_activity={project_activity}
+            activity={activity}
             climate_change_initiative={climate_change_initiative}
           />
         )}
