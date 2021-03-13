@@ -344,7 +344,7 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
     return SQL`public.ST_GeomFromGeoJSON(${geo})`;
   }
 
-  const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(`;
+  const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(array[`;
 
   geometry.forEach((geom: Feature, index: number) => {
     const geo = JSON.stringify(geom.geometry);
@@ -356,7 +356,7 @@ function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement {
       `);
     } else {
       sqlStatement.append(SQL`
-        public.ST_GeomFromGeoJSON(${geo})))
+        public.ST_GeomFromGeoJSON(${geo})]))
       `);
     }
   });
