@@ -33,7 +33,7 @@ const useApi = () => {
       },
       baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
     });
-  }, [config, keycloak]);
+  }, [config, keycloak?.token]);
 
   return instance;
 };
