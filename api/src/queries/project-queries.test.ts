@@ -7,7 +7,11 @@ import {
   postProjectSQL,
   postProjectRegionSQL,
   postProjectPermitSQL,
-  postProjectIUCNSQL
+  postProjectIUCNSQL,
+  getActivitiesByProjectSQL,
+  getClimateInitiativesByProjectSQL,
+  postProjectActivitySQL,
+  postProjectClimateChangeInitiativeSQL
 } from './project-queries';
 
 describe('postProjectSQL', () => {
@@ -26,7 +30,6 @@ describe('postProjectSQL', () => {
     const projectData = {
       name: 'name_test_data',
       objectives: 'objectives_test_data',
-      management_recovery_action: 'management_recovery_action_test_data',
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
       caveats: 'caveats_test_data',
@@ -262,15 +265,87 @@ describe('postProjectRegionSQL', () => {
       expect(response).to.be.null;
     });
   });
+
+  describe('valid parameters', () => {
+    it('Valid project region params provided - returns a SQLStatement', () => {
+      const projectId = 1;
+      const regionName = 'Kootenays';
+
+      const response = postProjectRegionSQL(regionName, projectId);
+
+      expect(response).to.not.be.null;
+    });
+  });
 });
 
-describe('valid parameters', () => {
-  it('Valid project region params provided - returns a SQLStatement', () => {
-    const projectId = 1;
-    const regionName = 'Kootenays';
+describe('getActivitiesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getActivitiesByProjectSQL((null as unknown) as number);
 
-    const response = postProjectRegionSQL(regionName, projectId);
+    expect(response).to.be.null;
+  });
 
+  it('valid projectId', () => {
+    const response = getActivitiesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectClimateChangeInitiativeSQL', () => {
+  it('Null projectId', () => {
+    const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getClimateInitiativesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectActivitySQL', () => {
+  it('Null activityId', () => {
+    const response = postProjectActivitySQL((null as unknown) as number, 1);
+    expect(response).to.be.null;
+  });
+
+  it('Null projectId', () => {
+    const response = postProjectActivitySQL(1, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('null activityId and null projectId', () => {
+    const response = postProjectActivitySQL((null as unknown) as number, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('Valid parameters', () => {
+    const response = postProjectActivitySQL(1, 1);
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectClimateChangeInitiativeSQL', () => {
+  it('Null activityId', () => {
+    const response = postProjectClimateChangeInitiativeSQL((null as unknown) as number, 1);
+    expect(response).to.be.null;
+  });
+
+  it('Null projectId', () => {
+    const response = postProjectClimateChangeInitiativeSQL(1, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('null activityId and null projectId', () => {
+    const response = postProjectClimateChangeInitiativeSQL((null as unknown) as number, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('Valid parameters', () => {
+    const response = postProjectClimateChangeInitiativeSQL(1, 1);
     expect(response).to.not.be.null;
   });
 });

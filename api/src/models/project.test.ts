@@ -14,8 +14,16 @@ describe('PostProjectData', () => {
       expect(projectPostData.name).to.equal(null);
     });
 
-    it('sets management_recovery_action', function () {
-      expect(projectPostData.management_recovery_action).to.equal(null);
+    it('sets type', function () {
+      expect(projectPostData.type).to.equal(null);
+    });
+
+    it('sets activities', function () {
+      expect(projectPostData.project_activities).to.have.length(0);
+    });
+
+    it('sets climate change initiatives', function () {
+      expect(projectPostData.climate_change_initiatives).to.have.length(0);
     });
 
     it('sets start_date', function () {
@@ -36,7 +44,9 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      management_recovery_action: 'management_recovery_action_test_data',
+      project_type: 'test_type',
+      project_activities: [1, 2],
+      climate_change_initiatives: [1, 2],
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
       comments: 'comments_test_data'
@@ -50,8 +60,16 @@ describe('PostProjectData', () => {
       expect(projectPostData.name).to.equal('name_test_data');
     });
 
-    it('sets management_recovery_action', function () {
-      expect(projectPostData.management_recovery_action).to.equal('management_recovery_action_test_data');
+    it('sets type', function () {
+      expect(projectPostData.type).to.equal('test_type');
+    });
+
+    it('sets activities', function () {
+      expect(projectPostData.project_activities).to.eql([1, 2]);
+    });
+
+    it('sets climate initiatives', function () {
+      expect(projectPostData.climate_change_initiatives).to.eql([1, 2]);
     });
 
     it('sets start_date', function () {

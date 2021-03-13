@@ -14,7 +14,6 @@ export interface IProject {
   pt_id: number;
   name: string;
   objectives: string;
-  management_recovery_action: string;
   location_description: string;
   start_date: string;
   end_date: string;
@@ -194,7 +193,8 @@ export class PostPermitData {
 export class PostProjectData {
   name: string;
   type: number;
-  management_recovery_action: string;
+  project_activities: number[];
+  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   comments: string;
@@ -203,8 +203,9 @@ export class PostProjectData {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.type = obj?.project_type;
-    this.management_recovery_action = obj?.management_recovery_action || null;
+    this.type = obj?.project_type || null;
+    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.climate_change_initiatives = (obj?.climate_change_initiatives?.length && obj.climate_change_initiatives) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;
@@ -221,21 +222,24 @@ export class GetProjectData {
   project_name: string;
   project_type: number;
   project_type_name: string;
-  management_recovery_action: string;
+  project_activities: number[];
+  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   comments: string;
 
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetProjectData', message: 'params', obj });
+  constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
 
-    this.project_name = obj?.name || null;
-    this.project_type = obj?.pt_id || null;
-    this.project_type_name = obj?.pt_name || null;
-    this.management_recovery_action = obj?.management_recovery_action || null;
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
-    this.comments = obj?.comments || null;
+    this.project_name = projectData?.name || null;
+    this.project_type = projectData?.pt_id || null;
+    this.project_type_name = projectData?.pt_name || null;
+    this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
+    this.climate_change_initiatives =
+      (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
+    this.start_date = projectData?.start_date || null;
+    this.end_date = projectData?.end_date || null;
+    this.comments = projectData?.comments || null;
   }
 }
 

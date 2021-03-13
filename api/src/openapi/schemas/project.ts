@@ -55,17 +55,23 @@ export const projectPostBody = {
       title: 'Project details',
       type: 'object',
       properties: {
-        name: {
+        project_name: {
           type: 'string'
         },
-        objectives: {
+        project_type: {
           type: 'string'
         },
-        management_recovery_action: {
-          type: 'string'
+        project_activities: {
+          type: 'array',
+          items: {
+            type: 'number'
+          }
         },
-        location_description: {
-          type: 'string'
+        climate_change_initiatives: {
+          type: 'array',
+          items: {
+            type: 'number'
+          }
         },
         start_date: {
           type: 'string',
@@ -74,24 +80,6 @@ export const projectPostBody = {
         end_date: {
           type: 'string',
           description: 'ISO 8601 date string'
-        },
-        caveats: {
-          type: 'string'
-        },
-        comments: {
-          type: 'string'
-        },
-        coordinator_first_name: {
-          type: 'string'
-        },
-        coordinator_last_name: {
-          type: 'string'
-        },
-        coordinator_email_address: {
-          type: 'string'
-        },
-        coordinator_agency_name: {
-          type: 'string'
         }
       }
     },
