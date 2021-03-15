@@ -78,9 +78,6 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               Et ad et in culpa si
             </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            />
           </div>
         </div>
       </div>

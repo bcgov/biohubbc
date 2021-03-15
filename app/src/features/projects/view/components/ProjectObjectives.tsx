@@ -1,7 +1,7 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
+import { Box, Grid, IconButton, Typography, Button } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
-import React from 'react';
+import React, { useState } from 'react';
 
 export interface IProjectObjectivesProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -16,6 +16,26 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
   const {
     projectWithDetailsData: { objectives }
   } = props;
+
+  const [isTruncatedObjectives, setIsTruncatedObjectives] = useState(objectives.objectives.length > 850);
+
+  /*
+    Function that finds a nice index (at a period ending a sentence)
+    to truncate objectives longer than 850 characters
+  */
+  const determineTruncatingLength = () => {
+    const periodIndices = [];
+
+    for (let i = 0; i < objectives.objectives.length; i++) {
+      if (objectives.objectives[i - 1] === '.' && objectives.objectives[i] === ' ') {
+        periodIndices.push(i);
+      }
+    }
+
+    return periodIndices.reduce((prev, curr) => {
+      return Math.abs(curr - 850) < Math.abs(prev - 850) ? curr : prev;
+    });
+  };
 
   return (
     <>
@@ -34,10 +54,28 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
             </Grid>
           </Grid>
           <Grid container item spacing={2} xs={12}>
-            <Grid item xs={12}>
-              {objectives.objectives}
-            </Grid>
-            <Grid item xs={12}></Grid>
+            {isTruncatedObjectives && (
+              <>
+                <Grid item xs={12}>
+                  {objectives.objectives.slice(0, determineTruncatingLength())}
+                </Grid>
+                <Button color="primary" onClick={() => setIsTruncatedObjectives(false)}>
+                  Read More
+                </Button>
+              </>
+            )}
+            {!isTruncatedObjectives && (
+              <>
+                <Grid item xs={12}>
+                  {objectives.objectives}
+                </Grid>
+                {objectives.objectives.length > 850 && (
+                  <Button color="primary" onClick={() => setIsTruncatedObjectives(true)}>
+                    Read Less
+                  </Button>
+                )}
+              </>
+            )}
           </Grid>
         </Grid>
       </Box>
