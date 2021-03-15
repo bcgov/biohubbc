@@ -139,7 +139,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            Placeholder
+            activity code
           </h6>
         </div>
       </div>
@@ -161,7 +161,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            Placeholder
+            climate code
           </h6>
         </div>
       </div>

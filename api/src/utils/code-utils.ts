@@ -7,7 +7,8 @@ import {
   getManagementActionTypeSQL,
   getIUCNConservationActionLevel1ClassificationSQL,
   getIUCNConservationActionLevel2SubclassificationSQL,
-  getIUCNConservationActionLevel3SubclassificationSQL
+  getIUCNConservationActionLevel3SubclassificationSQL,
+  getActivitySQL
 } from '../queries/code-queries';
 import { getLogger } from '../utils/logger';
 
@@ -19,7 +20,7 @@ export interface IAllCodeSets {
   first_nations: object;
   funding_source: object;
   investment_action_category: object;
-  project_activity: object;
+  activity: object;
   project_type: object;
   coordinator_agency: object;
   region: object;
@@ -50,6 +51,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     first_nations,
     funding_source,
     investment_action_category,
+    activity,
     iucn_conservation_action_level_1_classification,
     iucn_conservation_action_level_2_subclassification,
     iucn_conservation_action_level_3_subclassification
@@ -59,6 +61,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getFirstNationsSQL().text),
     await connection.query(getFundingSourceSQL().text),
     await connection.query(getInvestmentActionCategorySQL().text),
+    await connection.query(getActivitySQL().text),
     await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text)
@@ -74,6 +77,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     first_nations: (first_nations && first_nations.rows) || [],
     funding_source: (funding_source && funding_source.rows) || [],
     investment_action_category: (investment_action_category && investment_action_category.rows) || [],
+    activity: (activity && activity.rows) || [],
     iucn_conservation_action_level_1_classification:
       (iucn_conservation_action_level_1_classification && iucn_conservation_action_level_1_classification.rows) || [],
     iucn_conservation_action_level_2_subclassification:
@@ -82,16 +86,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_3_subclassification:
       (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
       [],
-    // TODO Temporarily hard coded list of project activities
-    project_activity: [
-      { id: 1, name: 'Reconnaissance' },
-      { id: 2, name: 'Monitoring' },
-      { id: 3, name: 'Habitat Restoration & Enhancement' },
-      { id: 4, name: 'Habitat Research' },
-      { id: 5, name: 'Habitat Protection' },
-      { id: 6, name: 'Salvage' },
-      { id: 7, name: 'Research' }
-    ],
     // TODO Temporarily hard coded list of project types
     project_type: [
       { id: 1, name: 'Fisheries' },

@@ -4,7 +4,12 @@ import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { GetObjectivesData, GetProjectData, GetLocationData } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
-import { getProjectSQL, getRegionsByProjectSQL } from '../../queries/project-queries';
+import {
+  getActivitiesByProjectSQL,
+  getClimateInitiativesByProjectSQL,
+  getProjectSQL,
+  getRegionsByProjectSQL
+} from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -74,8 +79,15 @@ function getProjectWithDetails(): RequestHandler {
     try {
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
       const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
+      const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
+      const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
 
-      if (!getProjectSQLStatement || !getRegionsByProjectSQLStatement) {
+      if (
+        !getProjectSQLStatement ||
+        !getRegionsByProjectSQLStatement ||
+        !getProjectActivitiesSQLStatement ||
+        !getProjectClimateInitiativesSQLStatement
+      ) {
         throw {
           status: 400,
           message: 'Failed to build SQL statement'
@@ -84,16 +96,27 @@ function getProjectWithDetails(): RequestHandler {
 
       await connection.open();
 
-      const [projectData, regionsData] = await Promise.all([
+      const [projectData, regionsData, activityData, climateInitiativeData] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
-        await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values)
+        await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
+        await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
+        await connection.query(
+          getProjectClimateInitiativesSQLStatement.text,
+          getProjectClimateInitiativesSQLStatement.values
+        )
       ]);
-
-      defaultLog.debug({ label: 'getProjectWithDetails', message: 'test' });
 
       await connection.commit();
 
-      const getProjectData = (projectData && projectData.rows && new GetProjectData(projectData.rows[0])) || null;
+      const getProjectData =
+        (projectData &&
+          projectData.rows &&
+          activityData &&
+          activityData.rows &&
+          climateInitiativeData &&
+          climateInitiativeData.rows &&
+          new GetProjectData(projectData.rows[0], activityData.rows, climateInitiativeData.rows)) ||
+        null;
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
       const getLocationData =
         (projectData &&

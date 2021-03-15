@@ -4,9 +4,11 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
 
 export interface IProjectDetailsProps {
   projectWithDetailsData: IProjectWithDetails;
+  codes: IGetAllCodesResponse;
 }
 
 /**
@@ -15,7 +17,7 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
-  const { projectWithDetailsData } = props;
+  const { projectWithDetailsData, codes } = props;
 
   return (
     <>
@@ -31,7 +33,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <GeneralInformation projectWithDetailsData={projectWithDetailsData}></GeneralInformation>
+            <GeneralInformation projectWithDetailsData={projectWithDetailsData} codes={codes}></GeneralInformation>
           </Box>
         </Paper>
       </Box>

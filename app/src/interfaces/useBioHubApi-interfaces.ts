@@ -140,6 +140,13 @@ export interface IUploadProjectArtifactsResponse {
   Key: string;
 }
 
+export interface ICode {
+  id: number;
+  name: string;
+}
+
+export type ICodeSet<T extends ICode = ICode> = T[];
+
 /**
  * Get all codes response object.
  *
@@ -147,17 +154,17 @@ export interface IUploadProjectArtifactsResponse {
  * @interface IGetAllCodesResponse
  */
 export interface IGetAllCodesResponse {
-  coordinator_agency: { id: number; name: string }[];
-  management_action_type: { id: number; name: string }[];
-  climate_change_initiative: { id: number; name: string }[];
-  first_nations: { id: number; name: string }[];
-  funding_source: { id: number; name: string }[];
-  investment_action_category: { id: number; fs_id: number; name: string }[];
-  project_activity: { id: number; name: string }[];
-  project_type: { id: number; name: string }[];
-  region: { id: number; name: string }[];
-  species: { id: number; name: string }[];
-  iucn_conservation_action_level_1_classification: { id: number; name: string }[];
-  iucn_conservation_action_level_2_subclassification: { id: number; iucn_id: number; name: string }[];
-  iucn_conservation_action_level_3_subclassification: { id: number; iucn1_id: number; name: string }[];
+  coordinator_agency: ICodeSet;
+  management_action_type: ICodeSet;
+  climate_change_initiative: ICodeSet;
+  first_nations: ICodeSet;
+  funding_source: ICodeSet;
+  investment_action_category: ICodeSet<{ id: number; fs_id: number; name: string }>;
+  activity: ICodeSet;
+  project_type: ICodeSet;
+  region: ICodeSet;
+  species: ICodeSet;
+  iucn_conservation_action_level_1_classification: ICodeSet;
+  iucn_conservation_action_level_2_subclassification: ICodeSet<{ id: number; iucn_id: number; name: string }>;
+  iucn_conservation_action_level_3_subclassification: ICodeSet<{ id: number; iucn1_id: number; name: string }>;
 }

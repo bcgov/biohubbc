@@ -29,6 +29,13 @@ export const getFirstNationsSQL = (): SQLStatement => SQL`SELECT id, name from f
 export const getFundingSourceSQL = (): SQLStatement => SQL`SELECT id, name from funding_source;`;
 
 /**
+ * SQL query to fetch activity codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getActivitySQL = (): SQLStatement => SQL`SELECT id, name from activity;`;
+
+/**
  * SQL query to fetch investment action category codes.
  *
  * @returns {SQLStatement} sql query object

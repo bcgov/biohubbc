@@ -2,6 +2,7 @@ import { cleanup, render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Router } from 'react-router';
@@ -11,7 +12,8 @@ const history = createMemoryHistory({ initialEntries: ['/projects/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
-  getProject: jest.fn<Promise<IProjectWithDetails>, [number]>()
+  getProject: jest.fn<Promise<IProjectWithDetails>, [number]>(),
+  getAllCodes: jest.fn<Promise<IGetAllCodesResponse>, []>()
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -22,6 +24,7 @@ describe('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().getProject.mockClear();
+    mockBiohubApi().getAllCodes.mockClear();
   });
 
   afterEach(() => {
@@ -60,6 +63,11 @@ describe('ProjectPage', () => {
           caveats: 'sjwer bds'
         }
       });
+
+      mockBiohubApi().getAllCodes.mockResolvedValue({
+        activity: [{ id: 1, name: 'activity 1' }],
+        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+      } as any);
 
       const { asFragment, findByText } = render(
         <Router history={history}>
