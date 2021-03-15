@@ -172,7 +172,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     onMounted && onMounted(drawRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.draw, props.edit, props.position]);
+  }, [props.edit, props.position]);
 
   return null;
 };
