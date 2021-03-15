@@ -694,7 +694,7 @@ export const postProjectActivitySQL = (activityId: number, projectId: number): S
 };
 
 /**
- * SQL query to insert a project activity row.
+ * SQL query to insert a climate initiative row.
  *
  * @param climateChangeInitiativeId
  * @param projectId

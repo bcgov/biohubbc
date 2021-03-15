@@ -59,7 +59,7 @@ export const projectPostBody = {
           type: 'string'
         },
         project_type: {
-          type: 'string'
+          type: 'number'
         },
         project_activities: {
           type: 'array',
