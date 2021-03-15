@@ -63,7 +63,7 @@ describe('CreateProjectPage', () => {
 
   it('removes the extra project steps if all permits are marked as having not conducted sampling', async () => {
     mockBiohubApi().getAllCodes.mockResolvedValue({
-      coordinator_agency: [{ id: 1, name: 'code 1' }]
+      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
     const { findByText, asFragment, queryByText, getByText, getByTestId, getByLabelText } = renderContainer();
 
@@ -90,7 +90,22 @@ describe('CreateProjectPage', () => {
     fireEvent.change(getByLabelText('First Name *'), { target: { value: 'first name' } });
     fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'last name' } });
     fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'email@email.com' } });
-    fireEvent.change(getByLabelText('Coordinator Agency *'), { target: { value: 'agency name' } });
+
+    const autocomplete = getByTestId('coordinator_agency');
+    autocomplete.focus();
+
+    // assign value to input field
+    fireEvent.change(getByLabelText('Coordinator Agency *'), { target: { value: 'Rocha' } });
+
+    await waitFor(() => {});
+
+    // navigate to the first item in the autocomplete box
+    fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
+
+    await waitFor(() => {});
+
+    // select the first item
+    fireEvent.keyDown(autocomplete, { key: 'Enter' });
 
     // go to next step
     fireEvent.click(getByText('Next'));

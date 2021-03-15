@@ -19,11 +19,13 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
   return (
     <Autocomplete
       freeSolo
+      autoSelect
       includeInputInList
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
       id={props.id}
+      data-testid={props.id}
       value={props.value}
       options={props.options}
       getOptionLabel={(option) => option}
@@ -40,9 +42,6 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
           fullWidth
           error={touched[props.id] && Boolean(errors[props.id])}
           helperText={errors[props.id]}
-          onChange={(event) => {
-            setFieldValue(props.id, event.target.value);
-          }}
         />
       )}
     />
