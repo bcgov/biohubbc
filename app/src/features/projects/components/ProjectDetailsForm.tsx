@@ -36,7 +36,7 @@ export const ProjectDetailsFormYupSchema = yup.object().shape({
 
 export interface IProjectDetailsFormProps {
   project_type: IMultiAutocompleteFieldOption[];
-  project_activity: IMultiAutocompleteFieldOption[];
+  activity: IMultiAutocompleteFieldOption[];
   climate_change_initiative: IMultiAutocompleteFieldOption[];
 }
 
@@ -94,7 +94,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
           <MultiAutocompleteFieldVariableSize
             id={'project_activities'}
             label={'Project Activities'}
-            options={props.project_activity}
+            options={props.activity}
             required={false}
           />
         </Grid>

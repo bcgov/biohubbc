@@ -32,7 +32,6 @@ export const postProjectSQL = (
       pt_id,
       name,
       objectives,
-      management_recovery_action,
       location_description,
       start_date,
       end_date,
@@ -48,7 +47,6 @@ export const postProjectSQL = (
       ${project.type},
       ${project.name},
       ${project.objectives},
-      ${project.management_recovery_action},
       ${project.location_description},
       ${project.start_date},
       ${project.end_date},
@@ -434,7 +432,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       project_type.name as pt_name,
       project.name,
       project.objectives,
-      project.management_recovery_action,
       project.location_description,
       project.start_date,
       project.end_date,
@@ -484,7 +481,6 @@ export const getProjectListSQL = (): SQLStatement | null => {
     SELECT
       p.id,
       p.name,
-      p.management_recovery_action,
       p.start_date,
       p.end_date,
       p.location_description,
@@ -499,7 +495,6 @@ export const getProjectListSQL = (): SQLStatement | null => {
     group by
       p.id,
       p.name,
-      p.management_recovery_action,
       p.start_date,
       p.end_date,
       p.location_description;
@@ -529,7 +524,6 @@ export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null =
     return null;
   }
 
-  // TODO these fields were chosen arbitrarily based on having a small
   const sqlStatement = SQL`
     SELECT
       id,
@@ -541,6 +535,74 @@ export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null =
 
   defaultLog.debug({
     label: 'getRegionsByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project activities.
+ *
+ * @param {string} projectId
+ * @returns {SQLStatement} sql query object
+ */
+
+export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getActivitiesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      id,
+      a_id,
+      revision_count
+    from
+      project_activity
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getActivitiesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project climate initiatives.
+ *
+ * @param {string} projectId
+ * @returns {SQLStatement} sql query object
+ */
+
+export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getClimateInitiativesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      id,
+      cci_id,
+      revision_count
+    from
+      project_climate_initiative
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getClimateInitiativesByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -582,6 +644,91 @@ export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStat
 
   defaultLog.debug({
     label: 'postProjectIUCNSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a project activity row.
+ *
+ * @param activityId
+ * @param projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectActivitySQL = (activityId: number, projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectActivity',
+    message: 'params',
+    activityId,
+    projectId
+  });
+
+  if (!activityId || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_activity (
+        a_id,
+        p_id
+      ) VALUES (
+        ${activityId},
+        ${projectId}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectActivity',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a climate initiative row.
+ *
+ * @param climateChangeInitiativeId
+ * @param projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectClimateChangeInitiativeSQL = (
+  climateChangeInitiativeId: number,
+  projectId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectClimateChangeInitiativeSQL',
+    message: 'params',
+    climateChangeInitiativeId,
+    projectId
+  });
+
+  if (!climateChangeInitiativeId || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_climate_initiative (
+        cci_id,
+        p_id
+      ) VALUES (
+        ${climateChangeInitiativeId},
+        ${projectId}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectClimateChangeInitiativeSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

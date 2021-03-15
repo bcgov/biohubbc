@@ -13,7 +13,9 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL,
   postProjectPermitSQL,
-  postProjectIUCNSQL
+  postProjectIUCNSQL,
+  postProjectActivitySQL,
+  postProjectClimateChangeInitiativeSQL
 } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
@@ -172,6 +174,20 @@ function createProject(): RequestHandler {
         await Promise.all(
           sanitizedProjectPostData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
             insertClassificationDetail(classificationDetail.subClassification2, projectId, connection)
+          )
+        );
+
+        // Handle project activities
+        await Promise.all(
+          sanitizedProjectPostData.project.project_activities.map((activityId: number) =>
+            insertProjectActivity(activityId, projectId, connection)
+          )
+        );
+
+        // Handle project climate change initiatives
+        await Promise.all(
+          sanitizedProjectPostData.project.climate_change_initiatives.map((climateChangeInitiativeId: number) =>
+            insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
           )
         );
 
@@ -406,6 +422,62 @@ export const insertClassificationDetail = async (
     throw {
       status: 400,
       message: 'Failed to insert into project_iucn_action_classification table'
+    };
+  }
+
+  return result.id;
+};
+
+export const insertProjectActivity = async (
+  activityId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectActivitySQL(activityId, projectId);
+
+  if (!sqlStatement) {
+    throw {
+      status: 400,
+      message: 'Failed to build SQL statement'
+    };
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw {
+      status: 400,
+      message: 'Failed to insert into project_activity table'
+    };
+  }
+
+  return result.id;
+};
+
+export const insertProjectClimateChangeInitiative = async (
+  climateChangeInitiativeId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectClimateChangeInitiativeSQL(climateChangeInitiativeId, projectId);
+
+  if (!sqlStatement) {
+    throw {
+      status: 400,
+      message: 'Failed to build SQL statement'
+    };
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw {
+      status: 400,
+      message: 'Failed to insert into project_climate_initiative table'
     };
   }
 

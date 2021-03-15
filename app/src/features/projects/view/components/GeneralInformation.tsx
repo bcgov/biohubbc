@@ -4,9 +4,11 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import React from 'react';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
 
 export interface IProjectDetailsProps {
   projectWithDetailsData: IProjectWithDetails;
+  codes: IGetAllCodesResponse;
 }
 
 /**
@@ -14,10 +16,23 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
+const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { project }
+    projectWithDetailsData: { project },
+    codes
   } = props;
+
+  const projectActivities =
+    codes?.activity
+      ?.filter((item) => project.project_activities.includes(item.id))
+      ?.map((item) => item.name)
+      .join(', ') || '';
+
+  const projectClimateChangeInitiatives =
+    codes?.climate_change_initiative
+      ?.filter((item) => project.climate_change_initiatives.includes(item.id))
+      ?.map((item) => item.name)
+      ?.join(', ') || '';
 
   return (
     <>
@@ -66,7 +81,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Activities</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">Placeholder</Typography>
+              <Typography variant="subtitle1">{projectActivities}</Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -74,7 +89,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props: any) => {
               <Typography variant="caption">Climate Change Initiatives</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">Placeholder</Typography>
+              <Typography variant="subtitle1">{projectClimateChangeInitiatives}</Typography>
             </Box>
           </Grid>
         </Grid>
