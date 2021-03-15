@@ -61,9 +61,12 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
                   {objectives.objectives
                     .slice(0, determineTruncatingLength())
                     .split('\n')
-                    .map((paragraph: string) => (
-                      <Typography key={uuidv4()}>{paragraph}</Typography>
-                    ))}
+                    .map((paragraph: string) => {
+                      if (paragraph) {
+                        return <Typography key={uuidv4()}>{paragraph}</Typography>;
+                      }
+                      return <p key={uuidv4()}></p>;
+                    })}
                 </Grid>
                 <Button color="primary" onClick={() => setIsTruncatedObjectives(false)}>
                   Read More
@@ -73,9 +76,12 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
             {!isTruncatedObjectives && (
               <>
                 <Grid item xs={12}>
-                  {objectives.objectives.split('\n').map((paragraph: string) => (
-                    <Typography key={uuidv4()}>{paragraph}</Typography>
-                  ))}
+                  {objectives.objectives.split('\n').map((paragraph: string) => {
+                    if (paragraph) {
+                      return <Typography key={uuidv4()}>{paragraph}</Typography>;
+                    }
+                    return <p key={uuidv4()}></p>;
+                  })}
                 </Grid>
                 {objectives.objectives.length > 850 && (
                   <Button color="primary" onClick={() => setIsTruncatedObjectives(true)}>

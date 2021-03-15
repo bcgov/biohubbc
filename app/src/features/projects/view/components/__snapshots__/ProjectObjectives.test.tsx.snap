@@ -71,6 +71,7 @@ exports[`ProjectObjectives renders correctly when objectives are in multiple par
           >
             Paragraph2
           </p>
+          <p />
           <p
             class="MuiTypography-root MuiTypography-body1"
           >

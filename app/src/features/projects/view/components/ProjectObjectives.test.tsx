@@ -56,7 +56,7 @@ describe('ProjectObjectives', () => {
   });
 
   it('renders correctly when objectives are in multiple paragraphs', () => {
-    const multilineObjectives = 'Paragraph1\nParagraph2\nParagraph3';
+    const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
       <ProjectObjectives
