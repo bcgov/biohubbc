@@ -111,7 +111,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_97"
+                    name="leaflet-base-layers_95"
                     type="radio"
                   />
                   <span>
@@ -123,7 +123,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_97"
+                    name="leaflet-base-layers_95"
                     type="radio"
                   />
                   <span>
@@ -310,17 +310,6 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                 </span>
               </a>
               <a
-                class="leaflet-draw-draw-circle"
-                href="#"
-                title="Draw a circle"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circle
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-marker"
                 href="#"
                 title="Draw a marker"
@@ -408,7 +397,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_50"
+                    name="leaflet-base-layers_49"
                     type="radio"
                   />
                   <span>
@@ -420,7 +409,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_50"
+                    name="leaflet-base-layers_49"
                     type="radio"
                   />
                   <span>
@@ -622,17 +611,6 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                 </span>
               </a>
               <a
-                class="leaflet-draw-draw-circle"
-                href="#"
-                title="Draw a circle"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circle
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-marker"
                 href="#"
                 title="Draw a marker"
@@ -720,7 +698,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_82"
+                    name="leaflet-base-layers_80"
                     type="radio"
                   />
                   <span>
@@ -732,7 +710,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_82"
+                    name="leaflet-base-layers_80"
                     type="radio"
                   />
                   <span>
@@ -919,17 +897,6 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 </span>
               </a>
               <a
-                class="leaflet-draw-draw-circle"
-                href="#"
-                title="Draw a circle"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circle
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-marker"
                 href="#"
                 title="Draw a marker"
@@ -1017,7 +984,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_166"
+                    name="leaflet-base-layers_162"
                     type="radio"
                   />
                   <span>
@@ -1029,7 +996,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_166"
+                    name="leaflet-base-layers_162"
                     type="radio"
                   />
                   <span>
