@@ -2,6 +2,7 @@ import { Box, Grid, IconButton, Typography, Button } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface IProjectObjectivesProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -57,7 +58,12 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
             {isTruncatedObjectives && (
               <>
                 <Grid item xs={12}>
-                  {objectives.objectives.slice(0, determineTruncatingLength())}
+                  {objectives.objectives
+                    .slice(0, determineTruncatingLength())
+                    .split('\n')
+                    .map((paragraph: string) => (
+                      <Typography key={uuidv4()}>{paragraph}</Typography>
+                    ))}
                 </Grid>
                 <Button color="primary" onClick={() => setIsTruncatedObjectives(false)}>
                   Read More
@@ -67,7 +73,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
             {!isTruncatedObjectives && (
               <>
                 <Grid item xs={12}>
-                  {objectives.objectives}
+                  {objectives.objectives.split('\n').map((paragraph: string) => (
+                    <Typography key={uuidv4()}>{paragraph}</Typography>
+                  ))}
                 </Grid>
                 {objectives.objectives.length > 850 && (
                   <Button color="primary" onClick={() => setIsTruncatedObjectives(true)}>

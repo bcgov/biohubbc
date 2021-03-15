@@ -31,6 +31,8 @@ const ProjectObjectivesForm = () => {
 
   const { values, touched, errors, handleChange, handleSubmit } = formikProps;
 
+  console.log(values.objectives);
+
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
