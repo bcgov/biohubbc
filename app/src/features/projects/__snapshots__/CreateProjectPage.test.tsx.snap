@@ -748,6 +748,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                             <div
                               aria-expanded="false"
                               class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+                              data-testid="coordinator_agency"
                               role="combobox"
                             >
                               <div

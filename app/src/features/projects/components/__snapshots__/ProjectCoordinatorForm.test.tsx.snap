@@ -153,6 +153,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          data-testid="coordinator_agency"
           role="combobox"
         >
           <div
@@ -532,6 +533,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          data-testid="coordinator_agency"
           role="combobox"
         >
           <div
