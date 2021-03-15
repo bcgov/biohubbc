@@ -1,4 +1,4 @@
-import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor, within } from '@testing-library/react';
+import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
