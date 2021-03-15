@@ -339,14 +339,312 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         </span>
                       </a>
                       <a
-                        class="leaflet-draw-draw-circle"
+                        class="leaflet-draw-draw-marker"
                         href="#"
-                        title="Draw a circle"
+                        title="Draw a marker"
                       >
                         <span
                           class="sr-only"
                         >
-                          Draw a circle
+                          Draw a marker
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-circlemarker"
+                        href="#"
+                        title="Draw a circlemarker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a circlemarker
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar"
+                    >
+                      <a
+                        class="leaflet-draw-edit-edit"
+                        href="#"
+                        title="Edit layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Edit layers
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-edit-remove"
+                        href="#"
+                        title="Delete layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Delete layers
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="leaflet-draw leaflet-control"
+                >
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
+                    >
+                      <a
+                        class="leaflet-draw-draw-polyline"
+                        href="#"
+                        title="Draw a polyline"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polyline
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-polygon"
+                        href="#"
+                        title="Draw a polygon"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polygon
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-rectangle"
+                        href="#"
+                        title="Draw a rectangle"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a rectangle
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-marker"
+                        href="#"
+                        title="Draw a marker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a marker
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-circlemarker"
+                        href="#"
+                        title="Draw a circlemarker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a circlemarker
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar"
+                    >
+                      <a
+                        class="leaflet-draw-edit-edit"
+                        href="#"
+                        title="Edit layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Edit layers
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-edit-remove"
+                        href="#"
+                        title="Delete layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Delete layers
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="leaflet-draw leaflet-control"
+                >
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
+                    >
+                      <a
+                        class="leaflet-draw-draw-polyline"
+                        href="#"
+                        title="Draw a polyline"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polyline
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-polygon"
+                        href="#"
+                        title="Draw a polygon"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polygon
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-rectangle"
+                        href="#"
+                        title="Draw a rectangle"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a rectangle
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-marker"
+                        href="#"
+                        title="Draw a marker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a marker
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-circlemarker"
+                        href="#"
+                        title="Draw a circlemarker"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a circlemarker
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar"
+                    >
+                      <a
+                        class="leaflet-draw-edit-edit"
+                        href="#"
+                        title="Edit layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Edit layers
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-edit-remove"
+                        href="#"
+                        title="Delete layers"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Delete layers
+                        </span>
+                      </a>
+                    </div>
+                    <ul
+                      class="leaflet-draw-actions"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="leaflet-draw leaflet-control"
+                >
+                  <div
+                    class="leaflet-draw-section"
+                  >
+                    <div
+                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
+                    >
+                      <a
+                        class="leaflet-draw-draw-polyline"
+                        href="#"
+                        title="Draw a polyline"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polyline
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-polygon"
+                        href="#"
+                        title="Draw a polygon"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a polygon
+                        </span>
+                      </a>
+                      <a
+                        class="leaflet-draw-draw-rectangle"
+                        href="#"
+                        title="Draw a rectangle"
+                      >
+                        <span
+                          class="sr-only"
+                        >
+                          Draw a rectangle
                         </span>
                       </a>
                       <a
@@ -437,7 +735,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_121"
+                            name="leaflet-base-layers_144"
                             type="radio"
                           />
                           <span>
@@ -449,7 +747,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_121"
+                            name="leaflet-base-layers_144"
                             type="radio"
                           />
                           <span>
@@ -809,17 +1107,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                         </span>
                       </a>
                       <a
-                        class="leaflet-draw-draw-circle"
-                        href="#"
-                        title="Draw a circle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circle
-                        </span>
-                      </a>
-                      <a
                         class="leaflet-draw-draw-marker"
                         href="#"
                         title="Draw a marker"
@@ -907,7 +1194,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_46"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>
@@ -919,7 +1206,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_46"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>
@@ -1192,36 +1479,28 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
               >
-                <svg
-                  height="0"
-                  pointer-events="none"
-                  style="left: 0px; top: 0px;"
-                  viewBox="0 0 0 0"
-                  width="0"
-                >
-                  <g>
-                    <path
-                      class="leaflet-interactive"
-                      d="M0 0"
-                      fill="#3388ff"
-                      fill-opacity="0.2"
-                      fill-rule="evenodd"
-                      stroke="#3388ff"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-opacity="1"
-                      stroke-width="4"
-                    />
-                  </g>
-                </svg>
+                <img
+                  alt=""
+                  class="leaflet-marker-shadow leaflet-zoom-hide"
+                  src="marker-shadow.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
+                />
               </div>
               <div
-                class="leaflet-pane leaflet-marker-pane"
+                class="leaflet-pane leaflet-overlay-pane"
               />
+              <div
+                class="leaflet-pane leaflet-marker-pane"
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  src="marker-icon.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
+                  tabindex="0"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -1301,17 +1580,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           class="sr-only"
                         >
                           Draw a rectangle
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-circle"
-                        href="#"
-                        title="Draw a circle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circle
                         </span>
                       </a>
                       <a
@@ -1402,7 +1670,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_75"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1414,7 +1682,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_75"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
