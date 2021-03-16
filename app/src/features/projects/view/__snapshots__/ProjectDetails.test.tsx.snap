@@ -78,6 +78,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
+                style="word-break: break-all;"
               >
                 Et ad et in culpa si
               </p>
