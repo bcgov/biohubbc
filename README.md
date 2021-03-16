@@ -75,10 +75,6 @@ app:
 
 - `localhost:7100`
 
-app-ionic
-
-- `localhost:8100`
-
 # Helpful Makefile Commands
 
 See `./Makefile` for all available commands.  
@@ -96,7 +92,7 @@ make close
 make clean
 ```
 
-### Shell into a container (database, api, app, app-ionic)
+### Shell into a container (database, api, app)
 
 ```
 make database
@@ -108,10 +104,6 @@ make api
 
 ```
 make app
-```
-
-```
-make app-ionic
 ```
 
 ### Prune Docker Artifacts
