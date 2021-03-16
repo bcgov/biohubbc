@@ -1,4 +1,4 @@
-export class CustomError extends Error {  
+export class CustomError extends Error {
   status: number;
   message: string;
   errors?: Array<string | object>[];
@@ -8,6 +8,6 @@ export class CustomError extends Error {
     this.status = status;
     this.message = message;
     this.errors = errors || [];
-    this.name = "CustomError";
+    this.name = 'CustomError';
   }
 }
