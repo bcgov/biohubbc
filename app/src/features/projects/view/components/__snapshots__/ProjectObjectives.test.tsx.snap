@@ -63,17 +63,20 @@ exports[`ProjectObjectives renders correctly when objectives are in multiple par
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
           >
             Paragraph1
           </p>
           <p
             class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
           >
             Paragraph2
           </p>
           <p />
           <p
             class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
           >
             Paragraph3
           </p>
@@ -147,6 +150,7 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
           >
             Et ad et in culpa si
           </p>
@@ -220,6 +224,7 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
           >
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitationullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit involuptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consecteturadipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolorin reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
           </p>

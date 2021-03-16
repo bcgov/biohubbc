@@ -63,7 +63,11 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
                     .split('\n')
                     .map((paragraph: string) => {
                       if (paragraph) {
-                        return <Typography key={uuidv4()}>{paragraph}</Typography>;
+                        return (
+                          <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
+                            {paragraph}
+                          </Typography>
+                        );
                       }
                       return <p key={uuidv4()}></p>;
                     })}
@@ -78,7 +82,11 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
                 <Grid item xs={12}>
                   {objectives.objectives.split('\n').map((paragraph: string) => {
                     if (paragraph) {
-                      return <Typography key={uuidv4()}>{paragraph}</Typography>;
+                      return (
+                        <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
+                          {paragraph}
+                        </Typography>
+                      );
                     }
                     return <p key={uuidv4()}></p>;
                   })}
