@@ -8,242 +8,9 @@ exports[`ProjectIUCNForm renders correctly with default empty values 1`] = `
     >
       <div
         class="MuiGrid-root MuiGrid-container"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-4"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-5 makeStyles-iucnInputContainer-1"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-6 makeStyles-iucnInput-2"
-              >
-                <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
-                >
-                  <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                    data-shrink="false"
-                    id="classification"
-                  >
-                    Classification
-                  </label>
-                  <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-                  >
-                    <div
-                      aria-haspopup="listbox"
-                      aria-label="Classification"
-                      aria-labelledby="classification classificationDetails.[0].classification"
-                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                      id="classificationDetails.[0].classification"
-                      role="button"
-                      tabindex="0"
-                    >
-                      <span>
-                        ​
-                      </span>
-                    </div>
-                    <input
-                      aria-hidden="true"
-                      class="MuiSelect-nativeInput"
-                      name="classificationDetails.[0].classification"
-                      tabindex="-1"
-                      value=""
-                    />
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                    <fieldset
-                      aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
-                    >
-                      <legend
-                        class="PrivateNotchedOutline-legendLabelled-9"
-                      >
-                        <span>
-                          Classification
-                        </span>
-                      </legend>
-                    </fieldset>
-                  </div>
-                  <p
-                    class="MuiFormHelperText-root MuiFormHelperText-contained"
-                  />
-                </div>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-11 makeStyles-iucnInput-2"
-              >
-                <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
-                >
-                  <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                    data-shrink="false"
-                    id="subClassification1"
-                  >
-                    Sub-classification
-                  </label>
-                  <div
-                    class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
-                  >
-                    <div
-                      aria-disabled="true"
-                      aria-haspopup="listbox"
-                      aria-label="subClassification1"
-                      aria-labelledby="subClassification1 classificationDetails.[0].subClassification1"
-                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
-                      id="classificationDetails.[0].subClassification1"
-                      role="button"
-                    >
-                      <span>
-                        ​
-                      </span>
-                    </div>
-                    <input
-                      aria-hidden="true"
-                      class="MuiSelect-nativeInput"
-                      name="classificationDetails.[0].subClassification1"
-                      tabindex="-1"
-                      value=""
-                    />
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                    <fieldset
-                      aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
-                    >
-                      <legend
-                        class="PrivateNotchedOutline-legendLabelled-9"
-                      >
-                        <span>
-                          Sub-classification
-                        </span>
-                      </legend>
-                    </fieldset>
-                  </div>
-                  <p
-                    class="MuiFormHelperText-root MuiFormHelperText-contained"
-                  />
-                </div>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-12 makeStyles-iucnInput-2"
-              >
-                <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
-                >
-                  <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                    data-shrink="false"
-                    id="subClassification2"
-                  >
-                    Sub-classification
-                  </label>
-                  <div
-                    class="MuiInputBase-root MuiOutlinedInput-root Mui-disabled Mui-disabled MuiInputBase-formControl"
-                  >
-                    <div
-                      aria-disabled="true"
-                      aria-haspopup="listbox"
-                      aria-label="subClassification2"
-                      aria-labelledby="subClassification2 classificationDetails.[0].subClassification2"
-                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input Mui-disabled Mui-disabled Mui-disabled"
-                      id="classificationDetails.[0].subClassification2"
-                      role="button"
-                    >
-                      <span>
-                        ​
-                      </span>
-                    </div>
-                    <input
-                      aria-hidden="true"
-                      class="MuiSelect-nativeInput"
-                      name="classificationDetails.[0].subClassification2"
-                      tabindex="-1"
-                      value=""
-                    />
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined Mui-disabled"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                    <fieldset
-                      aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
-                    >
-                      <legend
-                        class="PrivateNotchedOutline-legendLabelled-9"
-                      >
-                        <span>
-                          Sub-classification
-                        </span>
-                      </legend>
-                    </fieldset>
-                  </div>
-                  <p
-                    class="MuiFormHelperText-root MuiFormHelperText-contained"
-                  />
-                </div>
-              </div>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-13"
-            >
-              <button
-                aria-label="delete"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-                tabindex="0"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      />
       <div
-        class="MuiBox-root MuiBox-root-14"
+        class="MuiBox-root MuiBox-root-4"
       >
         <button
           aria-label="Add Another"
@@ -270,7 +37,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-17"
+      class="MuiBox-root MuiBox-root-7"
     >
       <div
         class="MuiGrid-root MuiGrid-container"
@@ -279,13 +46,13 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-18"
+            class="MuiBox-root MuiBox-root-8"
           >
             <div
-              class="MuiBox-root MuiBox-root-19 makeStyles-iucnInputContainer-15"
+              class="MuiBox-root MuiBox-root-9 makeStyles-iucnInputContainer-5"
             >
               <div
-                class="MuiBox-root MuiBox-root-20 makeStyles-iucnInput-16"
+                class="MuiBox-root MuiBox-root-10 makeStyles-iucnInput-6"
               >
                 <div
                   class="MuiFormControl-root MuiFormControl-fullWidth"
@@ -330,10 +97,10 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                       >
                         <span>
                           Classification
@@ -347,7 +114,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-25 makeStyles-iucnInput-16"
+                class="MuiBox-root MuiBox-root-15 makeStyles-iucnInput-6"
               >
                 <div
                   class="MuiFormControl-root MuiFormControl-fullWidth"
@@ -392,10 +159,10 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                       >
                         <span>
                           Sub-classification
@@ -409,7 +176,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-26 makeStyles-iucnInput-16"
+                class="MuiBox-root MuiBox-root-16 makeStyles-iucnInput-6"
               >
                 <div
                   class="MuiFormControl-root MuiFormControl-fullWidth"
@@ -454,10 +221,10 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                       >
                         <span>
                           Sub-classification
@@ -472,7 +239,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-27"
+              class="MuiBox-root MuiBox-root-17"
             >
               <button
                 aria-label="delete"
@@ -503,7 +270,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-28"
+        class="MuiBox-root MuiBox-root-18"
       >
         <button
           aria-label="Add Another"
