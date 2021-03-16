@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
+import { CustomError } from '../errors/CustomError';
 import { projectResponseBody } from '../openapi/schemas/project';
 import { getProjectListSQL } from '../queries/project-queries';
 import { getLogger } from '../utils/logger';
@@ -67,10 +68,7 @@ function getProjectList(): RequestHandler {
       const getProjectListSQLStatement = getProjectListSQL();
 
       if (!getProjectListSQLStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        throw new CustomError(400, 'Failed to build SQL statement');
       }
 
       await connection.open();
