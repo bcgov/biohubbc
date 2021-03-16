@@ -45,7 +45,7 @@ export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = 
 };
 
 export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
-  classificationDetails: [ProjectIUCNFormArrayItemInitialValues]
+  classificationDetails: []
 };
 
 export interface IIUCNSubClassification1Option extends IMultiAutocompleteFieldOption {
