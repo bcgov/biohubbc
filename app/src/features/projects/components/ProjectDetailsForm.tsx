@@ -122,6 +122,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               InputLabelProps={{
                 shrink: true
               }}
+              inputProps={{ min: '1600-05-01', max: '2021-03-16' }}
             />
           </Grid>
           <Grid item>
@@ -138,6 +139,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               InputLabelProps={{
                 shrink: true
               }}
+              inputProps={{ min: '1600-05-01', max: '2021-03-16' }}
             />
           </Grid>
         </Grid>

@@ -53,6 +53,15 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
         properties: {}
       });
     });
+  } else if (location.geometry[0].type !== 'Feature') {
+    geometryCollection.push({
+      id: uuidv4(),
+      type: 'Feature',
+      geometry: location.geometry[0],
+      properties: {}
+    });
+  } else {
+    geometryCollection.push(location.geometry[0]);
   }
 
   if (geometryCollection.length) {
