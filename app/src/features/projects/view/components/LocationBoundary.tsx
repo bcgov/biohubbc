@@ -32,7 +32,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
 
     We also set the bounds based on those geometries so the extent is set
   */
-  if (location.geometry[0].type === 'MultiPolygon') {
+  if (location?.geometry[0]?.type === 'MultiPolygon') {
     location.geometry[0].coordinates.forEach((geoCoords: any) => {
       geometryCollection.push({
         id: uuidv4(),
@@ -44,7 +44,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
         properties: {}
       });
     });
-  } else if (location.geometry[0].type === 'GeometryCollection') {
+  } else if (location?.geometry[0]?.type === 'GeometryCollection') {
     location.geometry[0].geometries.forEach((geometry: any) => {
       geometryCollection.push({
         id: uuidv4(),
@@ -53,7 +53,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
         properties: {}
       });
     });
-  } else if (location.geometry[0].type !== 'Feature') {
+  } else if (location?.geometry[0]?.type !== 'Feature') {
     geometryCollection.push({
       id: uuidv4(),
       type: 'Feature',
