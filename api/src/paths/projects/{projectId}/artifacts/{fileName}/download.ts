@@ -5,6 +5,7 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { IMediaItem } from '../../../../../models/media';
+import { CustomError } from '../../../../../errors/CustomError';
 
 export const GET: Operation = [getSingleMedia()];
 
@@ -74,17 +75,11 @@ GET.apiDoc = {
 function getSingleMedia(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `projectId`'
-      };
+      throw new CustomError(400, 'Missing required path param `projectId`');
     }
 
     if (!req.params.fileName) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `fileName`'
-      };
+      throw new CustomError(400, 'Missing required path param `fileName`');
     }
 
     const s3Object = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);

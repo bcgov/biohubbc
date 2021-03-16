@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { CustomError } from '../../errors/CustomError';
 import { GetObjectivesData, GetProjectData, GetLocationData } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
@@ -88,10 +89,7 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement
       ) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        throw new CustomError(400, 'Failed to build SQL statement');
       }
 
       await connection.open();

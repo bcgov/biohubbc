@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
+import { CustomError } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
@@ -242,10 +243,7 @@ function getAllCodes(): RequestHandler {
       const allCodeSets = await getAllCodeSets(connection);
 
       if (!allCodeSets) {
-        throw {
-          status: 500,
-          message: 'Failed to fetch codes'
-        };
+        throw new CustomError(500, 'Failed to fetch codes');
       }
 
       return res.status(200).json(allCodeSets);

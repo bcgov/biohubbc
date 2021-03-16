@@ -4,6 +4,7 @@ import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../constants/roles';
+import { CustomError } from '../../../../errors/CustomError';
 import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 
@@ -96,17 +97,11 @@ export function uploadMedia(): RequestHandler {
 
     if (!req.files || !req.files.length) {
       // no media objects included, skipping media upload step
-      throw {
-        status: 400,
-        message: 'Missing upload data'
-      };
+      throw new CustomError(400, 'Missing upload data');
     }
 
     if (!req.params.projectId || !req.params.projectId.length) {
-      throw {
-        status: 400,
-        message: 'Missing projectId'
-      };
+      throw new CustomError(400, 'Missing projectId');
     }
 
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
@@ -131,10 +126,7 @@ export function uploadMedia(): RequestHandler {
         s3UploadPromises.push(uploadFileToS3(file, metadata));
       } catch (error) {
         defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
-        throw {
-          status: 400,
-          message: 'Upload was not successful'
-        };
+        throw new CustomError(400, 'Upload was not successful');
       }
     });
     const results = await Promise.all(s3UploadPromises);
