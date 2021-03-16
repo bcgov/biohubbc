@@ -159,6 +159,9 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-3"
+    />
   </div>
 </DocumentFragment>
 `;
@@ -445,6 +448,9 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
         </div>
       </div>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-1"
+    />
   </div>
 </DocumentFragment>
 `;
@@ -746,6 +752,9 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
         </div>
       </div>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    />
   </div>
 </DocumentFragment>
 `;
@@ -1032,6 +1041,9 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
         </div>
       </div>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    />
   </div>
 </DocumentFragment>
 `;

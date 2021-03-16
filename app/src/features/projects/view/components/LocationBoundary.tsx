@@ -25,8 +25,10 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
   let bounds: any[] = [];
 
   /*
-    Leaflet does not know how to draw Multipolygons so we manually
-    convert to a Feature[] of GeoJSON objects which it can draw
+    Leaflet does not know how to draw Multipolygons or GeometryCollections
+    that are not in proper GeoJSON format so we manually convert to a Feature[]
+    of GeoJSON objects which it can draw using the <GeoJSON /> tag for
+    non-editable geometries
 
     We also set the bounds based on those geometries so the extent is set
   */
@@ -42,7 +44,18 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
         properties: {}
       });
     });
+  } else if (location.geometry[0].type === 'GeometryCollection') {
+    location.geometry[0].geometries.forEach((geometry: any) => {
+      geometryCollection.push({
+        id: uuidv4(),
+        type: 'Feature',
+        geometry,
+        properties: {}
+      });
+    });
+  }
 
+  if (geometryCollection.length) {
     const allGeosFeatureCollection = {
       type: 'FeatureCollection',
       features: geometryCollection

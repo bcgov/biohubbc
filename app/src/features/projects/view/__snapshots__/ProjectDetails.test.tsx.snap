@@ -529,6 +529,9 @@ exports[`ProjectDetails renders correctly 1`] = `
                       </div>
                     </div>
                   </div>
+                  <div
+                    class="MuiBox-root MuiBox-root-23"
+                  />
                 </div>
               </div>
             </div>
