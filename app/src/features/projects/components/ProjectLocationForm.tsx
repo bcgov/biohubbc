@@ -101,7 +101,14 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
     const geojson = kml(domKml);
 
-    setFieldValue('geometry', [...geojson.features, ...values.geometry]);
+    let sanitizedGeoJSON: Feature[] = [];
+    geojson.features.forEach((feature: Feature) => {
+      if (feature.geometry) {
+        sanitizedGeoJSON.push(feature);
+      }
+    });
+
+    setFieldValue('geometry', [...sanitizedGeoJSON, ...values.geometry]);
   };
 
   return (

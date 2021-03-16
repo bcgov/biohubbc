@@ -3,6 +3,9 @@ import { Edit } from '@material-ui/icons';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import React from 'react';
 import MapContainer from 'components/map/MapContainer';
+import { Feature } from 'geojson';
+import { v4 as uuidv4 } from 'uuid';
+import bbox from '@turf/bbox';
 
 export interface IProjectDetailsProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -17,6 +20,50 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
   const {
     projectWithDetailsData: { location }
   } = props;
+
+  let geometryCollection: Feature[] = [];
+  let bounds: any[] = [];
+
+  /*
+    Leaflet does not know how to draw Multipolygons or GeometryCollections
+    that are not in proper GeoJSON format so we manually convert to a Feature[]
+    of GeoJSON objects which it can draw using the <GeoJSON /> tag for
+    non-editable geometries
+
+    We also set the bounds based on those geometries so the extent is set
+  */
+  if (location.geometry[0].type === 'MultiPolygon') {
+    location.geometry[0].coordinates.forEach((geoCoords: any) => {
+      geometryCollection.push({
+        id: uuidv4(),
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: geoCoords
+        },
+        properties: {}
+      });
+    });
+  } else if (location.geometry[0].type === 'GeometryCollection') {
+    location.geometry[0].geometries.forEach((geometry: any) => {
+      geometryCollection.push({
+        id: uuidv4(),
+        type: 'Feature',
+        geometry,
+        properties: {}
+      });
+    });
+  }
+
+  if (geometryCollection.length) {
+    const allGeosFeatureCollection = {
+      type: 'FeatureCollection',
+      features: geometryCollection
+    };
+    const bboxCoords = bbox(allGeosFeatureCollection);
+
+    bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
+  }
 
   return (
     <>
@@ -55,7 +102,8 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
               <MapContainer
                 mapId="project_location_form_map"
                 hideDrawControls={true}
-                nonEditableGeometries={location.geometry}
+                nonEditableGeometries={geometryCollection}
+                bounds={bounds}
               />
             </Box>
           </Grid>

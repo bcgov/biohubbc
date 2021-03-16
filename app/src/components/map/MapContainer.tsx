@@ -66,7 +66,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <FeatureGroup>
         <MapEditControls
           position="topright"
-          draw={hideDrawControls ? shownDrawControls : undefined}
+          draw={hideDrawControls ? shownDrawControls : { circle: false }}
           edit={hideDrawControls ? showEditControls : undefined}
           geometry={geometryState?.geometry}
           setGeometry={geometryState?.setGeometry}

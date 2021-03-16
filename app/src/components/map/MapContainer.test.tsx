@@ -123,19 +123,49 @@ describe('MapContainer', () => {
     expect(setGeometry).toHaveBeenCalledWith(geometry);
   });
 
-  test('deletes geometries currently present on the map successfully', async () => {
-    const { container } = render(
+  test('deletes geometries currently present on the map successfully when user confirms', async () => {
+    const { getByText } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
     //@ts-ignore
-    fireEvent.click(getByText(container, 'Delete layers'));
+    fireEvent.click(getByText('Delete layers'));
 
-    await waitFor(() => {});
+    await waitFor(() => {
+      //@ts-ignore
+      fireEvent.click(getByText('Clear All'));
+    });
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Clear All'));
+    render(<MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />);
+
+    await waitFor(() => {
+      //@ts-ignore
+      fireEvent.click(getByText('Yes'));
+    });
 
     expect(setGeometry).toHaveBeenCalledWith([]);
+  });
+
+  test('does not delete geometries present on the map when user does not confirm', async () => {
+    const { getByText } = render(
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
+    );
+
+    //@ts-ignore
+    fireEvent.click(getByText('Delete layers'));
+
+    await waitFor(() => {
+      //@ts-ignore
+      fireEvent.click(getByText('Clear All'));
+    });
+
+    render(<MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />);
+
+    await waitFor(() => {
+      //@ts-ignore
+      fireEvent.click(getByText('No'));
+    });
+
+    expect(setGeometry).toHaveBeenCalledWith(geometry);
   });
 });

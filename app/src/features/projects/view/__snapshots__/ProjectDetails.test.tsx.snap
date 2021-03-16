@@ -406,28 +406,13 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                     <div
                       class="leaflet-pane leaflet-shadow-pane"
-                    >
-                      <img
-                        alt=""
-                        class="leaflet-marker-shadow leaflet-zoom-hide"
-                        src="marker-shadow.png"
-                        style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
-                      />
-                    </div>
+                    />
                     <div
                       class="leaflet-pane leaflet-overlay-pane"
                     />
                     <div
                       class="leaflet-pane leaflet-marker-pane"
-                    >
-                      <img
-                        alt=""
-                        class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                        src="marker-icon.png"
-                        style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
-                        tabindex="0"
-                      />
-                    </div>
+                    />
                     <div
                       class="leaflet-pane leaflet-tooltip-pane"
                     />
@@ -497,7 +482,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                                 <input
                                   checked="checked"
                                   class="leaflet-control-layers-selector"
-                                  name="leaflet-base-layers_37"
+                                  name="leaflet-base-layers_34"
                                   type="radio"
                                 />
                                 <span>
@@ -509,7 +494,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                               <div>
                                 <input
                                   class="leaflet-control-layers-selector"
-                                  name="leaflet-base-layers_37"
+                                  name="leaflet-base-layers_34"
                                   type="radio"
                                 />
                                 <span>
@@ -545,6 +530,9 @@ exports[`ProjectDetails renders correctly 1`] = `
                       </div>
                     </div>
                   </div>
+                  <div
+                    class="MuiBox-root MuiBox-root-23"
+                  />
                 </div>
               </div>
             </div>

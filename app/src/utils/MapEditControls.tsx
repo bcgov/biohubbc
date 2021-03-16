@@ -1,11 +1,12 @@
 // @ts-nocheck
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useLeafletContext } from '@react-leaflet/core';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import isEqual from 'lodash-es/isEqual';
 import { Feature } from 'geojson';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 
 /*
   Get leaflet icons working
@@ -52,9 +53,11 @@ export interface IMapEditControlsProps {
 }
 
 const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const context = useLeafletContext();
   const drawRef = useRef();
   const propsRef = useRef(props);
+  let deleteEvent: any;
 
   drawRef.current = createDrawElement(props, context);
 
@@ -109,6 +112,23 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     onDeleted && onDeleted(e);
   };
 
+  const drawGeometries = (geometries: Feature[]) => {
+    const container = context.layerContainer || context.map;
+
+    container.clearLayers();
+
+    /*
+      Used to draw geometries that are passed into the map container component
+    */
+    geometries?.forEach((geometry: Feature) => {
+      L.geoJSON(geometry, {
+        onEachFeature: function (feature: any, layer: any) {
+          container.addLayer(layer);
+        }
+      });
+    });
+  };
+
   /*
     On initial render, mount the controls and set up the event handlers
     Also, for each geometry that is passed in, draw it on the map
@@ -129,39 +149,17 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     map.on(eventHandlers.onCreated, onDrawCreate);
     map.on(eventHandlers.onEdited, onDrawEdit);
-    map.on(eventHandlers.onDeleted, onDrawDelete);
+    map.on(eventHandlers.onDeleted, (e) => {
+      deleteEvent = e;
+      setShowDeleteModal(true);
+    });
 
     onMounted && onMounted(drawRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    const container = context.layerContainer || context.map;
-    const markerStyle = {
-      radius: 10,
-      weight: 4,
-      stroke: true
-    };
-
-    container.clearLayers();
-
-    /*
-      Used to draw geometries that are passed into the map container component
-    */
-    props.geometry?.forEach((geometry: Feature) => {
-      L.geoJSON(geometry, {
-        pointToLayer: (feature: any, latLng: any) => {
-          if (feature.properties.radius) {
-            return L.circle(latLng, { radius: feature.properties.radius });
-          } else {
-            return L.circleMarker(latLng, markerStyle);
-          }
-        },
-        onEachFeature: function (feature: any, layer: any) {
-          container.addLayer(layer);
-        }
-      });
-    });
+    drawGeometries(props.geometry);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.geometry]);
 
@@ -184,9 +182,27 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     onMounted && onMounted(drawRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.draw, props.edit, props.position]);
+  }, [props.edit, props.position]);
 
-  return null;
+  return (
+    <YesNoDialog
+      dialogTitle="Delete Geometries"
+      dialogText="Are you sure you want to delete the selected geometries?"
+      open={showDeleteModal}
+      onClose={() => {
+        setShowDeleteModal(false);
+        drawGeometries(props.geometry);
+      }}
+      onNo={() => {
+        setShowDeleteModal(false);
+        drawGeometries(props.geometry);
+      }}
+      onYes={() => {
+        setShowDeleteModal(false);
+        onDrawDelete(deleteEvent);
+      }}
+    />
+  );
 };
 
 /*
