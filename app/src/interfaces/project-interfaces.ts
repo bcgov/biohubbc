@@ -2,6 +2,7 @@ import { IFormRecord } from './useBioHubApi-interfaces';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
+import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 
 /**
  * An interface representing the project table.
@@ -37,6 +38,7 @@ export interface IProjectWithDetails {
   project: IProjectDetailsForm;
   objectives: IProjectObjectivesForm;
   location: IProjectLocationForm;
+  coordinator: IProjectCoordinatorForm;
 }
 
 /**

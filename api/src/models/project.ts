@@ -279,6 +279,32 @@ export class GetObjectivesData {
   }
 }
 
+
+
+/**
+ * Pre-processes GET /projects/{id} coordinator data
+ *
+ * @export
+ * @class GetCoordinatorData
+ */
+ export class GetCoordinatorData {
+  coordinator_first_name: string;
+  coordinator_last_name: string;
+  coordinator_email_address: string;
+  coordinator_agency_name: string;
+  coordinator_public: boolean;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
+
+    this.coordinator_first_name = obj?.coordinator_first_name || '';
+    this.coordinator_last_name = obj?.coordinator_last_name || '';
+    this.coordinator_email_address = obj?.coordinator_email_address || '';
+    this.coordinator_agency_name = obj?.coordinator_agency_name || '';
+    this.coordinator_public = obj?.coordinator_public || 'false';
+  }
+}
+
 /**
  * Processes POST /project location data
  *

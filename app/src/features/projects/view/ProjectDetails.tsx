@@ -1,6 +1,7 @@
 import { Box, Paper, Typography } from '@material-ui/core';
 import React from 'react';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
+import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
@@ -42,6 +43,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Paper>
           <Box m={3}>
             <LocationBoundary projectWithDetailsData={projectWithDetailsData}></LocationBoundary>
+          </Box>
+        </Paper>
+      </Box>
+
+      <Box mb={4}>
+        <Paper>
+          <Box m={3}>
+            <ProjectCoordinator projectWithDetailsData={projectWithDetailsData}></ProjectCoordinator>
           </Box>
         </Paper>
       </Box>

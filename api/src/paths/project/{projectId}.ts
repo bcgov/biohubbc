@@ -2,8 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { CustomError } from '../../errors/CustomError';
-import { GetObjectivesData, GetProjectData, GetLocationData } from '../../models/project';
+import { GetObjectivesData, GetProjectData, GetLocationData, GetCoordinatorData } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
@@ -89,7 +88,10 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement
       ) {
-        throw new CustomError(400, 'Failed to build SQL statement');
+        throw {
+          status: 400,
+          message: 'Failed to build SQL statement'
+        };
       }
 
       await connection.open();
@@ -124,11 +126,14 @@ function getProjectWithDetails(): RequestHandler {
           new GetLocationData(projectData.rows[0], regionsData.rows)) ||
         null;
 
+        const getCoordinatorData = (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
+
       const result = {
         id: req.params.projectId,
         project: getProjectData,
         objectives: getObjectivesData,
-        location: getLocationData
+        location: getLocationData,
+        coordinator: getCoordinatorData
       };
 
       defaultLog.debug('result:', result);
