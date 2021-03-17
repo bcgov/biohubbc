@@ -17,8 +17,10 @@ import {
   Typography
 } from '@material-ui/core';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_LIMIT } from 'constants/dateFormats';
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
+import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
 import * as yup from 'yup';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 
@@ -46,20 +48,15 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .transform((value) => (isNaN(value) && null) || value)
     .required('Required'),
   investment_action_category: yup.number().required('Required'),
-  agency_project_id: yup.string(),
+  agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters'),
   funding_amount: yup
     .number()
     .transform((value) => (isNaN(value) && null) || value)
     .typeError('Must be a number')
     .min(0, 'Must be a positive number')
     .required('Required'),
-  start_date: yup.date().required('Required'),
-  end_date: yup
-    .date()
-    .when('start_date', (start_date: any, schema: any) => {
-      return start_date && schema.min(start_date, 'End Date is before Start Date');
-    })
-    .required('Required')
+  start_date: getStartDateStringValidator().required('Required'),
+  end_date: getEndDateStringValidator('start_date')
 });
 
 export interface IProjectFundingItemFormProps {
@@ -227,6 +224,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           required={true}
                           value={values.start_date}
                           type="date"
+                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
                           onChange={handleChange}
                           error={touched.start_date && Boolean(errors.start_date)}
                           helperText={errors.start_date}
@@ -244,6 +242,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           required={true}
                           value={values.end_date}
                           type="date"
+                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
                           onChange={handleChange}
                           error={touched.end_date && Boolean(errors.end_date)}
                           helperText={errors.end_date}

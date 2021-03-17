@@ -37,7 +37,7 @@ export const ProjectPermitFormInitialValues: IProjectPermitForm = {
 export const ProjectPermitFormYupSchema = yup.object().shape({
   permits: yup.array().of(
     yup.object().shape({
-      permit_number: yup.string().required('Required'),
+      permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
       sampling_conducted: yup.string().required('Required')
     })
   )

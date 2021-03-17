@@ -33,10 +33,14 @@ export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
 };
 
 export const ProjectCoordinatorYupSchema = yup.object().shape({
-  first_name: yup.string().required('Required'),
-  last_name: yup.string().required('Required'),
-  email_address: yup.string().email('Must be a valid email address').required('Required'),
-  coordinator_agency: yup.string().required('Required'),
+  first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
+  last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
+  email_address: yup
+    .string()
+    .max(500, 'Cannot exceed 500 characters')
+    .email('Must be a valid email address')
+    .required('Required'),
+  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
   share_contact_details: yup.string().required('Required')
 });
 

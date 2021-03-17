@@ -2,8 +2,10 @@ import { FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, TextFi
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_LIMIT } from 'constants/dateFormats';
 import { useFormikContext } from 'formik';
 import React from 'react';
+import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
 import * as yup from 'yup';
 
 export interface IProjectDetailsForm {
@@ -26,12 +28,10 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 };
 
 export const ProjectDetailsFormYupSchema = yup.object().shape({
-  project_name: yup.string().required('Required'),
+  project_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
   project_type: yup.string().required('Required'),
-  start_date: yup.date().required('Required'),
-  end_date: yup.date().when('start_date', (start_date: any, schema: any) => {
-    return start_date && schema.min(start_date, 'End Date is before Start Date');
-  })
+  start_date: getStartDateStringValidator().required('Required'),
+  end_date: getEndDateStringValidator('start_date')
 });
 
 export interface IProjectDetailsFormProps {
@@ -116,6 +116,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               required={true}
               value={values.start_date}
               type="date"
+              inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
               onChange={handleChange}
               error={touched.start_date && Boolean(errors.start_date)}
               helperText={errors.start_date}
@@ -132,6 +133,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               variant="outlined"
               value={values.end_date}
               type="date"
+              inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
               onChange={handleChange}
               error={touched.end_date && Boolean(errors.end_date)}
               helperText={errors.end_date}
