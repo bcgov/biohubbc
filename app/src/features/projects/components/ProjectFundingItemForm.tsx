@@ -17,6 +17,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_LIMIT } from 'constants/dateFormats';
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
@@ -223,7 +224,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           required={true}
                           value={values.start_date}
                           type="date"
-                          inputProps={{ min: '1900-01-01', max: '2100-12-31' }}
+                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
                           onChange={handleChange}
                           error={touched.start_date && Boolean(errors.start_date)}
                           helperText={errors.start_date}
@@ -241,7 +242,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                           required={true}
                           value={values.end_date}
                           type="date"
-                          inputProps={{ min: '1900-01-01', max: '2100-12-31' }}
+                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
                           onChange={handleChange}
                           error={touched.end_date && Boolean(errors.end_date)}
                           helperText={errors.end_date}

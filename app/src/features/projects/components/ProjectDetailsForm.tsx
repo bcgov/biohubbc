@@ -2,6 +2,7 @@ import { FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, TextFi
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_LIMIT } from 'constants/dateFormats';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
@@ -115,7 +116,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               required={true}
               value={values.start_date}
               type="date"
-              inputProps={{ min: '1900-01-01', max: '2100-12-31' }}
+              inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
               onChange={handleChange}
               error={touched.start_date && Boolean(errors.start_date)}
               helperText={errors.start_date}
@@ -132,7 +133,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               variant="outlined"
               value={values.end_date}
               type="date"
-              inputProps={{ min: '1900-01-01', max: '2100-12-31' }}
+              inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
               onChange={handleChange}
               error={touched.end_date && Boolean(errors.end_date)}
               helperText={errors.end_date}
