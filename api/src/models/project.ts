@@ -279,15 +279,13 @@ export class GetObjectivesData {
   }
 }
 
-
-
 /**
  * Pre-processes GET /projects/{id} coordinator data
  *
  * @export
  * @class GetCoordinatorData
  */
- export class GetCoordinatorData {
+export class GetCoordinatorData {
   first_name: string;
   last_name: string;
   email_address: string;

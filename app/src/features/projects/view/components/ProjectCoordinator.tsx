@@ -14,12 +14,11 @@ export interface IProjectDetailsProps {
  */
 const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { coordinator },
+    projectWithDetailsData: { coordinator }
   } = props;
 
   console.log('-----------------------coordinator');
   console.log(coordinator);
-
 
   return (
     <>
@@ -42,7 +41,9 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="caption">Name</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{coordinator.first_name} {coordinator.last_name}</Typography>
+              <Typography variant="subtitle1">
+                {coordinator.first_name} {coordinator.last_name}
+              </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
