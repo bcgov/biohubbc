@@ -19,6 +19,7 @@ const projectWithDetailsData: IProjectWithDetails = {
     regions: [],
     geometry: [
       {
+        id: 'myGeo',
         type: 'Feature',
         geometry: {
           type: 'Point',
