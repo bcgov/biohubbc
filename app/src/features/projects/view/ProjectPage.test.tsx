@@ -3,6 +3,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Router } from 'react-router';
@@ -43,33 +44,7 @@ describe('ProjectPage', () => {
 
   it('renders project page when project is loaded', async () => {
     await act(async () => {
-      mockBiohubApi().getProject.mockResolvedValue({
-        id: 1,
-        project: {
-          project_name: 'Test Project Name',
-          project_type: '1',
-          start_date: '1998-10-10',
-          end_date: '2021-02-26',
-          climate_change_initiatives: [],
-          project_activities: []
-        },
-        location: {
-          location_description: 'here and there',
-          regions: [],
-          geometry: []
-        },
-        objectives: {
-          objectives: 'Et ad et in culpa si',
-          caveats: 'sjwer bds'
-        },
-        coordinator: {
-          first_name: 'Amanda',
-          last_name: 'Christensen',
-          email_address: 'amanda@christensen.com',
-          coordinator_agency: 'Amanda and associates',
-          share_contact_details: 'true'
-        }
-      });
+      mockBiohubApi().getProject.mockResolvedValue(projectWithDetailsData);
 
       mockBiohubApi().getAllCodes.mockResolvedValue({
         activity: [{ id: 1, name: 'activity 1' }],
