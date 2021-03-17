@@ -5,6 +5,9 @@ import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 
 describe('MapContainer', () => {
+  // To ignore: Deprecated use of _flat, please use L.LineUtil.isFlat instead
+  console.warn = jest.fn();
+
   const classes = jest.fn().mockImplementation(() => {
     return jest.fn().mockReturnValue({
       map: {
