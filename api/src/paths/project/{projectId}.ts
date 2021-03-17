@@ -2,8 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { CustomError } from '../../errors/CustomError';
-import { GetObjectivesData, GetProjectData, GetLocationData } from '../../models/project';
+import { GetObjectivesData, GetProjectData, GetLocationData, GetCoordinatorData } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
@@ -13,6 +12,7 @@ import {
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
+import { CustomError } from '../../errors/CustomError';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -124,9 +124,13 @@ function getProjectWithDetails(): RequestHandler {
           new GetLocationData(projectData.rows[0], regionsData.rows)) ||
         null;
 
+      const getCoordinatorData =
+        (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
+
       const result = {
         id: req.params.projectId,
         project: getProjectData,
+        coordinator: getCoordinatorData,
         objectives: getObjectivesData,
         location: getLocationData
       };
