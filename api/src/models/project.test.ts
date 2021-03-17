@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData, PostObjectivesData, PostIUCNData } from './project';
+import {
+  PostProjectData,
+  PostLocationData,
+  PostObjectivesData,
+  PostIUCNData,
+  GetIUCNClassificationData
+} from './project';
 
 describe('PostProjectData', () => {
   describe('No values provided', () => {
@@ -157,6 +163,46 @@ describe('PostIUCNData', () => {
 
     it('sets classification details', function () {
       expect(projectIUCNData.classificationDetails).to.eql(obj.classificationDetails);
+    });
+  });
+});
+
+describe('GetIUCNClassificationData', () => {
+  describe('No values provided', () => {
+    let iucnClassificationData: GetIUCNClassificationData;
+
+    before(() => {
+      iucnClassificationData = new GetIUCNClassificationData([]);
+    });
+
+    it('sets classification details', function () {
+      expect(iucnClassificationData.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let iucnClassificationData: GetIUCNClassificationData;
+
+    const iucnClassificationDataObj = [
+      {
+        classification: 'class',
+        subclassification1: 'subclass1',
+        subclassification2: 'subclass2'
+      }
+    ];
+
+    before(() => {
+      iucnClassificationData = new GetIUCNClassificationData(iucnClassificationDataObj);
+    });
+
+    it('sets classification details', function () {
+      expect(iucnClassificationData.classificationDetails).to.eql([
+        {
+          classification: 'class',
+          subClassification1: 'subclass1',
+          subClassification2: 'subclass2'
+        }
+      ]);
     });
   });
 });
