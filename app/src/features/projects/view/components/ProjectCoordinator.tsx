@@ -16,10 +16,6 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
     projectWithDetailsData: { coordinator }
   } = props;
-
-  console.log('-----------------------coordinator');
-  console.log(coordinator);
-
   return (
     <>
       <Grid container spacing={3}>

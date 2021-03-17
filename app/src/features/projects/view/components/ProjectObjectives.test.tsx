@@ -21,6 +21,13 @@ const projectWithDetailsData: IProjectWithDetails = {
   objectives: {
     objectives: 'Et ad et in culpa si',
     caveats: 'sjwer bds'
+  },
+  coordinator: {
+    first_name: 'Amanda',
+    last_name: 'Christensen',
+    email_address: 'amanda@christensen.com',
+    coordinator_agency: 'Amanda and associates',
+    share_contact_details: 'true'
   }
 };
 
