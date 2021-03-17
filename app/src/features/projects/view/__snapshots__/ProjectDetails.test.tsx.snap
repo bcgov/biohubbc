@@ -189,7 +189,9 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
-                />
+                >
+                  Type name
+                </h6>
               </div>
             </div>
             <div
@@ -342,7 +344,9 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
-                />
+                >
+                  Region 1, Region 2
+                </h6>
               </div>
             </div>
             <div
@@ -363,7 +367,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
                 >
-                  here and there
+                  Location description
                 </h6>
               </div>
             </div>

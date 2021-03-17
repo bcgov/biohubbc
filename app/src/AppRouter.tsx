@@ -32,8 +32,6 @@ const AppRouter: React.FC = () => {
         layout={AuthLayout}
         title={getTitle('Projects')}
       />
-      {/* Temporary map route for demo */}
-      <AppRoute protected path="/map" component={ProjectsRouter} layout={AuthLayout} title={getTitle('Map')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );
