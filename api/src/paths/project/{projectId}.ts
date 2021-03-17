@@ -12,6 +12,7 @@ import {
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
+import { CustomError } from '../../errors/CustomError';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -88,10 +89,7 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement
       ) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        throw new CustomError(400, 'Failed to identify user ID');
       }
 
       await connection.open();
