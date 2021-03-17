@@ -354,6 +354,12 @@ export class PostIUCNData {
   }
 }
 
+interface IGetIUCN {
+  classification: string;
+  subClassification1: string;
+  subClassification2: string;
+}
+
 /**
  * Pre-processes GET /projects/{id} IUCN classification data
  *
@@ -361,7 +367,7 @@ export class PostIUCNData {
  * @class GetIUCNClassificationData
  */
 export class GetIUCNClassificationData {
-  classificationDetails: IPostIUCN[];
+  classificationDetails: IGetIUCN[];
 
   constructor(iucnClassificationData?: any[]) {
     defaultLog.debug({

@@ -28,9 +28,9 @@ export interface IProject {
 }
 
 /**
- * An interface representing the IUCN classification detail fields for GET
+ * An interface representing the IUCN classification detail item fields for GET
  *
- * @interface IProjectIUCN
+ * @interface IProjectIUCNArrayItem
  */
 interface IProjectIUCNArrayItem {
   classification: string;
