@@ -89,13 +89,75 @@ describe('LocationBoundary', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  // test('matches the snapshot when the geometry is a geometry collection', () => {
-  //   const { asFragment } = render(
-  //     <LocationBoundary
-  //       projectWithDetailsData={{ ...projectWithDetailsData, location: { ...projectWithDetailsData.location, geometry } }}
-  //     />
-  //   );
+  test('matches the snapshot when the geometry is a multipolygon', () => {
+    const geometry: any[] = [
+      {
+        type: 'MultiPolygon',
+        coordinates: [
+          [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          [
+            [
+              [-129, 56],
+              [-129, 56.5],
+              [-129, 57],
+              [-127, 59],
+              [-129, 56]
+            ]
+          ]
+        ]
+      }
+    ];
 
-  //   expect(asFragment()).toMatchSnapshot();
-  // });
+    const { asFragment } = render(
+      <LocationBoundary
+        projectWithDetailsData={{
+          ...projectWithDetailsData,
+          location: { ...projectWithDetailsData.location, geometry }
+        }}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('matches the snapshot when the geometry is a geometry collection', () => {
+    const geometry: any[] = [
+      {
+        type: 'GeometryCollection',
+        geometries: [
+          {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-128, 55],
+                [-128, 55.5],
+                [-128, 56],
+                [-126, 58],
+                [-128, 55]
+              ]
+            ]
+          }
+        ]
+      }
+    ];
+
+    const { asFragment } = render(
+      <LocationBoundary
+        projectWithDetailsData={{
+          ...projectWithDetailsData,
+          location: { ...projectWithDetailsData.location, geometry }
+        }}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });
