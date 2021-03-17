@@ -580,10 +580,9 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
 /**
  * SQL query to get project climate initiatives.
  *
- * @param {string} projectId
+ * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-
 export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getClimateInitiativesByProjectSQL', message: 'params', projectId });
 
@@ -610,6 +609,56 @@ export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStateme
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get IUCN action classifications.
+ * 
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getIUCNActionClassificationByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      ical1c.name as classification,
+      ical2s.name as subClassification1,
+      ical3s.name as subClassification2
+    FROM
+      project_iucn_action_classificaton as piac
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_3_subclassification as ical3s
+    ON
+      piac.iucn2_id = ical3s.id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_2_subclassification as ical2s
+    ON
+      ical3s.iucn1_id = ical2s.id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_1_classification as ical1c
+    ON
+      ical2s.iucn_id = ical1c.id
+    WHERE
+      piac.p_id = ${projectId}
+    GROUP BY
+      ical2s.name,
+      ical1c.name,
+      ical3s.name;
+  `;
+
+  defaultLog.debug({
+    label: 'getIUCNActionClassificationByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+}
 
 /**
  * SQL query to insert a project IUCN row.

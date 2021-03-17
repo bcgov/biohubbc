@@ -355,6 +355,28 @@ export class PostIUCNData {
 }
 
 /**
+ * Pre-processes GET /projects/{id} IUCN classification data
+ * 
+ * @export
+ * @class GetIUCNClassificationData
+ */
+export class GetIUCNClassificationData {
+  classificationDetails: IPostIUCN[];
+
+  constructor(iucnClassificationData?: any[]) {
+    defaultLog.debug({
+      label: 'GetIUCNClassificationData',
+      message: 'params',
+      iucnClassificationData: iucnClassificationData
+    });
+
+    this.classificationDetails = (iucnClassificationData && iucnClassificationData.map((item: any) => {
+      return { classification: item.classification, subClassification1: item.subclassification1, subClassification2: item.subclassification2 };
+    })) || [];
+  }
+}
+
+/**
  * Pre-processes GET /projects/{id}
  *
  * @export
