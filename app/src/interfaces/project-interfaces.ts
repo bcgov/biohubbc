@@ -28,6 +28,26 @@ export interface IProject {
 }
 
 /**
+ * An interface representing the IUCN classification detail fields for GET
+ *
+ * @interface IProjectIUCN
+ */
+interface IProjectIUCNArrayItem {
+  classification: string;
+  subClassification1: string;
+  subClassification2: string;
+}
+
+/**
+ * An interface representing the IUCN classification details for GET
+ *
+ * @interface IProjectIUCN
+ */
+interface IProjectIUCN {
+  classificationDetails: IProjectIUCNArrayItem[];
+}
+
+/**
  * An interface representing the project table.
  *
  * @export
@@ -39,6 +59,7 @@ export interface IProjectWithDetails {
   objectives: IProjectObjectivesForm;
   location: IProjectLocationForm;
   coordinator: IProjectCoordinatorForm;
+  iucn: IProjectIUCN;
 }
 
 /**

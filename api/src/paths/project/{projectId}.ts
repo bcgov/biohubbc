@@ -2,7 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { GetObjectivesData, GetProjectData, GetLocationData, GetCoordinatorData, GetIUCNClassificationData } from '../../models/project';
+import {
+  GetObjectivesData,
+  GetProjectData,
+  GetLocationData,
+  GetCoordinatorData,
+  GetIUCNClassificationData
+} from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
@@ -83,7 +89,9 @@ function getProjectWithDetails(): RequestHandler {
       const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
-      const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(Number(req.params.projectId));
+      const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
+        Number(req.params.projectId)
+      );
 
       if (
         !getProjectSQLStatement ||
@@ -97,7 +105,13 @@ function getProjectWithDetails(): RequestHandler {
 
       await connection.open();
 
-      const [projectData, regionsData, activityData, climateInitiativeData, iucnClassificationData] = await Promise.all([
+      const [
+        projectData,
+        regionsData,
+        activityData,
+        climateInitiativeData,
+        iucnClassificationData
+      ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
         await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
         await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),

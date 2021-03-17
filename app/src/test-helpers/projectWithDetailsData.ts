@@ -26,5 +26,14 @@ export const projectWithDetailsData: IProjectWithDetails = {
     email_address: 'amanda@christensen.com',
     coordinator_agency: 'Amanda and associates',
     share_contact_details: 'true'
+  },
+  iucn: {
+    classificationDetails: [
+      {
+        classification: 'classification',
+        subClassification1: 'sub classification 1',
+        subClassification2: 'sub classification 2'
+      }
+    ]
   }
 };

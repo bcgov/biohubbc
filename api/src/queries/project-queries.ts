@@ -612,7 +612,7 @@ export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStateme
 
 /**
  * SQL query to get IUCN action classifications.
- * 
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
@@ -658,7 +658,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
   });
 
   return sqlStatement;
-}
+};
 
 /**
  * SQL query to insert a project IUCN row.

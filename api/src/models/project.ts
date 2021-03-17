@@ -356,7 +356,7 @@ export class PostIUCNData {
 
 /**
  * Pre-processes GET /projects/{id} IUCN classification data
- * 
+ *
  * @export
  * @class GetIUCNClassificationData
  */
@@ -370,9 +370,16 @@ export class GetIUCNClassificationData {
       iucnClassificationData: iucnClassificationData
     });
 
-    this.classificationDetails = (iucnClassificationData && iucnClassificationData.map((item: any) => {
-      return { classification: item.classification, subClassification1: item.subclassification1, subClassification2: item.subclassification2 };
-    })) || [];
+    this.classificationDetails =
+      (iucnClassificationData &&
+        iucnClassificationData.map((item: any) => {
+          return {
+            classification: item.classification,
+            subClassification1: item.subclassification1,
+            subClassification2: item.subclassification2
+          };
+        })) ||
+      [];
   }
 }
 
