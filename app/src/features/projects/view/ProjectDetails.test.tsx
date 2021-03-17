@@ -1,49 +1,8 @@
 import { render } from '@testing-library/react';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
 import React from 'react';
 import ProjectDetails from './ProjectDetails';
-
-const projectWithDetailsData: IProjectWithDetails = {
-  id: 1,
-  project: {
-    project_name: 'Test Project Name',
-    project_type: '1',
-    start_date: '1998-10-10',
-    end_date: '2021-02-26',
-    climate_change_initiatives: [1],
-    project_activities: [1]
-  },
-  location: {
-    location_description: 'here and there',
-    regions: [],
-    geometry: [
-      {
-        id: 'myGeo',
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [125.6, 10.1]
-        },
-        properties: {
-          name: 'Dinagat Islands'
-        }
-      }
-    ]
-  },
-  objectives: {
-    objectives: 'Et ad et in culpa si',
-    caveats: 'sjwer bds'
-  },
-
-  coordinator: {
-    first_name: 'Amanda',
-    last_name: 'Christensen',
-    email_address: 'amanda@christensen.com',
-    coordinator_agency: 'Amanda and associates',
-    share_contact_details: 'true'
-  }
-};
 
 const codes: IGetAllCodesResponse = {
   coordinator_agency: [],
@@ -63,6 +22,18 @@ const codes: IGetAllCodesResponse = {
 
 describe('ProjectDetails', () => {
   it('renders correctly', () => {
+    projectWithDetailsData.location.geometry.push({
+      id: 'myGeo',
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [125.6, 10.1]
+      },
+      properties: {
+        name: 'Dinagat Islands'
+      }
+    });
+
     const { asFragment } = render(<ProjectDetails projectWithDetailsData={projectWithDetailsData} codes={codes} />);
 
     expect(asFragment()).toMatchSnapshot();
