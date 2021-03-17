@@ -1,9 +1,5 @@
 # Overview
 
-## Links to jira tickets
-
-- {Include links to all of the applicable Jira tickets}
-
 ## This PR contains the following changes
 
 - {List all the relevant changes. If there are many changes across many Jira tickets, organize the changes by Jira ticket}
