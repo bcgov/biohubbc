@@ -42,12 +42,6 @@ exports[`NotFoundPage renders correctly 1`] = `
       >
         Projects
       </a>
-      <a
-        color="inherit"
-        href="/map"
-      >
-        Map
-      </a>
     </div>
   </header>
 </DocumentFragment>
