@@ -37,7 +37,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="caption">Name</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">
+              <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
                 {coordinator.first_name} {coordinator.last_name}
               </Typography>
             </Box>
@@ -47,7 +47,9 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="caption">Email Address</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{coordinator.email_address}</Typography>
+              <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
+                {coordinator.email_address}
+              </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -55,7 +57,9 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
               <Typography variant="caption">Agency</Typography>
             </Box>
             <Box>
-              <Typography variant="subtitle1">{coordinator.coordinator_agency}</Typography>
+              <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
+                {coordinator.coordinator_agency}
+              </Typography>
             </Box>
           </Grid>
         </Grid>

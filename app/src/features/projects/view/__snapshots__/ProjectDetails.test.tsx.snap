@@ -635,6 +635,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
+                  style="word-break: break-all;"
                 >
                   Amanda Christensen
                 </h6>
@@ -657,6 +658,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
+                  style="word-break: break-all;"
                 >
                   amanda@christensen.com
                 </h6>
@@ -679,6 +681,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
+                  style="word-break: break-all;"
                 >
                   Amanda and associates
                 </h6>
