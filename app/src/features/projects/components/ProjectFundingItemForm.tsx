@@ -47,7 +47,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .transform((value) => (isNaN(value) && null) || value)
     .required('Required'),
   investment_action_category: yup.number().required('Required'),
-  agency_project_id: yup.string(),
+  agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters'),
   funding_amount: yup
     .number()
     .transform((value) => (isNaN(value) && null) || value)
