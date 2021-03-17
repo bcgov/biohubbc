@@ -89,7 +89,7 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement
       ) {
-        throw new CustomError(400, 'Failed to identify user ID');
+        throw new CustomError(400, 'Failed to build SQL statement');
       }
 
       await connection.open();
