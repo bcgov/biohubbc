@@ -126,14 +126,15 @@ function getProjectWithDetails(): RequestHandler {
           new GetLocationData(projectData.rows[0], regionsData.rows)) ||
         null;
 
-        const getCoordinatorData = (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
+      const getCoordinatorData = (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
 
       const result = {
         id: req.params.projectId,
         project: getProjectData,
+        coordinator: getCoordinatorData,
         objectives: getObjectivesData,
-        location: getLocationData,
-        coordinator: getCoordinatorData
+        location: getLocationData
+
       };
 
       defaultLog.debug('result:', result);
