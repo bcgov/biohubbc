@@ -142,11 +142,11 @@ describe('PostSpeciesData', () => {
     });
 
     it('sets focal_species', () => {
-      expect(data.focal_species).to.equal([]);
+      expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.equal([]);
+      expect(data.ancillary_species).to.eql([]);
     });
   });
 
