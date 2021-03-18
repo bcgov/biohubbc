@@ -19,6 +19,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
   } = props;
 
   const [isTruncatedObjectives, setIsTruncatedObjectives] = useState(objectives.objectives.length > 850);
+  const [isTruncatedCaveats, setIsTruncatedCaveats] = useState(objectives.caveats.length > 850);
 
   /*
     Function that finds a nice index (at a period ending a sentence)
@@ -93,6 +94,58 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
                 </Grid>
                 {objectives.objectives.length > 850 && (
                   <Button color="primary" onClick={() => setIsTruncatedObjectives(true)}>
+                    Read Less
+                  </Button>
+                )}
+              </>
+            )}
+          </Grid>
+
+          <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="h3">Project Caveats</Typography>
+            </Grid>
+          </Grid>
+          <Grid container item spacing={2} xs={12}>
+            {isTruncatedCaveats && (
+              <>
+                <Grid item xs={12}>
+                  {objectives.caveats
+                    .slice(0, determineTruncatingLength())
+                    .split('\n')
+                    .map((paragraph: string) => {
+                      if (paragraph) {
+                        return (
+                          <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
+                            {paragraph}
+                          </Typography>
+                        );
+                      }
+                      return <p key={uuidv4()}></p>;
+                    })}
+                </Grid>
+                <Button color="primary" onClick={() => setIsTruncatedCaveats(false)}>
+                  Read More
+                </Button>
+              </>
+            )}
+
+            {!isTruncatedCaveats && (
+              <>
+                <Grid item xs={12}>
+                  {objectives.caveats.split('\n').map((paragraph: string) => {
+                    if (paragraph) {
+                      return (
+                        <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
+                          {paragraph}
+                        </Typography>
+                      );
+                    }
+                    return <p key={uuidv4()}></p>;
+                  })}
+                </Grid>
+                {objectives.caveats.length > 850 && (
+                  <Button color="primary" onClick={() => setIsTruncatedCaveats(true)}>
                     Read Less
                   </Button>
                 )}
