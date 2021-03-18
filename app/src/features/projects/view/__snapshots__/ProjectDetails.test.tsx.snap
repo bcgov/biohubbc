@@ -640,7 +640,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
                 >
-                  , 
+                  species 1, species 2
                 </h6>
               </div>
             </div>

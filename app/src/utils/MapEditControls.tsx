@@ -150,6 +150,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     map.on(eventHandlers.onCreated, onDrawCreate);
     map.on(eventHandlers.onEdited, onDrawEdit);
     map.on(eventHandlers.onDeleted, (e) => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       deleteEvent = e;
       setShowDeleteModal(true);
     });

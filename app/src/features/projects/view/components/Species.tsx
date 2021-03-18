@@ -19,8 +19,8 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     }
   } = props;
 
-  const focal_species_names = focal_species?.length && focal_species.map((item) => item.name).join(', ');
-  const ancillary_species_names = ancillary_species?.length && ancillary_species.join(', ');
+  const focal_species_names = (focal_species?.length && focal_species.join(', ')) || '';
+  const ancillary_species_names = (ancillary_species?.length && ancillary_species.join(', ')) || '';
 
   return (
     <>

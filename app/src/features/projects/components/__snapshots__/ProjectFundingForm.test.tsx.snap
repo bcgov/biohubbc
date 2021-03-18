@@ -427,12 +427,12 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                         <p
                           class="MuiTypography-root MuiTypography-body2"
                         >
-                          Investment Action/Category
+                          Investment Action
                         </p>
                         <p
                           class="MuiTypography-root MuiTypography-body1"
                         >
-                          1
+                          action 1
                         </p>
                       </div>
                     </div>

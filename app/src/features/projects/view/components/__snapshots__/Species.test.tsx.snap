@@ -72,9 +72,7 @@ exports[`Species renders correctly with default empty values 1`] = `
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
-          >
-            0
-          </h6>
+          />
         </div>
       </div>
       <div
@@ -94,9 +92,7 @@ exports[`Species renders correctly with default empty values 1`] = `
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
-          >
-            0
-          </h6>
+          />
         </div>
       </div>
     </div>
@@ -177,7 +173,7 @@ exports[`Species renders correctly with existing species values 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            , 
+            species 1, species 2
           </h6>
         </div>
       </div>
