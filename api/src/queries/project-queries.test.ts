@@ -11,7 +11,8 @@ import {
   getActivitiesByProjectSQL,
   getClimateInitiativesByProjectSQL,
   postProjectActivitySQL,
-  postProjectClimateChangeInitiativeSQL
+  postProjectClimateChangeInitiativeSQL,
+  getIUCNActionClassificationByProjectSQL
 } from './project-queries';
 
 describe('postProjectSQL', () => {
@@ -287,6 +288,20 @@ describe('getActivitiesByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getActivitiesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getIUCNActionClassificationByProjectSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = getIUCNActionClassificationByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = getIUCNActionClassificationByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

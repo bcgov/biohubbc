@@ -2,13 +2,20 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { GetObjectivesData, GetProjectData, GetLocationData, GetCoordinatorData } from '../../models/project';
+import {
+  GetObjectivesData,
+  GetProjectData,
+  GetLocationData,
+  GetCoordinatorData,
+  GetIUCNClassificationData
+} from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
   getClimateInitiativesByProjectSQL,
   getProjectSQL,
-  getRegionsByProjectSQL
+  getRegionsByProjectSQL,
+  getIUCNActionClassificationByProjectSQL
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
@@ -82,25 +89,39 @@ function getProjectWithDetails(): RequestHandler {
       const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
+      const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
+        Number(req.params.projectId)
+      );
 
       if (
         !getProjectSQLStatement ||
         !getRegionsByProjectSQLStatement ||
         !getProjectActivitiesSQLStatement ||
-        !getProjectClimateInitiativesSQLStatement
+        !getProjectClimateInitiativesSQLStatement ||
+        !getProjectIUCNActionClassificationSQLStatement
       ) {
         throw new CustomError(400, 'Failed to build SQL statement');
       }
 
       await connection.open();
 
-      const [projectData, regionsData, activityData, climateInitiativeData] = await Promise.all([
+      const [
+        projectData,
+        regionsData,
+        activityData,
+        climateInitiativeData,
+        iucnClassificationData
+      ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
         await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
         await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
         await connection.query(
           getProjectClimateInitiativesSQLStatement.text,
           getProjectClimateInitiativesSQLStatement.values
+        ),
+        await connection.query(
+          getProjectIUCNActionClassificationSQLStatement.text,
+          getProjectIUCNActionClassificationSQLStatement.values
         )
       ]);
 
@@ -127,12 +148,21 @@ function getProjectWithDetails(): RequestHandler {
       const getCoordinatorData =
         (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
 
+      const getIUCNClassificationData =
+        (projectData &&
+          projectData.rows &&
+          iucnClassificationData &&
+          iucnClassificationData.rows &&
+          new GetIUCNClassificationData(iucnClassificationData.rows)) ||
+        null;
+
       const result = {
         id: req.params.projectId,
         project: getProjectData,
         coordinator: getCoordinatorData,
         objectives: getObjectivesData,
-        location: getLocationData
+        location: getLocationData,
+        iucn: getIUCNClassificationData
       };
 
       defaultLog.debug('result:', result);
