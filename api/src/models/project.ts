@@ -443,7 +443,7 @@ export class PostSpeciesData {
  * @See PostFundingData
  *
  * @export
- * @class PostLocationData
+ * @class PostFundingSource
  */
 export class PostFundingSource {
   agency_id: number;
@@ -466,10 +466,10 @@ export class PostFundingSource {
 }
 
 /**
- * Processes POST /project location data
+ * Processes POST /project funding data
  *
  * @export
- * @class PostLocationData
+ * @class PostFundingData
  */
 export class PostFundingData {
   funding_agencies: PostFundingSource[];
@@ -483,5 +483,37 @@ export class PostFundingData {
       (obj?.funding_agencies.length && obj.funding_agencies.map((item: any) => new PostFundingSource(item))) || [];
     this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
     this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{id} funding data
+ *
+ * @export
+ * @class GetFundingData
+ */
+export class GetFundingData {
+  fundingAgencies: PostFundingSource[];
+
+  constructor(fundingData?: any[]) {
+    defaultLog.debug({
+      label: 'GetIUCNClassificationData',
+      message: 'params',
+      fundingData: fundingData
+    });
+
+    this.fundingAgencies =
+      (fundingData &&
+        fundingData.map((item: any) => {
+          return {
+            agency_id: item.agency_id,
+            investment_action_category: item.investment_action_category,
+            agency_project_id: item.agency_project_id,
+            funding_amount: item.funding_amount,
+            start_date: item.start_date,
+            end_date: item.end_date
+          };
+        })) ||
+      [];
   }
 }

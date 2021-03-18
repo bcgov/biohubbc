@@ -7,7 +7,8 @@ import {
   GetProjectData,
   GetLocationData,
   GetCoordinatorData,
-  GetIUCNClassificationData
+  GetIUCNClassificationData,
+  GetFundingData
 } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
@@ -15,7 +16,8 @@ import {
   getClimateInitiativesByProjectSQL,
   getProjectSQL,
   getRegionsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL
+  getIUCNActionClassificationByProjectSQL,
+  getFundingSourceByProjectSQL
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
@@ -92,13 +94,15 @@ function getProjectWithDetails(): RequestHandler {
       const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
         Number(req.params.projectId)
       );
+      const getProjectFundingSourceSQLStatement = getFundingSourceByProjectSQL(Number(req.params.projectId));
 
       if (
         !getProjectSQLStatement ||
         !getRegionsByProjectSQLStatement ||
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement ||
-        !getProjectIUCNActionClassificationSQLStatement
+        !getProjectIUCNActionClassificationSQLStatement ||
+        !getProjectFundingSourceSQLStatement
       ) {
         throw new CustomError(400, 'Failed to build SQL statement');
       }
@@ -110,7 +114,8 @@ function getProjectWithDetails(): RequestHandler {
         regionsData,
         activityData,
         climateInitiativeData,
-        iucnClassificationData
+        iucnClassificationData,
+        fundingData
       ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
         await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
@@ -122,6 +127,10 @@ function getProjectWithDetails(): RequestHandler {
         await connection.query(
           getProjectIUCNActionClassificationSQLStatement.text,
           getProjectIUCNActionClassificationSQLStatement.values
+        ),
+        await connection.query(
+          getProjectFundingSourceSQLStatement.text,
+          getProjectFundingSourceSQLStatement.values
         )
       ]);
 
@@ -156,13 +165,24 @@ function getProjectWithDetails(): RequestHandler {
           new GetIUCNClassificationData(iucnClassificationData.rows)) ||
         null;
 
+      const getFundingData =
+        (projectData &&
+          projectData.rows &&
+          fundingData &&
+          fundingData.rows &&
+          new GetFundingData(fundingData.rows)) || null;
+
+      console.log('##############GET FUNDING DATA############');
+      console.log(getFundingData);
+
       const result = {
         id: req.params.projectId,
         project: getProjectData,
         coordinator: getCoordinatorData,
         objectives: getObjectivesData,
         location: getLocationData,
-        iucn: getIUCNClassificationData
+        iucn: getIUCNClassificationData,
+        funding: getFundingData
       };
 
       defaultLog.debug('result:', result);

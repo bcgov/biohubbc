@@ -12,7 +12,7 @@ export interface IProjectDetailsProps {
 }
 
 /**
- * Project details content for a project.
+ * Location boundary content for a project.
  *
  * @return {*}
  */

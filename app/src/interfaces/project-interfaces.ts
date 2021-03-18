@@ -48,6 +48,28 @@ interface IProjectIUCN {
 }
 
 /**
+ * An interface representing the funding agency item fields for GET
+ * 
+ * @interface IProjectFundingSourceArrayItem
+ */
+interface IProjectFundingSourceArrayItem {
+  agency_id: string;
+  investment_action_category: string;
+  funding_amount: number;
+  start_date: string;
+  end_date: string;
+}
+
+/**
+ * An interface representing the funding source for GET
+ * 
+ * @interface IProjectFundingSource
+ */
+interface IProjectFundingSource {
+  fundingAgencies: IProjectFundingSourceArrayItem[];
+}
+
+/**
  * An interface representing the project table.
  *
  * @export
@@ -60,6 +82,7 @@ export interface IProjectWithDetails {
   location: IProjectLocationForm;
   coordinator: IProjectCoordinatorForm;
   iucn: IProjectIUCN;
+  funding: IProjectFundingSource;
 }
 
 /**
