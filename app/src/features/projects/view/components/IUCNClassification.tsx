@@ -1,7 +1,35 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+  Grid,
+  Button,
+  IconButton,
+  Typography
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import Icon from '@mdi/react';
+import { mdiTrashCanOutline } from '@mdi/js';
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650
+  },
+  tableCellBorder: {
+    borderTop: '1px solid rgba(224, 224, 224, 1)'
+  },
+  heading: {
+    fontWeight: 'bold'
+  },
+  addButton: {
+    border: '2px solid'
+  }
+});
 
 export interface IIUCNClassificationProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -17,6 +45,8 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     projectWithDetailsData: { iucn }
   } = props;
 
+  const classes = useStyles();
+
   return (
     <>
       <Grid container spacing={3}>
@@ -25,47 +55,41 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
             <Typography variant="h3">IUCN Classification</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit Project Coordinator" aria-label="Edit Project Coordinator">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
-              </Typography>
-            </IconButton>
+            <Button
+              variant="outlined"
+              component="label"
+              size="medium"
+              color="primary"
+              className={classes.addButton && classes.heading}>
+              Add IUCN Classification
+            </Button>
           </Grid>
         </Grid>
-        {iucn.classificationDetails.map((classificationDetail: any) => (
-          <Grid key={classificationDetail.classification} container item spacing={3} xs={12}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Box color="text.disabled">
-                <Typography variant="caption">Classification</Typography>
-              </Box>
-              <Box>
-                <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                  {classificationDetail.classification}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Box color="text.disabled">
-                <Typography variant="caption">Sub-classification</Typography>
-              </Box>
-              <Box>
-                <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                  {classificationDetail.subClassification1}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Box color="text.disabled">
-                <Typography variant="caption">Sub-classification</Typography>
-              </Box>
-              <Box>
-                <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                  {classificationDetail.subClassification2}
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        ))}
+        <TableContainer>
+          <Table className={classes.table} aria-label="iucn-classification-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.heading}>Classification</TableCell>
+                <TableCell className={classes.heading}>Sub-classification</TableCell>
+                <TableCell className={classes.heading}>Sub-classification</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {iucn.classificationDetails.map((classificationDetail: any) => (
+                <TableRow key={classificationDetail.classification}>
+                  <TableCell>{classificationDetail.classification}</TableCell>
+                  <TableCell>{classificationDetail.subClassification1}</TableCell>
+                  <TableCell>{classificationDetail.subClassification2}</TableCell>
+                  <TableCell className={classes.tableCellBorder}>
+                    <IconButton color="primary" aria-label="delete">
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Grid>
     </>
   );

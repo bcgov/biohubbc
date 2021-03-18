@@ -20,110 +20,108 @@ exports[`IUCNClassification renders correctly 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item"
       >
-        <button
-          aria-label="Edit Project Coordinator"
-          class="MuiButtonBase-root MuiIconButton-root"
+        <label
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-3 MuiButton-outlinedPrimary"
+          role="button"
           tabindex="0"
-          title="Edit Project Coordinator"
-          type="button"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-label"
           >
-            <span
-              class="MuiTypography-root MuiTypography-caption"
-            >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                />
-              </svg>
-               EDIT
-            </span>
+            Add IUCN Classification
           </span>
           <span
             class="MuiTouchRipple-root"
           />
-        </button>
+        </label>
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+      class="MuiTableContainer-root"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      <table
+        aria-label="iucn-classification-table"
+        class="MuiTable-root makeStyles-table-1"
       >
-        <div
-          class="MuiBox-root MuiBox-root-1"
+        <thead
+          class="MuiTableHead-root"
         >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
+          <tr
+            class="MuiTableRow-root MuiTableRow-head"
           >
-            Classification
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-2"
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-3"
+              scope="col"
+            >
+              Classification
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-3"
+              scope="col"
+            >
+              Sub-classification
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-3"
+              scope="col"
+            >
+              Sub-classification
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          class="MuiTableBody-root"
         >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
+          <tr
+            class="MuiTableRow-root"
           >
-            classification
-          </h6>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-      >
-        <div
-          class="MuiBox-root MuiBox-root-3"
-        >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
-          >
-            Sub-classification
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-4"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
-          >
-            sub classification 1
-          </h6>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-      >
-        <div
-          class="MuiBox-root MuiBox-root-5"
-        >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
-          >
-            Sub-classification
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-6"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
-          >
-            sub classification 2
-          </h6>
-        </div>
-      </div>
+            <td
+              class="MuiTableCell-root MuiTableCell-body"
+            >
+              classification
+            </td>
+            <td
+              class="MuiTableCell-root MuiTableCell-body"
+            >
+              sub classification 1
+            </td>
+            <td
+              class="MuiTableCell-root MuiTableCell-body"
+            >
+              sub classification 2
+            </td>
+            <td
+              class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorder-2"
+            >
+              <button
+                aria-label="delete"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </DocumentFragment>
