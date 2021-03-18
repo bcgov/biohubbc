@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectObjectives renders correctly when objectives are in multiple paragraphs 1`] = `
+exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-3"
@@ -53,6 +53,175 @@ exports[`ProjectObjectives renders correctly when objectives are in multiple par
               class="MuiTouchRipple-root"
             />
           </button>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitationullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit involuptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consecteturadipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolorin reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </div>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Read More
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Caveats
+          </h3>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmodtempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitationullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit involuptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consecteturadipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolorin reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+          </p>
+        </div>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Read More
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ProjectObjectives renders correctly when objectives are in multiple paragraphs 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-4"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Objectives
+          </h3>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <button
+            aria-label="Edit General Information"
+            class="MuiButtonBase-root MuiIconButton-root"
+            tabindex="0"
+            title="Edit General Information"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-caption"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                  />
+                </svg>
+                 EDIT
+              </span>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            Paragraph1
+          </p>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            Paragraph2
+          </p>
+          <p />
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            Paragraph3
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Caveats
+          </h3>
         </div>
       </div>
       <div
@@ -156,12 +325,39 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
           </p>
         </div>
       </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Caveats
+          </h3>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            sjwer bds
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </DocumentFragment>
 `;
 
-exports[`ProjectObjectives renders correctly when objectives length is > 850 characters 1`] = `
+exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-2"
@@ -243,6 +439,28 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
             class="MuiTouchRipple-root"
           />
         </button>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Caveats
+          </h3>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <p />
+        </div>
       </div>
     </div>
   </div>
