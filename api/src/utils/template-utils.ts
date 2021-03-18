@@ -17,9 +17,9 @@ export interface IValidationResult {
 export function isValidJSONSchema(jsonSchema: object): IValidationResult {
   const ajv = new Ajv();
 
-  const isValidJSONSchema = ajv.validateSchema(jsonSchema);
+  const isValid = ajv.validateSchema(jsonSchema);
 
-  return { isValid: isValidJSONSchema, errors: ajv.errors };
+  return { isValid, errors: ajv.errors };
 }
 
 /**
@@ -33,7 +33,7 @@ export function isValidJSONSchema(jsonSchema: object): IValidationResult {
 export function isJSONObjectValidForJSONSchema(jsonObject: object, jsonSchema: object): IValidationResult {
   const ajv = new Ajv({ allErrors: true });
 
-  const isValidJSONSchema = ajv.validate(jsonSchema, jsonObject);
+  const isValidSchema = ajv.validate(jsonSchema, jsonObject);
 
-  return { isValid: isValidJSONSchema as boolean, errors: ajv.errors };
+  return { isValid: isValidSchema as boolean, errors: ajv.errors };
 }
