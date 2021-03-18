@@ -9,7 +9,7 @@ import { AjvError } from '@rjsf/core';
  */
 export const getCustomErrorTransformer = () => {
   return (errors: AjvError[]) => {
-    const transformedErrors = errors.filter((error) => {
+    return errors.filter((error) => {
       if (error.message === 'should be equal to one of the allowed values') {
         return false;
       }
@@ -29,7 +29,5 @@ export const getCustomErrorTransformer = () => {
 
       return true;
     });
-
-    return transformedErrors;
   };
 };

@@ -26,7 +26,7 @@ const useApi = () => {
 
   const config = useContext(ConfigContext);
 
-  const instance = useMemo(() => {
+  return useMemo(() => {
     return axios.create({
       headers: {
         Authorization: `Bearer ${keycloak?.token}`
@@ -35,8 +35,6 @@ const useApi = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, keycloak, keycloak?.token]);
-
-  return instance;
 };
 
 /**
@@ -166,8 +164,6 @@ export const useBiohubApi = () => {
    */
 
   const getMediaList = async (projectId: string): Promise<IMedia[]> => {
-    //const api = await apiPromise;
-
     const { data } = await api.get(`/api/projects/${projectId}/artifacts/list`);
 
     const mediaKeyList: IMedia[] = [];

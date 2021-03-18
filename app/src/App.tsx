@@ -30,7 +30,7 @@ const App: React.FC = () => {
                   keycloak={keycloak}
                   initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
                   LoadingComponent={<CircularProgress />}
-                  onEvent={getKeycloakEventHandler(keycloak)}>
+                  onEvent={getKeycloakEventHandler()}>
                   <AuthStateContextProvider>
                     <BrowserRouter>
                       <AuthStateContext.Consumer>

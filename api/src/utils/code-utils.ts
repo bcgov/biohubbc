@@ -71,7 +71,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
 
   connection.release();
 
-  const result: IAllCodeSets = {
+  return {
     management_action_type: (management_action_type && management_action_type.rows) || [],
     climate_change_initiative: (climate_change_initiative && climate_change_initiative.rows) || [],
     first_nations: (first_nations && first_nations.rows) || [],
@@ -724,6 +724,4 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
       { id: 346, name: 'Yelloweye Rockfish [Sebastes ruberrimus]' }
     ]
   };
-
-  return result;
 }
