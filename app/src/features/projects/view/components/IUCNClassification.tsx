@@ -20,8 +20,11 @@ const useStyles = makeStyles({
   table: {
     minWidth: 650
   },
-  tableCellBorder: {
+  tableCellBorderTop: {
     borderTop: '1px solid rgba(224, 224, 224, 1)'
+  },
+  tableCellBorderBottom: {
+    borderBottom: 'none'
   },
   heading: {
     fontWeight: 'bold'
@@ -65,31 +68,43 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
             </Button>
           </Grid>
         </Grid>
-        <TableContainer>
-          <Table className={classes.table} aria-label="iucn-classification-table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.heading}>Classification</TableCell>
-                <TableCell className={classes.heading}>Sub-classification</TableCell>
-                <TableCell className={classes.heading}>Sub-classification</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {iucn.classificationDetails.map((classificationDetail: any) => (
-                <TableRow key={classificationDetail.classification}>
-                  <TableCell>{classificationDetail.classification}</TableCell>
-                  <TableCell>{classificationDetail.subClassification1}</TableCell>
-                  <TableCell>{classificationDetail.subClassification2}</TableCell>
-                  <TableCell className={classes.tableCellBorder}>
-                    <IconButton color="primary" aria-label="delete">
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </TableCell>
+        <Grid container item xs={12}>
+          <TableContainer>
+            <Table className={classes.table} aria-label="iucn-classification-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.heading}>Classification</TableCell>
+                  <TableCell className={classes.heading}>Sub-classification</TableCell>
+                  <TableCell className={classes.heading}>Sub-classification</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+                  const tableCellStyle =
+                    index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
+
+                  return (
+                    <TableRow key={classificationDetail.classification}>
+                      <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
+                      <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
+                      <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
+                      <TableCell
+                        className={
+                          classes.tableCellBorderBottom && index === iucn.classificationDetails.length - 1
+                            ? classes.tableCellBorderBottom
+                            : classes.tableCellBorderTop
+                        }>
+                        <IconButton color="primary" aria-label="delete">
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
       </Grid>
     </>
   );

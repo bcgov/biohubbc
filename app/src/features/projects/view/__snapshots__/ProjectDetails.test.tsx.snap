@@ -550,7 +550,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-37"
+                    class="MuiBox-root MuiBox-root-38"
                   />
                 </div>
               </div>
@@ -725,7 +725,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               <label
                 aria-disabled="false"
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-35 MuiButton-outlinedPrimary"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-36 MuiButton-outlinedPrimary"
                 role="button"
                 tabindex="0"
               >
@@ -741,90 +741,94 @@ exports[`ProjectDetails renders correctly 1`] = `
             </div>
           </div>
           <div
-            class="MuiTableContainer-root"
+            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12"
           >
-            <table
-              aria-label="iucn-classification-table"
-              class="MuiTable-root makeStyles-table-33"
+            <div
+              class="MuiTableContainer-root"
             >
-              <thead
-                class="MuiTableHead-root"
+              <table
+                aria-label="iucn-classification-table"
+                class="MuiTable-root makeStyles-table-33"
               >
-                <tr
-                  class="MuiTableRow-root MuiTableRow-head"
+                <thead
+                  class="MuiTableHead-root"
                 >
-                  <th
-                    class="MuiTableCell-root MuiTableCell-head makeStyles-heading-35"
-                    scope="col"
+                  <tr
+                    class="MuiTableRow-root MuiTableRow-head"
                   >
-                    Classification
-                  </th>
-                  <th
-                    class="MuiTableCell-root MuiTableCell-head makeStyles-heading-35"
-                    scope="col"
-                  >
-                    Sub-classification
-                  </th>
-                  <th
-                    class="MuiTableCell-root MuiTableCell-head makeStyles-heading-35"
-                    scope="col"
-                  >
-                    Sub-classification
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                class="MuiTableBody-root"
-              >
-                <tr
-                  class="MuiTableRow-root"
-                >
-                  <td
-                    class="MuiTableCell-root MuiTableCell-body"
-                  >
-                    classification
-                  </td>
-                  <td
-                    class="MuiTableCell-root MuiTableCell-body"
-                  >
-                    sub classification 1
-                  </td>
-                  <td
-                    class="MuiTableCell-root MuiTableCell-body"
-                  >
-                    sub classification 2
-                  </td>
-                  <td
-                    class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorder-34"
-                  >
-                    <button
-                      aria-label="delete"
-                      class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-                      tabindex="0"
-                      type="button"
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-36"
+                      scope="col"
                     >
-                      <span
-                        class="MuiIconButton-label"
+                      Classification
+                    </th>
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-36"
+                      scope="col"
+                    >
+                      Sub-classification
+                    </th>
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-36"
+                      scope="col"
+                    >
+                      Sub-classification
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="MuiTableBody-root"
+                >
+                  <tr
+                    class="MuiTableRow-root"
+                  >
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-35"
+                    >
+                      classification
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-35"
+                    >
+                      sub classification 1
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-35"
+                    >
+                      sub classification 2
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-35"
+                    >
+                      <button
+                        aria-label="delete"
+                        class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                        tabindex="0"
+                        type="button"
                       >
-                        <svg
-                          role="presentation"
-                          style="width: 1.5rem; height: 1.5rem;"
-                          viewBox="0 0 24 24"
+                        <span
+                          class="MuiIconButton-label"
                         >
-                          <path
-                            d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                            style="fill: currentColor;"
-                          />
-                        </svg>
-                      </span>
-                      <span
-                        class="MuiTouchRipple-root"
-                      />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                          <svg
+                            role="presentation"
+                            style="width: 1.5rem; height: 1.5rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <span
+                          class="MuiTouchRipple-root"
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
