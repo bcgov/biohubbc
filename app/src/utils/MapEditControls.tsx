@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useRef, useEffect, useState } from 'react';
-import { useLeafletContext } from '@react-leaflet/core';
+import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
@@ -205,11 +205,14 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   );
 };
 
-/*
-  Function to create the draw/edit/remove elements on the map
-  based on the options and props passed into the component
-*/
-function createDrawElement(props: any, context: any) {
+/**
+ * Function to create the draw/edit/remove elements on the map based on the options and props passed into the component
+ *
+ * @param {IMapEditControlsProps} props
+ * @param {LeafletContextInterface} context
+ * @return {*}
+ */
+function createDrawElement(props: IMapEditControlsProps, context: LeafletContextInterface) {
   const { layerContainer } = context;
   const { draw, edit, position } = props;
   const options = {

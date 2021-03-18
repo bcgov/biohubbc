@@ -24,10 +24,10 @@ exports[`ProjectObjectives renders correctly when objectives are in multiple par
           class="MuiGrid-root MuiGrid-item"
         >
           <button
-            aria-label="Edit General Information"
+            aria-label="Edit Objectives Information"
             class="MuiButtonBase-root MuiIconButton-root"
             tabindex="0"
-            title="Edit General Information"
+            title="Edit Objectives Information"
             type="button"
           >
             <span
@@ -111,10 +111,10 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
           class="MuiGrid-root MuiGrid-item"
         >
           <button
-            aria-label="Edit General Information"
+            aria-label="Edit Objectives Information"
             class="MuiButtonBase-root MuiIconButton-root"
             tabindex="0"
-            title="Edit General Information"
+            title="Edit Objectives Information"
             type="button"
           >
             <span
@@ -185,10 +185,10 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
           class="MuiGrid-root MuiGrid-item"
         >
           <button
-            aria-label="Edit General Information"
+            aria-label="Edit Objectives Information"
             class="MuiButtonBase-root MuiIconButton-root"
             tabindex="0"
-            title="Edit General Information"
+            title="Edit Objectives Information"
             type="button"
           >
             <span
