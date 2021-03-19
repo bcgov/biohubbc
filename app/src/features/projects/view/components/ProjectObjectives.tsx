@@ -19,7 +19,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   } = props;
 
   const [isTruncatedObjectives, setIsTruncatedObjectives] = useState(objectives.objectives.length > 850);
-  const [isTruncatedCaveats, setIsTruncatedCaveats] = useState(objectives.caveats.length > 850);
+  const [isTruncatedCaveats, setIsTruncatedCaveats] = useState(objectives.caveats?.length > 850);
 
   /*
     Function that finds a nice index (at a period ending a sentence)
@@ -31,6 +31,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     for (let i = 0; i < objectives.objectives.length; i++) {
       if (objectives.objectives[i - 1] === '.' && objectives.objectives[i] === ' ') {
         periodIndices.push(i);
+        console.log(periodIndices);
       }
     }
 
@@ -133,7 +134,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             {!isTruncatedCaveats && (
               <>
                 <Grid item xs={12}>
-                  {objectives.caveats.split('\n').map((paragraph: string) => {
+                  {objectives.caveats?.split('\n').map((paragraph: string) => {
                     if (paragraph) {
                       return (
                         <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
@@ -144,7 +145,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
                     return <p key={uuidv4()}></p>;
                   })}
                 </Grid>
-                {objectives.caveats.length > 850 && (
+                {objectives.caveats?.length > 850 && (
                   <Button color="primary" onClick={() => setIsTruncatedCaveats(true)}>
                     Read Less
                   </Button>
