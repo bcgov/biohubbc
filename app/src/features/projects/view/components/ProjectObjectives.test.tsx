@@ -1,19 +1,21 @@
-import { render, fireEvent, getByText } from '@testing-library/react';
+import { render, fireEvent, getAllByText } from '@testing-library/react';
 import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 
 describe('ProjectObjectives', () => {
-  const longObjectives =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod' +
-    'tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation' +
-    'ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in' +
-    'voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,' +
-    'sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur' +
-    'adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,' +
-    'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor' +
-    'in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. This is the way we can' +
-    'assert that our long strings work as expected with objectives.';
+  const longData =
+    'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean' +
+    ' commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient ' +
+    'montes, nascetur ridiculus mus.\n Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.\n' +
+    ' Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget,' +
+    ' arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.\n\n' +
+    'Nullam dictum felis eu pede mollis pretium. Integer tincidunt. \n Cras dapibus. Vivamus elementum\n' +
+    ' semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.\n\n ' +
+    'Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius\n\n ' +
+    'laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies\n ' +
+    'nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper liber\n\n,' +
+    'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
     const { asFragment } = render(<ProjectObjectives projectWithDetailsData={projectWithDetailsData} />);
@@ -21,12 +23,12 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when objectives length is > 850 characters', () => {
+  it('renders correctly when objectives length is > 850 characters and caveats is empty', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectWithDetailsData={{
           ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: longObjectives }
+          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: '' }
         }}
       />
     );
@@ -34,14 +36,32 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when objectives are in multiple paragraphs', () => {
+  it('renders correctly when both objectives and caveats have length is > 850 characters', () => {
+    const { asFragment } = render(
+      <ProjectObjectives
+        projectWithDetailsData={{
+          ...projectWithDetailsData,
+          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: longData }
+        }}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs', () => {
     const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
+    const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
       <ProjectObjectives
         projectWithDetailsData={{
           ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: multilineObjectives }
+          objectives: {
+            ...projectWithDetailsData.objectives,
+            objectives: multilineObjectives,
+            caveats: multilineCaveats
+          }
         }}
       />
     );
@@ -49,29 +69,63 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('allows to read more to enable viewing the entire objectives string and read less to only show the truncated string', () => {
+  it('renders correctly when objectives and caveats are long and in multiple paragraphs', () => {
+    const { asFragment } = render(
+      <ProjectObjectives
+        projectWithDetailsData={{
+          ...projectWithDetailsData,
+          objectives: {
+            ...projectWithDetailsData.objectives,
+            objectives: longData,
+            caveats: longData
+          }
+        }}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('functions as expected with the read more and read less buttons', () => {
     const { container } = render(
       <ProjectObjectives
         projectWithDetailsData={{
           ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: longObjectives }
+          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: longData }
         }}
       />
     );
 
+    // for finding 'project objectives'
     //@ts-ignore
-    expect(getByText(container, 'Read More')).toBeInTheDocument();
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getByText(container, 'Read More'));
+    fireEvent.click(getAllByText(container, 'Read More')[0]);
 
     //@ts-ignore
-    expect(getByText(container, 'Read Less')).toBeInTheDocument();
+    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
 
     //@ts-ignore
-    fireEvent.click(getByText(container, 'Read Less'));
+    fireEvent.click(getAllByText(container, 'Read Less')[0]);
 
     //@ts-ignore
-    expect(getByText(container, 'Read More')).toBeInTheDocument();
+    expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
+
+    // for finding 'project caveats'
+    //@ts-ignore
+    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
+
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read More')[1]);
+
+    //@ts-ignore
+    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
+
+    //@ts-ignore
+    fireEvent.click(getAllByText(container, 'Read Less')[0]);
+
+    //@ts-ignore
+    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
   });
 });
