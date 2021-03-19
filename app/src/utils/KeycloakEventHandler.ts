@@ -1,8 +1,7 @@
 import { KeycloakEventHandler } from '@react-keycloak/web';
-import { KeycloakInstance } from 'keycloak-js';
 
-const getKeycloakEventHandler = (keycloak: KeycloakInstance) => {
-  const keycloakEventHandler: KeycloakEventHandler = (event, error) => {
+const getKeycloakEventHandler = (): KeycloakEventHandler => {
+  return (event: any, error: any) => {
     switch (event) {
       case 'onReady':
         console.log('keycloak onReady');
@@ -32,7 +31,6 @@ const getKeycloakEventHandler = (keycloak: KeycloakInstance) => {
         console.debug(`keycloak event: ${event} error ${error}`);
     }
   };
-  return keycloakEventHandler;
 };
 
 export default getKeycloakEventHandler;
