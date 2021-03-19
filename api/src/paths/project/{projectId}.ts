@@ -166,9 +166,6 @@ function getProjectWithDetails(): RequestHandler {
         (projectData && projectData.rows && fundingData && fundingData.rows && new GetFundingData(fundingData.rows)) ||
         null;
 
-      console.log('##############GET FUNDING DATA############');
-      console.log(getFundingData);
-
       const result = {
         id: req.params.projectId,
         project: getProjectData,
