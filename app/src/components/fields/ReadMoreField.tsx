@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export interface IReadMoreFieldProps {
   text: string;
-  max_char_length: number;
+  maxCharLength: number;
 }
 
 /**
@@ -13,9 +13,9 @@ export interface IReadMoreFieldProps {
  * @return {*}
  */
 export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
-  const { text, max_char_length } = props;
+  const { text, maxCharLength } = props;
 
-  const [isTruncatedText, setIsTruncatedText] = useState(text?.length > max_char_length);
+  const [isTruncatedText, setIsTruncatedText] = useState(text?.length > maxCharLength);
 
   const renderParagraph = (paragraph: string) => {
     if (paragraph) {
@@ -30,7 +30,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
 
   /*
     Function that finds a nice index (at a period ending a sentence)
-    to truncate objectives longer than max_char_length characters
+    to truncate objectives longer than maxCharLength characters
   */
   const determineTruncatingLength = () => {
     const periodIndices = [];
@@ -43,7 +43,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
     }
 
     return periodIndices.reduce((prev, curr) => {
-      return Math.abs(curr - max_char_length) < Math.abs(prev - max_char_length) ? curr : prev;
+      return Math.abs(curr - maxCharLength) < Math.abs(prev - maxCharLength) ? curr : prev;
     });
   };
 
@@ -71,7 +71,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
               return renderParagraph(paragraph);
             })}
           </Grid>
-          {text?.length > max_char_length && (
+          {text?.length > maxCharLength && (
             <Button color="primary" onClick={() => setIsTruncatedText(true)}>
               Read Less
             </Button>
