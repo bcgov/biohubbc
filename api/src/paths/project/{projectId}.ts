@@ -95,13 +95,12 @@ function getProjectWithDetails(): RequestHandler {
       const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
-      const getProjectFocalSpeciesSQLStatement = getFocalSpeciesByProjectSQL(Number(req.params.projectId));
-      const getProjectAncillarySpeciesSQLStatement = getAncillarySpeciesByProjectSQL(Number(req.params.projectId));
       const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
         Number(req.params.projectId)
       );
       const getProjectFundingSourceSQLStatement = getFundingSourceByProjectSQL(Number(req.params.projectId));
-
+      const getProjectFocalSpeciesSQLStatement = getFocalSpeciesByProjectSQL(Number(req.params.projectId));
+      const getProjectAncillarySpeciesSQLStatement = getAncillarySpeciesByProjectSQL(Number(req.params.projectId));
       if (
         !getProjectSQLStatement ||
         !getRegionsByProjectSQLStatement ||
@@ -134,16 +133,16 @@ function getProjectWithDetails(): RequestHandler {
           getProjectClimateInitiativesSQLStatement.text,
           getProjectClimateInitiativesSQLStatement.values
         ),
-        await connection.query(getProjectFocalSpeciesSQLStatement.text, getProjectFocalSpeciesSQLStatement.values),
-        await connection.query(
-          getProjectAncillarySpeciesSQLStatement.text,
-          getProjectAncillarySpeciesSQLStatement.values
-        ),
         await connection.query(
           getProjectIUCNActionClassificationSQLStatement.text,
           getProjectIUCNActionClassificationSQLStatement.values
         ),
-        await connection.query(getProjectFundingSourceSQLStatement.text, getProjectFundingSourceSQLStatement.values)
+        await connection.query(getProjectFundingSourceSQLStatement.text, getProjectFundingSourceSQLStatement.values),
+        await connection.query(getProjectFocalSpeciesSQLStatement.text, getProjectFocalSpeciesSQLStatement.values),
+        await connection.query(
+          getProjectAncillarySpeciesSQLStatement.text,
+          getProjectAncillarySpeciesSQLStatement.values
+        )
       ]);
 
       await connection.commit();
