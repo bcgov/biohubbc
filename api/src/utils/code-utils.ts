@@ -8,7 +8,8 @@ import {
   getIUCNConservationActionLevel1ClassificationSQL,
   getIUCNConservationActionLevel2SubclassificationSQL,
   getIUCNConservationActionLevel3SubclassificationSQL,
-  getActivitySQL
+  getActivitySQL,
+  getProjectTypeSQL
 } from '../queries/code-queries';
 import { getLogger } from '../utils/logger';
 
@@ -54,7 +55,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     activity,
     iucn_conservation_action_level_1_classification,
     iucn_conservation_action_level_2_subclassification,
-    iucn_conservation_action_level_3_subclassification
+    iucn_conservation_action_level_3_subclassification,
+    project_type
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getClimateChangeInitiativeSQL().text),
@@ -64,7 +66,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getActivitySQL().text),
     await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
-    await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text)
+    await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
+    await connection.query(getProjectTypeSQL().text)
   ]);
 
   await connection.commit();
@@ -86,13 +89,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_3_subclassification:
       (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
       [],
-    // TODO Temporarily hard coded list of project types
-    project_type: [
-      { id: 1, name: 'Fisheries' },
-      { id: 2, name: 'Wildlife' },
-      { id: 3, name: 'Aquatic Habitat' },
-      { id: 4, name: 'Terrestrial Habitat' }
-    ],
+      project_type: (project_type && project_type.rows) || [],
     // TODO Temporarily hard coded list of coordinator_agencies
     coordinator_agency: [
       { id: 1, name: 'A Rocha Canada' },
