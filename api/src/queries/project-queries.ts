@@ -723,6 +723,58 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 };
 
 /**
+ * SQL query to get funding source data
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getFundingSourceByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      pfs.funding_source_project_id as agency_id,
+      pfs.funding_amount,
+      pfs.funding_start_date as start_date,
+      pfs.funding_end_date as end_date,
+      iac.name as investment_action_category,
+      fs.name as agency_name
+    FROM
+      project_funding_source as pfs
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    LEFT OUTER JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
+    WHERE
+      pfs.p_id = ${projectId}
+    GROUP BY
+      pfs.funding_source_project_id,
+      pfs.funding_amount,
+      pfs.funding_start_date,
+      pfs.funding_end_date,
+      iac.name,
+      fs.name
+  `;
+
+  defaultLog.debug({
+    label: 'getFundingSourceByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a project IUCN row.
  *
  * @param iucn_id

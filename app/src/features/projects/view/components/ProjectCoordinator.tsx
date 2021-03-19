@@ -8,7 +8,7 @@ export interface IProjectDetailsProps {
 }
 
 /**
- * Project details content for a project.
+ * Project coordinator content for a project.
  *
  * @return {*}
  */

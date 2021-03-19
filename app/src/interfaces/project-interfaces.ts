@@ -49,6 +49,29 @@ interface IProjectIUCN {
 }
 
 /**
+ * An interface representing the funding agency item fields for GET
+ *
+ * @interface IProjectFundingSourceArrayItem
+ */
+interface IProjectFundingSourceArrayItem {
+  agency_id: string;
+  agency_name: string;
+  investment_action_category: string;
+  funding_amount: number;
+  start_date: string;
+  end_date: string;
+}
+
+/**
+ * An interface representing the funding source for GET
+ *
+ * @interface IProjectFundingSource
+ */
+interface IProjectFundingSource {
+  fundingAgencies: IProjectFundingSourceArrayItem[];
+}
+
+/**
  * An interface for a single instance of project metadata, for read-only use cases.
  *
  * @export
@@ -62,6 +85,7 @@ export interface IProjectWithDetails {
   coordinator: IProjectCoordinatorForm;
   species: IProjectSpeciesForm;
   iucn: IProjectIUCN;
+  funding: IProjectFundingSource;
 }
 
 /**

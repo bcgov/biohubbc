@@ -68,43 +68,45 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
             </Button>
           </Grid>
         </Grid>
-        <Grid container item xs={12}>
-          <TableContainer>
-            <Table className={classes.table} aria-label="iucn-classification-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Classification</TableCell>
-                  <TableCell className={classes.heading}>Sub-classification</TableCell>
-                  <TableCell className={classes.heading}>Sub-classification</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
-                  const tableCellStyle =
-                    index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
+        {iucn.classificationDetails.length > 0 && (
+          <Grid container item xs={12}>
+            <TableContainer>
+              <Table className={classes.table} aria-label="iucn-classification-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.heading}>Classification</TableCell>
+                    <TableCell className={classes.heading}>Sub-classification</TableCell>
+                    <TableCell className={classes.heading}>Sub-classification</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+                    const tableCellStyle =
+                      index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
 
-                  return (
-                    <TableRow key={classificationDetail.classification}>
-                      <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
-                      <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
-                      <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
-                      <TableCell
-                        className={
-                          classes.tableCellBorderBottom && index === iucn.classificationDetails.length - 1
-                            ? classes.tableCellBorderBottom
-                            : classes.tableCellBorderTop
-                        }>
-                        <IconButton color="primary" aria-label="delete">
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
+                    return (
+                      <TableRow key={classificationDetail.classification}>
+                        <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
+                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
+                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
+                        <TableCell
+                          className={
+                            classes.tableCellBorderBottom && index === iucn.classificationDetails.length - 1
+                              ? classes.tableCellBorderBottom
+                              : classes.tableCellBorderTop
+                          }>
+                          <IconButton color="primary" aria-label="delete">
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        )}
       </Grid>
     </>
   );

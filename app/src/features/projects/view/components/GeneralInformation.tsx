@@ -12,7 +12,7 @@ export interface IProjectDetailsProps {
 }
 
 /**
- * Project details content for a project.
+ * General information content for a project.
  *
  * @return {*}
  */

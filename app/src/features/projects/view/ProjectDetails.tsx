@@ -5,6 +5,7 @@ import ProjectCoordinator from 'features/projects/view/components/ProjectCoordin
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
+import FundingSource from 'features/projects/view/components/FundingSource';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
 import Species from './components/Species';
@@ -69,6 +70,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Paper>
           <Box m={3}>
             <IUCNClassification projectWithDetailsData={projectWithDetailsData}></IUCNClassification>
+          </Box>
+        </Paper>
+      </Box>
+
+      <Box mb={4}>
+        <Paper>
+          <Box m={3}>
+            <FundingSource projectWithDetailsData={projectWithDetailsData}></FundingSource>
           </Box>
         </Paper>
       </Box>

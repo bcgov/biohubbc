@@ -6,6 +6,7 @@ import {
   PostObjectivesData,
   PostIUCNData,
   GetIUCNClassificationData,
+  GetFundingData,
   PostSpeciesData,
   GetSpeciesData
 } from './project';
@@ -319,6 +320,43 @@ describe('GetIUCNClassificationData', () => {
           subClassification2: 'subclass2'
         }
       ]);
+    });
+  });
+});
+
+describe('GetFundingData', () => {
+  describe('No values provided', () => {
+    let fundingData: GetFundingData;
+
+    before(() => {
+      fundingData = new GetFundingData([]);
+    });
+
+    it('sets funding agencies', function () {
+      expect(fundingData.fundingAgencies).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let fundingData: GetFundingData;
+
+    const fundingDataObj = [
+      {
+        agency_id: '123',
+        agency_name: 'Agency name',
+        investment_action_category: 'investment',
+        start_date: '01/01/2020',
+        end_date: '01/01/2021',
+        funding_amount: 123
+      }
+    ];
+
+    before(() => {
+      fundingData = new GetFundingData(fundingDataObj);
+    });
+
+    it('sets funding agencies', function () {
+      expect(fundingData.fundingAgencies).to.eql(fundingDataObj);
     });
   });
 });

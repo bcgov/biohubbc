@@ -9,7 +9,7 @@ export interface IProjectObjectivesProps {
 }
 
 /**
- * Objectives content for a project.
+ * Project objectives content for a project.
  *
  * @return {*}
  */
