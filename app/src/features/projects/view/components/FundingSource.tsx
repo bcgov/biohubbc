@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDate } from 'utils/Utils';
+import { getFormattedDateRangeString } from 'utils/Utils';
 import { Edit } from '@material-ui/icons';
 
 const useStyles = makeStyles({
@@ -99,8 +99,11 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
                 </Box>
                 <Box>
                   <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                    {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, item.start_date)} -{' '}
-                    {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, item.end_date)}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortDateFormatMonthFirst,
+                      item.start_date,
+                      item.end_date
+                    )}
                   </Typography>
                 </Box>
               </Grid>
