@@ -49,7 +49,7 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when objectives and caveats are in multiple paragraphs', () => {
+  it('renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs', () => {
     const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
     const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
