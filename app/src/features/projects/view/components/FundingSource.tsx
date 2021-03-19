@@ -99,11 +99,7 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
                 </Box>
                 <Box>
                   <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortDateFormatMonthFirst,
-                      item.start_date,
-                      item.end_date
-                    )}
+                    {getFormattedDateRangeString(DATE_FORMAT.ShortDateFormatMonthFirst, item.start_date, item.end_date)}
                   </Typography>
                 </Box>
               </Grid>

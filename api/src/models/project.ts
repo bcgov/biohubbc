@@ -390,7 +390,7 @@ export class GetIUCNClassificationData {
 }
 
 /**
- * Pre-processes GET /projects/{id}
+ * Pre-processes GET /projects/{id} location data
  *
  * @export
  * @class GetLocationData
@@ -524,7 +524,7 @@ export class GetFundingData {
 
   constructor(fundingData?: any[]) {
     defaultLog.debug({
-      label: 'GetIUCNClassificationData',
+      label: 'GetFundingData',
       message: 'params',
       fundingData: fundingData
     });

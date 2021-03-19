@@ -180,16 +180,12 @@ function getProjectWithDetails(): RequestHandler {
         null;
 
       const getIUCNClassificationData =
-        (projectData &&
-          projectData.rows &&
-          iucnClassificationData &&
+        (iucnClassificationData &&
           iucnClassificationData.rows &&
           new GetIUCNClassificationData(iucnClassificationData.rows)) ||
         null;
 
-      const getFundingData =
-        (projectData && projectData.rows && fundingData && fundingData.rows && new GetFundingData(fundingData.rows)) ||
-        null;
+      const getFundingData = (fundingData && fundingData.rows && new GetFundingData(fundingData.rows)) || null;
 
       const result = {
         id: req.params.projectId,
