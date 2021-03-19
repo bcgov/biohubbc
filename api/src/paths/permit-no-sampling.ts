@@ -5,7 +5,7 @@ import { getDBConnection, IDBConnection } from '../database/db';
 import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../models/permit-no-sampling';
 import { PostCoordinatorData } from '../models/project';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../openapi/schemas/permit-no-sampling';
-import { postPermitNoSamplingSQL } from '../queries/permit-no-sampling-queries';
+import { postPermitNoSamplingSQL } from '../queries/permit-no-sampling/permit-no-sampling-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 

@@ -18,8 +18,8 @@ import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
-import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
@@ -52,14 +52,14 @@ const ProjectPage: React.FC = () => {
   const classes = useStyles();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IProjectWithDetails | null>(null);
+  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodesResponse>();
+  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.getAllCodes();
+      const codesResponse = await biohubApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         // TODO error handling/messaging
@@ -77,8 +77,8 @@ const ProjectPage: React.FC = () => {
 
   useEffect(() => {
     const getProject = async () => {
-      const codesResponse = await biohubApi.getAllCodes();
-      const projectWithDetailsResponse = await biohubApi.getProject(urlParams['id']);
+      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
       if (!projectWithDetailsResponse || !codesResponse) {
         // TODO error handling/messaging
@@ -170,11 +170,11 @@ const ProjectPage: React.FC = () => {
             </Box>
             <Box width="100%">
               {location.pathname.includes('/details') && (
-                <ProjectDetails projectWithDetailsData={projectWithDetails} codes={codes} />
+                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} />
               )}
-              {location.pathname.includes('/surveys') && <ProjectSurveys projectWithDetailsData={projectWithDetails} />}
+              {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
               {location.pathname.includes('/attachments') && (
-                <ProjectAttachments projectWithDetailsData={projectWithDetails} />
+                <ProjectAttachments projectForViewData={projectWithDetails} />
               )}
             </Box>
           </Box>

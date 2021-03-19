@@ -1,6 +1,6 @@
 import { Box, Grid, Button, Typography, Divider, IconButton } from '@material-ui/core';
 import React, { Fragment } from 'react';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -20,7 +20,7 @@ const useStyles = makeStyles({
 });
 
 export interface IProjectDetailsProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -30,7 +30,7 @@ export interface IProjectDetailsProps {
  */
 const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { funding }
+    projectForViewData: { funding }
   } = props;
 
   const classes = useStyles();

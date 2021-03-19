@@ -1,10 +1,10 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface ISpeciesProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -14,7 +14,7 @@ export interface ISpeciesProps {
  */
 const Species: React.FC<ISpeciesProps> = (props) => {
   const {
-    projectWithDetailsData: {
+    projectForViewData: {
       species: { focal_species, ancillary_species }
     }
   } = props;

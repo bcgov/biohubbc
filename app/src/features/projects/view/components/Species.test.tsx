@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
 import React from 'react';
-import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import Species from './Species';
 
 describe('Species', () => {
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
       <Species
-        projectWithDetailsData={{ ...projectWithDetailsData, species: { focal_species: [], ancillary_species: [] } }}
+        projectForViewData={{ ...getProjectForViewResponse, species: { focal_species: [], ancillary_species: [] } }}
       />
     );
 
@@ -17,8 +17,8 @@ describe('Species', () => {
   it('renders correctly with invalid null values', () => {
     const { asFragment } = render(
       <Species
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
+        projectForViewData={{
+          ...getProjectForViewResponse,
           species: { focal_species: (null as unknown) as string[], ancillary_species: (null as unknown) as string[] }
         }}
       />
@@ -28,7 +28,7 @@ describe('Species', () => {
   });
 
   it('renders correctly with existing species values', () => {
-    const { asFragment } = render(<Species projectWithDetailsData={{ ...projectWithDetailsData }} />);
+    const { asFragment } = render(<Species projectForViewData={{ ...getProjectForViewResponse }} />);
 
     expect(asFragment()).toMatchSnapshot();
   });

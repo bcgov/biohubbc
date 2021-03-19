@@ -1,5 +1,5 @@
 import { render, fireEvent, getAllByText } from '@testing-library/react';
-import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 
@@ -18,7 +18,7 @@ describe('ProjectObjectives', () => {
     'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
-    const { asFragment } = render(<ProjectObjectives projectWithDetailsData={projectWithDetailsData} />);
+    const { asFragment } = render(<ProjectObjectives projectForViewData={getProjectForViewResponse} />);
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -26,9 +26,9 @@ describe('ProjectObjectives', () => {
   it('renders correctly when objectives length is > 850 characters and caveats is empty', () => {
     const { asFragment } = render(
       <ProjectObjectives
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: '' }
+        projectForViewData={{
+          ...projectForViewData,
+          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: '' }
         }}
       />
     );
@@ -39,9 +39,9 @@ describe('ProjectObjectives', () => {
   it('renders correctly when both objectives and caveats have length is > 850 characters', () => {
     const { asFragment } = render(
       <ProjectObjectives
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: longData }
+        projectForViewData={{
+          ...projectForViewData,
+          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: longData }
         }}
       />
     );
@@ -55,10 +55,10 @@ describe('ProjectObjectives', () => {
 
     const { asFragment } = render(
       <ProjectObjectives
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
+        projectForViewData={{
+          ...projectForViewData,
           objectives: {
-            ...projectWithDetailsData.objectives,
+            ...projectForViewData.objectives,
             objectives: multilineObjectives,
             caveats: multilineCaveats
           }
@@ -72,10 +72,10 @@ describe('ProjectObjectives', () => {
   it('renders correctly when objectives and caveats are long and in multiple paragraphs', () => {
     const { asFragment } = render(
       <ProjectObjectives
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
+        projectForViewData={{
+          ...projectForViewData,
           objectives: {
-            ...projectWithDetailsData.objectives,
+            ...projectForViewData.objectives,
             objectives: longData,
             caveats: longData
           }
@@ -89,9 +89,9 @@ describe('ProjectObjectives', () => {
   it('functions as expected with the read more and read less buttons', () => {
     const { container } = render(
       <ProjectObjectives
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          objectives: { ...projectWithDetailsData.objectives, objectives: longData, caveats: longData }
+        projectForViewData={{
+          ...projectForViewData,
+          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: longData }
         }}
       />
     );

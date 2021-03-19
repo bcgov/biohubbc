@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import LocationBoundary from './LocationBoundary';
 import { Feature } from 'geojson';
-import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 describe('LocationBoundary', () => {
   test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', () => {
@@ -30,9 +30,9 @@ describe('LocationBoundary', () => {
 
     const { asFragment } = render(
       <LocationBoundary
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          location: { ...projectWithDetailsData.location, geometry }
+        projectForViewData={{
+          ...projectForViewData,
+          location: { ...projectForViewData.location, geometry }
         }}
       />
     );
@@ -58,9 +58,9 @@ describe('LocationBoundary', () => {
 
     const { asFragment } = render(
       <LocationBoundary
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          location: { ...projectWithDetailsData.location, geometry }
+        projectForViewData={{
+          ...projectForViewData,
+          location: { ...projectForViewData.location, geometry }
         }}
       />
     );
@@ -97,9 +97,9 @@ describe('LocationBoundary', () => {
 
     const { asFragment } = render(
       <LocationBoundary
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          location: { ...projectWithDetailsData.location, geometry }
+        projectForViewData={{
+          ...projectForViewData,
+          location: { ...projectForViewData.location, geometry }
         }}
       />
     );
@@ -130,9 +130,9 @@ describe('LocationBoundary', () => {
 
     const { asFragment } = render(
       <LocationBoundary
-        projectWithDetailsData={{
-          ...projectWithDetailsData,
-          location: { ...projectWithDetailsData.location, geometry }
+        projectForViewData={{
+          ...projectForViewData,
+          location: { ...projectForViewData.location, geometry }
         }}
       />
     );

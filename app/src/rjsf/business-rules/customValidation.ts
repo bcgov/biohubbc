@@ -1,6 +1,5 @@
 import { FormValidation } from '@rjsf/core';
 import jsonpatch from 'fast-json-patch';
-import { ITemplate } from 'interfaces/useBioHubApi-interfaces';
 import traverse from 'json-schema-traverse';
 import moment from 'moment';
 
@@ -74,7 +73,7 @@ export const getDateRangeValidator = (
  * @param {ITemplate} template
  * @return {*}  {rjsfValidator[]} an array of RJSF compliant custom validators
  */
-export const autoParseCustomValidators = (template: ITemplate): rjsfValidator[] => {
+export const autoParseCustomValidators = (template: any): rjsfValidator[] => {
   let validators: rjsfValidator[] = [];
 
   if (!template || !template.ui_template) {

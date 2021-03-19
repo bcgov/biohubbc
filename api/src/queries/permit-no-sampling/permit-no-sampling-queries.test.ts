@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { IPostPermitNoSampling } from '../models/permit-no-sampling';
-import { PostCoordinatorData } from '../models/project';
+import { IPostPermitNoSampling } from '../../models/permit-no-sampling';
+import { PostCoordinatorData } from '../../models/project';
 import { postPermitNoSamplingSQL } from './permit-no-sampling-queries';
 
 describe('postPermitNoSamplingSQL', () => {

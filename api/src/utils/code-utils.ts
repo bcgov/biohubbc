@@ -10,7 +10,7 @@ import {
   getIUCNConservationActionLevel3SubclassificationSQL,
   getActivitySQL,
   getProjectTypeSQL
-} from '../queries/code-queries';
+} from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
 import { coordinator_agency, region, species } from '../constants/codes';
 

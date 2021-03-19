@@ -1,34 +1,34 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { READ_ROLES } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
+import { READ_ROLES } from '../../../constants/roles';
+import { getDBConnection } from '../../../database/db';
+import { CustomError } from '../../../errors/CustomError';
 import {
+  GetCoordinatorData,
+  GetFundingData,
+  GetIUCNClassificationData,
+  GetLocationData,
   GetObjectivesData,
   GetProjectData,
-  GetLocationData,
-  GetCoordinatorData,
-  GetIUCNClassificationData,
-  GetFundingData,
   GetSpeciesData
-} from '../../models/project';
-import { projectResponseBody } from '../../openapi/schemas/project';
+} from '../../../models/project';
+import { projectIdResponseBody } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
+  getAncillarySpeciesByProjectSQL,
   getClimateInitiativesByProjectSQL,
-  getProjectSQL,
-  getRegionsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL,
-  getFundingSourceByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
-} from '../../queries/project-queries';
-import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
-import { CustomError } from '../../errors/CustomError';
+  getFundingSourceByProjectSQL,
+  getIUCNActionClassificationByProjectSQL,
+  getProjectSQL,
+  getRegionsByProjectSQL
+} from '../../../queries/project/project-view-queries';
+import { getLogger } from '../../../utils/logger';
+import { logRequest } from '../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}', 'POST'), getProjectWithDetails()];
+export const GET: Operation = [logRequest('paths/project/{projectId}', 'GET'), getProjectForView()];
 
 GET.apiDoc = {
   description: 'Fetch a project by its ID.',
@@ -55,7 +55,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             // TODO update with an object that represents the real response
-            ...(projectResponseBody as object)
+            ...(projectIdResponseBody as object)
           }
         }
       }
@@ -86,7 +86,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjectWithDetails(): RequestHandler {
+function getProjectForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -201,7 +201,7 @@ function getProjectWithDetails(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProject', message: 'error', error });
+      defaultLog.debug({ label: 'getProjectForView', message: 'error', error });
       throw error;
     } finally {
       connection.release();

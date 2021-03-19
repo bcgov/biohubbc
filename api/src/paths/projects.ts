@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { CustomError } from '../errors/CustomError';
-import { projectResponseBody } from '../openapi/schemas/project';
-import { getProjectListSQL } from '../queries/project-queries';
+import { projectIdResponseBody } from '../openapi/schemas/project';
+import { getProjectListSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -29,7 +29,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               // TODO update with an object that represents the real response
-              ...(projectResponseBody as object)
+              ...(projectIdResponseBody as object)
             }
           }
         }

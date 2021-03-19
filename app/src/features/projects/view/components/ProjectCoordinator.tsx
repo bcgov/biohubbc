@@ -1,10 +1,10 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import React from 'react';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 
 export interface IProjectDetailsProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -14,7 +14,7 @@ export interface IProjectDetailsProps {
  */
 const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { coordinator }
+    projectForViewData: { coordinator }
   } = props;
   return (
     <>

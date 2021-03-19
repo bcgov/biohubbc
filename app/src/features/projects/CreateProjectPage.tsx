@@ -33,6 +33,11 @@ import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
+import ProjectIUCNForm, {
+  IProjectIUCNForm,
+  ProjectIUCNFormInitialValues,
+  ProjectIUCNFormYupSchema
+} from 'features/projects/components/ProjectIUCNForm';
 import ProjectLocationForm, {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
@@ -43,11 +48,6 @@ import ProjectObjectivesForm, {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
-import ProjectIUCNForm, {
-  IProjectIUCNForm,
-  ProjectIUCNFormInitialValues,
-  ProjectIUCNFormYupSchema
-} from 'features/projects/components/ProjectIUCNForm';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitFormInitialValues,
@@ -60,11 +60,8 @@ import ProjectSpeciesForm, {
 } from 'features/projects/components/ProjectSpeciesForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  IGetAllCodesResponse,
-  IPermitNoSamplingPostObject,
-  IProjectPostObject
-} from 'interfaces/useBioHubApi-interfaces';
+import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
@@ -74,11 +71,6 @@ export interface ICreateProjectStep {
   stepContent: any;
   stepValues: any;
   stepValidation?: any;
-}
-
-export interface IFormStepState {
-  formTemplate: any;
-  formData: any;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -123,7 +115,7 @@ const CreateProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const [codes, setCodes] = useState<IGetAllCodesResponse>();
+  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
@@ -155,8 +147,8 @@ const CreateProjectPage: React.FC = () => {
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
   useEffect(() => {
-    const getAllCodes = async () => {
-      const response = await biohubApi.getAllCodes();
+    const getAllCodeSets = async () => {
+      const response = await biohubApi.codes.getAllCodeSets();
 
       if (!response) {
         // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
@@ -169,7 +161,7 @@ const CreateProjectPage: React.FC = () => {
     };
 
     if (!isLoadingCodes && !codes) {
-      getAllCodes();
+      getAllCodeSets();
       setIsLoadingCodes(true);
     }
   }, [biohubApi, isLoadingCodes, codes]);
@@ -432,11 +424,11 @@ const CreateProjectPage: React.FC = () => {
   /**
    * Creates a new project record in which no sampling was conducted
    *
-   * @param {IPermitNoSamplingPostObject} projectNoSamplingPostObject
+   * @param {ICreatePermitNoSamplingRequest} projectNoSamplingPostObject
    * @return {*}
    */
-  const createPermitNoSampling = async (projectNoSamplingPostObject: IPermitNoSamplingPostObject) => {
-    const response = await biohubApi.createPermitNoSampling(projectNoSamplingPostObject);
+  const createPermitNoSampling = async (projectNoSamplingPostObject: ICreatePermitNoSamplingRequest) => {
+    const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
 
     if (!response?.ids?.length) {
       showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
@@ -449,11 +441,11 @@ const CreateProjectPage: React.FC = () => {
   /**
    * Creates a new project record
    *
-   * @param {IProjectPostObject} projectPostObject
+   * @param {ICreateProjectRequest} projectPostObject
    * @return {*}
    */
-  const createProject = async (projectPostObject: IProjectPostObject) => {
-    const response = await biohubApi.createProject(projectPostObject);
+  const createProject = async (projectPostObject: ICreateProjectRequest) => {
+    const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
       showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
