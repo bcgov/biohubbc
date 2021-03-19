@@ -231,7 +231,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 </DocumentFragment>
 `;
 
-exports[`ProjectObjectives renders correctly when objectives and caveats are in multiple paragraphs 1`] = `
+exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-4"
