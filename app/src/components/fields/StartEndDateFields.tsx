@@ -2,11 +2,8 @@ import { Grid, TextField } from '@material-ui/core';
 import { DATE_LIMIT } from 'constants/dateFormats';
 import React from 'react';
 
-interface IProjectDetailsFormProps {
-  values: any;
-  handleChange: Function;
-  errors: any;
-  touched: any;
+interface IStartEndDateFieldsProps {
+  formikProps: any;
   startRequired: boolean;
   endRequired: boolean;
 }
@@ -15,8 +12,12 @@ interface IProjectDetailsFormProps {
  * Start/end date fields - commonly used throughout forms
  *
  */
-const StartEndDateFields: React.FC<IProjectDetailsFormProps> = (props: any) => {
-  const { values, handleChange, errors, touched, startRequired, endRequired } = props;
+const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
+  const {
+    formikProps: { values, handleChange, errors, touched },
+    startRequired,
+    endRequired
+  } = props;
 
   return (
     <Grid container item xs={12} spacing={3}>

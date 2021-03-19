@@ -215,10 +215,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                       />
                     </Grid>
                     <StartEndDateFields
-                      values={values}
-                      handleChange={handleChange}
-                      errors={errors}
-                      touched={touched}
+                      formikProps={{ values, handleChange, errors, touched }}
                       startRequired={true}
                       endRequired={true}
                     />
