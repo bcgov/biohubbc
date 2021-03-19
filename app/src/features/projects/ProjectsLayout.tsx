@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @param {*} props
  * @return {*}
  */
-const ProjectsLayout: React.FC = (props: any) => {
+const ProjectsLayout: React.FC = (props) => {
   const classes = useStyles();
 
   return (

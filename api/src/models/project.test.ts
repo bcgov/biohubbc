@@ -6,7 +6,9 @@ import {
   PostObjectivesData,
   PostIUCNData,
   GetIUCNClassificationData,
-  GetFundingData
+  GetFundingData,
+  PostSpeciesData,
+  GetSpeciesData
 } from './project';
 
 describe('PostProjectData', () => {
@@ -128,6 +130,120 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
+describe('PostSpeciesData', () => {
+  describe('No values provided', () => {
+    let data: PostSpeciesData;
+
+    before(() => {
+      data = new PostSpeciesData(null);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PostSpeciesData;
+
+    const obj = {
+      focal_species: ['species 1', 'species 2'],
+      ancillary_species: ['species 3']
+    };
+
+    before(() => {
+      data = new PostSpeciesData(obj);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql(['species 1', 'species 2']);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql(['species 3']);
+    });
+  });
+});
+
+describe('GetSpeciesData', () => {
+  describe('No values provided', () => {
+    let data: GetSpeciesData;
+
+    before(() => {
+      data = new GetSpeciesData((null as unknown) as any[], []);
+    });
+
+    it('sets focal_species', function () {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', function () {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('focal species values provided', () => {
+    let data: GetSpeciesData;
+
+    const focal_species = [{ name: 'species 1' }, { name: 'species 2' }];
+    const ancillary_species: any[] = [];
+
+    before(() => {
+      data = new GetSpeciesData(focal_species, ancillary_species);
+    });
+
+    it('sets focal_species', function () {
+      expect(data.focal_species).to.eql(['species 1', 'species 2']);
+    });
+
+    it('sets ancillary_species', function () {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('ancillary species values provided', () => {
+    let data: GetSpeciesData;
+
+    const focal_species = (null as unknown) as any[];
+    const ancillary_species = [{ name: 'species 3' }, { name: 'species 4' }];
+
+    before(() => {
+      data = new GetSpeciesData(focal_species, ancillary_species);
+    });
+
+    it('sets focal_species', function () {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', function () {
+      expect(data.ancillary_species).to.eql(['species 3', 'species 4']);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: GetSpeciesData;
+
+    const focal_species = [{ name: 'species 1' }, { name: 'species 2' }];
+    const ancillary_species = [{ name: 'species 3' }];
+
+    before(() => {
+      data = new GetSpeciesData(focal_species, ancillary_species);
+    });
+
+    it('sets focal_species', function () {
+      expect(data.focal_species).to.eql(['species 1', 'species 2']);
+    });
+
+    it('sets ancillary_species', function () {
+      expect(data.ancillary_species).to.eql(['species 3']);
     });
   });
 });

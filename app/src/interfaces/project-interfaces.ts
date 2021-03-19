@@ -3,6 +3,7 @@ import { IProjectDetailsForm } from 'features/projects/components/ProjectDetails
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
+import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
 /**
  * An interface representing the project table.
@@ -71,7 +72,7 @@ interface IProjectFundingSource {
 }
 
 /**
- * An interface representing the project table.
+ * An interface for a single instance of project metadata, for read-only use cases.
  *
  * @export
  * @interface IProject
@@ -82,6 +83,7 @@ export interface IProjectWithDetails {
   objectives: IProjectObjectivesForm;
   location: IProjectLocationForm;
   coordinator: IProjectCoordinatorForm;
+  species: IProjectSpeciesForm;
   iucn: IProjectIUCN;
   funding: IProjectFundingSource;
 }

@@ -13,7 +13,7 @@ export interface IProjectObjectivesProps {
  *
  * @return {*}
  */
-const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
+const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const {
     projectWithDetailsData: { objectives }
   } = props;
@@ -47,7 +47,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props: any) => {
               <Typography variant="h3">Project Objectives</Typography>
             </Grid>
             <Grid item>
-              <IconButton title="Edit General Information" aria-label="Edit General Information">
+              <IconButton title="Edit Objectives Information" aria-label="Edit Objectives Information">
                 <Typography variant="caption">
                   <Edit fontSize="inherit" /> EDIT
                 </Typography>

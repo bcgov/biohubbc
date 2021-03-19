@@ -108,6 +108,15 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     </Paper>
                   )}
                   {values.funding_agencies.map((fundingAgency, index) => {
+                    const investment_action_category_label =
+                      (fundingAgency.agency_id === 1 && 'Investment Action') ||
+                      (fundingAgency.agency_id === 2 && 'Investment Category') ||
+                      null;
+
+                    const investment_action_category_value = props.investment_action_category.filter(
+                      (item) => item.value === fundingAgency.investment_action_category
+                    )?.[0]?.label;
+
                     return (
                       <Box mb={3} key={index}>
                         <Paper>
@@ -159,10 +168,12 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                   <Typography variant="body2">Agency Project ID</Typography>
                                   <Typography variant="body1">{fundingAgency.agency_project_id}</Typography>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4}>
-                                  <Typography variant="body2">Investment Action/Category</Typography>
-                                  <Typography variant="body1">{fundingAgency.investment_action_category}</Typography>
-                                </Grid>
+                                {investment_action_category_label && (
+                                  <Grid item xs={12} sm={6} md={4}>
+                                    <Typography variant="body2">{investment_action_category_label}</Typography>
+                                    <Typography variant="body1">{investment_action_category_value}</Typography>
+                                  </Grid>
+                                )}
                               </Grid>
                             </Grid>
                           </Box>

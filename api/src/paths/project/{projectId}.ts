@@ -8,7 +8,8 @@ import {
   GetLocationData,
   GetCoordinatorData,
   GetIUCNClassificationData,
-  GetFundingData
+  GetFundingData,
+  GetSpeciesData
 } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
@@ -17,7 +18,9 @@ import {
   getProjectSQL,
   getRegionsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
-  getFundingSourceByProjectSQL
+  getFundingSourceByProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
@@ -51,6 +54,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
+            // TODO update with an object that represents the real response
             ...(projectResponseBody as object)
           }
         }
@@ -91,6 +95,8 @@ function getProjectWithDetails(): RequestHandler {
       const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
+      const getProjectFocalSpeciesSQLStatement = getFocalSpeciesByProjectSQL(Number(req.params.projectId));
+      const getProjectAncillarySpeciesSQLStatement = getAncillarySpeciesByProjectSQL(Number(req.params.projectId));
       const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
         Number(req.params.projectId)
       );
@@ -102,7 +108,9 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement ||
         !getProjectIUCNActionClassificationSQLStatement ||
-        !getProjectFundingSourceSQLStatement
+        !getProjectFundingSourceSQLStatement ||
+        !getProjectFocalSpeciesSQLStatement ||
+        !getProjectAncillarySpeciesSQLStatement
       ) {
         throw new CustomError(400, 'Failed to build SQL statement');
       }
@@ -115,7 +123,9 @@ function getProjectWithDetails(): RequestHandler {
         activityData,
         climateInitiativeData,
         iucnClassificationData,
-        fundingData
+        fundingData,
+        focalSpecies,
+        ancillarySpecies
       ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
         await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
@@ -123,6 +133,11 @@ function getProjectWithDetails(): RequestHandler {
         await connection.query(
           getProjectClimateInitiativesSQLStatement.text,
           getProjectClimateInitiativesSQLStatement.values
+        ),
+        await connection.query(getProjectFocalSpeciesSQLStatement.text, getProjectFocalSpeciesSQLStatement.values),
+        await connection.query(
+          getProjectAncillarySpeciesSQLStatement.text,
+          getProjectAncillarySpeciesSQLStatement.values
         ),
         await connection.query(
           getProjectIUCNActionClassificationSQLStatement.text,
@@ -142,7 +157,9 @@ function getProjectWithDetails(): RequestHandler {
           climateInitiativeData.rows &&
           new GetProjectData(projectData.rows[0], activityData.rows, climateInitiativeData.rows)) ||
         null;
+
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
+
       const getLocationData =
         (projectData &&
           projectData.rows &&
@@ -153,6 +170,14 @@ function getProjectWithDetails(): RequestHandler {
 
       const getCoordinatorData =
         (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
+
+      const getSpeciesData =
+        (focalSpecies &&
+          focalSpecies.rows &&
+          ancillarySpecies &&
+          ancillarySpecies.rows &&
+          new GetSpeciesData(focalSpecies.rows, ancillarySpecies.rows)) ||
+        null;
 
       const getIUCNClassificationData =
         (projectData &&
@@ -173,7 +198,8 @@ function getProjectWithDetails(): RequestHandler {
         objectives: getObjectivesData,
         location: getLocationData,
         iucn: getIUCNClassificationData,
-        funding: getFundingData
+        funding: getFundingData,
+        species: getSpeciesData
       };
 
       defaultLog.debug('result:', result);
