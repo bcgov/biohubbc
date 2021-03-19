@@ -107,7 +107,7 @@ describe('ProjectObjectives', () => {
 
 
 
-  it('the read more and read less buttons are working', async () => {
+  it('functions as expected with the read more and read less buttons', () => {
     const { container } = render(
       <ProjectObjectives
         projectWithDetailsData={{
