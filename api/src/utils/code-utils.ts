@@ -89,7 +89,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_3_subclassification:
       (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
       [],
-      project_type: (project_type && project_type.rows) || [],
+    project_type: (project_type && project_type.rows) || [],
     // TODO Temporarily hard coded list of coordinator_agencies
     coordinator_agency: [
       { id: 1, name: 'A Rocha Canada' },

@@ -37,10 +37,10 @@ export const getActivitySQL = (): SQLStatement => SQL`SELECT id, name from activ
 
 /**
  * SQL query to fetch project type codes.
- * 
+ *
  * @returns {SQLStatement} sql query object
  */
-export const getProjectTypeSQL = (): SQLStatement  => SQL`SELECT id, name from project_type;`;
+export const getProjectTypeSQL = (): SQLStatement => SQL`SELECT id, name from project_type;`;
 
 /**
  * SQL query to fetch investment action category codes.
