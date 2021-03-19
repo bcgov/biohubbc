@@ -5,6 +5,7 @@
  */
 export enum DATE_FORMAT {
   ShortDateFormat = 'YYYY-MM-DD', //2020-01-05
+  ShortDateFormatMonthFirst = 'MM/DD/YYYY', //01/05/2020
   ShortDateTimeFormat = 'YYYY-MM-DD, H:mm a', //2020-01-05, 3:30 pm
   ShortMediumDateFormat = 'MMM D, YYYY', //Jan 5, 2020
   ShortMediumDateTimeFormat = 'MMM D, YYYY, H:mm a', //Jan 5, 2020, 3:30 pm

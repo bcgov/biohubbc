@@ -486,6 +486,15 @@ export class PostFundingData {
   }
 }
 
+interface IGetFundingSource {
+  agency_id: string;
+  investment_action_category: string;
+  agency_name: string;
+  funding_amount: number;
+  start_date: string;
+  end_date: string;
+}
+
 /**
  * Pre-processes GET /projects/{id} funding data
  *
@@ -493,7 +502,7 @@ export class PostFundingData {
  * @class GetFundingData
  */
 export class GetFundingData {
-  fundingAgencies: PostFundingSource[];
+  fundingAgencies: IGetFundingSource[];
 
   constructor(fundingData?: any[]) {
     defaultLog.debug({
@@ -508,7 +517,7 @@ export class GetFundingData {
           return {
             agency_id: item.agency_id,
             investment_action_category: item.investment_action_category,
-            agency_project_id: item.agency_project_id,
+            agency_name: item.agency_name,
             funding_amount: item.funding_amount,
             start_date: item.start_date,
             end_date: item.end_date

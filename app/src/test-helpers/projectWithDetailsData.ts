@@ -35,5 +35,17 @@ export const projectWithDetailsData: IProjectWithDetails = {
         subClassification2: 'sub classification 2'
       }
     ]
+  },
+  funding: {
+    fundingAgencies: [
+      {
+        agency_id: '123',
+        agency_name: 'agency name',
+        investment_action_category: 'investment action',
+        funding_amount: 333,
+        start_date: '2000-04-14',
+        end_date: '2021-04-13'
+      }
+    ]
   }
 };

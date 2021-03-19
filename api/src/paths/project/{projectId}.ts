@@ -128,10 +128,7 @@ function getProjectWithDetails(): RequestHandler {
           getProjectIUCNActionClassificationSQLStatement.text,
           getProjectIUCNActionClassificationSQLStatement.values
         ),
-        await connection.query(
-          getProjectFundingSourceSQLStatement.text,
-          getProjectFundingSourceSQLStatement.values
-        )
+        await connection.query(getProjectFundingSourceSQLStatement.text, getProjectFundingSourceSQLStatement.values)
       ]);
 
       await connection.commit();
@@ -166,11 +163,8 @@ function getProjectWithDetails(): RequestHandler {
         null;
 
       const getFundingData =
-        (projectData &&
-          projectData.rows &&
-          fundingData &&
-          fundingData.rows &&
-          new GetFundingData(fundingData.rows)) || null;
+        (projectData && projectData.rows && fundingData && fundingData.rows && new GetFundingData(fundingData.rows)) ||
+        null;
 
       console.log('##############GET FUNDING DATA############');
       console.log(getFundingData);

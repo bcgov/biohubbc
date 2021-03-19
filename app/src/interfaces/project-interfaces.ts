@@ -49,11 +49,12 @@ interface IProjectIUCN {
 
 /**
  * An interface representing the funding agency item fields for GET
- * 
+ *
  * @interface IProjectFundingSourceArrayItem
  */
 interface IProjectFundingSourceArrayItem {
   agency_id: string;
+  agency_name: string;
   investment_action_category: string;
   funding_amount: number;
   start_date: string;
@@ -62,7 +63,7 @@ interface IProjectFundingSourceArrayItem {
 
 /**
  * An interface representing the funding source for GET
- * 
+ *
  * @interface IProjectFundingSource
  */
 interface IProjectFundingSource {
