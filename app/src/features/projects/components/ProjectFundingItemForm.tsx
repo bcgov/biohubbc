@@ -86,7 +86,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={props.onSubmit}>
-      {({ values, touched, errors, handleChange, handleSubmit, resetForm, setFieldValue }) => {
+      {(formikProps) => {
+        const { values, touched, errors, handleChange, handleSubmit, resetForm, setFieldValue } = formikProps;
+
         // Only show investment_action_category if certain agency_id values are selected
         // Toggle investment_action_category label and dropdown values based on chosen agency_id
         const investment_action_category_label =
@@ -214,11 +216,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                         }}
                       />
                     </Grid>
-                    <StartEndDateFields
-                      formikProps={{ values, handleChange, errors, touched }}
-                      startRequired={true}
-                      endRequired={true}
-                    />
+                    <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />
                   </Grid>
                 </Box>
               </DialogContent>
