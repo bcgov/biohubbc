@@ -1,0 +1,196 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FundingSource renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources
+        </h3>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <label
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-1 MuiButton-outlinedPrimary"
+          role="button"
+          tabindex="0"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </label>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-item"
+    >
+      <hr
+        class="MuiDivider-root makeStyles-topBorder-3"
+      />
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-4"
+        >
+          <p
+            class="MuiTypography-root makeStyles-heading-1 MuiTypography-body1"
+          >
+            agency name
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <button
+          aria-label="Edit General Information"
+          class="MuiButtonBase-root MuiIconButton-root"
+          tabindex="0"
+          title="Edit General Information"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-caption"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                />
+              </svg>
+               EDIT
+            </span>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-5"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Agency Project ID
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-6"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            123
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-7"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Funding Amount
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            333
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-9"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Funding Dates
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-10"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            04/14/2000 - 04/13/2021
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-11"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Investment Category
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            investment action
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

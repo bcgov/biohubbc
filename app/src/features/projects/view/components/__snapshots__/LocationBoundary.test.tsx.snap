@@ -21,10 +21,10 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
+          aria-label="Edit Location Information"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Location Information"
           type="button"
         >
           <span
@@ -317,10 +317,10 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
+          aria-label="Edit Location Information"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Location Information"
           type="button"
         >
           <span
@@ -625,10 +625,10 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
+          aria-label="Edit Location Information"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Location Information"
           type="button"
         >
           <span
@@ -921,10 +921,10 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
+          aria-label="Edit Location Information"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Location Information"
           type="button"
         >
           <span

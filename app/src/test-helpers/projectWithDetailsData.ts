@@ -27,12 +27,28 @@ export const projectWithDetailsData: IProjectWithDetails = {
     coordinator_agency: 'Amanda and associates',
     share_contact_details: 'true'
   },
+  species: {
+    focal_species: ['species 1', 'species 2'],
+    ancillary_species: ['species 3', 'species 4']
+  },
   iucn: {
     classificationDetails: [
       {
         classification: 'classification',
         subClassification1: 'sub classification 1',
         subClassification2: 'sub classification 2'
+      }
+    ]
+  },
+  funding: {
+    fundingAgencies: [
+      {
+        agency_id: '123',
+        agency_name: 'agency name',
+        investment_action_category: 'investment action',
+        funding_amount: 333,
+        start_date: '2000-04-14',
+        end_date: '2021-04-13'
       }
     ]
   }

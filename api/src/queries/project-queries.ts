@@ -611,6 +611,68 @@ export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStateme
 };
 
 /**
+ * SQL query to get project focal species.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getFocalSpeciesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getFocalSpeciesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      name
+    FROM
+      focal_species
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getFocalSpeciesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project ancillary species.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getAncillarySpeciesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getAncillarySpeciesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      name
+    FROM
+      ancillary_species
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getAncillarySpeciesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get IUCN action classifications.
  *
  * @param {number} projectId
@@ -652,6 +714,58 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 
   defaultLog.debug({
     label: 'getIUCNActionClassificationByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get funding source data
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getFundingSourceByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      pfs.funding_source_project_id as agency_id,
+      pfs.funding_amount,
+      pfs.funding_start_date as start_date,
+      pfs.funding_end_date as end_date,
+      iac.name as investment_action_category,
+      fs.name as agency_name
+    FROM
+      project_funding_source as pfs
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    LEFT OUTER JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
+    WHERE
+      pfs.p_id = ${projectId}
+    GROUP BY
+      pfs.funding_source_project_id,
+      pfs.funding_amount,
+      pfs.funding_start_date,
+      pfs.funding_end_date,
+      iac.name,
+      fs.name
+  `;
+
+  defaultLog.debug({
+    label: 'getFundingSourceByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

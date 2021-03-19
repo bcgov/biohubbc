@@ -12,11 +12,11 @@ export interface IProjectDetailsProps {
 }
 
 /**
- * Project details content for a project.
+ * Location boundary content for a project.
  *
  * @return {*}
  */
-const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
+const LocationBoundary: React.FC<IProjectDetailsProps> = (props) => {
   const {
     projectWithDetailsData: { location }
   } = props;
@@ -92,7 +92,7 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props: any) => {
             <Typography variant="h3">Location / Project Boundary</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit General Information" aria-label="Edit General Information">
+            <IconButton title="Edit Location Information" aria-label="Edit Location Information">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>

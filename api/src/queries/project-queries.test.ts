@@ -12,7 +12,10 @@ import {
   getClimateInitiativesByProjectSQL,
   postProjectActivitySQL,
   postProjectClimateChangeInitiativeSQL,
-  getIUCNActionClassificationByProjectSQL
+  getIUCNActionClassificationByProjectSQL,
+  getFundingSourceByProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL
 } from './project-queries';
 
 describe('postProjectSQL', () => {
@@ -307,6 +310,20 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
   });
 });
 
+describe('getFundingSourceByProjectSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = getFundingSourceByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = getFundingSourceByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
 describe('postProjectClimateChangeInitiativeSQL', () => {
   it('Null projectId', () => {
     const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
@@ -316,6 +333,34 @@ describe('postProjectClimateChangeInitiativeSQL', () => {
 
   it('valid projectId', () => {
     const response = getClimateInitiativesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getFocalSpeciesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getFocalSpeciesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getFocalSpeciesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getAncillarySpeciesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getAncillarySpeciesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getAncillarySpeciesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
