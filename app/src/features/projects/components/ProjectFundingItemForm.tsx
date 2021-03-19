@@ -17,7 +17,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { DATE_LIMIT } from 'constants/dateFormats';
+import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
@@ -86,7 +86,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
       validateOnBlur={true}
       validateOnChange={false}
       onSubmit={props.onSubmit}>
-      {({ values, touched, errors, handleChange, handleSubmit, resetForm, setFieldValue }) => {
+      {(formikProps) => {
+        const { values, touched, errors, handleChange, handleSubmit, resetForm, setFieldValue } = formikProps;
+
         // Only show investment_action_category if certain agency_id values are selected
         // Toggle investment_action_category label and dropdown values based on chosen agency_id
         const investment_action_category_label =
@@ -214,44 +216,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                         }}
                       />
                     </Grid>
-                    <Grid container item xs={12} spacing={3}>
-                      <Grid item>
-                        <TextField
-                          id="start_date"
-                          name="start_date"
-                          label="Start Date"
-                          variant="outlined"
-                          required={true}
-                          value={values.start_date}
-                          type="date"
-                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
-                          onChange={handleChange}
-                          error={touched.start_date && Boolean(errors.start_date)}
-                          helperText={errors.start_date}
-                          InputLabelProps={{
-                            shrink: true
-                          }}
-                        />
-                      </Grid>
-                      <Grid item>
-                        <TextField
-                          id="end_date"
-                          name="end_date"
-                          label="End Date"
-                          variant="outlined"
-                          required={true}
-                          value={values.end_date}
-                          type="date"
-                          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
-                          onChange={handleChange}
-                          error={touched.end_date && Boolean(errors.end_date)}
-                          helperText={errors.end_date}
-                          InputLabelProps={{
-                            shrink: true
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
+                    <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />
                   </Grid>
                 </Box>
               </DialogContent>
