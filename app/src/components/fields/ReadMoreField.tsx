@@ -1,4 +1,4 @@
-import { Grid, Typography, Button } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -47,17 +47,17 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   };
 
   return (
-    <>
+    <Box>
       {isTruncatedText && (
         <>
-          <Grid item xs={12}>
+          <Box>
             {text
               .slice(0, determineTruncatingLength())
               .split('\n')
               .map((paragraph: string) => {
                 return renderParagraph(paragraph);
               })}
-          </Grid>
+          </Box>
           <Button color="primary" onClick={() => setIsTruncatedText(false)}>
             Read More
           </Button>
@@ -65,11 +65,11 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
       )}
       {!isTruncatedText && (
         <>
-          <Grid item xs={12}>
+          <Box>
             {text?.split('\n').map((paragraph: string) => {
               return renderParagraph(paragraph);
             })}
-          </Grid>
+          </Box>
           {text?.length > maxCharLength && (
             <Button color="primary" onClick={() => setIsTruncatedText(true)}>
               Read Less
@@ -77,7 +77,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
           )}
         </>
       )}
-    </>
+    </Box>
   );
 };
 

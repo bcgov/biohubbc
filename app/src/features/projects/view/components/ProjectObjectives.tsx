@@ -35,7 +35,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             </Grid>
           </Grid>
           <Grid container item spacing={2} xs={12}>
-            <ReadMoreField text={objectives.objectives} maxCharLength={850} />
+            <Grid item xs={12}>
+              <ReadMoreField text={objectives.objectives} maxCharLength={850} />
+            </Grid>
           </Grid>
 
           <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
@@ -44,7 +46,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             </Grid>
           </Grid>
           <Grid container item spacing={2} xs={12}>
-            <ReadMoreField text={objectives.caveats} maxCharLength={850} />
+            <Grid item xs={12}>
+              <ReadMoreField text={objectives.caveats} maxCharLength={850} />
+            </Grid>
           </Grid>
         </Grid>
       </Box>

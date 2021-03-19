@@ -76,12 +76,20 @@ exports[`ProjectDetails renders correctly 1`] = `
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
+              <div
+                class="MuiBox-root MuiBox-root-4"
               >
-                Et ad et in culpa si
-              </p>
+                <div
+                  class="MuiBox-root MuiBox-root-5"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                    style="word-break: break-all;"
+                  >
+                    Et ad et in culpa si
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
           <div
@@ -103,12 +111,20 @@ exports[`ProjectDetails renders correctly 1`] = `
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
+              <div
+                class="MuiBox-root MuiBox-root-6"
               >
-                sjwer bds
-              </p>
+                <div
+                  class="MuiBox-root MuiBox-root-7"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body1"
+                    style="word-break: break-all;"
+                  >
+                    sjwer bds
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -116,13 +132,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiBox-root MuiBox-root-8"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-5"
+        class="MuiBox-root MuiBox-root-9"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -181,7 +197,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-6"
+                class="MuiBox-root MuiBox-root-10"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -190,7 +206,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-7"
+                class="MuiBox-root MuiBox-root-11"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -203,7 +219,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-8"
+                class="MuiBox-root MuiBox-root-12"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -212,7 +228,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-9"
+                class="MuiBox-root MuiBox-root-13"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -225,7 +241,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-10"
+                class="MuiBox-root MuiBox-root-14"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -234,7 +250,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-11"
+                class="MuiBox-root MuiBox-root-15"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -247,7 +263,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-12"
+                class="MuiBox-root MuiBox-root-16"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -256,7 +272,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-13"
+                class="MuiBox-root MuiBox-root-17"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -269,7 +285,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-14"
+                class="MuiBox-root MuiBox-root-18"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -278,7 +294,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-15"
+                class="MuiBox-root MuiBox-root-19"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -293,13 +309,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-16"
+    class="MuiBox-root MuiBox-root-20"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-17"
+        class="MuiBox-root MuiBox-root-21"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -358,7 +374,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-18"
+                class="MuiBox-root MuiBox-root-22"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -367,7 +383,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-19"
+                class="MuiBox-root MuiBox-root-23"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -380,7 +396,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-20"
+                class="MuiBox-root MuiBox-root-24"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -389,7 +405,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-21"
+                class="MuiBox-root MuiBox-root-25"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -402,7 +418,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
               <div
-                class="MuiBox-root MuiBox-root-22"
+                class="MuiBox-root MuiBox-root-26"
               >
                 <div
                   class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -577,7 +593,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-58"
+                    class="MuiBox-root MuiBox-root-62"
                   />
                 </div>
               </div>
@@ -588,13 +604,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-23"
+    class="MuiBox-root MuiBox-root-27"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-24"
+        class="MuiBox-root MuiBox-root-28"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -653,7 +669,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-25"
+                class="MuiBox-root MuiBox-root-29"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -662,7 +678,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-26"
+                class="MuiBox-root MuiBox-root-30"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -675,7 +691,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-27"
+                class="MuiBox-root MuiBox-root-31"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -684,7 +700,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-28"
+                class="MuiBox-root MuiBox-root-32"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -699,13 +715,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-29"
+    class="MuiBox-root MuiBox-root-33"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-30"
+        class="MuiBox-root MuiBox-root-34"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -764,7 +780,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-31"
+                class="MuiBox-root MuiBox-root-35"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -773,7 +789,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-32"
+                class="MuiBox-root MuiBox-root-36"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -787,7 +803,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-33"
+                class="MuiBox-root MuiBox-root-37"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -796,7 +812,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-34"
+                class="MuiBox-root MuiBox-root-38"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -810,7 +826,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-35"
+                class="MuiBox-root MuiBox-root-39"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -819,7 +835,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-36"
+                class="MuiBox-root MuiBox-root-40"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -835,13 +851,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-37"
+    class="MuiBox-root MuiBox-root-41"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-38"
+        class="MuiBox-root MuiBox-root-42"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -863,7 +879,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               <label
                 aria-disabled="false"
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-42 MuiButton-outlinedPrimary"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-46 MuiButton-outlinedPrimary"
                 role="button"
                 tabindex="0"
               >
@@ -886,7 +902,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               <table
                 aria-label="iucn-classification-table"
-                class="MuiTable-root makeStyles-table-39"
+                class="MuiTable-root makeStyles-table-43"
               >
                 <thead
                   class="MuiTableHead-root"
@@ -895,19 +911,19 @@ exports[`ProjectDetails renders correctly 1`] = `
                     class="MuiTableRow-root MuiTableRow-head"
                   >
                     <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-42"
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-46"
                       scope="col"
                     >
                       Classification
                     </th>
                     <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-42"
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-46"
                       scope="col"
                     >
                       Sub-classification
                     </th>
                     <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-42"
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-46"
                       scope="col"
                     >
                       Sub-classification
@@ -921,22 +937,22 @@ exports[`ProjectDetails renders correctly 1`] = `
                     class="MuiTableRow-root"
                   >
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-41"
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-45"
                     >
                       classification
                     </td>
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-41"
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-45"
                     >
                       sub classification 1
                     </td>
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-41"
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-45"
                     >
                       sub classification 2
                     </td>
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-41"
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-45"
                     >
                       <button
                         aria-label="delete"
@@ -973,13 +989,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-44"
+    class="MuiBox-root MuiBox-root-48"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-45"
+        class="MuiBox-root MuiBox-root-49"
       >
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -1001,7 +1017,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             >
               <label
                 aria-disabled="false"
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-46 MuiButton-outlinedPrimary"
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-50 MuiButton-outlinedPrimary"
                 role="button"
                 tabindex="0"
               >
@@ -1020,7 +1036,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiGrid-root MuiGrid-container MuiGrid-item"
           >
             <hr
-              class="MuiDivider-root makeStyles-topBorder-48"
+              class="MuiDivider-root makeStyles-topBorder-52"
             />
           </div>
           <div
@@ -1030,10 +1046,10 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-49"
+                class="MuiBox-root MuiBox-root-53"
               >
                 <p
-                  class="MuiTypography-root makeStyles-heading-46 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-heading-50 MuiTypography-body1"
                 >
                   agency name
                 </p>
@@ -1081,7 +1097,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-50"
+                class="MuiBox-root MuiBox-root-54"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -1090,7 +1106,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-51"
+                class="MuiBox-root MuiBox-root-55"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -1104,7 +1120,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-52"
+                class="MuiBox-root MuiBox-root-56"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -1113,7 +1129,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-53"
+                class="MuiBox-root MuiBox-root-57"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -1127,7 +1143,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-54"
+                class="MuiBox-root MuiBox-root-58"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -1136,7 +1152,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-55"
+                class="MuiBox-root MuiBox-root-59"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
@@ -1150,7 +1166,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <div
-                class="MuiBox-root MuiBox-root-56"
+                class="MuiBox-root MuiBox-root-60"
               >
                 <span
                   class="MuiTypography-root MuiTypography-caption"
@@ -1159,7 +1175,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-57"
+                class="MuiBox-root MuiBox-root-61"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
