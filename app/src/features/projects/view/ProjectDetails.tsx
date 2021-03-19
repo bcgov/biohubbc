@@ -7,6 +7,7 @@ import LocationBoundary from 'features/projects/view/components/LocationBoundary
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
 import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import Species from './components/Species';
 
 export interface IProjectDetailsProps {
   projectWithDetailsData: IProjectWithDetails;
@@ -44,6 +45,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Paper>
           <Box m={3}>
             <LocationBoundary projectWithDetailsData={projectWithDetailsData}></LocationBoundary>
+          </Box>
+        </Paper>
+      </Box>
+
+      <Box mb={4}>
+        <Paper>
+          <Box m={3}>
+            <Species projectWithDetailsData={projectWithDetailsData}></Species>
           </Box>
         </Paper>
       </Box>

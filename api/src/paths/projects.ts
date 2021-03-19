@@ -28,6 +28,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
+              // TODO update with an object that represents the real response
               ...(projectResponseBody as object)
             }
           }
