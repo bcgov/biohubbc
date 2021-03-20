@@ -6,7 +6,7 @@ const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
 /**
- * Apply biohub release 0.7 changes.
+ * Apply biohub release changes.
  *
  * @export
  * @param {Knex} knex
@@ -16,7 +16,7 @@ export async function up(knex: Knex): Promise<void> {
   const create_spatial_extensions = fs.readFileSync(
     path.join(__dirname, 'release.0.8', 'create_spatial_extensions.psql')
   );
-  const biohub_0_7 = fs.readFileSync(path.join(__dirname, 'release.0.8', 'biohub.0.7.sql'));
+  const biohub_ddl = fs.readFileSync(path.join(__dirname, 'release.0.8', 'biohub.sql'));
   const populate_user_identity_source = fs.readFileSync(
     path.join(__dirname, 'release.0.8', 'populate_user_identity_source.sql')
   );
@@ -57,7 +57,7 @@ export async function up(knex: Knex): Promise<void> {
     create schema if not exists biohub;
     set search_path = biohub, public;
 
-    ${biohub_0_7}
+    ${biohub_ddl}
     ${populate_user_identity_source}
     ${api_set_context}
     ${tr_audit_trigger}
