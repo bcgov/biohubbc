@@ -12,10 +12,11 @@
  create or replace view no_sample_permit as select * from biohub.no_sample_permit;
  create or replace view project as select * from biohub.project;
  create or replace view project_activity as select * from biohub.project_activity;
+ create or replace view project_attachment as select * from biohub.project_attachment;
  create or replace view project_climate_initiative as select * from biohub.project_climate_initiative;
  create or replace view project_first_nation as select * from biohub.project_first_nation;
  create or replace view project_funding_source as select * from biohub.project_funding_source;
- create or replace view project_iucn_action_classificaton as select * from biohub.project_iucn_action_classificaton;
+ create or replace view project_iucn_action_classification as select * from biohub.project_iucn_action_classification;
  create or replace view project_management_actions as select * from biohub.project_management_actions;
  create or replace view project_participation as select * from biohub.project_participation;
  create or replace view project_permit as select * from biohub.project_permit;
@@ -23,6 +24,7 @@
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
+ create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_role as select * from biohub.system_role;
  create or replace view system_user as select * from biohub.system_user;
  create or replace view system_user_role as select * from biohub.system_user_role;
