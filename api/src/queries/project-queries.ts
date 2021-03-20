@@ -691,7 +691,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.name as subClassification1,
       ical3s.name as subClassification2
     FROM
-      project_iucn_action_classificaton as piac
+      project_iucn_action_classification as piac
     LEFT OUTER JOIN
       iucn_conservation_action_level_3_subclassification as ical3s
     ON
@@ -794,8 +794,8 @@ export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStat
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_iucn_action_classificaton (
-        iucn2_id,
+      INSERT INTO project_iucn_action_classification (
+        iucn3_id,
         p_id
       ) VALUES (
         ${iucn_id},
