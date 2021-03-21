@@ -37,12 +37,12 @@ const subClassifications1: IIUCNSubClassification1Option[] = [
 const subClassifications2: IIUCNSubClassification2Option[] = [
   {
     value: 5,
-    iucn1_id: 3,
+    iucn2_id: 3,
     label: 'A Sub-class 2'
   },
   {
     value: 6,
-    iucn1_id: 4,
+    iucn2_id: 4,
     label: 'A Sub-class 2 again'
   }
 ];
