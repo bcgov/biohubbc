@@ -24,12 +24,12 @@ const classifications: IMultiAutocompleteFieldOption[] = [
 const subClassifications1: IIUCNSubClassification1Option[] = [
   {
     value: 3,
-    iucn_id: 1,
+    iucn1_id: 1,
     label: 'A Sub-class 1'
   },
   {
     value: 4,
-    iucn_id: 2,
+    iucn1_id: 2,
     label: 'A Sub-class 1 again'
   }
 ];
