@@ -10,7 +10,7 @@ import {
 import { getLogger } from '../../utils/logger';
 import { Feature } from 'geojson';
 
-const defaultLog = getLogger('queries/project/project-queries');
+const defaultLog = getLogger('queries/project/project-create-queries');
 
 /**
  * SQL query to insert a project row.

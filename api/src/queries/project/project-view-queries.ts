@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/project/project-queries');
+const defaultLog = getLogger('queries/project/project-view-queries');
 
 /**
  * SQL query to get a single project.
