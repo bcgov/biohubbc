@@ -9,28 +9,6 @@ import ProjectFundingForm, {
   ProjectFundingFormYupSchema
 } from './ProjectFundingForm';
 
-const first_nations: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'nation 1'
-  },
-  {
-    value: 2,
-    label: 'nation 2'
-  }
-];
-
-const stakeholder_partnerships: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'partner 1'
-  },
-  {
-    value: 2,
-    label: 'partner 2'
-  }
-];
-
 const funding_sources: IMultiAutocompleteFieldOption[] = [
   {
     value: 1,
@@ -75,8 +53,6 @@ describe('ProjectFundingForm', () => {
         onSubmit={async () => {}}>
         {() => (
           <ProjectFundingForm
-            first_nations={first_nations}
-            stakeholder_partnerships={stakeholder_partnerships}
             funding_sources={funding_sources}
             investment_action_category={investment_action_category}
           />
@@ -98,9 +74,7 @@ describe('ProjectFundingForm', () => {
           start_date: '2021-03-14',
           end_date: '2021-04-14'
         }
-      ],
-      indigenous_partnerships: [1, 2],
-      stakeholder_partnerships: ['partner 1']
+      ]
     };
 
     const { asFragment } = render(
@@ -112,8 +86,6 @@ describe('ProjectFundingForm', () => {
         onSubmit={async () => {}}>
         {() => (
           <ProjectFundingForm
-            first_nations={first_nations}
-            stakeholder_partnerships={stakeholder_partnerships}
             funding_sources={funding_sources}
             investment_action_category={investment_action_category}
           />
