@@ -8,7 +8,8 @@ import {
   GetIUCNClassificationData,
   GetFundingData,
   PostSpeciesData,
-  GetSpeciesData
+  GetSpeciesData,
+  PostPartnershipsData
 } from './project';
 
 describe('PostProjectData', () => {
@@ -130,6 +131,45 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
+describe('PostPartnershipsData', () => {
+  describe('No values provided', () => {
+    let projectPartnershipsData: PostPartnershipsData;
+
+    before(() => {
+      projectPartnershipsData = new PostPartnershipsData(null);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(projectPartnershipsData.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(projectPartnershipsData.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectPartnershipsData: PostPartnershipsData;
+
+    const obj = {
+      indigenous_partnerships: [1, 2],
+      stakeholder_partnerships: ['partner1, partner2']
+    };
+
+    before(() => {
+      projectPartnershipsData = new PostPartnershipsData(obj);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(projectPartnershipsData.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(projectPartnershipsData.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
     });
   });
 });

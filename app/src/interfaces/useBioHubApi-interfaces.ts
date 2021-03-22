@@ -4,6 +4,7 @@ import { IProjectFundingForm } from 'features/projects/components/ProjectFunding
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
+import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
 import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 
@@ -87,6 +88,7 @@ export interface IProjectPostObject {
   location: IProjectLocationForm;
   iucn: IProjectIUCNForm;
   funding: IProjectFundingForm;
+  partnerships: IProjectPartnershipsForm;
 }
 
 /**

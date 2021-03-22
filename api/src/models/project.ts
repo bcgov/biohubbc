@@ -116,6 +116,7 @@ export class PostProjectObject {
   species: PostSpeciesData;
   iucn: PostIUCNData;
   funding: PostFundingData;
+  partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
@@ -128,6 +129,7 @@ export class PostProjectObject {
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
     this.iucn = (obj?.iucn && new PostIUCNData(obj.iucn)) || null;
+    this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
   }
 }
 
@@ -491,14 +493,28 @@ export class PostFundingSource {
  */
 export class PostFundingData {
   funding_agencies: PostFundingSource[];
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
 
     this.funding_agencies =
       (obj?.funding_agencies.length && obj.funding_agencies.map((item: any) => new PostFundingSource(item))) || [];
+  }
+}
+
+/**
+ * Processes POST /project partnerships data
+ *
+ * @export
+ * @class PostPartnershipsData
+ */
+export class PostPartnershipsData {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostPartnershipsData', message: 'params', obj });
+
     this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
     this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
   }
