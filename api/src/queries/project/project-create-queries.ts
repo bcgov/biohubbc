@@ -414,28 +414,28 @@ export const postProjectPermitSQL = (
 /**
  * SQL query to insert a project IUCN row.
  *
- * @param iucn_id
+ * @param iucn3_id
  * @param project_id
  * @returns {SQLStatement} sql query object
  */
-export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStatement | null => {
+export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectIUCNSQL',
     message: 'params',
-    iucn_id,
+    iucn3_id,
     project_id
   });
 
-  if (!iucn_id || !project_id) {
+  if (!iucn3_id || !project_id) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_iucn_action_classificaton (
-        iucn2_id,
+      INSERT INTO project_iucn_action_classification (
+        iucn3_id,
         p_id
       ) VALUES (
-        ${iucn_id},
+        ${iucn3_id},
         ${project_id}
       )
       RETURNING

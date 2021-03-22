@@ -49,11 +49,11 @@ export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
 };
 
 export interface IIUCNSubClassification1Option extends IMultiAutocompleteFieldOption {
-  iucn_id: number;
+  iucn1_id: number;
 }
 
 export interface IIUCNSubClassification2Option extends IMultiAutocompleteFieldOption {
-  iucn1_id: number;
+  iucn2_id: number;
 }
 
 export const ProjectIUCNFormYupSchema = yup.object().shape({
@@ -140,8 +140,8 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                               error={subClassification1Meta.touched && Boolean(subClassification1Meta.error)}
                               inputProps={{ 'aria-label': 'subClassification1' }}>
                               {props.subClassifications1
-                                // Only show the sub-classification 1 categories whose iucn_id matches the classification id
-                                .filter((item: any) => item.iucn_id === classificationDetail.classification)
+                                // Only show the sub-classification 1 categories whose iucn1_id matches the classification id
+                                .filter((item: any) => item.iucn1_id === classificationDetail.classification)
                                 .map((item: any) => (
                                   <MenuItem key={item.value} value={item.value}>
                                     {item.label}
@@ -165,8 +165,8 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                               error={subClassification2Meta.touched && Boolean(subClassification2Meta.error)}
                               inputProps={{ 'aria-label': 'subClassification2' }}>
                               {props.subClassifications2
-                                // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn_id
-                                .filter((item: any) => item.iucn1_id === classificationDetail.subClassification1)
+                                // Only show the sub-classification 2 categories whose iucn1_id matches the sub-classification 1 iucn2_id
+                                .filter((item: any) => item.iucn2_id === classificationDetail.subClassification1)
                                 .map((item: any) => (
                                   <MenuItem key={item.value} value={item.value}>
                                     {item.label}

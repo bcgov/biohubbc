@@ -295,7 +295,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     LEFT OUTER JOIN
       iucn_conservation_action_level_1_classification as ical1c
     ON
-      ical2s.iucn_id = ical1c.id
+      ical2s.iucn1_id = ical1c.id
     WHERE
       piac.p_id = ${projectId}
     GROUP BY

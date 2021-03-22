@@ -15,6 +15,9 @@ set search_path to biohub_dapi_v1, biohub, public, topology;
 
 select api_set_context('myIDIR', null);
 
+insert into system_constant(constant_name, character_value) values ('CONSTANT_ONE', 'constant_one');
+insert into system_constant(constant_name, numeric_value) values ('CONSTANT_TWO', 1);
+
 do $$
 declare
   __id integer;
@@ -51,7 +54,8 @@ begin
   insert into project_management_actions (p_id, mat_id) values (__id, (select id from management_action_type where name = 'Recovery Action'));
   insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (__id, (select id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test');
   --insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date) values (__id, 43, '$1,000.00', now(), now());
-  insert into project_iucn_action_classificaton (p_id, iucn2_id) values (__id, (select id from iucn_conservation_action_level_2_subclassification where name = 'Species Stewardship'));
+  insert into project_iucn_action_classification (p_id, iucn3_id) values (__id, (select id from iucn_conservation_action_level_2_subclassification where name = 'Species Stewardship'));
+  insert into project_attachment (p_id, file_name, title) values (__id, 'test_filename.txt', 'test filename');
 end
 $$;
 
@@ -65,5 +69,7 @@ select count(1) from project_region;
 select count(1) from project_permit;
 select count(1) from project_management_actions;
 select count(1) from project_funding_source;
-select count(1) from project_iucn_action_classificaton;
+select count(1) from project_iucn_action_classification;
+select count(1) from project_attachment;
+select count(1) from system_constant;
 

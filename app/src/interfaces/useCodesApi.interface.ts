@@ -33,6 +33,6 @@ export interface IGetAllCodeSetsResponse {
   region: CodeSet;
   species: CodeSet;
   iucn_conservation_action_level_1_classification: CodeSet;
-  iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn_id: number; name: string }>;
-  iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
+  iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
+  iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
 }

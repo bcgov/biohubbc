@@ -283,12 +283,12 @@ const CreateProjectPage: React.FC = () => {
             }
             subClassifications1={
               codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
-                return { value: item.id, iucn_id: item.iucn_id, label: item.name };
+                return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
               }) || []
             }
             subClassifications2={
               codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
-                return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
+                return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
               }) || []
             }
           />
