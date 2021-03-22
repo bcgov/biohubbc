@@ -31,8 +31,8 @@ describe('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...projectForViewData,
-          location: { ...projectForViewData.location, geometry }
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, geometry }
         }}
       />
     );
@@ -59,8 +59,8 @@ describe('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...projectForViewData,
-          location: { ...projectForViewData.location, geometry }
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, geometry }
         }}
       />
     );
@@ -98,8 +98,8 @@ describe('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...projectForViewData,
-          location: { ...projectForViewData.location, geometry }
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, geometry }
         }}
       />
     );
@@ -131,8 +131,8 @@ describe('LocationBoundary', () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
-          ...projectForViewData,
-          location: { ...projectForViewData.location, geometry }
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, geometry }
         }}
       />
     );

@@ -48,7 +48,7 @@ describe('ProjectPage', () => {
 
   it('renders project page when project is loaded', async () => {
     await act(async () => {
-      mockBiohubApi().project.getProjectForView.mockResolvedValue(projectForViewData);
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         activity: [{ id: 1, name: 'activity 1' }],

@@ -27,8 +27,8 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...projectForViewData,
-          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: '' }
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
         }}
       />
     );
@@ -40,8 +40,8 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...projectForViewData,
-          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: longData }
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
         }}
       />
     );
@@ -56,9 +56,9 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...projectForViewData,
+          ...getProjectForViewResponse,
           objectives: {
-            ...projectForViewData.objectives,
+            ...getProjectForViewResponse.objectives,
             objectives: multilineObjectives,
             caveats: multilineCaveats
           }
@@ -73,9 +73,9 @@ describe('ProjectObjectives', () => {
     const { asFragment } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...projectForViewData,
+          ...getProjectForViewResponse,
           objectives: {
-            ...projectForViewData.objectives,
+            ...getProjectForViewResponse.objectives,
             objectives: longData,
             caveats: longData
           }
@@ -90,8 +90,8 @@ describe('ProjectObjectives', () => {
     const { container } = render(
       <ProjectObjectives
         projectForViewData={{
-          ...projectForViewData,
-          objectives: { ...projectForViewData.objectives, objectives: longData, caveats: longData }
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
         }}
       />
     );
