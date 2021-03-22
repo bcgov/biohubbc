@@ -571,7 +571,7 @@ export class GetPartnershipsData {
   indigenous_partnerships: string[];
   stakeholder_partnerships: string[];
 
-  constructor(indigenous_partnerships?: string[], stakeholder_partnerships?: string[]) {
+  constructor(indigenous_partnerships?: any[], stakeholder_partnerships?: any[]) {
     defaultLog.debug({
       label: 'GetPartnershipsData',
       message: 'params',
