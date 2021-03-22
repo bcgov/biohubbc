@@ -58,6 +58,11 @@ import ProjectSpeciesForm, {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
+import ProjectPartnershipsForm, {
+  IProjectPartnershipsForm,
+  ProjectPartnershipsFormInitialValues,
+  ProjectPartnershipsFormYupSchema
+} from 'features/projects/components/ProjectPartnershipsForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -109,7 +114,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NUM_PARTIAL_PROJECT_STEPS = 2;
-const NUM_ALL_PROJECT_STEPS = 8;
+const NUM_ALL_PROJECT_STEPS = 9;
 
 /**
  * Page for creating a new project.
@@ -305,8 +310,8 @@ const CreateProjectPage: React.FC = () => {
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
-        stepTitle: 'Funding and Partnerships',
-        stepSubTitle: 'Specify funding and partnerships for the project',
+        stepTitle: 'Funding',
+        stepSubTitle: 'Specify funding sources for the project',
         stepContent: (
           <ProjectFundingForm
             funding_sources={
@@ -319,6 +324,16 @@ const CreateProjectPage: React.FC = () => {
                 return { value: item.id, fs_id: item.fs_id, label: item.name };
               }) || []
             }
+          />
+        ),
+        stepValues: ProjectFundingFormInitialValues,
+        stepValidation: ProjectFundingFormYupSchema
+      },
+      {
+        stepTitle: 'Partnerships',
+        stepSubTitle: 'Specify partnerships for the project',
+        stepContent: (
+          <ProjectPartnershipsForm
             first_nations={
               codes?.first_nations?.map((item) => {
                 return { value: item.id, label: item.name };
@@ -331,8 +346,8 @@ const CreateProjectPage: React.FC = () => {
             }
           />
         ),
-        stepValues: ProjectFundingFormInitialValues,
-        stepValidation: ProjectFundingFormYupSchema
+        stepValues: ProjectPartnershipsFormInitialValues,
+        stepValidation: ProjectPartnershipsFormYupSchema
       }
     ]);
   }, [codes, stepForms]);
@@ -406,6 +421,7 @@ const CreateProjectPage: React.FC = () => {
       const speciesData = stepForms[5].stepValues as IProjectSpeciesForm;
       const iucnData = stepForms[6].stepValues as IProjectIUCNForm;
       const fundingData = stepForms[7].stepValues as IProjectFundingForm;
+      const partnershipsData = stepForms[8].stepValues as IProjectPartnershipsForm;
 
       if (!isSamplingConducted(permitData)) {
         await createPermitNoSampling({
@@ -421,7 +437,8 @@ const CreateProjectPage: React.FC = () => {
           location: locationData,
           species: speciesData,
           iucn: iucnData,
-          funding: fundingData
+          funding: fundingData,
+          partnerships: partnershipsData
         });
       }
     } catch (error) {

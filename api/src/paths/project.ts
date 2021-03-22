@@ -146,14 +146,14 @@ function createProject(): RequestHandler {
 
         // Handle funding indigenous partners
         await Promise.all(
-          sanitizedProjectPostData.funding.indigenous_partnerships.map((indigenousNationId: number) =>
+          sanitizedProjectPostData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
             insertIndigenousNation(indigenousNationId, projectId, connection)
           )
         );
 
         // Handle funding stakeholder partners
         await Promise.all(
-          sanitizedProjectPostData.funding.stakeholder_partnerships.map((stakeholderPartner: string) =>
+          sanitizedProjectPostData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
             insertStakeholderPartnership(stakeholderPartner, projectId, connection)
           )
         );
