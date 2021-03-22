@@ -31,7 +31,7 @@ const defaultLog = getLogger('paths/project/{projectId}');
 export const GET: Operation = [logRequest('paths/project/{projectId}', 'GET'), getProjectForView()];
 
 GET.apiDoc = {
-  description: 'Fetch a project by its ID.',
+  description: 'Get a project, for view-only purposes.',
   tags: ['project'],
   security: [
     {

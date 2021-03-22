@@ -87,16 +87,16 @@ export interface ICreatePermitNoSamplingResponse {
  */
 export interface IGetProjectForViewResponse {
   projectId: number;
-  project: IGetProjectForViewResponse_Details;
-  objectives: IGetProjectForViewResponse_Objectives;
-  location: IGetProjectForViewResponse_Location;
-  coordinator: IGetProjectForViewResponse_Coordinator;
-  species: IGetProjectForViewResponse_Species;
-  iucn: IGetProjectForViewResponse_IUCN;
-  funding: IGetProjectForViewResponse_FundingSource;
+  project: IGetProjectForViewResponseDetails;
+  objectives: IGetProjectForViewResponseObjectives;
+  location: IGetProjectForViewResponseLocation;
+  coordinator: IGetProjectForViewResponseCoordinator;
+  species: IGetProjectForViewResponseSpecies;
+  iucn: IGetProjectForViewResponseIUCN;
+  funding: IGetProjectForViewResponseFundingSource;
 }
 
-export interface IGetProjectForViewResponse_Details {
+export interface IGetProjectForViewResponseDetails {
   project_name: string;
   project_type: string;
   project_type_name?: string;
@@ -106,18 +106,18 @@ export interface IGetProjectForViewResponse_Details {
   end_date: string;
 }
 
-export interface IGetProjectForViewResponse_Objectives {
+export interface IGetProjectForViewResponseObjectives {
   objectives: string;
   caveats: string;
 }
 
-export interface IGetProjectForViewResponse_Location {
+export interface IGetProjectForViewResponseLocation {
   regions: string[];
   location_description: string;
   geometry: Feature[];
 }
 
-export interface IGetProjectForViewResponse_Coordinator {
+export interface IGetProjectForViewResponseCoordinator {
   first_name: string;
   last_name: string;
   email_address: string;
@@ -125,17 +125,17 @@ export interface IGetProjectForViewResponse_Coordinator {
   share_contact_details: string;
 }
 
-export interface IGetProjectForViewResponse_IUCNArrayItem {
+export interface IGetProjectForViewResponseIUCNArrayItem {
   classification: string;
   subClassification1: string;
   subClassification2: string;
 }
 
-export interface IGetProjectForViewResponse_IUCN {
-  classificationDetails: IGetProjectForViewResponse_IUCNArrayItem[];
+export interface IGetProjectForViewResponseIUCN {
+  classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
 }
 
-export interface IGetProjectForViewResponse_FundingSourceArrayItem {
+export interface IGetProjectForViewResponseFundingSourceArrayItem {
   agency_id: string;
   agency_name: string;
   investment_action_category: string;
@@ -144,11 +144,11 @@ export interface IGetProjectForViewResponse_FundingSourceArrayItem {
   end_date: string;
 }
 
-export interface IGetProjectForViewResponse_FundingSource {
-  fundingAgencies: IGetProjectForViewResponse_FundingSourceArrayItem[];
+export interface IGetProjectForViewResponseFundingSource {
+  fundingAgencies: IGetProjectForViewResponseFundingSourceArrayItem[];
 }
 
-export interface IGetProjectForViewResponse_Species {
+export interface IGetProjectForViewResponseSpecies {
   focal_species: string[];
   ancillary_species: string[];
 }

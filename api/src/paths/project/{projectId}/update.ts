@@ -18,7 +18,7 @@ export const GET: Operation = [logRequest('paths/project/{projectId}/update', 'G
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
 
 GET.apiDoc = {
-  description: 'Update a project.',
+  description: 'Get a project, for update purposes.',
   tags: ['project'],
   security: [
     {
