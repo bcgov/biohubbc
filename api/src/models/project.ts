@@ -513,7 +513,7 @@ export class PostPartnershipsData {
   stakeholder_partnerships: string[];
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostFundingData', message: 'params', obj });
+    defaultLog.debug({ label: 'PostPartnershipsData', message: 'params', obj });
 
     this.indigenous_partnerships = (obj?.indigenous_partnerships.length && obj.indigenous_partnerships) || [];
     this.stakeholder_partnerships = (obj?.stakeholder_partnerships.length && obj.stakeholder_partnerships) || [];
