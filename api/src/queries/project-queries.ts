@@ -691,19 +691,19 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.name as subClassification1,
       ical3s.name as subClassification2
     FROM
-      project_iucn_action_classificaton as piac
+      project_iucn_action_classification as piac
     LEFT OUTER JOIN
       iucn_conservation_action_level_3_subclassification as ical3s
     ON
-      piac.iucn2_id = ical3s.id
+      piac.iucn3_id = ical3s.id
     LEFT OUTER JOIN
       iucn_conservation_action_level_2_subclassification as ical2s
     ON
-      ical3s.iucn1_id = ical2s.id
+      ical3s.iucn2_id = ical2s.id
     LEFT OUTER JOIN
       iucn_conservation_action_level_1_classification as ical1c
     ON
-      ical2s.iucn_id = ical1c.id
+      ical2s.iucn1_id = ical1c.id
     WHERE
       piac.p_id = ${projectId}
     GROUP BY
@@ -777,28 +777,28 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
 /**
  * SQL query to insert a project IUCN row.
  *
- * @param iucn_id
+ * @param iucn3_id
  * @param project_id
  * @returns {SQLStatement} sql query object
  */
-export const postProjectIUCNSQL = (iucn_id: number, project_id: number): SQLStatement | null => {
+export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectIUCNSQL',
     message: 'params',
-    iucn_id,
+    iucn3_id,
     project_id
   });
 
-  if (!iucn_id || !project_id) {
+  if (!iucn3_id || !project_id) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_iucn_action_classificaton (
-        iucn2_id,
+      INSERT INTO project_iucn_action_classification (
+        iucn3_id,
         p_id
       ) VALUES (
-        ${iucn_id},
+        ${iucn3_id},
         ${project_id}
       )
       RETURNING

@@ -20,8 +20,7 @@ import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocomple
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
-import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 
 export interface IProjectFundingFormArrayItem {
@@ -55,8 +54,8 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .typeError('Must be a number')
     .min(0, 'Must be a positive number')
     .required('Required'),
-  start_date: getStartDateStringValidator().required('Required'),
-  end_date: getEndDateStringValidator('start_date')
+  start_date: yup.string().isValidDateString().required('Required'),
+  end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
 });
 
 export interface IProjectFundingItemFormProps {

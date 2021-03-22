@@ -5,8 +5,7 @@ import MultiAutocompleteFieldVariableSize, {
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import { getEndDateStringValidator, getStartDateStringValidator } from 'utils/YupValidations';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 
 export interface IProjectDetailsForm {
   project_name: string;
@@ -30,8 +29,8 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
   project_type: yup.string().required('Required'),
-  start_date: getStartDateStringValidator().required('Required'),
-  end_date: getEndDateStringValidator('start_date')
+  start_date: yup.string().isValidDateString().required('Required'),
+  end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
 });
 
 export interface IProjectDetailsFormProps {
