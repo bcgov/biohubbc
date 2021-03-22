@@ -14,7 +14,7 @@ import {
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 
 export interface IProjectCoordinatorForm {
   first_name: string;
