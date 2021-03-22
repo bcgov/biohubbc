@@ -119,7 +119,7 @@ PUT.apiDoc = {
 };
 
 /**
- * Update a project.
+ * Get a project, for update purposes.
  *
  * @returns {RequestHandler}
  */
