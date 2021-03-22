@@ -26,7 +26,7 @@ GET.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Project post request object.',
+    description: 'Project get request object.',
     content: {
       'application/json': {
         schema: {
@@ -76,7 +76,7 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Project post request object.',
+    description: 'Project put request object.',
     content: {
       'application/json': {
         schema: {
@@ -128,7 +128,7 @@ function getProjectForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      // Get each section out of the post body, allowing any of them to be null
+      // Get each section out of the request body, allowing any of them to be null
       // For each section that is not null
       // - parse the data through a model to sanitize it
       // - perform whatever update logic is needed
@@ -153,7 +153,7 @@ function updateProject(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      // Get each section out of the post body, allowing any of them to be null
+      // Get each section out of the request body, allowing any of them to be null
       // For each section that is not null
       // - parse the data through a model to sanitize it
       // - perform whatever update logic is needed
