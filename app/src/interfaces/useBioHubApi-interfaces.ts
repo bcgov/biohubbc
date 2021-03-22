@@ -167,6 +167,6 @@ export interface IGetAllCodesResponse {
   region: ICodeSet;
   species: ICodeSet;
   iucn_conservation_action_level_1_classification: ICodeSet;
-  iucn_conservation_action_level_2_subclassification: ICodeSet<{ id: number; iucn_id: number; name: string }>;
-  iucn_conservation_action_level_3_subclassification: ICodeSet<{ id: number; iucn1_id: number; name: string }>;
+  iucn_conservation_action_level_2_subclassification: ICodeSet<{ id: number; iucn1_id: number; name: string }>;
+  iucn_conservation_action_level_3_subclassification: ICodeSet<{ id: number; iucn2_id: number; name: string }>;
 }
