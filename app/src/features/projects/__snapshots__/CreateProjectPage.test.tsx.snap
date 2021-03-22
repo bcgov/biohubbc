@@ -3,19 +3,19 @@
 exports[`CreateProjectPage removes the extra project steps if all permits are marked as having not conducted sampling 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-46"
-  />
-  <div
     class="MuiBox-root MuiBox-root-47"
   />
   <div
     class="MuiBox-root MuiBox-root-48"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-49"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-49"
+        class="MuiBox-root MuiBox-root-50"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -28,11 +28,11 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-41 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-42 MuiTypography-colorPrimary"
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-42 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-43 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -51,7 +51,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-50"
+        class="MuiBox-root MuiBox-root-51"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -60,17 +60,17 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-51"
+        class="MuiBox-root MuiBox-root-52"
       >
         <hr
           class="MuiDivider-root"
         />
       </div>
       <div
-        class="MuiBox-root MuiBox-root-52"
+        class="MuiBox-root MuiBox-root-53"
       >
         <div
-          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-44 MuiPaper-elevation0"
+          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-45 MuiPaper-elevation0"
         >
           <div
             class="MuiStep-root MuiStep-vertical MuiStep-completed"
@@ -99,10 +99,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-completed MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-53"
+                    class="MuiBox-root MuiBox-root-54"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-45 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-46 MuiTypography-h2"
                     >
                       Project Coordinator
                     </h2>
@@ -164,10 +164,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-72"
+                    class="MuiBox-root MuiBox-root-73"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-45 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-46 MuiTypography-h2"
                     >
                       Permits
                     </h2>
@@ -195,11 +195,11 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                     class="MuiCollapse-wrapperInner"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-79"
+                      class="MuiBox-root MuiBox-root-81"
                     >
                       <form>
                         <div
-                          class="MuiBox-root MuiBox-root-80"
+                          class="MuiBox-root MuiBox-root-82"
                         >
                           <div
                             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -208,10 +208,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                             >
                               <div
-                                class="MuiBox-root MuiBox-root-86"
+                                class="MuiBox-root MuiBox-root-88"
                               >
                                 <div
-                                  class="MuiBox-root MuiBox-root-87"
+                                  class="MuiBox-root MuiBox-root-89"
                                 >
                                   <div
                                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -244,10 +244,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                       />
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-90 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-90 PrivateNotchedOutline-legendNotched-91"
+                                          class="PrivateNotchedOutline-legendLabelled-92 PrivateNotchedOutline-legendNotched-93"
                                         >
                                           <span>
                                             Permit Number *
@@ -258,7 +258,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-92"
+                                  class="MuiBox-root MuiBox-root-94"
                                 >
                                   <div
                                     class="MuiFormControl-root"
@@ -312,10 +312,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                       </svg>
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-90 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-90 PrivateNotchedOutline-legendNotched-91"
+                                          class="PrivateNotchedOutline-legendLabelled-92 PrivateNotchedOutline-legendNotched-93"
                                         >
                                           <span>
                                             Sampling Conducted
@@ -329,7 +329,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-93"
+                                  class="MuiBox-root MuiBox-root-95"
                                 >
                                   <button
                                     aria-label="remove permit"
@@ -360,7 +360,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-81"
+                            class="MuiBox-root MuiBox-root-83"
                           >
                             <button
                               aria-label="add permit"
@@ -381,20 +381,20 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                         </div>
                       </form>
                       <div
-                        class="MuiBox-root MuiBox-root-82"
+                        class="MuiBox-root MuiBox-root-84"
                       >
                         <hr
                           class="MuiDivider-root"
                         />
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-83"
+                        class="MuiBox-root MuiBox-root-85"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root-84"
+                          class="MuiBox-root MuiBox-root-86"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-40 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-41 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -409,10 +409,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                           </button>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root-85"
+                          class="MuiBox-root MuiBox-root-87"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-40 MuiButton-containedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-41 MuiButton-containedPrimary"
                             tabindex="0"
                             type="submit"
                           >
@@ -426,7 +426,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             />
                           </button>
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-40 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-41 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -1469,12 +1469,78 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
                     >
-                      Funding and Partnerships
+                      Funding
                     </h2>
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle2"
                     >
-                      Specify funding and partnerships for the project
+                      Specify funding sources for the project
+                    </h6>
+                  </div>
+                </span>
+              </span>
+            </span>
+            <div
+              class="MuiStepContent-root"
+              disabled=""
+              icon="8"
+            />
+          </div>
+          <div
+            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+          >
+            <span
+              class="MuiStepConnector-line MuiStepConnector-lineVertical"
+            />
+          </div>
+          <div
+            class="MuiStep-root MuiStep-vertical"
+          >
+            <span
+              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+            >
+              <span
+                class="MuiStepLabel-iconContainer"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
+                  />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    9
+                  </text>
+                </svg>
+              </span>
+              <span
+                class="MuiStepLabel-labelContainer"
+              >
+                <span
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-40"
+                  >
+                    <h2
+                      class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
+                    >
+                      Partnerships
+                    </h2>
+                    <h6
+                      class="MuiTypography-root MuiTypography-subtitle2"
+                    >
+                      Specify partnerships for the project
                     </h6>
                   </div>
                 </span>
@@ -1483,7 +1549,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             <div
               class="MuiStepContent-root MuiStepContent-last"
               disabled=""
-              icon="8"
+              icon="9"
             />
           </div>
         </div>
