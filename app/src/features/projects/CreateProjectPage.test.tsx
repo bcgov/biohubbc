@@ -57,7 +57,9 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('IUCN Classification')).toBeVisible();
 
-      expect(getByText('Funding and Partnerships')).toBeVisible();
+      expect(getByText('Funding')).toBeVisible();
+
+      expect(getByText('Partnerships')).toBeVisible();
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -85,7 +87,9 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('IUCN Classification')).toBeVisible();
 
-      expect(getByText('Funding and Partnerships')).toBeVisible();
+      expect(getByText('Funding')).toBeVisible();
+
+      expect(getByText('Partnerships')).toBeVisible();
     });
 
     // populate coordinator form
@@ -137,7 +141,9 @@ describe('CreateProjectPage', () => {
 
       expect(queryByText('IUCN Classification')).toBeNull();
 
-      expect(queryByText('Funding and Partnerships')).toBeNull();
+      expect(queryByText('Funding')).toBeNull();
+
+      expect(queryByText('Partnerships')).toBeNull();
 
       expect(asFragment()).toMatchSnapshot();
     });

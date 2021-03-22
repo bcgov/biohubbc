@@ -6,7 +6,7 @@ import {
 import { useFormikContext } from 'formik';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState, useEffect } from 'react';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 //@ts-ignore
 import { kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';

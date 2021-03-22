@@ -1,13 +1,11 @@
 import { Box, Button, Grid, IconButton, Paper, Typography } from '@material-ui/core';
 import { Delete, Edit } from '@material-ui/icons';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues
@@ -15,14 +13,10 @@ import ProjectFundingItemForm, {
 
 export interface IProjectFundingForm {
   funding_agencies: IProjectFundingFormArrayItem[];
-  indigenous_partnerships: number[];
-  stakeholder_partnerships: string[];
 }
 
 export const ProjectFundingFormInitialValues: IProjectFundingForm = {
-  funding_agencies: [],
-  indigenous_partnerships: [],
-  stakeholder_partnerships: []
+  funding_agencies: []
 };
 
 export const ProjectFundingFormYupSchema = yup.object().shape({});
@@ -34,8 +28,6 @@ export interface IInvestmentActionCategoryOption extends IMultiAutocompleteField
 export interface IProjectFundingFormProps {
   funding_sources: IMultiAutocompleteFieldOption[];
   investment_action_category: IInvestmentActionCategoryOption[];
-  first_nations: IMultiAutocompleteFieldOption[];
-  stakeholder_partnerships: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -184,22 +176,6 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                 </Box>
               </Box>
             )}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'indigenous_partnerships'}
-            label={'Indigenous Partnerships'}
-            options={props.first_nations}
-            required={false}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'stakeholder_partnerships'}
-            label={'Stakeholder Partnerships'}
-            options={props.stakeholder_partnerships}
-            required={false}
           />
         </Grid>
       </Grid>
