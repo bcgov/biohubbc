@@ -3,10 +3,10 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import {
-  projectPutBody,
-  projectIdResponseBody,
-  getProjectForViewRequestBody,
-  projectViewGetResponseBody
+  projectIdResponseObject,
+  projectUpdateGetRequestObject,
+  projectUpdateGetResponseObject,
+  projectUpdatePutRequestObject
 } from '../../../openapi/schemas/project';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -30,7 +30,7 @@ GET.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(getProjectForViewRequestBody as object)
+          ...(projectUpdateGetRequestObject as object)
         }
       }
     }
@@ -41,7 +41,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectViewGetResponseBody as object)
+            ...(projectUpdateGetResponseObject as object)
           }
         }
       }
@@ -80,7 +80,7 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(projectPutBody as object)
+          ...(projectUpdatePutRequestObject as object)
         }
       }
     }
@@ -91,8 +91,7 @@ PUT.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            // TODO update with an object that represents the real response
-            ...(projectIdResponseBody as object)
+            ...(projectIdResponseObject as object)
           }
         }
       }

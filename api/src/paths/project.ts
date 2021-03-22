@@ -4,7 +4,7 @@ import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { CustomError } from '../errors/CustomError';
 import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project';
-import { projectCreatePostBody, projectIdResponseBody } from '../openapi/schemas/project';
+import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
@@ -38,7 +38,7 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(projectCreatePostBody as object)
+          ...(projectCreatePostRequestObject as object)
         }
       }
     }
@@ -49,7 +49,7 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectIdResponseBody as object)
+            ...(projectIdResponseObject as object)
           }
         }
       }

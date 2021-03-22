@@ -12,7 +12,7 @@ import {
   GetProjectData,
   GetSpeciesData
 } from '../../../models/project';
-import { projectIdResponseBody } from '../../../openapi/schemas/project';
+import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
@@ -54,8 +54,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            // TODO update with an object that represents the real response
-            ...(projectIdResponseBody as object)
+            ...(projectViewGetResponseObject as object)
           }
         }
       }
