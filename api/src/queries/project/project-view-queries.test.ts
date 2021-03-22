@@ -3,11 +3,13 @@ import { describe } from 'mocha';
 import {
   getActivitiesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
+  getClimateInitiativesByProjectSQL,
   getFocalSpeciesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectListSQL,
-  getProjectSQL
+  getProjectSQL,
+  getRegionsByProjectSQL
 } from './project-view-queries';
 
 describe('getProjectSQL', () => {
@@ -29,9 +31,23 @@ describe('getProjectSQL', () => {
   });
 });
 
-describe('getProjectsSQL', () => {
+describe('getProjectListSQL', () => {
   it('returns a SQLStatement', () => {
     const response = getProjectListSQL();
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getRegionsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getRegionsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getRegionsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -102,6 +118,20 @@ describe('getAncillarySpeciesByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getAncillarySpeciesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getClimateInitiativesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getClimateInitiativesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
