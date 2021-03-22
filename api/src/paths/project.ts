@@ -354,11 +354,11 @@ export const insertPermitNumber = async (
 };
 
 export const insertClassificationDetail = async (
-  iucn_id: number,
+  iucn3_id: number,
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectIUCNSQL(iucn_id, project_id);
+  const sqlStatement = postProjectIUCNSQL(iucn3_id, project_id);
 
   if (!sqlStatement) {
     throw new CustomError(400, 'Failed to build SQL statement');

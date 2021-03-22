@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, March 10, 2021 16:57:57
+-- Date Created : Friday, March 19, 2021 13:37:09
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -397,7 +397,7 @@ COMMENT ON TABLE iucn_conservation_action_level_1_classification IS 'List of IUC
 
 CREATE TABLE iucn_conservation_action_level_2_subclassification(
     id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn_id                  integer          NOT NULL,
+    iucn1_id                 integer          NOT NULL,
     name                     varchar(300),
     record_end_date          date,
     record_effective_date    date             NOT NULL,
@@ -415,7 +415,7 @@ CREATE TABLE iucn_conservation_action_level_2_subclassification(
 
 COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.iucn_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.iucn1_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.name IS 'The name of the record.'
 ;
@@ -444,7 +444,7 @@ COMMENT ON TABLE iucn_conservation_action_level_2_subclassification IS 'List of 
 
 CREATE TABLE iucn_conservation_action_level_3_subclassification(
     id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn1_id                 integer          NOT NULL,
+    iucn2_id                 integer          NOT NULL,
     name                     varchar(300),
     record_end_date          date,
     record_effective_date    date             NOT NULL,
@@ -462,7 +462,7 @@ CREATE TABLE iucn_conservation_action_level_3_subclassification(
 
 COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.iucn1_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.iucn2_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.name IS 'The name of the IUCN action classification sublevel 2.
 '
@@ -699,6 +699,50 @@ COMMENT ON COLUMN project_activity.revision_count IS 'Revision count used for co
 ;
 
 -- 
+-- TABLE: project_attachment 
+--
+
+CREATE TABLE project_attachment(
+    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer         NOT NULL,
+    file_name         varchar(300),
+    title             varchar(300),
+    description       varchar(250),
+    create_date       timestamp(6)    DEFAULT now() NOT NULL,
+    create_user       integer         NOT NULL,
+    update_date       timestamp(6),
+    update_user       integer,
+    revision_count    integer         DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK141" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN project_attachment.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN project_attachment.p_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN project_attachment.file_name IS 'The name of the file attachment.'
+;
+COMMENT ON COLUMN project_attachment.title IS 'The title of the file.'
+;
+COMMENT ON COLUMN project_attachment.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN project_attachment.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN project_attachment.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN project_attachment.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN project_attachment.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN project_attachment.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE project_attachment IS 'A list of project attachments.'
+;
+
+-- 
 -- TABLE: project_climate_initiative 
 --
 
@@ -821,13 +865,13 @@ COMMENT ON TABLE project_funding_source IS 'Project funding source details.'
 ;
 
 -- 
--- TABLE: project_iucn_action_classificaton 
+-- TABLE: project_iucn_action_classification 
 --
 
-CREATE TABLE project_iucn_action_classificaton(
+CREATE TABLE project_iucn_action_classification(
     id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn2_id          integer         NOT NULL,
     p_id              integer         NOT NULL,
+    iucn3_id          integer         NOT NULL,
     create_date       timestamp(6)    DEFAULT now() NOT NULL,
     create_user       integer         NOT NULL,
     update_date       timestamp(6),
@@ -839,23 +883,23 @@ CREATE TABLE project_iucn_action_classificaton(
 
 
 
-COMMENT ON COLUMN project_iucn_action_classificaton.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.iucn2_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.p_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.iucn3_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.create_date IS 'The datetime the record was created.'
+COMMENT ON COLUMN project_iucn_action_classification.create_date IS 'The datetime the record was created.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.create_user IS 'The id of the user who created the record as identified in the system user table.'
+COMMENT ON COLUMN project_iucn_action_classification.create_user IS 'The id of the user who created the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.update_date IS 'The datetime the record was updated.'
+COMMENT ON COLUMN project_iucn_action_classification.update_date IS 'The datetime the record was updated.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+COMMENT ON COLUMN project_iucn_action_classification.update_user IS 'The id of the user who updated the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN project_iucn_action_classificaton.revision_count IS 'Revision count used for concurrency control.'
+COMMENT ON COLUMN project_iucn_action_classification.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE project_iucn_action_classificaton IS 'Project IUCN classifications.'
+COMMENT ON TABLE project_iucn_action_classification IS 'Project IUCN classifications.'
 ;
 
 -- 
@@ -1145,6 +1189,50 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 ;
 
 -- 
+-- TABLE: system_constant 
+--
+
+CREATE TABLE system_constant(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    constant_name      varchar(50)       NOT NULL,
+    character_value    varchar(300),
+    numeric_value      numeric(10, 0),
+    description        varchar(250),
+    create_date        timestamp(6)      DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamp(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK142" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN system_constant.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN system_constant.constant_name IS 'The lookup name of the constant.'
+;
+COMMENT ON COLUMN system_constant.character_value IS 'The string value of the constant.'
+;
+COMMENT ON COLUMN system_constant.numeric_value IS 'The numeric value of the constant.'
+;
+COMMENT ON COLUMN system_constant.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN system_constant.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN system_constant.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN system_constant.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN system_constant.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN system_constant.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE system_constant IS 'A list of system constants necessary for system functionality.'
+;
+
+-- 
 -- TABLE: system_role 
 --
 
@@ -1381,28 +1469,28 @@ CREATE INDEX "Ref7345" ON investment_action_category(fs_id)
 CREATE UNIQUE INDEX iucn_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: iac1_nuk1 
+-- INDEX: iucn2_nuk1 
 --
 
-CREATE UNIQUE INDEX iac1_nuk1 ON iucn_conservation_action_level_2_subclassification(iucn_id, name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX iucn2_nuk1 ON iucn_conservation_action_level_2_subclassification(name, record_end_date, iucn1_id)
 ;
 -- 
--- INDEX: "Ref13764" 
+-- INDEX: "Ref13773" 
 --
 
-CREATE INDEX "Ref13764" ON iucn_conservation_action_level_2_subclassification(iucn_id)
+CREATE INDEX "Ref13773" ON iucn_conservation_action_level_2_subclassification(iucn1_id)
 ;
 -- 
--- INDEX: iac2_nuk1 
+-- INDEX: iucn3_nuk1 
 --
 
-CREATE UNIQUE INDEX iac2_nuk1 ON iucn_conservation_action_level_3_subclassification(iucn1_id, name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX iucn3_nuk1 ON iucn_conservation_action_level_3_subclassification(name, iucn2_id, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref13965" 
+-- INDEX: "Ref13974" 
 --
 
-CREATE INDEX "Ref13965" ON iucn_conservation_action_level_3_subclassification(iucn1_id)
+CREATE INDEX "Ref13974" ON iucn_conservation_action_level_3_subclassification(iucn2_id)
 ;
 -- 
 -- INDEX: mat_nuk1 
@@ -1439,6 +1527,18 @@ CREATE INDEX "Ref4556" ON project_activity(p_id)
 --
 
 CREATE INDEX "Ref13658" ON project_activity(a_id)
+;
+-- 
+-- INDEX: pat_uk1 
+--
+
+CREATE UNIQUE INDEX pat_uk1 ON project_attachment(p_id, file_name)
+;
+-- 
+-- INDEX: "Ref4568" 
+--
+
+CREATE INDEX "Ref4568" ON project_attachment(p_id)
 ;
 -- 
 -- INDEX: pci_uk1 
@@ -1495,22 +1595,22 @@ CREATE INDEX "Ref4520" ON project_funding_source(p_id)
 CREATE INDEX "Ref8351" ON project_funding_source(iac_id)
 ;
 -- 
--- INDEX: piac_uk1 
+-- INDEX: piucn_uk1 
 --
 
-CREATE UNIQUE INDEX piac_uk1 ON project_iucn_action_classificaton(iucn2_id, p_id)
-;
--- 
--- INDEX: "Ref14066" 
---
-
-CREATE INDEX "Ref14066" ON project_iucn_action_classificaton(iucn2_id)
+CREATE UNIQUE INDEX piucn_uk1 ON project_iucn_action_classification(p_id, iucn3_id)
 ;
 -- 
 -- INDEX: "Ref4567" 
 --
 
-CREATE INDEX "Ref4567" ON project_iucn_action_classificaton(p_id)
+CREATE INDEX "Ref4567" ON project_iucn_action_classification(p_id)
+;
+-- 
+-- INDEX: "Ref14075" 
+--
+
+CREATE INDEX "Ref14075" ON project_iucn_action_classification(iucn3_id)
 ;
 -- 
 -- INDEX: pma_uk1 
@@ -1603,6 +1703,12 @@ CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
 CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 ;
 -- 
+-- INDEX: sc_uk1 
+--
+
+CREATE UNIQUE INDEX sc_uk1 ON system_constant(constant_name)
+;
+-- 
 -- INDEX: sr_nuk1 
 --
 
@@ -1678,8 +1784,8 @@ ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source45"
 -- TABLE: iucn_conservation_action_level_2_subclassification 
 --
 
-ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification64" 
-    FOREIGN KEY (iucn_id)
+ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification73" 
+    FOREIGN KEY (iucn1_id)
     REFERENCES iucn_conservation_action_level_1_classification(id)
 ;
 
@@ -1688,8 +1794,8 @@ ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "R
 -- TABLE: iucn_conservation_action_level_3_subclassification 
 --
 
-ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification65" 
-    FOREIGN KEY (iucn1_id)
+ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification74" 
+    FOREIGN KEY (iucn2_id)
     REFERENCES iucn_conservation_action_level_2_subclassification(id)
 ;
 
@@ -1716,6 +1822,16 @@ ALTER TABLE project_activity ADD CONSTRAINT "Refproject56"
 ALTER TABLE project_activity ADD CONSTRAINT "Refactivity58" 
     FOREIGN KEY (a_id)
     REFERENCES activity(id)
+;
+
+
+-- 
+-- TABLE: project_attachment 
+--
+
+ALTER TABLE project_attachment ADD CONSTRAINT "Refproject68" 
+    FOREIGN KEY (p_id)
+    REFERENCES project(id)
 ;
 
 
@@ -1765,17 +1881,17 @@ ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category
 
 
 -- 
--- TABLE: project_iucn_action_classificaton 
+-- TABLE: project_iucn_action_classification 
 --
 
-ALTER TABLE project_iucn_action_classificaton ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification66" 
-    FOREIGN KEY (iucn2_id)
-    REFERENCES iucn_conservation_action_level_3_subclassification(id)
-;
-
-ALTER TABLE project_iucn_action_classificaton ADD CONSTRAINT "Refproject67" 
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refproject67" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
+;
+
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification75" 
+    FOREIGN KEY (iucn3_id)
+    REFERENCES iucn_conservation_action_level_3_subclassification(id)
 ;
 
 

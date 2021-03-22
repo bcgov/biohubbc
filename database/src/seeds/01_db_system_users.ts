@@ -5,7 +5,7 @@ const DB_ADMIN = process.env.DB_ADMIN;
 
 const systemUsers = [
   { identifier: 'aagahche', type: 'IDIR' },
-  { identifier: 'cgarrettjones', type: 'IDIR' },
+  { identifier: 'cgarrett', type: 'IDIR' },
   { identifier: 'istest1', type: 'IDIR' },
   { identifier: 'jrpopkin', type: 'IDIR' },
   { identifier: 'jxdunsdo', type: 'IDIR' },

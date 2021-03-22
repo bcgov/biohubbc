@@ -178,7 +178,7 @@ GET.apiDoc = {
                     id: {
                       type: 'number'
                     },
-                    iucn_id: {
+                    iucn1_id: {
                       type: 'number'
                     },
                     name: {
@@ -195,7 +195,7 @@ GET.apiDoc = {
                     id: {
                       type: 'number'
                     },
-                    iucn1_id: {
+                    iucn2_id: {
                       type: 'number'
                     },
                     name: {
