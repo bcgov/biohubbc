@@ -168,3 +168,8 @@ export interface IGetAllCodesResponse {
   iucn_conservation_action_level_2_subclassification: ICodeSet<{ id: number; iucn_id: number; name: string }>;
   iucn_conservation_action_level_3_subclassification: ICodeSet<{ id: number; iucn1_id: number; name: string }>;
 }
+
+export interface IEditComponent {
+  id: number;
+  component: any;
+}
