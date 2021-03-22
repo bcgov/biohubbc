@@ -34,13 +34,15 @@ export interface IEditDialogProps {
    *
    * @memberof IEditDialogProps
    */
-  onNo: () => void;
+  onCancel: () => void;
   /**
    * Callback fired if the 'Yes' button is clicked.
    *
    * @memberof IEditDialogProps
    */
-  onYes: () => void;
+  onSave: () => void;
+
+  component: any;
 }
 
 /**
@@ -61,12 +63,13 @@ const EditDialog: React.FC<IEditDialogProps> = (props) => {
         <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+          {props.component}
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onNo} color="primary">
+          <Button onClick={props.onCancel} color="primary">
             No
           </Button>
-          <Button onClick={props.onYes} color="primary" autoFocus>
+          <Button onClick={props.onSave} color="primary" autoFocus>
             Yes
           </Button>
         </DialogActions>
