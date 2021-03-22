@@ -257,7 +257,7 @@ describe('postProjectClimateChangeInitiativeSQL', () => {
   it('null climate initiative id', () => {
     const response = postProjectClimateChangeInitiativeSQL((null as unknown) as number, 1);
 
-    expect(response).to.not.be.null;
+    expect(response).to.be.null;
   });
 
   it('valid params', () => {
