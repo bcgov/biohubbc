@@ -15,7 +15,9 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getFundingSourceByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
+  getAncillarySpeciesByProjectSQL,
+  getStakeholderPartnershipsByProjectSQL,
+  getIndigenousPartnershipsByProjectSQL
 } from './project-queries';
 
 describe('postProjectSQL', () => {
@@ -361,6 +363,34 @@ describe('getAncillarySpeciesByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getAncillarySpeciesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getIndigenousPartnershipsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getIndigenousPartnershipsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getIndigenousPartnershipsByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getStakeholderPartnershipsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getStakeholderPartnershipsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getStakeholderPartnershipsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

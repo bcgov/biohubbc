@@ -9,7 +9,8 @@ import {
   GetCoordinatorData,
   GetIUCNClassificationData,
   GetFundingData,
-  GetSpeciesData
+  GetSpeciesData,
+  GetPartnershipsData
 } from '../../models/project';
 import { projectResponseBody } from '../../openapi/schemas/project';
 import {
@@ -20,7 +21,9 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getFundingSourceByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
+  getAncillarySpeciesByProjectSQL,
+  getIndigenousPartnershipsByProjectSQL,
+  getStakeholderPartnershipsByProjectSQL
 } from '../../queries/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
@@ -101,6 +104,13 @@ function getProjectWithDetails(): RequestHandler {
       const getProjectFundingSourceSQLStatement = getFundingSourceByProjectSQL(Number(req.params.projectId));
       const getProjectFocalSpeciesSQLStatement = getFocalSpeciesByProjectSQL(Number(req.params.projectId));
       const getProjectAncillarySpeciesSQLStatement = getAncillarySpeciesByProjectSQL(Number(req.params.projectId));
+      const getProjectIndigenousPartnershipsSQLStatement = getIndigenousPartnershipsByProjectSQL(
+        Number(req.params.projectId)
+      );
+      const getProjectStakeholderPartnershipsSQLStatement = getStakeholderPartnershipsByProjectSQL(
+        Number(req.params.projectId)
+      );
+
       if (
         !getProjectSQLStatement ||
         !getRegionsByProjectSQLStatement ||
@@ -109,7 +119,9 @@ function getProjectWithDetails(): RequestHandler {
         !getProjectIUCNActionClassificationSQLStatement ||
         !getProjectFundingSourceSQLStatement ||
         !getProjectFocalSpeciesSQLStatement ||
-        !getProjectAncillarySpeciesSQLStatement
+        !getProjectAncillarySpeciesSQLStatement ||
+        !getProjectIndigenousPartnershipsSQLStatement ||
+        !getProjectStakeholderPartnershipsSQLStatement
       ) {
         throw new CustomError(400, 'Failed to build SQL statement');
       }
@@ -124,7 +136,9 @@ function getProjectWithDetails(): RequestHandler {
         iucnClassificationData,
         fundingData,
         focalSpecies,
-        ancillarySpecies
+        ancillarySpecies,
+        indigenousPartnerships,
+        stakeholderPartnerships
       ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
         await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
@@ -142,6 +156,14 @@ function getProjectWithDetails(): RequestHandler {
         await connection.query(
           getProjectAncillarySpeciesSQLStatement.text,
           getProjectAncillarySpeciesSQLStatement.values
+        ),
+        connection.query(
+          getProjectIndigenousPartnershipsSQLStatement.text,
+          getProjectIndigenousPartnershipsSQLStatement.values
+        ),
+        connection.query(
+          getProjectStakeholderPartnershipsSQLStatement.text,
+          getProjectStakeholderPartnershipsSQLStatement.values
         )
       ]);
 
@@ -178,6 +200,14 @@ function getProjectWithDetails(): RequestHandler {
           new GetSpeciesData(focalSpecies.rows, ancillarySpecies.rows)) ||
         null;
 
+      const getPartnershipsData =
+        (indigenousPartnerships &&
+          indigenousPartnerships.rows &&
+          stakeholderPartnerships &&
+          stakeholderPartnerships.rows &&
+          new GetPartnershipsData(indigenousPartnerships.rows, stakeholderPartnerships.rows)) ||
+        null;
+
       const getIUCNClassificationData =
         (iucnClassificationData &&
           iucnClassificationData.rows &&
@@ -194,7 +224,8 @@ function getProjectWithDetails(): RequestHandler {
         location: getLocationData,
         iucn: getIUCNClassificationData,
         funding: getFundingData,
-        species: getSpeciesData
+        species: getSpeciesData,
+        partnerships: getPartnershipsData
       };
 
       defaultLog.debug('result:', result);
