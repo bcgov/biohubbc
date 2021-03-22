@@ -283,15 +283,15 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.name as subClassification1,
       ical3s.name as subClassification2
     FROM
-      project_iucn_action_classificaton as piac
+      project_iucn_action_classification as piac
     LEFT OUTER JOIN
       iucn_conservation_action_level_3_subclassification as ical3s
     ON
-      piac.iucn2_id = ical3s.id
+      piac.iucn3_id = ical3s.id
     LEFT OUTER JOIN
       iucn_conservation_action_level_2_subclassification as ical2s
     ON
-      ical3s.iucn1_id = ical2s.id
+      ical3s.iucn2_id = ical2s.id
     LEFT OUTER JOIN
       iucn_conservation_action_level_1_classification as ical1c
     ON
