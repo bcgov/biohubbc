@@ -64,7 +64,7 @@ export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatement =>
-  SQL`SELECT id, iucn_id, name from iucn_conservation_action_level_2_subclassification;`;
+  SQL`SELECT id, iucn1_id, name from iucn_conservation_action_level_2_subclassification;`;
 
 /**
  * SQL query to fetch IUCN conservation action level 3 sub-classification codes.
@@ -72,4 +72,4 @@ export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatement =>
-  SQL`SELECT id, iucn1_id, name from iucn_conservation_action_level_3_subclassification;`;
+  SQL`SELECT id, iucn2_id, name from iucn_conservation_action_level_3_subclassification;`;
