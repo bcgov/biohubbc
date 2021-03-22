@@ -15,7 +15,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import { FieldArray, useFormikContext } from 'formik';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import React from 'react';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme) => ({
   iucnInputContainer: {

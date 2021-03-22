@@ -14,7 +14,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 
 export interface IProjectPermitFormArrayItem {
   permit_number: string;

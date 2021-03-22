@@ -5,7 +5,7 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import * as yup from 'yup';
+import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues
