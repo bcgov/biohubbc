@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProject } from 'interfaces/project-interfaces';
+import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { DATE_FORMAT } from 'constants/dateFormats';
@@ -69,7 +69,7 @@ const ProjectsListPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<IGetProjectsListResponse[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -83,7 +83,7 @@ const ProjectsListPage: React.FC = () => {
 
   useEffect(() => {
     const getProjects = async () => {
-      const projectsResponse = await biohubApi.getProjects();
+      const projectsResponse = await biohubApi.project.getProjectsList();
 
       setProjects(() => {
         setIsLoading(false);

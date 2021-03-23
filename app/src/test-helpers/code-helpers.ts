@@ -1,6 +1,6 @@
-import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
-export const codes: IGetAllCodesResponse = {
+export const codes: IGetAllCodeSetsResponse = {
   coordinator_agency: [],
   management_action_type: [],
   climate_change_initiative: [{ id: 1, name: 'climate code' }],

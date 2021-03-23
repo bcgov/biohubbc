@@ -2,7 +2,7 @@ import { Box, Button, CircularProgress, makeStyles, Paper, Typography } from '@m
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { UploadProjectArtifactsI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export interface IProjectAttachmentsProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -58,8 +58,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     }
   });
 
-  // TODO this is using IProject in the mean time, but will eventually need something like IProjectRecord
-  const [project, setProject] = useState<IProjectWithDetails | null>(null);
+  const [project, setProject] = useState<IGetProjectForViewResponse | null>(null);
 
   const handleUpload = async () => {
     const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -73,7 +72,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
     try {
       setDropzoneText('Uploading ...');
-      const uploadResponse = await biohubApi.uploadProjectArtifacts(urlParams['id'], files);
+      const uploadResponse = await biohubApi.project.uploadProjectArtifacts(urlParams['id'], files);
 
       if (!uploadResponse) {
         setDropzoneText('Failed to upload, please try again');
@@ -105,7 +104,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   useEffect(() => {
     const getProject = async () => {
-      const projectResponse = await biohubApi.getProject(urlParams['id']);
+      const projectResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
       if (!projectResponse) {
         // TODO error handling/messaging

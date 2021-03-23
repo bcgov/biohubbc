@@ -3,21 +3,21 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { CustomError } from '../errors/CustomError';
-import { PostFundingSource, PostProjectObject, IPostPermit, IPostIUCN } from '../models/project';
-import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
+import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project';
+import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
+  postProjectActivitySQL,
+  postProjectClimateChangeInitiativeSQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
+  postProjectIUCNSQL,
+  postProjectPermitSQL,
   postProjectRegionSQL,
   postProjectSQL,
-  postProjectStakeholderPartnershipSQL,
-  postProjectPermitSQL,
-  postProjectIUCNSQL,
-  postProjectActivitySQL,
-  postProjectClimateChangeInitiativeSQL
-} from '../queries/project-queries';
+  postProjectStakeholderPartnershipSQL
+} from '../queries/project/project-create-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -38,7 +38,7 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(projectPostBody as object)
+          ...(projectCreatePostRequestObject as object)
         }
       }
     }
@@ -49,7 +49,7 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectResponseBody as object)
+            ...(projectIdResponseObject as object)
           }
         }
       }

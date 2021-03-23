@@ -9,7 +9,9 @@ const history = createMemoryHistory();
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
-  getAllCodes: jest.fn<Promise<object>, []>()
+  codes: {
+    getAllCodeSets: jest.fn<Promise<object>, []>()
+  }
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -27,7 +29,7 @@ const renderContainer = () => {
 describe('CreateProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().getAllCodes.mockClear();
+    mockBiohubApi().codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -35,7 +37,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().getAllCodes.mockResolvedValue({
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       code_set: []
     });
     const { getByText, asFragment } = renderContainer();
@@ -64,7 +66,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('removes the extra project steps if all permits are marked as having not conducted sampling', async () => {
-    mockBiohubApi().getAllCodes.mockResolvedValue({
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
     const { findByText, asFragment, queryByText, getByText, getByTestId, getByLabelText } = renderContainer();
@@ -148,7 +150,7 @@ describe('CreateProjectPage', () => {
   });
 
   it('shows the page title', async () => {
-    mockBiohubApi().getAllCodes.mockResolvedValue({
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       code_set: []
     });
     const { findByText } = renderContainer();
@@ -159,7 +161,7 @@ describe('CreateProjectPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
-      mockBiohubApi().getAllCodes.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         code_set: []
       });
       history.push('/home');
@@ -178,7 +180,7 @@ describe('CreateProjectPage', () => {
     });
 
     it('it calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().getAllCodes.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         code_set: []
       });
       history.push('/home');
@@ -195,7 +197,7 @@ describe('CreateProjectPage', () => {
     });
 
     it('it does nothing if the user clicks `No`', async () => {
-      mockBiohubApi().getAllCodes.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         code_set: []
       });
       history.push('/home');

@@ -1,24 +1,25 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostProjectData, PostLocationData, PostCoordinatorData, PostObjectivesData } from '../models/project';
 import {
-  getProjectSQL,
-  getProjectListSQL,
-  postProjectSQL,
-  postProjectRegionSQL,
-  postProjectPermitSQL,
-  postProjectIUCNSQL,
-  getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL,
+  PostCoordinatorData,
+  PostFundingSource,
+  PostLocationData,
+  PostObjectivesData,
+  PostProjectData
+} from '../../models/project';
+import {
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL,
   postProjectActivitySQL,
   postProjectClimateChangeInitiativeSQL,
-  getIUCNActionClassificationByProjectSQL,
-  getFundingSourceByProjectSQL,
-  getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
-  getStakeholderPartnershipsByProjectSQL,
-  getIndigenousPartnershipsByProjectSQL
-} from './project-queries';
+  postProjectFundingSourceSQL,
+  postProjectIndigenousNationSQL,
+  postProjectIUCNSQL,
+  postProjectPermitSQL,
+  postProjectRegionSQL,
+  postProjectSQL,
+  postProjectStakeholderPartnershipSQL
+} from './project-create-queries';
 
 describe('postProjectSQL', () => {
   describe('Null project param provided', () => {
@@ -170,29 +171,136 @@ describe('postProjectSQL', () => {
   });
 });
 
-describe('getProjectSQL', () => {
-  describe('Null project id param provided', () => {
-    it('returns null', () => {
-      // force the function to accept a null value
-      const response = getProjectSQL((null as unknown) as number);
+describe('postFocalSpeciesSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when species is null', () => {
+      const response = postFocalSpeciesSQL((null as unknown) as string, 1);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns null when project id is null', () => {
+      const response = postFocalSpeciesSQL('species 1', (null as unknown) as number);
 
       expect(response).to.be.null;
     });
   });
 
-  describe('Valid project id param provided', () => {
-    it('returns a SQLStatement', () => {
-      const response = getProjectSQL(1);
+  describe('with valid parameters', () => {
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postFocalSpeciesSQL('species 1', 1);
 
       expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include('species 1');
     });
   });
 });
 
-describe('getProjectsSQL', () => {
-  it('returns a SQLStatement', () => {
-    const response = getProjectListSQL();
+describe('postProjectFundingSourceSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when funding source is null', () => {
+      const response = postProjectFundingSourceSQL((null as unknown) as PostFundingSource, 1);
 
+      expect(response).to.be.null;
+    });
+
+    it('returns null when project id is null', () => {
+      const response = postProjectFundingSourceSQL(new PostFundingSource({}), (null as unknown) as number);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('with valid parameters', () => {
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postProjectFundingSourceSQL(
+        new PostFundingSource({
+          agency_id: 111,
+          investment_action_category: 222,
+          agency_project_id: '123123123',
+          funding_amount: 10000,
+          start_date: '2020-02-02',
+          end_date: '2020-03-02'
+        }),
+        333
+      );
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include(333);
+      expect(response?.values).to.deep.include(222);
+      expect(response?.values).to.deep.include('123123123');
+      expect(response?.values).to.deep.include(10000);
+      expect(response?.values).to.deep.include('2020-02-02');
+      expect(response?.values).to.deep.include('2020-03-02');
+    });
+  });
+});
+
+describe('postAncillarySpeciesSQL', () => {
+  describe('with invalid parameters', () => {
+    it('returns null when species is null', () => {
+      const response = postAncillarySpeciesSQL((null as unknown) as string, 1);
+
+      expect(response).to.be.null;
+    });
+
+    it('returns null when project id is null', () => {
+      const response = postAncillarySpeciesSQL('species 1', (null as unknown) as number);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('with valid parameters', () => {
+    it('returns a SQLStatement when all fields are passed in as expected', () => {
+      const response = postAncillarySpeciesSQL('species 1', 1);
+
+      expect(response).to.not.be.null;
+      expect(response?.values).to.deep.include('species 1');
+    });
+  });
+});
+
+describe('postProjectStakeholderPartnershipSQL', () => {
+  it('Null activityId', () => {
+    const response = postProjectStakeholderPartnershipSQL((null as unknown) as string, 1);
+    expect(response).to.be.null;
+  });
+
+  it('Null projectId', () => {
+    const response = postProjectStakeholderPartnershipSQL('123', (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('null activityId and null projectId', () => {
+    const response = postProjectStakeholderPartnershipSQL((null as unknown) as string, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('Valid parameters', () => {
+    const response = postProjectStakeholderPartnershipSQL('123', 1);
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectClimateChangeInitiativeSQL', () => {
+  it('Null activityId', () => {
+    const response = postProjectIndigenousNationSQL((null as unknown) as number, 1);
+    expect(response).to.be.null;
+  });
+
+  it('Null projectId', () => {
+    const response = postProjectIndigenousNationSQL(1, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('null activityId and null projectId', () => {
+    const response = postProjectIndigenousNationSQL((null as unknown) as number, (null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('Valid parameters', () => {
+    const response = postProjectIndigenousNationSQL(1, 1);
     expect(response).to.not.be.null;
   });
 });
@@ -281,118 +389,6 @@ describe('postProjectRegionSQL', () => {
 
       expect(response).to.not.be.null;
     });
-  });
-});
-
-describe('getActivitiesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getActivitiesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getActivitiesByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getIUCNActionClassificationByProjectSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = getIUCNActionClassificationByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId provided', () => {
-    const response = getIUCNActionClassificationByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getFundingSourceByProjectSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = getFundingSourceByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId provided', () => {
-    const response = getFundingSourceByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('postProjectClimateChangeInitiativeSQL', () => {
-  it('Null projectId', () => {
-    const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getClimateInitiativesByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getFocalSpeciesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getFocalSpeciesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getFocalSpeciesByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getAncillarySpeciesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getAncillarySpeciesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getAncillarySpeciesByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getIndigenousPartnershipsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getIndigenousPartnershipsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getIndigenousPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getStakeholderPartnershipsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getStakeholderPartnershipsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getStakeholderPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
   });
 });
 

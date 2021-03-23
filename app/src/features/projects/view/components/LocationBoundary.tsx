@@ -1,6 +1,6 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bbox from '@turf/bbox';
 
 export interface IProjectDetailsProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -18,7 +18,7 @@ export interface IProjectDetailsProps {
  */
 const LocationBoundary: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { location }
+    projectForViewData: { location }
   } = props;
 
   /*

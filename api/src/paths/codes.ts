@@ -9,7 +9,7 @@ import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/code');
 
-export const GET: Operation = [logRequest('paths/code', 'POST'), getAllCodes()];
+export const GET: Operation = [logRequest('paths/code', 'GET'), getAllCodes()];
 
 GET.apiDoc = {
   description: 'Get all Codes.',

@@ -1,7 +1,6 @@
 import { Box, ThemeProvider, Typography } from '@material-ui/core';
 import { AjvError, ErrorListProps, FormValidation, IChangeEvent, ISubmitEvent } from '@rjsf/core';
 import Form from '@rjsf/material-ui';
-import { IFormRecord, ITemplate } from 'interfaces/useBioHubApi-interfaces';
 import React, { useState } from 'react';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -20,8 +19,8 @@ export interface IFormControlsComponentProps {
 }
 
 export interface IFormContainerProps {
-  record?: IFormRecord;
-  template: ITemplate;
+  record?: any;
+  template: any;
   customValidation?: (formData: any, errors: FormValidation) => FormValidation;
   customErrorTransformer?: (errors: AjvError[]) => AjvError[];
   isDisabled?: boolean;

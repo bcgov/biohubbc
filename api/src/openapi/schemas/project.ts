@@ -1,12 +1,10 @@
 /**
- * Project endpoint post body openapi schema.
- *
- * TODO WIP - this object is not in any kind of final form and can change as needed.
+ * Request Object for project create POST request
  */
-export const projectPostBody = {
-  title: 'Project Post Object',
+export const projectCreatePostRequestObject = {
+  title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'permit', 'project', 'location', 'species', 'funding'],
+  required: ['coordinator', 'permit', 'project', 'location', 'species', 'iucn', 'funding'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -123,6 +121,30 @@ export const projectPostBody = {
         }
       }
     },
+    iucn: {
+      title: 'Project IUCN classifications',
+      type: 'object',
+      properties: {
+        classificationDetails: {
+          type: 'array',
+          items: {
+            title: 'IUCN classification',
+            type: 'object',
+            properties: {
+              classification: {
+                type: 'number'
+              },
+              subClassification1: {
+                type: 'number'
+              },
+              subClassification2: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
     funding: {
       title: 'Project funding sources',
       type: 'object',
@@ -155,7 +177,13 @@ export const projectPostBody = {
               }
             }
           }
-        },
+        }
+      }
+    },
+    partnerships: {
+      title: 'Project partnerships',
+      type: 'object',
+      properties: {
         indigenous_partnerships: {
           type: 'array',
           items: {
@@ -174,9 +202,45 @@ export const projectPostBody = {
 };
 
 /**
- * Project endpoint response body openapi schema.
+ * Response object for project view GET request
  */
-export const projectResponseBody = {
+export const projectViewGetResponseObject = {
+  title: 'Project get response object, for view purposes',
+  type: 'object',
+  properties: {}
+};
+
+/**
+ * Request object for project update GET request
+ */
+export const projectUpdateGetRequestObject = {
+  title: 'Project get request object, for update purposes',
+  type: 'object',
+  properties: {}
+};
+
+/**
+ * Response object for project update GET request
+ */
+export const projectUpdateGetResponseObject = {
+  title: 'Project get response object, for update purposes',
+  type: 'object',
+  properties: {}
+};
+
+/**
+ * Request object for project update PUT request
+ */
+export const projectUpdatePutRequestObject = {
+  title: 'Project Put Object',
+  type: 'object',
+  properties: {}
+};
+
+/**
+ * Basic response object for a project.
+ */
+export const projectIdResponseObject = {
   title: 'Project Response Object',
   type: 'object',
   required: ['id'],

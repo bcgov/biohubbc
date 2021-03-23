@@ -1,11 +1,11 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
-import React from 'react';
 import ReadMoreField from 'components/fields/ReadMoreField';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import React from 'react';
 
 export interface IProjectObjectivesProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -15,7 +15,7 @@ export interface IProjectObjectivesProps {
  */
 const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const {
-    projectWithDetailsData: { objectives }
+    projectForViewData: { objectives }
   } = props;
 
   return (

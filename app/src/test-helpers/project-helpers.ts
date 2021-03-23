@@ -1,7 +1,7 @@
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 
-export const projectWithDetailsData: IProjectWithDetails = {
-  id: 1,
+export const getProjectForViewResponse: IGetProjectForViewResponse = {
+  projectId: 1,
   project: {
     project_name: 'Test Project Name',
     project_type_name: 'Type name',

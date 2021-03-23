@@ -41,20 +41,21 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the artifact',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            properties: {
+              artifact: {
+                type: 'object',
+                properties: {
+                  file_name: {
+                    description: 'The file name of the artifact',
+                    type: 'string'
+                  },
+                  encoded_file: {
+                    description: 'The base64 encoded file content',
+                    type: 'string'
+                  }
                 }
-              },
-              required: ['mediaKey']
+              }
             }
           }
         }
@@ -88,16 +89,11 @@ function getSingleMedia(): RequestHandler {
       return null;
     }
 
-    let artifact: IMediaItem = {
-      file_name: '',
-      encoded_file: ''
-    };
-
-    artifact = {
+    const mediaItem: IMediaItem = {
       file_name: req.params.fileName,
       encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
     };
 
-    return res.status(200).json({ artifact: artifact });
+    return res.status(200).json({ artifact: mediaItem });
   };
 }

@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
 
@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 });
 
 export interface IIUCNClassificationProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface IIUCNClassificationProps {
  */
 const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   const {
-    projectWithDetailsData: { iucn }
+    projectForViewData: { iucn }
   } = props;
 
   const classes = useStyles();

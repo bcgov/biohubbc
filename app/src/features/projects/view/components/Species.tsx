@@ -12,11 +12,11 @@ import {
 } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import clsx from 'clsx';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface ISpeciesProps {
-  projectWithDetailsData: IProjectWithDetails;
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 const useStyles = makeStyles({
@@ -36,7 +36,7 @@ const useStyles = makeStyles({
  */
 const Species: React.FC<ISpeciesProps> = (props) => {
   const {
-    projectWithDetailsData: {
+    projectForViewData: {
       species: { focal_species, ancillary_species }
     }
   } = props;

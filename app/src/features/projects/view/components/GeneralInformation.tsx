@@ -3,12 +3,12 @@ import { Edit } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import React from 'react';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
-import { IGetAllCodesResponse } from 'interfaces/useBioHubApi-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IProjectDetailsProps {
-  projectWithDetailsData: IProjectWithDetails;
-  codes: IGetAllCodesResponse;
+  projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -18,7 +18,7 @@ export interface IProjectDetailsProps {
  */
 const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectWithDetailsData: { project },
+    projectForViewData: { project },
     codes
   } = props;
 

@@ -1,10 +1,10 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IProjectWithDetails } from 'interfaces/project-interfaces';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
-export interface ISpeciesProps {
-  projectWithDetailsData: IProjectWithDetails;
+export interface IPartnershipsProps {
+  projectForViewData: IGetProjectForViewResponse;
 }
 
 /**
@@ -12,9 +12,9 @@ export interface ISpeciesProps {
  *
  * @return {*}
  */
-const Partnerships: React.FC<ISpeciesProps> = (props) => {
+const Partnerships: React.FC<IPartnershipsProps> = (props) => {
   const {
-    projectWithDetailsData: {
+    projectForViewData: {
       partnerships: { indigenous_partnerships, stakeholder_partnerships }
     }
   } = props;

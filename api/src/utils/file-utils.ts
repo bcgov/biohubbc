@@ -52,7 +52,7 @@ export async function getFileListFromS3(prefix: string): Promise<ListObjectsOutp
  * Note: Assigns the `authenticated-read` permission.
  *
  * @export
- * @param {MediaBase64} media an object containing information about a single piece of media
+ * @param {Express.Multer.File} file an object containing information about a single piece of media
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */

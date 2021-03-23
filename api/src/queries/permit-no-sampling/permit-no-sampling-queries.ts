@@ -1,9 +1,9 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { IPostPermitNoSampling } from '../models/permit-no-sampling';
-import { PostCoordinatorData } from '../models/project';
-import { getLogger } from '../utils/logger';
+import { IPostPermitNoSampling } from '../../models/permit-no-sampling';
+import { PostCoordinatorData } from '../../models/project';
+import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/permit-no-sampling-queries');
+const defaultLog = getLogger('queries/permit-no-sampling/permit-no-sampling-queries');
 
 /**
  * SQL query to insert a no sample permit row.

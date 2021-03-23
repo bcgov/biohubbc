@@ -1,12 +1,12 @@
 import { render } from '@testing-library/react';
-import { codes } from 'test-helpers/projectCodes';
-import { projectWithDetailsData } from 'test-helpers/projectWithDetailsData';
+import { codes } from 'test-helpers/code-helpers';
 import React from 'react';
 import ProjectDetails from './ProjectDetails';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 describe('ProjectDetails', () => {
   it('renders correctly', () => {
-    projectWithDetailsData.location.geometry.push({
+    getProjectForViewResponse.location.geometry.push({
       id: 'myGeo',
       type: 'Feature',
       geometry: {
@@ -18,7 +18,7 @@ describe('ProjectDetails', () => {
       }
     });
 
-    const { asFragment } = render(<ProjectDetails projectWithDetailsData={projectWithDetailsData} codes={codes} />);
+    const { asFragment } = render(<ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} />);
 
     expect(asFragment()).toMatchSnapshot();
   });
