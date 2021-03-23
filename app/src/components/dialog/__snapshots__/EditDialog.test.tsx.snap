@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ErrorDialog matches the snapshot with no error message 1`] = `
+exports[`EditDialog matches the snapshot with no error message 1`] = `
 <body
   style="padding-right: 0px; overflow: hidden;"
 >

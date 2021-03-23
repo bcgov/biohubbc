@@ -65,21 +65,4 @@ describe('EditDialog', () => {
 
     expect(baseElement).toMatchSnapshot();
   });
-
-  // it('matches the snapshot with an error message', () => {
-  //   const { baseElement } = render(
-  //     <div id="root">
-  //       <EditDialog
-  //         dialogTitle="This is dialog title"
-  //         dialogText="This is dialog text"
-  //         open={true}
-  //         onClose={() => jest.fn()}
-  //         onCancel={() => jest.fn()}
-  //         onSave={() => jest.fn()}
-  //       />
-  //     </div>
-  //   );
-
-  //   expect(baseElement).toMatchSnapshot();
-  // });
 });
