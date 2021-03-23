@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import React from 'react';
 import { Formik } from 'formik';
 
@@ -16,13 +16,6 @@ export interface IEditDialogProps {
    * @memberof IEditDialogProps
    */
   dialogTitle: string;
-  /**
-   * The dialog window body text.
-   *
-   * @type {string}
-   * @memberof IEditDialogProps
-   */
-  dialogText: string;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -82,16 +75,13 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
             aria-labelledby="edit-dialog-title"
             aria-describedby="edit-dialog-description">
             <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-            <DialogContent>
-              {props?.component?.element}
-              <DialogContentText id="edit-dialog-description">{props.dialogText}</DialogContentText>
-            </DialogContent>
+            <DialogContent>{props?.component?.element}</DialogContent>
             <DialogActions>
               <Button onClick={props.onCancel} color="primary">
-                No
+                Cancel
               </Button>
               <Button onClick={formikProps.submitForm} color="primary" autoFocus>
-                Yes
+                Save Changes
               </Button>
             </DialogActions>
           </Dialog>

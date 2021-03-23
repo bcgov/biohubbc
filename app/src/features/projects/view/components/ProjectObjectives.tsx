@@ -40,9 +40,8 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   };
 
   const handleDialogEdit = (values: IProjectObjectivesForm) => {
-    //make put request from here
+    // make put request from here using values and projectId
     setOpenEditDialog(false);
-    alert(JSON.stringify({ values: values, id: projectId }));
     history.push(`/projects/${projectId}/details`);
   };
 
@@ -52,7 +51,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={EditObjectivesI18N.editTitle}
-        dialogText={EditObjectivesI18N.editText}
         open={openEditDialog}
         component={{
           element: <ProjectObjectivesForm />,
