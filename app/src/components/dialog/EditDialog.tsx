@@ -55,7 +55,6 @@ export interface IEditDialogProps {
    * @memberof IEditDialogProps
    */
   onSave: (values: IEditDialogComponentProps) => void;
-  //Add interface for the values
 }
 
 /**
@@ -80,12 +79,12 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
           <Dialog
             open={props.open}
             onClose={props.onClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description">
-            <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+            aria-labelledby="edit-dialog-title"
+            aria-describedby="edit-dialog-description">
+            <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
             <DialogContent>
               {props?.component?.element}
-              <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+              <DialogContentText id="edit-dialog-description">{props.dialogText}</DialogContentText>
             </DialogContent>
             <DialogActions>
               <Button onClick={props.onCancel} color="primary">
