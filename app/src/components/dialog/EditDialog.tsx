@@ -2,11 +2,10 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import React from 'react';
 import { Formik } from 'formik';
 
-export interface IEditDialogComponentProps{
+export interface IEditDialogComponentProps {
   element: any;
   initialValues: any;
   validationSchema: any;
-  onSave: any;
 }
 
 export interface IEditDialogProps {
@@ -67,14 +66,8 @@ export interface IEditDialogProps {
  * @param {*} props
  * @return {*}
  */
-const EditDialog: React.FC<IEditDialogProps> = (props) => {
-
-  // if (!initialValues || !validationSchema){
-
-  // }
-
+export const EditDialog: React.FC<IEditDialogProps> = (props) => {
   return (
-
     <Box>
       <Formik
         initialValues={props.component.initialValues}
@@ -84,27 +77,27 @@ const EditDialog: React.FC<IEditDialogProps> = (props) => {
         onSubmit={(values) => {
           props.onSave(values);
         }}>
-          {(formikProps) => (
-        <Dialog
-          open={props.open}
-          onClose={props.onClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-            {props?.component?.element}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={props.onCancel} color="primary">
-              No
-            </Button>
-            <Button onClick={formikProps.submitForm} color="primary" autoFocus>
-              Yes
-            </Button>
-          </DialogActions>
-        </Dialog>
-          )}
+        {(formikProps) => (
+          <Dialog
+            open={props.open}
+            onClose={props.onClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description">
+            <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+            <DialogContent>
+              {props?.component?.element}
+              <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={props.onCancel} color="primary">
+                No
+              </Button>
+              <Button onClick={formikProps.submitForm} color="primary" autoFocus>
+                Yes
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </Formik>
     </Box>
   );

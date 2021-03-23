@@ -4,20 +4,15 @@ import EditDialog from 'components/dialog/EditDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
 import { EditObjectivesI18N } from 'constants/i18n';
 import ProjectObjectivesForm, {
-  //ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
-//import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
-// import ProjectObjectivesForm from 'features/projects/components/ProjectObjectivesForm';
-//import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 
 export interface IProjectObjectivesProps {
   projectWithDetailsData: IProjectWithDetails;
 }
-
 
 /**
  * Project objectives content for a project.
@@ -32,7 +27,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const history = useHistory();
 
   const openModalEdit = () => {
-    console.log(objectives);
     setOpenEditDialog(true);
   };
 
@@ -45,18 +39,13 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   };
 
   const handleDialogEdit = (values: any) => {
+    //make put request from here
     setOpenEditDialog(false);
-
-    alert(JSON.stringify({values: values, id: id}));
-
-    //this is the logic that is passed to the EditDialog
-    //the values are used for the api call
+    //alert(JSON.stringify({values: values, id: id}));
     history.push(`/projects/${id}/details`);
   };
 
-
   const [openEditDialog, setOpenEditDialog] = useState(false);
-
 
   return (
     <>
@@ -65,10 +54,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         dialogText={EditObjectivesI18N.editText}
         open={openEditDialog}
         component={{
-          element: <ProjectObjectivesForm/>,
+          element: <ProjectObjectivesForm />,
           initialValues: objectives,
-          validationSchema: ProjectObjectivesFormYupSchema,
-          onSave: handleDialogEdit
+          validationSchema: ProjectObjectivesFormYupSchema
         }}
         onClose={handleEditDialogClose}
         onCancel={handleDialogNo}
@@ -81,7 +69,10 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
               <Typography variant="h3">Project Objectives</Typography>
             </Grid>
             <Grid item>
-              <IconButton onClick={openModalEdit} title="Edit Objectives Information" aria-label="Edit Objectives Information">
+              <IconButton
+                onClick={openModalEdit}
+                title="Edit Objectives Information"
+                aria-label="Edit Objectives Information">
                 <Typography variant="caption">
                   <Edit fontSize="inherit" /> EDIT
                 </Typography>
