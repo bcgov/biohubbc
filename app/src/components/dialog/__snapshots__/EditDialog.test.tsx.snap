@@ -100,12 +100,6 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
               </div>
             </div>
           </form>
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-            id="edit-dialog-description"
-          >
-            This is dialog text
-          </p>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
@@ -118,7 +112,7 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
             <span
               class="MuiButton-label"
             >
-              No
+              Cancel
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -132,7 +126,7 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
             <span
               class="MuiButton-label"
             >
-              Yes
+              Save Changes
             </span>
             <span
               class="MuiTouchRipple-root"

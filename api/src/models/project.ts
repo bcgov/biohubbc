@@ -277,7 +277,7 @@ export class GetObjectivesData {
     defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || null;
+    this.caveats = obj?.caveats || '';
   }
 }
 
@@ -292,7 +292,7 @@ export class GetCoordinatorData {
   last_name: string;
   email_address: string;
   coordinator_agency: string;
-  share_contact_details: boolean;
+  share_contact_details: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
@@ -301,7 +301,7 @@ export class GetCoordinatorData {
     this.last_name = obj?.coordinator_last_name || '';
     this.email_address = obj?.coordinator_email_address || '';
     this.coordinator_agency = obj?.coordinator_agency_name || '';
-    this.share_contact_details = (obj?.coordinator_public === 'true' && true) || false;
+    this.share_contact_details = obj?.coordinator_public ? 'true' : 'false';
   }
 }
 

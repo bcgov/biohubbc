@@ -22,7 +22,7 @@ export interface IProjectObjectivesProps {
  */
 const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const {
-    projectForViewData: { objectives, projectId }
+    projectForViewData: { objectives, id }
   } = props;
 
   const history = useHistory();
@@ -40,10 +40,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   };
 
   const handleDialogEdit = (values: IProjectObjectivesForm) => {
-    //make put request from here
+    // make put request from here using values and projectId
     setOpenEditDialog(false);
-    alert(JSON.stringify({ values: values, id: projectId }));
-    history.push(`/projects/${projectId}/details`);
+    history.push(`/projects/${id}/details`);
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -52,7 +51,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     <>
       <EditDialog
         dialogTitle={EditObjectivesI18N.editTitle}
-        dialogText={EditObjectivesI18N.editText}
         open={openEditDialog}
         component={{
           element: <ProjectObjectivesForm />,
