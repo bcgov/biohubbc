@@ -72,6 +72,16 @@ interface IProjectFundingSource {
 }
 
 /**
+ * An interface representing the partnerships for GET
+ *
+ * @interface IProjectPartnerships
+ */
+interface IProjectPartnerships {
+  indigenous_partnerships: string[];
+  stakeholder_partnerships: string[];
+}
+
+/**
  * An interface for a single instance of project metadata, for read-only use cases.
  *
  * @export
@@ -86,6 +96,7 @@ export interface IProjectWithDetails {
   species: IProjectSpeciesForm;
   iucn: IProjectIUCN;
   funding: IProjectFundingSource;
+  partnerships: IProjectPartnerships;
 }
 
 /**
