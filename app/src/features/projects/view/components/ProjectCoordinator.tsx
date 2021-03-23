@@ -23,7 +23,7 @@ export interface IProjectDetailsProps {
  */
 const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectForViewData: { coordinator, projectId }
+    projectForViewData: { coordinator, id }
   } = props;
 
   const history = useHistory();
@@ -67,7 +67,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const handleDialogEdit = (values: IProjectCoordinatorForm) => {
     // make put request from here using values and projectId
     setOpenEditDialog(false);
-    history.push(`/projects/${projectId}/details`);
+    history.push(`/projects/${id}/details`);
   };
 
   if (!codes) {

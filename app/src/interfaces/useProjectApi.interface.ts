@@ -88,7 +88,7 @@ export interface ICreatePermitNoSamplingResponse {
  * @interface IGetProjectForViewResponse
  */
 export interface IGetProjectForViewResponse {
-  projectId: number;
+  id: number;
   project: IGetProjectForViewResponseDetails;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
