@@ -1,10 +1,16 @@
-import { Box, Grid, Typography, IconButton } from '@material-ui/core';
+import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import EditDialog from 'components/dialog/EditDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
 import { EditObjectivesI18N } from 'constants/i18n';
+import ProjectObjectivesForm, {
+  //ProjectObjectivesFormInitialValues,
+  ProjectObjectivesFormYupSchema
+} from 'features/projects/components/ProjectObjectivesForm';
 //import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IProjectWithDetails } from 'interfaces/project-interfaces';
+// import ProjectObjectivesForm from 'features/projects/components/ProjectObjectivesForm';
+//import { Formik } from 'formik';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 
@@ -20,13 +26,13 @@ export interface IProjectObjectivesProps {
  */
 const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const {
-    projectWithDetailsData: { objectives }
+    projectWithDetailsData: { objectives, id }
   } = props;
 
   const history = useHistory();
 
   const openModalEdit = () => {
-    setEditComponent(<Box>Hello</Box>);
+    console.log(objectives);
     setOpenEditDialog(true);
   };
 
@@ -38,15 +44,18 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     setOpenEditDialog(false);
   };
 
-  const handleDialogEdit = () => {
-    history.push('/projects');
+  const handleDialogEdit = (values: any) => {
+    setOpenEditDialog(false);
+
+    alert(JSON.stringify({values: values, id: id}));
+
+    //this is the logic that is passed to the EditDialog
+    //the values are used for the api call
+    history.push(`/projects/${id}/details`);
   };
 
 
-  // Whether or not to show the 'Are you sure you want to cancel' dialog
   const [openEditDialog, setOpenEditDialog] = useState(false);
-
-  const [editComponent, setEditComponent] = useState<any>();
 
 
   return (
@@ -55,7 +64,12 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         dialogTitle={EditObjectivesI18N.editTitle}
         dialogText={EditObjectivesI18N.editText}
         open={openEditDialog}
-        component={editComponent}
+        component={{
+          element: <ProjectObjectivesForm/>,
+          initialValues: objectives,
+          validationSchema: ProjectObjectivesFormYupSchema,
+          onSave: handleDialogEdit
+        }}
         onClose={handleEditDialogClose}
         onCancel={handleDialogNo}
         onSave={handleDialogEdit}

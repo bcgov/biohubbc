@@ -1,5 +1,13 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import React from 'react';
+import { Formik } from 'formik';
+
+export interface IEditDialogComponentProps{
+  element: any;
+  initialValues: any;
+  validationSchema: any;
+  onSave: any;
+}
 
 export interface IEditDialogProps {
   /**
@@ -23,6 +31,13 @@ export interface IEditDialogProps {
    * @memberof IEditDialogProps
    */
   open: boolean;
+
+  /**
+   * @type {IEditDialogComponentProps}
+   * @memberof IEditDialogProps
+   */
+  component: IEditDialogComponentProps;
+
   /**
    * Callback fired if the dialog is closed.
    *
@@ -40,9 +55,9 @@ export interface IEditDialogProps {
    *
    * @memberof IEditDialogProps
    */
-  onSave: () => void;
-
-  component: any;
+  onSave: (values: IEditDialogComponentProps) => void;
+  //TODO
+  //Add interface for the values
 }
 
 /**
@@ -53,27 +68,44 @@ export interface IEditDialogProps {
  * @return {*}
  */
 const EditDialog: React.FC<IEditDialogProps> = (props) => {
+
+  // if (!initialValues || !validationSchema){
+
+  // }
+
   return (
+
     <Box>
-      <Dialog
-        open={props.open}
-        onClose={props.onClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-          {props.component}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.onCancel} color="primary">
-            No
-          </Button>
-          <Button onClick={props.onSave} color="primary" autoFocus>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Formik
+        initialValues={props.component.initialValues}
+        validationSchema={props.component.validationSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={(values) => {
+          props.onSave(values);
+        }}>
+          {(formikProps) => (
+        <Dialog
+          open={props.open}
+          onClose={props.onClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+            {props?.component?.element}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={props.onCancel} color="primary">
+              No
+            </Button>
+            <Button onClick={formikProps.submitForm} color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+          )}
+      </Formik>
     </Box>
   );
 };
