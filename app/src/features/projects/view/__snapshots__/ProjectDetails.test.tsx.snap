@@ -596,7 +596,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-67"
+                    class="MuiBox-root MuiBox-root-65"
                   />
                 </div>
               </div>
@@ -1310,47 +1310,101 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
               <div
-                class="MuiBox-root MuiBox-root-63"
+                class="MuiTableContainer-root"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
+                <table
+                  aria-label="indigenous-partnerships-table"
+                  class="MuiTable-root"
                 >
-                  Indigenous Partnerships
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-64"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  partner 1, partner 2
-                </h6>
+                  <thead
+                    class="MuiTableHead-root"
+                  >
+                    <tr
+                      class="MuiTableRow-root MuiTableRow-head"
+                    >
+                      <th
+                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-64"
+                        scope="col"
+                      >
+                        Indigenous Partnerships
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    class="MuiTableBody-root"
+                  >
+                    <tr
+                      class="MuiTableRow-root"
+                    >
+                      <td
+                        class="MuiTableCell-root MuiTableCell-body"
+                      >
+                        partner 1
+                      </td>
+                    </tr>
+                    <tr
+                      class="MuiTableRow-root"
+                    >
+                      <td
+                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-63"
+                      >
+                        partner 2
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
               <div
-                class="MuiBox-root MuiBox-root-65"
+                class="MuiTableContainer-root"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
+                <table
+                  aria-label="stakeholder-partnerships-table"
+                  class="MuiTable-root"
                 >
-                  Stakeholder Partnerships
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-66"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  partner 3, partner 4
-                </h6>
+                  <thead
+                    class="MuiTableHead-root"
+                  >
+                    <tr
+                      class="MuiTableRow-root MuiTableRow-head"
+                    >
+                      <th
+                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-64"
+                        scope="col"
+                      >
+                        Stakeholder Partnerships
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    class="MuiTableBody-root"
+                  >
+                    <tr
+                      class="MuiTableRow-root"
+                    >
+                      <td
+                        class="MuiTableCell-root MuiTableCell-body"
+                      >
+                        partner 3
+                      </td>
+                    </tr>
+                    <tr
+                      class="MuiTableRow-root"
+                    >
+                      <td
+                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-63"
+                      >
+                        partner 4
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
