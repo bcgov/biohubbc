@@ -14,7 +14,6 @@ export const UploadProjectArtifactsI18N = {
     'An error has occurred while attempting to upload project artifacts, please try again. If the error persists, please contact your system administrator.'
 };
 
-
 export const EditObjectivesI18N = {
   editTitle: 'Edit Project Objectives',
   editText: 'Are you sure you want to save?',

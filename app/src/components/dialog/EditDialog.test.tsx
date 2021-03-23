@@ -14,7 +14,10 @@ export const SampleFormikFormInitialValues: ISampleFormikForm = {
 };
 
 export const SampleFormikFormYupSchema = yup.object().shape({
-  testField: yup.string().max(3000, 'Cannot exceed 3000 characters').required('You must provide a test field for the project')
+  testField: yup
+    .string()
+    .max(3000, 'Cannot exceed 3000 characters')
+    .required('You must provide a test field for the project')
 });
 
 const SampleFormikForm = () => {

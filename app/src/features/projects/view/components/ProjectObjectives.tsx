@@ -41,7 +41,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const handleDialogEdit = (values: any) => {
     //make put request from here
     setOpenEditDialog(false);
-    alert(JSON.stringify({values: values, id: projectId}));
+    alert(JSON.stringify({ values: values, id: projectId }));
     history.push(`/projects/${projectId}/details`);
   };
 
