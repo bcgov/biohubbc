@@ -14,7 +14,7 @@ export const SampleFormikFormInitialValues: ISampleFormikForm = {
 };
 
 export const SampleFormikFormYupSchema = yup.object().shape({
-  testField: yup.string().max(3000, 'Cannot exceed 3000 characters').required('You must a test field for the project')
+  testField: yup.string().max(3000, 'Cannot exceed 3000 characters').required('You must provide a test field for the project')
 });
 
 const SampleFormikForm = () => {
@@ -40,7 +40,7 @@ const SampleFormikForm = () => {
   );
 };
 
-describe('ErrorDialog', () => {
+describe('EditDialog', () => {
   it('matches the snapshot with no error message', () => {
     const { baseElement } = render(
       <div id="root">

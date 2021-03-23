@@ -55,13 +55,12 @@ export interface IEditDialogProps {
    * @memberof IEditDialogProps
    */
   onSave: (values: IEditDialogComponentProps) => void;
-  //TODO
   //Add interface for the values
 }
 
 /**
- * A dialog for displaying a title + message (typically a question), and giving the user the option to say
- * `Yes` or `No`.
+ * A dialog for displaying a component for editing purposes and giving the user the option to say
+ * `Yes`(Save) or `No`.
  *
  * @param {*} props
  * @return {*}
