@@ -4,6 +4,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
 import { EditObjectivesI18N } from 'constants/i18n';
 import ProjectObjectivesForm, {
+  IProjectObjectivesForm,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -38,7 +39,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     setOpenEditDialog(false);
   };
 
-  const handleDialogEdit = (values: any) => {
+  const handleDialogEdit = (values: IProjectObjectivesForm) => {
     //make put request from here
     setOpenEditDialog(false);
     alert(JSON.stringify({ values: values, id: projectId }));
