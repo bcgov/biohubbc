@@ -5,7 +5,6 @@ import { useFormikContext } from 'formik';
 import { TextField } from '@material-ui/core';
 import yup from 'utils/YupSchema';
 
-
 export interface ISampleFormikForm {
   testField: string;
 }
@@ -15,10 +14,7 @@ export const SampleFormikFormInitialValues: ISampleFormikForm = {
 };
 
 export const SampleFormikFormYupSchema = yup.object().shape({
-  testField: yup
-    .string()
-    .max(3000, 'Cannot exceed 3000 characters')
-    .required('You must a test field for the project')
+  testField: yup.string().max(3000, 'Cannot exceed 3000 characters').required('You must a test field for the project')
 });
 
 const SampleFormikForm = () => {
@@ -44,7 +40,6 @@ const SampleFormikForm = () => {
   );
 };
 
-
 describe('ErrorDialog', () => {
   it('matches the snapshot with no error message', () => {
     const { baseElement } = render(
@@ -54,7 +49,7 @@ describe('ErrorDialog', () => {
           dialogText="This is dialog text"
           open={true}
           component={{
-            element: <SampleFormikForm/>,
+            element: <SampleFormikForm />,
             initialValues: SampleFormikFormInitialValues,
             validationSchema: SampleFormikFormYupSchema
           }}
