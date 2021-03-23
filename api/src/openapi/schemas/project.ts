@@ -177,7 +177,13 @@ export const projectCreatePostRequestObject = {
               }
             }
           }
-        },
+        }
+      }
+    },
+    partnerships: {
+      title: 'Project partnerships',
+      type: 'object',
+      properties: {
         indigenous_partnerships: {
           type: 'array',
           items: {

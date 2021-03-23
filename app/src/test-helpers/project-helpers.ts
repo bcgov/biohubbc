@@ -51,5 +51,9 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         end_date: '2021-04-13'
       }
     ]
+  },
+  partnerships: {
+    indigenous_partnerships: ['partner 1', 'partner 2'],
+    stakeholder_partnerships: ['partner 3', 'partner 4']
   }
 };

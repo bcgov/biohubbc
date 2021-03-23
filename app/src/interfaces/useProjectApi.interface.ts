@@ -96,6 +96,7 @@ export interface IGetProjectForViewResponse {
   species: IGetProjectForViewResponseSpecies;
   iucn: IGetProjectForViewResponseIUCN;
   funding: IGetProjectForViewResponseFundingSource;
+  partnerships: IGetProjectForViewResponsePartnerships;
 }
 
 export interface IGetProjectForViewResponseDetails {
@@ -153,6 +154,11 @@ export interface IGetProjectForViewResponseFundingSource {
 export interface IGetProjectForViewResponseSpecies {
   focal_species: string[];
   ancillary_species: string[];
+}
+
+export interface IGetProjectForViewResponsePartnerships {
+  indigenous_partnerships: string[];
+  stakeholder_partnerships: string[];
 }
 
 /**

@@ -3,6 +3,7 @@ import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
+import Partnerships from 'features/projects/view/components/Partnerships';
 import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -30,14 +31,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Box>
       <Box mb={3}>
         <Paper>
-          <ProjectObjectives projectForViewData={projectForViewData}></ProjectObjectives>
+          <ProjectObjectives projectForViewData={projectForViewData} />
         </Paper>
       </Box>
 
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <GeneralInformation projectForViewData={projectForViewData} codes={codes}></GeneralInformation>
+            <GeneralInformation projectForViewData={projectForViewData} codes={codes} />
           </Box>
         </Paper>
       </Box>
@@ -45,7 +46,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <LocationBoundary projectForViewData={projectForViewData}></LocationBoundary>
+            <LocationBoundary projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>
@@ -53,7 +54,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <Species projectForViewData={projectForViewData}></Species>
+            <Species projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>
@@ -61,7 +62,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <ProjectCoordinator projectForViewData={projectForViewData}></ProjectCoordinator>
+            <ProjectCoordinator projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>
@@ -69,7 +70,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <IUCNClassification projectForViewData={projectForViewData}></IUCNClassification>
+            <IUCNClassification projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>
@@ -77,7 +78,15 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <FundingSource projectForViewData={projectForViewData}></FundingSource>
+            <FundingSource projectForViewData={projectForViewData} />
+          </Box>
+        </Paper>
+      </Box>
+
+      <Box mb={4}>
+        <Paper>
+          <Box m={3}>
+            <Partnerships projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>
