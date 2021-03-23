@@ -2,6 +2,10 @@ import { render, fireEvent, getAllByText } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
+
+const history = createMemoryHistory();
 
 describe('ProjectObjectives', () => {
   const longData =
@@ -18,19 +22,25 @@ describe('ProjectObjectives', () => {
     'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
-    const { asFragment } = render(<ProjectObjectives projectForViewData={getProjectForViewResponse} />);
+    const { asFragment } = render(
+      <Router history={history}>
+        <ProjectObjectives projectForViewData={getProjectForViewResponse} />
+      </Router>
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('renders correctly when objectives length is > 850 characters and caveats is empty', () => {
     const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
-        }}
-      />
+      <Router history={history}>
+        <ProjectObjectives
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
+          }}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -38,12 +48,14 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when both objectives and caveats have length is > 850 characters', () => {
     const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
-        }}
-      />
+      <Router history={history}>
+        <ProjectObjectives
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          }}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -54,16 +66,18 @@ describe('ProjectObjectives', () => {
     const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: {
-            ...getProjectForViewResponse.objectives,
-            objectives: multilineObjectives,
-            caveats: multilineCaveats
-          }
-        }}
-      />
+      <Router history={history}>
+        <ProjectObjectives
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            objectives: {
+              ...getProjectForViewResponse.objectives,
+              objectives: multilineObjectives,
+              caveats: multilineCaveats
+            }
+          }}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -71,16 +85,18 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when objectives and caveats are long and in multiple paragraphs', () => {
     const { asFragment } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: {
-            ...getProjectForViewResponse.objectives,
-            objectives: longData,
-            caveats: longData
-          }
-        }}
-      />
+      <Router history={history}>
+        <ProjectObjectives
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            objectives: {
+              ...getProjectForViewResponse.objectives,
+              objectives: longData,
+              caveats: longData
+            }
+          }}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -88,12 +104,14 @@ describe('ProjectObjectives', () => {
 
   it('functions as expected with the read more and read less buttons', () => {
     const { container } = render(
-      <ProjectObjectives
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
-        }}
-      />
+      <Router history={history}>
+        <ProjectObjectives
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          }}
+        />
+      </Router>
     );
 
     // for finding 'project objectives'
