@@ -1,8 +1,13 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor, fireEvent } from '@testing-library/react';
 import LocationBoundary from './LocationBoundary';
 import { Feature } from 'geojson';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
+import { codes } from 'test-helpers/code-helpers';
+
+const history = createMemoryHistory();
 
 describe('LocationBoundary', () => {
   test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', () => {
@@ -29,12 +34,15 @@ describe('LocationBoundary', () => {
     ];
 
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-      />
+      <Router history={history}>
+        <LocationBoundary
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            location: { ...getProjectForViewResponse.location, geometry }
+          }}
+          codes={codes}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -57,12 +65,15 @@ describe('LocationBoundary', () => {
     ];
 
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-      />
+      <Router history={history}>
+        <LocationBoundary
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            location: { ...getProjectForViewResponse.location, geometry }
+          }}
+          codes={codes}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -96,12 +107,15 @@ describe('LocationBoundary', () => {
     ];
 
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-      />
+      <Router history={history}>
+        <LocationBoundary
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            location: { ...getProjectForViewResponse.location, geometry }
+          }}
+          codes={codes}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -129,14 +143,53 @@ describe('LocationBoundary', () => {
     ];
 
     const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-      />
+      <Router history={history}>
+        <LocationBoundary
+          projectForViewData={{
+            ...getProjectForViewResponse,
+            location: { ...getProjectForViewResponse.location, geometry }
+          }}
+          codes={codes}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('editing the location boundary works in the dialog', async () => {
+    const { getByText } = render(
+      <Router history={history}>
+        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(getByText('Location / Project Boundary')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Location / Project Boundary')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+    });
   });
 });
