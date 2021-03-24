@@ -80,11 +80,11 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
                   id="testfield"
-                  name="testfield"
+                  name="testField"
                   required=""
                   rows="4"
                 >
-                  [object Object]
+                  this is a test
                 </textarea>
                 <fieldset
                   aria-hidden="true"
