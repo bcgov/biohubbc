@@ -211,15 +211,6 @@ export const projectViewGetResponseObject = {
 };
 
 /**
- * Request object for project update GET request
- */
-export const projectUpdateGetRequestObject = {
-  title: 'Project get request object, for update purposes',
-  type: 'object',
-  properties: {}
-};
-
-/**
  * Response object for project update GET request
  */
 export const projectUpdateGetResponseObject = {
