@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { CustomError } from '../errors/CustomError';
-import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project';
+import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
@@ -118,73 +118,99 @@ function createProject(): RequestHandler {
 
         projectId = projectResult.id;
 
+        const promises: Promise<any>[] = [];
+
         // Handle focal species
-        await Promise.all(
-          sanitizedProjectPostData.species.focal_species.map((focalSpecies: string) =>
-            insertFocalSpecies(focalSpecies, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.species.focal_species.map((focalSpecies: string) =>
+              insertFocalSpecies(focalSpecies, projectId, connection)
+            )
           )
         );
 
         // Handle ancillary species
-        await Promise.all(
-          sanitizedProjectPostData.species.ancillary_species.map((ancillarySpecies: string) =>
-            insertAncillarySpecies(ancillarySpecies, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpecies: string) =>
+              insertAncillarySpecies(ancillarySpecies, projectId, connection)
+            )
           )
         );
 
         // Handle regions
-        await Promise.all(
-          sanitizedProjectPostData.location.regions.map((region: string) => insertRegion(region, projectId, connection))
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.location.regions.map((region: string) =>
+              insertRegion(region, projectId, connection)
+            )
+          )
         );
 
         // Handle funding agencies
-        await Promise.all(
-          sanitizedProjectPostData.funding.funding_agencies.map((fundingSource: PostFundingSource) =>
-            insertFundingSource(fundingSource, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.funding.funding_agencies.map((fundingSource: PostFundingSource) =>
+              insertFundingSource(fundingSource, projectId, connection)
+            )
           )
         );
 
         // Handle indigenous partners
-        await Promise.all(
-          sanitizedProjectPostData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
-            insertIndigenousNation(indigenousNationId, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
+              insertIndigenousNation(indigenousNationId, projectId, connection)
+            )
           )
         );
 
         // Handle stakeholder partners
-        await Promise.all(
-          sanitizedProjectPostData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
-            insertStakeholderPartnership(stakeholderPartner, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
+              insertStakeholderPartnership(stakeholderPartner, projectId, connection)
+            )
           )
         );
 
         // Handle project permits
-        await Promise.all(
-          sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
-            insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
+              insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+            )
           )
         );
 
         // Handle project IUCN classifications
-        await Promise.all(
-          sanitizedProjectPostData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
-            insertClassificationDetail(classificationDetail.subClassification2, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
+              insertClassificationDetail(classificationDetail.subClassification2, projectId, connection)
+            )
           )
         );
 
         // Handle project activities
-        await Promise.all(
-          sanitizedProjectPostData.project.project_activities.map((activityId: number) =>
-            insertProjectActivity(activityId, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.project.project_activities.map((activityId: number) =>
+              insertProjectActivity(activityId, projectId, connection)
+            )
           )
         );
 
         // Handle project climate change initiatives
-        await Promise.all(
-          sanitizedProjectPostData.project.climate_change_initiatives.map((climateChangeInitiativeId: number) =>
-            insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.project.climate_change_initiatives.map((climateChangeInitiativeId: number) =>
+              insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
+            )
           )
         );
+
+        await Promise.all(promises);
 
         await connection.commit();
       } catch (error) {

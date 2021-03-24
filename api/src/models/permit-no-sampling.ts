@@ -1,7 +1,7 @@
 import { getLogger } from '../utils/logger';
-import { PostCoordinatorData } from './project';
+import { PostCoordinatorData } from './project-create';
 
-const defaultLog = getLogger('models/project');
+const defaultLog = getLogger('models/permit-no-sampling');
 
 /**
  * Processes POST /permit-no-sampling request data when no sampling is conducted.
