@@ -37,10 +37,6 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
     history.push(`/projects/${id}/details`);
   };
 
-  const changeEditDialogState = (newState: boolean) => {
-    setOpenEditDialog(newState);
-  };
-
   return (
     <>
       <EditDialog
@@ -59,8 +55,8 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
           initialValues: coordinator,
           validationSchema: ProjectCoordinatorYupSchema
         }}
-        onClose={() => changeEditDialogState(false)}
-        onCancel={() => changeEditDialogState(false)}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEdit}
       />
       <Grid container spacing={3}>
@@ -70,7 +66,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
           </Grid>
           <Grid item>
             <IconButton
-              onClick={() => changeEditDialogState(true)}
+              onClick={() => setOpenEditDialog(true)}
               title="Edit Project Coordinator Information"
               aria-label="Edit Project Coordinator Information">
               <Typography variant="caption">
