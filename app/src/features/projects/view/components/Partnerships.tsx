@@ -1,7 +1,29 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
+import {
+  Grid,
+  IconButton,
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
+import clsx from 'clsx';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+
+const useStyles = makeStyles({
+  tableCellBorderBottom: {
+    borderBottom: 'none'
+  },
+  tableHeading: {
+    fontWeight: 'bold',
+    borderBottom: 'none'
+  }
+});
 
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -19,9 +41,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     }
   } = props;
 
-  const indigenous_partnerships_names = (indigenous_partnerships?.length && indigenous_partnerships.join(', ')) || '';
-  const stakeholder_partnerships_names =
-    (stakeholder_partnerships?.length && stakeholder_partnerships.join(', ')) || '';
+  const classes = useStyles();
 
   return (
     <>
@@ -39,21 +59,55 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
           </Grid>
         </Grid>
         <Grid container item spacing={3} xs={12}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Indigenous Partnerships</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{indigenous_partnerships_names}</Typography>
-            </Box>
+          <Grid item xs={12}>
+            <TableContainer>
+              <Table aria-label="indigenous-partnerships-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.tableHeading}>Indigenous Partnerships</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell
+                          className={clsx(
+                            index === indigenous_partnerships.length - 1 && classes.tableCellBorderBottom
+                          )}>
+                          {indigenousPartnership}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Stakeholder Partnerships</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{stakeholder_partnerships_names}</Typography>
-            </Box>
+          <Grid item xs={12}>
+            <TableContainer>
+              <Table aria-label="stakeholder-partnerships-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.tableHeading}>Stakeholder Partnerships</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
+                    return (
+                      <TableRow key={index}>
+                        <TableCell
+                          className={clsx(
+                            index === stakeholder_partnerships.length - 1 && classes.tableCellBorderBottom
+                          )}>
+                          {stakeholderPartnership}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </Grid>
         </Grid>
       </Grid>

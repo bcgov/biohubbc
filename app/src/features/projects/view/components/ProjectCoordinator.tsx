@@ -1,10 +1,20 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import React from 'react';
+import React, { useState } from 'react';
+import EditDialog from 'components/dialog/EditDialog';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IProjectCoordinatorForm,
+  ProjectCoordinatorYupSchema
+} from 'features/projects/components/ProjectCoordinatorForm';
+import { useHistory } from 'react-router';
+import { EditCoordinatorI18N } from 'constants/i18n';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -14,17 +24,44 @@ export interface IProjectDetailsProps {
  */
 const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectForViewData: { coordinator }
+    projectForViewData: { coordinator, id },
+    codes
   } = props;
+
+  const history = useHistory();
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleDialogEdit = (values: IProjectCoordinatorForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
+
   return (
     <>
+      <EditDialog
+        dialogTitle={EditCoordinatorI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
+          initialValues: coordinator,
+          validationSchema: ProjectCoordinatorYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEdit}
+      />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">Project Coordinator</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit Project Coordinator" aria-label="Edit Project Coordinator">
+            <IconButton
+              onClick={() => setOpenEditDialog(true)}
+              title="Edit Project Coordinator Information"
+              aria-label="Edit Project Coordinator Information">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>

@@ -22,15 +22,15 @@ export class GetProjectData {
   constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
     defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
 
-    this.project_name = projectData?.name || null;
-    this.project_type = projectData?.pt_id || null;
-    this.project_type_name = projectData?.pt_name || null;
+    this.project_name = projectData?.name || '';
+    this.project_type = projectData?.pt_id || '';
+    this.project_type_name = projectData?.pt_name || '';
     this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
     this.climate_change_initiatives =
       (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
-    this.start_date = projectData?.start_date || null;
-    this.end_date = projectData?.end_date || null;
-    this.comments = projectData?.comments || null;
+    this.start_date = projectData?.start_date || '';
+    this.end_date = projectData?.end_date || '';
+    this.comments = projectData?.comments || '';
   }
 }
 
@@ -48,7 +48,7 @@ export class GetObjectivesData {
     defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || null;
+    this.caveats = obj?.caveats || '';
   }
 }
 
@@ -63,7 +63,7 @@ export class GetCoordinatorData {
   last_name: string;
   email_address: string;
   coordinator_agency: string;
-  share_contact_details: boolean;
+  share_contact_details: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
@@ -72,7 +72,7 @@ export class GetCoordinatorData {
     this.last_name = obj?.coordinator_last_name || '';
     this.email_address = obj?.coordinator_email_address || '';
     this.coordinator_agency = obj?.coordinator_agency_name || '';
-    this.share_contact_details = (obj?.coordinator_public === 'true' && true) || false;
+    this.share_contact_details = obj?.coordinator_public ? 'true' : 'false';
   }
 }
 

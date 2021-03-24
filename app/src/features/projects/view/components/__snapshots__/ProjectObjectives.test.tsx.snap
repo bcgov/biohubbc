@@ -1,9 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters 1`] = `
+exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-11"
+    class="MuiBox-root MuiBox-root-13"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-14"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -62,10 +65,10 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-12"
+            class="MuiBox-root MuiBox-root-15"
           >
             <div
-              class="MuiBox-root MuiBox-root-13"
+              class="MuiBox-root MuiBox-root-16"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -162,10 +165,10 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-14"
+            class="MuiBox-root MuiBox-root-17"
           >
             <div
-              class="MuiBox-root MuiBox-root-15"
+              class="MuiBox-root MuiBox-root-18"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -250,150 +253,10 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-16"
-  >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Objectives
-          </h3>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <button
-            aria-label="Edit Objectives Information"
-            class="MuiButtonBase-root MuiIconButton-root"
-            tabindex="0"
-            title="Edit Objectives Information"
-            type="button"
-          >
-            <span
-              class="MuiIconButton-label"
-            >
-              <span
-                class="MuiTypography-root MuiTypography-caption"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                  />
-                </svg>
-                 EDIT
-              </span>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-17"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-18"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph1
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph2
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph3
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Caveats
-          </h3>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-19"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-20"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph1
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph2
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph3
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`ProjectObjectives renders correctly when objectives and caveats are long and in multiple paragraphs 1`] = `
-<DocumentFragment>
+    class="MuiBox-root MuiBox-root-19"
+  />
   <div
-    class="MuiBox-root MuiBox-root-21"
+    class="MuiBox-root MuiBox-root-20"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -452,83 +315,31 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are lon
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-22"
+            class="MuiBox-root MuiBox-root-21"
           >
             <div
-              class="MuiBox-root MuiBox-root-23"
+              class="MuiBox-root MuiBox-root-22"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+                Paragraph1
               </p>
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+                Paragraph2
               </p>
               <p />
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Cras dapibus. Vivamus elementum
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 nisi.
+                Paragraph3
               </p>
             </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Read More
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
           </div>
         </div>
       </div>
@@ -552,83 +363,31 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are lon
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-24"
+            class="MuiBox-root MuiBox-root-23"
           >
             <div
-              class="MuiBox-root MuiBox-root-25"
+              class="MuiBox-root MuiBox-root-24"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+                Paragraph1
               </p>
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+                Paragraph2
               </p>
               <p />
               <p
                 class="MuiTypography-root MuiTypography-body1"
                 style="word-break: break-all;"
               >
-                Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Cras dapibus. Vivamus elementum
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 nisi.
+                Paragraph3
               </p>
             </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Read More
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
           </div>
         </div>
       </div>
@@ -641,6 +400,9 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-2"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -699,10 +461,10 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-2"
+            class="MuiBox-root MuiBox-root-3"
           >
             <div
-              class="MuiBox-root MuiBox-root-3"
+              class="MuiBox-root MuiBox-root-4"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -734,10 +496,10 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-4"
+            class="MuiBox-root MuiBox-root-5"
           >
             <div
-              class="MuiBox-root MuiBox-root-5"
+              class="MuiBox-root MuiBox-root-6"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -757,7 +519,10 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
 exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-7"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-8"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -816,10 +581,10 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-7"
+            class="MuiBox-root MuiBox-root-9"
           >
             <div
-              class="MuiBox-root MuiBox-root-8"
+              class="MuiBox-root MuiBox-root-10"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -916,10 +681,10 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-11"
           >
             <div
-              class="MuiBox-root MuiBox-root-10"
+              class="MuiBox-root MuiBox-root-12"
             >
               <p />
             </div>

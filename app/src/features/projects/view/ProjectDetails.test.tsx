@@ -1,8 +1,12 @@
 import { render } from '@testing-library/react';
-import { codes } from 'test-helpers/code-helpers';
+import { createMemoryHistory } from 'history';
 import React from 'react';
-import ProjectDetails from './ProjectDetails';
+import { Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import ProjectDetails from './ProjectDetails';
+
+const history = createMemoryHistory();
 
 describe('ProjectDetails', () => {
   it('renders correctly', () => {
@@ -18,7 +22,11 @@ describe('ProjectDetails', () => {
       }
     });
 
-    const { asFragment } = render(<ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} />);
+    const { asFragment } = render(
+      <Router history={history}>
+        <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} />
+      </Router>
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });

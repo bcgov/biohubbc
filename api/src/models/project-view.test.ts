@@ -1,6 +1,13 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetFundingData, GetIUCNClassificationData, GetPartnershipsData, GetSpeciesData } from './project-view';
+import {
+  GetCoordinatorData,
+  GetFundingData,
+  GetIUCNClassificationData,
+  GetObjectivesData,
+  GetPartnershipsData,
+  GetSpeciesData
+} from './project-view';
 
 describe('GetSpeciesData', () => {
   describe('No values provided', () => {
@@ -225,6 +232,111 @@ describe('GetFundingData', () => {
 
     it('sets funding agencies', function () {
       expect(fundingData.fundingAgencies).to.eql(fundingDataObj);
+    });
+  });
+});
+
+describe('GetObjectivesData', () => {
+  describe('No values provided', () => {
+    let projectObjectivesData: GetObjectivesData;
+
+    before(() => {
+      projectObjectivesData = new GetObjectivesData(null);
+    });
+
+    it('sets objectives', function () {
+      expect(projectObjectivesData.objectives).to.equal('');
+    });
+
+    it('sets caveats', function () {
+      expect(projectObjectivesData.caveats).to.equal('');
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectObjectivesData: GetObjectivesData;
+
+    const obj = {
+      objectives: 'these are the project objectives',
+      caveats: 'these are some interesting caveats'
+    };
+
+    before(() => {
+      projectObjectivesData = new GetObjectivesData(obj);
+    });
+
+    it('sets objectives', function () {
+      expect(projectObjectivesData.objectives).to.equal(obj.objectives);
+    });
+
+    it('sets caveats', function () {
+      expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
+describe('GetCoordinatorData', () => {
+  describe('No values provided', () => {
+    let projectCoordinatorData: GetCoordinatorData;
+
+    before(() => {
+      projectCoordinatorData = new GetCoordinatorData(null);
+    });
+
+    it('sets first_name', function () {
+      expect(projectCoordinatorData.first_name).to.equal('');
+    });
+
+    it('sets last_name', function () {
+      expect(projectCoordinatorData.last_name).to.equal('');
+    });
+
+    it('sets email_address', function () {
+      expect(projectCoordinatorData.email_address).to.equal('');
+    });
+
+    it('sets coordinator_agency', function () {
+      expect(projectCoordinatorData.coordinator_agency).to.equal('');
+    });
+
+    it('sets share_contact_details', function () {
+      expect(projectCoordinatorData.share_contact_details).to.equal('false');
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectCoordinatorData: GetCoordinatorData;
+
+    const obj = {
+      coordinator_first_name: 'first',
+      coordinator_last_name: 'last',
+      coordinator_email_address: 'email@example.com',
+      coordinator_agency_name: 'agency',
+      coordinator_public: true
+    };
+
+    before(() => {
+      projectCoordinatorData = new GetCoordinatorData(obj);
+    });
+
+    it('sets first_name', function () {
+      expect(projectCoordinatorData.first_name).to.equal(obj.coordinator_first_name);
+    });
+
+    it('sets last_name', function () {
+      expect(projectCoordinatorData.last_name).to.equal(obj.coordinator_last_name);
+    });
+
+    it('sets email_address', function () {
+      expect(projectCoordinatorData.email_address).to.equal(obj.coordinator_email_address);
+    });
+
+    it('sets coordinator_agency', function () {
+      expect(projectCoordinatorData.coordinator_agency).to.equal(obj.coordinator_agency_name);
+    });
+
+    it('sets share_contact_details', function () {
+      expect(projectCoordinatorData.share_contact_details).to.equal('true');
     });
   });
 });

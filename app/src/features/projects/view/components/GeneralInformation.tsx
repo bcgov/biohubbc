@@ -1,10 +1,15 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDateRangeString } from 'utils/Utils';
-import React from 'react';
+import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import React, { useState } from 'react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { useHistory } from 'react-router';
+import { IProjectDetailsForm, ProjectDetailsFormYupSchema } from 'features/projects/components/ProjectDetailsForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditGeneralInformationI18N } from 'constants/i18n';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -18,9 +23,25 @@ export interface IProjectDetailsProps {
  */
 const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectForViewData: { project },
+    projectForViewData: { project, id },
     codes
   } = props;
+
+  const formattedProject = {
+    ...project,
+    start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, project.start_date),
+    end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, project.end_date)
+  };
+
+  const history = useHistory();
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleDialogEdit = (values: IProjectDetailsForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
 
   const projectActivities =
     codes?.activity
@@ -36,13 +57,28 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
 
   return (
     <>
+      <EditDialog
+        dialogTitle={EditGeneralInformationI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
+          initialValues: formattedProject,
+          validationSchema: ProjectDetailsFormYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEdit}
+      />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">General Information</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit General Information" aria-label="Edit General Information">
+            <IconButton
+              onClick={() => setOpenEditDialog(true)}
+              title="Edit General Information"
+              aria-label="Edit General Information">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>
