@@ -233,15 +233,15 @@ export class GetProjectData {
   constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
     defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
 
-    this.project_name = projectData?.name || null;
-    this.project_type = projectData?.pt_id || null;
-    this.project_type_name = projectData?.pt_name || null;
+    this.project_name = projectData?.name || '';
+    this.project_type = projectData?.pt_id || '';
+    this.project_type_name = projectData?.pt_name || '';
     this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
     this.climate_change_initiatives =
       (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
-    this.start_date = projectData?.start_date || null;
-    this.end_date = projectData?.end_date || null;
-    this.comments = projectData?.comments || null;
+    this.start_date = projectData?.start_date || '';
+    this.end_date = projectData?.end_date || '';
+    this.comments = projectData?.comments || '';
   }
 }
 

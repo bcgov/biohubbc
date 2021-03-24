@@ -1,6 +1,6 @@
-import { Box, CircularProgress, Grid, IconButton, Typography } from '@material-ui/core';
+import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import ProjectCoordinatorForm, {
@@ -10,10 +10,10 @@ import ProjectCoordinatorForm, {
 import { useHistory } from 'react-router';
 import { EditCoordinatorI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -23,46 +23,13 @@ export interface IProjectDetailsProps {
  */
 const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
   const {
-    projectForViewData: { coordinator, id }
+    projectForViewData: { coordinator, id },
+    codes
   } = props;
 
   const history = useHistory();
-  const biohubApi = useBiohubApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-
-  // Get code sets
-  useEffect(() => {
-    const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
-
-      if (response) {
-        setCodes(() => {
-          setIsLoadingCodes(false);
-          return response;
-        });
-      }
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getAllCodeSets();
-      setIsLoadingCodes(true);
-    }
-  }, [biohubApi, isLoadingCodes, codes]);
-
-  const openModalEdit = () => {
-    setOpenEditDialog(true);
-  };
-
-  const handleEditDialogClose = () => {
-    setOpenEditDialog(false);
-  };
-
-  const handleDialogNo = () => {
-    setOpenEditDialog(false);
-  };
 
   const handleDialogEdit = (values: IProjectCoordinatorForm) => {
     // make put request from here using values and projectId
@@ -70,9 +37,9 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
     history.push(`/projects/${id}/details`);
   };
 
-  if (!codes) {
-    return <CircularProgress />;
-  }
+  const changeEditDialogState = (newState: boolean) => {
+    setOpenEditDialog(newState);
+  };
 
   return (
     <>
@@ -83,7 +50,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
           element: (
             <ProjectCoordinatorForm
               coordinator_agency={
-                codes?.coordinator_agency?.map((item) => {
+                codes?.coordinator_agency?.map((item: any) => {
                   return item.name;
                 }) || []
               }
@@ -92,8 +59,8 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
           initialValues: coordinator,
           validationSchema: ProjectCoordinatorYupSchema
         }}
-        onClose={handleEditDialogClose}
-        onCancel={handleDialogNo}
+        onClose={() => changeEditDialogState(false)}
+        onCancel={() => changeEditDialogState(false)}
         onSave={handleDialogEdit}
       />
       <Grid container spacing={3}>
@@ -103,7 +70,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
           </Grid>
           <Grid item>
             <IconButton
-              onClick={openModalEdit}
+              onClick={() => changeEditDialogState(true)}
               title="Edit Project Coordinator Information"
               aria-label="Edit Project Coordinator Information">
               <Typography variant="caption">

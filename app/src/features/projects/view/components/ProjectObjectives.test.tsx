@@ -1,4 +1,4 @@
-import { render, fireEvent, getAllByText } from '@testing-library/react';
+import { render, fireEvent, getAllByText, waitFor } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
@@ -6,6 +6,14 @@ import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 
 const history = createMemoryHistory();
+
+const renderContainer = () => {
+  return render(
+    <Router history={history}>
+      <ProjectObjectives projectForViewData={getProjectForViewResponse} />
+    </Router>
+  );
+};
 
 describe('ProjectObjectives', () => {
   const longData =
@@ -22,11 +30,7 @@ describe('ProjectObjectives', () => {
     'sit amet adipiscing sem neque sed ipsum. N\n\n';
 
   it('renders correctly when objectives length is <= 850 characters', () => {
-    const { asFragment } = render(
-      <Router history={history}>
-        <ProjectObjectives projectForViewData={getProjectForViewResponse} />
-      </Router>
-    );
+    const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -46,7 +50,7 @@ describe('ProjectObjectives', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when both objectives and caveats have length is > 850 characters', () => {
+  it('renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs', () => {
     const { asFragment } = render(
       <Router history={history}>
         <ProjectObjectives
@@ -74,25 +78,6 @@ describe('ProjectObjectives', () => {
               ...getProjectForViewResponse.objectives,
               objectives: multilineObjectives,
               caveats: multilineCaveats
-            }
-          }}
-        />
-      </Router>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders correctly when objectives and caveats are long and in multiple paragraphs', () => {
-    const { asFragment } = render(
-      <Router history={history}>
-        <ProjectObjectives
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            objectives: {
-              ...getProjectForViewResponse.objectives,
-              objectives: longData,
-              caveats: longData
             }
           }}
         />
@@ -145,5 +130,37 @@ describe('ProjectObjectives', () => {
 
     //@ts-ignore
     expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
+  });
+
+  it('editing the project objectives works in the dialog', async () => {
+    const { getByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+    });
   });
 });
