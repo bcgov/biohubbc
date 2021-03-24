@@ -76,8 +76,6 @@ initialize({
       defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
     }
 
-    console.log(error);
-    console.log(Object.keys(error));
     res.status(error.status || 500).json(error);
   }
 });
