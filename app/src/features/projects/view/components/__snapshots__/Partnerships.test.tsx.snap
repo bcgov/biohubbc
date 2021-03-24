@@ -3,6 +3,9 @@
 exports[`Partnerships renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <div
+    class="MuiBox-root MuiBox-root-3"
+  />
+  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -21,10 +24,10 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit Species Information"
+          aria-label="Edit Partnerships"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit Species Information"
+          title="Edit Partnerships"
           type="button"
         >
           <span
@@ -123,6 +126,9 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
 exports[`Partnerships renders correctly with existing species values 1`] = `
 <DocumentFragment>
   <div
+    class="MuiBox-root MuiBox-root-9"
+  />
+  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -141,10 +147,10 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit Species Information"
+          aria-label="Edit Partnerships"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit Species Information"
+          title="Edit Partnerships"
           type="button"
         >
           <span
@@ -192,7 +198,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-8"
                   scope="col"
                 >
                   Indigenous Partnerships
@@ -215,7 +221,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root"
               >
                 <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-5"
+                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-7"
                 >
                   partner 2
                 </td>
@@ -241,7 +247,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-8"
                   scope="col"
                 >
                   Stakeholder Partnerships
@@ -264,7 +270,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root"
               >
                 <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-5"
+                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-7"
                 >
                   partner 4
                 </td>
@@ -280,6 +286,9 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
 
 exports[`Partnerships renders correctly with invalid null values 1`] = `
 <DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-6"
+  />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
@@ -299,10 +308,10 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit Species Information"
+          aria-label="Edit Partnerships"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit Species Information"
+          title="Edit Partnerships"
           type="button"
         >
           <span
@@ -350,7 +359,7 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-4"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-5"
                   scope="col"
                 >
                   Indigenous Partnerships
@@ -380,7 +389,7 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-4"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-5"
                   scope="col"
                 >
                   Stakeholder Partnerships

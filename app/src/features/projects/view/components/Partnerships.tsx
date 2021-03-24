@@ -13,7 +13,16 @@ import {
 import { Edit } from '@material-ui/icons';
 import clsx from 'clsx';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import {
+  IProjectPartnershipsForm,
+  ProjectPartnershipsFormYupSchema
+} from 'features/projects/components/ProjectPartnershipsForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditPartnershipsI18N } from 'constants/i18n';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 const useStyles = makeStyles({
   tableCellBorderBottom: {
@@ -27,6 +36,7 @@ const useStyles = makeStyles({
 
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -36,22 +46,46 @@ export interface IPartnershipsProps {
  */
 const Partnerships: React.FC<IPartnershipsProps> = (props) => {
   const {
-    projectForViewData: {
-      partnerships: { indigenous_partnerships, stakeholder_partnerships }
-    }
+    projectForViewData: { partnerships, id },
+    codes
   } = props;
 
   const classes = useStyles();
 
+  const history = useHistory();
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleDialogEdit = (values: IProjectPartnershipsForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
+
   return (
     <>
+      <EditDialog
+        dialogTitle={EditPartnershipsI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
+          initialValues: partnerships,
+          validationSchema: ProjectPartnershipsFormYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEdit}
+      />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">Partnerships</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit Species Information" aria-label="Edit Species Information">
+            <IconButton
+              onClick={() => setOpenEditDialog(true)}
+              title="Edit Partnerships"
+              aria-label="Edit Partnerships">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>
@@ -68,12 +102,13 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+                  {partnerships.indigenous_partnership_strings?.map((indigenousPartnership: string, index: number) => {
                     return (
                       <TableRow key={index}>
                         <TableCell
                           className={clsx(
-                            index === indigenous_partnerships.length - 1 && classes.tableCellBorderBottom
+                            index === partnerships.indigenous_partnership_strings.length - 1 &&
+                              classes.tableCellBorderBottom
                           )}>
                           {indigenousPartnership}
                         </TableCell>
@@ -93,12 +128,12 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
+                  {partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
                     return (
                       <TableRow key={index}>
                         <TableCell
                           className={clsx(
-                            index === stakeholder_partnerships.length - 1 && classes.tableCellBorderBottom
+                            index === partnerships.stakeholder_partnerships.length - 1 && classes.tableCellBorderBottom
                           )}>
                           {stakeholderPartnership}
                         </TableCell>

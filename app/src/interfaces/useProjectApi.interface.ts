@@ -157,7 +157,8 @@ export interface IGetProjectForViewResponseSpecies {
 }
 
 export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: string[];
+  indigenous_partnerships: number[];
+  indigenous_partnership_strings: string[];
   stakeholder_partnerships: string[];
 }
 

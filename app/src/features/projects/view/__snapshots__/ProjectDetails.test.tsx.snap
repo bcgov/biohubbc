@@ -738,7 +738,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-67"
+                    class="MuiBox-root MuiBox-root-68"
                   />
                 </div>
               </div>
@@ -1263,6 +1263,9 @@ exports[`ProjectDetails renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-64"
       >
         <div
+          class="MuiBox-root MuiBox-root-67"
+        />
+        <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
         >
           <div
@@ -1281,10 +1284,10 @@ exports[`ProjectDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item"
             >
               <button
-                aria-label="Edit Species Information"
+                aria-label="Edit Partnerships"
                 class="MuiButtonBase-root MuiIconButton-root"
                 tabindex="0"
-                title="Edit Species Information"
+                title="Edit Partnerships"
                 type="button"
               >
                 <span

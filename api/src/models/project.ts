@@ -568,7 +568,8 @@ export class GetFundingData {
  * @class GetPartnershipsData
  */
 export class GetPartnershipsData {
-  indigenous_partnerships: string[];
+  indigenous_partnerships: number[];
+  indigenous_partnership_strings: string[];
   stakeholder_partnerships: string[];
 
   constructor(indigenous_partnerships?: any[], stakeholder_partnerships?: any[]) {
@@ -580,6 +581,8 @@ export class GetPartnershipsData {
     });
 
     this.indigenous_partnerships =
+      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
+    this.indigenous_partnership_strings =
       (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.name)) || [];
     this.stakeholder_partnerships =
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.name)) || [];
