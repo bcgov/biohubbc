@@ -18,32 +18,32 @@ import { ArrowBack } from '@material-ui/icons';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { CreateProjectI18N } from 'constants/i18n';
-import ProjectCoordinatorForm, {
+import {
   IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
-import ProjectDetailsForm, {
+import {
   IProjectDetailsForm,
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from 'features/projects/components/ProjectDetailsForm';
-import ProjectFundingForm, {
+import {
   IProjectFundingForm,
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
-import ProjectIUCNForm, {
+import {
   IProjectIUCNForm,
   ProjectIUCNFormInitialValues,
   ProjectIUCNFormYupSchema
 } from 'features/projects/components/ProjectIUCNForm';
-import ProjectLocationForm, {
+import {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
-import ProjectObjectivesForm, {
+import {
   IProjectObjectivesForm,
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
@@ -53,12 +53,12 @@ import ProjectPermitForm, {
   ProjectPermitFormInitialValues,
   ProjectPermitFormYupSchema
 } from 'features/projects/components/ProjectPermitForm';
-import ProjectSpeciesForm, {
+import {
   IProjectSpeciesForm,
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
-import ProjectPartnershipsForm, {
+import {
   IProjectPartnershipsForm,
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
@@ -69,6 +69,7 @@ import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interface
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -185,15 +186,7 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'Project Coordinator',
         stepSubTitle: 'Enter contact details for the project coordinator',
-        stepContent: (
-          <ProjectCoordinatorForm
-            coordinator_agency={
-              codes?.coordinator_agency?.map((item) => {
-                return item.name;
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
         stepValues: ProjectCoordinatorInitialValues,
         stepValidation: ProjectCoordinatorYupSchema
       },
@@ -217,127 +210,49 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'General Information',
         stepSubTitle: 'General information and details about this project',
-        stepContent: (
-          <ProjectDetailsForm
-            project_type={
-              codes?.project_type?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            activity={
-              codes?.activity?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            climate_change_initiative={
-              codes?.climate_change_initiative?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
         stepValues: ProjectDetailsFormInitialValues,
         stepValidation: ProjectDetailsFormYupSchema
       },
       {
         stepTitle: 'Objectives',
         stepSubTitle: 'Enter the objectives and potential caveats for this project',
-        stepContent: <ProjectObjectivesForm />,
+        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
         stepValues: ProjectObjectivesFormInitialValues,
         stepValidation: ProjectObjectivesFormYupSchema
       },
       {
         stepTitle: 'Location',
         stepSubTitle: 'Specify project regions and boundary information',
-        stepContent: (
-          <ProjectLocationForm
-            region={
-              codes?.region?.map((item) => {
-                return { value: item.name, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
         stepValues: ProjectLocationFormInitialValues,
         stepValidation: ProjectLocationFormYupSchema
       },
       {
         stepTitle: 'Species',
         stepSubTitle: 'Information about species this project is inventorying or monitoring',
-        stepContent: (
-          <ProjectSpeciesForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.name, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
         stepValues: ProjectSpeciesFormInitialValues,
         stepValidation: ProjectSpeciesFormYupSchema
       },
       {
         stepTitle: 'IUCN Classification',
         stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
-        stepContent: (
-          <ProjectIUCNForm
-            classifications={
-              codes?.iucn_conservation_action_level_1_classification?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            subClassifications1={
-              codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
-                return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
-              }) || []
-            }
-            subClassifications2={
-              codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
-                return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
         stepValues: ProjectIUCNFormInitialValues,
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding',
         stepSubTitle: 'Specify funding sources for the project',
-        stepContent: (
-          <ProjectFundingForm
-            funding_sources={
-              codes?.funding_source?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            investment_action_category={
-              codes?.investment_action_category?.map((item) => {
-                return { value: item.id, fs_id: item.fs_id, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
         stepValues: ProjectFundingFormInitialValues,
         stepValidation: ProjectFundingFormYupSchema
       },
       {
         stepTitle: 'Partnerships',
         stepSubTitle: 'Specify partnerships for the project',
-        stepContent: (
-          <ProjectPartnershipsForm
-            first_nations={
-              codes?.first_nations?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            stakeholder_partnerships={
-              codes?.funding_source?.map((item) => {
-                return { value: item.name, label: item.name };
-              }) || []
-            }
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
         stepValues: ProjectPartnershipsFormInitialValues,
         stepValidation: ProjectPartnershipsFormYupSchema
       }

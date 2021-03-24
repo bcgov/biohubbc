@@ -46,6 +46,14 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
+            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} />
+          </Box>
+        </Paper>
+      </Box>
+
+      <Box mb={4}>
+        <Paper>
+          <Box m={3}>
             <LocationBoundary projectForViewData={projectForViewData} />
           </Box>
         </Paper>
@@ -55,14 +63,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Paper>
           <Box m={3}>
             <Species projectForViewData={projectForViewData} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <ProjectCoordinator projectForViewData={projectForViewData} />
           </Box>
         </Paper>
       </Box>

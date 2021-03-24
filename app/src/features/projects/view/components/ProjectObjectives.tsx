@@ -27,17 +27,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
 
   const history = useHistory();
 
-  const openModalEdit = () => {
-    setOpenEditDialog(true);
-  };
-
-  const handleEditDialogClose = () => {
-    setOpenEditDialog(false);
-  };
-
-  const handleDialogNo = () => {
-    setOpenEditDialog(false);
-  };
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   const handleDialogEdit = (values: IProjectObjectivesForm) => {
     // make put request from here using values and projectId
@@ -45,8 +35,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     //history.push(`/projects/${id}/details`);
     console.log(id + ' ' + history.location.pathname);
   };
-
-  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   return (
     <>
@@ -58,8 +46,8 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
           initialValues: objectives,
           validationSchema: ProjectObjectivesFormYupSchema
         }}
-        onClose={handleEditDialogClose}
-        onCancel={handleDialogNo}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEdit}
       />
       <Box m={3}>
@@ -70,7 +58,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             </Grid>
             <Grid item>
               <IconButton
-                onClick={openModalEdit}
+                onClick={() => setOpenEditDialog(true)}
                 title="Edit Objectives Information"
                 aria-label="Edit Objectives Information">
                 <Typography variant="caption">
