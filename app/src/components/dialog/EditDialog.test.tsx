@@ -43,11 +43,12 @@ const handleOnSave = jest.fn();
 const handleOnCancel = jest.fn();
 const handleOnClose = jest.fn();
 
-const renderContainer = (testFieldValue: string) => {
+const renderContainer = (testFieldValue: string, dialogError?: string) => {
   return render(
     <div id="root">
       <EditDialog
         dialogTitle="This is dialog title"
+        dialogError={dialogError || undefined}
         open={true}
         component={{
           element: <SampleFormikForm />,
@@ -86,6 +87,12 @@ describe('EditDialog', () => {
         testField: 'updated value'
       });
     });
+  });
+
+  it('matches snapshot with error message', () => {
+    const { baseElement } = renderContainer('this is a test', 'This is an error');
+
+    expect(baseElement).toMatchSnapshot();
   });
 
   it('calls the onCancel prop when `Cancel` button is clicked', async () => {

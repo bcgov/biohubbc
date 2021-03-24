@@ -31,6 +31,11 @@ export interface IEditDialogProps {
   component: IEditDialogComponentProps;
 
   /**
+   * error message to display when the error exists
+   */
+  dialogError?: string;
+
+  /**
    * Callback fired if the dialog is closed.
    *
    * @memberof IEditDialogProps
@@ -84,6 +89,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
                 Save Changes
               </Button>
             </DialogActions>
+            {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
           </Dialog>
         )}
       </Formik>
