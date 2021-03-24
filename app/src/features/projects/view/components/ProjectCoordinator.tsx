@@ -3,13 +3,14 @@ import { Edit } from '@material-ui/icons';
 import React, { useState } from 'react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import ProjectCoordinatorForm, {
+import {
   IProjectCoordinatorForm,
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import { useHistory } from 'react-router';
 import { EditCoordinatorI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -43,15 +44,7 @@ const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
         dialogTitle={EditCoordinatorI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: (
-            <ProjectCoordinatorForm
-              coordinator_agency={
-                codes?.coordinator_agency?.map((item: any) => {
-                  return item.name;
-                }) || []
-              }
-            />
-          ),
+          element: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
           initialValues: coordinator,
           validationSchema: ProjectCoordinatorYupSchema
         }}

@@ -6,12 +6,10 @@ import React, { useState } from 'react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useHistory } from 'react-router';
-import ProjectDetailsForm, {
-  IProjectDetailsForm,
-  ProjectDetailsFormYupSchema
-} from 'features/projects/components/ProjectDetailsForm';
+import { IProjectDetailsForm, ProjectDetailsFormYupSchema } from 'features/projects/components/ProjectDetailsForm';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditGeneralInformationI18N } from 'constants/i18n';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -63,25 +61,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
         dialogTitle={EditGeneralInformationI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: (
-            <ProjectDetailsForm
-              project_type={
-                codes?.project_type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              activity={
-                codes?.activity?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              climate_change_initiative={
-                codes?.climate_change_initiative?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          ),
+          element: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
           initialValues: formattedProject,
           validationSchema: ProjectDetailsFormYupSchema
         }}
