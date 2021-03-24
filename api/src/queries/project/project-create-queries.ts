@@ -6,7 +6,7 @@ import {
   PostProjectData,
   PostObjectivesData,
   PostProjectObject
-} from '../../models/project';
+} from '../../models/project-create';
 import { getLogger } from '../../utils/logger';
 import { Feature } from 'geojson';
 

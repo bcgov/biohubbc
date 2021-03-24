@@ -6,7 +6,7 @@ import {
   PostLocationData,
   PostObjectivesData,
   PostProjectData
-} from '../../models/project';
+} from '../../models/project-create';
 import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,

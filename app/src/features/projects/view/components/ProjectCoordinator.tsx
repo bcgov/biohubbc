@@ -12,7 +12,7 @@ import { EditCoordinatorI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
-export interface IProjectDetailsProps {
+export interface IProjectCoordinatorProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
 }
@@ -22,7 +22,7 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const ProjectCoordinator: React.FC<IProjectDetailsProps> = (props) => {
+const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
   const {
     projectForViewData: { coordinator, id },
     codes

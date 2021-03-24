@@ -1,14 +1,21 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useState } from 'react';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { v4 as uuidv4 } from 'uuid';
 import bbox from '@turf/bbox';
+import { useHistory } from 'react-router';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { IProjectLocationForm, ProjectLocationFormYupSchema } from 'features/projects/components/ProjectLocationForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditLocationBoundaryI18N } from 'constants/i18n';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
-export interface IProjectDetailsProps {
+export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -16,10 +23,21 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const LocationBoundary: React.FC<IProjectDetailsProps> = (props) => {
+const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const {
-    projectForViewData: { location }
+    projectForViewData: { location, id },
+    codes
   } = props;
+
+  const history = useHistory();
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleDialogEdit = (values: IProjectLocationForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
 
   /*
     Leaflet does not know how to draw Multipolygons or GeometryCollections
@@ -84,15 +102,32 @@ const LocationBoundary: React.FC<IProjectDetailsProps> = (props) => {
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);
 
+  const formattedLocation = { ...location, geometry: geometryCollection };
+
   return (
     <>
+      <EditDialog
+        dialogTitle={EditLocationBoundaryI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
+          initialValues: formattedLocation,
+          validationSchema: ProjectLocationFormYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEdit}
+      />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">Location / Project Boundary</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit Location Information" aria-label="Edit Location Information">
+            <IconButton
+              onClick={() => setOpenEditDialog(true)}
+              title="Edit Location / Project Boundary"
+              aria-label="Edit Location / Project Boundary">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>

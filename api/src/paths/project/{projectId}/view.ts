@@ -12,7 +12,7 @@ import {
   GetPartnershipsData,
   GetProjectData,
   GetSpeciesData
-} from '../../../models/project';
+} from '../../../models/project-view';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
