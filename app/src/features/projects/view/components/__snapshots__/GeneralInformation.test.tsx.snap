@@ -142,7 +142,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            activity code
+            Activity code
           </h6>
         </div>
       </div>
@@ -164,7 +164,7 @@ exports[`GeneralInformation renders correctly 1`] = `
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
           >
-            climate code
+            Climate code
           </h6>
         </div>
       </div>

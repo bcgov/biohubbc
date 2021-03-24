@@ -12,6 +12,7 @@ import {
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
 import { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from 'features/projects/components/ProjectIUCNForm';
+import { ProjectLocationFormInitialValues, ProjectLocationFormYupSchema } from 'features/projects/components/ProjectLocationForm';
 import {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
@@ -133,6 +134,21 @@ describe('ProjectStepComponents', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => <ProjectStepComponents component="ProjectPartnerships" codes={codes} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project location', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectLocationFormInitialValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => <ProjectStepComponents component="ProjectLocation" codes={codes} />}
       </Formik>
     );
 
