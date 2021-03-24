@@ -59,10 +59,10 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
               class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
             >
               <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                data-shrink="false"
-                for="testField"
-                id="testField-label"
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                data-shrink="true"
+                for="testfield"
+                id="testfield-label"
               >
                 Test Field
                 <span
@@ -79,17 +79,19 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
                 <textarea
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                  id="testField"
-                  name="testField"
+                  id="testfield"
+                  name="testfield"
                   required=""
                   rows="4"
-                />
+                >
+                  [object Object]
+                </textarea>
                 <fieldset
                   aria-hidden="true"
                   class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-4"
+                    class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
                   >
                     <span>
                       Test Field

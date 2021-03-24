@@ -42,7 +42,8 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const handleDialogEdit = (values: IProjectObjectivesForm) => {
     // make put request from here using values and projectId
     setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+    //history.push(`/projects/${id}/details`);
+    console.log(id + " " + history.location.pathname);
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
