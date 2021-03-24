@@ -102,6 +102,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);
 
+  const formattedLocation = { ...location, geometry: geometryCollection };
+
   return (
     <>
       <EditDialog
@@ -109,7 +111,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         open={openEditDialog}
         component={{
           element: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
-          initialValues: location,
+          initialValues: formattedLocation,
           validationSchema: ProjectLocationFormYupSchema
         }}
         onClose={() => setOpenEditDialog(false)}

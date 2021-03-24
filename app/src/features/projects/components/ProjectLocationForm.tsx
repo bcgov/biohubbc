@@ -60,6 +60,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   useEffect(() => {
     setIsLoading(false);
 
+    console.log(values.geometry);
+
     /*
       If no geometries, we do not need to set bounds
 
