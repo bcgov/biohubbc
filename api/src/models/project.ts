@@ -410,7 +410,7 @@ export class GetLocationData {
       regionsData: regionsData
     });
 
-    this.location_description = (projectData && projectData.location_description) || null;
+    this.location_description = (projectData && projectData.location_description) || '';
     this.regions =
       (regionsData &&
         regionsData.map((item: any) => {
