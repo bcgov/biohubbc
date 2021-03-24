@@ -8,7 +8,7 @@ export const codes: IGetAllCodeSetsResponse = {
   funding_source: [],
   investment_action_category: [],
   activity: [{ id: 1, name: 'activity code' }],
-  project_type: [],
+  project_type: [{ id: 1, name: 'project type' }],
   region: [],
   species: [],
   iucn_conservation_action_level_1_classification: [],

@@ -1,7 +1,7 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import React, { useState } from 'react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -28,6 +28,12 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     projectForViewData: { project, id },
     codes
   } = props;
+
+  const formattedProject = {
+    ...project,
+    start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, project.start_date),
+    end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, project.end_date)
+  };
 
   const history = useHistory();
 
@@ -76,7 +82,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
               }
             />
           ),
-          initialValues: project,
+          initialValues: formattedProject,
           validationSchema: ProjectDetailsFormYupSchema
         }}
         onClose={() => setOpenEditDialog(false)}
