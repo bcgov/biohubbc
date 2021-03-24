@@ -12,7 +12,10 @@ import {
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
 import { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from 'features/projects/components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues, ProjectLocationFormYupSchema } from 'features/projects/components/ProjectLocationForm';
+import {
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
 import {
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
