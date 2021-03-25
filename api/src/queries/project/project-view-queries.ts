@@ -411,7 +411,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   const sqlStatement = SQL`
     SELECT
-      fn.id,
       fn.name
     FROM
       project_first_nation pfn
@@ -422,7 +421,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     WHERE
       pfn.p_id = ${projectId}
     GROUP BY
-      fn.id,
       fn.name;
   `;
 
