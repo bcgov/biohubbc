@@ -12,7 +12,7 @@ import {
   GetPartnershipsData,
   GetProjectData,
   GetSpeciesData
-} from '../../../models/project';
+} from '../../../models/project-view';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
@@ -23,9 +23,9 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectSQL,
-  getRegionsByProjectSQL,
-  getStakeholderPartnershipsByProjectSQL
+  getRegionsByProjectSQL
 } from '../../../queries/project/project-view-queries';
+import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 

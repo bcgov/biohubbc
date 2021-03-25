@@ -31,6 +31,11 @@ export interface IEditDialogProps {
   component: IEditDialogComponentProps;
 
   /**
+   * error message to display when the error exists
+   */
+  dialogError?: string;
+
+  /**
    * Callback fired if the dialog is closed.
    *
    * @memberof IEditDialogProps
@@ -62,6 +67,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
     <Box>
       <Formik
         initialValues={props.component.initialValues}
+        enableReinitialize={true}
         validationSchema={props.component.validationSchema}
         validateOnBlur={true}
         validateOnChange={false}
@@ -75,7 +81,9 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
             aria-labelledby="edit-dialog-title"
             aria-describedby="edit-dialog-description">
             <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-            <DialogContent>{props?.component?.element}</DialogContent>
+            <DialogContent>
+              <Box py={2}>{props.component.element}</Box>
+            </DialogContent>
             <DialogActions>
               <Button onClick={props.onCancel} color="primary">
                 Cancel
@@ -84,6 +92,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
                 Save Changes
               </Button>
             </DialogActions>
+            {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
           </Dialog>
         )}
       </Formik>

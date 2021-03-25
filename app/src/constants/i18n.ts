@@ -14,6 +14,13 @@ export const UploadProjectArtifactsI18N = {
     'An error has occurred while attempting to upload project artifacts, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditPartnershipsI18N = {
+  editTitle: 'Edit Partnerships',
+  createErrorTitle: 'Error Editing Partnerships',
+  createErrorText:
+    'An error has occurred while attempting to edit your partnerships, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditObjectivesI18N = {
   editTitle: 'Edit Project Objectives',
   createErrorTitle: 'Error Editing Project Objectives',
@@ -26,4 +33,18 @@ export const EditCoordinatorI18N = {
   createErrorTitle: 'Error Editing Project Coordinator',
   createErrorText:
     'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditGeneralInformationI18N = {
+  editTitle: 'Edit General Information',
+  createErrorTitle: 'Error Editing General Information',
+  createErrorText:
+    'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditLocationBoundaryI18N = {
+  editTitle: 'Edit Location / Project Boundary',
+  createErrorTitle: 'Error Editing Location / Project Boundary',
+  createErrorText:
+    'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
 };
