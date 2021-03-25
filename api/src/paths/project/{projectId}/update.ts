@@ -12,9 +12,9 @@ import {
 import {
   getCoordinatorByProjectSQL,
   putProjectSQL,
-  getIndigenousPartnershipsByProjectSQL,
-  getStakeholderPartnershipsByProjectSQL
+  getIndigenousPartnershipsByProjectSQL
 } from '../../../queries/project/project-update-queries';
+import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 
@@ -203,8 +203,8 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   const responseIndigenous = await connection.query(sqlStatementIndigenous.text, sqlStatementIndigenous.values);
   const responseStakeholder = await connection.query(sqlStatementStakeholder.text, sqlStatementStakeholder.values);
 
-  const resultIndigenous = (responseIndigenous && responseIndigenous.rows && responseIndigenous.rows[0]) || null;
-  const resultStakeholder = (responseStakeholder && responseStakeholder.rows && responseStakeholder.rows[0]) || null;
+  const resultIndigenous = (responseIndigenous && responseIndigenous.rows) || null;
+  const resultStakeholder = (responseStakeholder && responseStakeholder.rows) || null;
 
   if (!resultIndigenous) {
     throw new CustomError(400, 'Failed to get indigenous partnership data');
@@ -215,12 +215,8 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   }
 
   return {
-    indigenous_partnerships: resultIndigenous?.length
-      ? resultIndigenous.map((item: any) => item.id)
-      : [resultIndigenous.id],
-    stakeholder_partnerships: resultStakeholder?.length
-      ? resultStakeholder.map((item: any) => item.name)
-      : [resultStakeholder.name]
+    indigenous_partnerships: resultIndigenous?.length && resultIndigenous.map((item: any) => item.id),
+    stakeholder_partnerships: resultStakeholder?.length && resultStakeholder.map((item: any) => item.name)
   };
 };
 

@@ -10,9 +10,9 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getProjectListSQL,
   getProjectSQL,
-  getRegionsByProjectSQL,
-  getStakeholderPartnershipsByProjectSQL
+  getRegionsByProjectSQL
 } from './project-view-queries';
+import { getStakeholderPartnershipsByProjectSQL } from './project-view-update-queries';
 
 describe('getProjectSQL', () => {
   describe('Null project id param provided', () => {
