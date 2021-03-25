@@ -495,7 +495,7 @@ const CreateProjectPage: React.FC = () => {
               <Typography variant="h2" className={classes.stepTitle}>
                 {stepForms[index].stepTitle}
               </Typography>
-              <Typography variant="subtitle2">{stepForms[index].stepSubTitle}</Typography>
+              <Typography variant="subtitle1">{stepForms[index].stepSubTitle}</Typography>
             </Box>
           </StepLabel>
           <StepContent>
