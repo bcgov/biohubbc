@@ -14,6 +14,13 @@ export const UploadProjectArtifactsI18N = {
     'An error has occurred while attempting to upload project artifacts, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditPartnershipsI18N = {
+  editTitle: 'Edit Partnerships',
+  createErrorTitle: 'Error Editing Partnerships',
+  createErrorText:
+    'An error has occurred while attempting to edit your partnerships, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditObjectivesI18N = {
   editTitle: 'Edit Project Objectives',
   createErrorTitle: 'Error Editing Project Objectives',

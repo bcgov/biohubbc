@@ -68,3 +68,28 @@ export class PutCoordinatorData {
     this.revision_count = obj?.revision_count || null;
   }
 }
+
+/**
+ * Pre-processes GET /projects/{id} partnerships data for editing purposes
+ *
+ * @export
+ * @class GetPartnershipsData
+ */
+export class GetPartnershipsData {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+
+  constructor(indigenous_partnerships?: any[], stakeholder_partnerships?: any[]) {
+    defaultLog.debug({
+      label: 'GetPartnershipsData',
+      message: 'params',
+      indigenous_partnerships,
+      stakeholder_partnerships
+    });
+
+    this.indigenous_partnerships =
+      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
+    this.stakeholder_partnerships =
+      (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.name)) || [];
+  }
+}
