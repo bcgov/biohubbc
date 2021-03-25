@@ -55,7 +55,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     const { data } = await axios.get(`api/project/${projectId}/update`, {
       params: { entity: entities },
       paramsSerializer: (params) => {
-        console.log(qs.stringify(params));
         return qs.stringify(params);
       }
     });

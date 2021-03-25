@@ -741,7 +741,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-68"
+                    class="MuiBox-root MuiBox-root-70"
                   />
                 </div>
               </div>
@@ -1266,7 +1266,10 @@ exports[`ProjectDetails renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-65"
       >
         <div
-          class="MuiBox-root MuiBox-root-67"
+          class="MuiBox-root MuiBox-root-68"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-69"
         />
         <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"

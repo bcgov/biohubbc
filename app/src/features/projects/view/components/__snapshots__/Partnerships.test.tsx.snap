@@ -6,6 +6,9 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
     class="MuiBox-root MuiBox-root-3"
   />
   <div
+    class="MuiBox-root MuiBox-root-4"
+  />
+  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -123,10 +126,13 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Partnerships renders correctly with existing species values 1`] = `
+exports[`Partnerships renders correctly with existing partnership values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-9"
+    class="MuiBox-root MuiBox-root-11"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-12"
   />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -198,7 +204,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-8"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-10"
                   scope="col"
                 >
                   Indigenous Partnerships
@@ -221,7 +227,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root"
               >
                 <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-7"
+                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-9"
                 >
                   partner 2
                 </td>
@@ -247,7 +253,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-8"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-10"
                   scope="col"
                 >
                   Stakeholder Partnerships
@@ -270,7 +276,7 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
                 class="MuiTableRow-root"
               >
                 <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-7"
+                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-9"
                 >
                   partner 4
                 </td>
@@ -287,7 +293,10 @@ exports[`Partnerships renders correctly with existing species values 1`] = `
 exports[`Partnerships renders correctly with invalid null values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-7"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-8"
   />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -359,7 +368,7 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-5"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
                   scope="col"
                 >
                   Indigenous Partnerships
@@ -389,7 +398,7 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
                 class="MuiTableRow-root MuiTableRow-head"
               >
                 <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-5"
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
                   scope="col"
                 >
                   Stakeholder Partnerships

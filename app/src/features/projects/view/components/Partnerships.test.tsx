@@ -1,14 +1,35 @@
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import Partnerships from './Partnerships';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { codes } from 'test-helpers/code-helpers';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 const history = createMemoryHistory();
 
+jest.mock('../../../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  project: {
+    getProjectForUpdate: jest.fn<Promise<object>, []>()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
+
 describe('Partnerships', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().project.getProjectForUpdate.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
       <Router history={history}>
@@ -16,7 +37,6 @@ describe('Partnerships', () => {
           projectForViewData={{
             ...getProjectForViewResponse,
             partnerships: {
-              indigenous_partnership_strings: [],
               indigenous_partnerships: [],
               stakeholder_partnerships: []
             }
@@ -36,8 +56,7 @@ describe('Partnerships', () => {
           projectForViewData={{
             ...getProjectForViewResponse,
             partnerships: {
-              indigenous_partnerships: (null as unknown) as number[],
-              indigenous_partnership_strings: (null as unknown) as string[],
+              indigenous_partnerships: (null as unknown) as string[],
               stakeholder_partnerships: (null as unknown) as string[]
             }
           }}
@@ -49,7 +68,7 @@ describe('Partnerships', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with existing species values', () => {
+  it('renders correctly with existing partnership values', () => {
     const { asFragment } = render(
       <Router history={history}>
         <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
@@ -60,6 +79,13 @@ describe('Partnerships', () => {
   });
 
   it('editing the partnerships works in the dialog', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      partnerships: {
+        indigenous_partnerships: [1, 2],
+        stakeholder_partnerships: ['partner 1', 'partner 2']
+      }
+    });
+
     const { getByText } = render(
       <Router history={history}>
         <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
