@@ -107,7 +107,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                       Project Coordinator
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Enter contact details for the project coordinator
                     </h6>
@@ -172,7 +172,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                       Permits
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Enter permits associated with this project
                     </h6>
@@ -572,7 +572,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Project Coordinator
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Enter contact details for the project coordinator
                     </h6>
@@ -1076,7 +1076,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Permits
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Enter permits associated with this project
                     </h6>
@@ -1142,7 +1142,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       General Information
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       General information and details about this project
                     </h6>
@@ -1208,7 +1208,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Objectives
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Enter the objectives and potential caveats for this project
                     </h6>
@@ -1274,7 +1274,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Location
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Specify project regions and boundary information
                     </h6>
@@ -1340,7 +1340,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Species
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Information about species this project is inventorying or monitoring
                     </h6>
@@ -1406,7 +1406,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       IUCN Classification
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Lorem ipsum dolor sit amet, consectur whatever whatever
                     </h6>
@@ -1472,7 +1472,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Funding
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Specify funding sources for the project
                     </h6>
@@ -1538,7 +1538,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       Partnerships
                     </h2>
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle2"
+                      class="MuiTypography-root MuiTypography-subtitle1"
                     >
                       Specify partnerships for the project
                     </h6>

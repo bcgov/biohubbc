@@ -86,7 +86,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <Partnerships projectForViewData={projectForViewData} />
+            <Partnerships projectForViewData={projectForViewData} codes={codes} />
           </Box>
         </Paper>
       </Box>

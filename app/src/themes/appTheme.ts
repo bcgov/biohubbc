@@ -23,15 +23,9 @@ const appTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
-    fontSize: 16
+    fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(',')
   },
   overrides: {
-    MuiButton: {
-      root: {
-        textTransform: 'none'
-      }
-    },
     MuiTypography: {
       // https://material-ui.com/api/typography/
       h1: {
@@ -47,6 +41,15 @@ const appTheme = createMuiTheme({
       h3: {
         fontSize: '1.25rem',
         fontWeight: 700
+      },
+      h6: {
+        letterSpacing: '-0.01rem',
+        fontWeight: 700
+      }
+    },
+    MuiButton: {
+      root: {
+        textTransform: 'none'
       }
     },
     MuiCircularProgress: {
@@ -66,6 +69,16 @@ const appTheme = createMuiTheme({
       root: {
         maxWidth: 'xl',
         margin: 'auto'
+      }
+    },
+    MuiDialogTitle: {
+      root: {
+        padding: '20px 24px'
+      }
+    },
+    MuiDialogActions: {
+      root: {
+        padding: '20px 24px'
       }
     },
     MuiFormLabel: {

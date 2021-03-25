@@ -50,32 +50,23 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
         <div
           class="MuiDialogContent-root"
         >
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-            id="alert-dialog-description"
-          >
-            Enter Funding Source Details
-          </p>
-          <div
+          <fieldset
             class="MuiBox-root MuiBox-root-1"
           >
+            <legend
+              class="MuiFormLabel-root"
+              id="agency_details"
+            >
+              Agency Details
+            </legend>
             <div
               class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Agency Details
-                </h3>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
                 <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root"
                   style="width: 100%;"
                 >
                   <label
@@ -184,15 +175,19 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                   </div>
                 </div>
               </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Funding Details
-                </h3>
-              </div>
+            </div>
+          </fieldset>
+          <fieldset
+            class="MuiBox-root MuiBox-root-6"
+          >
+            <legend
+              class="MuiFormLabel-root"
+            >
+              Funding Details
+            </legend>
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
@@ -358,27 +353,21 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 </div>
               </div>
             </div>
+          </fieldset>
+          <div
+            class="MuiBox-root MuiBox-root-7"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
           </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Cancel
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            aria-label="Add Funding Source"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -399,6 +388,20 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 />
               </span>
             </span>
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Cancel
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </button>
         </div>
       </div>
@@ -461,32 +464,23 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
         <div
           class="MuiDialogContent-root"
         >
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-            id="alert-dialog-description"
+          <fieldset
+            class="MuiBox-root MuiBox-root-8"
           >
-            Enter Funding Source Details
-          </p>
-          <div
-            class="MuiBox-root MuiBox-root-6"
-          >
+            <legend
+              class="MuiFormLabel-root"
+              id="agency_details"
+            >
+              Agency Details
+            </legend>
             <div
               class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Agency Details
-                </h3>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
                 <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root"
                   style="width: 100%;"
                 >
                   <label
@@ -537,10 +531,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                       >
                         <span>
                           Agency Name
@@ -608,10 +602,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                       >
                         <span>
                           Investment Action
@@ -651,10 +645,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                       >
                         <span>
                           Agency Project ID
@@ -664,15 +658,19 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   </div>
                 </div>
               </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Funding Details
-                </h3>
-              </div>
+            </div>
+          </fieldset>
+          <fieldset
+            class="MuiBox-root MuiBox-root-13"
+          >
+            <legend
+              class="MuiFormLabel-root"
+            >
+              Funding Details
+            </legend>
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
@@ -717,10 +715,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                        class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                       >
                         <span>
                           Funding Amount
@@ -771,10 +769,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                          class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                         >
                           <span>
                             Start Date
@@ -822,10 +820,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                          class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                         >
                           <span>
                             End Date
@@ -838,27 +836,21 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 </div>
               </div>
             </div>
+          </fieldset>
+          <div
+            class="MuiBox-root MuiBox-root-14"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
           </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Cancel
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            aria-label="Add Funding Source"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -879,6 +871,20 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 />
               </span>
             </span>
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Cancel
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </button>
         </div>
       </div>
@@ -941,32 +947,23 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
         <div
           class="MuiDialogContent-root"
         >
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-            id="alert-dialog-description"
+          <fieldset
+            class="MuiBox-root MuiBox-root-15"
           >
-            Enter Funding Source Details
-          </p>
-          <div
-            class="MuiBox-root MuiBox-root-11"
-          >
+            <legend
+              class="MuiFormLabel-root"
+              id="agency_details"
+            >
+              Agency Details
+            </legend>
             <div
               class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Agency Details
-                </h3>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
                 <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root"
                   style="width: 100%;"
                 >
                   <label
@@ -1017,10 +1014,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                       >
                         <span>
                           Agency Name
@@ -1088,10 +1085,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                       >
                         <span>
                           Investment Category
@@ -1131,10 +1128,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                       >
                         <span>
                           Agency Project ID
@@ -1144,15 +1141,19 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   </div>
                 </div>
               </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Funding Details
-                </h3>
-              </div>
+            </div>
+          </fieldset>
+          <fieldset
+            class="MuiBox-root MuiBox-root-20"
+          >
+            <legend
+              class="MuiFormLabel-root"
+            >
+              Funding Details
+            </legend>
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
@@ -1197,10 +1198,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                        class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                       >
                         <span>
                           Funding Amount
@@ -1251,10 +1252,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                          class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                         >
                           <span>
                             Start Date
@@ -1302,10 +1303,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                          class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                         >
                           <span>
                             End Date
@@ -1318,27 +1319,21 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 </div>
               </div>
             </div>
+          </fieldset>
+          <div
+            class="MuiBox-root MuiBox-root-21"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
           </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Cancel
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            aria-label="Add Funding Source"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -1359,6 +1354,20 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 />
               </span>
             </span>
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Cancel
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </button>
         </div>
       </div>
@@ -1421,32 +1430,23 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
         <div
           class="MuiDialogContent-root"
         >
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-            id="alert-dialog-description"
+          <fieldset
+            class="MuiBox-root MuiBox-root-22"
           >
-            Enter Funding Source Details
-          </p>
-          <div
-            class="MuiBox-root MuiBox-root-16"
-          >
+            <legend
+              class="MuiFormLabel-root"
+              id="agency_details"
+            >
+              Agency Details
+            </legend>
             <div
               class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Agency Details
-                </h3>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
                 <div
-                  class="MuiFormControl-root MuiFormControl-fullWidth"
+                  class="MuiFormControl-root"
                   style="width: 100%;"
                 >
                   <label
@@ -1497,10 +1497,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                        class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                       >
                         <span>
                           Agency Name
@@ -1540,10 +1540,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                        class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                       >
                         <span>
                           Agency Project ID
@@ -1553,15 +1553,19 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                   </div>
                 </div>
               </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
-                <h3
-                  class="MuiTypography-root MuiTypography-h3"
-                >
-                  Funding Details
-                </h3>
-              </div>
+            </div>
+          </fieldset>
+          <fieldset
+            class="MuiBox-root MuiBox-root-27"
+          >
+            <legend
+              class="MuiFormLabel-root"
+            >
+              Funding Details
+            </legend>
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+            >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
@@ -1606,10 +1610,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                        class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                       >
                         <span>
                           Funding Amount
@@ -1660,10 +1664,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                          class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                         >
                           <span>
                             Start Date
@@ -1711,10 +1715,10 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
+                          class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                         >
                           <span>
                             End Date
@@ -1727,27 +1731,21 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 </div>
               </div>
             </div>
+          </fieldset>
+          <div
+            class="MuiBox-root MuiBox-root-28"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
           </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Cancel
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            aria-label="Add Funding Source"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -1768,6 +1766,20 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                 />
               </span>
             </span>
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Cancel
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </button>
         </div>
       </div>

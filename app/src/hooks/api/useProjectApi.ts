@@ -6,8 +6,11 @@ import {
   ICreateProjectResponse,
   IGetProjectMediaListResponse,
   IGetProjectForViewResponse,
-  IGetProjectsListResponse
+  IGetProjectsListResponse,
+  UPDATE_GET_ENTITIES,
+  IGetProjectForUpdateResponse
 } from 'interfaces/useProjectApi.interface';
+import qs from 'qs';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -28,13 +31,33 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get a project details based on its ID.
+   * Get project details based on its ID for viewing purposes.
    *
    * @param {projectId} projectId
    * @return {*}  {Promise<IGetProjectForViewResponse>}
    */
   const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/view`);
+
+    return data;
+  };
+
+  /**
+   * Get project details based on its ID for updating purposes.
+   *
+   * @param {projectId} projectId
+   * @returns
+   */
+  const getProjectForUpdate = async (
+    projectId: number,
+    entities: UPDATE_GET_ENTITIES[]
+  ): Promise<IGetProjectForUpdateResponse> => {
+    const { data } = await axios.get(`api/project/${projectId}/update`, {
+      params: { entity: entities },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
 
     return data;
   };
@@ -108,7 +131,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     createPermitNoSampling,
     getProjectForView,
     uploadProjectArtifacts,
-    getMediaList
+    getMediaList,
+    getProjectForUpdate
   };
 };
 

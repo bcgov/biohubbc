@@ -4,17 +4,17 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
+  Divider,
   FormControl,
   FormHelperText,
+  FormLabel,
   Grid,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
-  TextField,
-  Typography
+  TextField
 } from '@material-ui/core';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
@@ -105,14 +105,13 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
               aria-describedby="alert-dialog-description">
               <DialogTitle id="alert-dialog-title">Add Funding Source</DialogTitle>
               <DialogContent>
-                <DialogContentText id="alert-dialog-description">Enter Funding Source Details</DialogContentText>
-                <Box py={2}>
+                <Box component="fieldset">
+                  <FormLabel id="agency_details" component="legend">
+                    Agency Details
+                  </FormLabel>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
-                      <Typography variant="h3">Agency Details</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+                      <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
                         <InputLabel id="agency_id-label">Agency Name</InputLabel>
                         <Select
                           id="agency_id"
@@ -193,9 +192,11 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                         helperText={errors.agency_project_id}
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      <Typography variant="h3">Funding Details</Typography>
-                    </Grid>
+                  </Grid>
+                </Box>
+                <Box component="fieldset" mt={5}>
+                  <FormLabel component="legend">Funding Details</FormLabel>
+                  <Grid container spacing={3}>
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
@@ -218,23 +219,29 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                     <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />
                   </Grid>
                 </Box>
+                <Box mt={4}>
+                  <Divider />
+                </Box>
               </DialogContent>
               <DialogActions>
                 <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={async () => {
+                    handleSubmit();
+                  }}
+                  autoFocus
+                  aria-label="Add Funding Source">
+                  Add
+                </Button>
+                <Button
+                  variant="outlined"
                   onClick={() => {
                     props.onCancel();
                     resetForm();
                   }}
                   color="primary">
                   Cancel
-                </Button>
-                <Button
-                  onClick={async () => {
-                    handleSubmit();
-                  }}
-                  color="primary"
-                  autoFocus>
-                  Add
                 </Button>
               </DialogActions>
             </Dialog>

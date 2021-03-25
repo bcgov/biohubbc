@@ -11,7 +11,7 @@ exports[`EditDialog matches snapshot with error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-13"
       />
     </div>
   </div>
@@ -54,54 +54,58 @@ exports[`EditDialog matches snapshot with error message 1`] = `
         <div
           class="MuiDialogContent-root"
         >
-          <form>
-            <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="testfield"
-                id="testfield-label"
-              >
-                Test Field
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   
-                  *
-                </span>
-              </label>
+          <div
+            class="MuiBox-root MuiBox-root-14"
+          >
+            <form>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
               >
-                <textarea
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                  id="testfield"
-                  name="testField"
-                  required=""
-                  rows="4"
+                <label
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                  data-shrink="true"
+                  for="testfield"
+                  id="testfield-label"
                 >
-                  this is a test
-                </textarea>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                  Test Field
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
                   >
-                    <span>
-                      Test Field
-                       *
-                    </span>
-                  </legend>
-                </fieldset>
+                     
+                    *
+                  </span>
+                </label>
+                <div
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                >
+                  <textarea
+                    aria-invalid="false"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    id="testfield"
+                    name="testField"
+                    required=""
+                    rows="4"
+                  >
+                    this is a test
+                  </textarea>
+                  <fieldset
+                    aria-hidden="true"
+                    class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                  >
+                    <legend
+                      class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                    >
+                      <span>
+                        Test Field
+                         *
+                      </span>
+                    </legend>
+                  </fieldset>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
@@ -213,54 +217,58 @@ exports[`EditDialog matches the snapshot with no error message 1`] = `
         <div
           class="MuiDialogContent-root"
         >
-          <form>
-            <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="testfield"
-                id="testfield-label"
-              >
-                Test Field
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   
-                  *
-                </span>
-              </label>
+          <div
+            class="MuiBox-root MuiBox-root-2"
+          >
+            <form>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
               >
-                <textarea
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                  id="testfield"
-                  name="testField"
-                  required=""
-                  rows="4"
+                <label
+                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                  data-shrink="true"
+                  for="testfield"
+                  id="testfield-label"
                 >
-                  this is a test
-                </textarea>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
+                  Test Field
+                  <span
+                    aria-hidden="true"
+                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
                   >
-                    <span>
-                      Test Field
-                       *
-                    </span>
-                  </legend>
-                </fieldset>
+                     
+                    *
+                  </span>
+                </label>
+                <div
+                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                >
+                  <textarea
+                    aria-invalid="false"
+                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                    id="testfield"
+                    name="testField"
+                    required=""
+                    rows="4"
+                  >
+                    this is a test
+                  </textarea>
+                  <fieldset
+                    aria-hidden="true"
+                    class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
+                  >
+                    <legend
+                      class="PrivateNotchedOutline-legendLabelled-5 PrivateNotchedOutline-legendNotched-6"
+                    >
+                      <span>
+                        Test Field
+                         *
+                      </span>
+                    </legend>
+                  </fieldset>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
