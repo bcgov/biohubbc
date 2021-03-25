@@ -120,4 +120,32 @@ describe('Partnerships', () => {
       expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
     });
   });
+
+  it('displays an error dialog when fetching the update data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      partnerships: null
+    });
+
+    const { getByText } = render(
+      <Router history={history}>
+        <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(getByText('Partnerships')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Failed to Fetch Edit Data')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(getByText('Failed to Fetch Edit Data')).not.toBeVisible();
+    });
+  });
 });
