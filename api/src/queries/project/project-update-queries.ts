@@ -5,6 +5,74 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-create-queries');
 
 /**
+ * SQL query to get project stakeholder partnerships.
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getStakeholderPartnershipsByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      name
+    FROM
+      stakeholder_partnership
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getStakeholderPartnershipsByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project indigenous partnerships.
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getIndigenousPartnershipsByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      fn.id
+    FROM
+      project_first_nation pfn
+    LEFT OUTER JOIN
+      first_nations fn
+    ON
+      pfn.fn_id = fn.id
+    WHERE
+      pfn.p_id = ${projectId}
+    GROUP BY
+      fn.id;
+  `;
+
+  defaultLog.debug({
+    label: 'getIndigenousPartnershipsByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get coordinator information, for update purposes.
  *
  * @param {number} projectId

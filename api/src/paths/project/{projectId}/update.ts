@@ -9,7 +9,12 @@ import {
   projectUpdateGetResponseObject,
   projectUpdatePutRequestObject
 } from '../../../openapi/schemas/project';
-import { getCoordinatorByProjectSQL, putProjectSQL } from '../../../queries/project/project-update-queries';
+import {
+  getCoordinatorByProjectSQL,
+  putProjectSQL,
+  getIndigenousPartnershipsByProjectSQL,
+  getStakeholderPartnershipsByProjectSQL
+} from '../../../queries/project/project-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 
@@ -147,6 +152,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.partnerships)) {
+        promises.push(
+          getPartnershipsData(projectId, connection).then((value) => {
+            results.partnerships = value;
+          })
+        );
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -173,10 +186,42 @@ export const getProjectCoordinatorData = async (projectId: number, connection: I
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result) {
-    throw new CustomError(400, 'Failed to insert into project table');
+    throw new CustomError(400, 'Failed to get project coordinator data');
   }
 
   return result;
+};
+
+export const getPartnershipsData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatementIndigenous = getIndigenousPartnershipsByProjectSQL(projectId);
+  const sqlStatementStakeholder = getStakeholderPartnershipsByProjectSQL(projectId);
+
+  if (!sqlStatementIndigenous || !sqlStatementStakeholder) {
+    throw new CustomError(400, 'Failed to build SQL statement');
+  }
+
+  const responseIndigenous = await connection.query(sqlStatementIndigenous.text, sqlStatementIndigenous.values);
+  const responseStakeholder = await connection.query(sqlStatementStakeholder.text, sqlStatementStakeholder.values);
+
+  const resultIndigenous = (responseIndigenous && responseIndigenous.rows && responseIndigenous.rows[0]) || null;
+  const resultStakeholder = (responseStakeholder && responseStakeholder.rows && responseStakeholder.rows[0]) || null;
+
+  if (!resultIndigenous) {
+    throw new CustomError(400, 'Failed to get indigenous partnership data');
+  }
+
+  if (!resultStakeholder) {
+    throw new CustomError(400, 'Failed to get stakeholder partnership data');
+  }
+
+  return {
+    indigenous_partnerships: resultIndigenous?.length
+      ? resultIndigenous.map((item: any) => item.id)
+      : [resultIndigenous.id],
+    stakeholder_partnerships: resultStakeholder?.length
+      ? resultStakeholder.map((item: any) => item.name)
+      : [resultStakeholder.name]
+  };
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];

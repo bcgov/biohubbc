@@ -81,6 +81,102 @@ export interface ICreatePermitNoSamplingResponse {
   ids: number[];
 }
 
+export enum UPDATE_GET_ENTITIES {
+  coordinator = 'coordinator',
+  permit = 'permit',
+  project = 'project',
+  objectives = 'objectives',
+  location = 'location',
+  species = 'species',
+  iucn = 'iucn',
+  funding = 'funding',
+  partnerships = 'partnerships'
+}
+
+/**
+ * An interface for a single instance of project metadata, for update-only use cases.
+ *
+ * @export
+ * @interface IGetProjectForUpdateResponse
+ */
+export interface IGetProjectForUpdateResponse {
+  id: number;
+  project: IGetProjectForUpdateResponseDetails | null;
+  objectives: IGetProjectForUpdateResponseObjectives | null;
+  location: IGetProjectForUpdateResponseLocation | null;
+  coordinator: IGetProjectForUpdateResponseCoordinator | null;
+  species: IGetProjectForUpdateResponseSpecies | null;
+  iucn: IGetProjectForUpdateResponseIUCN | null;
+  funding: IGetProjectForUpdateResponseFundingSource | null;
+  partnerships: IGetProjectForUpdateResponsePartnerships | null;
+}
+
+export interface IGetProjectForUpdateResponseDetails {
+  project_name: string;
+  project_type: number;
+  project_type_name?: string;
+  project_activities: number[];
+  climate_change_initiatives: number[];
+  start_date: string;
+  end_date: string;
+  revision_count: number;
+}
+
+export interface IGetProjectForUpdateResponseObjectives {
+  objectives: string;
+  caveats: string;
+  revision_count: number;
+}
+
+export interface IGetProjectForUpdateResponseLocation {
+  regions: string[];
+  location_description: string;
+  geometry: Feature[];
+  revision_count: number;
+}
+
+export interface IGetProjectForUpdateResponseCoordinator {
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  coordinator_agency: string;
+  share_contact_details: string;
+  revision_count: number;
+}
+
+export interface IGetProjectForUpdateResponseSpecies {
+  focal_species: string[];
+  ancillary_species: string[];
+}
+
+interface IGetProjectForUpdateResponseIUCNArrayItem {
+  classification: number;
+  subClassification1: number;
+  subClassification2: number;
+}
+
+export interface IGetProjectForUpdateResponseIUCN {
+  classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
+}
+
+interface IGetProjectForUpdateResponseFundingSourceArrayItem {
+  agency_id: number;
+  investment_action_category: number;
+  agency_project_id: string;
+  funding_amount: number;
+  start_date: string;
+  end_date: string;
+}
+
+export interface IGetProjectForUpdateResponseFundingSource {
+  fundingAgencies: IGetProjectForUpdateResponseFundingSourceArrayItem[];
+}
+
+export interface IGetProjectForUpdateResponsePartnerships {
+  indigenous_partnerships: number[];
+  stakeholder_partnerships: string[];
+}
+
 /**
  * An interface for a single instance of project metadata, for view-only use cases.
  *
@@ -128,7 +224,7 @@ export interface IGetProjectForViewResponseCoordinator {
   share_contact_details: string;
 }
 
-export interface IGetProjectForViewResponseIUCNArrayItem {
+interface IGetProjectForViewResponseIUCNArrayItem {
   classification: string;
   subClassification1: string;
   subClassification2: string;
@@ -138,7 +234,7 @@ export interface IGetProjectForViewResponseIUCN {
   classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
 }
 
-export interface IGetProjectForViewResponseFundingSourceArrayItem {
+interface IGetProjectForViewResponseFundingSourceArrayItem {
   agency_id: string;
   agency_name: string;
   investment_action_category: string;
@@ -157,8 +253,7 @@ export interface IGetProjectForViewResponseSpecies {
 }
 
 export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: number[];
-  indigenous_partnership_strings: string[];
+  indigenous_partnerships: string[];
   stakeholder_partnerships: string[];
 }
 

@@ -9,7 +9,6 @@ import * as yup from 'yup';
 export interface IProjectPartnershipsForm {
   indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
-  indigenous_partnership_strings?: string[];
 }
 
 export const ProjectPartnershipsFormInitialValues: IProjectPartnershipsForm = {
