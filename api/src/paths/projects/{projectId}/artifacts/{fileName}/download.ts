@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { IMediaItem } from '../../../../../models/media';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../errors/CustomError';
 
 export const GET: Operation = [getSingleMedia()];
 
@@ -64,9 +64,6 @@ GET.apiDoc = {
     401: {
       $ref: '#/components/responses/401'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -76,11 +73,11 @@ GET.apiDoc = {
 function getSingleMedia(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
-      throw new CustomError(400, 'Missing required path param `projectId`');
+      throw new HTTP400('Missing required path param `projectId`');
     }
 
     if (!req.params.fileName) {
-      throw new CustomError(400, 'Missing required path param `fileName`');
+      throw new HTTP400('Missing required path param `fileName`');
     }
 
     const s3Object = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);
