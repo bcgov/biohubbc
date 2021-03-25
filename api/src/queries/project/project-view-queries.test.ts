@@ -12,7 +12,6 @@ import {
   getProjectSQL,
   getRegionsByProjectSQL
 } from './project-view-queries';
-import { getStakeholderPartnershipsByProjectSQL } from './project-view-update-queries';
 
 describe('getProjectSQL', () => {
   describe('Null project id param provided', () => {
@@ -148,20 +147,6 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getStakeholderPartnershipsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getStakeholderPartnershipsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getStakeholderPartnershipsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
