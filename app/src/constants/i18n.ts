@@ -27,3 +27,17 @@ export const EditCoordinatorI18N = {
   createErrorText:
     'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const EditGeneralInformationI18N = {
+  editTitle: 'Edit General Information',
+  createErrorTitle: 'Error Editing General Information',
+  createErrorText:
+    'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditLocationBoundaryI18N = {
+  editTitle: 'Edit Location / Project Boundary',
+  createErrorTitle: 'Error Editing Location / Project Boundary',
+  createErrorText:
+    'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
+};
