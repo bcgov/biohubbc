@@ -152,6 +152,7 @@ export interface IGetProjectForViewResponseFundingSource {
 }
 
 export interface IGetProjectForViewResponseSpecies {
+  id: number;
   focal_species: string[];
   ancillary_species: string[];
 }

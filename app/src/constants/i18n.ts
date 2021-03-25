@@ -41,3 +41,11 @@ export const EditLocationBoundaryI18N = {
   createErrorText:
     'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const EditSpeciesI18N = {
+  editTitle: 'Edit focal and ancillary species',
+  createErrorTitle: 'Error Editing Species',
+  createErrorText:
+    'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
+};
+
