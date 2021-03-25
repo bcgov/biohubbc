@@ -12,6 +12,8 @@ import {
 import {
   getCoordinatorByProjectSQL,
   putProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL,
   getIndigenousPartnershipsByProjectSQL
 } from '../../../queries/project/project-update-queries';
 import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
@@ -160,6 +162,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.species)) {
+        promises.push(
+          getSpeciesData(projectId, connection).then((value) => {
+            results.species = value;
+          })
+        );
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -217,6 +227,37 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   return {
     indigenous_partnerships: resultIndigenous?.length && resultIndigenous.map((item: any) => item.id),
     stakeholder_partnerships: resultStakeholder?.length && resultStakeholder.map((item: any) => item.name)
+  };
+};
+
+export const getSpeciesData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatementFocalSpecies = getFocalSpeciesByProjectSQL(projectId);
+  const sqlStatementAncillarySpecies = getAncillarySpeciesByProjectSQL(projectId);
+
+  if (!sqlStatementFocalSpecies || !sqlStatementAncillarySpecies) {
+    throw new CustomError(400, 'Failed to build SQL statement');
+  }
+
+  const responseFocalSpecies = await connection.query(sqlStatementFocalSpecies.text, sqlStatementFocalSpecies.values);
+  const responseAncillarySpecies = await connection.query(
+    sqlStatementAncillarySpecies.text,
+    sqlStatementAncillarySpecies.values
+  );
+
+  const resultFocalSpecies = (responseFocalSpecies && responseFocalSpecies.rows) || null;
+  const resultAncillarySpecies = (responseAncillarySpecies && responseAncillarySpecies.rows) || null;
+
+  if (!resultFocalSpecies) {
+    throw new CustomError(400, 'Failed to get focal species data');
+  }
+
+  if (!resultAncillarySpecies) {
+    throw new CustomError(400, 'Failed to get ancillary species data');
+  }
+
+  return {
+    focal_species: resultFocalSpecies?.length && resultFocalSpecies.map((item: any) => item.name),
+    ancillary_species: resultAncillarySpecies?.length && resultAncillarySpecies.map((item: any) => item.name)
   };
 };
 

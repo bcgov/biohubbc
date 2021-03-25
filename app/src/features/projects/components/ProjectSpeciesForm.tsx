@@ -4,7 +4,7 @@ import MultiAutocompleteFieldVariableSize, {
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import yup from 'utils/YupSchema';
+import * as yup from 'yup';
 
 export interface IProjectSpeciesForm {
   focal_species: string[];

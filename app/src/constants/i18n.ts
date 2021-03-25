@@ -55,4 +55,3 @@ export const EditSpeciesI18N = {
   createErrorText:
     'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
 };
-
