@@ -50,6 +50,10 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getCoordinatorByProjectSQL', message: 'params', projectId });
 
+  if (!projectId) {
+    return null;
+  }
+
   // TODO pull the record wtih the latest revision_count?
   const sqlStatement = SQL`
     SELECT
