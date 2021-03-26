@@ -12,11 +12,13 @@ import {
 import {
   getCoordinatorByProjectSQL,
   putProjectSQL,
-  getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
   getIndigenousPartnershipsByProjectSQL
 } from '../../../queries/project/project-update-queries';
-import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
+import {
+  getStakeholderPartnershipsByProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL
+} from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 
@@ -232,7 +234,7 @@ export const getSpeciesData = async (projectId: number, connection: IDBConnectio
   const sqlStatementAncillarySpecies = getAncillarySpeciesByProjectSQL(projectId);
 
   if (!sqlStatementFocalSpecies || !sqlStatementAncillarySpecies) {
-    throw new HTTP400( 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const responseFocalSpecies = await connection.query(sqlStatementFocalSpecies.text, sqlStatementFocalSpecies.values);

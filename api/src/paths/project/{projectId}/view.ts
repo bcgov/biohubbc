@@ -16,16 +16,18 @@ import {
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
   getClimateInitiativesByProjectSQL,
-  getFocalSpeciesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectSQL,
   getRegionsByProjectSQL
 } from '../../../queries/project/project-view-queries';
-import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
+import {
+  getStakeholderPartnershipsByProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL
+} from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 
