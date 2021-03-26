@@ -2,9 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   getActivitiesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
   getClimateInitiativesByProjectSQL,
-  getFocalSpeciesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -12,6 +10,8 @@ import {
   getProjectSQL,
   getRegionsByProjectSQL
 } from './project-view-queries';
+
+import { getFocalSpeciesByProjectSQL, getAncillarySpeciesByProjectSQL } from './project-view-update-queries';
 
 describe('getProjectSQL', () => {
   describe('Null project id param provided', () => {
