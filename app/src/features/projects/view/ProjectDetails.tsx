@@ -70,7 +70,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <IUCNClassification projectForViewData={projectForViewData} />
+            <IUCNClassification projectForViewData={projectForViewData} codes={codes} />
           </Box>
         </Paper>
       </Box>

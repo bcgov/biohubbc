@@ -5,6 +5,56 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-update-queries');
 
 /**
+ * SQL query to get IUCN action classifications.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getIUCNActionClassificationByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      ical1c.id as classification,
+      ical2s.id as subClassification1,
+      ical3s.id as subClassification2
+    FROM
+      project_iucn_action_classification as piac
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_3_subclassification as ical3s
+    ON
+      piac.iucn3_id = ical3s.id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_2_subclassification as ical2s
+    ON
+      ical3s.iucn2_id = ical2s.id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_1_classification as ical1c
+    ON
+      ical2s.iucn1_id = ical1c.id
+    WHERE
+      piac.p_id = ${projectId}
+    GROUP BY
+      ical2s.id,
+      ical1c.id,
+      ical3s.id;
+  `;
+
+  defaultLog.debug({
+    label: 'getIUCNActionClassificationByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get project indigenous partnerships.
  * @param {number} projectId
  * @returns {SQLStatement} sql query object

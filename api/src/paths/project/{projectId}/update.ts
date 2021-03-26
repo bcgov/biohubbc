@@ -12,7 +12,8 @@ import {
 import {
   getCoordinatorByProjectSQL,
   putProjectSQL,
-  getIndigenousPartnershipsByProjectSQL
+  getIndigenousPartnershipsByProjectSQL,
+  getIUCNActionClassificationByProjectSQL
 } from '../../../queries/project/project-update-queries';
 import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
@@ -160,6 +161,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.iucn)) {
+        promises.push(
+          getIUCNClassificationData(projectId, connection).then((value) => {
+            results.iucn = value;
+          })
+        );
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -173,6 +182,35 @@ function getProjectForUpdate(): RequestHandler {
     }
   };
 }
+
+export const getIUCNClassificationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getIUCNActionClassificationByProjectSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new CustomError(400, 'Failed to build SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new CustomError(400, 'Failed to get project IUCN data');
+  }
+
+  console.log('#########IUCN#############');
+  console.log(result);
+
+  const classificationDetails = result.map((item: any) => {
+    return {
+      classification: item.classification,
+      subClassification1: item.subclassification1,
+      subClassification2: item.subclassification2
+    };
+  }) || [];
+
+  return { classificationDetails };
+};
 
 export const getProjectCoordinatorData = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getCoordinatorByProjectSQL(projectId);
