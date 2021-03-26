@@ -1,6 +1,45 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetCoordinatorData, GetPartnershipsData, PutCoordinatorData } from './project-update';
+import { GetCoordinatorData, GetPartnershipsData, PutCoordinatorData, PutPartnershipsData } from './project-update';
+
+describe('PutPartnershipsData', () => {
+  describe('No values provided', () => {
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData({});
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      indigenous_partnerships: [1, 2],
+      stakeholder_partnerships: ['partner 3', 'partner 4']
+    };
+
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData(obj);
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
+    });
+  });
+});
 
 describe('GetPartnershipsData', () => {
   describe('No values provided', () => {

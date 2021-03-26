@@ -8,6 +8,7 @@ import {
   GetIUCNClassificationData,
   GetPartnershipsData,
   PutCoordinatorData,
+  PutPartnershipsData,
   PutLocationData,
   PutObjectivesData,
   PutProjectData,
@@ -385,6 +386,10 @@ function updateProject(): RequestHandler {
 
       const promises: Promise<any>[] = [];
 
+      if (entities?.partnerships) {
+        promises.push(updateProjectPartnershipsData(projectId, entities, connection));
+      }
+
       if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
         promises.push(updateProjectData(projectId, entities, connection));
       }
@@ -439,6 +444,21 @@ export const updateProjectIUCNData = async (
       throw new HTTP409('Failed to insert project IUCN data');
     }
   });
+};
+
+export const updateProjectPartnershipsData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
+
+  const sqlDeleteIndigenousPartnershipsStatement = deleteIndigenousPartnershipsSQL(projectId);
+  const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
+
+  if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
 };
 
 export const updateProjectData = async (
