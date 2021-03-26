@@ -23,9 +23,8 @@ const useStyles = makeStyles((theme) => ({
     overflowX: 'hidden'
   },
   iucnInput: {
-    flex: '1 0 200px',
-    width: '33.333%',
-    maxWidth: '200px'
+    flex: '0 0 auto',
+    width: '33.333%'
   }
 }));
 
@@ -98,8 +97,8 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex" alignItems="center" mt={-2}>
-                      <Box display="flex" className={classes.iucnInputContainer} flexWrap="wrap">
-                        <Box className={classes.iucnInput} my={2} mr={2}>
+                      <Box display="flex" className={classes.iucnInputContainer}>
+                        <Box className={classes.iucnInput} my={2} pr={2}>
                           <FormControl variant="outlined" fullWidth>
                             <InputLabel id="classification">Classification</InputLabel>
                             <Select
@@ -124,7 +123,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                             <FormHelperText>{classificationMeta.error}</FormHelperText>
                           </FormControl>
                         </Box>
-                        <Box className={classes.iucnInput} my={2} mr={2}>
+                        <Box className={classes.iucnInput} my={2} pr={2}>
                           <FormControl variant="outlined" fullWidth>
                             <InputLabel id="subClassification1">Sub-classification</InputLabel>
                             <Select
@@ -152,7 +151,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                             <FormHelperText>{subClassification1Meta.error}</FormHelperText>
                           </FormControl>
                         </Box>
-                        <Box my={2} mr={2} className={classes.iucnInput}>
+                        <Box my={2} pr={2} className={classes.iucnInput}>
                           <FormControl variant="outlined" fullWidth>
                             <InputLabel id="subClassification2">Sub-classification</InputLabel>
                             <Select

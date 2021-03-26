@@ -26,7 +26,6 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Edit } from '@material-ui/icons';
 import { APIError } from 'hooks/api/useAxios';
-import { useHistory } from 'react-router';
 
 const useStyles = makeStyles({
   table: {
@@ -49,6 +48,7 @@ const useStyles = makeStyles({
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -63,7 +63,6 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
   const biohubApi = useBiohubApi();
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -112,9 +111,19 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IProjectIUCNForm) => {
-    // make put request from here using values and projectId
-    setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+    const projectData = { iucn: values };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
   };
 
   return (

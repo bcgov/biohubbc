@@ -24,7 +24,7 @@ describe('ProjectDetails', () => {
 
     const { asFragment } = render(
       <Router history={history}>
-        <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} />
+        <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} refresh={jest.fn()} />
       </Router>
     );
 
