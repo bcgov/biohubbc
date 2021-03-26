@@ -181,17 +181,9 @@ export interface IGetProjectForUpdateResponsePartnerships {
  *
  * @export
  * @interface IUpdateProjectRequest
+ * @extends {IGetProjectForUpdateResponse}
  */
-export interface IUpdateProjectRequest {
-  project?: IGetProjectForUpdateResponseDetails;
-  objectives?: IGetProjectForUpdateResponseObjectives;
-  location?: IGetProjectForUpdateResponseLocation;
-  coordinator?: IGetProjectForUpdateResponseCoordinator;
-  species?: IGetProjectForUpdateResponseSpecies;
-  iucn?: IGetProjectForUpdateResponseIUCN;
-  funding?: IGetProjectForUpdateResponseFundingSource;
-  partnerships?: IGetProjectForUpdateResponsePartnerships;
-}
+export interface IUpdateProjectRequest extends IGetProjectForUpdateResponse {}
 
 /**
  * An interface for a single instance of project metadata, for view-only use cases.
