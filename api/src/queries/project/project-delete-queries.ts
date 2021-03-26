@@ -24,9 +24,7 @@ export const deleteIUCNSQL = (projectId: number): SQLStatement | null => {
     DELETE
       from project_iucn_action_classification
     WHERE
-      p_id = ${projectId}
-    RETURNING
-      *;
+      p_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -60,9 +58,7 @@ export const deleteFocalSpeciesSQL = (projectId: number): SQLStatement | null =>
     DELETE
       from focal_species
     WHERE
-      p_id = ${projectId}
-    RETURNING
-      *;
+      p_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -96,9 +92,7 @@ export const deleteAncillarySpeciesSQL = (projectId: number): SQLStatement | nul
     DELETE
       from ancillary_species
     WHERE
-      p_id = ${projectId}
-    RETURNING
-      *;
+      p_id = ${projectId};
   `;
 
   defaultLog.debug({
