@@ -35,7 +35,7 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
 };
 
 /**
- * SQL query to get project focal species.
+ * SQL query to get project focal species for update purposes.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -66,7 +66,7 @@ export const getFocalSpeciesByProjectSQL = (projectId: number): SQLStatement | n
 };
 
 /**
- * SQL query to get project ancillary species.
+ * SQL query to get project ancillary species for update purposes.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object

@@ -80,19 +80,19 @@ describe('Species', () => {
     });
     fireEvent.click(getByText('EDIT'));
     await waitFor(() => {
-      expect(getByText('Edit focal and ancillary species')).toBeVisible();
+      expect(getByText('Edit Species')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit focal and ancillary species')).not.toBeVisible();
+      expect(getByText('Edit Species')).not.toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Edit focal and ancillary species')).toBeVisible();
+      expect(getByText('Edit Species')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -120,13 +120,13 @@ describe('Species', () => {
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Edit Data')).toBeVisible();
+      expect(getByText('Failed to Fetch Species Data')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Edit Data')).not.toBeVisible();
+      expect(getByText('Failed to Fetch Species Data')).not.toBeVisible();
     });
   });
 });

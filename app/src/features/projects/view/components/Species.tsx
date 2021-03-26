@@ -96,7 +96,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
       />
 
       <ErrorDialog
-        dialogTitle="Failed to Fetch Edit Data"
+        dialogTitle="Failed to Fetch Species Data"
         dialogText="Could not retrieve data for editing purposes, please try again later."
         open={openErrorDialog}
         onClose={() => setOpenErrorDialog(false)}

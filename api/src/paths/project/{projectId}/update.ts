@@ -11,6 +11,7 @@ import {
   PutObjectivesData,
   PutProjectData
 } from '../../../models/project-update';
+import { GetSpeciesData } from '../../../models/project-view-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -261,10 +262,7 @@ export const getSpeciesData = async (projectId: number, connection: IDBConnectio
     throw new HTTP400('Failed to get ancillary species data');
   }
 
-  return {
-    focal_species: resultFocalSpecies?.length && resultFocalSpecies.map((item: any) => item.name),
-    ancillary_species: resultAncillarySpecies?.length && resultAncillarySpecies.map((item: any) => item.name)
-  };
+  return new GetSpeciesData(resultFocalSpecies, resultAncillarySpecies);
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];

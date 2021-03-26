@@ -10,9 +10,9 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
-  GetSpeciesData
+  GetProjectData
 } from '../../../models/project-view';
+import { GetSpeciesData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getActivitiesByProjectSQL,
