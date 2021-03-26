@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Friday, March 19, 2021 13:37:09
+-- Date Created : Friday, March 26, 2021 13:08:17
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1403,6 +1403,47 @@ COMMENT ON TABLE user_identity_source IS 'The source of the user identifier. Exa
 ;
 
 -- 
+-- TABLE: webform_draft 
+--
+
+CREATE TABLE webform_draft(
+    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    su_id             integer         NOT NULL,
+    name              varchar(300)    NOT NULL,
+    data              json            NOT NULL,
+    create_date       timestamp(6)    DEFAULT now() NOT NULL,
+    create_user       integer         NOT NULL,
+    update_date       timestamp(6),
+    update_user       integer,
+    revision_count    integer         DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK143" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN webform_draft.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN webform_draft.su_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN webform_draft.name IS 'The name of the draft record.'
+;
+COMMENT ON COLUMN webform_draft.data IS 'The json data associated with the draft record.'
+;
+COMMENT ON COLUMN webform_draft.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN webform_draft.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN webform_draft.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN webform_draft.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN webform_draft.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE webform_draft IS 'A persistent store for draft webform data. For example, if a user starts a project creation process and wants to save that information as a draft then the webform data can be persisted for subsequent reload into the project creation process.'
+;
+
+-- 
 -- INDEX: a_nuk1 
 --
 
@@ -1751,6 +1792,12 @@ CREATE INDEX "Ref7922" ON system_user_role(sr_id)
 CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: "Ref7876" 
+--
+
+CREATE INDEX "Ref7876" ON webform_draft(su_id)
+;
+-- 
 -- TABLE: ancillary_species 
 --
 
@@ -1982,6 +2029,16 @@ ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user21"
 ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role22" 
     FOREIGN KEY (sr_id)
     REFERENCES system_role(id)
+;
+
+
+-- 
+-- TABLE: webform_draft 
+--
+
+ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user76" 
+    FOREIGN KEY (su_id)
+    REFERENCES system_user(id)
 ;
 
 
