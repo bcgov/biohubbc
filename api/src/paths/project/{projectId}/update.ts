@@ -428,8 +428,9 @@ export const updateProjectSpeciesData = async (
   const putSpeciesData = (entities?.species && new PutSpeciesData(entities.species)) || null;
 
   const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(projectId);
+  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
 
-  if (!sqlDeleteFocalSpeciesStatement) {
+  if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
     throw new HTTP400('Failed to build SQL statement');
   }
 
@@ -440,12 +441,6 @@ export const updateProjectSpeciesData = async (
 
   if (!deleteFocalSpeciesResult) {
     throw new HTTP409('Failed to delete project focal species data');
-  }
-
-  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
-
-  if (!sqlDeleteAncillarySpeciesStatement) {
-    throw new HTTP400('Failed to build SQL statement');
   }
 
   const deleteAncillarySpeciesResult = await connection.query(
