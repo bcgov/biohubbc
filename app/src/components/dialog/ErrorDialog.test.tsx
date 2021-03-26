@@ -66,7 +66,5 @@ describe('ErrorDialog', () => {
       expect(getByText('an error')).not.toBeVisible();
       expect(getByText('{"error":"another error"}')).not.toBeVisible();
     });
-
-    expect(baseElement).toMatchSnapshot();
   });
 });
