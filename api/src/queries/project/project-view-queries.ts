@@ -16,7 +16,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
-  // TODO pull the record wtih the latest revision_count?
   const sqlStatement = SQL`
     SELECT
       project.id,
