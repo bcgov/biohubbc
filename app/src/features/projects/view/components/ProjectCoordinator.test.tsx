@@ -1,14 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForUpdateResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import { Router } from 'react-router-dom';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectCoordinator from './ProjectCoordinator';
-
-const history = createMemoryHistory();
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -26,9 +22,7 @@ const mockRefresh = jest.fn();
 
 const renderContainer = () => {
   return render(
-    <Router history={history}>
-      <ProjectCoordinator projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
-    </Router>
+    <ProjectCoordinator projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
   );
 };
 
@@ -49,7 +43,7 @@ describe('ProjectCoordinator', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it.only('editing the project coordinator works in the dialog', async () => {
+  it('editing the project coordinator works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       coordinator: {
         first_name: 'first name',

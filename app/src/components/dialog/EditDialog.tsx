@@ -31,7 +31,7 @@ export interface IEditDialogProps {
   component: IEditDialogComponentProps;
 
   /**
-   * error message to display when the error exists
+   * Error message to display when an error exists
    */
   dialogError?: string;
 
@@ -76,6 +76,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
         }}>
         {(formikProps) => (
           <Dialog
+            maxWidth="xl"
             open={props.open}
             onClose={props.onClose}
             aria-labelledby="edit-dialog-title"

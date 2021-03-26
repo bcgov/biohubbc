@@ -935,6 +935,12 @@ exports[`ProjectDetails renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-47"
       >
         <div
+          class="MuiBox-root MuiBox-root-51"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-52"
+        />
+        <div
           class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
         >
           <div
@@ -952,21 +958,43 @@ exports[`ProjectDetails renders correctly 1`] = `
             <div
               class="MuiGrid-root MuiGrid-item"
             >
+<<<<<<< HEAD
               <label
                 aria-disabled="false"
                 class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-51 MuiButton-outlinedPrimary"
                 role="button"
+=======
+              <button
+                aria-label="Edit IUCN Classification"
+                class="MuiButtonBase-root MuiIconButton-root"
+>>>>>>> 8369eeef1bab1f571c12282be4fa6a0c24822435
                 tabindex="0"
+                title="Edit IUCN Classification"
+                type="button"
               >
                 <span
-                  class="MuiButton-label"
+                  class="MuiIconButton-label"
                 >
-                  Add IUCN Classification
+                  <span
+                    class="MuiTypography-root MuiTypography-caption"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                     EDIT
+                  </span>
                 </span>
                 <span
                   class="MuiTouchRipple-root"
                 />
-              </label>
+              </button>
             </div>
           </div>
           <div
@@ -1026,6 +1054,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     >
                       sub classification 2
                     </td>
+<<<<<<< HEAD
                     <td
                       class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-50"
                     >
@@ -1054,6 +1083,8 @@ exports[`ProjectDetails renders correctly 1`] = `
                         />
                       </button>
                     </td>
+=======
+>>>>>>> 8369eeef1bab1f571c12282be4fa6a0c24822435
                   </tr>
                 </tbody>
               </table>

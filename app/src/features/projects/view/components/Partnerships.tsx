@@ -57,9 +57,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
   } = props;
 
   const classes = useStyles();
-
   const history = useHistory();
-
   const biohubApi = useBiohubApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -99,7 +97,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog
-        dialogTitle="Failed to Fetch Edit Data"
+        dialogTitle="Failed to Fetch Partnerships Data"
         dialogText="Could not retrieve data for editing purposes, please try again later."
         open={openErrorDialog}
         onClose={() => setOpenErrorDialog(false)}

@@ -3,6 +3,12 @@
 exports[`IUCNClassification renders correctly 1`] = `
 <DocumentFragment>
   <div
+    class="MuiBox-root MuiBox-root-6"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-7"
+  />
+  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -20,21 +26,36 @@ exports[`IUCNClassification renders correctly 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item"
       >
-        <label
-          aria-disabled="false"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-4 MuiButton-outlinedPrimary"
-          role="button"
+        <button
+          aria-label="Edit IUCN Classification"
+          class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
+          title="Edit IUCN Classification"
+          type="button"
         >
           <span
-            class="MuiButton-label"
+            class="MuiIconButton-label"
           >
-            Add IUCN Classification
+            <span
+              class="MuiTypography-root MuiTypography-caption"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                />
+              </svg>
+               EDIT
+            </span>
           </span>
           <span
             class="MuiTouchRipple-root"
           />
-        </label>
+        </button>
       </div>
     </div>
     <div
@@ -93,34 +114,6 @@ exports[`IUCNClassification renders correctly 1`] = `
                 class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-3"
               >
                 sub classification 2
-              </td>
-              <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-3"
-              >
-                <button
-                  aria-label="delete"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-                  tabindex="0"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      role="presentation"
-                      style="width: 1.5rem; height: 1.5rem;"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                        style="fill: currentColor;"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
               </td>
             </tr>
           </tbody>

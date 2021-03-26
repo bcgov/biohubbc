@@ -113,3 +113,38 @@ export class GetPartnershipsData {
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.name)) || [];
   }
 }
+
+interface IGetIUCN {
+  classification: number;
+  subClassification1: number;
+  subClassification2: number;
+}
+
+/**
+ * Pre-processes GET /projects/{id} IUCN classification data for editing purposes
+ *
+ * @export
+ * @class GetIUCNClassificationData
+ */
+export class GetIUCNClassificationData {
+  classificationDetails: IGetIUCN[];
+
+  constructor(iucnClassificationData?: any[]) {
+    defaultLog.debug({
+      label: 'GetIUCNClassificationData',
+      message: 'params',
+      iucnClassificationData: iucnClassificationData
+    });
+
+    this.classificationDetails =
+      (iucnClassificationData &&
+        iucnClassificationData.map((item: any) => {
+          return {
+            classification: item.classification,
+            subClassification1: item.subclassification1,
+            subClassification2: item.subclassification2
+          };
+        })) ||
+      [];
+  }
+}

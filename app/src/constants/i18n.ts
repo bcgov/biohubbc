@@ -49,6 +49,13 @@ export const EditLocationBoundaryI18N = {
     'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditIUCNI18N = {
+  editTitle: 'Edit IUCN Classification',
+  editErrorTitle: 'Error Editing IUCN Classification',
+  editErrorText:
+    'An error has occurred while attempting to edit your IUCN classification, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditSpeciesI18N = {
   editTitle: 'Edit Species',
   editErrorTitle: 'Error Editing Species',
