@@ -86,7 +86,7 @@ const ProjectPage: React.FC = () => {
 
     setProjectWithDetails(projectWithDetailsResponse);
     setCodes(codesResponse);
-  }, []);
+  }, [biohubApi.codes, biohubApi.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {
