@@ -38,11 +38,8 @@ import {
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
-import {
-  postProjectIUCNSQL,
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL
-} from '../../../queries/project/project-create-queries';
+import { postProjectIUCNSQL } from '../../../queries/project/project-create-queries';
+import { insertAncillarySpecies, insertFocalSpecies } from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -434,57 +431,40 @@ export const updateProjectSpeciesData = async (
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  const deleteFocalSpeciesResult = await connection.query(
+  const deleteFocalSpeciesPromises = connection.query(
     sqlDeleteFocalSpeciesStatement.text,
     sqlDeleteFocalSpeciesStatement.values
   );
+
+  const deleteAncillarySpeciesPromises = connection.query(
+    sqlDeleteAncillarySpeciesStatement.text,
+    sqlDeleteAncillarySpeciesStatement.values
+  );
+
+  const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+    deleteFocalSpeciesPromises,
+    deleteAncillarySpeciesPromises
+  ]);
 
   if (!deleteFocalSpeciesResult) {
     throw new HTTP409('Failed to delete project focal species data');
   }
 
-  const deleteAncillarySpeciesResult = await connection.query(
-    sqlDeleteAncillarySpeciesStatement.text,
-    sqlDeleteAncillarySpeciesStatement.values
-  );
-
   if (!deleteAncillarySpeciesResult) {
     throw new HTTP409('Failed to delete project ancillary species data');
   }
 
-  putSpeciesData?.focal_species.forEach(async (focalSpecies) => {
-    const sqlInsertFocalSpeciesStatement = postFocalSpeciesSQL(focalSpecies, projectId);
+  const insertFocalSpeciesPromises =
+    putSpeciesData?.focal_species?.map((focalSpecies: string) =>
+      insertFocalSpecies(focalSpecies, projectId, connection)
+    ) || [];
 
-    if (!sqlInsertFocalSpeciesStatement) {
-      throw new HTTP400('Failed to build SQL statement');
-    }
+  const insertAncillarySpeciesPromises =
+    putSpeciesData?.ancillary_species?.map((ancillarySpecies: string) =>
+      insertAncillarySpecies(ancillarySpecies, projectId, connection)
+    ) || [];
 
-    const insertFocalSpeciesResult = await connection.query(
-      sqlInsertFocalSpeciesStatement.text,
-      sqlInsertFocalSpeciesStatement.values
-    );
-
-    if (!insertFocalSpeciesResult || !insertFocalSpeciesResult.rowCount) {
-      throw new HTTP409('Failed to insert project focal species data');
-    }
-  });
-
-  putSpeciesData?.ancillary_species.forEach(async (ancillarySpecies) => {
-    const sqlInsertAncillarySpeciesStatement = postAncillarySpeciesSQL(ancillarySpecies, projectId);
-
-    if (!sqlInsertAncillarySpeciesStatement) {
-      throw new HTTP400('Failed to build SQL statement');
-    }
-
-    const insertAncillarySpeciesResult = await connection.query(
-      sqlInsertAncillarySpeciesStatement.text,
-      sqlInsertAncillarySpeciesStatement.values
-    );
-
-    if (!insertAncillarySpeciesResult || !insertAncillarySpeciesResult.rowCount) {
-      throw new HTTP409('Failed to insert project ancillary species data');
-    }
-  });
+  await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 };
 
 export const updateProjectIUCNData = async (
