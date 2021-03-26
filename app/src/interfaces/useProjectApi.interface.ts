@@ -100,15 +100,14 @@ export enum UPDATE_GET_ENTITIES {
  * @interface IGetProjectForUpdateResponse
  */
 export interface IGetProjectForUpdateResponse {
-  id: number;
-  project: IGetProjectForUpdateResponseDetails | null;
-  objectives: IGetProjectForUpdateResponseObjectives | null;
-  location: IGetProjectForUpdateResponseLocation | null;
-  coordinator: IGetProjectForUpdateResponseCoordinator | null;
-  species: IGetProjectForUpdateResponseSpecies | null;
-  iucn: IGetProjectForUpdateResponseIUCN | null;
-  funding: IGetProjectForUpdateResponseFundingSource | null;
-  partnerships: IGetProjectForUpdateResponsePartnerships | null;
+  project?: IGetProjectForUpdateResponseDetails;
+  objectives?: IGetProjectForUpdateResponseObjectives;
+  location?: IGetProjectForUpdateResponseLocation;
+  coordinator?: IGetProjectForUpdateResponseCoordinator;
+  species?: IGetProjectForUpdateResponseSpecies;
+  iucn?: IGetProjectForUpdateResponseIUCN;
+  funding?: IGetProjectForUpdateResponseFundingSource;
+  partnerships?: IGetProjectForUpdateResponsePartnerships;
 }
 
 export interface IGetProjectForUpdateResponseDetails {
@@ -175,6 +174,23 @@ export interface IGetProjectForUpdateResponseFundingSource {
 export interface IGetProjectForUpdateResponsePartnerships {
   indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
+}
+
+/**
+ * An interface for a single instance of project metadata, for update-only use cases.
+ *
+ * @export
+ * @interface IUpdateProjectRequest
+ */
+export interface IUpdateProjectRequest {
+  project?: IGetProjectForUpdateResponseDetails;
+  objectives?: IGetProjectForUpdateResponseObjectives;
+  location?: IGetProjectForUpdateResponseLocation;
+  coordinator?: IGetProjectForUpdateResponseCoordinator;
+  species?: IGetProjectForUpdateResponseSpecies;
+  iucn?: IGetProjectForUpdateResponseIUCN;
+  funding?: IGetProjectForUpdateResponseFundingSource;
+  partnerships?: IGetProjectForUpdateResponsePartnerships;
 }
 
 /**
