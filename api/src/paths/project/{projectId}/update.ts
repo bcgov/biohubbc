@@ -13,6 +13,7 @@ import {
   PutProjectData,
   PutIUCNData
 } from '../../../models/project-update';
+import { GetSpeciesData } from '../../../models/project-view-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -25,7 +26,11 @@ import {
   getIUCNActionClassificationByProjectSQL
 } from '../../../queries/project/project-update-queries';
 import { deleteIUCNSQL } from '../../../queries/project/project-delete-queries';
-import { getStakeholderPartnershipsByProjectSQL } from '../../../queries/project/project-view-update-queries';
+import {
+  getStakeholderPartnershipsByProjectSQL,
+  getFocalSpeciesByProjectSQL,
+  getAncillarySpeciesByProjectSQL
+} from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 import { postProjectIUCNSQL } from '../../../queries/project/project-create-queries';
@@ -169,6 +174,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.species)) {
+        promises.push(
+          getSpeciesData(projectId, connection).then((value) => {
+            results.species = value;
+          })
+        );
+      }
+
       if (entities.includes(GET_ENTITIES.iucn)) {
         promises.push(
           getIUCNClassificationData(projectId, connection).then((value) => {
@@ -253,6 +266,34 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   }
 
   return new GetPartnershipsData(resultIndigenous, resultStakeholder);
+};
+
+export const getSpeciesData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatementFocalSpecies = getFocalSpeciesByProjectSQL(projectId);
+  const sqlStatementAncillarySpecies = getAncillarySpeciesByProjectSQL(projectId);
+
+  if (!sqlStatementFocalSpecies || !sqlStatementAncillarySpecies) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const responseFocalSpecies = await connection.query(sqlStatementFocalSpecies.text, sqlStatementFocalSpecies.values);
+  const responseAncillarySpecies = await connection.query(
+    sqlStatementAncillarySpecies.text,
+    sqlStatementAncillarySpecies.values
+  );
+
+  const resultFocalSpecies = (responseFocalSpecies && responseFocalSpecies.rows) || null;
+  const resultAncillarySpecies = (responseAncillarySpecies && responseAncillarySpecies.rows) || null;
+
+  if (!resultFocalSpecies) {
+    throw new HTTP400('Failed to get focal species data');
+  }
+
+  if (!resultAncillarySpecies) {
+    throw new HTTP400('Failed to get ancillary species data');
+  }
+
+  return new GetSpeciesData(resultFocalSpecies, resultAncillarySpecies);
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];

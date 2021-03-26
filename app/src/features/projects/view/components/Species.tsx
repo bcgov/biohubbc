@@ -12,12 +12,21 @@ import {
 } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
 import clsx from 'clsx';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
-
-export interface ISpeciesProps {
-  projectForViewData: IGetProjectForViewResponse;
-}
+import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import {
+  IProjectSpeciesForm,
+  ProjectSpeciesFormInitialValues,
+  ProjectSpeciesFormYupSchema
+} from 'features/projects/components/ProjectSpeciesForm';
+import { EditDialog } from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { EditSpeciesI18N } from 'constants/i18n';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles({
   tableCellBorderBottom: {
@@ -28,6 +37,10 @@ const useStyles = makeStyles({
     borderBottom: 'none'
   }
 });
+export interface ISpeciesProps {
+  projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
+}
 
 /**
  * Species content for a project.
@@ -37,21 +50,88 @@ const useStyles = makeStyles({
 const Species: React.FC<ISpeciesProps> = (props) => {
   const {
     projectForViewData: {
-      species: { focal_species, ancillary_species }
-    }
+      species: { focal_species, ancillary_species },
+      id
+    },
+    codes
   } = props;
+
+  const history = useHistory();
+  const biohubApi = useBiohubApi();
 
   const classes = useStyles();
 
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [speciesForUpdate, setSpeciesForUpdate] = useState(ProjectSpeciesFormInitialValues);
+
+  const handleDialogEditOpen = async () => {
+    let speciesResponseData;
+
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.species]);
+
+      if (!response?.species) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      speciesResponseData = response.species;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    }
+
+    setSpeciesForUpdate(speciesResponseData);
+
+    setOpenEditDialog(true);
+  };
+
+  const handleDialogEditSave = (values: IProjectSpeciesForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditSpeciesI18N.editErrorTitle,
+    dialogText: EditSpeciesI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
   return (
     <>
+      <EditDialog
+        dialogTitle={EditSpeciesI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
+          initialValues: speciesForUpdate,
+          validationSchema: ProjectSpeciesFormYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEditSave}
+      />
+
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">Species</Typography>
           </Grid>
           <Grid item>
-            <IconButton title="Edit Species Information" aria-label="Edit Species Information">
+            <IconButton onClick={() => handleDialogEditOpen()} title="Edit Species" aria-label="Edit Species">
               <Typography variant="caption">
                 <Edit fontSize="inherit" /> EDIT
               </Typography>

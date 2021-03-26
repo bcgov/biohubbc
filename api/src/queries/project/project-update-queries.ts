@@ -100,6 +100,9 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getCoordinatorByProjectSQL', message: 'params', projectId });
 
+  if (!projectId) {
+    return null;
+  }
   const sqlStatement = SQL`
     SELECT
       id,

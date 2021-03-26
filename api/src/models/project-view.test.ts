@@ -5,9 +5,10 @@ import {
   GetFundingData,
   GetIUCNClassificationData,
   GetObjectivesData,
-  GetPartnershipsData,
-  GetSpeciesData
+  GetPartnershipsData
 } from './project-view';
+
+import { GetSpeciesData } from './project-view-update';
 
 describe('GetSpeciesData', () => {
   describe('No values provided', () => {
