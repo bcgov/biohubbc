@@ -145,7 +145,7 @@ export class GetPartnershipsData {
   }
 }
 
-interface IGetPutIUCN {
+export interface IGetPutIUCN {
   classification: number;
   subClassification1: number;
   subClassification2: number;

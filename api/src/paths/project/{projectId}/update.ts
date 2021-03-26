@@ -12,7 +12,8 @@ import {
   PutObjectivesData,
   PutProjectData,
   PutIUCNData,
-  PutSpeciesData
+  PutSpeciesData,
+  IGetPutIUCN
 } from '../../../models/project-update';
 import { GetSpeciesData } from '../../../models/project-view-update';
 import {
@@ -38,8 +39,7 @@ import {
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
-import { postProjectIUCNSQL } from '../../../queries/project/project-create-queries';
-import { insertAncillarySpecies, insertFocalSpecies } from '../../project';
+import { insertAncillarySpecies, insertClassificationDetail, insertFocalSpecies } from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -486,19 +486,12 @@ export const updateProjectIUCNData = async (
     throw new HTTP409('Failed to delete project IUCN data');
   }
 
-  putIUCNData?.classificationDetails.forEach(async (iucnClassification) => {
-    const sqlInsertStatement = postProjectIUCNSQL(iucnClassification.subClassification2, projectId);
+  const insertIUCNPromises =
+    putIUCNData?.classificationDetails?.map((iucnClassification: IGetPutIUCN) =>
+      insertClassificationDetail(iucnClassification.subClassification2, projectId, connection)
+    ) || [];
 
-    if (!sqlInsertStatement) {
-      throw new HTTP400('Failed to build SQL statement');
-    }
-
-    const insertResult = await connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-
-    if (!insertResult || !insertResult.rowCount) {
-      throw new HTTP409('Failed to insert project IUCN data');
-    }
-  });
+  await Promise.all(insertIUCNPromises);
 };
 
 export const updateProjectData = async (
