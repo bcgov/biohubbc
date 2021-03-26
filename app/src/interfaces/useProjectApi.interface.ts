@@ -156,7 +156,6 @@ interface IGetProjectForUpdateResponseIUCNArrayItem {
 
 export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
-  revision_count: number;
 }
 
 interface IGetProjectForUpdateResponseFundingSourceArrayItem {

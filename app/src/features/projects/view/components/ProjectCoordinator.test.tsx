@@ -49,7 +49,7 @@ describe('ProjectCoordinator', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it.only('editing the project coordinator works in the dialog', async () => {
+  it('editing the project coordinator works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       coordinator: {
         first_name: 'first name',

@@ -203,9 +203,6 @@ export const getIUCNClassificationData = async (projectId: number, connection: I
     throw new HTTP400('Failed to get project IUCN data');
   }
 
-  console.log('##########################')
-  console.log(result)
-  
   return new GetIUCNClassificationData(result);
 };
 

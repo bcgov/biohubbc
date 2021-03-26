@@ -185,13 +185,6 @@ const CreateProjectPage: React.FC = () => {
 
     setStepForms([
       {
-        stepTitle: 'IUCN Classification',
-        stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
-        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
-        stepValues: ProjectIUCNFormInitialValues,
-        stepValidation: ProjectIUCNFormYupSchema
-      },
-      {
         stepTitle: 'Project Coordinator',
         stepSubTitle: 'Enter contact details for the project coordinator',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
@@ -243,7 +236,13 @@ const CreateProjectPage: React.FC = () => {
         stepValues: ProjectSpeciesFormInitialValues,
         stepValidation: ProjectSpeciesFormYupSchema
       },
-      
+      {
+        stepTitle: 'IUCN Classification',
+        stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
+        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
+        stepValues: ProjectIUCNFormInitialValues,
+        stepValidation: ProjectIUCNFormYupSchema
+      },
       {
         stepTitle: 'Funding',
         stepSubTitle: 'Specify funding sources for the project',

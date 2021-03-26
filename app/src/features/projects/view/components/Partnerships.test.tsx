@@ -71,7 +71,7 @@ describe('Partnerships', () => {
   it('renders correctly with existing partnership values', () => {
     const { asFragment } = render(
       <Router history={history}>
-        <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
+        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
       </Router>
     );
 
@@ -88,7 +88,7 @@ describe('Partnerships', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
+        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
       </Router>
     );
 
@@ -128,7 +128,7 @@ describe('Partnerships', () => {
 
     const { getByText } = render(
       <Router history={history}>
-        <Partnerships projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
+        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
       </Router>
     );
 
@@ -139,13 +139,13 @@ describe('Partnerships', () => {
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Edit Data')).toBeVisible();
+      expect(getByText('Failed to Fetch Partnerships Data')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Edit Data')).not.toBeVisible();
+      expect(getByText('Failed to Fetch Partnerships Data')).not.toBeVisible();
     });
   });
 });

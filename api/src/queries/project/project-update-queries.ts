@@ -10,7 +10,7 @@ const defaultLog = getLogger('queries/project/project-update-queries');
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
+export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getIUCNActionClassificationByProjectSQL', message: 'params', projectId });
 
   if (!projectId) {
@@ -21,8 +21,7 @@ const defaultLog = getLogger('queries/project/project-update-queries');
     SELECT
       ical1c.id as classification,
       ical2s.id as subClassification1,
-      ical3s.id as subClassification2,
-      piac.revision_count
+      ical3s.id as subClassification2
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
@@ -42,8 +41,7 @@ const defaultLog = getLogger('queries/project/project-update-queries');
     GROUP BY
       ical2s.id,
       ical1c.id,
-      ical3s.id,
-      piac.revision_count;
+      ical3s.id;
   `;
 
   defaultLog.debug({

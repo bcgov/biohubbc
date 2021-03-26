@@ -128,7 +128,6 @@ interface IGetIUCN {
  */
 export class GetIUCNClassificationData {
   classificationDetails: IGetIUCN[];
-  revision_count: number;
 
   constructor(iucnClassificationData?: any[]) {
     defaultLog.debug({
@@ -147,6 +146,5 @@ export class GetIUCNClassificationData {
           };
         })) ||
       [];
-    this.revision_count = iucnClassificationData && iucnClassificationData[0]?.revision_count;
   }
 }
