@@ -21,7 +21,7 @@ import {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
-import EditDialog from 'components/dialog/EditDialog';
+import { EditDialog } from 'components/dialog/EditDialog';
 import { ErrorDialog } from 'components/dialog/ErrorDialog';
 import { EditSpeciesI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
