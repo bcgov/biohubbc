@@ -1,6 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getIndigenousPartnershipsByProjectSQL, getIUCNActionClassificationByProjectSQL } from './project-update-queries';
+import {
+  getIndigenousPartnershipsByProjectSQL,
+  getIUCNActionClassificationByProjectSQL
+} from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
   it('Null projectId', () => {
