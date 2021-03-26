@@ -217,7 +217,17 @@ export const projectUpdateGetResponseObject = {
   title: 'Project get response object, for update purposes',
   type: 'object',
   properties: {
-    coordinator: { type: 'object', properties: {} },
+    coordinator: {
+      type: 'object',
+      properties: {
+        first_name: { type: 'string' },
+        last_name: { type: 'string' },
+        email_address: { type: 'string' },
+        coordinator_agency: { type: 'string' },
+        share_contact_details: { type: 'string' },
+        revision_count: { type: 'number' }
+      }
+    },
     permit: { type: 'object', properties: {} },
     project: { type: 'object', properties: {} },
     objectives: { type: 'object', properties: {} },
