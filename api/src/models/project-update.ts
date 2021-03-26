@@ -187,7 +187,7 @@ export class GetObjectivesData {
   revision_count: number;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
+    defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || null;
     this.caveats = obj?.caveats || null;

@@ -140,18 +140,18 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             </IconButton>
           </Grid>
         </Grid>
-        <Grid container item spacing={3} xs={12}>
-          <Grid item xs={12} sm={6} md={4}>
+        <Grid container item xs={12} spacing={3} >
+          <Grid item xs={12}>
             <ReadMoreField text={objectives.objectives} maxCharLength={850} />
           </Grid>
         </Grid>
 
-        <Grid container item spacing={3} xs={12} justify="space-between" alignItems="center">
+        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">Project Caveats</Typography>
           </Grid>
         </Grid>
-        <Grid container item spacing={2} xs={12}>
+        <Grid container item xs={12} spacing={3} >
           <Grid item xs={12}>
             <ReadMoreField text={objectives.caveats} maxCharLength={850} />
           </Grid>
