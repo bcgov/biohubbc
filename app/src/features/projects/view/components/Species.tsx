@@ -108,7 +108,6 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
   return (
-
     <>
       <EditDialog
         dialogTitle={EditSpeciesI18N.editTitle}
