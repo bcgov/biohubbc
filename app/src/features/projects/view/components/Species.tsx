@@ -62,7 +62,6 @@ const Species: React.FC<ISpeciesProps> = (props) => {
   const classes = useStyles();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  //const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [speciesForUpdate, setSpeciesForUpdate] = useState(ProjectSpeciesFormInitialValues);
 
   const handleDialogEditOpen = async () => {
@@ -109,6 +108,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
   return (
+
     <>
       <EditDialog
         dialogTitle={EditSpeciesI18N.editTitle}
