@@ -207,14 +207,13 @@ export const putProjectSQL = (
   return sqlStatement;
 };
 
-
 /**
  * SQL query to get coordinator information, for update purposes.
  *
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}
  */
- export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
+export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getObjectivesByProjectSQL', message: 'params', projectId });
 
   if (!projectId) {
@@ -240,4 +239,3 @@ export const putProjectSQL = (
 
   return sqlStatement;
 };
-

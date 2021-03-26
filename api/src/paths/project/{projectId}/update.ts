@@ -312,10 +312,7 @@ export const getSpeciesData = async (projectId: number, connection: IDBConnectio
   return new GetSpeciesData(resultFocalSpecies, resultAncillarySpecies);
 };
 
-export const getObjectivesData = async (
-  projectId: number,
-  connection: IDBConnection
-): Promise<GetObjectivesData> => {
+export const getObjectivesData = async (projectId: number, connection: IDBConnection): Promise<GetObjectivesData> => {
   const sqlStatement = getObjectivesByProjectSQL(projectId);
 
   if (!sqlStatement) {

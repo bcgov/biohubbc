@@ -60,7 +60,9 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
   const [objectivesDataForUpdate, setObjectivesDataForUpdate] = useState<IGetProjectForUpdateResponseObjectives>(
     null as any
   );
-  const [objectivesFormData, setObjectivesFormData] = useState<IProjectObjectivesForm>(ProjectObjectivesFormInitialValues);
+  const [objectivesFormData, setObjectivesFormData] = useState<IProjectObjectivesForm>(
+    ProjectObjectivesFormInitialValues
+  );
 
   const handleDialogEditOpen = async () => {
     let objectivesResponseData;
@@ -124,39 +126,38 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
       />
       <ErrorDialog {...errorDialogProps} />
       <Box m={3}>
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">Project Objectives</Typography>
+        <Grid container spacing={3}>
+          <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="h3">Project Objectives</Typography>
+            </Grid>
+            <Grid item>
+              <IconButton
+                onClick={() => handleDialogEditOpen()}
+                title="Edit Objectives Information"
+                aria-label="Edit Objectives Information">
+                <Typography variant="caption">
+                  <Edit fontSize="inherit" /> EDIT
+                </Typography>
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item>
-            <IconButton
-              onClick={() => handleDialogEditOpen()}
-              title="Edit Objectives Information"
-              aria-label="Edit Objectives Information">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
-              </Typography>
-            </IconButton>
+          <Grid container item xs={12} spacing={3}>
+            <Grid item xs={12}>
+              <ReadMoreField text={objectives.objectives} maxCharLength={850} />
+            </Grid>
+          </Grid>
+          <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
+            <Grid item>
+              <Typography variant="h3">Project Caveats</Typography>
+            </Grid>
+          </Grid>
+          <Grid container item xs={12} spacing={3}>
+            <Grid item xs={12}>
+              <ReadMoreField text={objectives.caveats} maxCharLength={850} />
+            </Grid>
           </Grid>
         </Grid>
-        <Grid container item xs={12} spacing={3} >
-          <Grid item xs={12}>
-            <ReadMoreField text={objectives.objectives} maxCharLength={850} />
-          </Grid>
-        </Grid>
-
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">Project Caveats</Typography>
-          </Grid>
-        </Grid>
-        <Grid container item xs={12} spacing={3} >
-          <Grid item xs={12}>
-            <ReadMoreField text={objectives.caveats} maxCharLength={850} />
-          </Grid>
-        </Grid>
-      </Grid>
       </Box>
     </>
   );

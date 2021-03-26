@@ -180,7 +180,6 @@ export class GetIUCNClassificationData {
   }
 }
 
-
 export class GetObjectivesData {
   objectives: string;
   caveats: string;
