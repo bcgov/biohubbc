@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getIndigenousPartnershipsByProjectSQL } from './project-update-queries';
+import { getIndigenousPartnershipsByProjectSQL, getCoordinatorByProjectSQL } from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
   it('Null projectId', () => {
@@ -11,6 +11,20 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getCoordinatorByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getCoordinatorByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getCoordinatorByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
