@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getIndigenousPartnershipsByProjectSQL, getCoordinatorByProjectSQL, getIUCNActionClassificationByProjectSQL } from './project-update-queries';
+import {
+  getIndigenousPartnershipsByProjectSQL,
+  getCoordinatorByProjectSQL,
+  getIUCNActionClassificationByProjectSQL
+} from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
   it('Null projectId', () => {
@@ -29,7 +33,6 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
     expect(response).to.not.be.null;
   });
 });
-
 
 describe('getCoordinatorByProjectSQL', () => {
   it('Null projectId', () => {
