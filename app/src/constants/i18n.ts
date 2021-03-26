@@ -16,42 +16,42 @@ export const UploadProjectArtifactsI18N = {
 
 export const EditPartnershipsI18N = {
   editTitle: 'Edit Partnerships',
-  createErrorTitle: 'Error Editing Partnerships',
-  createErrorText:
+  editErrorTitle: 'Error Editing Partnerships',
+  editErrorText:
     'An error has occurred while attempting to edit your partnerships, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditObjectivesI18N = {
   editTitle: 'Edit Project Objectives',
-  createErrorTitle: 'Error Editing Project Objectives',
-  createErrorText:
+  editErrorTitle: 'Error Editing Project Objectives',
+  editErrorText:
     'An error has occurred while attempting to edit your project objectives, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditCoordinatorI18N = {
   editTitle: 'Edit Project Coordinator',
-  createErrorTitle: 'Error Editing Project Coordinator',
-  createErrorText:
+  editErrorTitle: 'Error Editing Project Coordinator',
+  editErrorText:
     'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditGeneralInformationI18N = {
   editTitle: 'Edit General Information',
-  createErrorTitle: 'Error Editing General Information',
-  createErrorText:
+  editErrorTitle: 'Error Editing General Information',
+  editErrorText:
     'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditLocationBoundaryI18N = {
   editTitle: 'Edit Location / Project Boundary',
-  createErrorTitle: 'Error Editing Location / Project Boundary',
-  createErrorText:
+  editErrorTitle: 'Error Editing Location / Project Boundary',
+  editErrorText:
     'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditIUCNI18N = {
   editTitle: 'Edit IUCN Classification',
-  createErrorTitle: 'Error Editing IUCN Classification',
-  createErrorText:
+  editErrorTitle: 'Error Editing IUCN Classification',
+  editErrorText:
     'An error has occurred while attempting to edit your IUCN classification, please try again. If the error persists, please contact your system administrator.'
 };

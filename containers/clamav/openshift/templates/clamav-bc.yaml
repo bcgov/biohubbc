@@ -1,0 +1,87 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: clamav-build
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: '${NAME}'
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: '${NAME}-build'
+      creationTimestamp: null
+      labels:
+        app: '${NAME}'
+    spec:
+      runPolicy: Serial
+      completionDeadlineSeconds: 1800
+      triggers:
+        - type: ImageChange
+          imageChange:
+            from:
+              kind: ImageStreamTag
+              name: '${NAME}:latest'
+      source:
+        type: Git
+        git:
+          ref: ${GIT_REF}
+          uri: ${GIT_SOURCE_URL}
+        contextDir: ${SOURCE_CONTEXT_DIR}
+        secrets:
+          - secret:
+              name: etc-pki-entitlement
+            destinationDir: etc-pki-entitlement
+        configMaps:
+          - configMap:
+              name: rhsm-conf
+            destinationDir: rhsm-conf
+          - configMap:
+              name: rhsm-ca
+            destinationDir: rhsm-ca
+      strategy:
+        type: Docker
+        dockerStrategy:
+          from:
+            kind: ImageStreamTag
+            name: 'rhel:latest'
+            namespace: ${NAME_SPACE}
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${NAME}:latest'
+      resources:
+        requests:
+          cpu: 100m
+          memory: 2Gi
+        limits:
+          cpu: '1'
+          memory: 4Gi
+    status:
+      lastVersion: 0
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    value: clamav
+    required: true
+  - name: GIT_SOURCE_URL
+    displayName: GIT Source Repo URL
+    description: A GIT URL to your source code.
+    value: 'https://github.com/bcgov/biohubbc.git'
+    required: true
+  - name: GIT_REF
+    displayName: Git Reference
+    description: The git reference or branch.
+    required: true
+    value: dev
+  - name: SOURCE_CONTEXT_DIR
+    displayName: Source Context Directory
+    description: The source context directory.
+    required: false
+    value: containers/clamav
+  - name: NAME_SPACE
+    displayName: Namespace for source image
+    value: af2668-tools
+    required: true    

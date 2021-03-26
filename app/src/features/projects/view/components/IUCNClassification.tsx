@@ -11,16 +11,20 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
-import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectForUpdateResponseIUCN,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { useHistory } from 'react-router';
-import { IProjectIUCNForm, ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema, ProjectIUCNFormArrayItemInitialValues } from 'features/projects/components/ProjectIUCNForm';
+import { IProjectIUCNForm, ProjectIUCNFormYupSchema, ProjectIUCNFormArrayItemInitialValues } from 'features/projects/components/ProjectIUCNForm';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditIUCNI18N } from 'constants/i18n';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { ErrorDialog } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Edit } from '@material-ui/icons';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles({
   table: {
@@ -43,6 +47,7 @@ const useStyles = makeStyles({
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -57,29 +62,77 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
   const biohubApi = useBiohubApi();
 
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditIUCNI18N.editErrorTitle,
+    dialogText: EditIUCNI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
-  const [iucnForUpdate, setIucnForUpdate] = useState(ProjectIUCNFormInitialValues);
+
+  const [iucnDataForUpdate, setIucnDataForUpdate] = useState<IGetProjectForUpdateResponseIUCN>(
+    null as any
+  );
+
+  const [iucnFormData, setIucnFormData] = useState<IProjectIUCNForm>(
+    { classificationDetails: [ProjectIUCNFormArrayItemInitialValues] }
+  );
 
   const handleDialogEditOpen = async () => {
-    const { iucn } = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
+    let iucnResponseData;
 
-    if (!iucn) {
-      setOpenErrorDialog(true);
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
+
+      if (!response?.iucn) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      iucnResponseData = response.iucn;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setIucnForUpdate(iucn);
+    setIucnDataForUpdate(iucnResponseData);
+
+    setIucnFormData({
+      classificationDetails: iucnResponseData.classificationDetails
+    });
+
     setOpenEditDialog(true);
   };
 
-  const handleDialogEdit = (values: IProjectIUCNForm) => {
-    // make post request from here using values and projectId
-    setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+  const handleDialogEditSave = async (values: IProjectIUCNForm) => {
+    const projectData = {
+      iucn: { ...values, revision_count: iucnDataForUpdate.revision_count }
+    };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
   };
 
   return (
@@ -89,20 +142,14 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         open={openEditDialog}
         component={{
           element: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
-          initialValues: iucnForUpdate?.classificationDetails?.length ? iucnForUpdate : { classificationDetails: [ProjectIUCNFormArrayItemInitialValues] },
+          initialValues: iucnFormData,
           validationSchema: ProjectIUCNFormYupSchema
         }}
         onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
-        onSave={handleDialogEdit}
+        onSave={handleDialogEditSave}
       />
-      <ErrorDialog
-        dialogTitle="Failed to Fetch IUCN Data"
-        dialogText="Could not retrieve data for editing purposes, please try again later."
-        open={openErrorDialog}
-        onClose={() => setOpenErrorDialog(false)}
-        onOk={() => setOpenErrorDialog(false)}
-      />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>

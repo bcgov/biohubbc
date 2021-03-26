@@ -1,6 +1,7 @@
 import { Box, Button, CircularProgress, makeStyles, Paper, Typography } from '@material-ui/core';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { UploadProjectArtifactsI18N } from 'constants/i18n';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { DropzoneArea } from 'material-ui-dropzone';
@@ -88,7 +89,8 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         setDropzoneInstanceKey(dropzoneInstanceKey > 0 ? 0 : 1);
       }
     } catch (error) {
-      showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
+      const apiError = error as APIError;
+      showErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
     }
   };
 

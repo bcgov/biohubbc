@@ -75,13 +75,15 @@ export const rootAPIDoc = {
       '403': getHTTPResponse('Unauthorized user'),
       '409': getHTTPResponse('Conflict'),
       '500': getHTTPResponse('Server error'),
-      '503': getHTTPResponse('Service unavailable'),
       default: getHTTPResponse('Unexpected error')
     },
     schemas: {
       Error: {
         description: 'Error response object',
         properties: {
+          name: {
+            type: 'string'
+          },
           status: {
             type: 'number'
           },

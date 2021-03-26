@@ -21,7 +21,8 @@ const defaultLog = getLogger('queries/project/project-update-queries');
     SELECT
       ical1c.id as classification,
       ical2s.id as subClassification1,
-      ical3s.id as subClassification2
+      ical3s.id as subClassification2,
+      piac.revision_count
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
@@ -41,7 +42,8 @@ const defaultLog = getLogger('queries/project/project-update-queries');
     GROUP BY
       ical2s.id,
       ical1c.id,
-      ical3s.id;
+      ical3s.id,
+      piac.revision_count;
   `;
 
   defaultLog.debug({
@@ -100,7 +102,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getCoordinatorByProjectSQL', message: 'params', projectId });
 
-  // TODO pull the record wtih the latest revision_count?
   const sqlStatement = SQL`
     SELECT
       id,

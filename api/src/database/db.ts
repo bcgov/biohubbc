@@ -2,7 +2,7 @@ import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 import { SYSTEM_USER_TYPE } from '../constants/database';
 import { setSystemUserContextSQL } from '../queries/user-context-queries';
 import { getLogger } from '../utils/logger';
-import { CustomError } from '../errors/CustomError';
+import { HTTP400, HTTP500 } from '../errors/CustomError';
 
 const defaultLog = getLogger('database/db');
 
@@ -159,7 +159,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
     const bceid = _token['preferred_username']?.split('@')[0];
 
     if (!idir && !bceid) {
-      throw new CustomError(400, 'Failed to identify user ID');
+      throw new HTTP400('Failed to identify user ID');
     }
 
     const userIdentifier = idir || bceid;
@@ -169,13 +169,13 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
     const setSystemUserContextSQLStatement = setSystemUserContextSQL(userIdentifier, systemUserType);
 
     if (!setSystemUserContextSQLStatement) {
-      throw new CustomError(400, 'Failed to build SQL statement');
+      throw new HTTP400('Failed to build SQL statement');
     }
 
     try {
       await _client.query(setSystemUserContextSQLStatement.text, setSystemUserContextSQLStatement.values);
     } catch (error) {
-      throw new CustomError(500, 'Failed to set user context', [error]);
+      throw new HTTP500('Failed to set user context', [error]);
     }
   };
 

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { CustomError } from '../errors/CustomError';
+import { HTTP400 } from '../errors/CustomError';
 import { projectIdResponseObject } from '../openapi/schemas/project';
 import { getProjectListSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';
@@ -46,9 +46,6 @@ GET.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -68,7 +65,7 @@ function getProjectList(): RequestHandler {
       const getProjectListSQLStatement = getProjectListSQL();
 
       if (!getProjectListSQLStatement) {
-        throw new CustomError(400, 'Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL statement');
       }
 
       await connection.open();

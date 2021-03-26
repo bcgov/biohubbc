@@ -8,7 +8,8 @@ import {
   IGetProjectForViewResponse,
   IGetProjectsListResponse,
   UPDATE_GET_ENTITIES,
-  IGetProjectForUpdateResponse
+  IGetProjectForUpdateResponse,
+  IUpdateProjectRequest
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -58,6 +59,19 @@ const useProjectApi = (axios: AxiosInstance) => {
         return qs.stringify(params);
       }
     });
+
+    return data;
+  };
+
+  /**
+   * Update an existing project.
+   *
+   * @param {number} projectId
+   * @param {IUpdateProjectRequest} projectData
+   * @return {*}  {Promise<any>}
+   */
+  const updateProject = async (projectId: number, projectData: IUpdateProjectRequest): Promise<any> => {
+    const { data } = await axios.put(`api/project/${projectId}/update`, projectData);
 
     return data;
   };
@@ -132,7 +146,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectForView,
     uploadProjectArtifacts,
     getMediaList,
-    getProjectForUpdate
+    getProjectForUpdate,
+    updateProject
   };
 };
 

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { CustomError } from '../errors/CustomError';
+import { HTTP400 } from '../errors/CustomError';
 import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
@@ -66,9 +66,6 @@ POST.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -95,7 +92,7 @@ function createProject(): RequestHandler {
       });
 
       if (!postProjectSQLStatement) {
-        throw new CustomError(400, 'Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL statement');
       }
 
       let projectId: number;
@@ -113,7 +110,7 @@ function createProject(): RequestHandler {
           (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
 
         if (!projectResult || !projectResult.id) {
-          throw new CustomError(400, 'Failed to insert into project table');
+          throw new HTTP400('Failed to insert into project table');
         }
 
         projectId = projectResult.id;
@@ -236,7 +233,7 @@ export const insertFocalSpecies = async (
   const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -244,7 +241,7 @@ export const insertFocalSpecies = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into focal_species table');
+    throw new HTTP400('Failed to insert into focal_species table');
   }
 
   return result.id;
@@ -258,7 +255,7 @@ export const insertAncillarySpecies = async (
   const sqlStatement = postAncillarySpeciesSQL(ancillary_species, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -266,7 +263,7 @@ export const insertAncillarySpecies = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into ancillary_species table');
+    throw new HTTP400('Failed to insert into ancillary_species table');
   }
 
   return result.id;
@@ -276,7 +273,7 @@ export const insertRegion = async (region: string, project_id: number, connectio
   const sqlStatement = postProjectRegionSQL(region, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -284,7 +281,7 @@ export const insertRegion = async (region: string, project_id: number, connectio
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_region table');
+    throw new HTTP400('Failed to insert into project_region table');
   }
 
   return result.id;
@@ -298,7 +295,7 @@ export const insertFundingSource = async (
   const sqlStatement = postProjectFundingSourceSQL(fundingSource, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -306,7 +303,7 @@ export const insertFundingSource = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_region table');
+    throw new HTTP400('Failed to insert into project_region table');
   }
 
   return result.id;
@@ -320,7 +317,7 @@ export const insertIndigenousNation = async (
   const sqlStatement = postProjectIndigenousNationSQL(indigenousNationId, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -328,7 +325,7 @@ export const insertIndigenousNation = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_first_nation table');
+    throw new HTTP400('Failed to insert into project_first_nation table');
   }
 
   return result.id;
@@ -342,7 +339,7 @@ export const insertStakeholderPartnership = async (
   const sqlStatement = postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -350,7 +347,7 @@ export const insertStakeholderPartnership = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into stakeholder_partnership table');
+    throw new HTTP400('Failed to insert into stakeholder_partnership table');
   }
 
   return result.id;
@@ -365,7 +362,7 @@ export const insertPermitNumber = async (
   const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -373,7 +370,7 @@ export const insertPermitNumber = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_permit table');
+    throw new HTTP400('Failed to insert into project_permit table');
   }
 
   return result.id;
@@ -387,7 +384,7 @@ export const insertClassificationDetail = async (
   const sqlStatement = postProjectIUCNSQL(iucn3_id, project_id);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -395,7 +392,7 @@ export const insertClassificationDetail = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_iucn_action_classification table');
+    throw new HTTP400('Failed to insert into project_iucn_action_classification table');
   }
 
   return result.id;
@@ -409,7 +406,7 @@ export const insertProjectActivity = async (
   const sqlStatement = postProjectActivitySQL(activityId, projectId);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -417,7 +414,7 @@ export const insertProjectActivity = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_activity table');
+    throw new HTTP400('Failed to insert into project_activity table');
   }
 
   return result.id;
@@ -431,7 +428,7 @@ export const insertProjectClimateChangeInitiative = async (
   const sqlStatement = postProjectClimateChangeInitiativeSQL(climateChangeInitiativeId, projectId);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -439,7 +436,7 @@ export const insertProjectClimateChangeInitiative = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new CustomError(400, 'Failed to insert into project_climate_initiative table');
+    throw new HTTP400('Failed to insert into project_climate_initiative table');
   }
 
   return result.id;

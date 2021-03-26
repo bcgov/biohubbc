@@ -17,7 +17,7 @@ export class PutProjectData {
     this.type = obj?.project_type || null;
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -31,7 +31,7 @@ export class PutLocationData {
 
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -45,7 +45,7 @@ export class PutObjectivesData {
 
     this.objectives = obj?.objectives || '';
     this.caveats = obj?.caveats || null;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -65,7 +65,27 @@ export class PutCoordinatorData {
     this.email_address = obj?.email_address || null;
     this.coordinator_agency = obj?.coordinator_agency || null;
     this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
+  }
+}
+
+export class GetCoordinatorData {
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  coordinator_agency: string;
+  share_contact_details: string;
+  revision_count: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
+
+    this.first_name = obj?.coordinator_first_name || null;
+    this.last_name = obj?.coordinator_last_name || null;
+    this.email_address = obj?.coordinator_email_address || null;
+    this.coordinator_agency = obj?.coordinator_agency_name || null;
+    this.share_contact_details = (obj?.coordinator_public && 'true') || 'false';
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -108,6 +128,7 @@ interface IGetIUCN {
  */
 export class GetIUCNClassificationData {
   classificationDetails: IGetIUCN[];
+  revision_count: number;
 
   constructor(iucnClassificationData?: any[]) {
     defaultLog.debug({
@@ -126,5 +147,6 @@ export class GetIUCNClassificationData {
           };
         })) ||
       [];
+    this.revision_count = iucnClassificationData && iucnClassificationData[0]?.revision_count;
   }
 }

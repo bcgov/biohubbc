@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { CustomError } from '../errors/CustomError';
+import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
@@ -221,9 +221,6 @@ GET.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -243,7 +240,7 @@ function getAllCodes(): RequestHandler {
       const allCodeSets = await getAllCodeSets(connection);
 
       if (!allCodeSets) {
-        throw new CustomError(500, 'Failed to fetch codes');
+        throw new HTTP500('Failed to fetch codes');
       }
 
       return res.status(200).json(allCodeSets);
