@@ -30,8 +30,8 @@ export const EditObjectivesI18N = {
 
 export const EditCoordinatorI18N = {
   editTitle: 'Edit Project Coordinator',
-  createErrorTitle: 'Error Editing Project Coordinator',
-  createErrorText:
+  editErrorTitle: 'Error Editing Project Coordinator',
+  editErrorText:
     'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
 };
 

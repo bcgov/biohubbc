@@ -3,7 +3,14 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400, HTTP409 } from '../../../errors/CustomError';
-import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../../../models/project-update';
+import {
+  GetCoordinatorData,
+  GetPartnershipsData,
+  PutCoordinatorData,
+  PutLocationData,
+  PutObjectivesData,
+  PutProjectData
+} from '../../../models/project-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -100,7 +107,7 @@ GET.apiDoc = {
 };
 
 export interface IGetProjectForUpdate {
-  coordinator: any;
+  coordinator: GetCoordinatorData | null;
   permit: any;
   project: any;
   objectives: any;
@@ -108,7 +115,7 @@ export interface IGetProjectForUpdate {
   species: any;
   iucn: any;
   funding: any;
-  partnerships: any;
+  partnerships: GetPartnershipsData | null;
 }
 
 /**
@@ -183,7 +190,10 @@ function getProjectForUpdate(): RequestHandler {
   };
 }
 
-export const getProjectCoordinatorData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+export const getProjectCoordinatorData = async (
+  projectId: number,
+  connection: IDBConnection
+): Promise<GetCoordinatorData> => {
   const sqlStatement = getCoordinatorByProjectSQL(projectId);
 
   if (!sqlStatement) {
@@ -198,7 +208,7 @@ export const getProjectCoordinatorData = async (projectId: number, connection: I
     throw new HTTP400('Failed to get project coordinator data');
   }
 
-  return result;
+  return new GetCoordinatorData(result);
 };
 
 export const getPartnershipsData = async (projectId: number, connection: IDBConnection): Promise<any> => {
@@ -223,10 +233,7 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
     throw new HTTP400('Failed to get stakeholder partnership data');
   }
 
-  return {
-    indigenous_partnerships: resultIndigenous?.length && resultIndigenous.map((item: any) => item.id),
-    stakeholder_partnerships: resultStakeholder?.length && resultStakeholder.map((item: any) => item.name)
-  };
+  return new GetPartnershipsData(resultIndigenous, resultStakeholder);
 };
 
 export const getSpeciesData = async (projectId: number, connection: IDBConnection): Promise<any> => {

@@ -53,8 +53,6 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
   if (!projectId) {
     return null;
   }
-
-  // TODO pull the record wtih the latest revision_count?
   const sqlStatement = SQL`
     SELECT
       id,

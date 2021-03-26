@@ -210,13 +210,37 @@ export const projectViewGetResponseObject = {
   properties: {}
 };
 
+const projectUpdateProperties = {
+  coordinator: {
+    type: 'object',
+    properties: {
+      first_name: { type: 'string' },
+      last_name: { type: 'string' },
+      email_address: { type: 'string' },
+      coordinator_agency: { type: 'string' },
+      share_contact_details: { type: 'string' },
+      revision_count: { type: 'number' }
+    }
+  },
+  permit: { type: 'object', properties: {} },
+  project: { type: 'object', properties: {} },
+  objectives: { type: 'object', properties: {} },
+  location: { type: 'object', properties: {} },
+  species: { type: 'object', properties: {} },
+  iucn: { type: 'object', properties: {} },
+  funding: { type: 'object', properties: {} },
+  partnerships: { type: 'object', properties: {} }
+};
+
 /**
  * Response object for project update GET request
  */
 export const projectUpdateGetResponseObject = {
   title: 'Project get response object, for update purposes',
   type: 'object',
-  properties: {}
+  properties: {
+    ...projectUpdateProperties
+  }
 };
 
 /**
@@ -225,7 +249,9 @@ export const projectUpdateGetResponseObject = {
 export const projectUpdatePutRequestObject = {
   title: 'Project Put Object',
   type: 'object',
-  properties: {}
+  properties: {
+    ...projectUpdateProperties
+  }
 };
 
 /**

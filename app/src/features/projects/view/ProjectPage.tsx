@@ -75,25 +75,25 @@ const ProjectPage: React.FC = () => {
     }
   }, [urlParams, biohubApi, isLoadingCodes, codes]);
 
+  const getProject = async () => {
+    const codesResponse = await biohubApi.codes.getAllCodeSets();
+    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+
+    if (!projectWithDetailsResponse || !codesResponse) {
+      // TODO error handling/messaging
+      return;
+    }
+
+    setProjectWithDetails(projectWithDetailsResponse);
+    setCodes(codesResponse);
+  };
+
   useEffect(() => {
-    const getProject = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-      const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-      if (!projectWithDetailsResponse || !codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setProjectWithDetails(projectWithDetailsResponse);
-      setCodes(codesResponse);
-    };
-
     if (!isLoadingProject && !projectWithDetails) {
       getProject();
       setIsLoadingProject(true);
     }
-  }, [urlParams, biohubApi, isLoadingProject, projectWithDetails]);
+  }, [urlParams, biohubApi, isLoadingProject, projectWithDetails, getProject]);
 
   if (!codes || !projectWithDetails) {
     return <CircularProgress></CircularProgress>;
@@ -170,7 +170,7 @@ const ProjectPage: React.FC = () => {
             </Box>
             <Box width="100%">
               {location.pathname.includes('/details') && (
-                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} />
+                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
               )}
               {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
               {location.pathname.includes('/attachments') && (
