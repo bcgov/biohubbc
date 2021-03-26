@@ -107,6 +107,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
+  
   return (
     <>
       <EditDialog
