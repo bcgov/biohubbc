@@ -11,7 +11,8 @@ import {
   PutLocationData,
   PutObjectivesData,
   PutProjectData,
-  PutIUCNData
+  PutIUCNData,
+  PutSpeciesData
 } from '../../../models/project-update';
 import { GetSpeciesData } from '../../../models/project-view-update';
 import {
@@ -25,7 +26,11 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL
 } from '../../../queries/project/project-update-queries';
-import { deleteIUCNSQL } from '../../../queries/project/project-delete-queries';
+import {
+  deleteIUCNSQL,
+  deleteFocalSpeciesSQL,
+  deleteAncillarySpeciesSQL
+} from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
@@ -33,7 +38,11 @@ import {
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
-import { postProjectIUCNSQL } from '../../../queries/project/project-create-queries';
+import {
+  postProjectIUCNSQL,
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL
+} from '../../../queries/project/project-create-queries';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -393,6 +402,10 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectIUCNData(projectId, entities, connection));
       }
 
+      if (entities?.species) {
+        promises.push(updateProjectSpeciesData(projectId, entities, connection));
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -406,6 +419,78 @@ function updateProject(): RequestHandler {
     }
   };
 }
+
+export const updateProjectSpeciesData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putSpeciesData = (entities?.species && new PutSpeciesData(entities.species)) || null;
+
+  const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(projectId);
+
+  if (!sqlDeleteFocalSpeciesStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const deleteFocalSpeciesResult = await connection.query(
+    sqlDeleteFocalSpeciesStatement.text,
+    sqlDeleteFocalSpeciesStatement.values
+  );
+
+  if (!deleteFocalSpeciesResult) {
+    throw new HTTP409('Failed to delete project focal species data');
+  }
+
+  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
+
+  if (!sqlDeleteAncillarySpeciesStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const deleteAncillarySpeciesResult = await connection.query(
+    sqlDeleteAncillarySpeciesStatement.text,
+    sqlDeleteAncillarySpeciesStatement.values
+  );
+
+  if (!deleteAncillarySpeciesResult) {
+    throw new HTTP409('Failed to delete project ancillary species data');
+  }
+
+  putSpeciesData?.focal_species.forEach(async (focalSpecies) => {
+    const sqlInsertFocalSpeciesStatement = postFocalSpeciesSQL(focalSpecies, projectId);
+
+    if (!sqlInsertFocalSpeciesStatement) {
+      throw new HTTP400('Failed to build SQL statement');
+    }
+
+    const insertFocalSpeciesResult = await connection.query(
+      sqlInsertFocalSpeciesStatement.text,
+      sqlInsertFocalSpeciesStatement.values
+    );
+
+    if (!insertFocalSpeciesResult || !insertFocalSpeciesResult.rowCount) {
+      throw new HTTP409('Failed to insert project focal species data');
+    }
+  });
+
+  putSpeciesData?.ancillary_species.forEach(async (ancillarySpecies) => {
+    const sqlInsertAncillarySpeciesStatement = postAncillarySpeciesSQL(ancillarySpecies, projectId);
+
+    if (!sqlInsertAncillarySpeciesStatement) {
+      throw new HTTP400('Failed to build SQL statement');
+    }
+
+    const insertAncillarySpeciesResult = await connection.query(
+      sqlInsertAncillarySpeciesStatement.text,
+      sqlInsertAncillarySpeciesStatement.values
+    );
+
+    if (!insertAncillarySpeciesResult || !insertAncillarySpeciesResult.rowCount) {
+      throw new HTTP409('Failed to insert project ancillary species data');
+    }
+  });
+};
 
 export const updateProjectIUCNData = async (
   projectId: number,
@@ -422,7 +507,7 @@ export const updateProjectIUCNData = async (
 
   const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
 
-  if (!deleteResult || !deleteResult.rowCount) {
+  if (!deleteResult) {
     throw new HTTP409('Failed to delete project IUCN data');
   }
 
