@@ -20,7 +20,7 @@ import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -75,7 +75,7 @@ const ProjectPage: React.FC = () => {
     }
   }, [urlParams, biohubApi, isLoadingCodes, codes]);
 
-  const getProject = async () => {
+  const getProject = useCallback(async () => {
     const codesResponse = await biohubApi.codes.getAllCodeSets();
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
@@ -86,7 +86,7 @@ const ProjectPage: React.FC = () => {
 
     setProjectWithDetails(projectWithDetailsResponse);
     setCodes(codesResponse);
-  };
+  }, [biohubApi.codes, biohubApi.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {

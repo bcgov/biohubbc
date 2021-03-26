@@ -109,7 +109,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
   const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
 
   const getExistingValue = (existingValues: any[]): IMultiAutocompleteFieldOption[] => {
-    if (!values) {
+    if (!existingValues) {
       return [];
     }
 

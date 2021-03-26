@@ -55,3 +55,10 @@ export const EditIUCNI18N = {
   editErrorText:
     'An error has occurred while attempting to edit your IUCN classification, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const EditSpeciesI18N = {
+  editTitle: 'Edit Species',
+  editErrorTitle: 'Error Editing Species',
+  editErrorText:
+    'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
+};
