@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
-import { CustomError } from '../../../errors/CustomError';
+import { HTTP400, HTTP409 } from '../../../errors/CustomError';
 import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../../../models/project-update';
 import {
   projectIdResponseObject,
@@ -91,9 +91,6 @@ GET.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -127,7 +124,7 @@ function getProjectForUpdate(): RequestHandler {
       const entities: string[] = (req.query?.entity as string[]) || getAllEntities();
 
       if (!projectId) {
-        throw new CustomError(400, 'Missing required path parameter: projectId');
+        throw new HTTP400('Missing required path parameter: projectId');
       }
 
       await connection.open();
@@ -188,7 +185,7 @@ export const getProjectCoordinatorData = async (projectId: number, connection: I
   const sqlStatement = getCoordinatorByProjectSQL(projectId);
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -196,7 +193,7 @@ export const getProjectCoordinatorData = async (projectId: number, connection: I
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result) {
-    throw new CustomError(400, 'Failed to get project coordinator data');
+    throw new HTTP400('Failed to get project coordinator data');
   }
 
   return result;
@@ -207,7 +204,7 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   const sqlStatementStakeholder = getStakeholderPartnershipsByProjectSQL(projectId);
 
   if (!sqlStatementIndigenous || !sqlStatementStakeholder) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const responseIndigenous = await connection.query(sqlStatementIndigenous.text, sqlStatementIndigenous.values);
@@ -217,11 +214,11 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   const resultStakeholder = (responseStakeholder && responseStakeholder.rows) || null;
 
   if (!resultIndigenous) {
-    throw new CustomError(400, 'Failed to get indigenous partnership data');
+    throw new HTTP400('Failed to get indigenous partnership data');
   }
 
   if (!resultStakeholder) {
-    throw new CustomError(400, 'Failed to get stakeholder partnership data');
+    throw new HTTP400('Failed to get stakeholder partnership data');
   }
 
   return {
@@ -306,9 +303,6 @@ PUT.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -342,11 +336,11 @@ function updateProject(): RequestHandler {
       const entities: IUpdateProject = req.body;
 
       if (!projectId) {
-        throw new CustomError(400, 'Missing required path parameter: projectId');
+        throw new HTTP400('Missing required path parameter: projectId');
       }
 
       if (!entities) {
-        throw new CustomError(400, 'Missing required request body');
+        throw new HTTP400('Missing required request body');
       }
 
       await connection.open();
@@ -390,7 +384,7 @@ export const updateProjectData = async (
     0;
 
   if (!revision_count && revision_count !== 0) {
-    throw new CustomError(400, 'Failed to parse request body');
+    throw new HTTP400('Failed to parse request body');
   }
 
   const sqlStatement = putProjectSQL(
@@ -403,7 +397,7 @@ export const updateProjectData = async (
   );
 
   if (!sqlStatement) {
-    throw new CustomError(400, 'Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const result = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -411,6 +405,6 @@ export const updateProjectData = async (
   if (!result || !result.rowCount) {
     // TODO if revision count is bad, it is supposed to raise an exception?
     // It currently does skip the update as expected, but it just returns 0 rows updated, and doesn't result in any errors
-    throw new CustomError(409, 'Failed to update stale project data');
+    throw new HTTP409('Failed to update stale project data');
   }
 };

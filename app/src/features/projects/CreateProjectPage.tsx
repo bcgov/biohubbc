@@ -64,6 +64,7 @@ import {
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
 import { Formik } from 'formik';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -349,7 +350,8 @@ const CreateProjectPage: React.FC = () => {
         });
       }
     } catch (error) {
-      showErrorDialog({ ...((error?.message && { dialogError: error.message }) || {}) });
+      const apiError = error as APIError;
+      showErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
     }
   };
 
