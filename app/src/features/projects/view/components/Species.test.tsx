@@ -62,7 +62,7 @@ describe('Species', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('editing the partnerships works in the dialog', async () => {
+  it('editing the species works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       species: {
         focal_species: ['species 1', 'species 2'],
@@ -120,13 +120,13 @@ describe('Species', () => {
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Species Data')).toBeVisible();
+      expect(getByText('Error Editing Species')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Species Data')).not.toBeVisible();
+      expect(getByText('Error Editing Species')).not.toBeVisible();
     });
   });
 });

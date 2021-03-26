@@ -22,10 +22,11 @@ import {
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
 import { EditDialog } from 'components/dialog/EditDialog';
-import { ErrorDialog } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSpeciesI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles({
   tableCellBorderBottom: {
@@ -61,24 +62,51 @@ const Species: React.FC<ISpeciesProps> = (props) => {
   const classes = useStyles();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
+  //const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [speciesForUpdate, setSpeciesForUpdate] = useState(ProjectSpeciesFormInitialValues);
 
   const handleDialogEditOpen = async () => {
-    const { species } = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.species]);
+    let speciesResponseData;
 
-    if (!species) {
-      setOpenErrorDialog(true);
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.species]);
+
+      if (!response?.species) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      speciesResponseData = response.species;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setSpeciesForUpdate(species);
+    setSpeciesForUpdate(speciesResponseData);
+
     setOpenEditDialog(true);
   };
   const handleDialogEditSave = (values: IProjectSpeciesForm) => {
     // make put request from here using values and projectId
     setOpenEditDialog(false);
     history.push(`/projects/${id}/details`);
+  };
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditSpeciesI18N.editErrorTitle,
+    dialogText: EditSpeciesI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
   return (
     <>
@@ -95,13 +123,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
         onSave={handleDialogEditSave}
       />
 
-      <ErrorDialog
-        dialogTitle="Failed to Fetch Species Data"
-        dialogText="Could not retrieve data for editing purposes, please try again later."
-        open={openErrorDialog}
-        onClose={() => setOpenErrorDialog(false)}
-        onOk={() => setOpenErrorDialog(false)}
-      />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
