@@ -63,29 +63,31 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
   );
 
   const handleDialogEditOpen = async () => {
-    let coordinator;
+    let coordinatorResponseData;
 
     try {
-      ({ coordinator } = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.coordinator]));
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.coordinator]);
+
+      if (!response?.coordinator) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      coordinatorResponseData = response.coordinator;
     } catch (error) {
       const apiError = new APIError(error);
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    if (!coordinator) {
-      showErrorDialog({ open: true });
-      return;
-    }
-
-    setCoordinatorDataForUpdate(coordinator);
+    setCoordinatorDataForUpdate(coordinatorResponseData);
 
     setCoordinatorFormData({
-      first_name: coordinator.first_name,
-      last_name: coordinator.last_name,
-      email_address: coordinator.email_address,
-      coordinator_agency: coordinator.coordinator_agency,
-      share_contact_details: coordinator.share_contact_details
+      first_name: coordinatorResponseData.first_name,
+      last_name: coordinatorResponseData.last_name,
+      email_address: coordinatorResponseData.email_address,
+      coordinator_agency: coordinatorResponseData.coordinator_agency,
+      share_contact_details: coordinatorResponseData.share_contact_details
     });
 
     setOpenEditDialog(true);
