@@ -227,7 +227,29 @@ const projectUpdateProperties = {
   objectives: { type: 'object', properties: {} },
   location: { type: 'object', properties: {} },
   species: { type: 'object', properties: {} },
-  iucn: { type: 'object', properties: {} },
+  iucn: {
+    type: 'object',
+    properties: {
+      classificationDetails: {
+        type: 'array',
+        items: {
+          title: 'IUCN classification',
+          type: 'object',
+          properties: {
+            classification: {
+              type: 'number'
+            },
+            subClassification1: {
+              type: 'number'
+            },
+            subClassification2: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  },
   funding: { type: 'object', properties: {} },
   partnerships: { type: 'object', properties: {} }
 };

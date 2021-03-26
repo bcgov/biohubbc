@@ -71,6 +71,12 @@ const appTheme = createMuiTheme({
         margin: 'auto'
       }
     },
+    MuiDialog: {
+      paperWidthXl: {
+        maxWidth: '1000px',
+        flexBasis: '41%'
+      }
+    },
     MuiDialogTitle: {
       root: {
         padding: '20px 24px'

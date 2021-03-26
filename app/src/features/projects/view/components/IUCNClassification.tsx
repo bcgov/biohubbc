@@ -6,15 +6,27 @@ import {
   TableBody,
   TableCell,
   Grid,
-  Button,
-  IconButton,
-  Typography
+  Typography,
+  IconButton
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import Icon from '@mdi/react';
-import { mdiTrashCanOutline } from '@mdi/js';
+import React, { useState } from 'react';
+import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import {
+  IProjectIUCNForm,
+  ProjectIUCNFormYupSchema,
+  ProjectIUCNFormArrayItemInitialValues,
+  ProjectIUCNFormInitialValues
+} from 'features/projects/components/ProjectIUCNForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditIUCNI18N } from 'constants/i18n';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { Edit } from '@material-ui/icons';
+import { APIError } from 'hooks/api/useAxios';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles({
   table: {
@@ -36,6 +48,7 @@ const useStyles = makeStyles({
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 /**
@@ -45,27 +58,96 @@ export interface IIUCNClassificationProps {
  */
 const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   const {
-    projectForViewData: { iucn }
+    projectForViewData: { iucn, id },
+    codes
   } = props;
 
   const classes = useStyles();
+  const history = useHistory();
+  const biohubApi = useBiohubApi();
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditIUCNI18N.editErrorTitle,
+    dialogText: EditIUCNI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const [iucnFormData, setIucnFormData] = useState(ProjectIUCNFormInitialValues);
+
+  const handleDialogEditOpen = async () => {
+    let iucnResponseData;
+
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
+
+      if (!response?.iucn) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      iucnResponseData = response.iucn;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    }
+
+    setIucnFormData({
+      classificationDetails: iucnResponseData.classificationDetails
+    });
+
+    setOpenEditDialog(true);
+  };
+
+  const handleDialogEditSave = async (values: IProjectIUCNForm) => {
+    // make put request from here using values and projectId
+    setOpenEditDialog(false);
+    history.push(`/projects/${id}/details`);
+  };
 
   return (
     <>
+      <EditDialog
+        dialogTitle={EditIUCNI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
+          initialValues: iucnFormData?.classificationDetails?.length
+            ? iucnFormData
+            : { classificationDetails: [ProjectIUCNFormArrayItemInitialValues] },
+          validationSchema: ProjectIUCNFormYupSchema
+        }}
+        onClose={() => setOpenEditDialog(false)}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEditSave}
+      />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h3">IUCN Classification</Typography>
           </Grid>
           <Grid item>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              className={classes.addButton && classes.heading}>
-              Add IUCN Classification
-            </Button>
+            <IconButton
+              onClick={() => handleDialogEditOpen()}
+              title="Edit IUCN Classification"
+              aria-label="Edit IUCN Classification">
+              <Typography variant="caption">
+                <Edit fontSize="inherit" /> EDIT
+              </Typography>
+            </IconButton>
           </Grid>
         </Grid>
         {iucn.classificationDetails.length > 0 && (
@@ -89,16 +171,6 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
                         <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
                         <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
                         <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
-                        <TableCell
-                          className={
-                            classes.tableCellBorderBottom && index === iucn.classificationDetails.length - 1
-                              ? classes.tableCellBorderBottom
-                              : classes.tableCellBorderTop
-                          }>
-                          <IconButton color="primary" aria-label="delete">
-                            <Icon path={mdiTrashCanOutline} size={1} />
-                          </IconButton>
-                        </TableCell>
                       </TableRow>
                     );
                   })}
