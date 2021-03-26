@@ -14,6 +14,7 @@ import Species from './components/Species';
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -46,7 +47,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} />
+            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
           </Box>
         </Paper>
       </Box>
