@@ -86,6 +86,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
 
     setOpenEditDialog(true);
   };
+  
   const handleDialogEditSave = (values: IProjectSpeciesForm) => {
     // make put request from here using values and projectId
     setOpenEditDialog(false);
