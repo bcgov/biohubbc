@@ -86,7 +86,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
 
     setOpenEditDialog(true);
   };
-  
+
   const handleDialogEditSave = (values: IProjectSpeciesForm) => {
     // make put request from here using values and projectId
     setOpenEditDialog(false);
@@ -108,7 +108,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
-  
+
   return (
     <>
       <EditDialog
