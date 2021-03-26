@@ -373,7 +373,7 @@ export const updateProjectIUCNData = async (
 ): Promise<void> => {
   const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
 
-  const sqlDeleteStatement = deleteIUCNSQL(projectId, putIUCNData);
+  const sqlDeleteStatement = deleteIUCNSQL(projectId);
 
   if (!sqlDeleteStatement) {
     throw new HTTP400('Failed to build SQL statement');
