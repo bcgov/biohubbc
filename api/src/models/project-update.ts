@@ -179,3 +179,18 @@ export class GetIUCNClassificationData {
       [];
   }
 }
+
+
+export class GetObjectivesData {
+  objectives: string;
+  caveats: string;
+  revision_count: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
+
+    this.objectives = obj?.objectives || null;
+    this.caveats = obj?.caveats || null;
+    this.revision_count = obj?.revision_count ?? null;
+  }
+}

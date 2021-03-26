@@ -34,7 +34,7 @@ const ProjectObjectivesForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid item xs={12} md={6}>
           <TextField
             id="objectives"
             name="objectives"
