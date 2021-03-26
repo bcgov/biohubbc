@@ -51,11 +51,11 @@ describe('ProjectCoordinator', () => {
         email_address: 'email@email.com',
         coordinator_agency: 'agency 1',
         share_contact_details: 'true',
-        revision_count: 0
+        revision_count: 1
       }
     });
 
-    const { getByText, getAllByRole } = renderContainer();
+    const { getByText, getAllByRole, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -76,7 +76,7 @@ describe('ProjectCoordinator', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit Project Coordinator')).not.toBeVisible();
+      expect(queryByText('Edit Project Coordinator')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -110,7 +110,7 @@ describe('ProjectCoordinator', () => {
           email_address: 'email@email.com',
           coordinator_agency: 'agency 1',
           share_contact_details: 'true',
-          revision_count: 0
+          revision_count: 1
         }
       });
 
@@ -123,7 +123,7 @@ describe('ProjectCoordinator', () => {
       coordinator: undefined
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -138,7 +138,7 @@ describe('ProjectCoordinator', () => {
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing Project Coordinator')).not.toBeVisible();
+      expect(queryByText('Error Editing Project Coordinator')).not.toBeInTheDocument();
     });
   });
 

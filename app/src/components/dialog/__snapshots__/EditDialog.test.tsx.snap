@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EditDialog matches snapshot with error message 1`] = `
+exports[`EditDialog matches snapshot when open, with error message 1`] = `
 <body
   style="padding-right: 0px; overflow: hidden;"
 >
@@ -11,7 +11,7 @@ exports[`EditDialog matches snapshot with error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-13"
+        class="MuiBox-root MuiBox-root-7"
       />
     </div>
   </div>
@@ -55,7 +55,7 @@ exports[`EditDialog matches snapshot with error message 1`] = `
           class="MuiDialogContent-root"
         >
           <div
-            class="MuiBox-root MuiBox-root-14"
+            class="MuiBox-root MuiBox-root-8"
           >
             <form>
               <div
@@ -91,10 +91,10 @@ exports[`EditDialog matches snapshot with error message 1`] = `
                   </textarea>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                     >
                       <span>
                         Test Field
@@ -163,7 +163,17 @@ exports[`EditDialog matches snapshot with error message 1`] = `
 </body>
 `;
 
-exports[`EditDialog matches the snapshot with no error message 1`] = `
+exports[`EditDialog matches the snapshot when not open 1`] = `
+<body>
+  <div>
+    <div
+      id="root"
+    />
+  </div>
+</body>
+`;
+
+exports[`EditDialog matches the snapshot when open, with no error message 1`] = `
 <body
   style="padding-right: 0px; overflow: hidden;"
 >

@@ -82,6 +82,10 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
     return <ul>{items}</ul>;
   };
 
+  if (!props.open) {
+    return <></>;
+  }
+
   return (
     <Box>
       <Dialog

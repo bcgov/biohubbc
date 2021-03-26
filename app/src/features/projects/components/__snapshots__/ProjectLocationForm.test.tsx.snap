@@ -102,10 +102,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-33 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-35"
+                  class="PrivateNotchedOutline-legendLabelled-32"
                 >
                   <span>
                     Regions *
@@ -142,10 +142,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-33 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-35"
+                class="PrivateNotchedOutline-legendLabelled-32"
               >
                 <span>
                   Location Description
@@ -159,12 +159,12 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-31 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-28 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-37"
+          class="MuiBox-root MuiBox-root-34"
         >
           <label
             aria-disabled="false"
@@ -189,10 +189,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-38"
+          class="MuiBox-root MuiBox-root-35"
         />
         <div
-          class="MuiBox-root MuiBox-root-39"
+          class="MuiBox-root MuiBox-root-36"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -474,9 +474,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-40"
-            />
           </div>
         </div>
       </div>
@@ -936,9 +933,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-10"
-            />
           </div>
         </div>
       </div>
@@ -1049,10 +1043,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="PrivateNotchedOutline-legendLabelled-14"
                 >
                   <span>
                     Regions *
@@ -1091,10 +1085,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
               >
                 <span>
                   Location Description
@@ -1108,12 +1102,12 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-11 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-10 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-16"
         >
           <label
             aria-disabled="false"
@@ -1138,10 +1132,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-17"
         />
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-18"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1415,9 +1409,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-20"
-            />
           </div>
         </div>
       </div>

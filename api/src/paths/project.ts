@@ -92,7 +92,7 @@ function createProject(): RequestHandler {
       });
 
       if (!postProjectSQLStatement) {
-        throw new HTTP400('Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL insert statement');
       }
 
       let projectId: number;
@@ -100,7 +100,7 @@ function createProject(): RequestHandler {
       try {
         await connection.open();
 
-        // Insert into project table
+        // Handle project details
         const createProjectResponse = await connection.query(
           postProjectSQLStatement.text,
           postProjectSQLStatement.values
@@ -110,7 +110,7 @@ function createProject(): RequestHandler {
           (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
 
         if (!projectResult || !projectResult.id) {
-          throw new HTTP400('Failed to insert into project table');
+          throw new HTTP400('Failed to insert project general information data');
         }
 
         projectId = projectResult.id;
@@ -233,7 +233,7 @@ export const insertFocalSpecies = async (
   const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -241,7 +241,7 @@ export const insertFocalSpecies = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into focal_species table');
+    throw new HTTP400('Failed to insert project focal species data');
   }
 
   return result.id;
@@ -255,7 +255,7 @@ export const insertAncillarySpecies = async (
   const sqlStatement = postAncillarySpeciesSQL(ancillary_species, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -263,7 +263,7 @@ export const insertAncillarySpecies = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into ancillary_species table');
+    throw new HTTP400('Failed to insert project ancillary species data');
   }
 
   return result.id;
@@ -273,7 +273,7 @@ export const insertRegion = async (region: string, project_id: number, connectio
   const sqlStatement = postProjectRegionSQL(region, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -281,7 +281,7 @@ export const insertRegion = async (region: string, project_id: number, connectio
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_region table');
+    throw new HTTP400('Failed to insert project region data');
   }
 
   return result.id;
@@ -295,7 +295,7 @@ export const insertFundingSource = async (
   const sqlStatement = postProjectFundingSourceSQL(fundingSource, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -303,7 +303,7 @@ export const insertFundingSource = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_region table');
+    throw new HTTP400('Failed to insert project funding data');
   }
 
   return result.id;
@@ -317,7 +317,7 @@ export const insertIndigenousNation = async (
   const sqlStatement = postProjectIndigenousNationSQL(indigenousNationId, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -325,7 +325,7 @@ export const insertIndigenousNation = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_first_nation table');
+    throw new HTTP400('Failed to insert project first nations partnership data');
   }
 
   return result.id;
@@ -339,7 +339,7 @@ export const insertStakeholderPartnership = async (
   const sqlStatement = postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -347,7 +347,7 @@ export const insertStakeholderPartnership = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into stakeholder_partnership table');
+    throw new HTTP400('Failed to insert project stakeholder partnership data');
   }
 
   return result.id;
@@ -362,7 +362,7 @@ export const insertPermitNumber = async (
   const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -370,7 +370,7 @@ export const insertPermitNumber = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_permit table');
+    throw new HTTP400('Failed to insert project permit data');
   }
 
   return result.id;
@@ -384,7 +384,7 @@ export const insertClassificationDetail = async (
   const sqlStatement = postProjectIUCNSQL(iucn3_id, project_id);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -392,7 +392,7 @@ export const insertClassificationDetail = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_iucn_action_classification table');
+    throw new HTTP400('Failed to insert project IUCN data');
   }
 
   return result.id;
@@ -406,7 +406,7 @@ export const insertProjectActivity = async (
   const sqlStatement = postProjectActivitySQL(activityId, projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -414,7 +414,7 @@ export const insertProjectActivity = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_activity table');
+    throw new HTTP400('Failed to insert project activity data');
   }
 
   return result.id;
@@ -428,7 +428,7 @@ export const insertProjectClimateChangeInitiative = async (
   const sqlStatement = postProjectClimateChangeInitiativeSQL(climateChangeInitiativeId, projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -436,7 +436,7 @@ export const insertProjectClimateChangeInitiative = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw new HTTP400('Failed to insert into project_climate_initiative table');
+    throw new HTTP400('Failed to insert project climate change initiative data');
   }
 
   return result.id;

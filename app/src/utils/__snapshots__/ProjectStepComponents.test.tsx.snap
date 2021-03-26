@@ -1370,9 +1370,6 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-56"
-            />
           </div>
         </div>
       </div>

@@ -3,7 +3,9 @@ import { describe } from 'mocha';
 import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
+  getAncillarySpeciesByProjectSQL,
+  getActivitiesByProjectSQL,
+  getClimateInitiativesByProjectSQL
 } from './project-view-update-queries';
 
 describe('getStakeholderPartnershipsByProjectSQL', () => {
@@ -43,6 +45,34 @@ describe('getAncillarySpeciesByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getAncillarySpeciesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getActivitiesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getActivitiesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getActivitiesByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getClimateInitiativesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getClimateInitiativesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

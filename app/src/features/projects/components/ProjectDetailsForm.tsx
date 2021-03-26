@@ -9,8 +9,7 @@ import yup from 'utils/YupSchema';
 
 export interface IProjectDetailsForm {
   project_name: string;
-  project_type: string;
-  project_type_name?: string;
+  project_type: number;
   project_activities: number[];
   climate_change_initiatives: number[];
   start_date: string;
@@ -19,7 +18,7 @@ export interface IProjectDetailsForm {
 
 export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project_name: '',
-  project_type: '',
+  project_type: ('' as unknown) as number,
   project_activities: [],
   climate_change_initiatives: [],
   start_date: '',
@@ -28,7 +27,7 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  project_type: yup.string().required('Required'),
+  project_type: yup.number().required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
   end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
 });

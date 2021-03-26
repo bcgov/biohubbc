@@ -77,7 +77,7 @@ describe('Species', () => {
       }
     });
 
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByRole, queryByText } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -100,7 +100,7 @@ describe('Species', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit Species')).not.toBeVisible();
+      expect(queryByText('Edit Species')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -143,7 +143,7 @@ describe('Species', () => {
       species: null
     });
 
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByRole, queryByText } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -162,7 +162,7 @@ describe('Species', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Error Editing Species')).not.toBeVisible();
+      expect(queryByText('Error Editing Species')).not.toBeInTheDocument();
     });
   });
 

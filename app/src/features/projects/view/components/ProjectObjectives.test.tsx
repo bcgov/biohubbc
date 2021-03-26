@@ -162,7 +162,7 @@ describe('ProjectObjectives', () => {
       }
     });
 
-    const { getByText, getAllByRole } = renderContainer();
+    const { getByText, getAllByRole, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -183,7 +183,7 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).not.toBeVisible();
+      expect(queryByText('Edit Project Objectives')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -226,7 +226,7 @@ describe('ProjectObjectives', () => {
       objectives: undefined
     });
 
-    const { getByText, getAllByRole } = renderContainer();
+    const { getByText, getAllByRole, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -243,7 +243,7 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Error Editing Project Objectives')).not.toBeVisible();
+      expect(queryByText('Error Editing Project Objectives')).not.toBeInTheDocument();
     });
   });
 

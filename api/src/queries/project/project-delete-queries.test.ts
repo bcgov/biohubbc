@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  deleteActivitiesSQL,
   deleteAncillarySpeciesSQL,
+  deleteClimateInitiativesSQL,
   deleteFocalSpeciesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteIUCNSQL,
@@ -73,6 +75,34 @@ describe('deleteStakeholderPartnershipsSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deleteStakeholderPartnershipsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteActivitiesSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deleteActivitiesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteActivitiesSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteClimateInitiativesSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deleteClimateInitiativesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteClimateInitiativesSQL(1);
 
     expect(response).to.not.be.null;
   });

@@ -19,8 +19,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   const sqlStatement = SQL`
     SELECT
       project.id,
-      project.pt_id,
-      project_type.name as pt_name,
+      project_type.name as type,
       project.name,
       project.objectives,
       project.location_description,
@@ -126,73 +125,6 @@ export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null =
 
   defaultLog.debug({
     label: 'getRegionsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get project activities.
- *
- * @param {string} projectId
- * @returns {SQLStatement} sql query object
- */
-
-export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getActivitiesByProjectSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      id,
-      a_id,
-      revision_count
-    from
-      project_activity
-    where p_id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'getActivitiesByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get project climate initiatives.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getClimateInitiativesByProjectSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      id,
-      cci_id,
-      revision_count
-    from
-      project_climate_initiative
-    where p_id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'getClimateInitiativesByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

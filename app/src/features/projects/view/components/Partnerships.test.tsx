@@ -83,7 +83,7 @@ describe('Partnerships', () => {
       }
     });
 
-    const { getByText, getAllByRole } = render(
+    const { getByText, getAllByRole, queryByText } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -106,7 +106,7 @@ describe('Partnerships', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit Partnerships')).not.toBeVisible();
+      expect(queryByText('Edit Partnerships')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -149,7 +149,7 @@ describe('Partnerships', () => {
       partnerships: null
     });
 
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -166,7 +166,7 @@ describe('Partnerships', () => {
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing Partnerships')).not.toBeVisible();
+      expect(queryByText('Error Editing Partnerships')).not.toBeInTheDocument();
     });
   });
 
