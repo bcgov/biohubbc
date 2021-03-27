@@ -22,6 +22,18 @@ export class PutIUCNData {
   }
 }
 
+export class PutSpeciesData {
+  focal_species: string[];
+  ancillary_species: string[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PutSpeciesData', message: 'params', obj });
+
+    this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
+    this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
+  }
+}
+
 export class PutProjectData {
   name: string;
   type: number;
@@ -133,7 +145,7 @@ export class GetPartnershipsData {
   }
 }
 
-interface IGetPutIUCN {
+export interface IGetPutIUCN {
   classification: number;
   subClassification1: number;
   subClassification2: number;

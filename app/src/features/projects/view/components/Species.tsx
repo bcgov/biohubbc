@@ -14,7 +14,6 @@ import { Edit } from '@material-ui/icons';
 import clsx from 'clsx';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import {
   IProjectSpeciesForm,
@@ -40,6 +39,7 @@ const useStyles = makeStyles({
 export interface ISpeciesProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -56,9 +56,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     codes
   } = props;
 
-  const history = useHistory();
   const biohubApi = useBiohubApi();
-
   const classes = useStyles();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -87,10 +85,20 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = (values: IProjectSpeciesForm) => {
-    // make put request from here using values and projectId
-    setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+  const handleDialogEditSave = async (values: IProjectSpeciesForm) => {
+    const projectData = { species: values };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
   };
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
