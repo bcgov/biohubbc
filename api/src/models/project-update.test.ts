@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetCoordinatorData, GetPartnershipsData, PutCoordinatorData, PutPartnershipsData, PutSpeciesData } from './project-update';
+import {
+  GetCoordinatorData,
+  GetPartnershipsData,
+  PutCoordinatorData,
+  PutPartnershipsData,
+  PutSpeciesData
+} from './project-update';
 
 describe('PutPartnershipsData', () => {
   describe('No values provided', () => {

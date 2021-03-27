@@ -42,7 +42,13 @@ import {
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
-import { insertAncillarySpecies, insertClassificationDetail, insertFocalSpecies, insertIndigenousNation, insertStakeholderPartnership } from '../../project';
+import {
+  insertAncillarySpecies,
+  insertClassificationDetail,
+  insertFocalSpecies,
+  insertIndigenousNation,
+  insertStakeholderPartnership
+} from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 

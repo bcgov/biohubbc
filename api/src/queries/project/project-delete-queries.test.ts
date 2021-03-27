@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { deleteAncillarySpeciesSQL, deleteFocalSpeciesSQL, deleteIndigenousPartnershipsSQL, deleteIUCNSQL, deleteStakeholderPartnershipsSQL } from './project-delete-queries';
+import {
+  deleteAncillarySpeciesSQL,
+  deleteFocalSpeciesSQL,
+  deleteIndigenousPartnershipsSQL,
+  deleteIUCNSQL,
+  deleteStakeholderPartnershipsSQL
+} from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {
   it('returns null response when null projectId provided', () => {

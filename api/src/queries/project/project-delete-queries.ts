@@ -5,7 +5,7 @@ const defaultLog = getLogger('queries/project/project-delete-queries');
 
 /**
  * SQL query to delete project indigenous partnership rows (project_first_nations)
- * 
+ *
  * @param {projectId} projectId
  * @returns {SQLStatement} sql query object
  */
@@ -39,11 +39,11 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
 
 /**
  * SQL query to delete project stakeholder partnership rows
- * 
+ *
  * @param {projectId} projectId
  * @returns {SQLStatement} sql query object
  */
- export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatement | null => {
+export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'deleteStakeholderPartnershipsSQL',
     message: 'params',
