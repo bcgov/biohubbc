@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetCoordinatorData, GetPartnershipsData, PutCoordinatorData, PutPartnershipsData } from './project-update';
+import { GetCoordinatorData, GetPartnershipsData, PutCoordinatorData, PutPartnershipsData, PutSpeciesData } from './project-update';
 
 describe('PutPartnershipsData', () => {
   describe('No values provided', () => {
@@ -191,7 +191,7 @@ describe('GetCoordinatorData', () => {
   });
 });
 
-describe('GetCoordinatorData', () => {
+describe('PutCoordinatorData', () => {
   describe('No values provided', () => {
     let data: PutCoordinatorData;
 
@@ -262,6 +262,45 @@ describe('GetCoordinatorData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(1);
+    });
+  });
+});
+
+describe('PutSpeciesData', () => {
+  describe('No values provided', () => {
+    let data: PutSpeciesData;
+
+    before(() => {
+      data = new PutSpeciesData({});
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      focal_species: ['species 1', 'species 2'],
+      ancillary_species: ['species 3', 'species 4']
+    };
+
+    let data: PutSpeciesData;
+
+    before(() => {
+      data = new PutSpeciesData(obj);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql(obj.focal_species);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql(obj.ancillary_species);
     });
   });
 });
