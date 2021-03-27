@@ -103,4 +103,28 @@ describe('ProjectCoordinator', () => {
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
+
+  it('displays an error dialog when fetching the update data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      coordinator: undefined
+    });
+
+    const { getByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Error Editing Project Coordinator')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(getByText('Error Editing Project Coordinator')).not.toBeVisible();
+    });
+  });
 });

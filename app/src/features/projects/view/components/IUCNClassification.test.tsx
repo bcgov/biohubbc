@@ -2,17 +2,15 @@ import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import IUCNClassification from './IUCNClassification';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
 import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-
-const history = createMemoryHistory();
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<object>, []>()
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
+    updateProject: jest.fn()
   }
 };
 
@@ -20,10 +18,19 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const mockRefresh = jest.fn();
+
+const renderContainer = () => {
+  return render(
+    <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+  );
+};
+
 describe('IUCNClassification', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
+    mockBiohubApi().project.updateProject.mockClear();
   });
 
   afterEach(() => {
@@ -31,11 +38,7 @@ describe('IUCNClassification', () => {
   });
 
   it('renders correctly', () => {
-    const { asFragment } = render(
-      <Router history={history}>
-        <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
-    );
+    const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -53,17 +56,19 @@ describe('IUCNClassification', () => {
       }
     });
 
-    const { getByText } = render(
-      <Router history={history}>
-        <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
-    );
+    const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.iucn
+      ]);
+    });
 
     await waitFor(() => {
       expect(getByText('Edit IUCN Classification')).toBeVisible();
@@ -84,7 +89,20 @@ describe('IUCNClassification', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+        iucn: {
+          classificationDetails: [
+            {
+              classification: 1,
+              subClassification1: 1,
+              subClassification2: 1
+            }
+          ]
+        }
+      });
+
+      expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
@@ -93,11 +111,7 @@ describe('IUCNClassification', () => {
       iucn: null
     });
 
-    const { getByText } = render(
-      <Router history={history}>
-        <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
-    );
+    const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();

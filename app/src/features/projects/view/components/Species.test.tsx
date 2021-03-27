@@ -1,17 +1,16 @@
-import { render, waitFor, fireEvent } from '@testing-library/react';
+import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import Species from './Species';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
 import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-const history = createMemoryHistory();
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<object>, []>()
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
+    updateProject: jest.fn()
   }
 };
 
@@ -19,18 +18,29 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const mockRefresh = jest.fn();
+
 describe('Species', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().project.getProjectForUpdate.mockClear();
+    mockBiohubApi().project.updateProject.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Species
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            species: { focal_species: [], ancillary_species: [] }
-          }}
-          codes={codes}
-        />
-      </Router>
+      <Species
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          species: { focal_species: [], ancillary_species: [] }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -38,15 +48,14 @@ describe('Species', () => {
 
   it('renders correctly with invalid null values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Species
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            species: { focal_species: (null as unknown) as string[], ancillary_species: (null as unknown) as string[] }
-          }}
-          codes={codes}
-        />
-      </Router>
+      <Species
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          species: { focal_species: (null as unknown) as string[], ancillary_species: (null as unknown) as string[] }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -54,9 +63,7 @@ describe('Species', () => {
 
   it('renders correctly with existing species values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
-      </Router>
+      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -71,14 +78,21 @@ describe('Species', () => {
     });
 
     const { getByText } = render(
-      <Router history={history}>
-        <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
-      </Router>
+      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
     );
+
     await waitFor(() => {
       expect(getByText('Species')).toBeVisible();
     });
+
     fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.species
+      ]);
+    });
+
     await waitFor(() => {
       expect(getByText('Edit Species')).toBeVisible();
     });
@@ -98,19 +112,25 @@ describe('Species', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+        species: {
+          focal_species: ['species 1', 'species 2'],
+          ancillary_species: ['species 1', 'species 2']
+        }
+      });
+
+      expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      partnerships: null
+      species: null
     });
 
     const { getByText } = render(
-      <Router history={history}>
-        <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} />
-      </Router>
+      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {

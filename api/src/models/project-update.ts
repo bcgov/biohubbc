@@ -3,6 +3,37 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-update');
 
+export class PutIUCNData {
+  classificationDetails: IGetPutIUCN[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PutIUCNData', message: 'params', obj });
+
+    this.classificationDetails =
+      (obj?.classificationDetails?.length &&
+        obj.classificationDetails.map((item: any) => {
+          return {
+            classification: item.classification,
+            subClassification1: item.subClassification1,
+            subClassification2: item.subClassification2
+          };
+        })) ||
+      [];
+  }
+}
+
+export class PutSpeciesData {
+  focal_species: string[];
+  ancillary_species: string[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PutSpeciesData', message: 'params', obj });
+
+    this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
+    this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
+  }
+}
+
 export class PutProjectData {
   name: string;
   type: number;
@@ -114,7 +145,7 @@ export class GetPartnershipsData {
   }
 }
 
-interface IGetIUCN {
+export interface IGetPutIUCN {
   classification: number;
   subClassification1: number;
   subClassification2: number;
@@ -127,7 +158,7 @@ interface IGetIUCN {
  * @class GetIUCNClassificationData
  */
 export class GetIUCNClassificationData {
-  classificationDetails: IGetIUCN[];
+  classificationDetails: IGetPutIUCN[];
 
   constructor(iucnClassificationData?: any[]) {
     defaultLog.debug({
