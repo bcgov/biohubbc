@@ -7,7 +7,7 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -103,7 +103,7 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
