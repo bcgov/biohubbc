@@ -5,9 +5,6 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 import { codes } from 'test-helpers/code-helpers';
-import { createMemoryHistory } from 'history';
-
-const history = createMemoryHistory();
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
