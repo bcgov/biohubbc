@@ -237,4 +237,70 @@ describe('Partnerships', () => {
       expect(queryByText('API Error is Here')).toBeNull();
     });
   });
+
+  it('shows error dialog with API error message when getting partnerships data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Partnerships')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating partnerships data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      partnerships: {
+        indigenous_partnerships: [1, 2],
+        stakeholder_partnerships: ['partner 1', 'partner 2']
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Partnerships')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.partnerships
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Partnerships')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
 });
