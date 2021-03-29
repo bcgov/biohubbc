@@ -3,10 +3,13 @@
 exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-13"
+    class="MuiBox-root MuiBox-root-15"
   />
   <div
-    class="MuiBox-root MuiBox-root-14"
+    class="MuiBox-root MuiBox-root-16"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-17"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -59,16 +62,16 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-15"
+            class="MuiBox-root MuiBox-root-18"
           >
             <div
-              class="MuiBox-root MuiBox-root-16"
+              class="MuiBox-root MuiBox-root-19"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -159,16 +162,16 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-17"
+            class="MuiBox-root MuiBox-root-20"
           >
             <div
-              class="MuiBox-root MuiBox-root-18"
+              class="MuiBox-root MuiBox-root-21"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -253,10 +256,13 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-19"
+    class="MuiBox-root MuiBox-root-22"
   />
   <div
-    class="MuiBox-root MuiBox-root-20"
+    class="MuiBox-root MuiBox-root-23"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-24"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -309,16 +315,16 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-21"
+            class="MuiBox-root MuiBox-root-25"
           >
             <div
-              class="MuiBox-root MuiBox-root-22"
+              class="MuiBox-root MuiBox-root-26"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -357,16 +363,16 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-23"
+            class="MuiBox-root MuiBox-root-27"
           >
             <div
-              class="MuiBox-root MuiBox-root-24"
+              class="MuiBox-root MuiBox-root-28"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -403,6 +409,9 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
   />
   <div
     class="MuiBox-root MuiBox-root-2"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-3"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -455,16 +464,16 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-3"
+            class="MuiBox-root MuiBox-root-4"
           >
             <div
-              class="MuiBox-root MuiBox-root-4"
+              class="MuiBox-root MuiBox-root-5"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -490,16 +499,16 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-5"
+            class="MuiBox-root MuiBox-root-6"
           >
             <div
-              class="MuiBox-root MuiBox-root-6"
+              class="MuiBox-root MuiBox-root-7"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -519,10 +528,13 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
 exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-8"
   />
   <div
-    class="MuiBox-root MuiBox-root-8"
+    class="MuiBox-root MuiBox-root-9"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-10"
   >
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -575,16 +587,16 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-11"
           >
             <div
-              class="MuiBox-root MuiBox-root-10"
+              class="MuiBox-root MuiBox-root-12"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1"
@@ -675,16 +687,16 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-11"
+            class="MuiBox-root MuiBox-root-13"
           >
             <div
-              class="MuiBox-root MuiBox-root-12"
+              class="MuiBox-root MuiBox-root-14"
             >
               <p />
             </div>

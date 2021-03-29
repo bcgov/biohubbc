@@ -3,7 +3,8 @@ import { describe } from 'mocha';
 import {
   getIndigenousPartnershipsByProjectSQL,
   getCoordinatorByProjectSQL,
-  getIUCNActionClassificationByProjectSQL
+  getIUCNActionClassificationByProjectSQL,
+  getObjectivesByProjectSQL
 } from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
@@ -43,6 +44,20 @@ describe('getCoordinatorByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getCoordinatorByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getObjectivesByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getObjectivesByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getObjectivesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

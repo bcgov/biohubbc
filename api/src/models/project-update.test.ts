@@ -3,9 +3,11 @@ import { describe } from 'mocha';
 import {
   GetCoordinatorData,
   GetPartnershipsData,
+  GetObjectivesData,
   PutCoordinatorData,
   PutPartnershipsData,
-  PutSpeciesData
+  PutSpeciesData,
+  PutObjectivesData
 } from './project-update';
 
 describe('PutPartnershipsData', () => {
@@ -307,6 +309,102 @@ describe('PutSpeciesData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(obj.ancillary_species);
+    });
+  });
+});
+
+describe('GetObjectivesData', () => {
+  describe('No values provided', () => {
+    let data: GetObjectivesData;
+
+    before(() => {
+      data = new GetObjectivesData({});
+    });
+
+    it('sets objectives', () => {
+      expect(data.objectives).to.equal(null);
+    });
+
+    it('sets caveats', () => {
+      expect(data.caveats).to.equal(null);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(null);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      objectives: 'objectives',
+      caveats: 'caveats',
+      revision_count: 1
+    };
+
+    let data: GetObjectivesData;
+
+    before(() => {
+      data = new GetObjectivesData(obj);
+    });
+
+    it('sets objectives', () => {
+      expect(data.objectives).to.equal(obj.objectives);
+    });
+
+    it('sets caveats', () => {
+      expect(data.caveats).to.equal(obj.caveats);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(obj.revision_count);
+    });
+  });
+});
+
+describe('PutObjectivesData', () => {
+  describe('No values provided', () => {
+    let data: PutObjectivesData;
+
+    before(() => {
+      data = new PutObjectivesData({});
+    });
+
+    it('sets objectives', () => {
+      expect(data.objectives).to.equal('');
+    });
+
+    it('sets caveats', () => {
+      expect(data.caveats).to.equal(null);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(null);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      objectives: 'objectives',
+      caveats: 'caveats',
+      revision_count: 1
+    };
+
+    let data: PutObjectivesData;
+
+    before(() => {
+      data = new PutObjectivesData(obj);
+    });
+
+    it('sets objectives', () => {
+      expect(data.objectives).to.equal(obj.objectives);
+    });
+
+    it('sets caveats', () => {
+      expect(data.caveats).to.equal(obj.caveats);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });
