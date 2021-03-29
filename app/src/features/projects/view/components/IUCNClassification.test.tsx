@@ -1,4 +1,4 @@
-import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import { render, cleanup, waitFor, fireEvent, getByTestId } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import IUCNClassification from './IUCNClassification';
@@ -56,7 +56,7 @@ describe('IUCNClassification', () => {
       }
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();
@@ -75,6 +75,20 @@ describe('IUCNClassification', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit IUCN Classification')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit IUCN Classification')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit IUCN Classification')).not.toBeVisible();
@@ -133,7 +147,7 @@ describe('IUCNClassification', () => {
   it('shows error dialog with API error message when getting species data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();
@@ -145,7 +159,9 @@ describe('IUCNClassification', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
