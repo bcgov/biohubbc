@@ -20,6 +20,7 @@
  drop trigger if exists audit_project_permit on biohub.project_permit;
  drop trigger if exists audit_project_region on biohub.project_region;
  drop trigger if exists audit_stakeholder_partnership on biohub.stakeholder_partnership;
+ drop trigger if exists audit_webform_draft on biohub.webform_draft;
  drop trigger if exists audit_system_user_role on biohub.system_user_role;
  drop trigger if exists audit_user_identity_source on biohub.user_identity_source;
  drop trigger if exists audit_system_role on biohub.system_role;
@@ -52,6 +53,7 @@
  create trigger audit_project_permit before insert or update or delete on biohub.project_permit for each row execute procedure tr_audit_trigger();
  create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
  create trigger audit_stakeholder_partnership before insert or update or delete on biohub.stakeholder_partnership for each row execute procedure tr_audit_trigger();
+ create trigger audit_webform_draft before insert or update or delete on biohub.webform_draft for each row execute procedure tr_audit_trigger();
  create trigger audit_system_user_role before insert or update or delete on biohub.system_user_role for each row execute procedure tr_audit_trigger();
  create trigger audit_user_identity_source before insert or update or delete on biohub.user_identity_source for each row execute procedure tr_audit_trigger();
  create trigger audit_system_role before insert or update or delete on biohub.system_role for each row execute procedure tr_audit_trigger();

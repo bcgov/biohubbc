@@ -20,6 +20,7 @@
  drop trigger if exists journal_project_permit on biohub.project_permit;
  drop trigger if exists journal_project_region on biohub.project_region;
  drop trigger if exists journal_stakeholder_partnership on biohub.stakeholder_partnership;
+ drop trigger if exists journal_webform_draft on biohub.webform_draft;
  drop trigger if exists journal_system_user_role on biohub.system_user_role;
  drop trigger if exists journal_user_identity_source on biohub.user_identity_source;
  drop trigger if exists journal_system_role on biohub.system_role;
@@ -52,6 +53,7 @@
  create trigger journal_project_permit after insert or update or delete on biohub.project_permit for each row execute procedure tr_journal_trigger();
  create trigger journal_project_region after insert or update or delete on biohub.project_region for each row execute procedure tr_journal_trigger();
  create trigger journal_stakeholder_partnership after insert or update or delete on biohub.stakeholder_partnership for each row execute procedure tr_journal_trigger();
+ create trigger journal_webform_draft after insert or update or delete on biohub.webform_draft for each row execute procedure tr_journal_trigger();
  create trigger journal_system_user_role after insert or update or delete on biohub.system_user_role for each row execute procedure tr_journal_trigger();
  create trigger journal_user_identity_source after insert or update or delete on biohub.user_identity_source for each row execute procedure tr_journal_trigger();
  create trigger journal_system_role after insert or update or delete on biohub.system_role for each row execute procedure tr_journal_trigger();

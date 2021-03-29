@@ -29,4 +29,5 @@
  create or replace view system_user as select * from biohub.system_user;
  create or replace view system_user_role as select * from biohub.system_user_role;
  create or replace view user_identity_source as select * from biohub.user_identity_source;
+ create or replace view webform_draft as select * from biohub.webform_draft;
 
