@@ -7,6 +7,7 @@ import {
   GetCoordinatorData,
   GetIUCNClassificationData,
   GetPartnershipsData,
+  GetObjectivesData,
   PutCoordinatorData,
   PutPartnershipsData,
   PutLocationData,
@@ -26,7 +27,8 @@ import {
   getCoordinatorByProjectSQL,
   putProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL
+  getIUCNActionClassificationByProjectSQL,
+  getObjectivesByProjectSQL
 } from '../../../queries/project/project-update-queries';
 import {
   deleteIUCNSQL,
@@ -131,7 +133,7 @@ export interface IGetProjectForUpdate {
   coordinator: GetCoordinatorData | null;
   permit: any;
   project: any;
-  objectives: any;
+  objectives: GetObjectivesData | null;
   location: any;
   species: any;
   iucn: GetIUCNClassificationData | null;
@@ -201,6 +203,14 @@ function getProjectForUpdate(): RequestHandler {
         promises.push(
           getIUCNClassificationData(projectId, connection).then((value) => {
             results.iucn = value;
+          })
+        );
+      }
+
+      if (entities.includes(GET_ENTITIES.objectives)) {
+        promises.push(
+          getObjectivesData(projectId, connection).then((value) => {
+            results.objectives = value;
           })
         );
       }
@@ -309,6 +319,24 @@ export const getSpeciesData = async (projectId: number, connection: IDBConnectio
   }
 
   return new GetSpeciesData(resultFocalSpecies, resultAncillarySpecies);
+};
+
+export const getObjectivesData = async (projectId: number, connection: IDBConnection): Promise<GetObjectivesData> => {
+  const sqlStatement = getObjectivesByProjectSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get project objectives data');
+  }
+
+  return new GetObjectivesData(result);
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
