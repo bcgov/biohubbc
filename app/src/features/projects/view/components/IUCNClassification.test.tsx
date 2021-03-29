@@ -1,4 +1,4 @@
-import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
+import { render, cleanup, waitFor, fireEvent, getByTestId } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import IUCNClassification from './IUCNClassification';
@@ -223,7 +223,9 @@ describe('IUCNClassification', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
