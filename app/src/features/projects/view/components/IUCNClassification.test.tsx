@@ -1,4 +1,4 @@
-import { render, cleanup, waitFor, fireEvent, getByTestId } from '@testing-library/react';
+import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import IUCNClassification from './IUCNClassification';

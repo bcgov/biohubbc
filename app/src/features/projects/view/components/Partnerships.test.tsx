@@ -83,7 +83,7 @@ describe('Partnerships', () => {
       }
     });
 
-    const { getByText } = render(
+    const { getByText, getAllByRole } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -104,6 +104,20 @@ describe('Partnerships', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Partnerships')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Partnerships')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit Partnerships')).not.toBeVisible();
@@ -159,7 +173,7 @@ describe('Partnerships', () => {
   it('shows error dialog with API error message when getting partnerships data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getAllByRole } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -173,7 +187,9 @@ describe('Partnerships', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();

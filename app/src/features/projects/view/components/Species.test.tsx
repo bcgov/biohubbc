@@ -77,7 +77,7 @@ describe('Species', () => {
       }
     });
 
-    const { getByText } = render(
+    const { getByText, getAllByRole } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -109,6 +109,20 @@ describe('Species', () => {
       expect(getByText('Edit Species')).toBeVisible();
     });
 
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).toBeVisible();
+    });
+
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
@@ -129,7 +143,7 @@ describe('Species', () => {
       species: null
     });
 
-    const { getByText } = render(
+    const { getByText, getAllByRole } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -143,7 +157,9 @@ describe('Species', () => {
       expect(getByText('Error Editing Species')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Error Editing Species')).not.toBeVisible();
