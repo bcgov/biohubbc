@@ -848,51 +848,70 @@ exports[`ProjectStepComponents renders the project funding 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-direction-xs-column"
+      class="MuiBox-root MuiBox-root-37"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <header
+        class="MuiBox-root MuiBox-root-38"
       >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources (0)
+        </h3>
         <button
-          aria-label="Add Funding Agency"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined"
+          aria-label="Add Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
           tabindex="0"
-          title="Add Funding Agency"
+          title="Add Funding Source"
           type="button"
         >
           <span
             class="MuiButton-label"
           >
-            Add Funding Agency
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Add Funding Source
           </span>
           <span
             class="MuiTouchRipple-root"
           />
         </button>
-      </div>
+      </header>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-direction-xs-column"
+        class="MuiBox-root MuiBox-root-39"
       >
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-40"
         >
-          <div
-            class="MuiBox-root MuiBox-root-33"
+          <ul
+            class="MuiList-root MuiList-dense"
           >
             <div
-              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
             >
               <div
-                class="MuiBox-root MuiBox-root-34"
+                class="MuiBox-root MuiBox-root-41"
               >
-                <p
-                  class="MuiTypography-root MuiTypography-body1"
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2"
                 >
                   No Funding Sources
-                </p>
+                </h6>
               </div>
             </div>
-          </div>
+          </ul>
         </div>
       </div>
     </div>
@@ -1002,10 +1021,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-42 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-49 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-44"
+                  class="PrivateNotchedOutline-legendLabelled-51"
                 >
                   <span>
                     Regions *
@@ -1042,10 +1061,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-42 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-49 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-44"
+                class="PrivateNotchedOutline-legendLabelled-51"
               >
                 <span>
                   Location Description
@@ -1059,12 +1078,12 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-40 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-47 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-46"
+          class="MuiBox-root MuiBox-root-53"
         >
           <label
             aria-disabled="false"
@@ -1089,10 +1108,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-47"
+          class="MuiBox-root MuiBox-root-54"
         />
         <div
-          class="MuiBox-root MuiBox-root-48"
+          class="MuiBox-root MuiBox-root-55"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1352,7 +1371,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-49"
+              class="MuiBox-root MuiBox-root-56"
             />
           </div>
         </div>
@@ -1553,10 +1572,10 @@ exports[`ProjectStepComponents renders the project partnerships 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-36 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-43 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-38"
+                  class="PrivateNotchedOutline-legendLabelled-45"
                 >
                   <span>
                     Indigenous Partnerships
@@ -1656,10 +1675,10 @@ exports[`ProjectStepComponents renders the project partnerships 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-36 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-43 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-38"
+                  class="PrivateNotchedOutline-legendLabelled-45"
                 >
                   <span>
                     Stakeholder Partnerships
