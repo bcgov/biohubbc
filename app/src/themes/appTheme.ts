@@ -73,10 +73,7 @@ const appTheme = createMuiTheme({
     },
     MuiDialog: {
       paperWidthXl: {
-        width: '600px',
-        '@media (min-width: 800px)': {
-          width: '800px'
-        }
+        width: '800px'
       }
     },
     MuiDialogTitle: {
