@@ -9,6 +9,7 @@ import {
   GetPartnershipsData,
   GetObjectivesData,
   PutCoordinatorData,
+  PutPartnershipsData,
   PutLocationData,
   PutObjectivesData,
   PutProjectData,
@@ -32,7 +33,9 @@ import {
 import {
   deleteIUCNSQL,
   deleteFocalSpeciesSQL,
-  deleteAncillarySpeciesSQL
+  deleteAncillarySpeciesSQL,
+  deleteIndigenousPartnershipsSQL,
+  deleteStakeholderPartnershipsSQL
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
@@ -41,7 +44,13 @@ import {
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
-import { insertAncillarySpecies, insertClassificationDetail, insertFocalSpecies } from '../../project';
+import {
+  insertAncillarySpecies,
+  insertClassificationDetail,
+  insertFocalSpecies,
+  insertIndigenousNation,
+  insertStakeholderPartnership
+} from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -324,7 +333,7 @@ export const getObjectivesData = async (projectId: number, connection: IDBConnec
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result) {
-    throw new HTTP400('Failed to get project coordinator data');
+    throw new HTTP400('Failed to get project objectives data');
   }
 
   return new GetObjectivesData(result);
@@ -418,6 +427,10 @@ function updateProject(): RequestHandler {
       await connection.open();
 
       const promises: Promise<any>[] = [];
+
+      if (entities?.partnerships) {
+        promises.push(updateProjectPartnershipsData(projectId, entities, connection));
+      }
 
       if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
         promises.push(updateProjectData(projectId, entities, connection));
@@ -520,6 +533,56 @@ export const updateProjectIUCNData = async (
     ) || [];
 
   await Promise.all(insertIUCNPromises);
+};
+
+export const updateProjectPartnershipsData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
+
+  const sqlDeleteIndigenousPartnershipsStatement = deleteIndigenousPartnershipsSQL(projectId);
+  const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
+
+  if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const deleteIndigenousPartnershipsPromises = connection.query(
+    sqlDeleteIndigenousPartnershipsStatement.text,
+    sqlDeleteIndigenousPartnershipsStatement.values
+  );
+
+  const deleteStakeholderPartnershipsPromises = connection.query(
+    sqlDeleteStakeholderPartnershipsStatement.text,
+    sqlDeleteStakeholderPartnershipsStatement.values
+  );
+
+  const [deleteIndigenousPartnershipsResult, deleteStakeholderPartnershipsResult] = await Promise.all([
+    deleteIndigenousPartnershipsPromises,
+    deleteStakeholderPartnershipsPromises
+  ]);
+
+  if (!deleteIndigenousPartnershipsResult) {
+    throw new HTTP409('Failed to delete project indigenous partnerships data');
+  }
+
+  if (!deleteStakeholderPartnershipsResult) {
+    throw new HTTP409('Failed to delete project stakeholder partnerships data');
+  }
+
+  const insertIndigenousPartnershipsPromises =
+    putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
+      insertIndigenousNation(indigenousPartnership, projectId, connection)
+    ) || [];
+
+  const insertStakeholderPartnershipsPromises =
+    putPartnershipsData?.stakeholder_partnerships?.map((stakeholderPartnership: string) =>
+      insertStakeholderPartnership(stakeholderPartnership, projectId, connection)
+    ) || [];
+
+  await Promise.all([...insertIndigenousPartnershipsPromises, ...insertStakeholderPartnershipsPromises]);
 };
 
 export const updateProjectData = async (

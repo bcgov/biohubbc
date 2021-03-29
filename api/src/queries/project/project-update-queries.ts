@@ -208,7 +208,7 @@ export const putProjectSQL = (
 };
 
 /**
- * SQL query to get coordinator information, for update purposes.
+ * SQL query to get objectives information, for update purposes.
  *
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}

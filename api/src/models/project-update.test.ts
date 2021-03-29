@@ -5,9 +5,49 @@ import {
   GetPartnershipsData,
   GetObjectivesData,
   PutCoordinatorData,
+  PutPartnershipsData,
   PutSpeciesData,
   PutObjectivesData
 } from './project-update';
+
+describe('PutPartnershipsData', () => {
+  describe('No values provided', () => {
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData({});
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('all values provided', () => {
+    const obj = {
+      indigenous_partnerships: [1, 2],
+      stakeholder_partnerships: ['partner 3', 'partner 4']
+    };
+
+    let data: PutPartnershipsData;
+
+    before(() => {
+      data = new PutPartnershipsData(obj);
+    });
+
+    it('sets indigenous_partnerships', () => {
+      expect(data.indigenous_partnerships).to.eql(obj.indigenous_partnerships);
+    });
+
+    it('sets stakeholder_partnerships', () => {
+      expect(data.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
+    });
+  });
+});
 
 describe('GetPartnershipsData', () => {
   describe('No values provided', () => {
@@ -308,15 +348,15 @@ describe('GetObjectivesData', () => {
     });
 
     it('sets objectives', () => {
-      expect(data.objectives).to.equal('objectives');
+      expect(data.objectives).to.equal(obj.objectives);
     });
 
     it('sets caveats', () => {
-      expect(data.caveats).to.equal('caveats');
+      expect(data.caveats).to.equal(obj.caveats);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(1);
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });

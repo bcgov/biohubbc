@@ -4,6 +4,74 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-delete-queries');
 
 /**
+ * SQL query to delete project indigenous partnership rows (project_first_nations)
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteIndigenousPartnershipsSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_first_nation
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteIndigenousPartnershipsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete project stakeholder partnership rows
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteStakeholderPartnershipsSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from stakeholder_partnership
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteStakeholderPartnershipsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete project IUCN rows.
  *
  * @param {projectId} projectId
