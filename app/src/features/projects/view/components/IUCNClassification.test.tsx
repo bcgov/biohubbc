@@ -37,7 +37,24 @@ describe('IUCNClassification', () => {
     cleanup();
   });
 
-  it('renders correctly', () => {
+  it('renders correctly with no classification details', () => {
+    const { asFragment } = render(
+      <IUCNClassification
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          iucn: {
+            classificationDetails: []
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with classification details', () => {
     const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();

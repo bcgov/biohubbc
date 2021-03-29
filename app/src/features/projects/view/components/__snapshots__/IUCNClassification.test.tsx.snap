@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`IUCNClassification renders correctly 1`] = `
+exports[`IUCNClassification renders correctly with classification details 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-13"
   />
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-14"
   />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -66,7 +66,7 @@ exports[`IUCNClassification renders correctly 1`] = `
       >
         <table
           aria-label="iucn-classification-table"
-          class="MuiTable-root makeStyles-table-1"
+          class="MuiTable-root makeStyles-table-8"
         >
           <thead
             class="MuiTableHead-root"
@@ -75,19 +75,19 @@ exports[`IUCNClassification renders correctly 1`] = `
               class="MuiTableRow-root MuiTableRow-head"
             >
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-4"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
                 scope="col"
               >
                 Classification
               </th>
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-4"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
                 scope="col"
               >
                 Sub-classification
               </th>
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-4"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
                 scope="col"
               >
                 Sub-classification
@@ -101,23 +101,104 @@ exports[`IUCNClassification renders correctly 1`] = `
               class="MuiTableRow-root"
             >
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-3"
+                class="MuiTableCell-root MuiTableCell-body"
               >
                 classification
               </td>
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-3"
+                class="MuiTableCell-root MuiTableCell-body"
               >
                 sub classification 1
               </td>
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-3"
+                class="MuiTableCell-root MuiTableCell-body"
               >
                 sub classification 2
               </td>
             </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+              >
+                classification again
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+              >
+                sub classification 1 again
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+              >
+                sub classification 2 again
+              </td>
+            </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`IUCNClassification renders correctly with no classification details 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-6"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-7"
+  />
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          IUCN Classification
+        </h3>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <button
+          aria-label="Edit IUCN Classification"
+          class="MuiButtonBase-root MuiIconButton-root"
+          tabindex="0"
+          title="Edit IUCN Classification"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-caption"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                />
+              </svg>
+               EDIT
+            </span>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </div>
