@@ -1,21 +1,42 @@
-import { render, fireEvent, getAllByText, waitFor } from '@testing-library/react';
+import { cleanup, render, fireEvent, getAllByText, waitFor } from '@testing-library/react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectForUpdateResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
+import { codes } from 'test-helpers/code-helpers';
 
-const history = createMemoryHistory();
+jest.mock('../../../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  project: {
+    getProjectForUpdate: jest.fn<Promise<IGetProjectForUpdateResponse>, ['number', UPDATE_GET_ENTITIES[]]>(),
+    updateProject: jest.fn()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
+
+const mockRefresh = jest.fn();
 
 const renderContainer = () => {
   return render(
-    <Router history={history}>
-      <ProjectObjectives projectForViewData={getProjectForViewResponse} />
-    </Router>
+    <ProjectObjectives projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
   );
 };
 
 describe('ProjectObjectives', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().project.getProjectForUpdate.mockClear();
+    mockBiohubApi().project.updateProject.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   const longData =
     'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean' +
     ' commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient ' +
@@ -37,14 +58,14 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when objectives length is > 850 characters and caveats is empty', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <ProjectObjectives
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
-          }}
-        />
-      </Router>
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -52,14 +73,14 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <ProjectObjectives
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
-          }}
-        />
-      </Router>
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -70,18 +91,18 @@ describe('ProjectObjectives', () => {
     const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
-      <Router history={history}>
-        <ProjectObjectives
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            objectives: {
-              ...getProjectForViewResponse.objectives,
-              objectives: multilineObjectives,
-              caveats: multilineCaveats
-            }
-          }}
-        />
-      </Router>
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: {
+            ...getProjectForViewResponse.objectives,
+            objectives: multilineObjectives,
+            caveats: multilineCaveats
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -89,14 +110,14 @@ describe('ProjectObjectives', () => {
 
   it('functions as expected with the read more and read less buttons', () => {
     const { container } = render(
-      <Router history={history}>
-        <ProjectObjectives
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
-          }}
-        />
-      </Router>
+      <ProjectObjectives
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     // for finding 'project objectives'
@@ -133,6 +154,14 @@ describe('ProjectObjectives', () => {
   });
 
   it('editing the project objectives works in the dialog', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      objectives: {
+        objectives: 'initial objectives',
+        caveats: 'initial caveats',
+        revision_count: 0
+      }
+    });
+
     const { getByText } = renderContainer();
 
     await waitFor(() => {
@@ -140,6 +169,12 @@ describe('ProjectObjectives', () => {
     });
 
     fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.objectives
+      ]);
+    });
 
     await waitFor(() => {
       expect(getByText('Edit Project Objectives')).toBeVisible();
@@ -160,7 +195,39 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+        objectives: {
+          objectives: 'initial objectives',
+          caveats: 'initial caveats',
+          revision_count: 0
+        }
+      });
+      expect(mockRefresh).toBeCalledTimes(1);
+    });
+  });
+
+  it('displays an error dialog when fetching the update data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      objectives: undefined
+    });
+
+    const { getByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Error Editing Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(getByText('Error Editing Project Objectives')).not.toBeVisible();
     });
   });
 });
