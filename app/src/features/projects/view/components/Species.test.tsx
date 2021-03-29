@@ -63,7 +63,7 @@ describe('Species', () => {
 
   it('renders correctly with existing species values', () => {
     const { asFragment } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -78,7 +78,7 @@ describe('Species', () => {
     });
 
     const { getByText } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -130,7 +130,7 @@ describe('Species', () => {
     });
 
     const { getByText } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -147,6 +147,72 @@ describe('Species', () => {
 
     await waitFor(() => {
       expect(getByText('Error Editing Species')).not.toBeVisible();
+    });
+  });
+
+  it('shows error dialog with API error message when getting species data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating species data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      species: {
+        focal_species: ['species 1', 'species 2'],
+        ancillary_species: ['species 1', 'species 2']
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.species
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 });
