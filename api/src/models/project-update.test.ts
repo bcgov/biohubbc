@@ -396,15 +396,15 @@ describe('PutObjectivesData', () => {
     });
 
     it('sets objectives', () => {
-      expect(data.objectives).to.equal('objectives');
+      expect(data.objectives).to.equal(obj.objectives);
     });
 
     it('sets caveats', () => {
-      expect(data.caveats).to.equal('caveats');
+      expect(data.caveats).to.equal(obj.caveats);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(1);
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });
