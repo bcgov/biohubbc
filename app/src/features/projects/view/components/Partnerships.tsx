@@ -14,7 +14,6 @@ import { Edit } from '@material-ui/icons';
 import clsx from 'clsx';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import {
   IProjectPartnershipsForm,
@@ -22,10 +21,11 @@ import {
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditPartnershipsI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles({
   tableCellBorderBottom: {
@@ -40,6 +40,7 @@ const useStyles = makeStyles({
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -57,29 +58,64 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
   } = props;
 
   const classes = useStyles();
-  const history = useHistory();
   const biohubApi = useBiohubApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [partnershipsForUpdate, setPartnershipsForUpdate] = useState(ProjectPartnershipsFormInitialValues);
 
   const handleDialogEditOpen = async () => {
-    const { partnerships } = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.partnerships]);
+    let partnershipsResponseData;
 
-    if (!partnerships) {
-      setOpenErrorDialog(true);
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.partnerships]);
+
+      if (!response?.partnerships) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      partnershipsResponseData = response.partnerships;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setPartnershipsForUpdate(partnerships);
+    setPartnershipsForUpdate(partnershipsResponseData);
+
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = (values: IProjectPartnershipsForm) => {
-    // make put request from here using values and projectId
-    setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+  const handleDialogEditSave = async (values: IProjectPartnershipsForm) => {
+    const projectData = { partnerships: values };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
+  };
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditPartnershipsI18N.editErrorTitle,
+    dialogText: EditPartnershipsI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
   return (
@@ -96,13 +132,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog
-        dialogTitle="Failed to Fetch Partnerships Data"
-        dialogText="Could not retrieve data for editing purposes, please try again later."
-        open={openErrorDialog}
-        onClose={() => setOpenErrorDialog(false)}
-        onOk={() => setOpenErrorDialog(false)}
-      />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>

@@ -2,17 +2,15 @@ import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import React from 'react';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import Partnerships from './Partnerships';
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router-dom';
 import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-
-const history = createMemoryHistory();
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<object>, []>()
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
+    updateProject: jest.fn()
   }
 };
 
@@ -20,10 +18,13 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const mockRefresh = jest.fn();
+
 describe('Partnerships', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
+    mockBiohubApi().project.updateProject.mockClear();
   });
 
   afterEach(() => {
@@ -32,18 +33,17 @@ describe('Partnerships', () => {
 
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Partnerships
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            partnerships: {
-              indigenous_partnerships: [],
-              stakeholder_partnerships: []
-            }
-          }}
-          codes={codes}
-        />
-      </Router>
+      <Partnerships
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          partnerships: {
+            indigenous_partnerships: [],
+            stakeholder_partnerships: []
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -51,18 +51,17 @@ describe('Partnerships', () => {
 
   it('renders correctly with invalid null values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Partnerships
-          projectForViewData={{
-            ...getProjectForViewResponse,
-            partnerships: {
-              indigenous_partnerships: (null as unknown) as string[],
-              stakeholder_partnerships: (null as unknown) as string[]
-            }
-          }}
-          codes={codes}
-        />
-      </Router>
+      <Partnerships
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          partnerships: {
+            indigenous_partnerships: (null as unknown) as string[],
+            stakeholder_partnerships: (null as unknown) as string[]
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -70,9 +69,7 @@ describe('Partnerships', () => {
 
   it('renders correctly with existing partnership values', () => {
     const { asFragment } = render(
-      <Router history={history}>
-        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
+      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -87,9 +84,7 @@ describe('Partnerships', () => {
     });
 
     const { getByText } = render(
-      <Router history={history}>
-        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
+      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -97,6 +92,12 @@ describe('Partnerships', () => {
     });
 
     fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.partnerships
+      ]);
+    });
 
     await waitFor(() => {
       expect(getByText('Edit Partnerships')).toBeVisible();
@@ -117,7 +118,15 @@ describe('Partnerships', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/details`);
+      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+        partnerships: {
+          indigenous_partnerships: [1, 2],
+          stakeholder_partnerships: ['partner 1', 'partner 2']
+        }
+      });
+
+      expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
@@ -127,9 +136,7 @@ describe('Partnerships', () => {
     });
 
     const { getByText } = render(
-      <Router history={history}>
-        <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} />
-      </Router>
+      <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -139,13 +146,13 @@ describe('Partnerships', () => {
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Partnerships Data')).toBeVisible();
+      expect(getByText('Error Editing Partnerships')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(getByText('Failed to Fetch Partnerships Data')).not.toBeVisible();
+      expect(getByText('Error Editing Partnerships')).not.toBeVisible();
     });
   });
 });

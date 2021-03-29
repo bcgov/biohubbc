@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { deleteAncillarySpeciesSQL, deleteFocalSpeciesSQL, deleteIUCNSQL } from './project-delete-queries';
+import {
+  deleteAncillarySpeciesSQL,
+  deleteFocalSpeciesSQL,
+  deleteIndigenousPartnershipsSQL,
+  deleteIUCNSQL,
+  deleteStakeholderPartnershipsSQL
+} from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {
   it('returns null response when null projectId provided', () => {
@@ -39,6 +45,34 @@ describe('deleteAncillarySpeciesSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deleteAncillarySpeciesSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteIndigenousPartnershipsSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deleteIndigenousPartnershipsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteIndigenousPartnershipsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteStakeholderPartnershipsSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deleteStakeholderPartnershipsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteStakeholderPartnershipsSQL(1);
 
     expect(response).to.not.be.null;
   });
