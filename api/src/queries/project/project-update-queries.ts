@@ -206,3 +206,36 @@ export const putProjectSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get objectives information, for update purposes.
+ *
+ * @param {number} projectId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getObjectivesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+  const sqlStatement = SQL`
+    SELECT
+      objectives,
+      caveats,
+      revision_count
+    FROM
+      project
+    WHERE
+      id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getObjectivesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
