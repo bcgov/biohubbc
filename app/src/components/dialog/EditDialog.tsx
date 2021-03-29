@@ -1,4 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
 import { Formik } from 'formik';
 
@@ -63,6 +65,9 @@ export interface IEditDialogProps {
  * @return {*}
  */
 export const EditDialog: React.FC<IEditDialogProps> = (props) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Box>
       <Formik
@@ -76,6 +81,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
         }}>
         {(formikProps) => (
           <Dialog
+            fullScreen={fullScreen}
             maxWidth="xl"
             open={props.open}
             onClose={props.onClose}
@@ -86,11 +92,11 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
               <Box py={2}>{props.component.element}</Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={props.onCancel} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={formikProps.submitForm} color="primary" autoFocus>
+              <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
                 Save Changes
+              </Button>
+              <Button onClick={props.onCancel} color="primary" variant="outlined">
+                Cancel
               </Button>
             </DialogActions>
             {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
