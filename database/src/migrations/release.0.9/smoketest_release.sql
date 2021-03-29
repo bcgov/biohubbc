@@ -59,6 +59,9 @@ begin
 end
 $$;
 
+insert into webform_draft (su_id, name, data)
+  values ((select id from system_user limit 1), 'my draft name','{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}');
+
 select count(1) from project;
 select count(1) from focal_species;
 select count(1) from ancillary_species;
@@ -72,4 +75,5 @@ select count(1) from project_funding_source;
 select count(1) from project_iucn_action_classification;
 select count(1) from project_attachment;
 select count(1) from system_constant;
+select count(1) from webform_draft;
 
