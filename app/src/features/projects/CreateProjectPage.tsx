@@ -128,6 +128,8 @@ const CreateProjectPage: React.FC = () => {
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
@@ -371,6 +373,8 @@ const CreateProjectPage: React.FC = () => {
       return;
     }
 
+    setEnableCancelCheck(false);
+
     history.push(`/projects`);
   };
 
@@ -387,6 +391,8 @@ const CreateProjectPage: React.FC = () => {
       showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
+
+    setEnableCancelCheck(false);
 
     history.push(`/projects/${response.id}`);
   };
@@ -493,7 +499,7 @@ const CreateProjectPage: React.FC = () => {
 
   return (
     <>
-      <Prompt message={handleLocationChange}></Prompt>
+      <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <YesNoDialog
         dialogTitle={CreateProjectI18N.cancelTitle}
         dialogText={CreateProjectI18N.cancelText}
