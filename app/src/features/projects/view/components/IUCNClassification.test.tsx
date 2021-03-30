@@ -199,7 +199,7 @@ describe('IUCNClassification', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();
@@ -223,9 +223,7 @@ describe('IUCNClassification', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();

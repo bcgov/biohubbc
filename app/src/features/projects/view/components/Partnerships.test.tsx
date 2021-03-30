@@ -205,7 +205,7 @@ describe('Partnerships', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = render(
+    const { getByText, queryByText } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -231,9 +231,7 @@ describe('Partnerships', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
