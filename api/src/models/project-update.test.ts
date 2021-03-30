@@ -7,7 +7,8 @@ import {
   PutCoordinatorData,
   PutPartnershipsData,
   PutSpeciesData,
-  PutObjectivesData
+  PutObjectivesData,
+  GetLocationData
 } from './project-update';
 
 describe('PutPartnershipsData', () => {
@@ -405,6 +406,79 @@ describe('PutObjectivesData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(obj.revision_count);
+    });
+  });
+});
+
+describe('GetLocationData', () => {
+  describe('No values provided', () => {
+    let locationData: GetLocationData;
+
+    before(() => {
+      locationData = new GetLocationData([]);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql([]);
+    });
+
+    it('sets location_description', function() {
+      expect(locationData.location_description).to.equal('');
+    });
+
+    it('sets the geometry', function() {
+      expect(locationData.geometry).to.eql([]);
+    });
+
+    it('sets revision_count', () => {
+      expect(locationData.revision_count).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let locationData: GetLocationData;
+
+    const locationDataObj = {
+      regions: ['region 1', 'region 2'],
+      location_description: 'location description',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ],
+      revision_count: 1
+    };
+
+    before(() => {
+      locationData = new GetLocationData(locationDataObj);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql(locationDataObj.regions);
+    });
+
+    it('sets location_description', function() {
+      expect(locationData.location_description).to.equal(locationDataObj.location_description);
+    });
+
+    it('sets the geometry', function() {
+      expect(locationData.geometry).to.eql(locationDataObj.geometry);
+    });
+
+    it('sets revision_count', () => {
+      expect(locationData.revision_count).to.equal(locationDataObj.revision_count);
     });
   });
 });

@@ -1,6 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../../models/project-update';
 import { getLogger } from '../../utils/logger';
+import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 
 const defaultLog = getLogger('queries/project/project-update-queries');
 
@@ -166,8 +167,32 @@ export const putProjectSQL = (
 
   if (location) {
     sqlSetStatements.push(SQL`location_description = ${location.location_description}`);
-    // TODO geometry conversion wizardry
-    // sqlSetStatements.push(SQL`objectives = ${location.geometry},`)
+
+    const geometrySQLStatement = SQL`geography = `;
+
+    if (location.geometry && location.geometry.length) {
+      const geometryCollectionSQL = generateGeometryCollectionSQL(location.geometry);
+
+      geometrySQLStatement.append(SQL`
+        public.geography(
+          public.ST_Force2D(
+            public.ST_SetSRID(
+      `);
+
+      geometrySQLStatement.append(geometryCollectionSQL);
+
+      geometrySQLStatement.append(SQL`
+        , 4326)))
+      `);
+    } else {
+      geometrySQLStatement.append(SQL`null`);
+    }
+
+    console.log('#############GEOOOOOOOOOOOOOOOOOOO###################')
+    console.log(geometrySQLStatement.text)
+    console.log(geometrySQLStatement.values)
+
+    sqlSetStatements.push(geometrySQLStatement);
   }
 
   if (objectives) {

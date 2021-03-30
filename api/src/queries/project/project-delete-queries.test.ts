@@ -5,6 +5,7 @@ import {
   deleteFocalSpeciesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteIUCNSQL,
+  deleteRegionsSQL,
   deleteStakeholderPartnershipsSQL
 } from './project-delete-queries';
 
@@ -17,6 +18,20 @@ describe('deleteIUCNSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deleteIUCNSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteRegionsSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deleteRegionsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteRegionsSQL(1);
 
     expect(response).to.not.be.null;
   });

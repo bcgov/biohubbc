@@ -53,6 +53,7 @@ export class PutProjectData {
 }
 
 export class PutLocationData {
+  regions: string[];
   location_description: string;
   geometry: Feature[];
   revision_count: number;
@@ -60,6 +61,7 @@ export class PutLocationData {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutLocationData', message: 'params', obj });
 
+    this.regions = obj?.regions || [];
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
@@ -203,5 +205,41 @@ export class GetObjectivesData {
     this.objectives = obj?.objectives || null;
     this.caveats = obj?.caveats || null;
     this.revision_count = obj?.revision_count ?? null;
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{id} location data
+ *
+ * @export
+ * @class GetLocationData
+ */
+ export class GetLocationData {
+  location_description: string;
+  regions: string[];
+  geometry?: Feature[];
+  revision_count: number;
+
+  constructor(locationData?: any) {
+    defaultLog.debug({
+      label: 'GetLocationData',
+      message: 'params',
+      locationData
+    });
+
+    const locationDataItem = locationData && locationData.length && locationData[0];
+
+    console.log('#############LOCATION DATA');
+    console.log(locationData);
+
+    this.location_description = locationDataItem?.location_description || '';
+    this.regions =
+      (locationData &&
+        locationData.map((item: any) => {
+          return item.name;
+        })) ||
+      [];
+    this.geometry = (locationDataItem?.geometry?.length && [JSON.parse(locationDataItem.geometry)]) || [];
+    this.revision_count = locationDataItem?.revision_count ?? null;
   }
 }

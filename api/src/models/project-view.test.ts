@@ -4,6 +4,7 @@ import {
   GetCoordinatorData,
   GetFundingData,
   GetIUCNClassificationData,
+  GetLocationData,
   GetObjectivesData,
   GetPartnershipsData
 } from './project-view';
@@ -338,6 +339,70 @@ describe('GetCoordinatorData', () => {
 
     it('sets share_contact_details', function () {
       expect(projectCoordinatorData.share_contact_details).to.equal('true');
+    });
+  });
+});
+
+describe('GetLocationData', () => {
+  describe('No values provided', () => {
+    let locationData: GetLocationData;
+
+    before(() => {
+      locationData = new GetLocationData([]);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql([]);
+    });
+
+    it('sets location_description', function() {
+      expect(locationData.location_description).to.equal('');
+    });
+
+    it('sets the geometry', function() {
+      expect(locationData.geometry).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let locationData: GetLocationData;
+
+    const locationDataObj = {
+      regions: ['region 1', 'region 2'],
+      location_description: 'location description',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ]
+    };
+
+    before(() => {
+      locationData = new GetLocationData(locationDataObj);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql(locationDataObj.regions);
+    });
+
+    it('sets location_description', function() {
+      expect(locationData.location_description).to.equal(locationDataObj.location_description);
+    });
+
+    it('sets the geometry', function() {
+      expect(locationData.geometry).to.eql(locationDataObj.geometry);
     });
   });
 });

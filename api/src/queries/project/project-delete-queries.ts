@@ -4,6 +4,40 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-delete-queries');
 
 /**
+ * SQL query to delete project region rows
+ * 
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteRegionsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteRegionsSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_region
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteRegionsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete project indigenous partnership rows (project_first_nations)
  *
  * @param {projectId} projectId

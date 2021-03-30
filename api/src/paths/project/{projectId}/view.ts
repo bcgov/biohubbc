@@ -7,10 +7,10 @@ import {
   GetCoordinatorData,
   GetFundingData,
   GetIUCNClassificationData,
-  GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData
+  GetProjectData,
+  GetLocationData
 } from '../../../models/project-view';
 import { GetSpeciesData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
@@ -20,13 +20,13 @@ import {
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
-  getProjectSQL,
-  getRegionsByProjectSQL
+  getProjectSQL
 } from '../../../queries/project/project-view-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
+  getAncillarySpeciesByProjectSQL,
+  getLocationByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -93,7 +93,7 @@ function getProjectForView(): RequestHandler {
 
     try {
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
-      const getRegionsByProjectSQLStatement = getRegionsByProjectSQL(Number(req.params.projectId));
+      const getProjectLocationSQLStatement = getLocationByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
       const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
@@ -111,7 +111,7 @@ function getProjectForView(): RequestHandler {
 
       if (
         !getProjectSQLStatement ||
-        !getRegionsByProjectSQLStatement ||
+        !getProjectLocationSQLStatement ||
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement ||
         !getProjectIUCNActionClassificationSQLStatement ||
@@ -128,7 +128,7 @@ function getProjectForView(): RequestHandler {
 
       const [
         projectData,
-        regionsData,
+        locationData,
         activityData,
         climateInitiativeData,
         iucnClassificationData,
@@ -139,7 +139,7 @@ function getProjectForView(): RequestHandler {
         stakeholderPartnerships
       ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
-        await connection.query(getRegionsByProjectSQLStatement.text, getRegionsByProjectSQLStatement.values),
+        await connection.query(getProjectLocationSQLStatement.text, getProjectLocationSQLStatement.values),
         await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
         await connection.query(
           getProjectClimateInitiativesSQLStatement.text,
@@ -180,11 +180,9 @@ function getProjectForView(): RequestHandler {
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
 
       const getLocationData =
-        (projectData &&
-          projectData.rows &&
-          regionsData &&
-          regionsData.rows &&
-          new GetLocationData(projectData.rows[0], regionsData.rows)) ||
+        (locationData &&
+          locationData.rows &&
+          new GetLocationData(locationData.rows)) ||
         null;
 
       const getCoordinatorData =
