@@ -8,7 +8,6 @@ export interface IDollarAmountFieldProps {
   id: string;
   label: string;
   name: string;
-  value: number;
 }
 
 interface NumberFormatCustomProps {
@@ -39,9 +38,9 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
 }
 
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
-  const { handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();
+  const { values, handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();
 
-  const { required, id, name, label, value } = props;
+  const { required, id, name, label } = props;
 
   return (
     <TextField
@@ -51,7 +50,7 @@ const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
       name={name}
       label={label}
       variant="outlined"
-      value={value}
+      value={values[name]}
       onChange={handleChange}
       error={touched[id] && Boolean(errors[id])}
       helperText={errors[id]}
