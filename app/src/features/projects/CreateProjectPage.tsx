@@ -305,7 +305,7 @@ const CreateProjectPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setOpenCancelDialog(true);
+    history.push('/projects');
   };
 
   const handleYesNoDialogClose = () => {
