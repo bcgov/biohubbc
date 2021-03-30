@@ -73,7 +73,7 @@ const appTheme = createMuiTheme({
     },
     MuiDialog: {
       paperWidthXl: {
-        maxWidth: '800px'
+        width: '800px'
       }
     },
     MuiDialogTitle: {

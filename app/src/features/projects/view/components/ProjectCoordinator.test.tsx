@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForUpdateResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
@@ -9,7 +9,7 @@ import ProjectCoordinator from './ProjectCoordinator';
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<IGetProjectForUpdateResponse>, ['number', UPDATE_GET_ENTITIES[]]>(),
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
@@ -55,7 +55,7 @@ describe('ProjectCoordinator', () => {
       }
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -74,6 +74,20 @@ describe('ProjectCoordinator', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Coordinator')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Coordinator')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit Project Coordinator')).not.toBeVisible();
@@ -125,6 +139,74 @@ describe('ProjectCoordinator', () => {
 
     await waitFor(() => {
       expect(getByText('Error Editing Project Coordinator')).not.toBeVisible();
+    });
+  });
+
+  it('shows error dialog with API error message when getting coordinator data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getAllByRole } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating coordinator data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      coordinator: {
+        first_name: 'first name',
+        last_name: 'last name',
+        email_address: 'email@email.com',
+        coordinator_agency: 'agency 1',
+        share_contact_details: 'true',
+        revision_count: 0
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.coordinator
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Coordinator')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 });

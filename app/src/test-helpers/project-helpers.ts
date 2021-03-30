@@ -37,6 +37,11 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
         classification: 'classification',
         subClassification1: 'sub classification 1',
         subClassification2: 'sub classification 2'
+      },
+      {
+        classification: 'classification again',
+        subClassification1: 'sub classification 1 again',
+        subClassification2: 'sub classification 2 again'
       }
     ]
   },

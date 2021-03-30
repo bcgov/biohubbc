@@ -1,6 +1,6 @@
 import { cleanup, render, fireEvent, getAllByText, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForUpdateResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
@@ -9,7 +9,7 @@ import { codes } from 'test-helpers/code-helpers';
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<IGetProjectForUpdateResponse>, ['number', UPDATE_GET_ENTITIES[]]>(),
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
@@ -162,7 +162,7 @@ describe('ProjectObjectives', () => {
       }
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -181,6 +181,20 @@ describe('ProjectObjectives', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit Project Objectives')).not.toBeVisible();
@@ -212,7 +226,7 @@ describe('ProjectObjectives', () => {
       objectives: undefined
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -224,10 +238,77 @@ describe('ProjectObjectives', () => {
       expect(getByText('Error Editing Project Objectives')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Error Editing Project Objectives')).not.toBeVisible();
+    });
+  });
+
+  it('shows error dialog with API error message when getting objectives data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getAllByRole } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating objectives data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      objectives: {
+        objectives: 'initial objectives',
+        caveats: 'initial caveats',
+        revision_count: 0
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.objectives
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Project Objectives')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 });

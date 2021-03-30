@@ -107,7 +107,7 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
           </DialogContent>
         )}
         <DialogActions>
-          <Button onClick={props.onOk} color="primary" autoFocus>
+          <Button onClick={props.onOk} color="primary" variant="contained" autoFocus>
             Ok
           </Button>
         </DialogActions>

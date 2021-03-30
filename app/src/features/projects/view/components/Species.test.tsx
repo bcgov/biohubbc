@@ -63,7 +63,7 @@ describe('Species', () => {
 
   it('renders correctly with existing species values', () => {
     const { asFragment } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -77,8 +77,8 @@ describe('Species', () => {
       }
     });
 
-    const { getByText } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+    const { getByText, getAllByRole } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -98,6 +98,20 @@ describe('Species', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit Species')).not.toBeVisible();
@@ -129,8 +143,8 @@ describe('Species', () => {
       species: null
     });
 
-    const { getByText } = render(
-      <Species projectForViewData={{ ...getProjectForViewResponse }} codes={codes} refresh={mockRefresh} />
+    const { getByText, getAllByRole } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
     await waitFor(() => {
@@ -143,10 +157,78 @@ describe('Species', () => {
       expect(getByText('Error Editing Species')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Error Editing Species')).not.toBeVisible();
+    });
+  });
+
+  it('shows error dialog with API error message when getting species data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating species data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      species: {
+        focal_species: ['species 1', 'species 2'],
+        ancillary_species: ['species 1', 'species 2']
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = render(
+      <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.species
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Species')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 });

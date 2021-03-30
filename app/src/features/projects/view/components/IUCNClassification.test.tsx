@@ -37,7 +37,24 @@ describe('IUCNClassification', () => {
     cleanup();
   });
 
-  it('renders correctly', () => {
+  it('renders correctly with no classification details', () => {
+    const { asFragment } = render(
+      <IUCNClassification
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          iucn: {
+            classificationDetails: []
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with classification details', () => {
     const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();
@@ -56,7 +73,7 @@ describe('IUCNClassification', () => {
       }
     });
 
-    const { getByText } = renderContainer();
+    const { getByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();
@@ -75,6 +92,20 @@ describe('IUCNClassification', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(getByText('Edit IUCN Classification')).not.toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit IUCN Classification')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(getByText('Edit IUCN Classification')).not.toBeVisible();
@@ -127,6 +158,75 @@ describe('IUCNClassification', () => {
 
     await waitFor(() => {
       expect(getByText('Error Editing IUCN Classification')).not.toBeVisible();
+    });
+  });
+
+  it('shows error dialog with API error message when getting species data for update fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getAllByRole } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('IUCN Classification')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating species data fails', async () => {
+    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+      iucn: {
+        classificationDetails: [
+          {
+            classification: 1,
+            subClassification1: 1,
+            subClassification2: 1
+          }
+        ]
+      }
+    });
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('IUCN Classification')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+        UPDATE_GET_ENTITIES.iucn
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit IUCN Classification')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 });

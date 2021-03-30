@@ -1036,19 +1036,38 @@ exports[`ProjectDetails renders correctly 1`] = `
                     class="MuiTableRow-root"
                   >
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                      class="MuiTableCell-root MuiTableCell-body"
                     >
                       classification
                     </td>
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                      class="MuiTableCell-root MuiTableCell-body"
                     >
                       sub classification 1
                     </td>
                     <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                      class="MuiTableCell-root MuiTableCell-body"
                     >
                       sub classification 2
+                    </td>
+                  </tr>
+                  <tr
+                    class="MuiTableRow-root"
+                  >
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                    >
+                      classification again
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                    >
+                      sub classification 1 again
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-51"
+                    >
+                      sub classification 2 again
                     </td>
                   </tr>
                 </tbody>
