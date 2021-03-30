@@ -462,7 +462,6 @@ describe('GetLocationData', () => {
 
     before(() => {
       locationData = new GetLocationData(locationDataObj);
-      console.log(locationData);
     });
 
     it('sets regions', function () {
