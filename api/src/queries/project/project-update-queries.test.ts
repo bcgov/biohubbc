@@ -102,7 +102,18 @@ describe('putProjectSQL', () => {
       1,
       null,
       new PutLocationData({
-        location_description: 'descritpion'
+        location_description: 'description',
+        regions: ['region 1', 'region 2'],
+        geometry: [{
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }]
       }),
       null,
       null,
