@@ -487,7 +487,7 @@ const CreateProjectPage: React.FC = () => {
       return false;
     }
 
-    // If the cancel dialog is already open and a location change action is triggered (by `handleDialogYes`: allow it
+    // If the cancel dialog is already open and a location change action is triggered by `handleDialogYes`: allow it
     return true;
   };
 
