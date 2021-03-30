@@ -101,39 +101,6 @@ export const getProjectListSQL = (): SQLStatement | null => {
 };
 
 /**
- * SQL query to get all projects.
- *
- * @param {string} projectId
- * @returns {SQLStatement} sql query object
- */
-
-export const getRegionsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getRegionsByProjectSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      id,
-      name
-    from
-      project_region
-    where p_id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'getRegionsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to get IUCN action classifications.
  *
  * @param {number} projectId

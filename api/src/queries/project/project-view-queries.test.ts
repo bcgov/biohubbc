@@ -5,8 +5,7 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectListSQL,
-  getProjectSQL,
-  getRegionsByProjectSQL
+  getProjectSQL
 } from './project-view-queries';
 
 describe('getProjectSQL', () => {
@@ -31,20 +30,6 @@ describe('getProjectSQL', () => {
 describe('getProjectListSQL', () => {
   it('returns a SQLStatement', () => {
     const response = getProjectListSQL();
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getRegionsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getRegionsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getRegionsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

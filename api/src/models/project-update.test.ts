@@ -3,12 +3,13 @@ import { describe } from 'mocha';
 import {
   GetCoordinatorData,
   GetPartnershipsData,
-  GetProjectData,
   GetObjectivesData,
   PutCoordinatorData,
   PutPartnershipsData,
   PutSpeciesData,
   PutObjectivesData,
+  GetLocationData,
+  GetProjectData,
   PutProjectData
 } from './project-update';
 
@@ -407,6 +408,76 @@ describe('PutObjectivesData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(obj.revision_count);
+    });
+  });
+});
+
+describe('GetLocationData', () => {
+  describe('No values provided', () => {
+    let locationData: GetLocationData;
+
+    before(() => {
+      locationData = new GetLocationData([]);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql([]);
+    });
+
+    it('sets location_description', function () {
+      expect(locationData.location_description).to.equal('');
+    });
+
+    it('sets the geometry', function () {
+      expect(locationData.geometry).to.eql([]);
+    });
+
+    it('sets revision_count', () => {
+      expect(locationData.revision_count).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let locationData: GetLocationData;
+
+    const location_description = 'location description';
+    const geometry =
+      '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}';
+    const revision_count = 1;
+
+    const locationDataObj = [
+      {
+        name: 'region 1',
+        location_description,
+        geometry,
+        revision_count
+      },
+      {
+        name: 'region 2',
+        location_description,
+        geometry,
+        revision_count
+      }
+    ];
+
+    before(() => {
+      locationData = new GetLocationData(locationDataObj);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql(['region 1', 'region 2']);
+    });
+
+    it('sets location_description', function () {
+      expect(locationData.location_description).to.equal(location_description);
+    });
+
+    it('sets the geometry', function () {
+      expect(locationData.geometry).to.eql([JSON.parse(geometry)]);
+    });
+
+    it('sets revision_count', () => {
+      expect(locationData.revision_count).to.equal(revision_count);
     });
   });
 });

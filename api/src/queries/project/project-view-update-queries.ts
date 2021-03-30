@@ -4,7 +4,52 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-create-queries');
 
 /**
+ * SQL query to get project location.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getLocationByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getLocationByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      p.location_description,
+      public.ST_asGeoJSON(p.geography) as geometry,
+      pr.name,
+      p.revision_count
+    FROM
+      project p
+    LEFT OUTER JOIN
+      project_region pr
+    ON
+      p.id = pr.p_id
+    WHERE
+      p.id = ${projectId}
+    GROUP BY
+      p.location_description,
+      p.geography,
+      pr.name,
+      p.revision_count;
+  `;
+
+  defaultLog.debug({
+    label: 'getLocationByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get project stakeholder partnerships.
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */

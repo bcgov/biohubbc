@@ -5,8 +5,23 @@ import {
   getFocalSpeciesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
   getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL
+  getClimateInitiativesByProjectSQL,
+  getLocationByProjectSQL
 } from './project-view-update-queries';
+
+describe('getLocationByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getLocationByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getLocationByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
 
 describe('getStakeholderPartnershipsByProjectSQL', () => {
   it('Null projectId', () => {

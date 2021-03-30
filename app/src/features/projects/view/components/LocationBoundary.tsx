@@ -1,21 +1,32 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectForUpdateResponseLocation,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { v4 as uuidv4 } from 'uuid';
 import bbox from '@turf/bbox';
-import { useHistory } from 'react-router';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { IProjectLocationForm, ProjectLocationFormYupSchema } from 'features/projects/components/ProjectLocationForm';
+import {
+  IProjectLocationForm,
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -29,14 +40,73 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     codes
   } = props;
 
-  const history = useHistory();
+  const biohubApi = useBiohubApi();
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditLocationBoundaryI18N.editErrorTitle,
+    dialogText: EditLocationBoundaryI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(null as any);
+  const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(ProjectLocationFormInitialValues);
 
-  const handleDialogEdit = (values: IProjectLocationForm) => {
-    // make put request from here using values and projectId
-    setOpenEditDialog(false);
-    history.push(`/projects/${id}/details`);
+  const handleDialogEditOpen = async () => {
+    let locationResponseData;
+
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
+
+      if (!response?.location) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      locationResponseData = response.location;
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    }
+
+    setLocationDataForUpdate(locationResponseData);
+
+    setLocationFormData({
+      regions: locationResponseData.regions,
+      location_description: locationResponseData.location_description,
+      geometry: generateValidGeometryCollection(locationResponseData.geometry).geometryCollection
+    });
+
+    setOpenEditDialog(true);
+  };
+
+  const handleDialogEditSave = async (values: IProjectLocationForm) => {
+    const projectData = {
+      location: { ...values, revision_count: locationDataForUpdate.revision_count }
+    };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
   };
 
   /*
@@ -51,7 +121,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     let geometryCollection: Feature[] = [];
     let bounds: any[] = [];
 
-    if (!geometry.length) {
+    if (!geometry || !geometry.length) {
       return { geometryCollection, bounds };
     }
 
@@ -102,8 +172,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);
 
-  const formattedLocation = { ...location, geometry: geometryCollection };
-
   return (
     <>
       <EditDialog
@@ -111,13 +179,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         open={openEditDialog}
         component={{
           element: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
-          initialValues: formattedLocation,
+          initialValues: locationFormData,
           validationSchema: ProjectLocationFormYupSchema
         }}
         onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
-        onSave={handleDialogEdit}
+        onSave={handleDialogEditSave}
       />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
@@ -125,7 +194,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           </Grid>
           <Grid item>
             <IconButton
-              onClick={() => setOpenEditDialog(true)}
+              onClick={() => handleDialogEditOpen()}
               title="Edit Location / Project Boundary"
               aria-label="Edit Location / Project Boundary">
               <Typography variant="caption">

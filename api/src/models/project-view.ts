@@ -33,6 +33,37 @@ export class GetProjectData {
 }
 
 /**
+ * Pre-processes GET /projects/{id} location data
+ *
+ * @export
+ * @class GetLocationData
+ */
+export class GetLocationData {
+  location_description: string;
+  regions: string[];
+  geometry?: Feature[];
+
+  constructor(locationData?: any) {
+    defaultLog.debug({
+      label: 'GetLocationData',
+      message: 'params',
+      locationData
+    });
+
+    const locationDataItem = locationData && locationData.length && locationData[0];
+
+    this.location_description = locationDataItem?.location_description || '';
+    this.regions =
+      (locationData &&
+        locationData.map((item: any) => {
+          return item.name;
+        })) ||
+      [];
+    this.geometry = (locationDataItem?.geometry?.length && [JSON.parse(locationDataItem.geometry)]) || [];
+  }
+}
+
+/**
  * Pre-processes GET /projects/{id} objectives data
  *
  * @export
@@ -106,36 +137,6 @@ export class GetIUCNClassificationData {
           };
         })) ||
       [];
-  }
-}
-
-/**
- * Pre-processes GET /projects/{id} location data
- *
- * @export
- * @class GetLocationData
- */
-export class GetLocationData {
-  location_description: string;
-  regions: string[];
-  geometry?: Feature[];
-
-  constructor(projectData?: any, regionsData?: any[]) {
-    defaultLog.debug({
-      label: 'GetLocationData',
-      message: 'params',
-      projectData: projectData,
-      regionsData: regionsData
-    });
-
-    this.location_description = (projectData && projectData.location_description) || '';
-    this.regions =
-      (regionsData &&
-        regionsData.map((item: any) => {
-          return item.name;
-        })) ||
-      [];
-    this.geometry = (projectData?.geometry?.length && [JSON.parse(projectData.geometry)]) || [];
   }
 }
 

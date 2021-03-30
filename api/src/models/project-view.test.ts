@@ -4,6 +4,7 @@ import {
   GetCoordinatorData,
   GetFundingData,
   GetIUCNClassificationData,
+  GetLocationData,
   GetObjectivesData,
   GetPartnershipsData
 } from './project-view';
@@ -338,6 +339,65 @@ describe('GetCoordinatorData', () => {
 
     it('sets share_contact_details', function () {
       expect(projectCoordinatorData.share_contact_details).to.equal('true');
+    });
+  });
+});
+
+describe('GetLocationData', () => {
+  describe('No values provided', () => {
+    let locationData: GetLocationData;
+
+    before(() => {
+      locationData = new GetLocationData([]);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql([]);
+    });
+
+    it('sets location_description', function () {
+      expect(locationData.location_description).to.equal('');
+    });
+
+    it('sets the geometry', function () {
+      expect(locationData.geometry).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let locationData: GetLocationData;
+
+    const location_description = 'location description';
+    const geometry =
+      '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}';
+
+    const locationDataObj = [
+      {
+        name: 'region 1',
+        location_description,
+        geometry
+      },
+      {
+        name: 'region 2',
+        location_description,
+        geometry
+      }
+    ];
+
+    before(() => {
+      locationData = new GetLocationData(locationDataObj);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql(['region 1', 'region 2']);
+    });
+
+    it('sets location_description', function () {
+      expect(locationData.location_description).to.equal(location_description);
+    });
+
+    it('sets the geometry', function () {
+      expect(locationData.geometry).to.eql([JSON.parse(geometry)]);
     });
   });
 });

@@ -16,7 +16,8 @@ import {
   PutProjectData,
   PutIUCNData,
   PutSpeciesData,
-  IGetPutIUCN
+  IGetPutIUCN,
+  GetLocationData
 } from '../../../models/project-update';
 import { GetSpeciesData } from '../../../models/project-view-update';
 import {
@@ -39,12 +40,14 @@ import {
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
   deleteIndigenousPartnershipsSQL,
-  deleteStakeholderPartnershipsSQL
+  deleteStakeholderPartnershipsSQL,
+  deleteRegionsSQL
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
+  getLocationByProjectSQL,
   getActivitiesByProjectSQL,
   getClimateInitiativesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
@@ -55,6 +58,7 @@ import {
   insertClassificationDetail,
   insertFocalSpecies,
   insertIndigenousNation,
+  insertRegion,
   insertProjectActivity,
   insertProjectClimateChangeInitiative,
   insertStakeholderPartnership
@@ -199,6 +203,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.location)) {
+        promises.push(
+          getLocationData(projectId, connection).then((value) => {
+            results.location = value;
+          })
+        );
+      }
+
       if (entities.includes(GET_ENTITIES.species)) {
         promises.push(
           getSpeciesData(projectId, connection).then((value) => {
@@ -244,6 +256,24 @@ function getProjectForUpdate(): RequestHandler {
     }
   };
 }
+
+export const getLocationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getLocationByProjectSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get project location data');
+  }
+
+  return new GetLocationData(result);
+};
 
 export const getIUCNClassificationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getIUCNActionClassificationByProjectSQL(projectId);
@@ -487,6 +517,10 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectData(projectId, entities, connection));
       }
 
+      if (entities?.location) {
+        promises.push(updateProjectRegionsData(projectId, entities, connection));
+      }
+
       if (entities?.iucn) {
         promises.push(updateProjectIUCNData(projectId, entities, connection));
       }
@@ -508,6 +542,31 @@ function updateProject(): RequestHandler {
     }
   };
 }
+
+export const updateProjectRegionsData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
+
+  const sqlDeleteRegionsStatement = deleteRegionsSQL(projectId);
+
+  if (!sqlDeleteRegionsStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const deleteRegionsResult = await connection.query(sqlDeleteRegionsStatement.text, sqlDeleteRegionsStatement.values);
+
+  if (!deleteRegionsResult) {
+    throw new HTTP409('Failed to delete project regions data');
+  }
+
+  const insertRegionsPromises =
+    putLocationData?.regions?.map((region: string) => insertRegion(region, projectId, connection)) || [];
+
+  await Promise.all(insertRegionsPromises);
+};
 
 export const updateProjectSpeciesData = async (
   projectId: number,
@@ -648,11 +707,11 @@ export const updateProjectData = async (
 
   // Update project table
   const revision_count =
-    putProjectData?.revision_count ||
-    putLocationData?.revision_count ||
-    putObjectivesData?.revision_count ||
-    putCoordinatorData?.revision_count ||
-    0;
+    putProjectData?.revision_count ??
+    putLocationData?.revision_count ??
+    putObjectivesData?.revision_count ??
+    putCoordinatorData?.revision_count ??
+    null;
 
   if (!revision_count && revision_count !== 0) {
     throw new HTTP400('Failed to parse request body');
