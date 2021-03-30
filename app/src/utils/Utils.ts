@@ -67,7 +67,7 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
 export const getFormattedAmount = (amount: number): string => {
-  if (amount === undefined) {
+  if (!amount && amount !== 0) {
     //amount was invalid
     return '';
   }
