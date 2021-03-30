@@ -199,7 +199,7 @@ describe('IUCNClassification', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('IUCN Classification')).toBeVisible();

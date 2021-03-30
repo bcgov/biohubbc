@@ -29,8 +29,8 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
         onChange({
           target: {
             name: props.name,
-            value: parseInt(values.value),
-          },
+            value: parseInt(values.value)
+          }
         });
       }}
       thousandSeparator
@@ -41,16 +41,7 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
 }
 
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
-  const {
-    required,
-    id,
-    name,
-    label,
-    value,
-    handleChange,
-    touched,
-    errors
-  } = props;
+  const { required, id, name, label, value, handleChange, touched, errors } = props;
 
   return (
     <TextField

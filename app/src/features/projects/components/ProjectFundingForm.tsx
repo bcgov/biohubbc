@@ -189,9 +189,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                   Funding Amount
                                 </Typography>
                                 <Typography variant="body1">
-                                  {getFormattedAmount(
-                                    fundingAgency.funding_amount
-                                  )}
+                                  {getFormattedAmount(fundingAgency.funding_amount)}
                                 </Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>

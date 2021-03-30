@@ -205,7 +205,7 @@ describe('Partnerships', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getAllByRole } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
