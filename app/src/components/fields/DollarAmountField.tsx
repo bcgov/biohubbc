@@ -15,13 +15,12 @@ export interface IDollarAmountFieldProps {
 
 interface NumberFormatCustomProps {
   inputRef: (instance: NumberFormat | null) => void;
-  onChange: (event: { target: { name: string; value: string } }) => void;
+  onChange: (event: { target: { name: string; value: number } }) => void;
   name: string;
 }
 
 function NumberFormatCustom(props: NumberFormatCustomProps) {
   const { inputRef, onChange, ...other } = props;
-
   return (
     <NumberFormat
       {...other}
@@ -30,7 +29,7 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
         onChange({
           target: {
             name: props.name,
-            value: values.value,
+            value: parseInt(values.value),
           },
         });
       }}

@@ -3,7 +3,7 @@ import React, { Fragment } from 'react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
 import { Edit } from '@material-ui/icons';
 
 const useStyles = makeStyles({
@@ -88,9 +88,7 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
                   <Typography variant="caption">Funding Amount</Typography>
                 </Box>
                 <Box>
-                  <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                    {item.funding_amount}
-                  </Typography>
+                  <Typography variant="subtitle1">{getFormattedAmount(item.funding_amount)}</Typography>
                 </Box>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
