@@ -70,6 +70,8 @@ import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interface
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import * as History from 'history';
+import { Prompt } from 'react-router-dom';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ICreateProjectStep {
@@ -478,8 +480,20 @@ const CreateProjectPage: React.FC = () => {
     return <CircularProgress />;
   }
 
+  const handleLocationChange = (location: History.Location, action: History.Action) => {
+    if (!openCancelDialog) {
+      // If the cancel dialog is not open: open it
+      setOpenCancelDialog(true);
+      return false;
+    }
+
+    // If the cancel dialog is already open and a location change action is triggered (by `handleDialogYes`: allow it
+    return true;
+  };
+
   return (
     <>
+      <Prompt message={handleLocationChange}></Prompt>
       <YesNoDialog
         dialogTitle={CreateProjectI18N.cancelTitle}
         dialogText={CreateProjectI18N.cancelText}
