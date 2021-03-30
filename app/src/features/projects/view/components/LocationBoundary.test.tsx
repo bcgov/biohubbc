@@ -158,7 +158,7 @@ describe('LocationBoundary', () => {
   });
 
   test('editing the location boundary works in the dialog', async () => {
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <Router history={history}>
         <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} />
       </Router>
@@ -177,7 +177,7 @@ describe('LocationBoundary', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(getByText('Edit Location / Project Boundary')).not.toBeVisible();
+      expect(queryByText('Edit Location / Project Boundary')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));

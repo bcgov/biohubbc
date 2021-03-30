@@ -8,6 +8,7 @@ import {
   GetIUCNClassificationData,
   GetPartnershipsData,
   GetObjectivesData,
+  GetProjectData,
   PutCoordinatorData,
   PutPartnershipsData,
   PutLocationData,
@@ -25,12 +26,15 @@ import {
 } from '../../../openapi/schemas/project';
 import {
   getCoordinatorByProjectSQL,
-  putProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
-  getObjectivesByProjectSQL
+  getObjectivesByProjectSQL,
+  getProjectByProjectSQL,
+  putProjectSQL
 } from '../../../queries/project/project-update-queries';
 import {
+  deleteActivitiesSQL,
+  deleteClimateInitiativesSQL,
   deleteIUCNSQL,
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
@@ -40,7 +44,9 @@ import {
 import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL
+  getAncillarySpeciesByProjectSQL,
+  getActivitiesByProjectSQL,
+  getClimateInitiativesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -49,6 +55,8 @@ import {
   insertClassificationDetail,
   insertFocalSpecies,
   insertIndigenousNation,
+  insertProjectActivity,
+  insertProjectClimateChangeInitiative,
   insertStakeholderPartnership
 } from '../../project';
 
@@ -215,6 +223,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.project)) {
+        promises.push(
+          getProjectData(projectId, connection).then((value) => {
+            results.project = value;
+          })
+        );
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -233,7 +249,7 @@ export const getIUCNClassificationData = async (projectId: number, connection: I
   const sqlStatement = getIUCNActionClassificationByProjectSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL get statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -254,7 +270,7 @@ export const getProjectCoordinatorData = async (
   const sqlStatement = getCoordinatorByProjectSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL get statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -273,7 +289,7 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   const sqlStatementStakeholder = getStakeholderPartnershipsByProjectSQL(projectId);
 
   if (!sqlStatementIndigenous || !sqlStatementStakeholder) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL get statement');
   }
 
   const responseIndigenous = await connection.query(sqlStatementIndigenous.text, sqlStatementIndigenous.values);
@@ -298,7 +314,7 @@ export const getSpeciesData = async (projectId: number, connection: IDBConnectio
   const sqlStatementAncillarySpecies = getAncillarySpeciesByProjectSQL(projectId);
 
   if (!sqlStatementFocalSpecies || !sqlStatementAncillarySpecies) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL get statement');
   }
 
   const responseFocalSpecies = await connection.query(sqlStatementFocalSpecies.text, sqlStatementFocalSpecies.values);
@@ -325,7 +341,7 @@ export const getObjectivesData = async (projectId: number, connection: IDBConnec
   const sqlStatement = getObjectivesByProjectSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL get statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -337,6 +353,41 @@ export const getObjectivesData = async (projectId: number, connection: IDBConnec
   }
 
   return new GetObjectivesData(result);
+};
+
+export const getProjectData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatementDetails = getProjectByProjectSQL(projectId);
+  const sqlStatementActivities = getActivitiesByProjectSQL(projectId);
+  const sqlStatementClimateInitiatives = getClimateInitiativesByProjectSQL(projectId);
+
+  if (!sqlStatementDetails || !sqlStatementActivities || !sqlStatementClimateInitiatives) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const [responseDetails, responseActivities, responseClimateInitiatives] = await Promise.all([
+    connection.query(sqlStatementDetails.text, sqlStatementDetails.values),
+    connection.query(sqlStatementActivities.text, sqlStatementActivities.values),
+    connection.query(sqlStatementClimateInitiatives.text, sqlStatementClimateInitiatives.values)
+  ]);
+
+  const resultDetails = (responseDetails && responseDetails.rows && responseDetails.rows[0]) || null;
+  const resultActivities = (responseActivities && responseActivities.rows && responseActivities.rows) || null;
+  const resultClimateInitiatives =
+    (responseClimateInitiatives && responseClimateInitiatives.rows && responseClimateInitiatives.rows) || null;
+
+  if (!resultDetails) {
+    throw new HTTP400('Failed to get project details data');
+  }
+
+  if (!resultActivities) {
+    throw new HTTP400('Failed to get project activities data');
+  }
+
+  if (!resultClimateInitiatives) {
+    throw new HTTP400('Failed to get project climate initiatives data');
+  }
+
+  return new GetProjectData(resultDetails, resultActivities, resultClimateInitiatives);
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
@@ -469,7 +520,7 @@ export const updateProjectSpeciesData = async (
   const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
 
   if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL update statement');
   }
 
   const deleteFocalSpeciesPromises = connection.query(
@@ -518,13 +569,13 @@ export const updateProjectIUCNData = async (
   const sqlDeleteStatement = deleteIUCNSQL(projectId);
 
   if (!sqlDeleteStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL update statement');
   }
 
   const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
 
   if (!deleteResult) {
-    throw new HTTP409('Failed to delete project IUCN data');
+    throw new HTTP409('Failed to update project IUCN data');
   }
 
   const insertIUCNPromises =
@@ -546,7 +597,7 @@ export const updateProjectPartnershipsData = async (
   const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
 
   if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL update statement');
   }
 
   const deleteIndigenousPartnershipsPromises = connection.query(
@@ -607,7 +658,7 @@ export const updateProjectData = async (
     throw new HTTP400('Failed to parse request body');
   }
 
-  const sqlStatement = putProjectSQL(
+  const sqlUpdateProject = putProjectSQL(
     projectId,
     putProjectData,
     putLocationData,
@@ -616,15 +667,53 @@ export const updateProjectData = async (
     revision_count
   );
 
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+  if (!sqlUpdateProject) {
+    throw new HTTP400('Failed to build SQL update statement');
   }
 
-  const result = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = await connection.query(sqlUpdateProject.text, sqlUpdateProject.values);
 
   if (!result || !result.rowCount) {
     // TODO if revision count is bad, it is supposed to raise an exception?
     // It currently does skip the update as expected, but it just returns 0 rows updated, and doesn't result in any errors
     throw new HTTP409('Failed to update stale project data');
   }
+
+  const sqlDeleteActivities = deleteActivitiesSQL(projectId);
+  const sqlDeleteClimateInitiatives = deleteClimateInitiativesSQL(projectId);
+
+  if (!sqlDeleteActivities || !sqlDeleteClimateInitiatives) {
+    throw new HTTP400('Failed to build SQL delete statement');
+  }
+
+  const deleteActivitiesPromises = connection.query(sqlDeleteActivities.text, sqlDeleteActivities.values);
+  const deleteClimateInitiativesPromises = connection.query(
+    sqlDeleteClimateInitiatives.text,
+    sqlDeleteClimateInitiatives.values
+  );
+
+  const [deleteActivitiesResult, deleteClimateInitiativesResult] = await Promise.all([
+    deleteActivitiesPromises,
+    deleteClimateInitiativesPromises
+  ]);
+
+  if (!deleteActivitiesResult) {
+    throw new HTTP409('Failed to update project activity data');
+  }
+
+  if (!deleteClimateInitiativesResult) {
+    throw new HTTP409('Failed to update project activity data');
+  }
+
+  const insertActivityPromises =
+    putProjectData?.project_activities?.map((activityId: number) =>
+      insertProjectActivity(activityId, projectId, connection)
+    ) || [];
+
+  const insertClimateInitiativesPromises =
+    putProjectData?.climate_change_initiatives?.map((climateChangeInitiativeId: number) =>
+      insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
+    ) || [];
+
+  await Promise.all([...insertActivityPromises, ...insertClimateInitiativesPromises]);
 };

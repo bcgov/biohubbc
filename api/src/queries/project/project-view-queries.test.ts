@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -52,20 +50,6 @@ describe('getRegionsByProjectSQL', () => {
   });
 });
 
-describe('getActivitiesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getActivitiesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getActivitiesByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
 describe('getIUCNActionClassificationByProjectSQL', () => {
   it('returns null response when null projectId provided', () => {
     const response = getIUCNActionClassificationByProjectSQL((null as unknown) as number);
@@ -89,20 +73,6 @@ describe('getFundingSourceByProjectSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = getFundingSourceByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getClimateInitiativesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getClimateInitiativesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getClimateInitiativesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

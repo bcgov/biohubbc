@@ -95,3 +95,66 @@ export const getAncillarySpeciesByProjectSQL = (projectId: number): SQLStatement
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get project activities.
+ *
+ * @param {string} projectId
+ * @returns {SQLStatement} sql query object
+ */
+
+export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getActivitiesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      a_id
+    from
+      project_activity
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getActivitiesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project climate initiatives.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getClimateInitiativesByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getClimateInitiativesByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      cci_id
+    from
+      project_climate_initiative
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getClimateInitiativesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

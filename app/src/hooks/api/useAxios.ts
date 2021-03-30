@@ -13,11 +13,11 @@ export class APIError {
   responseURL?: string;
 
   constructor(error: AxiosError) {
-    this.name = error.name;
-    this.status = error?.response?.status || Number(error?.code) || 0;
-    this.message = error.message;
-
+    this.name = error?.response?.data?.name || error.name;
+    this.status = error?.response?.data?.status || error?.response?.status || Number(error?.code);
+    this.message = error?.response?.data?.message || error.message;
     this.errors = error?.response?.data?.errors || [];
+
     this.requestURL = `${error?.config?.baseURL}${error?.config?.url}`;
     this.responseURL = error?.request?.responseURL;
   }

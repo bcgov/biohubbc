@@ -113,7 +113,6 @@ export interface IGetProjectForUpdateResponse {
 export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
   project_type: number;
-  project_type_name?: string;
   project_activities: number[];
   climate_change_initiatives: number[];
   start_date: string;
@@ -206,7 +205,6 @@ export interface IGetProjectForViewResponse {
 export interface IGetProjectForViewResponseDetails {
   project_name: string;
   project_type: string;
-  project_type_name?: string;
   project_activities: number[];
   climate_change_initiatives: number[];
   start_date: string;

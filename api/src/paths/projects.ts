@@ -65,7 +65,7 @@ function getProjectList(): RequestHandler {
       const getProjectListSQLStatement = getProjectListSQL();
 
       if (!getProjectListSQLStatement) {
-        throw new HTTP400('Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();

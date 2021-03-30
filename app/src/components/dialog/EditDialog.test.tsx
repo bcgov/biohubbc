@@ -43,13 +43,21 @@ const handleOnSave = jest.fn();
 const handleOnCancel = jest.fn();
 const handleOnClose = jest.fn();
 
-const renderContainer = (testFieldValue: string, dialogError?: string) => {
+const renderContainer = ({
+  testFieldValue,
+  dialogError,
+  open = true
+}: {
+  testFieldValue: string;
+  dialogError?: string;
+  open?: boolean;
+}) => {
   return render(
     <div id="root">
       <EditDialog
         dialogTitle="This is dialog title"
         dialogError={dialogError || undefined}
-        open={true}
+        open={open}
         component={{
           element: <SampleFormikForm />,
           initialValues: { testField: testFieldValue },
@@ -64,14 +72,26 @@ const renderContainer = (testFieldValue: string, dialogError?: string) => {
 };
 
 describe('EditDialog', () => {
-  it('matches the snapshot with no error message', () => {
-    const { baseElement } = renderContainer('this is a test');
+  it('matches the snapshot when not open', () => {
+    const { baseElement } = renderContainer({ testFieldValue: 'this is a test', open: false });
+
+    expect(baseElement).toMatchSnapshot();
+  });
+
+  it('matches the snapshot when open, with no error message', () => {
+    const { baseElement } = renderContainer({ testFieldValue: 'this is a test' });
+
+    expect(baseElement).toMatchSnapshot();
+  });
+
+  it('matches snapshot when open, with error message', () => {
+    const { baseElement } = renderContainer({ testFieldValue: 'this is a test', dialogError: 'This is an error' });
 
     expect(baseElement).toMatchSnapshot();
   });
 
   it('calls the onSave prop when `Save Changes` button is clicked', async () => {
-    const { findByText, getByLabelText } = renderContainer('initial value');
+    const { findByText, getByLabelText } = renderContainer({ testFieldValue: 'initial value' });
 
     const textField = await getByLabelText('Test Field', { exact: false });
 
@@ -89,14 +109,8 @@ describe('EditDialog', () => {
     });
   });
 
-  it('matches snapshot with error message', () => {
-    const { baseElement } = renderContainer('this is a test', 'This is an error');
-
-    expect(baseElement).toMatchSnapshot();
-  });
-
   it('calls the onCancel prop when `Cancel` button is clicked', async () => {
-    const { findByText } = renderContainer('');
+    const { findByText } = renderContainer({ testFieldValue: 'this is a test' });
 
     const cancelButton = await findByText('Cancel', { exact: false });
 

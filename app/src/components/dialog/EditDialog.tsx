@@ -66,7 +66,12 @@ export interface IEditDialogProps {
  */
 export const EditDialog: React.FC<IEditDialogProps> = (props) => {
   const theme = useTheme();
+
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  if (!props.open) {
+    return <></>;
+  }
 
   return (
     <Box>

@@ -11,7 +11,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
       id="root"
     >
       <div
-        class="MuiBox-root MuiBox-root-7"
+        class="MuiBox-root MuiBox-root-2"
       />
     </div>
   </div>
@@ -36,76 +36,30 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
       tabindex="-1"
     >
       <div
-        aria-describedby="edit-dialog-description"
-        aria-labelledby="edit-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"
+        aria-describedby="alert-dialog-description"
+        aria-labelledby="alert-dialog-title"
+        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
         role="dialog"
       >
         <div
           class="MuiDialogTitle-root"
-          id="edit-dialog-title"
+          id="alert-dialog-title"
         >
           <h2
             class="MuiTypography-root MuiTypography-h6"
           >
-            This is dialog title
+            this is a test
           </h2>
         </div>
         <div
           class="MuiDialogContent-root"
         >
-          <div
-            class="MuiBox-root MuiBox-root-8"
+          <p
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            id="alert-dialog-description"
           >
-            <form>
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="testfield"
-                  id="testfield-label"
-                >
-                  Test Field
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-                >
-                  <textarea
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                    id="testfield"
-                    name="testField"
-                    required=""
-                    rows="4"
-                  >
-                    this is a test
-                  </textarea>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-                    >
-                      <span>
-                        Test Field
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </form>
-          </div>
+            This is an error
+          </p>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
@@ -118,7 +72,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
             <span
               class="MuiButton-label"
             >
-              Save Changes
+              Yes
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -141,17 +95,12 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
             <span
               class="MuiButton-label"
             >
-              Cancel
+              No
             </span>
             <span
               class="MuiTouchRipple-root"
             />
           </button>
-        </div>
-        <div
-          class="MuiDialogContent-root"
-        >
-          This is an error
         </div>
       </div>
     </div>
@@ -209,76 +158,30 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
       tabindex="-1"
     >
       <div
-        aria-describedby="edit-dialog-description"
-        aria-labelledby="edit-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"
+        aria-describedby="alert-dialog-description"
+        aria-labelledby="alert-dialog-title"
+        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
         role="dialog"
       >
         <div
           class="MuiDialogTitle-root"
-          id="edit-dialog-title"
+          id="alert-dialog-title"
         >
           <h2
             class="MuiTypography-root MuiTypography-h6"
           >
-            This is dialog title
+            this is a test
           </h2>
         </div>
         <div
           class="MuiDialogContent-root"
         >
-          <div
-            class="MuiBox-root MuiBox-root-2"
+          <p
+            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+            id="alert-dialog-description"
           >
-            <form>
-              <div
-                class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              >
-                <label
-                  class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                  data-shrink="true"
-                  for="testfield"
-                  id="testfield-label"
-                >
-                  Test Field
-                  <span
-                    aria-hidden="true"
-                    class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                  >
-                     
-                    *
-                  </span>
-                </label>
-                <div
-                  class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-                >
-                  <textarea
-                    aria-invalid="false"
-                    class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                    id="testfield"
-                    name="testField"
-                    required=""
-                    rows="4"
-                  >
-                    this is a test
-                  </textarea>
-                  <fieldset
-                    aria-hidden="true"
-                    class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
-                  >
-                    <legend
-                      class="PrivateNotchedOutline-legendLabelled-5 PrivateNotchedOutline-legendNotched-6"
-                    >
-                      <span>
-                        Test Field
-                         *
-                      </span>
-                    </legend>
-                  </fieldset>
-                </div>
-              </div>
-            </form>
-          </div>
+            this is text
+          </p>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
@@ -291,7 +194,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
             <span
               class="MuiButton-label"
             >
-              Save Changes
+              Yes
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -314,7 +217,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
             <span
               class="MuiButton-label"
             >
-              Cancel
+              No
             </span>
             <span
               class="MuiTouchRipple-root"

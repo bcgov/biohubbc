@@ -3,12 +3,6 @@
 exports[`IUCNClassification renders correctly with classification details 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-13"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-14"
-  />
-  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -66,7 +60,7 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       >
         <table
           aria-label="iucn-classification-table"
-          class="MuiTable-root makeStyles-table-8"
+          class="MuiTable-root makeStyles-table-6"
         >
           <thead
             class="MuiTableHead-root"
@@ -75,19 +69,19 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
               class="MuiTableRow-root MuiTableRow-head"
             >
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-9"
                 scope="col"
               >
                 Classification
               </th>
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-9"
                 scope="col"
               >
                 Sub-classification
               </th>
               <th
-                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-11"
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-9"
                 scope="col"
               >
                 Sub-classification
@@ -120,17 +114,17 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
               class="MuiTableRow-root"
             >
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-8"
               >
                 classification again
               </td>
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-8"
               >
                 sub classification 1 again
               </td>
               <td
-                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-10"
+                class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-8"
               >
                 sub classification 2 again
               </td>
@@ -145,12 +139,6 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
 
 exports[`IUCNClassification renders correctly with no classification details 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-6"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-7"
-  />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >

@@ -3,19 +3,13 @@
 exports[`CreateProjectPage removes the extra project steps if all permits are marked as having not conducted sampling 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-47"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-48"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-49"
+    class="MuiBox-root MuiBox-root-45"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-50"
+        class="MuiBox-root MuiBox-root-46"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -28,11 +22,11 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-42 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-40 MuiTypography-colorPrimary"
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-43 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-41 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -51,7 +45,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-51"
+        class="MuiBox-root MuiBox-root-47"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -60,17 +54,17 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-52"
+        class="MuiBox-root MuiBox-root-48"
       >
         <hr
           class="MuiDivider-root"
         />
       </div>
       <div
-        class="MuiBox-root MuiBox-root-53"
+        class="MuiBox-root MuiBox-root-49"
       >
         <div
-          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-45 MuiPaper-elevation0"
+          class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-43 MuiPaper-elevation0"
         >
           <div
             class="MuiStep-root MuiStep-vertical MuiStep-completed"
@@ -99,10 +93,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-completed MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-54"
+                    class="MuiBox-root MuiBox-root-50"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-46 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-44 MuiTypography-h2"
                     >
                       Project Coordinator
                     </h2>
@@ -164,10 +158,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-73"
+                    class="MuiBox-root MuiBox-root-69"
                   >
                     <h2
-                      class="MuiTypography-root makeStyles-stepTitle-46 MuiTypography-h2"
+                      class="MuiTypography-root makeStyles-stepTitle-44 MuiTypography-h2"
                     >
                       Permits
                     </h2>
@@ -195,11 +189,11 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                     class="MuiCollapse-wrapperInner"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-81"
+                      class="MuiBox-root MuiBox-root-77"
                     >
                       <form>
                         <div
-                          class="MuiBox-root MuiBox-root-82"
+                          class="MuiBox-root MuiBox-root-78"
                         >
                           <div
                             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -208,10 +202,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                             >
                               <div
-                                class="MuiBox-root MuiBox-root-88"
+                                class="MuiBox-root MuiBox-root-84"
                               >
                                 <div
-                                  class="MuiBox-root MuiBox-root-89"
+                                  class="MuiBox-root MuiBox-root-85"
                                 >
                                   <div
                                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -244,10 +238,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                       />
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-90 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-86 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-92 PrivateNotchedOutline-legendNotched-93"
+                                          class="PrivateNotchedOutline-legendLabelled-88 PrivateNotchedOutline-legendNotched-89"
                                         >
                                           <span>
                                             Permit Number *
@@ -258,7 +252,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-94"
+                                  class="MuiBox-root MuiBox-root-90"
                                 >
                                   <div
                                     class="MuiFormControl-root"
@@ -312,10 +306,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                       </svg>
                                       <fieldset
                                         aria-hidden="true"
-                                        class="PrivateNotchedOutline-root-90 MuiOutlinedInput-notchedOutline"
+                                        class="PrivateNotchedOutline-root-86 MuiOutlinedInput-notchedOutline"
                                       >
                                         <legend
-                                          class="PrivateNotchedOutline-legendLabelled-92 PrivateNotchedOutline-legendNotched-93"
+                                          class="PrivateNotchedOutline-legendLabelled-88 PrivateNotchedOutline-legendNotched-89"
                                         >
                                           <span>
                                             Sampling Conducted
@@ -329,7 +323,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-95"
+                                  class="MuiBox-root MuiBox-root-91"
                                 >
                                   <button
                                     aria-label="remove permit"
@@ -360,7 +354,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-83"
+                            class="MuiBox-root MuiBox-root-79"
                           >
                             <button
                               aria-label="add permit"
@@ -381,20 +375,20 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                         </div>
                       </form>
                       <div
-                        class="MuiBox-root MuiBox-root-84"
+                        class="MuiBox-root MuiBox-root-80"
                       >
                         <hr
                           class="MuiDivider-root"
                         />
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-85"
+                        class="MuiBox-root MuiBox-root-81"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root-86"
+                          class="MuiBox-root MuiBox-root-82"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-41 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-39 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -409,10 +403,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                           </button>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root-87"
+                          class="MuiBox-root MuiBox-root-83"
                         >
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-41 MuiButton-containedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-39 MuiButton-containedPrimary"
                             tabindex="0"
                             type="submit"
                           >
@@ -426,7 +420,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             />
                           </button>
                           <button
-                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-41 MuiButton-outlinedPrimary"
+                            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-39 MuiButton-outlinedPrimary"
                             tabindex="0"
                             type="button"
                           >
@@ -459,18 +453,12 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-7"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-8"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-9"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiBox-root MuiBox-root-8"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -506,7 +494,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-9"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -515,14 +503,14 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-12"
+        class="MuiBox-root MuiBox-root-10"
       >
         <hr
           class="MuiDivider-root"
         />
       </div>
       <div
-        class="MuiBox-root MuiBox-root-13"
+        class="MuiBox-root MuiBox-root-11"
       >
         <div
           class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-5 MuiPaper-elevation0"
@@ -564,7 +552,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiStepLabel-active MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-14"
+                    class="MuiBox-root MuiBox-root-12"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -595,7 +583,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     class="MuiCollapse-wrapperInner"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-15"
+                      class="MuiBox-root MuiBox-root-13"
                     >
                       <form>
                         <div
@@ -635,10 +623,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                 />
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-19"
+                                    class="PrivateNotchedOutline-legendLabelled-17"
                                   >
                                     <span>
                                       First Name *
@@ -682,10 +670,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                 />
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-19"
+                                    class="PrivateNotchedOutline-legendLabelled-17"
                                   >
                                     <span>
                                       Last Name *
@@ -729,10 +717,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                 />
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-19"
+                                    class="PrivateNotchedOutline-legendLabelled-17"
                                   >
                                     <span>
                                       Business Email Address *
@@ -814,10 +802,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                   </div>
                                   <fieldset
                                     aria-hidden="true"
-                                    class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
+                                    class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
                                   >
                                     <legend
-                                      class="PrivateNotchedOutline-legendLabelled-19"
+                                      class="PrivateNotchedOutline-legendLabelled-17"
                                     >
                                       <span>
                                         Coordinator Agency *
@@ -835,7 +823,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                               class="MuiFormControl-root"
                             >
                               <legend
-                                class="MuiFormLabel-root makeStyles-legend-16 Mui-required"
+                                class="MuiFormLabel-root makeStyles-legend-14 Mui-required"
                               >
                                 Share Contact Details
                                 <span
@@ -851,7 +839,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                 Do you want the project coordinator contact information visible to the public?
                               </p>
                               <div
-                                class="MuiBox-root MuiBox-root-21"
+                                class="MuiBox-root MuiBox-root-19"
                               >
                                 <div
                                   aria-label="Share Contact Details"
@@ -863,21 +851,21 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                   >
                                     <span
                                       aria-disabled="false"
-                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-23 Mui-checked MuiIconButton-colorPrimary"
+                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-21 Mui-checked MuiIconButton-colorPrimary"
                                     >
                                       <span
                                         class="MuiIconButton-label"
                                       >
                                         <input
                                           checked=""
-                                          class="PrivateSwitchBase-input-25"
+                                          class="PrivateSwitchBase-input-23"
                                           name="share_contact_details"
                                           required=""
                                           type="radio"
                                           value="false"
                                         />
                                         <div
-                                          class="PrivateRadioButtonIcon-root-26 PrivateRadioButtonIcon-checked-28"
+                                          class="PrivateRadioButtonIcon-root-24 PrivateRadioButtonIcon-checked-26"
                                         >
                                           <svg
                                             aria-hidden="true"
@@ -891,7 +879,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                           </svg>
                                           <svg
                                             aria-hidden="true"
-                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
+                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
                                             focusable="false"
                                             viewBox="0 0 24 24"
                                           >
@@ -916,20 +904,20 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                   >
                                     <span
                                       aria-disabled="false"
-                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                                      class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                                     >
                                       <span
                                         class="MuiIconButton-label"
                                       >
                                         <input
-                                          class="PrivateSwitchBase-input-25"
+                                          class="PrivateSwitchBase-input-23"
                                           name="share_contact_details"
                                           required=""
                                           type="radio"
                                           value="true"
                                         />
                                         <div
-                                          class="PrivateRadioButtonIcon-root-26"
+                                          class="PrivateRadioButtonIcon-root-24"
                                         >
                                           <svg
                                             aria-hidden="true"
@@ -943,7 +931,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                                           </svg>
                                           <svg
                                             aria-hidden="true"
-                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
+                                            class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
                                             focusable="false"
                                             viewBox="0 0 24 24"
                                           >
@@ -973,20 +961,20 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                         </div>
                       </form>
                       <div
-                        class="MuiBox-root MuiBox-root-29"
+                        class="MuiBox-root MuiBox-root-27"
                       >
                         <hr
                           class="MuiDivider-root"
                         />
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-30"
+                        class="MuiBox-root MuiBox-root-28"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root-31"
+                          class="MuiBox-root MuiBox-root-29"
                         />
                         <div
-                          class="MuiBox-root MuiBox-root-32"
+                          class="MuiBox-root MuiBox-root-30"
                         >
                           <button
                             class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
@@ -1068,7 +1056,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-33"
+                    class="MuiBox-root MuiBox-root-31"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1134,7 +1122,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-34"
+                    class="MuiBox-root MuiBox-root-32"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1200,7 +1188,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-35"
+                    class="MuiBox-root MuiBox-root-33"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1266,7 +1254,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-36"
+                    class="MuiBox-root MuiBox-root-34"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1332,7 +1320,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-37"
+                    class="MuiBox-root MuiBox-root-35"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1398,7 +1386,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-38"
+                    class="MuiBox-root MuiBox-root-36"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1464,7 +1452,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-39"
+                    class="MuiBox-root MuiBox-root-37"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
@@ -1530,7 +1518,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-40"
+                    class="MuiBox-root MuiBox-root-38"
                   >
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"

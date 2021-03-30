@@ -114,7 +114,7 @@ export const insertNoSamplePermitNumber = async (
   if (!result || !result.id) {
     throw {
       status: 400,
-      message: 'Failed to insert into no_sample_permit table'
+      message: 'Failed to insert no-sampling permit data'
     };
   }
 

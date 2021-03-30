@@ -169,7 +169,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
     const setSystemUserContextSQLStatement = setSystemUserContextSQL(userIdentifier, systemUserType);
 
     if (!setSystemUserContextSQLStatement) {
-      throw new HTTP400('Failed to build SQL statement');
+      throw new HTTP400('Failed to build SQL user context statement');
     }
 
     try {

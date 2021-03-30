@@ -98,7 +98,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
 
       iucnResponseData = response.iucn;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
