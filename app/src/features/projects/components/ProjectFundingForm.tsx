@@ -6,7 +6,7 @@ import { FieldArray, useFormikContext } from 'formik';
 import Icon from '@mdi/react';
 import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import React, { useState } from 'react';
-import { getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
@@ -188,7 +188,11 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                 <Typography variant="body2" color="textSecondary">
                                   Funding Amount
                                 </Typography>
-                                <Typography variant="body1">${fundingAgency.funding_amount}</Typography>
+                                <Typography variant="body1">
+                                  {getFormattedAmount(
+                                    fundingAgency.funding_amount
+                                  )}
+                                </Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
                                 <Typography variant="body2" color="textSecondary">

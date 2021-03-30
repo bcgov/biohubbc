@@ -10,7 +10,6 @@ import {
   FormHelperText,
   FormLabel,
   Grid,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -22,6 +21,7 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
+import DollarAmountField from 'components/fields/DollarAmountField';
 
 export interface IProjectFundingFormArrayItem {
   agency_id: number;
@@ -202,22 +202,15 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                   <FormLabel component="legend">Funding Details</FormLabel>
                   <Grid container spacing={3}>
                     <Grid item xs={12}>
-                      <TextField
-                        fullWidth
+                      <DollarAmountField
                         required={true}
                         id="funding_amount"
                         name="funding_amount"
                         label="Funding Amount"
-                        type="number"
-                        variant="outlined"
                         value={values.funding_amount}
-                        onChange={handleChange}
-                        error={touched.funding_amount && Boolean(errors.funding_amount)}
-                        helperText={errors.funding_amount}
-                        InputProps={{ startAdornment: <InputAdornment position="start">$</InputAdornment> }}
-                        InputLabelProps={{
-                          shrink: true
-                        }}
+                        handleChange={handleChange}
+                        errors={errors}
+                        touched={touched}
                       />
                     </Grid>
                     <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />

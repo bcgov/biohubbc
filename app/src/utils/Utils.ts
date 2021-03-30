@@ -59,3 +59,18 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
 
   return dateMoment.format(dateFormat);
 };
+
+/**
+ * Get a formatted amount string.
+ *
+ * @param {number} amount
+ * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
+ */
+export const getFormattedAmount = (amount: number): string => {
+  if (amount === undefined) {
+    //amount was invalid
+    return '';
+  }
+
+  return '$' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
