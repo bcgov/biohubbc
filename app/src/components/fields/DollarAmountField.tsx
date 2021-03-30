@@ -1,6 +1,7 @@
 import { TextField } from '@material-ui/core';
 import React from 'react';
 import NumberFormat from 'react-number-format';
+import { useFormikContext } from 'formik';
 
 export interface IDollarAmountFieldProps {
   required?: boolean;
@@ -8,9 +9,6 @@ export interface IDollarAmountFieldProps {
   label: string;
   name: string;
   value: number;
-  handleChange: any;
-  touched: any;
-  errors: any;
 }
 
 interface NumberFormatCustomProps {
@@ -41,7 +39,9 @@ function NumberFormatCustom(props: NumberFormatCustomProps) {
 }
 
 const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
-  const { required, id, name, label, value, handleChange, touched, errors } = props;
+  const { handleChange, touched, errors } = useFormikContext<IDollarAmountFieldProps>();
+
+  const { required, id, name, label, value } = props;
 
   return (
     <TextField
