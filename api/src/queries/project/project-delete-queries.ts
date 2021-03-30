@@ -5,7 +5,7 @@ const defaultLog = getLogger('queries/project/project-delete-queries');
 
 /**
  * SQL query to delete project region rows
- * 
+ *
  * @param {projectId} projectId
  * @returns {SQLStatement} sql query object
  */

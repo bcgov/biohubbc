@@ -1,13 +1,21 @@
 import { Box, Grid, IconButton, Typography } from '@material-ui/core';
 import { Edit } from '@material-ui/icons';
-import { IGetProjectForUpdateResponseLocation, IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectForUpdateResponseLocation,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { v4 as uuidv4 } from 'uuid';
 import bbox from '@turf/bbox';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { IProjectLocationForm, ProjectLocationFormInitialValues, ProjectLocationFormYupSchema } from 'features/projects/components/ProjectLocationForm';
+import {
+  IProjectLocationForm,
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -51,20 +59,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(
-    null as any
-  );
-  const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(
-    ProjectLocationFormInitialValues
-  );
+  const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(null as any);
+  const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(ProjectLocationFormInitialValues);
 
   const handleDialogEditOpen = async () => {
     let locationResponseData;
 
     try {
       const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
-
-      console.log(response.location)
 
       if (!response?.location) {
         showErrorDialog({ open: true });
@@ -73,7 +75,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       locationResponseData = response.location;
     } catch (error) {
-      console.log(error);
       const apiError = new APIError(error);
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;

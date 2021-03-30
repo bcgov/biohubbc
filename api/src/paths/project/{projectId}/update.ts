@@ -206,8 +206,6 @@ function getProjectForUpdate(): RequestHandler {
       if (entities.includes(GET_ENTITIES.location)) {
         promises.push(
           getLocationData(projectId, connection).then((value) => {
-            console.log('################VALUEEEEEEEEEEEEEEEEEEEEE')
-            console.log(value)
             results.location = value;
           })
         );
@@ -248,9 +246,6 @@ function getProjectForUpdate(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
-
-      console.log('####################RESULTSSSSSSSSSSSSSSSSSSSS')
-      console.log(results);
 
       return res.status(200).send(results);
     } catch (error) {
@@ -568,9 +563,7 @@ export const updateProjectRegionsData = async (
   }
 
   const insertRegionsPromises =
-    putLocationData?.regions?.map((region: string) =>
-      insertRegion(region, projectId, connection)
-    ) || [];
+    putLocationData?.regions?.map((region: string) => insertRegion(region, projectId, connection)) || [];
 
   await Promise.all(insertRegionsPromises);
 };
@@ -711,10 +704,6 @@ export const updateProjectData = async (
   const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
   const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
   const putCoordinatorData = (entities?.coordinator && new PutCoordinatorData(entities.coordinator)) || null;
-
-
-  console.log('###########PUTLOCATIONDATA');
-  console.log(putLocationData);
 
   // Update project table
   const revision_count =

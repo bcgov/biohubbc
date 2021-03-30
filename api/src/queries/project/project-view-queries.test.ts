@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getActivitiesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -31,20 +30,6 @@ describe('getProjectSQL', () => {
 describe('getProjectListSQL', () => {
   it('returns a SQLStatement', () => {
     const response = getProjectListSQL();
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getActivitiesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getActivitiesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getActivitiesByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

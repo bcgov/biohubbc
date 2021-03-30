@@ -38,7 +38,7 @@ export class GetProjectData {
  * @export
  * @class GetLocationData
  */
- export class GetLocationData {
+export class GetLocationData {
   location_description: string;
   regions: string[];
   geometry?: Feature[];
@@ -51,9 +51,6 @@ export class GetProjectData {
     });
 
     const locationDataItem = locationData && locationData.length && locationData[0];
-
-    console.log('#############LOCATION DATA');
-    console.log(locationData);
 
     this.location_description = locationDataItem?.location_description || '';
     this.regions =

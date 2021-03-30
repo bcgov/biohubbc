@@ -424,11 +424,11 @@ describe('GetLocationData', () => {
       expect(locationData.regions).to.eql([]);
     });
 
-    it('sets location_description', function() {
+    it('sets location_description', function () {
       expect(locationData.location_description).to.equal('');
     });
 
-    it('sets the geometry', function() {
+    it('sets the geometry', function () {
       expect(locationData.geometry).to.eql([]);
     });
 
@@ -471,11 +471,11 @@ describe('GetLocationData', () => {
       expect(locationData.regions).to.eql(locationDataObj.regions);
     });
 
-    it('sets location_description', function() {
+    it('sets location_description', function () {
       expect(locationData.location_description).to.equal(locationDataObj.location_description);
     });
 
-    it('sets the geometry', function() {
+    it('sets the geometry', function () {
       expect(locationData.geometry).to.eql(locationDataObj.geometry);
     });
 

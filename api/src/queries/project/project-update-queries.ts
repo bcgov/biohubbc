@@ -232,10 +232,6 @@ export const putProjectSQL = (
       geometrySQLStatement.append(SQL`null`);
     }
 
-    console.log('#############GEOOOOOOOOOOOOOOOOOOO###################')
-    console.log(geometrySQLStatement.text)
-    console.log(geometrySQLStatement.values)
-
     sqlSetStatements.push(geometrySQLStatement);
   }
 

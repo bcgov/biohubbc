@@ -5,7 +5,7 @@ const defaultLog = getLogger('queries/project/project-create-queries');
 
 /**
  * SQL query to get project location.
- * 
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
@@ -49,7 +49,7 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
 
 /**
  * SQL query to get project stakeholder partnerships.
- * 
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */

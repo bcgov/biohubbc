@@ -218,7 +218,7 @@ export class GetObjectivesData {
  * @export
  * @class GetLocationData
  */
- export class GetLocationData {
+export class GetLocationData {
   location_description: string;
   regions: string[];
   geometry?: Feature[];
