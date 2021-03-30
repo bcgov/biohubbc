@@ -1190,9 +1190,8 @@ exports[`ProjectDetails renders correctly 1`] = `
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
                 >
-                  333
+                  $ 333
                 </h6>
               </div>
             </div>

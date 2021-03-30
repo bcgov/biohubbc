@@ -233,7 +233,7 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                       <p
                         class="MuiTypography-root MuiTypography-body1"
                       >
-                        $222
+                        $ 222
                       </p>
                     </div>
                     <div
