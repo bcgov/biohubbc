@@ -161,7 +161,7 @@ describe('IUCNClassification', () => {
     });
   });
 
-  it('shows error dialog with API error message when getting species data for update fails', async () => {
+  it('shows error dialog with API error message when getting IUCN data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();
@@ -185,7 +185,7 @@ describe('IUCNClassification', () => {
     });
   });
 
-  it('shows error dialog with API error message when updating species data fails', async () => {
+  it('shows error dialog with API error message when updating IUCN data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       iucn: {
         classificationDetails: [
