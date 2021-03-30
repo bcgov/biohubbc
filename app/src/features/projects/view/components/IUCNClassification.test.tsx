@@ -108,7 +108,7 @@ describe('IUCNClassification', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classification')).not.toBeVisible();
+      expect(queryByText('Edit IUCN Classification')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));

@@ -129,7 +129,7 @@ describe('putProjectSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns valid sql when only objectives data is provided', () => {
+  it('returns valid sql when only coordinator data is provided', () => {
     const response = putProjectSQL(
       1,
       null,

@@ -197,7 +197,7 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).not.toBeVisible();
+      expect(queryByText('Edit Project Objectives')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));

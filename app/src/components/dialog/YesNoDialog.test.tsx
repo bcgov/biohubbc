@@ -30,7 +30,7 @@ const renderContainer = ({
 };
 
 describe('EditDialog', () => {
-  it('matches the snapshot when not open, with no error message', () => {
+  it('matches the snapshot when not open', () => {
     const { baseElement } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'this is text', open: false });
 
     expect(baseElement).toMatchSnapshot();

@@ -120,7 +120,7 @@ describe('Partnerships', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Edit Partnerships')).not.toBeVisible();
+      expect(queryByText('Edit Partnerships')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));

@@ -114,7 +114,7 @@ describe('Species', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Edit Species')).not.toBeVisible();
+      expect(queryByText('Edit Species')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));

@@ -65,21 +65,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              No
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -101,6 +87,20 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
               </span>
             </span>
           </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              No
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -112,7 +112,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
 </body>
 `;
 
-exports[`EditDialog matches the snapshot when not open, with no error message 1`] = `
+exports[`EditDialog matches the snapshot when not open 1`] = `
 <body>
   <div>
     <div
@@ -187,21 +187,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           class="MuiDialogActions-root MuiDialogActions-spacing"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              No
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary Mui-focusVisible Mui-focusVisible"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
             tabindex="0"
             type="button"
           >
@@ -222,6 +208,20 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
                 />
               </span>
             </span>
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              No
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </button>
         </div>
       </div>

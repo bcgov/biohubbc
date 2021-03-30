@@ -90,7 +90,7 @@ describe('ProjectCoordinator', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(getByText('Edit Project Coordinator')).not.toBeVisible();
+      expect(queryByText('Edit Project Coordinator')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
