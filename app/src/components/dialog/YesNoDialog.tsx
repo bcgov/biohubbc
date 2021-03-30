@@ -51,6 +51,10 @@ export interface IYesNoDialogProps {
  * @return {*}
  */
 const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
+  if (!props.open) {
+    return <></>;
+  }
+
   return (
     <Box>
       <Dialog

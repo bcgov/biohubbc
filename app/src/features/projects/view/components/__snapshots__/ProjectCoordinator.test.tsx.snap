@@ -3,12 +3,6 @@
 exports[`ProjectCoordinator renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-2"
-  />
-  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -65,7 +59,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-3"
+          class="MuiBox-root MuiBox-root-1"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -74,7 +68,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-4"
+          class="MuiBox-root MuiBox-root-2"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -88,7 +82,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-5"
+          class="MuiBox-root MuiBox-root-3"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -97,7 +91,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-6"
+          class="MuiBox-root MuiBox-root-4"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -111,7 +105,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-5"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -120,7 +114,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-6"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"

@@ -206,3 +206,71 @@ export const deleteAncillarySpeciesSQL = (projectId: number): SQLStatement | nul
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete project activity rows.
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteActivitiesSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE FROM
+      project_activity
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteActivitiesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete project climate initiative rows.
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteClimateInitiativesSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE FROM
+      project_climate_initiative
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteClimateInitiativesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

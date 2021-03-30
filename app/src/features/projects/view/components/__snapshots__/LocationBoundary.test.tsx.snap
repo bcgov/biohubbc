@@ -3,9 +3,6 @@
 exports[`LocationBoundary matches the snapshot when the geometry is a geometry collection 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-22"
-  />
-  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -62,7 +59,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-16"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -71,7 +68,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-17"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -84,7 +81,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-18"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -93,7 +90,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-19"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -106,7 +103,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-27"
+          class="MuiBox-root MuiBox-root-20"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -288,9 +285,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-28"
-            />
           </div>
         </div>
       </div>
@@ -301,9 +295,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
 
 exports[`LocationBoundary matches the snapshot when the geometry is a multipolygon 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-15"
-  />
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
@@ -361,7 +352,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-11"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -370,7 +361,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-12"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -383,7 +374,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-13"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -392,7 +383,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-14"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -405,7 +396,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-15"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -599,9 +590,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-21"
-            />
           </div>
         </div>
       </div>
@@ -613,9 +601,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in invalid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-8"
-  />
-  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -672,7 +657,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-6"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -681,7 +666,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-7"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -694,7 +679,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-8"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -703,7 +688,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-9"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -716,7 +701,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-13"
+          class="MuiBox-root MuiBox-root-10"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -898,9 +883,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-14"
-            />
           </div>
         </div>
       </div>
@@ -912,9 +894,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
-  />
-  <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
   >
     <div
@@ -971,7 +950,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-2"
+          class="MuiBox-root MuiBox-root-1"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -980,7 +959,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-3"
+          class="MuiBox-root MuiBox-root-2"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -993,7 +972,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-4"
+          class="MuiBox-root MuiBox-root-3"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -1002,7 +981,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-5"
+          class="MuiBox-root MuiBox-root-4"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -1015,7 +994,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-6"
+          class="MuiBox-root MuiBox-root-5"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1197,9 +1176,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 </div>
               </div>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-7"
-            />
           </div>
         </div>
       </div>

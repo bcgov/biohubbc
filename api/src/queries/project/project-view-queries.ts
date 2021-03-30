@@ -19,8 +19,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   const sqlStatement = SQL`
     SELECT
       project.id,
-      project.pt_id,
-      project_type.name as pt_name,
+      project_type.name as type,
       project.name,
       project.objectives,
       project.location_description,
@@ -107,7 +106,6 @@ export const getProjectListSQL = (): SQLStatement | null => {
  * @param {string} projectId
  * @returns {SQLStatement} sql query object
  */
-
 export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getActivitiesByProjectSQL', message: 'params', projectId });
 

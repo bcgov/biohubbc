@@ -37,6 +37,8 @@ export class PutSpeciesData {
 export class PutProjectData {
   name: string;
   type: number;
+  project_activities: number[];
+  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -46,9 +48,11 @@ export class PutProjectData {
 
     this.name = obj?.project_name || null;
     this.type = obj?.project_type || null;
+    this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
+    this.climate_change_initiatives = (obj?.climate_change_initiatives?.length && obj.climate_change_initiatives) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.revision_count = obj?.revision_count ?? null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 
@@ -64,7 +68,7 @@ export class PutLocationData {
     this.regions = obj?.regions || [];
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
-    this.revision_count = obj?.revision_count ?? null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 
@@ -78,7 +82,7 @@ export class PutObjectivesData {
 
     this.objectives = obj?.objectives || '';
     this.caveats = obj?.caveats || null;
-    this.revision_count = obj?.revision_count ?? null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 
@@ -98,7 +102,7 @@ export class PutCoordinatorData {
     this.email_address = obj?.email_address || null;
     this.coordinator_agency = obj?.coordinator_agency || null;
     this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
-    this.revision_count = obj?.revision_count ?? null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 
@@ -130,7 +134,7 @@ export class GetCoordinatorData {
     this.email_address = obj?.coordinator_email_address || null;
     this.coordinator_agency = obj?.coordinator_agency_name || null;
     this.share_contact_details = (obj?.coordinator_public && 'true') || 'false';
-    this.revision_count = obj?.revision_count ?? null;
+    this.revision_count = obj?.revision_count || null;
   }
 }
 
@@ -229,9 +233,6 @@ export class GetObjectivesData {
 
     const locationDataItem = locationData && locationData.length && locationData[0];
 
-    console.log('#############LOCATION DATA');
-    console.log(locationData);
-
     this.location_description = locationDataItem?.location_description || '';
     this.regions =
       (locationData &&
@@ -241,5 +242,34 @@ export class GetObjectivesData {
       [];
     this.geometry = (locationDataItem?.geometry?.length && [JSON.parse(locationDataItem.geometry)]) || [];
     this.revision_count = locationDataItem?.revision_count ?? null;
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{projectId}/update project data
+ *
+ * @export
+ * @class GetProjectData
+ */
+export class GetProjectData {
+  project_name: string;
+  project_type: number;
+  project_activities: number[];
+  climate_change_initiatives: number[];
+  start_date: string;
+  end_date: string;
+  revision_count: number;
+
+  constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
+
+    this.project_name = projectData?.name || '';
+    this.project_type = projectData?.pt_id || '';
+    this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
+    this.climate_change_initiatives =
+      (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
+    this.start_date = projectData?.start_date || '';
+    this.end_date = projectData?.end_date || '';
+    this.revision_count = projectData?.revision_count || null;
   }
 }

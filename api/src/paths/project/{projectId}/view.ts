@@ -15,8 +15,6 @@ import {
 import { GetSpeciesData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
-  getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -26,7 +24,9 @@ import {
   getStakeholderPartnershipsByProjectSQL,
   getFocalSpeciesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
-  getLocationByProjectSQL
+  getLocationByProjectSQL,
+  getClimateInitiativesByProjectSQL,
+  getActivitiesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -121,7 +121,7 @@ function getProjectForView(): RequestHandler {
         !getProjectIndigenousPartnershipsSQLStatement ||
         !getProjectStakeholderPartnershipsSQLStatement
       ) {
-        throw new HTTP400('Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();

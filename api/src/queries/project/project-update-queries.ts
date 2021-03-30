@@ -106,7 +106,6 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
   }
   const sqlStatement = SQL`
     SELECT
-      id,
       coordinator_first_name,
       coordinator_last_name,
       coordinator_email_address,
@@ -120,7 +119,43 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
   `;
 
   defaultLog.debug({
-    label: 'getProjectSQL',
+    label: 'getCoordinatorByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project information, for update purposes.
+ *
+ * @param {number} projectId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getProjectByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      name,
+      pt_id,
+      start_date,
+      end_date,
+      revision_count
+    FROM
+      project
+    WHERE
+      id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -153,6 +188,15 @@ export const putProjectSQL = (
     coordinator,
     revision_count
   });
+
+  if (!projectId) {
+    return null;
+  }
+
+  if (!project && !location && !objectives && !coordinator) {
+    // Nothing to update
+    return null;
+  }
 
   const sqlStatement: SQLStatement = SQL`UPDATE project SET `;
 
@@ -244,6 +288,7 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
   if (!projectId) {
     return null;
   }
+
   const sqlStatement = SQL`
     SELECT
       objectives,

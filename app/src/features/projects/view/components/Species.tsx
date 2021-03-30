@@ -75,7 +75,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
 
       speciesResponseData = response.species;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }

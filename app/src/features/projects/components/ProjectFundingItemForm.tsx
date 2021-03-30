@@ -93,6 +93,10 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
         const investment_action_category_label =
           (values.agency_id === 1 && 'Investment Action') || (values.agency_id === 2 && 'Investment Category') || null;
 
+        if (!props.open) {
+          return <></>;
+        }
+
         return (
           <>
             <Dialog

@@ -70,8 +70,8 @@ export interface IErrorDialogProps {
 export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
-  const ErrorDetailsList = (props: { errors: (string | object)[] }) => {
-    const items = props.errors.map((error, index) => {
+  const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
+    const items = errorProps.errors.map((error, index) => {
       if (typeof error === 'string') {
         return <li key={index}>{error}</li>;
       }
@@ -81,6 +81,10 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
 
     return <ul>{items}</ul>;
   };
+
+  if (!props.open) {
+    return <></>;
+  }
 
   return (
     <Box>
