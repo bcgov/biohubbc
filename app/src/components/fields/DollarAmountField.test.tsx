@@ -7,15 +7,7 @@ describe('DollarAmountField', () => {
   it('matches the snapshot', () => {
     const { asFragment } = render(
       <Formik initialValues={[]} onSubmit={async () => {}}>
-        {() => (
-          <DollarAmountField
-            id="id"
-            label="label"
-            required= {true}
-            name= "name"
-            value= {123}
-          />
-        )}
+        {() => <DollarAmountField id="id" label="label" required={true} name="name" value={123} />}
       </Formik>
     );
 
