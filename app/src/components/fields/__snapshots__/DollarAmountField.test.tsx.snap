@@ -6,7 +6,7 @@ exports[`DollarAmountField matches the snapshot 1`] = `
     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
   >
     <label
-      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
       data-shrink="true"
       for="id"
       id="id-label"
@@ -30,7 +30,7 @@ exports[`DollarAmountField matches the snapshot 1`] = `
         name="name"
         required=""
         type="text"
-        value="$123"
+        value=""
       />
       <fieldset
         aria-hidden="true"
