@@ -70,6 +70,8 @@ import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interface
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import * as History from 'history';
+import { Prompt } from 'react-router-dom';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ICreateProjectStep {
@@ -125,6 +127,8 @@ const CreateProjectPage: React.FC = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
@@ -301,7 +305,7 @@ const CreateProjectPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setOpenCancelDialog(true);
+    history.push('/projects');
   };
 
   const handleYesNoDialogClose = () => {
@@ -369,6 +373,8 @@ const CreateProjectPage: React.FC = () => {
       return;
     }
 
+    setEnableCancelCheck(false);
+
     history.push(`/projects`);
   };
 
@@ -385,6 +391,8 @@ const CreateProjectPage: React.FC = () => {
       showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
+
+    setEnableCancelCheck(false);
 
     history.push(`/projects/${response.id}`);
   };
@@ -478,8 +486,20 @@ const CreateProjectPage: React.FC = () => {
     return <CircularProgress />;
   }
 
+  const handleLocationChange = (location: History.Location, action: History.Action) => {
+    if (!openCancelDialog) {
+      // If the cancel dialog is not open: open it
+      setOpenCancelDialog(true);
+      return false;
+    }
+
+    // If the cancel dialog is already open and a location change action is triggered by `handleDialogYes`: allow it
+    return true;
+  };
+
   return (
     <>
+      <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <YesNoDialog
         dialogTitle={CreateProjectI18N.cancelTitle}
         dialogText={CreateProjectI18N.cancelText}
