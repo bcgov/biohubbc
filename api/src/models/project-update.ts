@@ -52,7 +52,7 @@ export class PutProjectData {
     this.climate_change_initiatives = (obj?.climate_change_initiatives?.length && obj.climate_change_initiatives) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -66,7 +66,7 @@ export class PutLocationData {
 
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -80,7 +80,7 @@ export class PutObjectivesData {
 
     this.objectives = obj?.objectives || '';
     this.caveats = obj?.caveats || null;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -100,7 +100,7 @@ export class PutCoordinatorData {
     this.email_address = obj?.email_address || null;
     this.coordinator_agency = obj?.coordinator_agency || null;
     this.share_contact_details = (obj?.share_contact_details === 'true' && true) || false;
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -132,7 +132,7 @@ export class GetCoordinatorData {
     this.email_address = obj?.coordinator_email_address || null;
     this.coordinator_agency = obj?.coordinator_agency_name || null;
     this.share_contact_details = (obj?.coordinator_public && 'true') || 'false';
-    this.revision_count = obj?.revision_count || null;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
 
@@ -235,6 +235,6 @@ export class GetProjectData {
       (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
-    this.revision_count = projectData?.revision_count || null;
+    this.revision_count = projectData?.revision_count ?? null;
   }
 }
