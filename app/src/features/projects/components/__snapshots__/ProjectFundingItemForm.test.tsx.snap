@@ -210,24 +210,16 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                   >
-                    <div
-                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                      >
-                        $
-                      </p>
-                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      class="MuiInputBase-input MuiOutlinedInput-input"
                       id="funding_amount"
+                      inputmode="numeric"
                       name="funding_amount"
                       required=""
-                      type="number"
+                      type="text"
                       value=""
                     />
                     <fieldset
@@ -693,25 +685,17 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                   >
-                    <div
-                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                      >
-                        $
-                      </p>
-                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      class="MuiInputBase-input MuiOutlinedInput-input"
                       id="funding_amount"
+                      inputmode="numeric"
                       name="funding_amount"
                       required=""
-                      type="number"
-                      value="222"
+                      type="text"
+                      value="$222"
                     />
                     <fieldset
                       aria-hidden="true"
@@ -1176,25 +1160,17 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                   >
-                    <div
-                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                      >
-                        $
-                      </p>
-                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      class="MuiInputBase-input MuiOutlinedInput-input"
                       id="funding_amount"
+                      inputmode="numeric"
                       name="funding_amount"
                       required=""
-                      type="number"
-                      value="444"
+                      type="text"
+                      value="$444"
                     />
                     <fieldset
                       aria-hidden="true"
@@ -1588,25 +1564,17 @@ exports[`ProjectFundingItemForm renders correctly with existing funding item val
                     </span>
                   </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart"
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                   >
-                    <div
-                      class="MuiInputAdornment-root MuiInputAdornment-positionStart"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-                      >
-                        $
-                      </p>
-                    </div>
                     <input
                       aria-invalid="false"
-                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart"
+                      class="MuiInputBase-input MuiOutlinedInput-input"
                       id="funding_amount"
+                      inputmode="numeric"
                       name="funding_amount"
                       required=""
-                      type="number"
-                      value="666"
+                      type="text"
+                      value="$666"
                     />
                     <fieldset
                       aria-hidden="true"
