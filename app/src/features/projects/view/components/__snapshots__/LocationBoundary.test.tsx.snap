@@ -59,7 +59,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-21"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -68,7 +68,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-22"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -81,7 +81,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-23"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -90,7 +90,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-24"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -103,7 +103,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-25"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -237,7 +237,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_100"
+                            name="leaflet-base-layers_115"
                             type="radio"
                           />
                           <span>
@@ -249,7 +249,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_100"
+                            name="leaflet-base-layers_115"
                             type="radio"
                           />
                           <span>
@@ -352,7 +352,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-16"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -361,7 +361,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-17"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -374,7 +374,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-13"
+          class="MuiBox-root MuiBox-root-18"
         >
           <span
             class="MuiTypography-root MuiTypography-caption"
@@ -383,7 +383,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
           </span>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-14"
+          class="MuiBox-root MuiBox-root-19"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1"
@@ -396,7 +396,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-15"
+          class="MuiBox-root MuiBox-root-20"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -542,7 +542,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_81"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -554,7 +554,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_81"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -599,6 +599,299 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
 `;
 
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in invalid GeoJSON format 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Location / Project Boundary
+        </h3>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <button
+          aria-label="Edit Location / Project Boundary"
+          class="MuiButtonBase-root MuiIconButton-root"
+          tabindex="0"
+          title="Edit Location / Project Boundary"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-caption"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                />
+              </svg>
+               EDIT
+            </span>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-11"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Region(s)
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+          >
+            Region 1, Region 2
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-13"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Location Description
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-14"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+          >
+            Location description
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-15"
+        >
+          <div
+            class="leaflet-container leaflet-grab leaflet-touch-drag"
+            id="project_location_form_map"
+            style="height: 100%; position: relative;"
+            tabindex="0"
+          >
+            <div
+              class="leaflet-pane leaflet-map-pane"
+              style="left: 0px; top: 0px;"
+            >
+              <div
+                class="leaflet-pane leaflet-tile-pane"
+              >
+                <div
+                  class="leaflet-layer "
+                  style="z-index: 1;"
+                >
+                  <div
+                    class="leaflet-tile-container leaflet-zoom-animated"
+                    style="z-index: 18; left: 0px; top: 0px;"
+                  >
+                    <img
+                      alt=""
+                      class="leaflet-tile"
+                      role="presentation"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                      style="width: 256px; height: 256px; left: -38px; top: -79px;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="leaflet-pane leaflet-shadow-pane"
+              />
+              <div
+                class="leaflet-pane leaflet-overlay-pane"
+              >
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g>
+                    <path
+                      class="leaflet-interactive"
+                      d="M-1 2L0 -2z"
+                      fill="#3388ff"
+                      fill-opacity="0.2"
+                      fill-rule="evenodd"
+                      stroke="#3388ff"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-opacity="1"
+                      stroke-width="3"
+                    />
+                  </g>
+                </svg>
+              </div>
+              <div
+                class="leaflet-pane leaflet-marker-pane"
+              />
+              <div
+                class="leaflet-pane leaflet-tooltip-pane"
+              />
+              <div
+                class="leaflet-pane leaflet-popup-pane"
+              />
+            </div>
+            <div
+              class="leaflet-control-container"
+            >
+              <div
+                class="leaflet-top leaflet-left"
+              >
+                <div
+                  class="leaflet-control-zoom leaflet-bar leaflet-control"
+                >
+                  <a
+                    aria-label="Zoom in"
+                    class="leaflet-control-zoom-in"
+                    href="#"
+                    role="button"
+                    title="Zoom in"
+                  >
+                    +
+                  </a>
+                  <a
+                    aria-label="Zoom out"
+                    class="leaflet-control-zoom-out leaflet-disabled"
+                    href="#"
+                    role="button"
+                    title="Zoom out"
+                  >
+                    −
+                  </a>
+                </div>
+              </div>
+              <div
+                class="leaflet-top leaflet-right"
+              >
+                <div
+                  class="leaflet-draw leaflet-control"
+                />
+              </div>
+              <div
+                class="leaflet-bottom leaflet-left"
+              />
+              <div
+                class="leaflet-bottom leaflet-right"
+              >
+                <div
+                  aria-haspopup="true"
+                  class="leaflet-control-layers leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-layers-toggle"
+                    href="#"
+                    title="Layers"
+                  />
+                  <section
+                    class="leaflet-control-layers-list"
+                  >
+                    <div
+                      class="leaflet-control-layers-base"
+                    >
+                      <label>
+                        <div>
+                          <input
+                            checked="checked"
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_74"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_74"
+                            type="radio"
+                          />
+                          <span>
+                             BC Government
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    <div
+                      class="leaflet-control-layers-separator"
+                      style="display: none;"
+                    />
+                    <div
+                      class="leaflet-control-layers-overlays"
+                    />
+                  </section>
+                </div>
+                <div
+                  class="leaflet-control-attribution leaflet-control"
+                >
+                  <a
+                    href="https://leafletjs.com"
+                    title="A JS library for interactive maps"
+                  >
+                    Leaflet
+                  </a>
+                   | © 
+                  <a
+                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                  >
+                    ESRI Basemap
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -835,7 +1128,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_59"
+                            name="leaflet-base-layers_55"
                             type="radio"
                           />
                           <span>
@@ -847,7 +1140,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_59"
+                            name="leaflet-base-layers_55"
                             type="radio"
                           />
                           <span>
@@ -891,7 +1184,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 </DocumentFragment>
 `;
 
-exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
+exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 <DocumentFragment>
   <div
     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -1021,8 +1314,8 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
-                      style="width: 256px; height: 256px; left: -38px; top: -79px;"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
@@ -1032,30 +1325,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
               />
               <div
                 class="leaflet-pane leaflet-overlay-pane"
-              >
-                <svg
-                  height="0"
-                  pointer-events="none"
-                  style="left: 0px; top: 0px;"
-                  viewBox="0 0 0 0"
-                  width="0"
-                >
-                  <g>
-                    <path
-                      class="leaflet-interactive"
-                      d="M-1 2L0 -2z"
-                      fill="#3388ff"
-                      fill-opacity="0.2"
-                      fill-rule="evenodd"
-                      stroke="#3388ff"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-opacity="1"
-                      stroke-width="3"
-                    />
-                  </g>
-                </svg>
-              </div>
+              />
               <div
                 class="leaflet-pane leaflet-marker-pane"
               />
@@ -1086,7 +1356,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   </a>
                   <a
                     aria-label="Zoom out"
-                    class="leaflet-control-zoom-out leaflet-disabled"
+                    class="leaflet-control-zoom-out"
                     href="#"
                     role="button"
                     title="Zoom out"
@@ -1128,7 +1398,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_38"
+                            name="leaflet-base-layers_34"
                             type="radio"
                           />
                           <span>
@@ -1140,7 +1410,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_38"
+                            name="leaflet-base-layers_34"
                             type="radio"
                           />
                           <span>

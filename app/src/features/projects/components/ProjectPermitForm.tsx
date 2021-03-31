@@ -115,6 +115,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                       <Box pt={0.5} pl={1}>
                         <IconButton
                           color="primary"
+                          data-testid="delete-icon"
                           aria-label="remove permit"
                           onClick={() => arrayHelpers.remove(index)}>
                           <Icon path={mdiTrashCanOutline} size={1} />

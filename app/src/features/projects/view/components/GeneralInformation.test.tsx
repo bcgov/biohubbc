@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForUpdateResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
@@ -9,7 +9,7 @@ import ProjectDetails from './GeneralInformation';
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<IGetProjectForUpdateResponse>, ['number', UPDATE_GET_ENTITIES[]]>(),
+    getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
@@ -35,7 +35,22 @@ describe('ProjectDetails', () => {
     cleanup();
   });
 
-  it('renders correctly', async () => {
+  it('renders correctly with no activity and climate initiative data', () => {
+    const { asFragment } = render(
+      <ProjectDetails
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          project: { ...getProjectForViewResponse.project, climate_change_initiatives: [], project_activities: [] }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with activity and climate initiative data', () => {
     const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();
@@ -54,7 +69,7 @@ describe('ProjectDetails', () => {
       }
     });
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
@@ -73,6 +88,20 @@ describe('ProjectDetails', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(queryByText('Edit General Information')).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('EDIT'));
+
+    await waitFor(() => {
+      expect(getByText('Edit General Information')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('Edit General Information')).not.toBeInTheDocument();
