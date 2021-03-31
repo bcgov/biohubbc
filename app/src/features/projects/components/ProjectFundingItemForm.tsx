@@ -53,6 +53,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .transform((value) => (isNaN(value) && null) || value)
     .typeError('Must be a number')
     .min(0, 'Must be a positive number')
+    .max(9999999999)
     .required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
   end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
