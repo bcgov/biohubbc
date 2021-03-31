@@ -176,7 +176,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
                       index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
 
                     return (
-                      <TableRow key={classificationDetail.classification}>
+                      <TableRow key={index}>
                         <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
                         <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
                         <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
