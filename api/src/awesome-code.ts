@@ -1,3 +1,12 @@
+import { RequestHandler } from "express";
+import { Operation } from "express-openapi";
+import { HTTP400 } from "./errors/CustomError";
+import { getLogger } from "./utils/logger";
+
+const defaultLog = getLogger('/api/projects/{projectId}/artifacts/list');
+
+export const GET: Operation = [getMediaList()];
+
 export function mySupperFunction(
   param1: string,
   param2: string,
@@ -53,4 +62,43 @@ function isNotBoolean(test){
     retVal = true;
   }
   return retVal;
+}
+
+function getFileListFromS3(s: string) {
+  return { Contents: [ { Key: s, LastModified: '2222' } ] };
+}
+
+function getMediaList(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'Get artifact list', message: 'params', req_params: req.params });
+
+    if (!req.params.projectId) {
+      throw new HTTP400('Missing required path param `projectId`');
+    }
+
+    const ContentsList = await getFileListFromS3(req.params.projectId + '/');
+
+    defaultLog.debug({ label: 'getFileListFromS3:', message: 'Content', ContentsList });
+
+    const fileList: any[] = [];
+
+    if (!ContentsList) {
+      throw new HTTP400('Failed to get the content list');
+    }
+
+    const contents = ContentsList.Contents;
+
+    contents?.forEach(function (content) {
+      const file = {
+        fileName: content.Key,
+        lastModified: content.LastModified
+      };
+
+      fileList.push(file);
+    });
+
+    defaultLog.debug({ label: 'getMediaList', message: 'fileList', fileList });
+
+    return res.status(200).json(fileList);
+  };
 }
