@@ -130,7 +130,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
       return;
     }
 
-    _client.query('ROLLBACK');
+    await _client.query('ROLLBACK');
   };
 
   /**
