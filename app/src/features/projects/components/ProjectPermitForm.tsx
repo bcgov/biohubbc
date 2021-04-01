@@ -61,7 +61,6 @@ export interface IProjectPermitFormProps {
  */
 const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
-  console.log(errors);
 
   useEffect(() => {
     props?.onValuesChange?.(values);
