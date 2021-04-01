@@ -51,7 +51,7 @@ describe('ProjectsListPage', () => {
           focal_species_name_list: null,
           location_description: 'location',
           regions_name_list: 'South Coast',
-          start_date: '2021-03-16T00:00:00.000Z',
+          start_date: null,
           end_date: null
         }
       ]);
@@ -96,7 +96,7 @@ describe('ProjectsListPage', () => {
           focal_species_name_list: null,
           location_description: 'location',
           regions_name_list: 'South Coast',
-          start_date: '2021-03-16T10:02:02.000Z',
+          start_date: null,
           end_date: null
         }
       ]);

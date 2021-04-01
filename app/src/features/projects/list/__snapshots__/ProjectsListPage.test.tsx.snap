@@ -98,9 +98,7 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
                 </td>
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
-                >
-                  Mar 15, 2021
-                </td>
+                />
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
                 />
