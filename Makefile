@@ -91,19 +91,19 @@ build-backend: ## Builds all backend containers
 	@echo "==============================================="
 	@echo "Make: build-backend - building backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx
+	@docker-compose -f docker-compose.yml build db db_setup api nginx clamav
 
 run-backend: ## Runs all backend containers
 	@echo "==============================================="
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx clamav
 
 run-backend-debug: ## Runs all backend containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx
+	@docker-compose -f docker-compose.yml up db db_setup api nginx clamav
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -114,19 +114,19 @@ build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx app
+	@docker-compose -f docker-compose.yml build db db_setup api nginx app clamav
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app clamav
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx app
+	@docker-compose -f docker-compose.yml up db db_setup api nginx app clamav
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Ionic Commands (backend + ionic frontend)
