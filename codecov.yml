@@ -1,2 +1,4 @@
 comment: false
 threshold: 5%
+ignore:
+  - "**/constants/*.ts"
