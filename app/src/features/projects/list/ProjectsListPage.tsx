@@ -85,6 +85,8 @@ const ProjectsListPage: React.FC = () => {
     const getProjects = async () => {
       const projectsResponse = await biohubApi.project.getProjectsList();
 
+      console.log(projectsResponse);
+
       setProjects(() => {
         setIsLoading(false);
         return projectsResponse;
@@ -161,7 +163,7 @@ const ProjectsListPage: React.FC = () => {
                     <StyledTableCell>End Date</StyledTableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody data-testid="project-table">
                   {projects.map((row) => (
                     <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
                       <TableCell>{row.name}</TableCell>

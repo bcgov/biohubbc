@@ -53,17 +53,16 @@ describe('ProjectsListPage', () => {
         }
       ]);
 
-      const { asFragment, getByText } = render(
+      const { asFragment, getByTestId } = render(
         <MemoryRouter>
           <ProjectsListPage />
         </MemoryRouter>
       );
 
       await waitFor(() => {
-        expect(getByText('Projects')).toBeInTheDocument();
+        expect(getByTestId('project-table')).toBeInTheDocument();
+        expect(asFragment()).toMatchSnapshot();
       });
-
-      expect(asFragment()).toMatchSnapshot();
     });
   });
 });
