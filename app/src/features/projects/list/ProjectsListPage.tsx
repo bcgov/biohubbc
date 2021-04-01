@@ -85,8 +85,6 @@ const ProjectsListPage: React.FC = () => {
     const getProjects = async () => {
       const projectsResponse = await biohubApi.project.getProjectsList();
 
-      console.log(projectsResponse);
-
       setProjects(() => {
         setIsLoading(false);
         return projectsResponse;
