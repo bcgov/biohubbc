@@ -1,5 +1,5 @@
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { ensureProtocol, getFormattedDate, getFormattedDateRangeString } from './Utils';
+import { ensureProtocol, getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from './Utils';
 
 describe('ensureProtocol', () => {
   it('does nothing if string already has `http://`', async () => {
@@ -30,6 +30,17 @@ describe('ensureProtocol', () => {
     const url = 'someurl.com';
     const urlWithProtocol = ensureProtocol(url, 'http://');
     expect(urlWithProtocol).toEqual(`http://${url}`);
+  });
+});
+
+describe('getFormattedAmount', () => {
+  it('returns a valid amount string when amount is valid', () => {
+    const amount = 10000000;
+    expect(getFormattedAmount(amount)).toEqual('$ 10,000,000');
+  });
+
+  it('returns empty string when amount is invalid', () => {
+    expect(getFormattedAmount(null)).toEqual('');
   });
 });
 
