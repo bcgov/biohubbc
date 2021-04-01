@@ -163,7 +163,7 @@ const ProjectsListPage: React.FC = () => {
                 </TableHead>
                 <TableBody data-testid="project-table">
                   {projects.map((row) => (
-                    <StyledTableRow key={row.id} onClick={() => navigateToProjectPage(row.id)}>
+                    <StyledTableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
                       <TableCell>{row.name}</TableCell>
                       <TableCell>{row.focal_species_name_list}</TableCell>
                       <TableCell>{row.regions_name_list}</TableCell>

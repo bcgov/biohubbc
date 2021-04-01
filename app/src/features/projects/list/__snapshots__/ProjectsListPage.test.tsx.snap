@@ -81,6 +81,7 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
             >
               <tr
                 class="MuiTableRow-root WithStyles(ForwardRef(TableRow))-root-11"
+                data-testid="Project 1"
               >
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
