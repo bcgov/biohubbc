@@ -128,7 +128,6 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
           initialValues: partnershipsForUpdate,
           validationSchema: ProjectPartnershipsFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

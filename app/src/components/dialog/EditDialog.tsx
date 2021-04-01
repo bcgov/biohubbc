@@ -38,12 +38,6 @@ export interface IEditDialogProps {
   dialogError?: string;
 
   /**
-   * Callback fired if the dialog is closed.
-   *
-   * @memberof IEditDialogProps
-   */
-  onClose: () => void;
-  /**
    * Callback fired if the 'No' button is clicked.
    *
    * @memberof IEditDialogProps
@@ -89,7 +83,6 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
             fullScreen={fullScreen}
             maxWidth="xl"
             open={props.open}
-            onClose={props.onClose}
             aria-labelledby="edit-dialog-title"
             aria-describedby="edit-dialog-description">
             <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>

@@ -121,7 +121,6 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
           initialValues: coordinatorFormData,
           validationSchema: ProjectCoordinatorYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

@@ -138,7 +138,6 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
             : { classificationDetails: [ProjectIUCNFormArrayItemInitialValues] },
           validationSchema: ProjectIUCNFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

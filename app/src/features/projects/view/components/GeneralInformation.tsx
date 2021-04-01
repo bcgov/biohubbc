@@ -132,7 +132,6 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
           initialValues: detailsFormData,
           validationSchema: ProjectDetailsFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

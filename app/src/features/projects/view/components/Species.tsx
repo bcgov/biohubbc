@@ -127,7 +127,6 @@ const Species: React.FC<ISpeciesProps> = (props) => {
           initialValues: speciesForUpdate,
           validationSchema: ProjectSpeciesFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

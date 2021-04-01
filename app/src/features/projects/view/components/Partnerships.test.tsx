@@ -83,7 +83,7 @@ describe('Partnerships', () => {
       }
     });
 
-    const { getByText, getAllByRole, queryByText } = render(
+    const { getByText, queryByText } = render(
       <Partnerships projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -104,20 +104,6 @@ describe('Partnerships', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
-
-    await waitFor(() => {
-      expect(queryByText('Edit Partnerships')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('EDIT'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Partnerships')).toBeVisible();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('Edit Partnerships')).not.toBeInTheDocument();

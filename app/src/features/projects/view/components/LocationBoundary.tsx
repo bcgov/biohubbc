@@ -180,7 +180,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           initialValues: locationFormData,
           validationSchema: ProjectLocationFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
