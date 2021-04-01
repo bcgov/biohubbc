@@ -182,7 +182,11 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         </Box>
                       </Box>
                       <Box pl={1}>
-                        <IconButton color="primary" aria-label="delete" onClick={() => arrayHelpers.remove(index)}>
+                        <IconButton
+                          data-testid="delete-icon"
+                          color="primary"
+                          aria-label="delete"
+                          onClick={() => arrayHelpers.remove(index)}>
                           <Icon path={mdiTrashCanOutline} size={1} />
                         </IconButton>
                       </Box>

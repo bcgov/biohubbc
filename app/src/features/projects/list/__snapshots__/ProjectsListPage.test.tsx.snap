@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectsListPage renders with a proper list of projects 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-5"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthLg"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-6"
+      >
+        Projects
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+          style="float: right; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Create Project
+          </span>
+        </button>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-7"
+      >
+        <div
+          class="MuiPaper-root MuiTableContainer-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <table
+            class="MuiTable-root"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              />
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <td
+                  class="MuiTableCell-root WithStyles(ForwardRef(TableCell))-root-8 MuiTableCell-body"
+                >
+                  No Projects found
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
