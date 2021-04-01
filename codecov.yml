@@ -1,4 +1,5 @@
 comment: false
 threshold: 5%
 ignore:
-  - "**/constants/*.ts"
+  - "api/src/constants/*.ts"
+  - "app/src/constants/*.ts"
