@@ -41,7 +41,6 @@ const SampleFormikForm = () => {
 
 const handleOnSave = jest.fn();
 const handleOnCancel = jest.fn();
-const handleOnClose = jest.fn();
 
 const renderContainer = ({
   testFieldValue,
@@ -63,7 +62,6 @@ const renderContainer = ({
           initialValues: { testField: testFieldValue },
           validationSchema: SampleFormikFormYupSchema
         }}
-        onClose={handleOnClose}
         onCancel={handleOnCancel}
         onSave={handleOnSave}
       />

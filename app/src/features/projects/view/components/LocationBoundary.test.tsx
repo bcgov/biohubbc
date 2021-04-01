@@ -200,7 +200,7 @@ describe('LocationBoundary', () => {
       }
     });
 
-    const { getByText, queryByText, getAllByRole } = render(
+    const { getByText, queryByText } = render(
       <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -221,20 +221,6 @@ describe('LocationBoundary', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
-
-    await waitFor(() => {
-      expect(queryByText('Edit Location / Project Boundary')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('EDIT'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('Edit Location / Project Boundary')).not.toBeInTheDocument();
@@ -292,7 +278,7 @@ describe('LocationBoundary', () => {
   it('shows error dialog with API error message when getting location data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = render(
+    const { getByText, queryByText } = render(
       <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -306,9 +292,7 @@ describe('LocationBoundary', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
@@ -326,7 +310,7 @@ describe('LocationBoundary', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getAllByRole } = render(
       <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -352,7 +336,9 @@ describe('LocationBoundary', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
