@@ -101,7 +101,7 @@ describe('ProjectIUCNForm', () => {
   });
 
   it('adds an IUCN classification when the add button is clicked', async () => {
-    const { getByText, queryByText, getByTestId } = render(
+    const { getByText, queryByTestId } = render(
       <Formik
         initialValues={ProjectIUCNFormInitialValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -118,12 +118,12 @@ describe('ProjectIUCNForm', () => {
       </Formik>
     );
 
-    expect(queryByText('Sub-classification')).toBeNull();
+    expect(queryByTestId('iucn-classification-grid')).toBeNull();
 
     fireEvent.click(getByText('Add Classification'));
 
     await waitFor(() => {
-      expect(getByTestId('iucn-classification-grid')).toBeInTheDocument();
+      expect(queryByTestId('iucn-classification-grid')).toBeInTheDocument();
     });
   });
 });
