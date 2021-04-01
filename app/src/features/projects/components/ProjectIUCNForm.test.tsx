@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Formik } from 'formik';
 import React from 'react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -98,5 +98,32 @@ describe('ProjectIUCNForm', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('adds an IUCN classification when the add button is clicked', async () => {
+    const { getByText, queryByText, getByTestId } = render(
+      <Formik
+        initialValues={ProjectIUCNFormInitialValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(queryByText('Sub-classification')).toBeNull();
+
+    fireEvent.click(getByText('Add Classification'));
+
+    await waitFor(() => {
+      expect(getByTestId('iucn-classification-grid')).toBeInTheDocument();
+    });
   });
 });

@@ -44,6 +44,7 @@ exports[`ProjectIUCNForm renders correctly with existing details values 1`] = `
       >
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          data-testid="iucn-classification-grid"
         >
           <div
             class="MuiBox-root MuiBox-root-8"

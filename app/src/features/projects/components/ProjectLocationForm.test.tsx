@@ -72,6 +72,40 @@ describe('ProjectLocationForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  it('renders correctly with errors on fields', () => {
+    const existingFormValues: IProjectLocationForm = {
+      regions: ['region 1', 'region 2'],
+      location_description: 'a location description',
+      geometry: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        }
+      ]
+    };
+
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{ location_description: 'error is here' }}
+        initialTouched={{ location_description: true }}
+        onSubmit={async () => {}}>
+        {() => <ProjectLocationForm region={region} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   it('displays an error when the spatial upload is attempted with an incorrect file type', async () => {
     const file = new File([''], 'testfile.json', {
       lastModified: 1614369038812,

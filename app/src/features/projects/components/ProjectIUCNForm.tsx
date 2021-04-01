@@ -99,7 +99,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                 const subClassification2Meta = getFieldMeta(`classificationDetails.[${index}].subClassification2`);
 
                 return (
-                  <Grid item xs={12} key={index}>
+                  <Grid data-testid="iucn-classification-grid" item xs={12} key={index}>
                     <Box display="flex" alignItems="center" mt={-2}>
                       <Box display="flex" className={classes.iucnInputContainer}>
                         <Box className={classes.iucnInput} my={2} pr={2}>
