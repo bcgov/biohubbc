@@ -34,7 +34,9 @@ export interface IComponentDialogProps {
 }
 
 /**
- * A dialog to wrap any component that needs to be displayed as a modal.
+ * A dialog to wrap any component(s) that need to be displayed as a modal.
+ *
+ * Any component(s) passed in `props.children` will be rendered as the content of the dialog.
  *
  * @param {*} props
  * @return {*}

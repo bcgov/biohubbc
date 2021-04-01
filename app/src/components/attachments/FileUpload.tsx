@@ -1,9 +1,9 @@
-import { Box, Button, makeStyles, Theme, Typography } from '@material-ui/core';
+import { Box, Button, makeStyles, Typography } from '@material-ui/core';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState } from 'react';
 
-const useStyles = makeStyles((Theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {

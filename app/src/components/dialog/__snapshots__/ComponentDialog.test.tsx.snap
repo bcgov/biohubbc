@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentDialog matches snapshot when open 1`] = `
+<body
+  style="padding-right: 0px; overflow: hidden;"
+>
+  <div
+    aria-hidden="true"
+  >
+    <div
+      id="root"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-1"
+      />
+    </div>
+  </div>
+  <div
+    class="MuiDialog-root"
+    role="presentation"
+    style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
+  >
+    <div
+      aria-hidden="true"
+      class="MuiBackdrop-root"
+      style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+    />
+    <div
+      data-test="sentinelStart"
+      tabindex="0"
+    />
+    <div
+      class="MuiDialog-container MuiDialog-scrollPaper"
+      role="none presentation"
+      style="opacity: 1; webkit-transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"
+      tabindex="-1"
+    >
+      <div
+        aria-describedby="component-dialog-description"
+        aria-labelledby="component-dialog-title"
+        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthXl MuiPaper-elevation24 MuiPaper-rounded"
+        role="dialog"
+      >
+        <div
+          class="MuiDialogTitle-root"
+          id="component-dialog-title"
+        >
+          <h2
+            class="MuiTypography-root MuiTypography-h6"
+          >
+            this is a test
+          </h2>
+        </div>
+        <div
+          class="MuiDialogContent-root"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-2"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-3"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                This is a test component
+              </p>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiDialogActions-root MuiDialogActions-spacing"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Close
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            >
+              <span
+                class="MuiTouchRipple-ripple MuiTouchRipple-rippleVisible MuiTouchRipple-ripplePulsate"
+                style="width: 1px; height: 1px; top: -0.5px; left: -0.5px;"
+              >
+                <span
+                  class="MuiTouchRipple-child MuiTouchRipple-childPulsate"
+                />
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      data-test="sentinelEnd"
+      tabindex="0"
+    />
+  </div>
+</body>
+`;
+
+exports[`ComponentDialog matches the snapshot when not open 1`] = `
+<body>
+  <div>
+    <div
+      id="root"
+    />
+  </div>
+</body>
+`;

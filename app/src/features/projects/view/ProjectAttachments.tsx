@@ -1,11 +1,10 @@
-import { Box, Button, CircularProgress, Paper, Typography } from '@material-ui/core';
+import { Box, Button, Paper, Typography } from '@material-ui/core';
 import { mdiTrayPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router';
 
 export interface IProjectAttachmentsProps {
@@ -22,32 +21,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   const projectId = urlParams['id'];
 
-  const biohubApi = useBiohubApi();
-
-  const [project, setProject] = useState<IGetProjectForViewResponse | null>(null);
-
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-
-  useEffect(() => {
-    const getProject = async () => {
-      const projectResponse = await biohubApi.project.getProjectForView(projectId);
-
-      if (!projectResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setProject(projectResponse);
-    };
-
-    if (!project) {
-      getProject();
-    }
-  }, [urlParams, biohubApi, project]);
-
-  if (!project) {
-    return <CircularProgress></CircularProgress>;
-  }
 
   return (
     <>
