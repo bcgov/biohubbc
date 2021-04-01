@@ -54,6 +54,21 @@ describe('LocationBoundary', () => {
     }
   ];
 
+  test('matches the snapshot when there is no geometry', () => {
+    const { asFragment } = render(
+      <LocationBoundary
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, geometry: [] }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', () => {
     const { asFragment } = render(
       <LocationBoundary

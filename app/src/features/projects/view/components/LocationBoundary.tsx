@@ -157,15 +157,13 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       geometryCollection.push(geometry[0]);
     }
 
-    if (geometryCollection.length) {
-      const allGeosFeatureCollection = {
-        type: 'FeatureCollection',
-        features: geometryCollection
-      };
-      const bboxCoords = bbox(allGeosFeatureCollection);
+    const allGeosFeatureCollection = {
+      type: 'FeatureCollection',
+      features: geometryCollection
+    };
+    const bboxCoords = bbox(allGeosFeatureCollection);
 
-      bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
-    }
+    bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
 
     return { geometryCollection, bounds };
   };

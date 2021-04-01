@@ -328,6 +328,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   <button
                                     aria-label="remove permit"
                                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                                    data-testid="delete-icon"
                                     tabindex="0"
                                     type="button"
                                   >

@@ -172,6 +172,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               <button
                 aria-label="remove permit"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                data-testid="delete-icon"
                 tabindex="0"
                 type="button"
               >
@@ -326,6 +327,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               <button
                 aria-label="remove permit"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                data-testid="delete-icon"
                 tabindex="0"
                 type="button"
               >

@@ -67,4 +67,67 @@ describe('ProjectPage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
   });
+
+  it('shows the project details when pathname includes /details', async () => {
+    await act(async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        activity: [{ id: 1, name: 'activity 1' }],
+        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+      } as any);
+
+      history.push('/details');
+
+      const { asFragment } = render(
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('shows the project surveys when pathname includes /surveys', async () => {
+    await act(async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        activity: [{ id: 1, name: 'activity 1' }],
+        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+      } as any);
+
+      history.push('/surveys');
+
+      const { asFragment } = render(
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('shows the project attachments when pathname includes /attachments', async () => {
+    await act(async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        activity: [{ id: 1, name: 'activity 1' }],
+        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+      } as any);
+
+      history.push('/attachments');
+
+      const { asFragment } = render(
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
 });
