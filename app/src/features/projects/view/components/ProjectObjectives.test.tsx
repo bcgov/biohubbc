@@ -162,7 +162,7 @@ describe('ProjectObjectives', () => {
       }
     });
 
-    const { getByText, getAllByRole, queryByText } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -181,20 +181,6 @@ describe('ProjectObjectives', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
-
-    await waitFor(() => {
-      expect(queryByText('Edit Project Objectives')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('EDIT'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Project Objectives')).toBeVisible();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('Edit Project Objectives')).not.toBeInTheDocument();
@@ -226,7 +212,7 @@ describe('ProjectObjectives', () => {
       objectives: undefined
     });
 
-    const { getByText, getAllByRole, queryByText } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -238,9 +224,7 @@ describe('ProjectObjectives', () => {
       expect(getByText('Error Editing Project Objectives')).toBeVisible();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('Error Editing Project Objectives')).not.toBeInTheDocument();
@@ -250,7 +234,7 @@ describe('ProjectObjectives', () => {
   it('shows error dialog with API error message when getting objectives data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -262,9 +246,7 @@ describe('ProjectObjectives', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
@@ -281,7 +263,7 @@ describe('ProjectObjectives', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Objectives')).toBeVisible();
@@ -305,7 +287,9 @@ describe('ProjectObjectives', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();

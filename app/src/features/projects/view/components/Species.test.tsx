@@ -77,7 +77,7 @@ describe('Species', () => {
       }
     });
 
-    const { getByText, getAllByRole, queryByText } = render(
+    const { getByText, queryByText } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -109,20 +109,6 @@ describe('Species', () => {
       expect(getByText('Edit Species')).toBeVisible();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() => {
-      expect(queryByText('Edit Species')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('EDIT'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Species')).toBeVisible();
-    });
-
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
@@ -143,7 +129,7 @@ describe('Species', () => {
       species: null
     });
 
-    const { getByText, getAllByRole, queryByText } = render(
+    const { getByText, queryByText } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -157,9 +143,7 @@ describe('Species', () => {
       expect(getByText('Error Editing Species')).toBeVisible();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('Error Editing Species')).not.toBeInTheDocument();
@@ -199,7 +183,7 @@ describe('Species', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getAllByRole } = render(
       <Species projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -225,7 +209,9 @@ describe('Species', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();

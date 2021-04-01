@@ -120,7 +120,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
           initialValues: objectivesFormData,
           validationSchema: ProjectObjectivesFormYupSchema
         }}
-        onClose={() => setOpenEditDialog(false)}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />

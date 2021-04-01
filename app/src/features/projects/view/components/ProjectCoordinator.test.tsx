@@ -55,7 +55,7 @@ describe('ProjectCoordinator', () => {
       }
     });
 
-    const { getByText, getAllByRole, queryByText } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -74,20 +74,6 @@ describe('ProjectCoordinator', () => {
     });
 
     fireEvent.click(getByText('Cancel'));
-
-    await waitFor(() => {
-      expect(queryByText('Edit Project Coordinator')).not.toBeInTheDocument();
-    });
-
-    fireEvent.click(getByText('EDIT'));
-
-    await waitFor(() => {
-      expect(getByText('Edit Project Coordinator')).toBeVisible();
-    });
-
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('Edit Project Coordinator')).not.toBeInTheDocument();
@@ -145,7 +131,7 @@ describe('ProjectCoordinator', () => {
   it('shows error dialog with API error message when getting coordinator data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -157,9 +143,7 @@ describe('ProjectCoordinator', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
@@ -179,7 +163,7 @@ describe('ProjectCoordinator', () => {
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
@@ -203,7 +187,9 @@ describe('ProjectCoordinator', () => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Ok'));
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeNull();
