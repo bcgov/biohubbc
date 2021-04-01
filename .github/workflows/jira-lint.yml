@@ -13,5 +13,5 @@ jobs:
           jira-base-url: ${{ secrets.JIRA_BASE_URL }}
           skip-branches: '^(prod|test\/v\d+)$'
           skip-comments: false
-          pr-threshold: 500
+          pr-threshold: 2000
           validate_issue_status: true
