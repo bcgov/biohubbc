@@ -38,4 +38,28 @@ declare module 'yup' {
       message?: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
+
+  export class ArraySchema extends yup.ArraySchema {
+    /**
+     * Determine if the array of permits has duplicate permit numbers
+     *
+     * @param {string} message='Permit numbers must be unique' - error message if this check fails
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    isUniquePermitNumber(
+      message: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Determine if the array of classification details has duplicates
+     *
+     * @param {string} message='IUCN Classifications must be unique' - error message if this check fails
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
+    isUniqueIUCNClassificationDetail(
+      message: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+  }
 }
