@@ -9,7 +9,8 @@ import {
   IGetProjectsListResponse,
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
-  IUpdateProjectRequest
+  IUpdateProjectRequest,
+  IGetProjectAttachmentsResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -20,6 +21,22 @@ import qs from 'qs';
  * @return {*} object whose properties are supported api methods.
  */
 const useProjectApi = (axios: AxiosInstance) => {
+  /**
+   * Get project attachments based on project ID
+   * 
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
+   */
+  const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
+    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments`);
+
+    return data;
+  };
+
+  const deleteProjectAttachment = async (attachmentId: number): Promise<number> => {
+    return await axios.delete(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}`);
+  }
+
   /**
    * Get projects list.
    *
@@ -35,7 +52,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * Get project details based on its ID for viewing purposes.
    *
    * @param {projectId} projectId
-   * @return {*}  {Promise<IGetProjectForViewResponse>}
+   * @return {*} {Promise<IGetProjectForViewResponse>}
    */
   const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/view`);
@@ -147,7 +164,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     uploadProjectArtifacts,
     getMediaList,
     getProjectForUpdate,
-    updateProject
+    updateProject,
+    getProjectAttachments
   };
 };
 

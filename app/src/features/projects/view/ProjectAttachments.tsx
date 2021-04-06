@@ -1,4 +1,4 @@
-import { Box, Button, Paper, Typography } from '@material-ui/core';
+import { Box, Button, Typography } from '@material-ui/core';
 import { mdiTrayPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
@@ -6,6 +6,7 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { useParams } from 'react-router';
+import AttachmentsList from 'components/attachments/AttachmentsList';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -45,9 +46,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <Paper>
-          <Box p={3}>Attachments list placeholder</Box>
-        </Paper>
+        <Box p={3}>
+          <AttachmentsList projectId={projectId} />
+        </Box>
       </Box>
     </>
   );
