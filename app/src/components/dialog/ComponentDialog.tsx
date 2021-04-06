@@ -56,7 +56,6 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
         fullScreen={fullScreen}
         maxWidth="xl"
         open={props.open}
-        onClose={props.onClose}
         aria-labelledby="component-dialog-title"
         aria-describedby="component-dialog-description">
         <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
