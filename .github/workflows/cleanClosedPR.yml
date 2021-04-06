@@ -44,6 +44,14 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
+      # Clean the api deployment artifacts
+      - name: Clean API Deployment
+        working-directory: "./api/.pipeline/"
+        run: |
+          npm ci
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+
       # Clean the app deployment artifacts
       - name: Clean APP Deployment
         working-directory: "./app/.pipeline/"
