@@ -51,6 +51,10 @@ export interface IYesNoDialogProps {
  * @return {*}
  */
 const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
+  if (!props.open) {
+    return <></>;
+  }
+
   return (
     <Box>
       <Dialog
@@ -63,11 +67,11 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onNo} color="primary">
-            No
-          </Button>
-          <Button onClick={props.onYes} color="primary" autoFocus>
+          <Button onClick={props.onYes} color="primary" variant="contained" autoFocus>
             Yes
+          </Button>
+          <Button onClick={props.onNo} color="primary" variant="outlined">
+            No
           </Button>
         </DialogActions>
       </Dialog>

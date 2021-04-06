@@ -2,14 +2,15 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { projectResponseBody } from '../openapi/schemas/project';
-import { getProjectsSQL } from '../queries/project-queries';
+import { HTTP400 } from '../errors/CustomError';
+import { projectIdResponseObject } from '../openapi/schemas/project';
+import { getProjectListSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/projects');
 
-export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjects()];
+export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjectList()];
 
 GET.apiDoc = {
   description: 'Get all Projects.',
@@ -27,7 +28,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(projectResponseBody as object)
+              ...(projectIdResponseObject as object)
             }
           }
         }
@@ -45,9 +46,6 @@ GET.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -59,37 +57,37 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjects(): RequestHandler {
+function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectsSQLStatement = getProjectsSQL();
+      const getProjectListSQLStatement = getProjectListSQL();
 
-      if (!getProjectsSQLStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+      if (!getProjectListSQLStatement) {
+        throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
-      const getProjectsResponse = await connection.query(getProjectsSQLStatement.text, getProjectsSQLStatement.values);
+      const getProjectListResponse = await connection.query(
+        getProjectListSQLStatement.text,
+        getProjectListSQLStatement.values
+      );
 
       await connection.commit();
 
       let rows: any[] = [];
 
-      if (getProjectsResponse && getProjectsResponse.rows) {
-        rows = getProjectsResponse.rows;
+      if (getProjectListResponse && getProjectListResponse.rows) {
+        rows = getProjectListResponse.rows;
       }
 
       const result: any[] = _extractProjects(rows);
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjects', message: 'error', error });
+      defaultLog.debug({ label: 'getProjectList', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -112,6 +110,8 @@ export function _extractProjects(rows: any[]): any[] {
       const project: any = {
         id: row.id,
         name: row.name,
+        focal_species_name_list: row.focal_species_name_list,
+        regions_name_list: row.regions_name_list,
         start_date: row.start_date,
         end_date: row.end_date,
         location_description: row.location_description

@@ -23,23 +23,33 @@ const appTheme = createMuiTheme({
     }
   },
   typography: {
-    fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(','),
-    fontSize: 16
+    fontFamily: ['BCSans', 'Verdana', 'Arial', 'sans-serif'].join(',')
   },
   overrides: {
     MuiTypography: {
       // https://material-ui.com/api/typography/
       h1: {
+        letterSpacing: '-0.01rem',
         fontSize: '2rem',
         fontWeight: 700
       },
       h2: {
+        letterSpacing: '-0.01rem',
         fontSize: '1.5rem',
         fontWeight: 700
       },
       h3: {
         fontSize: '1.25rem',
         fontWeight: 700
+      },
+      h6: {
+        letterSpacing: '-0.01rem',
+        fontWeight: 700
+      }
+    },
+    MuiButton: {
+      root: {
+        textTransform: 'none'
       }
     },
     MuiCircularProgress: {
@@ -61,20 +71,19 @@ const appTheme = createMuiTheme({
         margin: 'auto'
       }
     },
-    MuiStepLabel: {
-      labelContainer: {
-        paddingLeft: '2.3rem'
+    MuiDialog: {
+      paperWidthXl: {
+        width: '800px'
       }
     },
-    MuiStepContent: {
+    MuiDialogTitle: {
       root: {
-        paddingLeft: '4rem'
+        padding: '20px 24px'
       }
     },
-    MuiStepIcon: {
+    MuiDialogActions: {
       root: {
-        fontSize: '2.5rem',
-        marginLeft: '-.525rem'
+        padding: '20px 24px'
       }
     },
     MuiFormLabel: {
@@ -83,6 +92,47 @@ const appTheme = createMuiTheme({
         '&$error': {
           color: '#db3131'
         }
+      }
+    },
+    MuiStepLabel: {
+      labelContainer: {
+        paddingLeft: '3rem'
+      },
+      iconContainer: {
+        width: '3rem',
+        height: '3rem',
+        paddingRight: 0,
+        borderRadius: '1.25rem'
+      }
+    },
+    MuiStepIcon: {
+      root: {
+        width: '3rem',
+        height: '3rem',
+        color: '#003366'
+      },
+      text: {
+        color: '#003366',
+        fontSize: '40%',
+        fontWeight: 700
+      },
+      active: {
+        color: 'transparent'
+      }
+    },
+    MuiStepContent: {
+      root: {
+        marginTop: 0,
+        marginLeft: '1.5rem',
+        paddingTop: '1rem',
+        paddingBottom: 0,
+        paddingLeft: '4.5rem'
+      }
+    },
+    MuiStepConnector: {
+      vertical: {
+        marginLeft: '1.5rem',
+        padding: '0'
       }
     }
   }

@@ -151,6 +151,7 @@ objects:
         metadata:
           labels:
             name: '${DATABASE_SERVICE_NAME}'
+            role: db
         spec:
           containers:
             - capabilities: {}

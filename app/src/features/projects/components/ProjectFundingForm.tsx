@@ -1,0 +1,231 @@
+import { Box, Button, Divider, Grid, IconButton, List, ListItem, Paper, Toolbar, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { DATE_FORMAT } from 'constants/dateFormats';
+import { FieldArray, useFormikContext } from 'formik';
+import Icon from '@mdi/react';
+import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import React, { useState } from 'react';
+import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
+import yup from 'utils/YupSchema';
+import ProjectFundingItemForm, {
+  IProjectFundingFormArrayItem,
+  ProjectFundingFormArrayItemInitialValues
+} from './ProjectFundingItemForm';
+
+export interface IProjectFundingForm {
+  funding_agencies: IProjectFundingFormArrayItem[];
+}
+
+export const ProjectFundingFormInitialValues: IProjectFundingForm = {
+  funding_agencies: []
+};
+
+export const ProjectFundingFormYupSchema = yup.object().shape({});
+
+export interface IInvestmentActionCategoryOption extends IMultiAutocompleteFieldOption {
+  fs_id: number;
+}
+
+export interface IProjectFundingFormProps {
+  funding_sources: IMultiAutocompleteFieldOption[];
+  investment_action_category: IInvestmentActionCategoryOption[];
+}
+
+const useStyles = makeStyles((theme) => ({
+  title: {
+    flexGrow: 1,
+    marginRight: '1rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    fontWeight: 700
+  },
+  titleDesc: {
+    marginLeft: theme.spacing(1),
+    fontWeight: 400
+  },
+  fundingListIem: {
+    padding: 0,
+    '& + li': {
+      marginTop: theme.spacing(2)
+    }
+  },
+  fundingListItemInner: {
+    flexGrow: 1,
+    flexShrink: 1,
+    overflow: 'hidden'
+  },
+  fundingListItemToolbar: {
+    paddingRight: theme.spacing(2)
+  }
+}));
+
+/**
+ * Create project - Funding section
+ *
+ * @return {*}
+ */
+const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
+  const classes = useStyles();
+  const formikProps = useFormikContext<IProjectFundingForm>();
+  const { values } = formikProps;
+
+  // Tracks information about the current funding source item that is being added/edited
+  const [currentProjectFundingFormArrayItem, setCurrentProjectFundingFormArrayItem] = useState({
+    index: 0,
+    values: ProjectFundingFormArrayItemInitialValues
+  });
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  return (
+    <form onSubmit={formikProps.handleSubmit}>
+      <Box>
+        <Box component="header" display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h3">Funding Sources ({values.funding_agencies.length})</Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            title="Add Funding Source"
+            aria-label="Add Funding Source"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            onClick={() => {
+              setCurrentProjectFundingFormArrayItem({
+                index: values.funding_agencies.length,
+                values: ProjectFundingFormArrayItemInitialValues
+              });
+              setIsModalOpen(true);
+            }}>
+            Add Funding Source
+          </Button>
+        </Box>
+        <Box>
+          <FieldArray
+            name="funding_agencies"
+            render={(arrayHelpers) => (
+              <Box mb={2}>
+                <ProjectFundingItemForm
+                  open={isModalOpen}
+                  onSubmit={(projectFundingItemValues, helper) => {
+                    if (currentProjectFundingFormArrayItem.index < values.funding_agencies.length) {
+                      // Update an existing item
+                      arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
+                    } else {
+                      // Add a new item
+                      arrayHelpers.push(projectFundingItemValues);
+                    }
+                    // Reset the modal form
+                    helper.resetForm();
+                    // Close the modal
+                    setIsModalOpen(false);
+                  }}
+                  onClose={() => setIsModalOpen(false)}
+                  onCancel={() => setIsModalOpen(false)}
+                  initialValues={currentProjectFundingFormArrayItem.values}
+                  funding_sources={props.funding_sources}
+                  investment_action_category={props.investment_action_category}
+                />
+                <List dense disablePadding>
+                  {!values.funding_agencies.length && (
+                    <ListItem dense component={Paper}>
+                      <Box display="flex" flexGrow={1} justifyContent="center" alignContent="middle" p={2}>
+                        <Typography variant="subtitle2">No Funding Sources</Typography>
+                      </Box>
+                    </ListItem>
+                  )}
+                  {values.funding_agencies.map((fundingAgency, index) => {
+                    const investment_action_category_label =
+                      (fundingAgency.agency_id === 1 && 'Investment Action') ||
+                      (fundingAgency.agency_id === 2 && 'Investment Category') ||
+                      null;
+
+                    const investment_action_category_value = props.investment_action_category.filter(
+                      (item) => item.value === fundingAgency.investment_action_category
+                    )?.[0]?.label;
+
+                    return (
+                      <ListItem dense className={classes.fundingListIem} key={index}>
+                        <Paper className={classes.fundingListItemInner}>
+                          <Toolbar className={classes.fundingListItemToolbar}>
+                            <Typography className={classes.title}>
+                              {getCodeValueNameByID(props.funding_sources, fundingAgency.agency_id)}
+                              {investment_action_category_label && (
+                                <span className={classes.titleDesc}>({investment_action_category_value})</span>
+                              )}
+                            </Typography>
+                            <IconButton
+                              color="primary"
+                              title="Edit Funding Source"
+                              aria-label="Edit Funding Source"
+                              onClick={() => {
+                                setCurrentProjectFundingFormArrayItem({
+                                  index: index,
+                                  values: values.funding_agencies[index]
+                                });
+                                setIsModalOpen(true);
+                              }}>
+                              <Icon path={mdiPencilOutline} size={1} />
+                            </IconButton>
+                            <IconButton
+                              color="primary"
+                              title="Delete Funding Source"
+                              aria-label="Delete Funding Source"
+                              onClick={() => arrayHelpers.remove(index)}>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </IconButton>
+                          </Toolbar>
+                          <Divider />
+                          <Box py={2} px={3}>
+                            <Grid container spacing={2}>
+                              <Grid item xs={12} sm={6} md={4}>
+                                <Typography variant="body2" color="textSecondary">
+                                  Agency Project ID
+                                </Typography>
+                                <Typography variant="body1">{fundingAgency.agency_project_id}</Typography>
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                <Typography variant="body2" color="textSecondary">
+                                  Funding Amount
+                                </Typography>
+                                <Typography variant="body1">
+                                  {getFormattedAmount(fundingAgency.funding_amount)}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                <Typography variant="body2" color="textSecondary">
+                                  Start / End Date
+                                </Typography>
+                                <Typography variant="body1">
+                                  {getFormattedDateRangeString(
+                                    DATE_FORMAT.ShortMediumDateFormat,
+                                    fundingAgency.start_date,
+                                    fundingAgency.end_date
+                                  )}
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </Box>
+                        </Paper>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Box>
+            )}
+          />
+        </Box>
+      </Box>
+    </form>
+  );
+};
+
+export default ProjectFundingForm;
+
+export const getCodeValueNameByID = (codeSet: IMultiAutocompleteFieldOption[], codeValueId: number): string => {
+  if (!codeSet?.length || !codeValueId) {
+    return '';
+  }
+
+  return codeSet.find((item) => item.value === codeValueId)?.label || '';
+};

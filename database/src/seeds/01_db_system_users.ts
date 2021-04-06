@@ -5,7 +5,7 @@ const DB_ADMIN = process.env.DB_ADMIN;
 
 const systemUsers = [
   { identifier: 'aagahche', type: 'IDIR' },
-  { identifier: 'cgarrettjones', type: 'IDIR' },
+  { identifier: 'cgarrett', type: 'IDIR' },
   { identifier: 'istest1', type: 'IDIR' },
   { identifier: 'jrpopkin', type: 'IDIR' },
   { identifier: 'jxdunsdo', type: 'IDIR' },
@@ -31,6 +31,8 @@ export async function seed(knex: Knex): Promise<void> {
     set search_path = ${DB_SCHEMA};
 
     DELETE FROM system_user WHERE user_identifier IN (${systemUsers.map((user) => `'${user.identifier}'`).join(',')});
+
+    ALTER SEQUENCE system_user_id_seq RESTART WITH 2;
   `);
 
   // Seed the system users

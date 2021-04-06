@@ -1,12 +1,11 @@
 import CreateProjectPage from 'features/projects/CreateProjectPage';
-import EditProjectPage from 'features/projects/EditProjectPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
-import ProjectsPage from 'features/projects/ProjectsPage';
+import ProjectsListPage from 'features/projects/list/ProjectsListPage';
+import ProjectPage from 'features/projects/view/ProjectPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
-import ProjectPage from './ProjectPage';
 
 interface IProjectsRouterProps {
   classes: any;
@@ -21,7 +20,13 @@ interface IProjectsRouterProps {
 const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
   return (
     <Switch>
-      <PrivateRoute exact layout={ProjectsLayout} path="/projects" component={ProjectsPage} componentProps={props} />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects"
+        component={ProjectsListPage}
+        componentProps={props}
+      />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
@@ -29,18 +34,26 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         component={CreateProjectPage}
         componentProps={props}
       />
+      <Redirect exact from="/projects/:id?" to="/projects/:id?/details" />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?"
+        path="/projects/:id?/details"
         component={ProjectPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/edit"
-        component={EditProjectPage}
+        path="/projects/:id?/surveys"
+        component={ProjectPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/attachments"
+        component={ProjectPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}

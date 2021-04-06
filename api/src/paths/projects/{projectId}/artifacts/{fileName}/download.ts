@@ -5,6 +5,7 @@ import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { IMediaItem } from '../../../../../models/media';
+import { HTTP400 } from '../../../../../errors/CustomError';
 
 export const GET: Operation = [getSingleMedia()];
 
@@ -20,11 +21,17 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
       required: true
     },
     {
       in: 'path',
       name: 'fileName',
+      schema: {
+        type: 'string'
+      },
       required: true
     }
   ],
@@ -34,20 +41,21 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the artifact',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            properties: {
+              artifact: {
+                type: 'object',
+                properties: {
+                  file_name: {
+                    description: 'The file name of the artifact',
+                    type: 'string'
+                  },
+                  encoded_file: {
+                    description: 'The base64 encoded file content',
+                    type: 'string'
+                  }
                 }
-              },
-              required: ['mediaKey']
+              }
             }
           }
         }
@@ -55,9 +63,6 @@ GET.apiDoc = {
     },
     401: {
       $ref: '#/components/responses/401'
-    },
-    503: {
-      $ref: '#/components/responses/503'
     },
     default: {
       $ref: '#/components/responses/default'
@@ -68,17 +73,11 @@ GET.apiDoc = {
 function getSingleMedia(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `projectId`'
-      };
+      throw new HTTP400('Missing required path param `projectId`');
     }
 
     if (!req.params.fileName) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `fileName`'
-      };
+      throw new HTTP400('Missing required path param `fileName`');
     }
 
     const s3Object = await getFileFromS3(req.params.projectId + '/' + req.params.fileName);
@@ -87,16 +86,11 @@ function getSingleMedia(): RequestHandler {
       return null;
     }
 
-    let artifact: IMediaItem = {
-      file_name: '',
-      encoded_file: ''
-    };
-
-    artifact = {
+    const mediaItem: IMediaItem = {
       file_name: req.params.fileName,
       encoded_file: 'data:' + s3Object.ContentType + ';base64,' + s3Object.Body?.toString('base64')
     };
 
-    return res.status(200).json({ artifact: artifact });
+    return res.status(200).json({ artifact: mediaItem });
   };
 }

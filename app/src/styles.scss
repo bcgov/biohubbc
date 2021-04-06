@@ -1,1 +1,22 @@
 @import 'styles/fonts.scss';
+
+fieldset {
+  border: none;
+  padding: 0;
+  overflow: hidden;
+  min-width: 0;
+}
+
+legend.MuiFormLabel-root {
+  margin-bottom: 0.75rem;
+  float: left;
+  color: #000000 !important;
+  font-weight: 700;
+  letter-spacing: -0.01rem;
+}
+
+.MuiDialogActions-root {
+  button {
+    min-width: 6rem;
+  }
+}

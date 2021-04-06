@@ -1,0 +1,195 @@
+import {
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableBody,
+  TableCell,
+  Grid,
+  Typography,
+  IconButton
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import React, { useState } from 'react';
+import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import {
+  IProjectIUCNForm,
+  ProjectIUCNFormYupSchema,
+  ProjectIUCNFormArrayItemInitialValues,
+  ProjectIUCNFormInitialValues
+} from 'features/projects/components/ProjectIUCNForm';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditIUCNI18N } from 'constants/i18n';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { Edit } from '@material-ui/icons';
+import { APIError } from 'hooks/api/useAxios';
+
+const useStyles = makeStyles({
+  table: {
+    minWidth: 650
+  },
+  tableCellBorderTop: {
+    borderTop: '1px solid rgba(224, 224, 224, 1)'
+  },
+  tableCellBorderBottom: {
+    borderBottom: 'none'
+  },
+  heading: {
+    fontWeight: 'bold'
+  },
+  addButton: {
+    border: '2px solid'
+  }
+});
+
+export interface IIUCNClassificationProps {
+  projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
+}
+
+/**
+ * IUCN Classification content for a project.
+ *
+ * @return {*}
+ */
+const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
+  const {
+    projectForViewData: { iucn, id },
+    codes
+  } = props;
+
+  const classes = useStyles();
+  const biohubApi = useBiohubApi();
+
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditIUCNI18N.editErrorTitle,
+    dialogText: EditIUCNI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const [iucnFormData, setIucnFormData] = useState(ProjectIUCNFormInitialValues);
+
+  const handleDialogEditOpen = async () => {
+    let iucnResponseData;
+
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
+
+      if (!response?.iucn) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      iucnResponseData = response.iucn;
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    }
+
+    setIucnFormData({
+      classificationDetails: iucnResponseData.classificationDetails
+    });
+
+    setOpenEditDialog(true);
+  };
+
+  const handleDialogEditSave = async (values: IProjectIUCNForm) => {
+    const projectData = { iucn: values };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = new APIError(error);
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
+  };
+
+  return (
+    <>
+      <EditDialog
+        dialogTitle={EditIUCNI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
+          initialValues: iucnFormData?.classificationDetails?.length
+            ? iucnFormData
+            : { classificationDetails: [ProjectIUCNFormArrayItemInitialValues] },
+          validationSchema: ProjectIUCNFormYupSchema
+        }}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEditSave}
+      />
+      <ErrorDialog {...errorDialogProps} />
+      <Grid container spacing={3}>
+        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
+          <Grid item>
+            <Typography variant="h3">IUCN Classification</Typography>
+          </Grid>
+          <Grid item>
+            <IconButton
+              onClick={() => handleDialogEditOpen()}
+              title="Edit IUCN Classification"
+              aria-label="Edit IUCN Classification">
+              <Typography variant="caption">
+                <Edit fontSize="inherit" /> EDIT
+              </Typography>
+            </IconButton>
+          </Grid>
+        </Grid>
+        {iucn.classificationDetails.length > 0 && (
+          <Grid container item xs={12}>
+            <TableContainer>
+              <Table className={classes.table} aria-label="iucn-classification-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell className={classes.heading}>Classification</TableCell>
+                    <TableCell className={classes.heading}>Sub-classification</TableCell>
+                    <TableCell className={classes.heading}>Sub-classification</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+                    const tableCellStyle =
+                      index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
+
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
+                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
+                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
+        )}
+      </Grid>
+    </>
+  );
+};
+
+export default IUCNClassification;

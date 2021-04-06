@@ -2,13 +2,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
+import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/code');
 
-export const GET: Operation = [logRequest('paths/code', 'POST'), getAllCodes()];
+export const GET: Operation = [logRequest('paths/code', 'GET'), getAllCodes()];
 
 GET.apiDoc = {
   description: 'Get all Codes.',
@@ -154,6 +155,54 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              iucn_conservation_action_level_1_classification: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              iucn_conservation_action_level_2_subclassification: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    iucn1_id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              iucn_conservation_action_level_3_subclassification: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    iucn2_id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }
@@ -171,9 +220,6 @@ GET.apiDoc = {
     },
     500: {
       $ref: '#/components/responses/500'
-    },
-    503: {
-      $ref: '#/components/responses/503'
     },
     default: {
       $ref: '#/components/responses/default'
@@ -194,10 +240,7 @@ function getAllCodes(): RequestHandler {
       const allCodeSets = await getAllCodeSets(connection);
 
       if (!allCodeSets) {
-        throw {
-          status: 500,
-          message: 'Failed to fetch codes'
-        };
+        throw new HTTP500('Failed to fetch codes');
       }
 
       return res.status(200).json(allCodeSets);

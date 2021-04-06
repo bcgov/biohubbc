@@ -1,28 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`NotFoundPage renders correctly 1`] = `
-<div
-  className="MuiContainer-root MuiContainer-maxWidthLg"
->
+<DocumentFragment>
   <div
-    className="MuiGrid-root MuiGrid-container"
+    class="MuiContainer-root MuiContainer-maxWidthLg"
   >
     <div
-      className="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-container"
     >
-      <h1>
-        Access Denied
-      </h1>
-      <h2>
-        You do not have permission to view this page
-      </h2>
-      <a
-        href="/projects"
-        onClick={[Function]}
+      <div
+        class="MuiGrid-root MuiGrid-item"
       >
-        Go back to the projects page
-      </a>
+        <h1>
+          Access Denied
+        </h1>
+        <h2>
+          You do not have permission to view this page
+        </h2>
+        <a
+          href="/projects"
+        >
+          Go back to the projects page
+        </a>
+      </div>
     </div>
   </div>
-</div>
+</DocumentFragment>
 `;

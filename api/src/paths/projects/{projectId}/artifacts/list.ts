@@ -3,6 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../constants/roles';
+import { HTTP400 } from '../../../../errors/CustomError';
 import { getFileListFromS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 
@@ -22,6 +23,9 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
       required: true
     }
   ],
@@ -52,9 +56,6 @@ GET.apiDoc = {
     401: {
       $ref: '#/components/responses/401'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -66,10 +67,7 @@ function getMediaList(): RequestHandler {
     defaultLog.debug({ label: 'Get artifact list', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
-      throw {
-        status: 400,
-        message: 'Missing required path param `projectId`'
-      };
+      throw new HTTP400('Missing required path param `projectId`');
     }
 
     const ContentsList = await getFileListFromS3(req.params.projectId + '/');
@@ -79,10 +77,7 @@ function getMediaList(): RequestHandler {
     const fileList: any[] = [];
 
     if (!ContentsList) {
-      throw {
-        status: 400,
-        message: 'Failed to get the content list'
-      };
+      throw new HTTP400('Failed to get the content list');
     }
 
     const contents = ContentsList.Contents;

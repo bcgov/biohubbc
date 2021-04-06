@@ -19,8 +19,8 @@ export interface ILoggerMessage extends winston.Logform.TransformableInfo {
  * @param {*} obj
  * @returns {boolean} True if the value is an object, false otherwise.
  */
-const isObject = (item: any): boolean => {
-  return item && typeof item === 'object' && item.constructor.name === 'Object';
+export const isObject = (item: any): boolean => {
+  return !!(item && typeof item === 'object' && item.constructor.name === 'Object');
 };
 
 /**
@@ -29,7 +29,7 @@ const isObject = (item: any): boolean => {
  * @param {*} obj
  * @returns {boolean} True if the value is an object with enumerable keys, false otherwise.
  */
-const isObjectWithkeys = (item: any): boolean => {
+export const isObjectWithkeys = (item: any): boolean => {
   return isObject(item) && !!Object.keys(item).length;
 };
 
@@ -39,8 +39,28 @@ const isObjectWithkeys = (item: any): boolean => {
  * @param {any} item
  * @return {*}  {string}
  */
-const prettyPrint = (item: any): string => {
+export const prettyPrint = (item: any): string => {
   return JSON.stringify(item, undefined, 2);
+};
+
+/**
+ * Returns a printf function.
+ *
+ * @param {string} logLabel
+ * @return {*}  {((args: ILoggerMessage) => string)}
+ */
+export const getPrintfFunction = (logLabel: string): ((args: ILoggerMessage) => string) => {
+  return ({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
+    const optionalLabel = (label && ` ${label} -`) || '';
+
+    const logMessage = (message && ((isObject(message) && `${prettyPrint(message)}`) || message)) || '';
+
+    const optionalError = (error && ((isObjectWithkeys(error) && `\n${prettyPrint(error)}`) || `\n${error}`)) || '';
+
+    const optionalOther = (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
+
+    return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
+  };
 };
 
 /**
@@ -101,19 +121,7 @@ export const getLogger = function (logLabel: string) {
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
           winston.format.errors({ stack: true }),
           winston.format.colorize(),
-          winston.format.printf(({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
-            const optionalLabel = (label && ` ${label} -`) || '';
-
-            const logMessage = (message && ((isObject(message) && `${prettyPrint(message)}`) || message)) || '';
-
-            const optionalError =
-              (error && ((isObjectWithkeys(error) && `\n${prettyPrint(error)}`) || `\n${error}`)) || '';
-
-            const optionalOther =
-              (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
-
-            return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
-          })
+          winston.format.printf(getPrintfFunction(logLabel))
         )
       })
     ]

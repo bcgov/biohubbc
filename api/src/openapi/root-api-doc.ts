@@ -1,3 +1,16 @@
+const getHTTPResponse = (description: string) => {
+  return {
+    description,
+    content: {
+      'application/json': {
+        schema: {
+          $ref: '#/components/schemas/Error'
+        }
+      }
+    }
+  };
+};
+
 export const rootAPIDoc = {
   openapi: '3.0.0',
   info: {
@@ -57,81 +70,20 @@ export const rootAPIDoc = {
       }
     },
     responses: {
-      '400': {
-        description: 'Bad request',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      '401': {
-        description: 'Unauthenticated user',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      '403': {
-        description: 'Unauthorized user',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      '409': {
-        description: 'Conflict',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      '500': {
-        description: 'Server error',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      '503': {
-        description: 'Service unavailable',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      },
-      default: {
-        description: 'Unexpected error',
-        content: {
-          'application/json': {
-            schema: {
-              $ref: '#/components/schemas/Error'
-            }
-          }
-        }
-      }
+      '400': getHTTPResponse('Bad request'),
+      '401': getHTTPResponse('Unauthenticated user'),
+      '403': getHTTPResponse('Unauthorized user'),
+      '409': getHTTPResponse('Conflict'),
+      '500': getHTTPResponse('Server error'),
+      default: getHTTPResponse('Unexpected error')
     },
     schemas: {
       Error: {
         description: 'Error response object',
         properties: {
+          name: {
+            type: 'string'
+          },
           status: {
             type: 'number'
           },

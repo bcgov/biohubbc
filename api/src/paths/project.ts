@@ -1,15 +1,23 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
-import { getDBConnection } from '../database/db';
-import { PostProjectRegionObject, PostProjectObject, PostSpeciesObject } from '../models/project';
-import { projectPostBody, projectResponseBody } from '../openapi/schemas/project';
+import { getDBConnection, IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/CustomError';
+import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
+import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
+  postProjectActivitySQL,
+  postProjectClimateChangeInitiativeSQL,
+  postProjectFundingSourceSQL,
+  postProjectIndigenousNationSQL,
+  postProjectIUCNSQL,
+  postProjectPermitSQL,
+  postProjectRegionSQL,
   postProjectSQL,
-  postProjectRegionSQL
-} from '../queries/project-queries';
+  postProjectStakeholderPartnershipSQL
+} from '../queries/project/project-create-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -30,7 +38,7 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(projectPostBody as object)
+          ...(projectCreatePostRequestObject as object)
         }
       }
     }
@@ -41,7 +49,7 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectResponseBody as object)
+            ...(projectIdResponseObject as object)
           }
         }
       }
@@ -58,9 +66,6 @@ POST.apiDoc = {
     500: {
       $ref: '#/components/responses/500'
     },
-    503: {
-      $ref: '#/components/responses/503'
-    },
     default: {
       $ref: '#/components/responses/default'
     }
@@ -76,16 +81,18 @@ function createProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedProjectData = new PostProjectObject(req.body);
+    const sanitizedProjectPostData = new PostProjectObject(req.body);
 
     try {
-      const postProjectSQLStatement = postProjectSQL(sanitizedProjectData);
+      const postProjectSQLStatement = postProjectSQL({
+        ...sanitizedProjectPostData.project,
+        ...sanitizedProjectPostData.location,
+        ...sanitizedProjectPostData.objectives,
+        ...sanitizedProjectPostData.coordinator
+      });
 
       if (!postProjectSQLStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
+        throw new HTTP400('Failed to build SQL insert statement');
       }
 
       let projectId: number;
@@ -93,7 +100,7 @@ function createProject(): RequestHandler {
       try {
         await connection.open();
 
-        // Insert into project table
+        // Handle project details
         const createProjectResponse = await connection.query(
           postProjectSQLStatement.text,
           postProjectSQLStatement.values
@@ -103,126 +110,104 @@ function createProject(): RequestHandler {
           (createProjectResponse && createProjectResponse.rows && createProjectResponse.rows[0]) || null;
 
         if (!projectResult || !projectResult.id) {
-          throw {
-            status: 400,
-            message: 'Failed to insert into project table'
-          };
+          throw new HTTP400('Failed to insert project general information data');
         }
 
         projectId = projectResult.id;
 
+        const promises: Promise<any>[] = [];
+
         // Handle focal species
-        if (req.body.species?.focal_species && Array.isArray(req.body.species?.focal_species)) {
-          await Promise.all(
-            req.body.species.focal_species.map(async (focalSpecies: string) => {
-              const sanitizedFocalSpeciesData = new PostSpeciesObject({ name: focalSpecies });
-
-              const postFocalSpeciesSQLStatement = postFocalSpeciesSQL(sanitizedFocalSpeciesData, projectId);
-
-              if (!postFocalSpeciesSQLStatement) {
-                throw {
-                  status: 400,
-                  message: 'Failed to build SQL statement'
-                };
-              }
-
-              // Insert into focal_species table
-              const createFocalSpeciesResponse = await connection.query(
-                postFocalSpeciesSQLStatement.text,
-                postFocalSpeciesSQLStatement.values
-              );
-
-              const focalSpeciesResult =
-                (createFocalSpeciesResponse && createFocalSpeciesResponse.rows && createFocalSpeciesResponse.rows[0]) ||
-                null;
-
-              if (!focalSpeciesResult || !focalSpeciesResult.id) {
-                throw {
-                  status: 400,
-                  message: 'Failed to insert into focal_species table'
-                };
-              }
-            })
-          );
-        }
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.species.focal_species.map((focalSpecies: string) =>
+              insertFocalSpecies(focalSpecies, projectId, connection)
+            )
+          )
+        );
 
         // Handle ancillary species
-        if (req.body.species?.ancillary_species && Array.isArray(req.body.species?.ancillary_species)) {
-          await Promise.all(
-            req.body.species.ancillary_species.map(async (ancillarySpecies: string) => {
-              const sanitizedAncillarySpeciesData = new PostSpeciesObject({ name: ancillarySpecies });
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpecies: string) =>
+              insertAncillarySpecies(ancillarySpecies, projectId, connection)
+            )
+          )
+        );
 
-              const postAncillarySpeciesSQLStatement = postAncillarySpeciesSQL(
-                sanitizedAncillarySpeciesData,
-                projectId
-              );
+        // Handle regions
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.location.regions.map((region: string) =>
+              insertRegion(region, projectId, connection)
+            )
+          )
+        );
 
-              if (!postAncillarySpeciesSQLStatement) {
-                throw {
-                  status: 400,
-                  message: 'Failed to build SQL statement'
-                };
-              }
+        // Handle funding agencies
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.funding.funding_agencies.map((fundingSource: PostFundingSource) =>
+              insertFundingSource(fundingSource, projectId, connection)
+            )
+          )
+        );
 
-              // Insert into ancillary_species table
-              const createAncillarySpeciesResponse = await connection.query(
-                postAncillarySpeciesSQLStatement.text,
-                postAncillarySpeciesSQLStatement.values
-              );
+        // Handle indigenous partners
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.partnerships.indigenous_partnerships.map((indigenousNationId: number) =>
+              insertIndigenousNation(indigenousNationId, projectId, connection)
+            )
+          )
+        );
 
-              const ancillarySpeciesResult =
-                (createAncillarySpeciesResponse &&
-                  createAncillarySpeciesResponse.rows &&
-                  createAncillarySpeciesResponse.rows[0]) ||
-                null;
+        // Handle stakeholder partners
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.partnerships.stakeholder_partnerships.map((stakeholderPartner: string) =>
+              insertStakeholderPartnership(stakeholderPartner, projectId, connection)
+            )
+          )
+        );
 
-              if (!ancillarySpeciesResult || !ancillarySpeciesResult.id) {
-                throw {
-                  status: 400,
-                  message: 'Failed to insert into ancillary_species table'
-                };
-              }
-            })
-          );
-        }
+        // Handle project permits
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
+              insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+            )
+          )
+        );
 
-        // Handle project regions
-        if (req.body.location?.regions && Array.isArray(req.body.location?.regions)) {
-          await Promise.all(
-            req.body.location.regions.map(async (region: string) => {
-              const sanitizedProjectRegionData = new PostProjectRegionObject({ name: region });
-              const postProjectRegionSQLStatement = postProjectRegionSQL(sanitizedProjectRegionData, projectId);
+        // Handle project IUCN classifications
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.iucn.classificationDetails.map((classificationDetail: IPostIUCN) =>
+              insertClassificationDetail(classificationDetail.subClassification2, projectId, connection)
+            )
+          )
+        );
 
-              if (!postProjectRegionSQLStatement) {
-                throw {
-                  status: 400,
-                  message: 'Failed to build SQL statement'
-                };
-              }
+        // Handle project activities
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.project.project_activities.map((activityId: number) =>
+              insertProjectActivity(activityId, projectId, connection)
+            )
+          )
+        );
 
-              // Insert into project_region table
-              const createProjectRegionResponse = await connection.query(
-                postProjectRegionSQLStatement.text,
-                postProjectRegionSQLStatement.values
-              );
+        // Handle project climate change initiatives
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.project.climate_change_initiatives.map((climateChangeInitiativeId: number) =>
+              insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
+            )
+          )
+        );
 
-              const projectRegionResult =
-                (createProjectRegionResponse &&
-                  createProjectRegionResponse.rows &&
-                  createProjectRegionResponse.rows[0]) ||
-                null;
-
-              if (!projectRegionResult || !projectRegionResult.id) {
-                throw {
-                  status: 400,
-                  message: 'Failed to insert into project_region table'
-                };
-              }
-            })
-          );
-        }
-
-        // TODO insert funding
+        await Promise.all(promises);
 
         await connection.commit();
       } catch (error) {
@@ -239,3 +224,220 @@ function createProject(): RequestHandler {
     }
   };
 }
+
+export const insertFocalSpecies = async (
+  focal_species: string,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project focal species data');
+  }
+
+  return result.id;
+};
+
+export const insertAncillarySpecies = async (
+  ancillary_species: string,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postAncillarySpeciesSQL(ancillary_species, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project ancillary species data');
+  }
+
+  return result.id;
+};
+
+export const insertRegion = async (region: string, project_id: number, connection: IDBConnection): Promise<number> => {
+  const sqlStatement = postProjectRegionSQL(region, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project region data');
+  }
+
+  return result.id;
+};
+
+export const insertFundingSource = async (
+  fundingSource: PostFundingSource,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectFundingSourceSQL(fundingSource, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project funding data');
+  }
+
+  return result.id;
+};
+
+export const insertIndigenousNation = async (
+  indigenousNationId: number,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectIndigenousNationSQL(indigenousNationId, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project first nations partnership data');
+  }
+
+  return result.id;
+};
+
+export const insertStakeholderPartnership = async (
+  stakeholderPartner: string,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project stakeholder partnership data');
+  }
+
+  return result.id;
+};
+
+export const insertPermitNumber = async (
+  permit_number: string,
+  project_id: number,
+  sampling_conducted: boolean,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project permit data');
+  }
+
+  return result.id;
+};
+
+export const insertClassificationDetail = async (
+  iucn3_id: number,
+  project_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectIUCNSQL(iucn3_id, project_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project IUCN data');
+  }
+
+  return result.id;
+};
+
+export const insertProjectActivity = async (
+  activityId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectActivitySQL(activityId, projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project activity data');
+  }
+
+  return result.id;
+};
+
+export const insertProjectClimateChangeInitiative = async (
+  climateChangeInitiativeId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectClimateChangeInitiativeSQL(climateChangeInitiativeId, projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project climate change initiative data');
+  }
+
+  return result.id;
+};

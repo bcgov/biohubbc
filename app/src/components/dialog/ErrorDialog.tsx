@@ -1,4 +1,13 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from '@material-ui/core';
 import React from 'react';
 
 export interface IErrorDialogProps {
@@ -17,12 +26,19 @@ export interface IErrorDialogProps {
    */
   dialogText: string;
   /**
-   * The dialog window body error (optional).
+   * The dialog window human friendly error (optional).
    *
    * @type {string}
    * @memberof IErrorDialogProps
    */
   dialogError?: string;
+  /**
+   * The dialog window technical error details (optional).
+   *
+   * @type {((string | object)[])}
+   * @memberof IErrorDialogProps
+   */
+  dialogErrorDetails?: (string | object)[];
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -46,12 +62,30 @@ export interface IErrorDialogProps {
 
 /**
  * A dialog for displaying a title + message + optional error message, and just giving the user an `Ok` button to
- * aknowledge it.
+ * acknowledge it.
  *
  * @param {*} props
  * @return {*}
  */
 export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
+  const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
+    const items = errorProps.errors.map((error, index) => {
+      if (typeof error === 'string') {
+        return <li key={index}>{error}</li>;
+      }
+
+      return <li key={index}>{JSON.stringify(error)}</li>;
+    });
+
+    return <ul>{items}</ul>;
+  };
+
+  if (!props.open) {
+    return <></>;
+  }
+
   return (
     <Box>
       <Dialog
@@ -66,10 +100,18 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
         {props.dialogError && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
+            <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
+              {(isExpanded && 'Hide detailed error message') || 'Show detailed error message'}
+            </Button>
+            {props?.dialogErrorDetails?.length && (
+              <Collapse in={isExpanded}>
+                <ErrorDetailsList errors={props.dialogErrorDetails} />
+              </Collapse>
+            )}
           </DialogContent>
         )}
         <DialogActions>
-          <Button onClick={props.onOk} color="primary" autoFocus>
+          <Button onClick={props.onOk} color="primary" variant="contained" autoFocus>
             Ok
           </Button>
         </DialogActions>

@@ -1,6 +1,7 @@
 import { decode, verify } from 'jsonwebtoken';
 import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
+import { HTTP401 } from '../errors/CustomError';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('security/auth-utils');
@@ -27,10 +28,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (!req.headers || !req.headers.authorization) {
       defaultLog.warn({ label: 'authenticate', message: 'token was null' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     const token = req.headers.authorization;
@@ -39,10 +37,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (token.indexOf('Bearer ') !== 0) {
       defaultLog.warn({ label: 'authenticate', message: 'token did not have a bearer' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     // Validate the 'Authorization' header.
@@ -51,10 +46,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (!tokenString) {
       defaultLog.warn({ label: 'authenticate', message: 'token string was null' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     // Decode token without verifying signature
@@ -62,10 +54,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (!decodedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token was null' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     // Get token header kid
@@ -73,10 +62,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (!decodedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token header kid was null' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     const jwksClient: JwksClient = JwksRsa({ jwksUri: KEYCLOAK_URL });
@@ -88,10 +74,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
 
     if (!key) {
       defaultLog.warn({ label: 'authenticate', message: 'get signing key' });
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     const signingKey = key['publicKey'] || key['rsaPublicKey'];
@@ -100,10 +83,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     const verifiedToken = verifyToken(tokenString, signingKey);
 
     if (!verifiedToken) {
-      throw {
-        status: 401,
-        message: 'Access Denied'
-      };
+      throw new HTTP401('Access Denied');
     }
 
     defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
@@ -114,10 +94,7 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     return true;
   } catch (error) {
     defaultLog.warn({ label: 'authenticate', message: `unexpected error - ${error.message}`, error });
-    throw {
-      status: 401,
-      message: 'Access Denied'
-    };
+    throw new HTTP401('Access Denied');
   }
 };
 
