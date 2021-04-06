@@ -16,7 +16,10 @@ export const ProjectSpeciesFormInitialValues: IProjectSpeciesForm = {
   ancillary_species: []
 };
 
-export const ProjectSpeciesFormYupSchema = yup.object().shape({});
+export const ProjectSpeciesFormYupSchema = yup.object().shape({
+  focal_species: yup.array(),
+  ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+});
 
 export interface IProjectSpeciesFormProps {
   species: IMultiAutocompleteFieldOption[];

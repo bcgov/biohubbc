@@ -40,6 +40,24 @@ yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: 
   });
 });
 
+yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: string) {
+  return this.test('is-unique-focal-ancillary-species', message, function (values) {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    let hasDuplicates = false;
+
+    this.parent.focal_species.forEach((species: string) => {
+      if (values.includes(species)) {
+        hasDuplicates = true;
+      }
+    });
+
+    return !hasDuplicates;
+  });
+});
+
 yup.addMethod(
   yup.string,
   'isValidDateString',
