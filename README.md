@@ -79,6 +79,9 @@ app-ionic
 
 - `localhost:8100`
 
+clamav:
+- `localhost:3310`
+
 # Helpful Makefile Commands
 
 See `./Makefile` for all available commands.  
