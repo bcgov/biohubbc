@@ -191,8 +191,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     updateFile(fileToUpdate, { status: UploadFileStatus.FAILED, error: error.message });
   };
 
-  const ProgressBar = (props: { file: IUploadFile }) => {
-    const { file } = props;
+  const ProgressBar = (progressBarProps: { file: IUploadFile }) => {
+    const { file } = progressBarProps;
 
     if (file.status === UploadFileStatus.PROCESSING) {
       return <LinearProgress variant="indeterminate" />;
@@ -210,8 +210,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     return <LinearProgress variant="determinate" value={file.progress} />;
   };
 
-  const FileButton = (props: { file: IUploadFile }) => {
-    const { file } = props;
+  const FileButton = (fileButtonProps: { file: IUploadFile }) => {
+    const { file } = fileButtonProps;
 
     if (file.status === UploadFileStatus.PENDING || file.status === UploadFileStatus.UPLOADING) {
       return (
