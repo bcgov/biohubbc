@@ -5,10 +5,6 @@ name: PR-Based Deploy on OpensShift
 on:
   pull_request:
     types: [opened, reopened, synchronize]
-    branches:
-      - dev
-      - test
-      - prod
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -46,6 +42,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -77,6 +87,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10.16
+
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -110,6 +134,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -141,6 +179,20 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 10.16
+
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -177,6 +229,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -188,7 +254,7 @@ jobs:
         working-directory: './database/.pipeline/'
         run: |
           npm install
-          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy Database image
   deployDatabaseSetup:
@@ -212,6 +278,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -224,7 +304,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run db-setup:deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy API image
   deployAPI:
@@ -248,6 +328,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -260,7 +354,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
   # Deploy App image
   deployAPP:
@@ -283,6 +377,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -295,7 +403,7 @@ jobs:
         run: |
           npm install
           # npm ci
-          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
   # Clean build/deployment artifacts
   clean:
@@ -320,6 +428,20 @@ jobs:
         with:
           node-version: 10.16
 
+      # Cache Node modules
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -333,7 +455,7 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
 
       # Clean the api build/deployment artifacts
       - name: Clean API Artifacts
@@ -342,7 +464,7 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
 
       # Clean the app build/deployment artifacts
       - name: Clean APP Artifacts
@@ -351,4 +473,4 @@ jobs:
           npm install
           # npm ci
           DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=$BRANCH
+          DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
