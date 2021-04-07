@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Project Draft Form renders correctly with empty initial values 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            data-shrink="false"
+            for="draft_name"
+            id="draft_name-label"
+          >
+            Draft Name
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+          >
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input"
+              id="draft_name"
+              name="draft_name"
+              required=""
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-3"
+              >
+                <span>
+                  Draft Name *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Project Draft Form renders correctly with populated initial values 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+            data-shrink="true"
+            for="draft_name"
+            id="draft_name-label"
+          >
+            Draft Name
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+          >
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input"
+              id="draft_name"
+              name="draft_name"
+              required=""
+              type="text"
+              value="draft test name"
+            />
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+              >
+                <span>
+                  Draft Name *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;

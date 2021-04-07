@@ -70,20 +70,6 @@ exports[`ErrorDialog renders correctly with an error message 1`] = `
           >
             This is dialog error
           </p>
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Show detailed error message
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"

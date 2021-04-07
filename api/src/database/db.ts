@@ -39,11 +39,52 @@ try {
 }
 
 export interface IDBConnection {
+  /**
+   * Opens a new connection, begins a transaction, and sets the user context.
+   *
+   * Note: Does nothing if the connection is already open.
+   * @memberof IDBConnection
+   */
   open: () => Promise<void>;
+  /**
+   * Releases (closes) the connection.
+   *
+   * Note: Does nothing if the connection is already released.
+   * @memberof IDBConnection
+   */
   release: () => void;
+  /**
+   * Commits the transaction that was opened by calling `.open()`.
+   *
+   * Note: Does nothing if the connection is not open, or was released.
+   * @memberof IDBConnection
+   */
   commit: () => Promise<void>;
+  /**
+   * Rollsback the transaction, undoing any queries performed by this connection.
+   *
+   * Note: Does nothing if the connection is not open, or was released.
+   * @memberof IDBConnection
+   */
   rollback: () => Promise<void>;
+  /**
+   * Performs a query agaisnt this connection, returning the results.
+   *
+   * Note: Does nothing if the connection is not open, or was released.
+   *
+   * @param {string} text SQL text
+   * @param {any[]} [values] SQL values array (optional)
+   * @return {*}  {(Promise<QueryResult<any> | void>)}
+   * @memberof IDBConnection
+   */
   query: (text: string, values?: any[]) => Promise<QueryResult<any> | void>;
+  /**
+   * Get the ID of the system user in context.
+   *
+   * Note: will always return `null` if the connection is not open.
+   * @memberof IDBConnection
+   */
+  systemUserId: () => number | null;
 }
 
 /**
@@ -64,12 +105,15 @@ export interface IDBConnection {
  *   connection.release();
  * }
  *
- * @returns {IDBConnection}
+ * @param {string} keycloakToken
+ * @return {*} {IDBConnection}
  */
 export const getDBConnection = function (keycloakToken: string): IDBConnection {
   let _client: PoolClient;
 
   let _isOpen = false;
+
+  let _systemUserId: number | null = null;
 
   const _token = keycloakToken;
 
@@ -78,7 +122,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    *
    * Note: Does nothing if the connection is already open.
    */
-  const open = async () => {
+  const _open = async () => {
     if (_client || _isOpen) {
       return;
     }
@@ -97,7 +141,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    *
    * Note: Does nothing if the connection is already released.
    */
-  const release = () => {
+  const _release = () => {
     if (!_client || !_isOpen) {
       return;
     }
@@ -112,7 +156,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    *
    * Note: Does nothing if the connection is not open, or was released.
    */
-  const commit = async () => {
+  const _commit = async () => {
     if (!_client || !_isOpen) {
       return;
     }
@@ -125,7 +169,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    *
    * Note: Does nothing if the connection is not open, or was released.
    */
-  const rollback = async () => {
+  const _rollback = async () => {
     if (!_client || !_isOpen) {
       return;
     }
@@ -142,7 +186,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any> | void>)}
    */
-  const query = async (text: string, values?: any[]): Promise<QueryResult<any> | void> => {
+  const _query = async (text: string, values?: any[]): Promise<QueryResult<any> | void> => {
     if (!_client || !_isOpen) {
       return;
     }
@@ -150,8 +194,14 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
     return _client.query(text, values || []);
   };
 
+  const _getSystemUserID = () => {
+    return _systemUserId;
+  };
+
   /**
-   * Internal function to set the user context.
+   * Set the user context.
+   *
+   * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
     // Strip the `@<alias>` from the end of the username, which is added in keycloak to IDIR and BCeID usernames
@@ -173,11 +223,23 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
     }
 
     try {
-      await _client.query(setSystemUserContextSQLStatement.text, setSystemUserContextSQLStatement.values);
+      const response = await _client.query(
+        setSystemUserContextSQLStatement.text,
+        setSystemUserContextSQLStatement.values
+      );
+
+      _systemUserId = response?.rows?.[0].api_set_context;
     } catch (error) {
       throw new HTTP500('Failed to set user context', [error]);
     }
   };
 
-  return { open: open, query: query, release: release, commit: commit, rollback: rollback };
+  return {
+    open: _open,
+    query: _query,
+    release: _release,
+    commit: _commit,
+    rollback: _rollback,
+    systemUserId: _getSystemUserID
+  };
 };

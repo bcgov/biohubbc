@@ -1,4 +1,11 @@
-import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from '@testing-library/react';
+import {
+  cleanup,
+  findByText as rawFindByText,
+  getByText as rawGetByText,
+  fireEvent,
+  render,
+  waitFor
+} from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
@@ -11,6 +18,10 @@ jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
+  },
+  draft: {
+    createDraft: jest.fn<Promise<object>, []>(),
+    updateDraft: jest.fn<Promise<object>, []>()
   }
 };
 
@@ -30,6 +41,8 @@ describe('CreateProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi().draft.createDraft.mockClear();
+    mockBiohubApi().draft.updateDraft.mockClear();
   });
 
   afterEach(() => {
@@ -40,6 +53,7 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       code_set: []
     });
+
     const { getByText, asFragment } = renderContainer();
 
     await waitFor(() => {
@@ -211,6 +225,101 @@ describe('CreateProjectPage', () => {
       expect(history.location.pathname).toEqual('/projects/create');
       fireEvent.click(AreYouSureNoButton);
       expect(history.location.pathname).toEqual('/projects/create');
+    });
+  });
+
+  describe('draft project', () => {
+    beforeEach(() => {
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        code_set: []
+      });
+    });
+
+    it('opens the save as draft dialog', async () => {
+      const { getByText, findByText, asFragment } = renderContainer();
+
+      const saveAsDraftButton = await findByText('Save as Draft');
+
+      fireEvent.click(saveAsDraftButton);
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      // Expect dialog to be open
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('the cancel button closes the dialog', async () => {
+      const { getByText, findByText, queryByText, getByRole, asFragment } = renderContainer();
+
+      const saveAsDraftButton = await findByText('Save as Draft');
+
+      fireEvent.click(saveAsDraftButton);
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      const cancelButton = rawGetByText(getByRole('dialog'), 'Cancel');
+
+      fireEvent.click(cancelButton);
+
+      await waitFor(() => {
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
+
+      // Expect dialog to be closed
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('the save button calls the createDraft/updateDraft functions and closes the dialog', async () => {
+      mockBiohubApi().draft.createDraft.mockResolvedValue({
+        id: 1,
+        date: '2021-01-20'
+      });
+
+      const { getByText, findByText, queryByText, getByLabelText, asFragment } = renderContainer();
+
+      const saveAsDraftButton = await findByText('Save as Draft');
+
+      fireEvent.click(saveAsDraftButton);
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+
+      fireEvent.click(getByText('Save'));
+
+      await waitFor(() => {
+        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
+
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
+
+      // Expect dialog to be closed
+      expect(asFragment()).toMatchSnapshot();
+
+      fireEvent.click(getByText('Save as Draft'));
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+
+      fireEvent.click(getByText('Save'));
+
+      await waitFor(() => {
+        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
+
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
+
+      // Expect dialog to be closed
+      expect(asFragment()).toMatchSnapshot();
     });
   });
 });
