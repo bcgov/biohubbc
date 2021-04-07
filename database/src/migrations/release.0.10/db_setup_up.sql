@@ -1,4 +1,6 @@
 -- db_setup_up.sql
+\c biohub
+
 -- TODO: lock down public but allow access to postgis installed there
 --REVOKE ALL PRIVILEGES ON SCHEMA public FROM PUBLIC;
 
@@ -28,6 +30,8 @@ set search_path = biohub;
 \i populate_project_type.sql
 \i populate_activity.sql
 \i populate_icun_classifications.sql
+\i populate_project_role.sql
+\i populate_system_role.sql
 
 -- postgis reader role
 --create role postgis_reader inherit;
