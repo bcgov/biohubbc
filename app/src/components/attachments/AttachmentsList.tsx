@@ -9,7 +9,8 @@ import {
   TableCell,
   TableBody,
   Table,
-  TablePagination
+  TablePagination,
+  Link
 } from '@material-ui/core';
 import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
@@ -72,13 +73,30 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const deleteAttachment = async (attachment: any) => {
     try {
-      const response = await biohubApi.project.deleteProjectAttachment(attachment.id);
+      const response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
 
       if (!response) {
         return;
       }
 
       getAttachments();
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const viewFileContents = async (attachment: any) => {
+    try {
+      // const response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+
+      // if (!response) {
+      //   return;
+      // }
+
+      // console.log(response);
+
+      const url = 'https://nrs.objectstore.gov.bc.ca/gblhvt/2/10MB.pdf';
+      window.open(url);
     } catch (error) {
       return error;
     }
@@ -98,7 +116,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             {attachmentsList.length > 0 && attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
               <TableRow key={row.fileName}>
                 <TableCell component="th" scope="row">
-                  {row.fileName}
+                  <Link
+                    underline="always"
+                    component="button"
+                    variant="body2"
+                    onClick={() => viewFileContents(row)}>
+                    {row.fileName}
+                  </Link>
                 </TableCell>
                 <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                 <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>

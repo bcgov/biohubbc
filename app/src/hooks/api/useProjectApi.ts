@@ -28,14 +28,34 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
    */
   const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
-    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments`);
+    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments/view`);
 
     return data;
   };
 
-  const deleteProjectAttachment = async (attachmentId: number): Promise<number> => {
-    return await axios.delete(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}`);
+  /**
+   * Delete project attachment based on project and attachment ID
+   * 
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<number>}
+   */
+  const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}/delete`);
+
+    return data;
   }
+
+  /**
+   * Get project attachment S3 url based on project and attachment ID
+   * 
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
+    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}/view`);
+
+    return data;
+  };
 
   /**
    * Get projects list.
@@ -165,7 +185,9 @@ const useProjectApi = (axios: AxiosInstance) => {
     getMediaList,
     getProjectForUpdate,
     updateProject,
-    getProjectAttachments
+    getProjectAttachments,
+    getAttachmentSignedURL,
+    deleteProjectAttachment
   };
 };
 

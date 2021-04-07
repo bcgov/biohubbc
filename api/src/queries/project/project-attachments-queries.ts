@@ -16,7 +16,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
     return null;
   }
 
-  const sqlStatement = SQL`
+  const sqlStatement: SQLStatement = SQL`
     SELECT
       id,
       file_name,
@@ -29,6 +29,74 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
 
   defaultLog.debug({
     label: 'getProjectAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete an attachment for a single project.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+ export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteProjectAttachmentSQL', message: 'params', projectId });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_attachment
+    WHERE
+      p_id = ${projectId}
+    AND
+      id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteProjectAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get S3 url for an attachment for a single project.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectAttachmentS3KeySQL', message: 'params', projectId });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      s3_key
+    FROM
+      project_attachment
+    WHERE
+      p_id = ${projectId}
+    AND
+      id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectAttachmentS3KeySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

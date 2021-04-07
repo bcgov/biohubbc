@@ -2,14 +2,14 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
-import { GetAttachmentsData } from '../../../../models/project-attachments';
-import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../../utils/logger';
+import { WRITE_ROLES } from '../../../../../constants/roles';
+import { getDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/CustomError';
+import { GetAttachmentsData } from '../../../../../models/project-attachments';
+import { getProjectAttachmentsSQL } from '../../../../../queries/project/project-attachments-queries';
+import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments');
+const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/view');
 
 export const GET: Operation = [getAttachments()];
 
