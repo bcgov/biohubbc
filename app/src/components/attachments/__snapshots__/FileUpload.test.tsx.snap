@@ -3,14 +3,14 @@
 exports[`FileUpload handles file upload failure 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-37"
+    class="MuiBox-root MuiBox-root-42"
   >
     <div
-      class="MuiBox-root MuiBox-root-38 makeStyles-dropZone-34"
+      class="MuiBox-root MuiBox-root-43 makeStyles-dropZone-39"
     >
       <section>
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiBox-root MuiBox-root-46"
           tabindex="0"
         >
           <input
@@ -22,59 +22,60 @@ exports[`FileUpload handles file upload failure 1`] = `
             type="file"
           />
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-47"
           >
             <svg
+              class="makeStyles-textSpacing-44"
               role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
+              style="width: 3rem; height: 3rem;"
               viewBox="0 0 24 24"
             >
               <path
-                d="M2 12H4V17H20V12H22V17A2 2 0 0 1 20 19H4A2 2 0 0 1 2 17M11 5H13V8H16V10H13V13H11V10H8V8H11Z"
+                d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
                 style="fill: currentColor;"
               />
             </svg>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            <h3
+              class="MuiTypography-root makeStyles-textSpacing-44 MuiTypography-h3"
             >
               Drag your files here, or 
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-39 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-45 MuiTypography-colorPrimary"
               >
                 Browse Files
               </a>
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </h3>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file size: 50 MB
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file count: 10
-            </p>
+            </span>
           </div>
         </div>
       </section>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-42"
+      class="MuiBox-root MuiBox-root-48"
     >
       <ul
         class="MuiList-root MuiList-padding"
       >
         <li
-          class="MuiListItem-root makeStyles-uploadListItem-35 MuiListItem-gutters"
+          class="MuiListItem-root makeStyles-uploadListItem-40 MuiListItem-gutters"
         >
           <div
-            class="MuiBox-root MuiBox-root-53"
+            class="MuiBox-root MuiBox-root-61"
           >
             <div
-              class="MuiBox-root MuiBox-root-54"
+              class="MuiBox-root MuiBox-root-62"
             >
               <div
-                class="MuiBox-root MuiBox-root-55"
+                class="MuiBox-root MuiBox-root-63"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body1"
@@ -82,56 +83,60 @@ exports[`FileUpload handles file upload failure 1`] = `
                   testpng.txt
                 </p>
                 <p
-                  class="MuiTypography-root makeStyles-uploadListStatus-36 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-uploadListStatus-41 MuiTypography-body1"
                 >
                   File was evil!
                 </p>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-56"
+                class="MuiBox-root MuiBox-root-64"
               >
                 <div
                   aria-valuemax="100"
                   aria-valuemin="0"
                   aria-valuenow="0"
-                  class="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-determinate"
+                  class="MuiLinearProgress-root MuiLinearProgress-colorSecondary MuiLinearProgress-determinate"
                   role="progressbar"
                 >
                   <div
-                    class="MuiLinearProgress-bar MuiLinearProgress-barColorPrimary MuiLinearProgress-bar1Determinate"
+                    class="MuiLinearProgress-bar MuiLinearProgress-barColorSecondary MuiLinearProgress-bar1Determinate"
                     style="transform: translateX(-100%);"
                   />
                 </div>
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-57"
+              class="MuiBox-root MuiBox-root-65"
             >
-              <button
-                aria-label="delete attachment"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-                tabindex="0"
-                title="Delete Attachment"
-                type="button"
+              <div
+                class="MuiBox-root MuiBox-root-66"
               >
-                <span
-                  class="MuiIconButton-label"
+                <button
+                  aria-label="remove file"
+                  class="MuiButtonBase-root MuiIconButton-root"
+                  tabindex="0"
+                  title="Remove File"
+                  type="button"
                 >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
+                  <span
+                    class="MuiIconButton-label"
                   >
-                    <path
-                      d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
+                    <svg
+                      role="presentation"
+                      style="width: 1.5rem; height: 1.5rem;"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </li>
@@ -141,17 +146,17 @@ exports[`FileUpload handles file upload failure 1`] = `
 </DocumentFragment>
 `;
 
-exports[`FileUpload handles file upload success 1`] = `
+exports[`FileUpload handles file upload failure 2`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-13"
+    class="MuiBox-root MuiBox-root-42"
   >
     <div
-      class="MuiBox-root MuiBox-root-14 makeStyles-dropZone-10"
+      class="MuiBox-root MuiBox-root-43 makeStyles-dropZone-39"
     >
       <section>
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-46"
           tabindex="0"
         >
           <input
@@ -163,59 +168,126 @@ exports[`FileUpload handles file upload success 1`] = `
             type="file"
           />
           <div
-            class="MuiBox-root MuiBox-root-17"
+            class="MuiBox-root MuiBox-root-47"
           >
             <svg
+              class="makeStyles-textSpacing-44"
               role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
+              style="width: 3rem; height: 3rem;"
               viewBox="0 0 24 24"
             >
               <path
-                d="M2 12H4V17H20V12H22V17A2 2 0 0 1 20 19H4A2 2 0 0 1 2 17M11 5H13V8H16V10H13V13H11V10H8V8H11Z"
+                d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
                 style="fill: currentColor;"
               />
             </svg>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            <h3
+              class="MuiTypography-root makeStyles-textSpacing-44 MuiTypography-h3"
             >
               Drag your files here, or 
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-15 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-45 MuiTypography-colorPrimary"
               >
                 Browse Files
               </a>
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </h3>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file size: 50 MB
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file count: 10
-            </p>
+            </span>
           </div>
         </div>
       </section>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-18"
+      class="MuiBox-root MuiBox-root-48"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FileUpload handles file upload success 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-14"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-15 makeStyles-dropZone-11"
+    >
+      <section>
+        <div
+          class="MuiBox-root MuiBox-root-18"
+          tabindex="0"
+        >
+          <input
+            autocomplete="off"
+            data-testid="drop-zone-input"
+            multiple=""
+            style="display: none;"
+            tabindex="-1"
+            type="file"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-19"
+          >
+            <svg
+              class="makeStyles-textSpacing-16"
+              role="presentation"
+              style="width: 3rem; height: 3rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+            <h3
+              class="MuiTypography-root makeStyles-textSpacing-16 MuiTypography-h3"
+            >
+              Drag your files here, or 
+              <a
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-17 MuiTypography-colorPrimary"
+              >
+                Browse Files
+              </a>
+            </h3>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+            >
+              Maximum file size: 50 MB
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+            >
+              Maximum file count: 10
+            </span>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-20"
     >
       <ul
         class="MuiList-root MuiList-padding"
       >
         <li
-          class="MuiListItem-root makeStyles-uploadListItem-11 MuiListItem-gutters"
+          class="MuiListItem-root makeStyles-uploadListItem-12 MuiListItem-gutters"
         >
           <div
-            class="MuiBox-root MuiBox-root-29"
+            class="MuiBox-root MuiBox-root-33"
           >
             <div
-              class="MuiBox-root MuiBox-root-30"
+              class="MuiBox-root MuiBox-root-34"
             >
               <div
-                class="MuiBox-root MuiBox-root-31"
+                class="MuiBox-root MuiBox-root-35"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body1"
@@ -223,13 +295,13 @@ exports[`FileUpload handles file upload success 1`] = `
                   testpng.txt
                 </p>
                 <p
-                  class="MuiTypography-root makeStyles-uploadListStatus-12 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-uploadListStatus-13 MuiTypography-body1"
                 >
                   complete
                 </p>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-32"
+                class="MuiBox-root MuiBox-root-36"
               >
                 <div
                   aria-valuemax="100"
@@ -246,33 +318,22 @@ exports[`FileUpload handles file upload success 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-33"
+              class="MuiBox-root MuiBox-root-37"
             >
-              <button
-                aria-label="delete attachment"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-                tabindex="0"
-                title="Delete Attachment"
-                type="button"
+              <div
+                class="MuiBox-root MuiBox-root-38"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
+                  <path
+                    d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
         </li>
@@ -292,7 +353,7 @@ exports[`FileUpload matches the snapshot 1`] = `
     >
       <section>
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-8"
           tabindex="0"
         >
           <input
@@ -304,44 +365,45 @@ exports[`FileUpload matches the snapshot 1`] = `
             type="file"
           />
           <div
-            class="MuiBox-root MuiBox-root-8"
+            class="MuiBox-root MuiBox-root-9"
           >
             <svg
+              class="makeStyles-textSpacing-6"
               role="presentation"
-              style="width: 1.5rem; height: 1.5rem;"
+              style="width: 3rem; height: 3rem;"
               viewBox="0 0 24 24"
             >
               <path
-                d="M2 12H4V17H20V12H22V17A2 2 0 0 1 20 19H4A2 2 0 0 1 2 17M11 5H13V8H16V10H13V13H11V10H8V8H11Z"
+                d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
                 style="fill: currentColor;"
               />
             </svg>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            <h3
+              class="MuiTypography-root makeStyles-textSpacing-6 MuiTypography-h3"
             >
               Drag your files here, or 
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-6 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-7 MuiTypography-colorPrimary"
               >
                 Browse Files
               </a>
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </h3>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file size: 50 MB
-            </p>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file count: 10
-            </p>
+            </span>
           </div>
         </div>
       </section>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-10"
     />
   </div>
 </DocumentFragment>

@@ -1,5 +1,5 @@
 import { Box, IconButton, LinearProgress, List, ListItem, makeStyles, Typography } from '@material-ui/core';
-import { mdiWindowClose } from '@mdi/js';
+import { mdiCheck, mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
@@ -21,9 +21,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 export enum UploadFileStatus {
-  REJECTED = 'rejected',
   PENDING = 'pending',
   UPLOADING = 'uploading',
+  PROCESSING = 'finishing upload',
   FAILED = 'failed',
   COMPLETE = 'complete'
 }
@@ -108,16 +108,23 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
   /**
    * Cancel the upload or delete the file if the upload has passed the point of cancelling.
    *
-   * @param {IUploadFile} fileToDelete
+   * @param {IUploadFile} fileToCancel
    */
-  const deleteFile = (fileToDelete: IUploadFile) => {
+  const cancelUpload = (fileToCancel: IUploadFile) => {
     // Cancel any active upload request for this file
     // Note: this only cancels the initial upload of the file data to the API, and not the upload from the API to S3.
-    fileToDelete.cancelTokenSource.cancel();
+    fileToCancel.cancelTokenSource.cancel();
 
-    // TODO kick off api delete request
+    removeFile(fileToCancel);
+  };
 
-    setFiles((currentFiles) => currentFiles.filter((item) => item.file.name !== fileToDelete.file.name));
+  /**
+   * Remove the file from the list.
+   *
+   * @param {IUploadFile} fileToDelete
+   */
+  const removeFile = (fileToRemove: IUploadFile) => {
+    setFiles((currentFiles) => currentFiles.filter((item) => item.file.name !== fileToRemove.file.name));
   };
 
   /**
@@ -159,7 +166,10 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
    * @param {ProgressEvent} progressEvent
    */
   const handleFileUploadProgress = (fileToUpdate: IUploadFile, progressEvent: ProgressEvent) => {
-    updateFile(fileToUpdate, { progress: Math.round((progressEvent.loaded / progressEvent.total) * 100) });
+    updateFile(fileToUpdate, {
+      progress: Math.round((progressEvent.loaded / progressEvent.total) * 100),
+      status: progressEvent.loaded === progressEvent.total ? UploadFileStatus.PROCESSING : UploadFileStatus.UPLOADING
+    });
   };
 
   /**
@@ -179,6 +189,63 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
    */
   const handleFileUploadFailure = (fileToUpdate: IUploadFile, error: APIError) => {
     updateFile(fileToUpdate, { status: UploadFileStatus.FAILED, error: error.message });
+  };
+
+  const ProgressBar = (props: { file: IUploadFile }) => {
+    const { file } = props;
+
+    if ([UploadFileStatus.PENDING, UploadFileStatus.UPLOADING].includes(file.status)) {
+      return <LinearProgress variant="determinate" value={file.progress} />;
+    }
+
+    if ([UploadFileStatus.PROCESSING].includes(file.status)) {
+      return <LinearProgress variant="indeterminate" />;
+    }
+
+    if ([UploadFileStatus.COMPLETE].includes(file.status)) {
+      return <LinearProgress variant="determinate" color="primary" value={100} />;
+    }
+
+    if ([UploadFileStatus.FAILED].includes(file.status)) {
+      return <LinearProgress variant="determinate" color="secondary" value={0} />;
+    }
+
+    return <LinearProgress variant="indeterminate" value={0} />;
+  };
+
+  const FileButton = (props: { file: IUploadFile }) => {
+    const { file } = props;
+
+    if ([UploadFileStatus.PENDING, UploadFileStatus.UPLOADING].includes(file.status)) {
+      return (
+        <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
+          <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => cancelUpload(file)}>
+            <Icon path={mdiWindowClose} size={1} />
+          </IconButton>
+        </Box>
+      );
+    }
+
+    if ([UploadFileStatus.COMPLETE].includes(file.status)) {
+      return (
+        <Box width="4rem" p={'0.75rem'} display="flex" justifyContent="flex-end" alignContent="center">
+          <Icon path={mdiCheck} size={1} />
+        </Box>
+      );
+    }
+
+    if ([UploadFileStatus.FAILED].includes(file.status)) {
+      return (
+        <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
+          <IconButton title="Remove File" aria-label="remove file" onClick={() => removeFile(file)}>
+            <Icon path={mdiWindowClose} size={1} />
+          </IconButton>
+        </Box>
+      );
+    }
+
+    // status is processing, show no icon
+    return <Box width="4rem" />;
   };
 
   /**
@@ -202,17 +269,11 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
                 <Typography className={classes.uploadListStatus}>{file.error || file.status}</Typography>
               </Box>
               <Box>
-                <LinearProgress variant="determinate" value={file.progress} />
+                <ProgressBar file={file} />
               </Box>
             </Box>
-            <Box ml={2}>
-              <IconButton
-                color="primary"
-                title="Delete Attachment"
-                aria-label="delete attachment"
-                onClick={() => deleteFile(file)}>
-                <Icon path={mdiWindowClose} size={1} />
-              </IconButton>
+            <Box ml={2} display="flex" alignItems="center">
+              <FileButton file={file} />
             </Box>
           </Box>
         </ListItem>
