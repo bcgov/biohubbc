@@ -119,11 +119,6 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         open={openEditDialog}
         component={{
           element: <ProjectFundingItemForm
-            open={openEditDialog}
-            onSubmit={handleDialogEditSave}
-            onClose={() => setOpenEditDialog(false)}
-            onCancel={() => setOpenEditDialog(false)}
-            initialValues={fundingFormData}
             funding_sources={
               codes?.funding_source?.map((item) => {
                 return { value: item.id, label: item.name };
@@ -141,23 +136,6 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      {/* <ProjectFundingItemForm
-        open={openEditDialog}
-        onSubmit={handleDialogEditSave}
-        onClose={() => setOpenEditDialog(false)}
-        onCancel={() => setOpenEditDialog(false)}
-        initialValues={fundingFormData}
-        funding_sources={
-          codes?.funding_source?.map((item) => {
-            return { value: item.id, label: item.name };
-          }) || []
-        }
-        investment_action_category={
-          codes?.investment_action_category?.map((item) => {
-            return { value: item.id, fs_id: item.fs_id, label: item.name };
-          }) || []
-        }
-      /> */}
       <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
@@ -175,7 +153,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
             </Button>
           </Grid>
         </Grid>
-        {funding.fundingSources.map((item: any) => (
+        {funding.fundingSources.map((item: any, index: number) => (
           <Fragment key={item.id}>
             <Grid container item>
               <Divider className={classes.topBorder} />
@@ -187,7 +165,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                 </Box>
               </Grid>
               <Grid item>
-                <IconButton onClick={() => handleDialogEditOpen(0)} title="Edit Funding Source Information" aria-label="Edit Funding Source Information">
+                <IconButton onClick={() => handleDialogEditOpen(index)} title="Edit Funding Source Information" aria-label="Edit Funding Source Information">
                   <Typography variant="caption">
                     <Edit fontSize="inherit" /> EDIT
                   </Typography>

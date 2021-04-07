@@ -7,13 +7,14 @@ import Icon from '@mdi/react';
 import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
-//import EditDialog from 'components/dialog/EditDialog';
+import EditDialog from 'components/dialog/EditDialog';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
-  ProjectFundingFormArrayItemInitialValues
+  ProjectFundingFormArrayItemInitialValues,
+  ProjectFundingFormArrayItemYupSchema
 } from './ProjectFundingItemForm';
-//import { AddFundingI18N, EditFundingI18N } from 'constants/i18n';
+import { AddFundingI18N } from 'constants/i18n';
 //import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectFundingForm {
@@ -111,9 +112,18 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
             name="funding_sources"
             render={(arrayHelpers) => (
               <Box mb={2}>
-                <ProjectFundingItemForm
+                <EditDialog
+                  dialogTitle={AddFundingI18N.addTitle}
                   open={isModalOpen}
-                  onSubmit={(projectFundingItemValues, helper) => {
+                  component={{
+                    element: <ProjectFundingItemForm
+                      funding_sources={props.funding_sources}
+                      investment_action_category={props.investment_action_category} />,
+                    initialValues: currentProjectFundingFormArrayItem.values,
+                    validationSchema: ProjectFundingFormArrayItemYupSchema
+                  }}
+                  onCancel={() => setIsModalOpen(false)}
+                  onSave={(projectFundingItemValues, helper) => {
                     if (currentProjectFundingFormArrayItem.index < values.funding_sources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
@@ -121,28 +131,11 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                       // Add a new item
                       arrayHelpers.push(projectFundingItemValues);
                     }
-                    // Reset the modal form
-                    helper.resetForm();
+
                     // Close the modal
                     setIsModalOpen(false);
                   }}
-                  onClose={() => setIsModalOpen(false)}
-                  onCancel={() => setIsModalOpen(false)}
-                  initialValues={currentProjectFundingFormArrayItem.values}
-                  funding_sources={props.funding_sources}
-                  investment_action_category={props.investment_action_category}
                 />
-                {/* <EditDialog
-                  dialogTitle={AddFundingI18N.addTitle}
-                  open={isModalOpen}
-                  component={{
-                    element: <ProjectFundingItemForm codes={props.codes} />,
-                    initialValues: currentProjectFundingFormArrayItem.values,
-                    validationSchema: ProjectFundingYupSchema
-                  }}
-                  onCancel={() => setOpenEditDialog(false)}
-                  onSave={handleDialogEditSave}
-                /> */}
                 <List dense disablePadding>
                   {!values.funding_sources.length && (
                     <ListItem dense component={Paper}>
