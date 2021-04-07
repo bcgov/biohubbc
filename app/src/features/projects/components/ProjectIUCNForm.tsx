@@ -8,6 +8,7 @@ import {
   Box,
   IconButton,
   Button,
+  Typography,
   makeStyles
 } from '@material-ui/core';
 import Icon from '@mdi/react';
@@ -57,13 +58,16 @@ export interface IIUCNSubClassification2Option extends IMultiAutocompleteFieldOp
 }
 
 export const ProjectIUCNFormYupSchema = yup.object().shape({
-  classificationDetails: yup.array().of(
-    yup.object().shape({
-      classification: yup.number().required('You must specify a classification'),
-      subClassification1: yup.number().required('You must specify a sub-classification'),
-      subClassification2: yup.number().required('You must specify a sub-classification')
-    })
-  )
+  classificationDetails: yup
+    .array()
+    .of(
+      yup.object().shape({
+        classification: yup.number().required('You must specify a classification'),
+        subClassification1: yup.number().required('You must specify a sub-classification'),
+        subClassification2: yup.number().required('You must specify a sub-classification')
+      })
+    )
+    .isUniqueIUCNClassificationDetail('IUCN Classifications must be unique')
 });
 
 export interface IProjectIUCNFormProps {
@@ -80,7 +84,7 @@ export interface IProjectIUCNFormProps {
 const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
   const classes = useStyles();
 
-  const { values, handleChange, handleSubmit, getFieldMeta } = useFormikContext<IProjectIUCNForm>();
+  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectIUCNForm>();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -95,7 +99,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                 const subClassification2Meta = getFieldMeta(`classificationDetails.[${index}].subClassification2`);
 
                 return (
-                  <Grid item xs={12} key={index}>
+                  <Grid data-testid="iucn-classification-grid" item xs={12} key={index}>
                     <Box display="flex" alignItems="center" mt={-2}>
                       <Box display="flex" className={classes.iucnInputContainer}>
                         <Box className={classes.iucnInput} my={2} pr={2}>
@@ -178,7 +182,11 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         </Box>
                       </Box>
                       <Box pl={1}>
-                        <IconButton color="primary" aria-label="delete" onClick={() => arrayHelpers.remove(index)}>
+                        <IconButton
+                          data-testid="delete-icon"
+                          color="primary"
+                          aria-label="delete"
+                          onClick={() => arrayHelpers.remove(index)}>
                           <Icon path={mdiTrashCanOutline} size={1} />
                         </IconButton>
                       </Box>
@@ -187,6 +195,11 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                 );
               })}
             </Grid>
+            {errors?.classificationDetails && !Array.isArray(errors?.classificationDetails) && (
+              <Box pb={2}>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.classificationDetails}</Typography>
+              </Box>
+            )}
             <Box>
               <Button
                 type="button"

@@ -8,7 +8,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField
+  TextField,
+  Typography
 } from '@material-ui/core';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -35,12 +36,15 @@ export const ProjectPermitFormInitialValues: IProjectPermitForm = {
 };
 
 export const ProjectPermitFormYupSchema = yup.object().shape({
-  permits: yup.array().of(
-    yup.object().shape({
-      permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
-      sampling_conducted: yup.string().required('Required')
-    })
-  )
+  permits: yup
+    .array()
+    .of(
+      yup.object().shape({
+        permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        sampling_conducted: yup.string().required('Required')
+      })
+    )
+    .isUniquePermitNumber('Permit numbers must be unique')
 });
 
 export interface IProjectPermitFormProps {
@@ -56,7 +60,7 @@ export interface IProjectPermitFormProps {
  * @return {*}
  */
 const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
-  const { values, handleChange, handleSubmit, getFieldMeta } = useFormikContext<IProjectPermitForm>();
+  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   useEffect(() => {
     props?.onValuesChange?.(values);
@@ -126,6 +130,11 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                 );
               })}
             </Grid>
+            {errors?.permits && !Array.isArray(errors?.permits) && (
+              <Box pt={2}>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permits}</Typography>
+              </Box>
+            )}
             <Box pt={2}>
               <Button
                 type="button"
