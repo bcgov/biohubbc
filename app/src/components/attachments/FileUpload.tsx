@@ -194,29 +194,26 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
   const ProgressBar = (props: { file: IUploadFile }) => {
     const { file } = props;
 
-    if ([UploadFileStatus.PENDING, UploadFileStatus.UPLOADING].includes(file.status)) {
-      return <LinearProgress variant="determinate" value={file.progress} />;
-    }
-
-    if ([UploadFileStatus.PROCESSING].includes(file.status)) {
+    if (file.status === UploadFileStatus.PROCESSING) {
       return <LinearProgress variant="indeterminate" />;
     }
 
-    if ([UploadFileStatus.COMPLETE].includes(file.status)) {
+    if (file.status === UploadFileStatus.COMPLETE) {
       return <LinearProgress variant="determinate" color="primary" value={100} />;
     }
 
-    if ([UploadFileStatus.FAILED].includes(file.status)) {
+    if (file.status === UploadFileStatus.FAILED) {
       return <LinearProgress variant="determinate" color="secondary" value={0} />;
     }
 
-    return <LinearProgress variant="indeterminate" value={0} />;
+    // status is pending or uploading
+    return <LinearProgress variant="determinate" value={file.progress} />;
   };
 
   const FileButton = (props: { file: IUploadFile }) => {
     const { file } = props;
 
-    if ([UploadFileStatus.PENDING, UploadFileStatus.UPLOADING].includes(file.status)) {
+    if (file.status === UploadFileStatus.PENDING || file.status === UploadFileStatus.UPLOADING) {
       return (
         <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
           <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => cancelUpload(file)}>
@@ -226,7 +223,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       );
     }
 
-    if ([UploadFileStatus.COMPLETE].includes(file.status)) {
+    if (file.status === UploadFileStatus.COMPLETE) {
       return (
         <Box width="4rem" p={'0.75rem'} display="flex" justifyContent="flex-end" alignContent="center">
           <Icon path={mdiCheck} size={1} />
@@ -234,7 +231,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       );
     }
 
-    if ([UploadFileStatus.FAILED].includes(file.status)) {
+    if (file.status === UploadFileStatus.FAILED) {
       return (
         <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
           <IconButton title="Remove File" aria-label="remove file" onClick={() => removeFile(file)}>
