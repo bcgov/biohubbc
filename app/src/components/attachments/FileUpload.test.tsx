@@ -37,7 +37,7 @@ describe('FileUpload', () => {
 
     mockBiohubApi().project.uploadProjectArtifacts.mockReturnValue(mockUploadPromise);
 
-    const { getByTestId, getByText } = renderContainer();
+    const { asFragment, getByTestId, getByText } = renderContainer();
 
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
@@ -65,6 +65,8 @@ describe('FileUpload', () => {
     await waitFor(() => {
       expect(getByText('complete')).toBeVisible();
     });
+
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('handles file upload failure', async () => {
@@ -76,7 +78,7 @@ describe('FileUpload', () => {
 
     mockBiohubApi().project.uploadProjectArtifacts.mockReturnValue(mockUploadPromise);
 
-    const { getByTestId, getByText } = renderContainer();
+    const { asFragment, getByTestId, getByText } = renderContainer();
 
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
@@ -97,12 +99,14 @@ describe('FileUpload', () => {
       expect(getByText('uploading')).toBeVisible();
     });
 
-    // Manually trigger the upload resolve to simulate a successful upload
+    // Manually trigger the upload reject to simulate an unsuccessful upload
     // @ts-ignore
     rejectRef(new APIError({ response: { data: { message: 'File was evil!' } } } as any));
 
     await waitFor(() => {
       expect(getByText('File was evil!')).toBeVisible();
     });
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -1,5 +1,287 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`FileUpload handles file upload failure 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-37"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-38 makeStyles-dropZone-34"
+    >
+      <section>
+        <div
+          class="MuiBox-root MuiBox-root-40"
+          tabindex="0"
+        >
+          <input
+            autocomplete="off"
+            data-testid="drop-zone-input"
+            multiple=""
+            style="display: none;"
+            tabindex="-1"
+            type="file"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-41"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M2 12H4V17H20V12H22V17A2 2 0 0 1 20 19H4A2 2 0 0 1 2 17M11 5H13V8H16V10H13V13H11V10H8V8H11Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Drag your files here, or 
+              <a
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-39 MuiTypography-colorPrimary"
+              >
+                Browse Files
+              </a>
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Maximum file size: 50 MB
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Maximum file count: 10
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-42"
+    >
+      <ul
+        class="MuiList-root MuiList-padding"
+      >
+        <li
+          class="MuiListItem-root makeStyles-uploadListItem-35 MuiListItem-gutters"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-53"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-54"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-55"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  testpng.txt
+                </p>
+                <p
+                  class="MuiTypography-root makeStyles-uploadListStatus-36 MuiTypography-body1"
+                >
+                  File was evil!
+                </p>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-56"
+              >
+                <div
+                  aria-valuemax="100"
+                  aria-valuemin="0"
+                  aria-valuenow="0"
+                  class="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-determinate"
+                  role="progressbar"
+                >
+                  <div
+                    class="MuiLinearProgress-bar MuiLinearProgress-barColorPrimary MuiLinearProgress-bar1Determinate"
+                    style="transform: translateX(-100%);"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-57"
+            >
+              <button
+                aria-label="delete attachment"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                tabindex="0"
+                title="Delete Attachment"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`FileUpload handles file upload success 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-13"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-14 makeStyles-dropZone-10"
+    >
+      <section>
+        <div
+          class="MuiBox-root MuiBox-root-16"
+          tabindex="0"
+        >
+          <input
+            autocomplete="off"
+            data-testid="drop-zone-input"
+            multiple=""
+            style="display: none;"
+            tabindex="-1"
+            type="file"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-17"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M2 12H4V17H20V12H22V17A2 2 0 0 1 20 19H4A2 2 0 0 1 2 17M11 5H13V8H16V10H13V13H11V10H8V8H11Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Drag your files here, or 
+              <a
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-15 MuiTypography-colorPrimary"
+              >
+                Browse Files
+              </a>
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Maximum file size: 50 MB
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              Maximum file count: 10
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-18"
+    >
+      <ul
+        class="MuiList-root MuiList-padding"
+      >
+        <li
+          class="MuiListItem-root makeStyles-uploadListItem-11 MuiListItem-gutters"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-29"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-30"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-31"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  testpng.txt
+                </p>
+                <p
+                  class="MuiTypography-root makeStyles-uploadListStatus-12 MuiTypography-body1"
+                >
+                  complete
+                </p>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-32"
+              >
+                <div
+                  aria-valuemax="100"
+                  aria-valuemin="0"
+                  aria-valuenow="100"
+                  class="MuiLinearProgress-root MuiLinearProgress-colorPrimary MuiLinearProgress-determinate"
+                  role="progressbar"
+                >
+                  <div
+                    class="MuiLinearProgress-bar MuiLinearProgress-barColorPrimary MuiLinearProgress-bar1Determinate"
+                    style="transform: translateX(0%);"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-33"
+            >
+              <button
+                aria-label="delete attachment"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                tabindex="0"
+                title="Delete Attachment"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M13.46,12L19,17.54V19H17.54L12,13.46L6.46,19H5V17.54L10.54,12L5,6.46V5H6.46L12,10.54L17.54,5H19V6.46L13.46,12Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`FileUpload matches the snapshot 1`] = `
 <DocumentFragment>
   <div
