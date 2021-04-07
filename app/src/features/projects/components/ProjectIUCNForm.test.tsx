@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Formik } from 'formik';
 import React from 'react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -98,5 +98,149 @@ describe('ProjectIUCNForm', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('adds an IUCN classification when the add button is clicked', async () => {
+    const { getByText, queryByTestId } = render(
+      <Formik
+        initialValues={ProjectIUCNFormInitialValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(queryByTestId('iucn-classification-grid')).toBeNull();
+
+    fireEvent.click(getByText('Add Classification'));
+
+    await waitFor(() => {
+      expect(queryByTestId('iucn-classification-grid')).toBeInTheDocument();
+    });
+  });
+
+  it('renders correctly with error on the iucn classifications due to duplicates', () => {
+    const existingFormValues: IProjectIUCNForm = {
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 3,
+          subClassification2: 5
+        },
+        {
+          classification: 1,
+          subClassification1: 3,
+          subClassification2: 5
+        }
+      ]
+    };
+
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{ classificationDetails: 'Error is here' }}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with error on the iucn classification individual fields', () => {
+    const existingFormValues: IProjectIUCNForm = {
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 3,
+          subClassification2: 5
+        }
+      ]
+    };
+
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{
+          classificationDetails: [
+            {
+              classification: 'Error here',
+              subClassification1: 'Error here too',
+              subClassification2: 'Error again here too'
+            }
+          ]
+        }}
+        initialTouched={{
+          classificationDetails: [{ classification: true, subClassification1: true, subClassification2: true }]
+        }}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('deletes existing iucn classifications when delete icon is clicked', async () => {
+    const existingFormValues: IProjectIUCNForm = {
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 3,
+          subClassification2: 5
+        }
+      ]
+    };
+
+    const { getByTestId, queryByTestId } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(queryByTestId('iucn-classification-grid')).toBeInTheDocument();
+
+    fireEvent.click(getByTestId('delete-icon'));
+
+    await waitFor(() => {
+      expect(queryByTestId('iucn-classification-grid')).toBeNull();
+    });
   });
 });

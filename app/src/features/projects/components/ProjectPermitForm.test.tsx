@@ -51,6 +51,65 @@ describe('ProjectPermitForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  it('renders correctly with errors on the permit_number and sampling_conducted fields', () => {
+    const existingFormValues: IProjectPermitForm = {
+      permits: [
+        {
+          permit_number: '123',
+          sampling_conducted: 'true'
+        }
+      ]
+    };
+
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectPermitFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{
+          permits: [{ permit_number: 'Error here', sampling_conducted: 'Error here too' }]
+        }}
+        initialTouched={{
+          permits: [{ permit_number: true, sampling_conducted: true }]
+        }}
+        onSubmit={async () => {}}>
+        {() => <ProjectPermitForm />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with error on the permits field due to duplicates', () => {
+    const existingFormValues: IProjectPermitForm = {
+      permits: [
+        {
+          permit_number: '123',
+          sampling_conducted: 'true'
+        },
+        {
+          permit_number: '123',
+          sampling_conducted: 'true'
+        }
+      ]
+    };
+
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectPermitFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{ permits: 'Error is here' }}
+        onSubmit={async () => {}}>
+        {() => <ProjectPermitForm />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   it('deletes existing permits when delete icon is clicked', async () => {
     const existingFormValues: IProjectPermitForm = {
       permits: [
