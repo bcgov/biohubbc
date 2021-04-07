@@ -65,14 +65,17 @@ describe('ProjectFundingForm', () => {
 
   it('renders correctly with existing funding values', () => {
     const existingFormValues: IProjectFundingForm = {
-      funding_agencies: [
+      funding_sources: [
         {
+          id: 11,
           agency_id: 1,
           investment_action_category: 1,
+          investment_action_category_name: 'Action 23',
           agency_project_id: '111',
           funding_amount: 222,
           start_date: '2021-03-14',
-          end_date: '2021-04-14'
+          end_date: '2021-04-14',
+          revision_count: 23
         }
       ]
     };

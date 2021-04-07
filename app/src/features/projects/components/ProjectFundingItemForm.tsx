@@ -24,21 +24,27 @@ import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 import DollarAmountField from 'components/fields/DollarAmountField';
 
 export interface IProjectFundingFormArrayItem {
+  id: number;
   agency_id: number;
   investment_action_category: number;
+  investment_action_category_name: string;
   agency_project_id: string;
   funding_amount: number;
   start_date: string;
   end_date: string;
+  revision_count: number;
 }
 
 export const ProjectFundingFormArrayItemInitialValues: IProjectFundingFormArrayItem = {
+  id: 0,
   agency_id: ('' as unknown) as number,
   investment_action_category: ('' as unknown) as number,
+  investment_action_category_name: '',
   agency_project_id: '',
   funding_amount: ('' as unknown) as number,
   start_date: '',
-  end_date: ''
+  end_date: '',
+  revision_count: 0
 };
 
 export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
@@ -77,6 +83,7 @@ export interface IProjectFundingItemFormProps {
  * @param {*} props
  * @return {*}
  */
+
 const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) => {
   return (
     <Formik

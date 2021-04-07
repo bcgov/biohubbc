@@ -209,8 +209,8 @@ describe('GetFundingData', () => {
       fundingData = new GetFundingData([]);
     });
 
-    it('sets funding agencies', function () {
-      expect(fundingData.fundingAgencies).to.eql([]);
+    it('sets project funding sources', function () {
+      expect(fundingData.fundingSources).to.eql([]);
     });
   });
 
@@ -232,8 +232,8 @@ describe('GetFundingData', () => {
       fundingData = new GetFundingData(fundingDataObj);
     });
 
-    it('sets funding agencies', function () {
-      expect(fundingData.fundingAgencies).to.eql(fundingDataObj);
+    it('sets project funding sources', function () {
+      expect(fundingData.fundingSources).to.eql(fundingDataObj);
     });
   });
 });

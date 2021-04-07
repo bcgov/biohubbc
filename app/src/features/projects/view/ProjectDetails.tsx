@@ -79,7 +79,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box mb={4}>
         <Paper>
           <Box m={3}>
-            <FundingSource projectForViewData={projectForViewData} />
+            <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
           </Box>
         </Paper>
       </Box>

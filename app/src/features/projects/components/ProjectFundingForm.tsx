@@ -7,18 +7,21 @@ import Icon from '@mdi/react';
 import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
+//import EditDialog from 'components/dialog/EditDialog';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues
 } from './ProjectFundingItemForm';
+//import { AddFundingI18N, EditFundingI18N } from 'constants/i18n';
+//import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectFundingForm {
-  funding_agencies: IProjectFundingFormArrayItem[];
+  funding_sources: IProjectFundingFormArrayItem[];
 }
 
 export const ProjectFundingFormInitialValues: IProjectFundingForm = {
-  funding_agencies: []
+  funding_sources: []
 };
 
 export const ProjectFundingFormYupSchema = yup.object().shape({});
@@ -68,10 +71,13 @@ const useStyles = makeStyles((theme) => ({
  */
 const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
   const classes = useStyles();
-  const formikProps = useFormikContext<IProjectFundingForm>();
-  const { values } = formikProps;
 
-  // Tracks information about the current funding source item that is being added/edited
+  const formikProps = useFormikContext<IProjectFundingForm>();
+  const { values
+   // , touched, errors, handleChange, handleSubmit, resetForm, setFieldValue
+  } = formikProps;
+
+  //Tracks information about the current funding source item that is being added/edited
   const [currentProjectFundingFormArrayItem, setCurrentProjectFundingFormArrayItem] = useState({
     index: 0,
     values: ProjectFundingFormArrayItemInitialValues
@@ -83,7 +89,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
     <form onSubmit={formikProps.handleSubmit}>
       <Box>
         <Box component="header" display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h3">Funding Sources ({values.funding_agencies.length})</Typography>
+          <Typography variant="h3">Funding Sources ({values.funding_sources.length})</Typography>
           <Button
             variant="outlined"
             color="primary"
@@ -92,7 +98,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => {
               setCurrentProjectFundingFormArrayItem({
-                index: values.funding_agencies.length,
+                index: values.funding_sources.length,
                 values: ProjectFundingFormArrayItemInitialValues
               });
               setIsModalOpen(true);
@@ -102,13 +108,13 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
         </Box>
         <Box>
           <FieldArray
-            name="funding_agencies"
+            name="funding_sources"
             render={(arrayHelpers) => (
               <Box mb={2}>
                 <ProjectFundingItemForm
                   open={isModalOpen}
                   onSubmit={(projectFundingItemValues, helper) => {
-                    if (currentProjectFundingFormArrayItem.index < values.funding_agencies.length) {
+                    if (currentProjectFundingFormArrayItem.index < values.funding_sources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);
                     } else {
@@ -126,22 +132,33 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   funding_sources={props.funding_sources}
                   investment_action_category={props.investment_action_category}
                 />
+                {/* <EditDialog
+                  dialogTitle={AddFundingI18N.addTitle}
+                  open={isModalOpen}
+                  component={{
+                    element: <ProjectFundingItemForm codes={props.codes} />,
+                    initialValues: currentProjectFundingFormArrayItem.values,
+                    validationSchema: ProjectFundingYupSchema
+                  }}
+                  onCancel={() => setOpenEditDialog(false)}
+                  onSave={handleDialogEditSave}
+                /> */}
                 <List dense disablePadding>
-                  {!values.funding_agencies.length && (
+                  {!values.funding_sources.length && (
                     <ListItem dense component={Paper}>
                       <Box display="flex" flexGrow={1} justifyContent="center" alignContent="middle" p={2}>
                         <Typography variant="subtitle2">No Funding Sources</Typography>
                       </Box>
                     </ListItem>
                   )}
-                  {values.funding_agencies.map((fundingAgency, index) => {
+                  {values.funding_sources.map((fundingSource, index) => {
                     const investment_action_category_label =
-                      (fundingAgency.agency_id === 1 && 'Investment Action') ||
-                      (fundingAgency.agency_id === 2 && 'Investment Category') ||
+                      (fundingSource.agency_id === 1 && 'Investment Action') ||
+                      (fundingSource.agency_id === 2 && 'Investment Category') ||
                       null;
 
                     const investment_action_category_value = props.investment_action_category.filter(
-                      (item) => item.value === fundingAgency.investment_action_category
+                      (item) => item.value === fundingSource.investment_action_category
                     )?.[0]?.label;
 
                     return (
@@ -149,11 +166,12 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                         <Paper className={classes.fundingListItemInner}>
                           <Toolbar className={classes.fundingListItemToolbar}>
                             <Typography className={classes.title}>
-                              {getCodeValueNameByID(props.funding_sources, fundingAgency.agency_id)}
+                              {getCodeValueNameByID(props.funding_sources, fundingSource.agency_id)}
                               {investment_action_category_label && (
                                 <span className={classes.titleDesc}>({investment_action_category_value})</span>
                               )}
                             </Typography>
+
                             <IconButton
                               color="primary"
                               title="Edit Funding Source"
@@ -161,7 +179,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                               onClick={() => {
                                 setCurrentProjectFundingFormArrayItem({
                                   index: index,
-                                  values: values.funding_agencies[index]
+                                  values: values.funding_sources[index]
                                 });
                                 setIsModalOpen(true);
                               }}>
@@ -182,14 +200,14 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                 <Typography variant="body2" color="textSecondary">
                                   Agency Project ID
                                 </Typography>
-                                <Typography variant="body1">{fundingAgency.agency_project_id}</Typography>
+                                <Typography variant="body1">{fundingSource.agency_project_id}</Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
                                 <Typography variant="body2" color="textSecondary">
                                   Funding Amount
                                 </Typography>
                                 <Typography variant="body1">
-                                  {getFormattedAmount(fundingAgency.funding_amount)}
+                                  {getFormattedAmount(fundingSource.funding_amount)}
                                 </Typography>
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
@@ -199,8 +217,8 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                                 <Typography variant="body1">
                                   {getFormattedDateRangeString(
                                     DATE_FORMAT.ShortMediumDateFormat,
-                                    fundingAgency.start_date,
-                                    fundingAgency.end_date
+                                    fundingSource.start_date,
+                                    fundingSource.end_date
                                   )}
                                 </Typography>
                               </Grid>

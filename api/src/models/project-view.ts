@@ -140,47 +140,6 @@ export class GetIUCNClassificationData {
   }
 }
 
-interface IGetFundingSource {
-  agency_id: string;
-  investment_action_category: string;
-  agency_name: string;
-  funding_amount: number;
-  start_date: string;
-  end_date: string;
-}
-
-/**
- * Pre-processes GET /projects/{id} funding data
- *
- * @export
- * @class GetFundingData
- */
-export class GetFundingData {
-  fundingAgencies: IGetFundingSource[];
-
-  constructor(fundingData?: any[]) {
-    defaultLog.debug({
-      label: 'GetFundingData',
-      message: 'params',
-      fundingData: fundingData
-    });
-
-    this.fundingAgencies =
-      (fundingData &&
-        fundingData.map((item: any) => {
-          return {
-            agency_id: item.agency_id,
-            investment_action_category: item.investment_action_category,
-            agency_name: item.agency_name,
-            funding_amount: item.funding_amount,
-            start_date: item.start_date,
-            end_date: item.end_date
-          };
-        })) ||
-      [];
-  }
-}
-
 /**
  * Pre-processes GET /projects/{id} partnerships data
  *
