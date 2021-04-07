@@ -19,11 +19,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
 
   const renderParagraph = (paragraph: string) => {
     if (paragraph) {
-      return (
-        <Typography style={{ wordBreak: 'break-all' }} key={uuidv4()}>
-          {paragraph}
-        </Typography>
-      );
+      return <Typography key={uuidv4()}>{paragraph}</Typography>;
     }
     return <p key={uuidv4()}></p>;
   };
@@ -50,30 +46,30 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
     <Box>
       {isTruncatedText && (
         <>
-          <Box>
-            {text
-              .slice(0, determineTruncatingLength())
-              .split('\n')
-              .map((paragraph: string) => {
-                return renderParagraph(paragraph);
-              })}
+          {text
+            .slice(0, determineTruncatingLength())
+            .split('\n')
+            .map((paragraph: string) => {
+              return renderParagraph(paragraph);
+            })}
+          <Box mt={3}>
+            <Button size="small" variant="outlined" color="primary" onClick={() => setIsTruncatedText(false)}>
+              Read More
+            </Button>
           </Box>
-          <Button color="primary" onClick={() => setIsTruncatedText(false)}>
-            Read More
-          </Button>
         </>
       )}
       {!isTruncatedText && (
         <>
-          <Box>
-            {text?.split('\n').map((paragraph: string) => {
-              return renderParagraph(paragraph);
-            })}
-          </Box>
+          {text?.split('\n').map((paragraph: string) => {
+            return renderParagraph(paragraph);
+          })}
           {text?.length > maxCharLength && (
-            <Button color="primary" onClick={() => setIsTruncatedText(true)}>
-              Read Less
-            </Button>
+            <Box mt={3}>
+              <Button size="small" variant="outlined" color="primary" onClick={() => setIsTruncatedText(true)}>
+                Read Less
+              </Button>
+            </Box>
           )}
         </>
       )}

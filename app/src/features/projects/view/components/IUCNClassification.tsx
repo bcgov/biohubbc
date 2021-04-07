@@ -1,15 +1,14 @@
 import {
+  Box,
+  Button,
   TableContainer,
   Table,
   TableHead,
   TableRow,
   TableBody,
   TableCell,
-  Grid,
-  Typography,
-  IconButton
+  Typography
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -24,26 +23,9 @@ import { EditIUCNI18N } from 'constants/i18n';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { Edit } from '@material-ui/icons';
 import { APIError } from 'hooks/api/useAxios';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
-  },
-  tableCellBorderBottom: {
-    borderBottom: 'none'
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  addButton: {
-    border: '2px solid'
-  }
-});
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -62,7 +44,6 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     codes
   } = props;
 
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -142,52 +123,43 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">IUCN Classification</Typography>
-          </Grid>
-          <Grid item>
-            <IconButton
-              onClick={() => handleDialogEditOpen()}
-              title="Edit IUCN Classification"
-              aria-label="Edit IUCN Classification">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
-              </Typography>
-            </IconButton>
-          </Grid>
-        </Grid>
-        {iucn.classificationDetails.length > 0 && (
-          <Grid container item xs={12}>
-            <TableContainer>
-              <Table className={classes.table} aria-label="iucn-classification-table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.heading}>Classification</TableCell>
-                    <TableCell className={classes.heading}>Sub-classification</TableCell>
-                    <TableCell className={classes.heading}>Sub-classification</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
-                    const tableCellStyle =
-                      index === iucn.classificationDetails.length - 1 ? classes.tableCellBorderBottom : undefined;
 
-                    return (
-                      <TableRow key={index}>
-                        <TableCell className={tableCellStyle}>{classificationDetail.classification}</TableCell>
-                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification1}</TableCell>
-                        <TableCell className={tableCellStyle}>{classificationDetail.subClassification2}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-        )}
-      </Grid>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+        <Typography variant="h3">IUCN Classifications</Typography>
+        <Button
+          className="editButtonSmall"
+          onClick={() => handleDialogEditOpen()}
+          title="Edit IUCN Classifications"
+          aria-label="Edit General Information"
+          startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+          EDIT
+        </Button>
+      </Box>
+
+      {iucn.classificationDetails.length > 0 && (
+        <TableContainer>
+          <Table aria-label="iucn-classification-table">
+            <TableHead>
+              <TableRow>
+                <TableCell width="33.3333%">Classification</TableCell>
+                <TableCell width="33.3333%">Sub-classification</TableCell>
+                <TableCell width="33.3333%">Sub-classification</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{classificationDetail.classification}</TableCell>
+                    <TableCell>{classificationDetail.subClassification1}</TableCell>
+                    <TableCell>{classificationDetail.subClassification2}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </>
   );
 };

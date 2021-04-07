@@ -1,5 +1,9 @@
 @import 'styles/fonts.scss';
 
+body {
+  overflow-y: scroll;
+}
+
 fieldset {
   border: none;
   padding: 0;
@@ -18,5 +22,35 @@ legend.MuiFormLabel-root {
 .MuiDialogActions-root {
   button {
     min-width: 6rem;
+  }
+}
+
+.MuiButton-root.editButtonSmall {
+  font-weight: 700 !important;
+
+  .MuiButton-startIcon {
+    margin-top: -1px;
+  }
+}
+
+dd {
+  margin-top: 0.25rem !important;
+}
+
+.ddInline {
+  dd {
+    position: relative;
+    display: inline-block;
+    &:after {
+      content: ', ';
+      display: inline-block;
+      margin-right: 0.25rem;
+    }
+  }
+
+  dd:last-child {
+    &:after {
+      display: none;
+    }
   }
 }
