@@ -1,10 +1,13 @@
 import { Box, Link, makeStyles, Typography } from '@material-ui/core';
-import { mdiTrayPlus } from '@mdi/js';
+import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
 import Dropzone from 'react-dropzone';
 
 const useStyles = makeStyles(() => ({
+  textSpacing: {
+    marginBottom: '1rem'
+  },
   browseLink: {
     cursor: 'pointer'
   }
@@ -57,12 +60,18 @@ export const DropZone: React.FC<IFileUploadProps> = (props) => {
           <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
             <Box m={3} display="flex" flexDirection="column" alignItems="center">
-              <Icon path={mdiTrayPlus} size={1} />
-              <Typography>
+              <Icon path={mdiUploadOutline} size={2} className={classes.textSpacing} />
+              <Typography variant="h3" className={classes.textSpacing}>
                 Drag your files here, or <Link className={classes.browseLink}>Browse Files</Link>
               </Typography>
-              <Typography>{`Maximum file size: ${MAX_FILE_SIZE_MEGABYTES} MB`}</Typography>
-              <Typography>{`Maximum file count: ${MAX_FILES}`}</Typography>
+              <Typography
+                component="span"
+                variant="subtitle2"
+                color="textSecondary">{`Maximum file size: ${MAX_FILE_SIZE_MEGABYTES} MB`}</Typography>
+              <Typography
+                component="span"
+                variant="subtitle2"
+                color="textSecondary">{`Maximum file count: ${MAX_FILES}`}</Typography>
             </Box>
           </Box>
         </section>

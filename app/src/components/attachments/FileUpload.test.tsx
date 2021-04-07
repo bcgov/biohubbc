@@ -66,6 +66,7 @@ describe('FileUpload', () => {
       expect(getByText('complete')).toBeVisible();
     });
 
+    // expect file list item to show complete state
     expect(asFragment()).toMatchSnapshot();
   });
 
@@ -78,7 +79,7 @@ describe('FileUpload', () => {
 
     mockBiohubApi().project.uploadProjectArtifacts.mockReturnValue(mockUploadPromise);
 
-    const { asFragment, getByTestId, getByText } = renderContainer();
+    const { asFragment, getByTestId, getByText, getByTitle } = renderContainer();
 
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
@@ -107,6 +108,18 @@ describe('FileUpload', () => {
       expect(getByText('File was evil!')).toBeVisible();
     });
 
+    // expect file list item to show error state
+    expect(asFragment()).toMatchSnapshot();
+
+    const removeButton = getByTitle('Remove File');
+
+    await waitFor(() => {
+      expect(removeButton).toBeVisible();
+    });
+
+    fireEvent.click(removeButton);
+
+    // expect file list item to be removed
     expect(asFragment()).toMatchSnapshot();
   });
 });

@@ -1,5 +1,5 @@
 import { Box, Button, Paper, Typography } from '@material-ui/core';
-import { mdiTrayPlus } from '@mdi/js';
+import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -38,7 +38,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           </Box>
           <Box>
             <Button variant="outlined" onClick={() => setOpenUploadAttachments(true)}>
-              <Icon path={mdiTrayPlus} size={1} />
+              <Icon path={mdiUploadOutline} size={1} />
               <Typography>Upload</Typography>
             </Button>
           </Box>
