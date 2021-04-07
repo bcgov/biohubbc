@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Friday, March 26, 2021 13:08:17
+-- Date Created : Tuesday, April 06, 2021 16:50:53
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -708,6 +708,8 @@ CREATE TABLE project_attachment(
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
+    key               varchar(300)    NOT NULL,
+    file_size         integer,
     create_date       timestamp(6)    DEFAULT now() NOT NULL,
     create_user       integer         NOT NULL,
     update_date       timestamp(6),
@@ -728,6 +730,10 @@ COMMENT ON COLUMN project_attachment.file_name IS 'The name of the file attachme
 COMMENT ON COLUMN project_attachment.title IS 'The title of the file.'
 ;
 COMMENT ON COLUMN project_attachment.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN project_attachment.key IS 'The identifying key to the file in the storage system.'
+;
+COMMENT ON COLUMN project_attachment.file_size IS 'The size of the file in bytes.'
 ;
 COMMENT ON COLUMN project_attachment.create_date IS 'The datetime the record was created.'
 ;
@@ -1067,16 +1073,17 @@ COMMENT ON COLUMN project_region.revision_count IS 'Revision count used for conc
 --
 
 CREATE TABLE project_role(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)     NOT NULL,
-    record_effective_date    date            NOT NULL,
-    description              varchar(250)    NOT NULL,
+    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)      NOT NULL,
+    record_effective_date    date             NOT NULL,
     record_end_date          date,
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
+    description              varchar(250)     NOT NULL,
+    notes                    varchar(3000),
+    create_date              timestamp(6)     DEFAULT now() NOT NULL,
+    create_user              integer          NOT NULL,
     update_date              timestamp(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer          DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_3 PRIMARY KEY (id)
 )
 ;
@@ -1089,9 +1096,11 @@ COMMENT ON COLUMN project_role.name IS 'The name of the project role.'
 ;
 COMMENT ON COLUMN project_role.record_effective_date IS 'Record level effective date.'
 ;
+COMMENT ON COLUMN project_role.record_end_date IS 'Record level end date.'
+;
 COMMENT ON COLUMN project_role.description IS 'The description of the project role.'
 ;
-COMMENT ON COLUMN project_role.record_end_date IS 'Record level end date.'
+COMMENT ON COLUMN project_role.notes IS 'Notes associated with the record.'
 ;
 COMMENT ON COLUMN project_role.create_date IS 'The datetime the record was created.'
 ;
@@ -1264,6 +1273,8 @@ COMMENT ON COLUMN system_role.record_end_date IS 'Record level end date.'
 ;
 COMMENT ON COLUMN system_role.description IS 'The description of the record.'
 ;
+COMMENT ON COLUMN system_role.notes IS 'Notes associated with the record.'
+;
 COMMENT ON COLUMN system_role.create_date IS 'The datetime the record was created.'
 ;
 COMMENT ON COLUMN system_role.create_user IS 'The id of the user who created the record as identified in the system user table.'
@@ -1388,6 +1399,8 @@ COMMENT ON COLUMN user_identity_source.record_effective_date IS 'Record level ef
 COMMENT ON COLUMN user_identity_source.record_end_date IS 'Record level end date.'
 ;
 COMMENT ON COLUMN user_identity_source.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN user_identity_source.notes IS 'Notes associated with the record.'
 ;
 COMMENT ON COLUMN user_identity_source.create_date IS 'The datetime the record was created.'
 ;
