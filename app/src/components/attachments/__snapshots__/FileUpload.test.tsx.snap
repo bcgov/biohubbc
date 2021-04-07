@@ -3,14 +3,14 @@
 exports[`FileUpload matches the snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-4"
   >
     <div
-      class="MuiBox-root MuiBox-root-7 makeStyles-dropZone-2"
+      class="MuiBox-root MuiBox-root-5 makeStyles-dropZone-1"
     >
       <section>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-7"
           tabindex="0"
         >
           <input
@@ -22,7 +22,7 @@ exports[`FileUpload matches the snapshot 1`] = `
             type="file"
           />
           <div
-            class="MuiBox-root MuiBox-root-10"
+            class="MuiBox-root MuiBox-root-8"
           >
             <svg
               role="presentation"
@@ -39,7 +39,7 @@ exports[`FileUpload matches the snapshot 1`] = `
             >
               Drag your files here, or 
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-8 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-6 MuiTypography-colorPrimary"
               >
                 Browse Files
               </a>
@@ -59,7 +59,7 @@ exports[`FileUpload matches the snapshot 1`] = `
       </section>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-11"
+      class="MuiBox-root MuiBox-root-9"
     />
   </div>
 </DocumentFragment>

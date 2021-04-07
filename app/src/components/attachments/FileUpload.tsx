@@ -1,5 +1,3 @@
-/* eslint-disable */
-// @ts-nocheck
 import { Box, IconButton, LinearProgress, List, ListItem, makeStyles, Typography } from '@material-ui/core';
 import { mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -10,17 +8,10 @@ import React, { useState } from 'react';
 import DropZone from './DropZone';
 
 const useStyles = makeStyles(() => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
   dropZone: {
     border: '2px dashed grey',
     cursor: 'default'
   },
-  uploadList: {},
   uploadListItem: {
     border: '1px solid grey'
   },
@@ -28,10 +19,6 @@ const useStyles = makeStyles(() => ({
     textTransform: 'capitalize'
   }
 }));
-
-const MAX_FILES = Number(process.env.REACT_APP_MAX_FILES) || 10;
-const MAX_FILE_SIZE_BYTES = Number(process.env.REACT_APP_MAX_FILE_SIZE) || 52428800; // bytes
-const MAX_FILE_SIZE_MEGABYTES = Math.round(MAX_FILE_SIZE_BYTES / 1048576);
 
 export enum UploadFileStatus {
   REJECTED = 'rejected',
