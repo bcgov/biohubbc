@@ -112,9 +112,6 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
     return null;
   }
 
-  console.log("YOOOOOOOOOOOOOOOOOOOOOO")
-  console.log(OBJECT_STORE_BUCKET_NAME)
-
   return S3.getSignedUrl('getObject', {
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Key: key,

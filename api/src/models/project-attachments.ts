@@ -20,7 +20,8 @@ export class GetAttachmentsData {
           return {
             id: item.id,
             fileName: item.file_name,
-            lastModified: item.update_date
+            lastModified: item.update_date || item.create_date,
+            size: item.file_size
           };
         })) ||
       [];

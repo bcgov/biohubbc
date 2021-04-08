@@ -3,12 +3,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../../../../../constants/roles';
-// import { getS3SignedURL } from '../../../../../utils/file-utils';
 import { HTTP400 } from '../../../../../errors/CustomError';
-// import { getDBConnection } from '../../../../../../database/db';
 import { getLogger } from '../../../../../utils/logger';
 import { getDBConnection } from '../../../../../database/db';
 import { getProjectAttachmentS3KeySQL } from '../../../../../queries/project/project-attachments-queries';
+import { getS3SignedURL } from '../../../../../utils/file-utils';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/view');
 
@@ -72,14 +71,6 @@ function getSingleAttachmentURL(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
-    // const s3SignedUrl = await getS3SignedURL(2 + '/' + '10MB.pdf');
-
-    // if (!s3SignedUrl) {
-    //   return null;
-    // }
-
-    // return res.status(200).json(s3SignedUrl);
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -95,8 +86,15 @@ function getSingleAttachmentURL(): RequestHandler {
 
       await connection.commit();
 
-      console.log('#####RESULTTTTTT####')
-      console.log(result);
+      const s3Key = result && result.rows.length && result.rows[0]?.key;
+
+      const s3SignedUrl = await getS3SignedURL(s3Key);
+
+      if (!s3SignedUrl) {
+        return null;
+      }
+
+      return res.status(200).json(s3SignedUrl);
     } catch (error) {
       defaultLog.debug({ label: 'getSingleAttachmentURL', message: 'error', error });
       throw error;

@@ -12,6 +12,7 @@ import { Feature } from 'geojson';
 export interface IGetProjectAttachment {
   fileName: string;
   lastModified: string;
+  size: number;
 }
 
 /**

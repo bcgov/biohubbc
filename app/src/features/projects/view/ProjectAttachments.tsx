@@ -3,10 +3,11 @@ import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import { IGetProjectForViewResponse, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import AttachmentsList from 'components/attachments/AttachmentsList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -19,10 +20,29 @@ export interface IProjectAttachmentsProps {
  */
 const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const urlParams = useParams();
-
   const projectId = urlParams['id'];
+  const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
+  const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+
+  const getAttachments = async () => {
+    try {
+      const response = await biohubApi.project.getProjectAttachments(projectId);
+
+      if (!response?.attachmentsList) {
+        return;
+      }
+
+      setAttachmentsList([...response.attachmentsList]);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  useEffect(() => {
+    getAttachments();
+  }, [openUploadAttachments]);
 
   return (
     <>
@@ -47,7 +67,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       </Box>
       <Box mb={3}>
         <Box p={3}>
-          <AttachmentsList projectId={projectId} />
+          <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
         </Box>
       </Box>
     </>

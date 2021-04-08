@@ -20,7 +20,9 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
     SELECT
       id,
       file_name,
-      update_date
+      update_date,
+      create_date,
+      file_size
     from
       project_attachment
     where
@@ -57,7 +59,9 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
     WHERE
       p_id = ${projectId}
     AND
-      id = ${attachmentId};
+      id = ${attachmentId}
+    RETURNING
+      key;
   `;
 
   defaultLog.debug({
@@ -131,20 +135,20 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_attachment (
-        p_id,
-        file_name,
-        file_size,
-        key
-      ) VALUES (
-        ${projectId},
-        ${fileName},
-        ${fileSize},
-        ${projectId + '/' + fileName}
-      )
-      RETURNING
-        id;
-    `;
+    INSERT INTO project_attachment (
+      p_id,
+      file_name,
+      file_size,
+      key
+    ) VALUES (
+      ${projectId},
+      ${fileName},
+      ${fileSize},
+      ${projectId + '/' + fileName}
+    )
+    RETURNING
+      id;
+  `;
 
   defaultLog.debug({
     label: 'postProjectAttachmentSQL',

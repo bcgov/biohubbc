@@ -107,12 +107,22 @@ export function uploadMedia(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     // Insert file metadata into project_attachment table
-    const insertProjectAttachmentsPromises =
-      rawMediaArray.map((file: Express.Multer.File) =>
-        insertProjectAttachment(file, Number(req.params.projectId), connection)
-      ) || [];
+    try {
+      await connection.open();
 
-    await Promise.all([...insertProjectAttachmentsPromises]);
+      const insertProjectAttachmentsPromises =
+        rawMediaArray.map((file: Express.Multer.File) =>
+          insertProjectAttachment(file, Number(req.params.projectId), connection)
+        ) || [];
+
+      await Promise.all([...insertProjectAttachmentsPromises]);
+
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback();
+    } finally {
+      connection.release();
+    }
 
     // Upload files to S3
     const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
