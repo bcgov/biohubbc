@@ -236,27 +236,25 @@ describe('putProjectFundingSourceSQL', () => {
         new PutFundingSource({
           fundingSources: [
             {
-              investment_action_category: 2,
+              investment_action_category: 222,
               agency_project_id: 'funding source name',
               funding_amount: 10000,
               start_date: '2020-02-02',
               end_date: '2020-03-02',
-              revision_count: 1
+              revision_count: 11
             }
           ]
         }),
         1
       );
 
-      console.log(response?.values);
-
       expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(2);
+      expect(response?.values).to.deep.include(222);
       expect(response?.values).to.deep.include('funding source name');
       expect(response?.values).to.deep.include(10000);
       expect(response?.values).to.deep.include('2020-02-02');
       expect(response?.values).to.deep.include('2020-03-02');
-      expect(response?.values).to.deep.include(1);
+      expect(response?.values).to.deep.include(12);
     });
   });
 });

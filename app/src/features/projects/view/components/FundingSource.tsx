@@ -202,14 +202,14 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                   </Typography>
                 </Box>
               </Grid>
-              {item.investment_action_category !== 'Not Applicable' && (
+              {item.investment_action_category_name !== 'Not Applicable' && (
                 <Grid item xs={12} sm={6} md={4}>
                   <Box color="text.disabled">
                     <Typography variant="caption">Investment Category</Typography>
                   </Box>
                   <Box>
                     <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                      {item.investment_action_category}
+                      {item.investment_action_category_name}
                     </Typography>
                   </Box>
                 </Grid>
