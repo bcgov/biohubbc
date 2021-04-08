@@ -73,10 +73,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
   const classes = useStyles();
 
   const formikProps = useFormikContext<IProjectFundingForm>();
-  const {
-    values
-    // , touched, errors, handleChange, handleSubmit, resetForm, setFieldValue
-  } = formikProps;
+  const { values } = formikProps;
 
   //Tracks information about the current funding source item that is being added/edited
   const [currentProjectFundingFormArrayItem, setCurrentProjectFundingFormArrayItem] = useState({
