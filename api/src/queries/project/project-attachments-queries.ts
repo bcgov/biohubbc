@@ -75,7 +75,7 @@ export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: numb
 };
 
 /**
- * SQL query to get S3 url for an attachment for a single project.
+ * SQL query to get S3 key of an attachment for a single project.
  *
  * @param {number} projectId
  * @param {number} attachmentId

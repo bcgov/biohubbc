@@ -3,7 +3,7 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('models/project-attachments');
 
 /**
- * Pre-processes GET /projects/{id}/artifacts/attachments data
+ * Pre-processes GET /project/{id}/attachments data
  *
  * @export
  * @class GetAttachmentsData
