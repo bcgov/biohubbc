@@ -8,7 +8,8 @@ import {
   deleteIndigenousPartnershipsSQL,
   deleteIUCNSQL,
   deleteRegionsSQL,
-  deleteStakeholderPartnershipsSQL
+  deleteStakeholderPartnershipsSQL,
+  deleteFundingSQL
 } from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {
@@ -118,6 +119,20 @@ describe('deleteClimateInitiativesSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deleteClimateInitiativesSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteFundingSQL', () => {
+  it('returns null response when null pfsId (project funding source) provided', () => {
+    const response = deleteFundingSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deleteFundingSQL(1);
 
     expect(response).to.not.be.null;
   });
