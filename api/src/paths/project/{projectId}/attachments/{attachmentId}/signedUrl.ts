@@ -74,7 +74,10 @@ function getSingleAttachmentURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectAttachmentS3KeySQLStatement = getProjectAttachmentS3KeySQL(Number(req.params.projectId), Number(req.params.attachmentId));
+      const getProjectAttachmentS3KeySQLStatement = getProjectAttachmentS3KeySQL(
+        Number(req.params.projectId),
+        Number(req.params.attachmentId)
+      );
 
       if (!getProjectAttachmentS3KeySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -82,7 +85,10 @@ function getSingleAttachmentURL(): RequestHandler {
 
       await connection.open();
 
-      const result = await connection.query(getProjectAttachmentS3KeySQLStatement.text, getProjectAttachmentS3KeySQLStatement.values);
+      const result = await connection.query(
+        getProjectAttachmentS3KeySQLStatement.text,
+        getProjectAttachmentS3KeySQLStatement.values
+      );
 
       await connection.commit();
 

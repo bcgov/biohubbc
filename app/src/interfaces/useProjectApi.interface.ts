@@ -17,7 +17,7 @@ export interface IGetProjectAttachment {
 
 /**
  * Get project attachments response object.
- * 
+ *
  * @export
  * @interface IGetProjectAttachmentsResponse
  */

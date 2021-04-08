@@ -448,25 +448,25 @@ export const insertProjectAttachment = async (
   projectId: number,
   connection: IDBConnection
 ): Promise<number> => {
-  console.log('testttttt')
+  console.log('testttttt');
   const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId);
 
-  console.log('$$$$$$$$')
-  console.log(sqlStatement?.text)
-  console.log(sqlStatement?.values)
+  console.log('$$$$$$$$');
+  console.log(sqlStatement?.text);
+  console.log(sqlStatement?.values);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-  
-  console.log("#########HSHSHHSHSHS")
-  console.log(response)
+
+  console.log('#########HSHSHHSHSHS');
+  console.log(response);
 
   const result = (response && response.rows && response.rows[0]) || null;
 
-  console.log("###########RESSULT#############")
+  console.log('###########RESSULT#############');
   console.log(result);
 
   if (!result || !result.id) {

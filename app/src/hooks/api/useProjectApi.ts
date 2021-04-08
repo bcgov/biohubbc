@@ -22,7 +22,7 @@ import qs from 'qs';
 const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get project attachments based on project ID
-   * 
+   *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
    */
@@ -34,7 +34,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
   /**
    * Delete project attachment based on project and attachment ID
-   * 
+   *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<number>}
    */
@@ -42,11 +42,11 @@ const useProjectApi = (axios: AxiosInstance) => {
     const { data } = await axios.delete(`/api/project/${projectId}/attachments/${attachmentId}/delete`);
 
     return data;
-  }
+  };
 
   /**
    * Get project attachment S3 url based on project and attachment ID
-   * 
+   *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
    */

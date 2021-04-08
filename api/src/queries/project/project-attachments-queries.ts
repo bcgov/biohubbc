@@ -46,7 +46,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
- export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'deleteProjectAttachmentSQL', message: 'params', projectId });
 
   if (!projectId || !attachmentId) {
@@ -117,7 +117,7 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
  * @param projectId
  * @returns {SQLStatement} sql query object
  */
- export const postProjectAttachmentSQL = (
+export const postProjectAttachmentSQL = (
   fileName: string,
   fileSize: number,
   projectId: number

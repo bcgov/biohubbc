@@ -83,11 +83,15 @@ function getAttachments(): RequestHandler {
 
       await connection.open();
 
-      const attachmentsData = await connection.query(getProjectAttachmentsSQLStatement.text, getProjectAttachmentsSQLStatement.values);
+      const attachmentsData = await connection.query(
+        getProjectAttachmentsSQLStatement.text,
+        getProjectAttachmentsSQLStatement.values
+      );
 
       await connection.commit();
 
-      const getAttachmentsData = (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
+      const getAttachmentsData =
+        (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
 
       defaultLog.debug('Attachments Data:', getAttachmentsData);
 

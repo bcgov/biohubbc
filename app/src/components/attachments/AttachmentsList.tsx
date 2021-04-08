@@ -22,7 +22,7 @@ import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650,
+    minWidth: 650
   },
   heading: {
     fontWeight: 'bold'
@@ -33,8 +33,8 @@ const useStyles = makeStyles({
 });
 
 export interface IAttachmentsListProps {
-  projectId: number,
-  attachmentsList: IGetProjectAttachment[],
+  projectId: number;
+  attachmentsList: IGetProjectAttachment[];
   getAttachments: () => void;
 }
 
@@ -95,29 +95,28 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {props.attachmentsList.length > 0 && props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-              <TableRow key={row.fileName}>
-                <TableCell component="th" scope="row">
-                  <Link
-                    underline="always"
-                    component="button"
-                    variant="body2"
-                    onClick={() => viewFileContents(row)}>
-                    {row.fileName}
-                  </Link>
-                </TableCell>
-                <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
-                <TableCell>{row.size / 1000000} MB</TableCell>
-                <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
-                  <IconButton color="primary" aria-label="delete-attachment" onClick={() => deleteAttachment(row)}>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+            {props.attachmentsList.length > 0 &&
+              props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow key={row.fileName}>
+                  <TableCell component="th" scope="row">
+                    <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
+                      {row.fileName}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
+                  <TableCell>{row.size / 1000000} MB</TableCell>
+                  <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
+                    <IconButton color="primary" aria-label="delete-attachment" onClick={() => deleteAttachment(row)}>
+                      <Icon path={mdiTrashCanOutline} size={1} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
             {!props.attachmentsList.length && (
               <TableRow>
-                <TableCell colSpan={3} align="center">No Attachments</TableCell>
+                <TableCell colSpan={3} align="center">
+                  No Attachments
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

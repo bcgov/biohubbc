@@ -76,13 +76,19 @@ function deleteAttachment(): RequestHandler {
     try {
       await connection.open();
 
-      const deleteProjectAttachmentSQLStatement = deleteProjectAttachmentSQL(Number(req.params.projectId), Number(req.params.attachmentId));
+      const deleteProjectAttachmentSQLStatement = deleteProjectAttachmentSQL(
+        Number(req.params.projectId),
+        Number(req.params.attachmentId)
+      );
 
       if (!deleteProjectAttachmentSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const result = await connection.query(deleteProjectAttachmentSQLStatement.text, deleteProjectAttachmentSQLStatement.values);
+      const result = await connection.query(
+        deleteProjectAttachmentSQLStatement.text,
+        deleteProjectAttachmentSQLStatement.values
+      );
       const s3Key = result && result.rows.length && result.rows[0]?.key;
 
       await connection.commit();
