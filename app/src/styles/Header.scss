@@ -1,6 +1,6 @@
 @import 'colours.scss';
 
-.app-header {
+.headerToolbar {
   height: 70px;
   border-bottom: 2px solid $BCgovGold;
   color: $appHeaderColor;
@@ -25,7 +25,7 @@
   }
 }
 
-.app-header .brand:hover {
+.headerToolbar .brand:hover {
   text-decoration: none;
 }
 
@@ -81,6 +81,7 @@ $navItemPadding: 0.8375rem;
     display: block;
     padding: $navItemPadding;
     color: inherit;
+    font-size: 1rem;
     text-decoration: none;
 
     &:hover {

@@ -1,4 +1,4 @@
-import { Box, Paper, Typography } from '@material-ui/core';
+import { Box, Divider, Paper, Typography } from '@material-ui/core';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
@@ -27,69 +27,42 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
 
   return (
     <>
-      <Box mb={4}>
+      <Box mb={6}>
         <Typography variant="h2">Project Details</Typography>
       </Box>
-      <Box mb={3}>
-        <Paper>
+
+      <Box component={Paper} p={4}>
+        <Box component="section" mb={5}>
           <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <Species projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <FundingSource projectForViewData={projectForViewData} />
-          </Box>
-        </Paper>
-      </Box>
-
-      <Box mb={4}>
-        <Paper>
-          <Box m={3}>
-            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
-          </Box>
-        </Paper>
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <Species projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4} mb={5}>
+          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider />
+        <Box component="section" mt={4}>
+          <FundingSource projectForViewData={projectForViewData} />
+        </Box>
       </Box>
     </>
   );

@@ -3,7 +3,6 @@ import {
   Breadcrumbs,
   CircularProgress,
   Container,
-  Divider,
   List,
   ListItem,
   ListItemIcon,
@@ -12,7 +11,6 @@ import {
   Paper,
   Typography
 } from '@material-ui/core';
-import { AssignmentOutlined, DescriptionOutlined, InfoOutlined } from '@material-ui/icons';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
@@ -24,15 +22,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import Icon from '@mdi/react';
+import { mdiPaperclip, mdiClipboardCheckMultipleOutline, mdiInformationOutline } from '@mdi/js';
 
 const useStyles = makeStyles((theme) => ({
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
+  projectNav: {
+    minWidth: '15rem',
+    '& a': {
+      color: theme.palette.primary.main
+    },
+    '& svg': {
+      color: theme.palette.primary.main
+    }
   }
 }));
 
@@ -102,84 +103,71 @@ const ProjectPage: React.FC = () => {
   return (
     <>
       <Paper elevation={2} square={true}>
-        <Box py={3}>
-          <Container maxWidth={false}>
+        <Container maxWidth="xl">
+          <Box py={3}>
             <Box mb={3}>
               <Breadcrumbs>
-                <Link to="/projects" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                  <Typography variant="body2">Projects</Typography>
+                <Link to="/projects" color="primary" aria-current="page">
+                  Projects
                 </Link>
-                <Link to="details" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                  <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+                <Link to="details" color="primary" aria-current="page">
+                  {projectWithDetails.project.project_name}
                 </Link>
               </Breadcrumbs>
             </Box>
             <Box mb={1}>
               <Typography variant="h1">{projectWithDetails.project.project_name}</Typography>
             </Box>
-            <Box mb={3} display="flex">
-              <Typography variant="subtitle2">
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.MediumDateFormat,
-                  projectWithDetails.project.start_date,
-                  projectWithDetails.project.end_date
-                )}
+            <Box>
+              <Typography variant="subtitle1" color="textSecondary">
+                <span>
+                  {getFormattedDateRangeString(
+                    DATE_FORMAT.MediumDateFormat,
+                    projectWithDetails.project.start_date,
+                    projectWithDetails.project.end_date
+                  )}
+                </span>
               </Typography>
-              <Divider orientation="vertical" flexItem style={{ margin: '0 0.6rem' }} />
-              <Typography variant="subtitle2">TODO Set Project Regions</Typography>
-            </Box>
-          </Container>
-        </Box>
-      </Paper>
-      <Box my={3}>
-        <Container maxWidth={false}>
-          <Box display="flex" flexDirection="row">
-            <Box mr={5}>
-              <List>
-                <ListItem>
-                  <ListItemIcon>
-                    <InfoOutlined />
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Link to="details" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                      <Typography variant="body2">Project Details</Typography>
-                    </Link>
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <AssignmentOutlined />
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Link to="surveys" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                      <Typography variant="body2">Surveys</Typography>
-                    </Link>
-                  </ListItemText>
-                </ListItem>
-                <ListItem>
-                  <ListItemIcon>
-                    <DescriptionOutlined />
-                  </ListItemIcon>
-                  <ListItemText>
-                    <Link to="attachments" color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                      <Typography variant="body2">Attachments</Typography>
-                    </Link>
-                  </ListItemText>
-                </ListItem>
-              </List>
-            </Box>
-            <Box width="100%">
-              {location.pathname.includes('/details') && (
-                <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-              )}
-              {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
-              {location.pathname.includes('/attachments') && (
-                <ProjectAttachments projectForViewData={projectWithDetails} />
-              )}
             </Box>
           </Box>
         </Container>
-      </Box>
+      </Paper>
+
+      <Container maxWidth="xl">
+        <Box display="flex" flexDirection="row" py={6}>
+          <Box component="aside" mr={3} mt={-2}>
+            <List component="nav" className={classes.projectNav}>
+              <ListItem button component={Link} to="details">
+                <ListItemIcon>
+                  <Icon path={mdiInformationOutline} size={1} />
+                </ListItemIcon>
+                <ListItemText>Project Details</ListItemText>
+              </ListItem>
+              <ListItem button component={Link} to="surveys">
+                <ListItemIcon>
+                  <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
+                </ListItemIcon>
+                <ListItemText>Surveys</ListItemText>
+              </ListItem>
+              <ListItem button component={Link} to="attachments">
+                <ListItemIcon>
+                  <Icon path={mdiPaperclip} size={1} />
+                </ListItemIcon>
+                <ListItemText>Attachments</ListItemText>
+              </ListItem>
+            </List>
+          </Box>
+          <Box component="article" flex="1 1 auto">
+            {location.pathname.includes('/details') && (
+              <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+            )}
+            {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
+            {location.pathname.includes('/attachments') && (
+              <ProjectAttachments projectForViewData={projectWithDetails} />
+            )}
+          </Box>
+        </Box>
+      </Container>
     </>
   );
 };

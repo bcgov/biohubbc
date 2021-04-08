@@ -1,17 +1,4 @@
-import {
-  Grid,
-  IconButton,
-  makeStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
-import clsx from 'clsx';
+import { Box, Button, Grid, Typography } from '@material-ui/core';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
@@ -26,16 +13,8 @@ import { EditPartnershipsI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
-
-const useStyles = makeStyles({
-  tableCellBorderBottom: {
-    borderBottom: 'none'
-  },
-  tableHeading: {
-    fontWeight: 'bold',
-    borderBottom: 'none'
-  }
-});
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -57,7 +36,6 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     codes
   } = props;
 
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -132,72 +110,49 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
+
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3">Partnerships</Typography>
+          <Button
+            className="editButtonSmall"
+            onClick={() => handleDialogEditOpen()}
+            title="Edit Partnerships"
+            aria-label="Edit Partnerships"
+            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+            EDIT
+          </Button>
+        </Box>
+      </Box>
+
+      <dl className="ddInline">
+        <Grid container spacing={2}>
           <Grid item>
-            <Typography variant="h3">Partnerships</Typography>
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
+              Indigenous Partnerships
+            </Typography>
+            {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+              return (
+                <Typography component="dd" variant="body1" key={index}>
+                  {indigenousPartnership}
+                </Typography>
+              );
+            })}
           </Grid>
           <Grid item>
-            <IconButton onClick={() => handleDialogEditOpen()} title="Edit Partnerships" aria-label="Edit Partnerships">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
-              </Typography>
-            </IconButton>
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
+              Stakeholder Partnerships
+            </Typography>
+            {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
+              return (
+                <Typography component="dd" variant="body1" key={index}>
+                  {stakeholderPartnership}
+                </Typography>
+              );
+            })}
           </Grid>
         </Grid>
-        <Grid container item spacing={3} xs={12}>
-          <Grid item xs={12}>
-            <TableContainer>
-              <Table aria-label="indigenous-partnerships-table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.tableHeading}>Indigenous Partnerships</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
-                    return (
-                      <TableRow key={index}>
-                        <TableCell
-                          className={clsx(
-                            index === indigenous_partnerships.length - 1 && classes.tableCellBorderBottom
-                          )}>
-                          {indigenousPartnership}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-          <Grid item xs={12}>
-            <TableContainer>
-              <Table aria-label="stakeholder-partnerships-table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.tableHeading}>Stakeholder Partnerships</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
-                    return (
-                      <TableRow key={index}>
-                        <TableCell
-                          className={clsx(
-                            index === stakeholder_partnerships.length - 1 && classes.tableCellBorderBottom
-                          )}>
-                          {stakeholderPartnership}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Grid>
-        </Grid>
-      </Grid>
+      </dl>
     </>
   );
 };

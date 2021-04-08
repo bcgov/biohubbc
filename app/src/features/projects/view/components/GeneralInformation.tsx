@@ -1,5 +1,4 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import { Box, Button, Grid, Typography } from '@material-ui/core';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
@@ -20,6 +19,8 @@ import {
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -136,67 +137,63 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">General Information</Typography>
-          </Grid>
-          <Grid item>
-            <IconButton
-              onClick={() => handleDialogEditOpen()}
-              title="Edit General Information"
-              aria-label="Edit General Information">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3">General Information</Typography>
+          <Button
+            className="editButtonSmall"
+            onClick={() => handleDialogEditOpen()}
+            title="Edit General Information"
+            aria-label="Edit General Information"
+            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+            EDIT
+          </Button>
+        </Box>
+        <dl>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Project Name
               </Typography>
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Grid container item spacing={3} xs={12}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Project Name</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{project.project_name}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Type</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{project.project_type}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Timeline</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">
+              <Typography component="dd" variant="body1">
+                {project.project_name}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Type
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {project.project_type}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Timeline
+              </Typography>
+              <Typography component="dd" variant="body1">
                 {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date, project.end_date)}
               </Typography>
-            </Box>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Activities
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {projectActivities}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Climate Change Initiatives
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {projectClimateChangeInitiatives}
+              </Typography>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Activities</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{projectActivities}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Climate Change Initiatives</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{projectClimateChangeInitiatives}</Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Grid>
+        </dl>
+      </Box>
     </>
   );
 };
