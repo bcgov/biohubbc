@@ -1,6 +1,62 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DollarAmountField matches the snapshot 1`] = `
+exports[`DollarAmountField matches the snapshot with error 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+  >
+    <label
+      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+      data-shrink="true"
+      for="id"
+      id="id-label"
+    >
+      label
+      <span
+        aria-hidden="true"
+        class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+      >
+         *
+      </span>
+    </label>
+    <div
+      class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+    >
+      <input
+        aria-describedby="id-helper-text"
+        aria-invalid="true"
+        class="MuiInputBase-input MuiOutlinedInput-input"
+        id="id"
+        inputmode="numeric"
+        name="name"
+        required=""
+        type="text"
+        value=""
+      />
+      <fieldset
+        aria-hidden="true"
+        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+      >
+        <legend
+          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+        >
+          <span>
+            label *
+          </span>
+        </legend>
+      </fieldset>
+    </div>
+    <p
+      class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
+      id="id-helper-text"
+    >
+      error is here
+    </p>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`DollarAmountField matches the snapshot without error 1`] = `
 <DocumentFragment>
   <div
     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"

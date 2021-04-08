@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, getByText, getByRole, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
@@ -82,16 +82,14 @@ describe('MapContainer', () => {
   });
 
   test('draws a marker successfully on the map and updates the geometry', () => {
-    const { container } = render(
+    const { getByText, getByRole } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Draw a marker'));
+    fireEvent.click(getByText('Draw a marker'));
 
-    //@ts-ignore
     // Click on existing geometry on map to place a marker in that location
-    fireEvent.click(getByRole(container, 'presentation'));
+    fireEvent.click(getByRole('presentation'));
 
     expect(setGeometry).toHaveBeenCalled();
   });
@@ -111,17 +109,15 @@ describe('MapContainer', () => {
   });
 
   test('edits geometries as expected', async () => {
-    const { container } = render(
+    const { getByText } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Edit layers'));
+    fireEvent.click(getByText('Edit layers'));
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Save'));
+    fireEvent.click(getByText('Save'));
 
     expect(setGeometry).toHaveBeenCalledWith(geometry);
   });
@@ -131,42 +127,58 @@ describe('MapContainer', () => {
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
-    //@ts-ignore
     fireEvent.click(getByText('Delete layers'));
 
     await waitFor(() => {
-      //@ts-ignore
       fireEvent.click(getByText('Clear All'));
     });
 
     render(<MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />);
 
     await waitFor(() => {
-      //@ts-ignore
       fireEvent.click(getByText('Yes'));
     });
 
     expect(setGeometry).toHaveBeenCalledWith([]);
   });
 
-  test('does not delete geometries present on the map when user does not confirm', async () => {
+  test('does not delete geometries present on the map when user does not confirm by clicking no', async () => {
     const { getByText } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
     );
 
-    //@ts-ignore
     fireEvent.click(getByText('Delete layers'));
 
     await waitFor(() => {
-      //@ts-ignore
       fireEvent.click(getByText('Clear All'));
     });
 
     render(<MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />);
 
     await waitFor(() => {
-      //@ts-ignore
       fireEvent.click(getByText('No'));
+    });
+
+    expect(setGeometry).toHaveBeenCalledWith(geometry);
+  });
+
+  test('does not delete geometries present on the map when user does not confirm by clicking out of the dialog', async () => {
+    const { getByText, getAllByRole } = render(
+      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
+    );
+
+    fireEvent.click(getByText('Delete layers'));
+
+    await waitFor(() => {
+      fireEvent.click(getByText('Clear All'));
+    });
+
+    render(<MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />);
+
+    await waitFor(() => {
+      // Get the backdrop, then get the firstChild because this is where the event listener is attached
+      //@ts-ignore
+      fireEvent.click(getAllByRole('presentation')[0].firstChild);
     });
 
     expect(setGeometry).toHaveBeenCalledWith(geometry);

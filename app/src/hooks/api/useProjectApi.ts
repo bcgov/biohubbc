@@ -1,11 +1,11 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   ICreatePermitNoSamplingRequest,
   ICreatePermitNoSamplingResponse,
   ICreateProjectRequest,
   ICreateProjectResponse,
-  IGetProjectMediaListResponse,
   IGetProjectForViewResponse,
+  IGetProjectMediaListResponse,
   IGetProjectsListResponse,
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
@@ -142,16 +142,26 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Upload project artifacts.
    *
-   * @param projectId
-   * @param files
-   * @return {*} {Promise<string[]>}
+   * @param {number} projectId
+   * @param {File[]} files
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
    */
-  const uploadProjectArtifacts = async (projectId: number, files: File[]): Promise<string[]> => {
+  const uploadProjectArtifacts = async (
+    projectId: number,
+    files: File[],
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<string[]> => {
     const req_message = new FormData();
 
     files.forEach((file) => req_message.append('media', file));
 
-    const { data } = await axios.post(`/api/projects/${projectId}/artifacts/upload`, req_message);
+    const { data } = await axios.post(`/api/projects/${projectId}/artifacts/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
 
     return data;
   };

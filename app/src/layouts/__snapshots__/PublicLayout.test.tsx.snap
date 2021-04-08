@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicLayout renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-3"
+  >
+    <header
+      class="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
+      style="box-shadow: none;"
+    >
+      <div
+        class="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
+      >
+        <a
+          aria-label="Go to BioHub Home"
+          class="brand"
+          href="/projects"
+        >
+          <picture>
+            <source
+              media="(min-width: 1200px)"
+              srcset="gov-bc-logo-horiz.png"
+            />
+            <source
+              media="(min-width: 600px)"
+              srcset="gov-bc-logo-vert.png"
+            />
+            <img
+              alt="Government of British Columbia"
+              src="gov-bc-logo-vert.png"
+            />
+          </picture>
+          BioHub
+        </a>
+      </div>
+      <div
+        aria-label="Main Navigation"
+        class="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
+        role="navigation"
+      >
+        <a
+          color="inherit"
+          href="/projects"
+        >
+          Projects
+        </a>
+      </div>
+    </header>
+    <main
+      class="makeStyles-mainContent-1"
+    >
+      <div
+        classes="[object Object]"
+      >
+        <p>
+          The public layout content
+        </p>
+      </div>
+    </main>
+    <footer
+      class="app-footer"
+    >
+      <div
+        aria-label="Footer"
+        class="MuiToolbar-root MuiToolbar-regular app-footer-toolbar MuiToolbar-gutters"
+        role="navigation"
+      >
+        <ul>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+            >
+              Disclaimer
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/privacy"
+            >
+              Privacy
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+            >
+              Accessibility
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/copyright"
+            >
+              Copyright
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+</DocumentFragment>
+`;
