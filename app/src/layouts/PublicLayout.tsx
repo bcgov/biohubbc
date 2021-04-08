@@ -4,32 +4,23 @@ import Header from 'components/layout/Header';
 import React from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  mainContent: {
-    flex: 1,
-    width: 'inherit',
-    height: 'inherit',
-    overflow: 'auto'
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  }
+  mainContent: {}
 }));
 
 const PublicLayout: React.FC = (props) => {
   const classes = useStyles();
 
   return (
-    <Box mb={2} height="inherit" width="inherit" display="flex" flexDirection="column">
+    <Box height="100vh" display="flex" flexDirection="column">
       <CssBaseline />
 
       <Header />
 
-      <main className={classes.mainContent}>
+      <Box component="main" flex="1 1 auto">
         {React.Children.map(props.children, (child: any) => {
           return React.cloneElement(child, { classes: classes });
         })}
-      </main>
+      </Box>
 
       <Footer />
     </Box>

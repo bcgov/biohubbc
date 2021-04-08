@@ -3,128 +3,95 @@
 exports[`ProjectCoordinator renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiBox-root MuiBox-root-1"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      class="MuiBox-root MuiBox-root-2"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Project Coordinator
-        </h3>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item"
+        Project Coordinator
+      </h3>
+      <button
+        aria-label="Edit Project Coordinator Information"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Project Coordinator Information"
+        type="button"
       >
-        <button
-          aria-label="Edit Project Coordinator Information"
-          class="MuiButtonBase-root MuiIconButton-root"
-          tabindex="0"
-          title="Edit Project Coordinator Information"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiTypography-root MuiTypography-caption"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                />
-              </svg>
-               EDIT
-            </span>
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-    >
+    <dl>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
       >
         <div
-          class="MuiBox-root MuiBox-root-1"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
         >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
             Name
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-2"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
           >
             Amanda Christensen
-          </h6>
+          </dd>
         </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-      >
         <div
-          class="MuiBox-root MuiBox-root-3"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
         >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
             Email Address
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-4"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
           >
             amanda@christensen.com
-          </h6>
+          </dd>
         </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-      >
         <div
-          class="MuiBox-root MuiBox-root-5"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
         >
-          <span
-            class="MuiTypography-root MuiTypography-caption"
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
             Agency
-          </span>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-6"
-        >
-          <h6
-            class="MuiTypography-root MuiTypography-subtitle1"
-            style="word-break: break-all;"
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
           >
             Amanda and associates
-          </h6>
+          </dd>
         </div>
       </div>
-    </div>
+    </dl>
   </div>
 </DocumentFragment>
 `;

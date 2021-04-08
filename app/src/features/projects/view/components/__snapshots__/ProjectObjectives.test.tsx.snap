@@ -3,244 +3,201 @@
 exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-11"
+    class="MuiBox-root MuiBox-root-14"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-15"
     >
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Objectives
-          </h3>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <button
-            aria-label="Edit Objectives Information"
-            class="MuiButtonBase-root MuiIconButton-root"
-            tabindex="0"
-            title="Edit Objectives Information"
-            type="button"
-          >
-            <span
-              class="MuiIconButton-label"
-            >
-              <span
-                class="MuiTypography-root MuiTypography-caption"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                  />
-                </svg>
-                 EDIT
-              </span>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Objectives
+      </h3>
+      <button
+        aria-label="Edit Project Objectives"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Project Objectives"
+        type="button"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        <span
+          class="MuiButton-label"
         >
-          <div
-            class="MuiBox-root MuiBox-root-12"
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <div
-              class="MuiBox-root MuiBox-root-13"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Cras dapibus. Vivamus elementum
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 nisi.
-              </p>
-            </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Read More
-              </span>
-              <span
-                class="MuiTouchRipple-root"
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
               />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+            </svg>
+          </span>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-16"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Caveats
-          </h3>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Cras dapibus. Vivamus elementum
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         nisi.
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-17"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+          tabindex="0"
+          type="button"
         >
-          <div
-            class="MuiBox-root MuiBox-root-14"
+          <span
+            class="MuiButton-label"
           >
-            <div
-              class="MuiBox-root MuiBox-root-15"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Cras dapibus. Vivamus elementum
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 nisi.
-              </p>
-            </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Read More
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
-        </div>
+            Read More
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-18"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-19"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Caveats
+      </h3>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-20"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Cras dapibus. Vivamus elementum
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         nisi.
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-21"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Read More
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </div>
@@ -250,141 +207,102 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-16"
+    class="MuiBox-root MuiBox-root-22"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-23"
     >
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
+        Objectives
+      </h3>
+      <button
+        aria-label="Edit Project Objectives"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Project Objectives"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
         >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            Project Objectives
-          </h3>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <button
-            aria-label="Edit Objectives Information"
-            class="MuiButtonBase-root MuiIconButton-root"
-            tabindex="0"
-            title="Edit Objectives Information"
-            type="button"
-          >
-            <span
-              class="MuiIconButton-label"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <span
-                class="MuiTypography-root MuiTypography-caption"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                  />
-                </svg>
-                 EDIT
-              </span>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-24"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-17"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-18"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph1
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph2
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph3
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        Paragraph1
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Caveats
-          </h3>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Paragraph2
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-19"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-20"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph1
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph2
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Paragraph3
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+        Paragraph3
+      </p>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-25"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-26"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Caveats
+      </h3>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-27"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Paragraph1
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Paragraph2
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Paragraph3
+      </p>
     </div>
   </div>
 </DocumentFragment>
@@ -396,112 +314,77 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
     class="MuiBox-root MuiBox-root-1"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-2"
     >
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
+        Objectives
+      </h3>
+      <button
+        aria-label="Edit Project Objectives"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Project Objectives"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
         >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            Project Objectives
-          </h3>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <button
-            aria-label="Edit Objectives Information"
-            class="MuiButtonBase-root MuiIconButton-root"
-            tabindex="0"
-            title="Edit Objectives Information"
-            type="button"
-          >
-            <span
-              class="MuiIconButton-label"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <span
-                class="MuiTypography-root MuiTypography-caption"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                  />
-                </svg>
-                 EDIT
-              </span>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-3"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-2"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-3"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Et ad et in culpa si
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        Et ad et in culpa si
+      </p>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-4"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Caveats
-          </h3>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Caveats
+      </h3>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-6"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <div
-            class="MuiBox-root MuiBox-root-4"
-          >
-            <div
-              class="MuiBox-root MuiBox-root-5"
-            >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                sjwer bds
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+        sjwer bds
+      </p>
     </div>
   </div>
 </DocumentFragment>
@@ -510,175 +393,137 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
 exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-7"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-8"
     >
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Objectives
-          </h3>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <button
-            aria-label="Edit Objectives Information"
-            class="MuiButtonBase-root MuiIconButton-root"
-            tabindex="0"
-            title="Edit Objectives Information"
-            type="button"
-          >
-            <span
-              class="MuiIconButton-label"
-            >
-              <span
-                class="MuiTypography-root MuiTypography-caption"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                  />
-                </svg>
-                 EDIT
-              </span>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Objectives
+      </h3>
+      <button
+        aria-label="Edit Project Objectives"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Project Objectives"
+        type="button"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        <span
+          class="MuiButton-label"
         >
-          <div
-            class="MuiBox-root MuiBox-root-7"
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <div
-              class="MuiBox-root MuiBox-root-8"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Cras dapibus. Vivamus elementum
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-              </p>
-              <p />
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-              </p>
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-                style="word-break: break-all;"
-              >
-                 nisi.
-              </p>
-            </div>
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Read More
-              </span>
-              <span
-                class="MuiTouchRipple-root"
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
               />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+            </svg>
+          </span>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-9"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Project Caveats
-          </h3>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Cras dapibus. Vivamus elementum
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+      </p>
+      <p />
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+         nisi.
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-10"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+          tabindex="0"
+          type="button"
         >
-          <div
-            class="MuiBox-root MuiBox-root-9"
+          <span
+            class="MuiButton-label"
           >
-            <div
-              class="MuiBox-root MuiBox-root-10"
-            >
-              <p />
-            </div>
-          </div>
-        </div>
+            Read More
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root"
+  />
+  <div
+    class="MuiBox-root MuiBox-root-11"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-12"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Caveats
+      </h3>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-13"
+    >
+      <p />
     </div>
   </div>
 </DocumentFragment>
