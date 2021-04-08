@@ -11,7 +11,6 @@ import {
   Paper,
   Typography
 } from '@material-ui/core';
-
 import { DATE_FORMAT } from 'constants/dateFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
