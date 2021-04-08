@@ -17,9 +17,10 @@ import {
   PutIUCNData,
   PutSpeciesData,
   IGetPutIUCN,
-  GetLocationData
+  GetLocationData,
+  PutFundingSource
 } from '../../../models/project-update';
-import { GetSpeciesData, GetFundingData, PutFundingData } from '../../../models/project-view-update';
+import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -31,7 +32,8 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
   getProjectByProjectSQL,
-  putProjectSQL
+  putProjectFundingSourceSQL,
+  putProjectSQL,
 } from '../../../queries/project/project-update-queries';
 import {
   deleteActivitiesSQL,
@@ -50,8 +52,7 @@ import {
   getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
   getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL,
-  getFundingSourceByProjectSQL
+  getClimateInitiativesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -63,8 +64,7 @@ import {
   insertRegion,
   insertProjectActivity,
   insertProjectClimateChangeInitiative,
-  insertStakeholderPartnership,
-  insertFundingSource
+  insertStakeholderPartnership
 } from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
@@ -239,6 +239,13 @@ function getProjectForUpdate(): RequestHandler {
       }
 
       if (entities.includes(GET_ENTITIES.project)) {
+        promises.push(
+          getProjectData(projectId, connection).then((value) => {
+            results.project = value;
+          })
+        );
+      }
+      if (entities.includes(GET_ENTITIES.funding)) {
         promises.push(
           getProjectData(projectId, connection).then((value) => {
             results.project = value;
@@ -532,7 +539,7 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectSpeciesData(projectId, entities, connection));
       }
 
-      if (entities?.species) {
+      if (entities?.funding) {
         promises.push(updateProjectFundingData(projectId, entities, connection));
       }
 
@@ -651,7 +658,6 @@ export const updateProjectIUCNData = async (
 
   await Promise.all(insertIUCNPromises);
 };
-
 
 export const updateProjectPartnershipsData = async (
   projectId: number,
@@ -785,35 +791,34 @@ export const updateProjectData = async (
   await Promise.all([...insertActivityPromises, ...insertClimateInitiativesPromises]);
 };
 
-
 export const updateProjectFundingData = async (
   projectId: number,
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putFundingData = (entities?.funding && new PutFundingData(entities.funding)) || null;
+  const putFundingSource = (entities?.funding && new PutFundingSource(entities.funding));
 
-  const sqlDeleteStatement = deleteFundingSQL(projectId);
+  const sqlDeleteStatement = deleteFundingSQL(putFundingSource?.id);
 
   if (!sqlDeleteStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL delete statement');
   }
 
   const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
 
   if (!deleteResult) {
-    throw new HTTP409('Failed to update project Funding data');
+    throw new HTTP409('Failed to delete project funding source');
   }
 
-  const insertFundingPromises =
-    // putFundingData?.classificationDetails?.map((iucnClassification: IGetPutIUCN) =>
-    //   insertClassificationDetail(iucnClassification.subClassification2, projectId, connection)
-    // ) || [];
+  const sqlInsertStatement = putProjectFundingSourceSQL(putFundingSource, projectId);
 
-    putFundingData?.fundingSources?.map(())
+  if (!sqlInsertStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
 
+  const insertResult = await connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
 
-  await Promise.all(insertFundingPromises);
+  if (!insertResult) {
+    throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
+  }
 };
-
-

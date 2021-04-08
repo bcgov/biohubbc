@@ -277,19 +277,19 @@ export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | n
 
 
 /**
- * SQL query to delete project IUCN rows.
+ * SQL query to delete the specific project funding source record.
  *
- * @param {projectId} projectId
+ * @param {pfsId} pfsId
  * @returns {SQLStatement} sql query object
  */
- export const deleteFundingSQL = (projectId: number): SQLStatement | null => {
+ export const deleteFundingSQL = (pfsId: number | undefined): SQLStatement | null => {
   defaultLog.debug({
     label: 'deleteFundingSQL',
     message: 'params',
-    projectId
+    pfsId
   });
 
-  if (!projectId) {
+  if (!pfsId) {
     return null;
   }
 
@@ -297,7 +297,7 @@ export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | n
     DELETE
       from project_funding_source
     WHERE
-      p_id = ${projectId};
+      id = ${pfsId};
   `;
 
   defaultLog.debug({

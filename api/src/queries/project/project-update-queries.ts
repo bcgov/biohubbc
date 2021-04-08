@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData } from '../../models/project-update';
+import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData, PutFundingSource } from '../../models/project-update';
 import { getLogger } from '../../utils/logger';
 import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 
@@ -240,6 +240,7 @@ export const putProjectSQL = (
     sqlSetStatements.push(SQL`caveats = ${objectives.caveats}`);
   }
 
+
   if (coordinator) {
     sqlSetStatements.push(SQL`coordinator_first_name = ${coordinator.first_name}`);
     sqlSetStatements.push(SQL`coordinator_last_name = ${coordinator.last_name}`);
@@ -298,6 +299,54 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
 
   defaultLog.debug({
     label: 'getObjectivesByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to put (insert) a project funding source row with incremented revision count.
+ *
+ * @param {PutFundingSource} fundingSource
+ * @returns {SQLStatement} sql query object
+ */
+ export const putProjectFundingSourceSQL = (
+  fundingSource: PutFundingSource | null,
+  projectId: number
+): SQLStatement | null => {
+  defaultLog.debug({ label: 'putProjectFundingSourceSQL', message: 'params', fundingSource, projectId });
+
+  if (!fundingSource || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_funding_source (
+        p_id,
+        iac_id,
+        funding_source_project_id,
+        funding_amount,
+        funding_start_date,
+        funding_end_date,
+        revision_count
+      ) VALUES (
+        ${projectId},
+        ${fundingSource.investment_action_category},
+        ${fundingSource.agency_project_id},
+        ${fundingSource.funding_amount},
+        ${fundingSource.start_date},
+        ${fundingSource.end_date},
+        ${fundingSource.revision_count + 1}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'putProjectFundingSourceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
