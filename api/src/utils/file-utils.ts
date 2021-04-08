@@ -31,7 +31,7 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput | null
 
 /**
  * Delete a file from S3, based on its key.
- * 
+ *
  * For potential future reference, for deleting the delete marker of a file in S3:
  * https://docs.aws.amazon.com/AmazonS3/latest/userguide/RemDelMarker.html
  *
