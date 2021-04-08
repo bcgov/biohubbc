@@ -7,6 +7,57 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import moment from 'moment';
 import * as yup from 'yup';
 
+yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
+  return this.test('is-unique-permit-number', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    let seen = new Set();
+    const hasDuplicates = values.some((permit) => {
+      return seen.size === seen.add(permit.permit_number).size;
+    });
+
+    return !hasDuplicates;
+  });
+});
+
+yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
+  return this.test('is-unique-iucn-classification-detail', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    const hasDuplicates = values
+      .map((iucn: any) => {
+        return iucn.classification + iucn.subClassification1 + iucn.subClassification2;
+      })
+      .some((iucn, _, array) => {
+        return array.indexOf(iucn) !== array.lastIndexOf(iucn);
+      });
+
+    return !hasDuplicates;
+  });
+});
+
+yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: string) {
+  return this.test('is-unique-focal-ancillary-species', message, function (values) {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    let hasDuplicates = false;
+
+    this.parent.focal_species.forEach((species: string) => {
+      if (values.includes(species)) {
+        hasDuplicates = true;
+      }
+    });
+
+    return !hasDuplicates;
+  });
+});
+
 yup.addMethod(
   yup.string,
   'isValidDateString',

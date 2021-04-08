@@ -73,7 +73,7 @@ describe('Species', () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       species: {
         focal_species: ['species 1', 'species 2'],
-        ancillary_species: ['species 1', 'species 2']
+        ancillary_species: ['species 3', 'species 4']
       }
     });
 
@@ -116,7 +116,7 @@ describe('Species', () => {
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         species: {
           focal_species: ['species 1', 'species 2'],
-          ancillary_species: ['species 1', 'species 2']
+          ancillary_species: ['species 3', 'species 4']
         }
       });
 
@@ -178,7 +178,7 @@ describe('Species', () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       species: {
         focal_species: ['species 1', 'species 2'],
-        ancillary_species: ['species 1', 'species 2']
+        ancillary_species: ['species 3', 'species 4']
       }
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
