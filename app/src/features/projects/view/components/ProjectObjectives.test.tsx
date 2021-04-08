@@ -165,7 +165,7 @@ describe('ProjectObjectives', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Objectives')).toBeVisible();
+      expect(getByText('Objectives')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -215,7 +215,7 @@ describe('ProjectObjectives', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Objectives')).toBeVisible();
+      expect(getByText('Objectives')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -237,7 +237,7 @@ describe('ProjectObjectives', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Objectives')).toBeVisible();
+      expect(getByText('Objectives')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -266,7 +266,7 @@ describe('ProjectObjectives', () => {
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Objectives')).toBeVisible();
+      expect(getByText('Objectives')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));

@@ -1,4 +1,4 @@
-import { Box, CircularProgress, ThemeProvider } from '@material-ui/core';
+import { CircularProgress, ThemeProvider } from '@material-ui/core';
 // Strange looking `type {}` import below, see: https://github.com/microsoft/TypeScript/issues/36812
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';
@@ -13,43 +13,41 @@ import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 const App: React.FC = () => {
   return (
-    <Box height="100vh" width="100vw" display="flex" overflow="hidden">
-      <ThemeProvider theme={appTheme}>
-        <ConfigContextProvider>
-          <ConfigContext.Consumer>
-            {(config) => {
-              if (!config) {
-                return <CircularProgress />;
-              }
+    <ThemeProvider theme={appTheme}>
+      <ConfigContextProvider>
+        <ConfigContext.Consumer>
+          {(config) => {
+            if (!config) {
+              return <CircularProgress />;
+            }
 
-              //@ts-ignore
-              const keycloak: KeycloakInstance = new Keycloak(config.KEYCLOAK_CONFIG);
+            //@ts-ignore
+            const keycloak: KeycloakInstance = new Keycloak(config.KEYCLOAK_CONFIG);
 
-              return (
-                <KeycloakProvider
-                  keycloak={keycloak}
-                  initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
-                  LoadingComponent={<CircularProgress />}
-                  onEvent={getKeycloakEventHandler()}>
-                  <AuthStateContextProvider>
-                    <BrowserRouter>
-                      <AuthStateContext.Consumer>
-                        {(context: IAuthState) => {
-                          if (!context.ready) {
-                            return <CircularProgress />;
-                          }
-                          return <AppRouter />;
-                        }}
-                      </AuthStateContext.Consumer>
-                    </BrowserRouter>
-                  </AuthStateContextProvider>
-                </KeycloakProvider>
-              );
-            }}
-          </ConfigContext.Consumer>
-        </ConfigContextProvider>
-      </ThemeProvider>
-    </Box>
+            return (
+              <KeycloakProvider
+                keycloak={keycloak}
+                initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
+                LoadingComponent={<CircularProgress />}
+                onEvent={getKeycloakEventHandler()}>
+                <AuthStateContextProvider>
+                  <BrowserRouter>
+                    <AuthStateContext.Consumer>
+                      {(context: IAuthState) => {
+                        if (!context.ready) {
+                          return <CircularProgress />;
+                        }
+                        return <AppRouter />;
+                      }}
+                    </AuthStateContext.Consumer>
+                  </BrowserRouter>
+                </AuthStateContextProvider>
+              </KeycloakProvider>
+            );
+          }}
+        </ConfigContext.Consumer>
+      </ConfigContextProvider>
+    </ThemeProvider>
   );
 };
 

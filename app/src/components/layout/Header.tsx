@@ -8,8 +8,8 @@ import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 
 const Header: React.FC = () => {
   return (
-    <AppBar position="static" style={{ boxShadow: 'none' }}>
-      <Toolbar className={'app-header'}>
+    <AppBar position="sticky" style={{ boxShadow: 'none' }}>
+      <Toolbar className={'headerToolbar'}>
         <Link to="/projects" className={'brand'} aria-label="Go to BioHub Home">
           <picture>
             <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>

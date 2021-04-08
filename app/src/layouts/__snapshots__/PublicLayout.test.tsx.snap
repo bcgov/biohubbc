@@ -3,14 +3,14 @@
 exports[`PublicLayout renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-2"
   >
     <header
-      class="MuiPaper-root MuiAppBar-root MuiAppBar-positionStatic MuiAppBar-colorPrimary MuiPaper-elevation4"
+      class="MuiPaper-root MuiAppBar-root MuiAppBar-positionSticky MuiAppBar-colorPrimary MuiPaper-elevation4"
       style="box-shadow: none;"
     >
       <div
-        class="MuiToolbar-root MuiToolbar-regular app-header MuiToolbar-gutters"
+        class="MuiToolbar-root MuiToolbar-regular headerToolbar MuiToolbar-gutters"
       >
         <a
           aria-label="Go to BioHub Home"
@@ -48,7 +48,7 @@ exports[`PublicLayout renders correctly 1`] = `
       </div>
     </header>
     <main
-      class="makeStyles-mainContent-1"
+      class="MuiBox-root MuiBox-root-3"
     >
       <div
         classes="[object Object]"

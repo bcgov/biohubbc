@@ -2,6 +2,15 @@ import { createMuiTheme } from '@material-ui/core';
 import 'styles.scss';
 
 const appTheme = createMuiTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1440
+    }
+  },
   palette: {
     // https://material-ui.com/customization/palette/
     primary: {
@@ -40,6 +49,10 @@ const appTheme = createMuiTheme({
       },
       h3: {
         fontSize: '1.25rem',
+        fontWeight: 700
+      },
+      h4: {
+        fontSize: '1rem',
         fontWeight: 700
       },
       h6: {
@@ -133,6 +146,14 @@ const appTheme = createMuiTheme({
       vertical: {
         marginLeft: '1.5rem',
         padding: '0'
+      }
+    },
+    MuiTableCell: {
+      root: {
+        verticalAlign: 'top'
+      },
+      head: {
+        background: '#f7f8fa'
       }
     }
   }
