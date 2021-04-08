@@ -87,16 +87,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const viewFileContents = async (attachment: any) => {
     try {
-      // const response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      const response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
 
-      // if (!response) {
-      //   return;
-      // }
+      if (!response) {
+        return;
+      }
 
-      // console.log(response);
-
-      const url = 'https://nrs.objectstore.gov.bc.ca/gblhvt/2/10MB.pdf';
-      window.open(url);
+      window.open(response);
     } catch (error) {
       return error;
     }

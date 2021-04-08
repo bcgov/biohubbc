@@ -86,7 +86,7 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      s3_key
+      key
     FROM
       project_attachment
     WHERE
@@ -97,6 +97,57 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
 
   defaultLog.debug({
     label: 'getProjectAttachmentS3KeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a project attachment row.
+ *
+ * @param fileName
+ * @param fileSize
+ * @param projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const postProjectAttachmentSQL = (
+  fileName: string,
+  fileSize: number,
+  projectId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectAttachmentSQL',
+    message: 'params',
+    fileName,
+    fileSize,
+    projectId
+  });
+
+  if (!fileName || !fileSize || !projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+      INSERT INTO project_attachment (
+        p_id,
+        file_name,
+        file_size,
+        key
+      ) VALUES (
+        ${projectId},
+        ${fileName},
+        ${fileSize},
+        ${projectId + '/' + fileName}
+      )
+      RETURNING
+        id;
+    `;
+
+  defaultLog.debug({
+    label: 'postProjectAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
+import { postProjectAttachmentSQL } from '../queries/project/project-attachments-queries';
 import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
@@ -437,6 +438,28 @@ export const insertProjectClimateChangeInitiative = async (
 
   if (!result || !result.id) {
     throw new HTTP400('Failed to insert project climate change initiative data');
+  }
+
+  return result.id;
+};
+
+export const insertProjectAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert project attachment data');
   }
 
   return result.id;

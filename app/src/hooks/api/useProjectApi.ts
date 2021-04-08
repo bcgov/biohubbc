@@ -5,7 +5,6 @@ import {
   ICreateProjectRequest,
   ICreateProjectResponse,
   IGetProjectForViewResponse,
-  IGetProjectMediaListResponse,
   IGetProjectsListResponse,
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
@@ -28,7 +27,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
    */
   const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
-    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments/view`);
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/list`);
 
     return data;
   };
@@ -40,7 +39,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<number>}
    */
   const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}/delete`);
+    const { data } = await axios.delete(`/api/project/${projectId}/attachments/${attachmentId}/delete`);
 
     return data;
   }
@@ -52,7 +51,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<string>}
    */
   const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
-    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/attachments/${attachmentId}/view`);
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/signedUrl`);
 
     return data;
   };
@@ -140,7 +139,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Upload project artifacts.
+   * Upload project attachments.
    *
    * @param {number} projectId
    * @param {File[]} files
@@ -148,7 +147,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
-  const uploadProjectArtifacts = async (
+  const uploadProjectAttachments = async (
     projectId: number,
     files: File[],
     cancelTokenSource?: CancelTokenSource,
@@ -158,7 +157,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     files.forEach((file) => req_message.append('media', file));
 
-    const { data } = await axios.post(`/api/projects/${projectId}/artifacts/upload`, req_message, {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
@@ -166,33 +165,12 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Fetch all media for the project.
-   *
-   * @return {*} {Promise<IGetProjectMediaListResponse[]>}
-   */
-  const getMediaList = async (projectId: string): Promise<IGetProjectMediaListResponse[]> => {
-    const { data } = await axios.get(`/api/projects/${projectId}/artifacts/list`);
-
-    if (!data || !data.length) {
-      return [];
-    }
-
-    return data.map((file: any) => {
-      return {
-        file_name: file.key,
-        encoded_file: ''
-      };
-    });
-  };
-
   return {
     getProjectsList,
     createProject,
     createPermitNoSampling,
     getProjectForView,
-    uploadProjectArtifacts,
-    getMediaList,
+    uploadProjectAttachments,
     getProjectForUpdate,
     updateProject,
     getProjectAttachments,
