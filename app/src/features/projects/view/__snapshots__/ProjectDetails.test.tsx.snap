@@ -1087,7 +1087,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 class="MuiTypography-root MuiTypography-subtitle1"
                 style="word-break: break-all;"
               >
-                222
+                investment action
               </h6>
             </div>
           </div>

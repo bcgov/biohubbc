@@ -8,6 +8,8 @@ import ProjectFundingForm, {
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from './ProjectFundingForm';
+import { codes } from 'test-helpers/code-helpers';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 const funding_sources: IMultiAutocompleteFieldOption[] = [
   {
@@ -87,12 +89,7 @@ describe('ProjectFundingForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => (
-          <ProjectFundingForm
-            funding_sources={funding_sources}
-            investment_action_category={investment_action_category}
-          />
-        )}
+        {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
       </Formik>
     );
 
