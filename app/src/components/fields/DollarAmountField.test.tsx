@@ -24,8 +24,7 @@ describe('DollarAmountField', () => {
         }}
         onSubmit={async () => {}}
         initialErrors={{ id: 'error is here' }}
-        initialTouched={{ id: true }}
-      >
+        initialTouched={{ id: true }}>
         {() => <DollarAmountField id="id" label="label" required={true} name="name" />}
       </Formik>
     );
