@@ -225,6 +225,8 @@ describe('postProjectFundingSourceSQL', () => {
         333
       );
 
+      console.log(response?.values);
+
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(333);
       expect(response?.values).to.deep.include(222);

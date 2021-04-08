@@ -286,7 +286,7 @@ export class PutFundingSource {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutFundingSource', message: 'params', obj });
 
-    const fundingSource = obj?.fundingSources[0];
+    const fundingSource = obj?.fundingSources?.length && obj.fundingSources[0];
 
     this.id = fundingSource?.id || null;
     this.investment_action_category = fundingSource?.investment_action_category || null;
