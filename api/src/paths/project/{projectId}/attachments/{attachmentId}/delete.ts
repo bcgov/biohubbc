@@ -2,61 +2,22 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { deleteProjectAttachmentSQL } from '../../../../../queries/project/project-attachments-queries';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
+import { getAttachmentApiResponseObject } from '../../../../../utils/shared-api-responses';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/delete');
 
 export const DELETE: Operation = [deleteAttachment()];
 
 DELETE.apiDoc = {
-  description: 'Delete an attachment of a project.',
-  tags: ['attachment'],
-  security: [
-    {
-      Bearer: WRITE_ROLES
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'projectId',
-      schema: {
-        type: 'number'
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'attachmentId',
-      schema: {
-        type: 'number'
-      },
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Row count of successfully deleted attachment record',
-      content: {
-        'text/plain': {
-          schema: {
-            type: 'number'
-          }
-        }
-      }
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  ...getAttachmentApiResponseObject(
+    'Delete an attachment of a project.',
+    'Row count of successfully deleted attachment record'
+  )
 };
 
 function deleteAttachment(): RequestHandler {
