@@ -15,7 +15,6 @@ import ProjectFundingItemForm, {
   ProjectFundingFormArrayItemYupSchema
 } from './ProjectFundingItemForm';
 import { AddFundingI18N } from 'constants/i18n';
-//import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectFundingForm {
   funding_sources: IProjectFundingFormArrayItem[];
