@@ -126,7 +126,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                     validationSchema: ProjectFundingFormArrayItemYupSchema
                   }}
                   onCancel={() => setIsModalOpen(false)}
-                  onSave={(projectFundingItemValues, helper) => {
+                  onSave={(projectFundingItemValues) => {
                     if (currentProjectFundingFormArrayItem.index < values.funding_sources.length) {
                       // Update an existing item
                       arrayHelpers.replace(currentProjectFundingFormArrayItem.index, projectFundingItemValues);

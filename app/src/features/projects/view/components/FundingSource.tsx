@@ -44,7 +44,7 @@ export interface IProjectFundingProps {
 const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   const {
     projectForViewData: { funding, id },
-    codes: codes
+    codes
   } = props;
 
   const classes = useStyles();
