@@ -3,397 +3,241 @@
 exports[`Partnerships renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiBox-root MuiBox-root-1"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      class="MuiBox-root MuiBox-root-2"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Partnerships
-        </h3>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item"
+        Partnerships
+      </h3>
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
       >
-        <button
-          aria-label="Edit Partnerships"
-          class="MuiButtonBase-root MuiIconButton-root"
-          tabindex="0"
-          title="Edit Partnerships"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiTypography-root MuiTypography-caption"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                />
-              </svg>
-               EDIT
-            </span>
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-    </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="indigenous-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-2"
-                  scope="col"
-                >
-                  Indigenous Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            />
-          </table>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="stakeholder-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-2"
-                  scope="col"
-                >
-                  Stakeholder Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            />
-          </table>
-        </div>
-      </div>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
   </div>
+  <dl
+    class="ddInline"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Stakeholder Partnerships
+        </dt>
+      </div>
+    </div>
+  </dl>
 </DocumentFragment>
 `;
 
 exports[`Partnerships renders correctly with existing partnership values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiBox-root MuiBox-root-5"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      class="MuiBox-root MuiBox-root-6"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Partnerships
-        </h3>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item"
+        Partnerships
+      </h3>
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
       >
-        <button
-          aria-label="Edit Partnerships"
-          class="MuiButtonBase-root MuiIconButton-root"
-          tabindex="0"
-          title="Edit Partnerships"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiTypography-root MuiTypography-caption"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                />
-              </svg>
-               EDIT
-            </span>
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-    </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="indigenous-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
-                  scope="col"
-                >
-                  Indigenous Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            >
-              <tr
-                class="MuiTableRow-root"
-              >
-                <td
-                  class="MuiTableCell-root MuiTableCell-body"
-                >
-                  partner 1
-                </td>
-              </tr>
-              <tr
-                class="MuiTableRow-root"
-              >
-                <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-5"
-                >
-                  partner 2
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="stakeholder-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-6"
-                  scope="col"
-                >
-                  Stakeholder Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            >
-              <tr
-                class="MuiTableRow-root"
-              >
-                <td
-                  class="MuiTableCell-root MuiTableCell-body"
-                >
-                  partner 3
-                </td>
-              </tr>
-              <tr
-                class="MuiTableRow-root"
-              >
-                <td
-                  class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-5"
-                >
-                  partner 4
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
   </div>
+  <dl
+    class="ddInline"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 1
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 2
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Stakeholder Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 3
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 4
+        </dd>
+      </div>
+    </div>
+  </dl>
 </DocumentFragment>
 `;
 
 exports[`Partnerships renders correctly with invalid null values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    class="MuiBox-root MuiBox-root-3"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      class="MuiBox-root MuiBox-root-4"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Partnerships
-        </h3>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item"
+        Partnerships
+      </h3>
+      <button
+        aria-label="Edit Partnerships"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit Partnerships"
+        type="button"
       >
-        <button
-          aria-label="Edit Partnerships"
-          class="MuiButtonBase-root MuiIconButton-root"
-          tabindex="0"
-          title="Edit Partnerships"
-          type="button"
+        <span
+          class="MuiButton-label"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <span
-              class="MuiTypography-root MuiTypography-caption"
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
             >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                />
-              </svg>
-               EDIT
-            </span>
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
           </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-    </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="indigenous-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-4"
-                  scope="col"
-                >
-                  Indigenous Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            />
-          </table>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiTableContainer-root"
-        >
-          <table
-            aria-label="stakeholder-partnerships-table"
-            class="MuiTable-root"
-          >
-            <thead
-              class="MuiTableHead-root"
-            >
-              <tr
-                class="MuiTableRow-root MuiTableRow-head"
-              >
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-4"
-                  scope="col"
-                >
-                  Stakeholder Partnerships
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              class="MuiTableBody-root"
-            />
-          </table>
-        </div>
-      </div>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
   </div>
+  <dl
+    class="ddInline"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Stakeholder Partnerships
+        </dt>
+      </div>
+    </div>
+  </dl>
 </DocumentFragment>
 `;

@@ -76,7 +76,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classification')).toBeVisible();
+      expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -88,19 +88,19 @@ describe('IUCNClassification', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classification')).toBeVisible();
+      expect(getByText('Edit IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Edit IUCN Classification')).not.toBeInTheDocument();
+      expect(queryByText('Edit IUCN Classifications')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classification')).toBeVisible();
+      expect(getByText('Edit IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -131,19 +131,19 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classification')).toBeVisible();
+      expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing IUCN Classification')).toBeVisible();
+      expect(getByText('Error Editing IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(queryByText('Error Editing IUCN Classification')).not.toBeInTheDocument();
+      expect(queryByText('Error Editing IUCN Classifications')).not.toBeInTheDocument();
     });
   });
 
@@ -153,7 +153,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classification')).toBeVisible();
+      expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -186,7 +186,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classification')).toBeVisible();
+      expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('EDIT'));
@@ -198,7 +198,7 @@ describe('IUCNClassification', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classification')).toBeVisible();
+      expect(getByText('Edit IUCN Classifications')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));

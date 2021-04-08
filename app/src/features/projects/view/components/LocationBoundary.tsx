@@ -1,5 +1,4 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import { Box, Button, Grid, Typography } from '@material-ui/core';
 import {
   IGetProjectForUpdateResponseLocation,
   IGetProjectForViewResponse,
@@ -22,6 +21,8 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -184,51 +185,47 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">Location / Project Boundary</Typography>
-          </Grid>
-          <Grid item>
-            <IconButton
-              onClick={() => handleDialogEditOpen()}
-              title="Edit Location / Project Boundary"
-              aria-label="Edit Location / Project Boundary">
-              <Typography variant="caption">
-                <Edit fontSize="inherit" /> EDIT
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3">Location / Project Boundary</Typography>
+          <Button
+            className="editButtonSmall"
+            onClick={() => handleDialogEditOpen()}
+            title="Edit Location / Project Boundary"
+            aria-label="Edit Location / Project Boundary"
+            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+            EDIT
+          </Button>
+        </Box>
+        <dl>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Region(s)
               </Typography>
-            </IconButton>
+              <Typography component="dd" variant="body1">
+                {location.regions.join(', ')}
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Location Description
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {location.location_description}
+              </Typography>
+            </Grid>
           </Grid>
-        </Grid>
-        <Grid container item spacing={3} xs={12}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Region(s)</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{location.regions.join(', ')}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Box color="text.disabled">
-              <Typography variant="caption">Location Description</Typography>
-            </Box>
-            <Box>
-              <Typography variant="subtitle1">{location.location_description}</Typography>
-            </Box>
-          </Grid>
-          <Grid item xs={12}>
-            <Box mt={5} height={500}>
-              <MapContainer
-                mapId="project_location_form_map"
-                hideDrawControls={true}
-                nonEditableGeometries={geometryCollection}
-                bounds={bounds}
-              />
-            </Box>
-          </Grid>
-        </Grid>
-      </Grid>
+        </dl>
+        <Box mt={4} height={500}>
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            nonEditableGeometries={geometryCollection}
+            bounds={bounds}
+          />
+        </Box>
+      </Box>
     </>
   );
 };

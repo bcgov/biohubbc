@@ -12,1404 +12,1088 @@ exports[`ProjectDetails renders correctly 1`] = `
     </h2>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiPaper-root MuiBox-root MuiBox-root-2 MuiPaper-elevation1 MuiPaper-rounded"
   >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    <section
+      class="MuiBox-root MuiBox-root-3"
     >
       <div
-        class="MuiBox-root MuiBox-root-3"
+        class="MuiBox-root MuiBox-root-4"
       >
         <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+          class="MuiBox-root MuiBox-root-5"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Objectives
+          </h3>
+          <button
+            aria-label="Edit Project Objectives"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit Project Objectives"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-6"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Et ad et in culpa si
+          </p>
+        </div>
+      </div>
+      <hr
+        class="MuiDivider-root"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-7"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Caveats
+          </h3>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-9"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            sjwer bds
+          </p>
+        </div>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-10"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            General Information
+          </h3>
+          <button
+            aria-label="Edit General Information"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit General Information"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Project Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Test Project Name
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Type
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Timeline
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Oct 10, 1998 - Feb 26, 2021
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Activities
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Activity code
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Climate Change Initiatives
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Climate code
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-13"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-14"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-15"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Project Coordinator
+          </h3>
+          <button
+            aria-label="Edit Project Coordinator Information"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit Project Coordinator Information"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Amanda Christensen
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Email Address
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                amanda@christensen.com
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Agency
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Amanda and associates
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-16"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-17"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-18"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Location / Project Boundary
+          </h3>
+          <button
+            aria-label="Edit Location / Project Boundary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit Location / Project Boundary"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Region(s)
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Region 1, Region 2
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Location Description
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Location description
+              </dd>
+            </div>
+          </div>
+        </dl>
+        <div
+          class="MuiBox-root MuiBox-root-19"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+            class="leaflet-container leaflet-grab leaflet-touch-drag"
+            id="project_location_form_map"
+            style="height: 100%; position: relative;"
+            tabindex="0"
           >
             <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                Project Objectives
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit Objectives Information"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Objectives Information"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="leaflet-pane leaflet-map-pane"
+              style="left: 0px; top: 0px;"
             >
               <div
-                class="MuiBox-root MuiBox-root-4"
+                class="leaflet-pane leaflet-tile-pane"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-5"
+                  class="leaflet-layer "
+                  style="z-index: 1;"
                 >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1"
-                    style="word-break: break-all;"
+                  <div
+                    class="leaflet-tile-container leaflet-zoom-animated"
+                    style="z-index: 18; left: 0px; top: 0px;"
                   >
-                    Et ad et in culpa si
-                  </p>
+                    <img
+                      alt=""
+                      class="leaflet-tile"
+                      role="presentation"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
+                      style="width: 256px; height: 256px; left: -33px; top: -4px;"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
+              <div
+                class="leaflet-pane leaflet-shadow-pane"
               >
-                Project Caveats
-              </h3>
+                <img
+                  alt=""
+                  class="leaflet-marker-shadow leaflet-zoom-hide"
+                  src="marker-shadow.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 0px; top: 0px;"
+                />
+              </div>
+              <div
+                class="leaflet-pane leaflet-overlay-pane"
+              />
+              <div
+                class="leaflet-pane leaflet-marker-pane"
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  src="marker-icon.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; z-index: 0; left: 0px; top: 0px; z-index: 0; z-index: 0;"
+                  tabindex="0"
+                />
+              </div>
+              <div
+                class="leaflet-pane leaflet-tooltip-pane"
+              />
+              <div
+                class="leaflet-pane leaflet-popup-pane"
+              />
             </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="leaflet-control-container"
             >
               <div
-                class="MuiBox-root MuiBox-root-6"
+                class="leaflet-top leaflet-left"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-7"
+                  class="leaflet-control-zoom leaflet-bar leaflet-control"
                 >
-                  <p
-                    class="MuiTypography-root MuiTypography-body1"
-                    style="word-break: break-all;"
+                  <a
+                    aria-label="Zoom in"
+                    class="leaflet-control-zoom-in leaflet-disabled"
+                    href="#"
+                    role="button"
+                    title="Zoom in"
                   >
-                    sjwer bds
-                  </p>
+                    +
+                  </a>
+                  <a
+                    aria-label="Zoom out"
+                    class="leaflet-control-zoom-out"
+                    href="#"
+                    role="button"
+                    title="Zoom out"
+                  >
+                    −
+                  </a>
+                </div>
+              </div>
+              <div
+                class="leaflet-top leaflet-right"
+              >
+                <div
+                  class="leaflet-draw leaflet-control"
+                />
+              </div>
+              <div
+                class="leaflet-bottom leaflet-left"
+              />
+              <div
+                class="leaflet-bottom leaflet-right"
+              >
+                <div
+                  aria-haspopup="true"
+                  class="leaflet-control-layers leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-layers-toggle"
+                    href="#"
+                    title="Layers"
+                  />
+                  <section
+                    class="leaflet-control-layers-list"
+                  >
+                    <div
+                      class="leaflet-control-layers-base"
+                    >
+                      <label>
+                        <div>
+                          <input
+                            checked="checked"
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_37"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_37"
+                            type="radio"
+                          />
+                          <span>
+                             BC Government
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                    <div
+                      class="leaflet-control-layers-separator"
+                      style="display: none;"
+                    />
+                    <div
+                      class="leaflet-control-layers-overlays"
+                    />
+                  </section>
+                </div>
+                <div
+                  class="leaflet-control-attribution leaflet-control"
+                >
+                  <a
+                    href="https://leafletjs.com"
+                    title="A JS library for interactive maps"
+                  >
+                    Leaflet
+                  </a>
+                   | © 
+                  <a
+                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                  >
+                    ESRI Basemap
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-8"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-9"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                General Information
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit General Information"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit General Information"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-10"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Project Name
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-11"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Test Project Name
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-12"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Type
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-13"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  1
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-14"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Timeline
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-15"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Oct 10, 1998 - Feb 26, 2021
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-16"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Activities
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-17"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Activity code
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-18"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Climate Change Initiatives
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-19"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Climate code
-                </h6>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-20"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-20"
     >
       <div
         class="MuiBox-root MuiBox-root-21"
       >
         <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+          class="MuiBox-root MuiBox-root-22"
         >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
           >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                Project Coordinator
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit Project Coordinator Information"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Project Coordinator Information"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+            Species
+          </h3>
+          <button
+            aria-label="Edit Species"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit Species"
+            type="button"
           >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            <span
+              class="MuiButton-label"
             >
-              <div
-                class="MuiBox-root MuiBox-root-22"
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
                 >
-                  Name
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-23"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  Amanda Christensen
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-24"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Email Address
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-25"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  amanda@christensen.com
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-26"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Agency
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-27"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  Amanda and associates
-                </h6>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-28"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-29"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                Location / Project Boundary
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit Location / Project Boundary"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Location / Project Boundary"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-30"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Region(s)
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-31"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Region 1, Region 2
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-32"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Location Description
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-33"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  Location description
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-34"
-              >
-                <div
-                  class="leaflet-container leaflet-grab leaflet-touch-drag"
-                  id="project_location_form_map"
-                  style="height: 100%; position: relative;"
-                  tabindex="0"
-                >
-                  <div
-                    class="leaflet-pane leaflet-map-pane"
-                    style="left: 0px; top: 0px;"
-                  >
-                    <div
-                      class="leaflet-pane leaflet-tile-pane"
-                    >
-                      <div
-                        class="leaflet-layer "
-                        style="z-index: 1;"
-                      >
-                        <div
-                          class="leaflet-tile-container leaflet-zoom-animated"
-                          style="z-index: 18; left: 0px; top: 0px;"
-                        >
-                          <img
-                            alt=""
-                            class="leaflet-tile"
-                            role="presentation"
-                            src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
-                            style="width: 256px; height: 256px; left: -33px; top: -4px;"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      class="leaflet-pane leaflet-shadow-pane"
-                    >
-                      <img
-                        alt=""
-                        class="leaflet-marker-shadow leaflet-zoom-hide"
-                        src="marker-shadow.png"
-                        style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 0px; top: 0px;"
-                      />
-                    </div>
-                    <div
-                      class="leaflet-pane leaflet-overlay-pane"
-                    />
-                    <div
-                      class="leaflet-pane leaflet-marker-pane"
-                    >
-                      <img
-                        alt=""
-                        class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                        src="marker-icon.png"
-                        style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; z-index: 0; left: 0px; top: 0px; z-index: 0; z-index: 0;"
-                        tabindex="0"
-                      />
-                    </div>
-                    <div
-                      class="leaflet-pane leaflet-tooltip-pane"
-                    />
-                    <div
-                      class="leaflet-pane leaflet-popup-pane"
-                    />
-                  </div>
-                  <div
-                    class="leaflet-control-container"
-                  >
-                    <div
-                      class="leaflet-top leaflet-left"
-                    >
-                      <div
-                        class="leaflet-control-zoom leaflet-bar leaflet-control"
-                      >
-                        <a
-                          aria-label="Zoom in"
-                          class="leaflet-control-zoom-in leaflet-disabled"
-                          href="#"
-                          role="button"
-                          title="Zoom in"
-                        >
-                          +
-                        </a>
-                        <a
-                          aria-label="Zoom out"
-                          class="leaflet-control-zoom-out"
-                          href="#"
-                          role="button"
-                          title="Zoom out"
-                        >
-                          −
-                        </a>
-                      </div>
-                    </div>
-                    <div
-                      class="leaflet-top leaflet-right"
-                    >
-                      <div
-                        class="leaflet-draw leaflet-control"
-                      />
-                    </div>
-                    <div
-                      class="leaflet-bottom leaflet-left"
-                    />
-                    <div
-                      class="leaflet-bottom leaflet-right"
-                    >
-                      <div
-                        aria-haspopup="true"
-                        class="leaflet-control-layers leaflet-control"
-                      >
-                        <a
-                          class="leaflet-control-layers-toggle"
-                          href="#"
-                          title="Layers"
-                        />
-                        <section
-                          class="leaflet-control-layers-list"
-                        >
-                          <div
-                            class="leaflet-control-layers-base"
-                          >
-                            <label>
-                              <div>
-                                <input
-                                  checked="checked"
-                                  class="leaflet-control-layers-selector"
-                                  name="leaflet-base-layers_37"
-                                  type="radio"
-                                />
-                                <span>
-                                   Esri Imagery
-                                </span>
-                              </div>
-                            </label>
-                            <label>
-                              <div>
-                                <input
-                                  class="leaflet-control-layers-selector"
-                                  name="leaflet-base-layers_37"
-                                  type="radio"
-                                />
-                                <span>
-                                   BC Government
-                                </span>
-                              </div>
-                            </label>
-                          </div>
-                          <div
-                            class="leaflet-control-layers-separator"
-                            style="display: none;"
-                          />
-                          <div
-                            class="leaflet-control-layers-overlays"
-                          />
-                        </section>
-                      </div>
-                      <div
-                        class="leaflet-control-attribution leaflet-control"
-                      >
-                        <a
-                          href="https://leafletjs.com"
-                          title="A JS library for interactive maps"
-                        >
-                          Leaflet
-                        </a>
-                         | © 
-                        <a
-                          href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                        >
-                          ESRI Basemap
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-35"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-36"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                Species
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit Species"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Species"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiTableContainer-root"
-              >
-                <table
-                  aria-label="focal-species-table"
-                  class="MuiTable-root"
-                >
-                  <thead
-                    class="MuiTableHead-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root MuiTableRow-head"
-                    >
-                      <th
-                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-38"
-                        scope="col"
-                      >
-                        Focal Species
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    class="MuiTableBody-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body"
-                      >
-                        species 1
-                      </td>
-                    </tr>
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-37"
-                      >
-                        species 2
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <div
-                class="MuiTableContainer-root"
-              >
-                <table
-                  aria-label="ancillary-species-table"
-                  class="MuiTable-root"
-                >
-                  <thead
-                    class="MuiTableHead-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root MuiTableRow-head"
-                    >
-                      <th
-                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-38"
-                        scope="col"
-                      >
-                        Ancillary Species
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    class="MuiTableBody-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body"
-                      >
-                        species 3
-                      </td>
-                    </tr>
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-37"
-                      >
-                        species 4
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-39"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-40"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                IUCN Classification
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit IUCN Classification"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit IUCN Classification"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiTableContainer-root"
-            >
-              <table
-                aria-label="iucn-classification-table"
-                class="MuiTable-root makeStyles-table-41"
-              >
-                <thead
-                  class="MuiTableHead-root"
-                >
-                  <tr
-                    class="MuiTableRow-root MuiTableRow-head"
-                  >
-                    <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-44"
-                      scope="col"
-                    >
-                      Classification
-                    </th>
-                    <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-44"
-                      scope="col"
-                    >
-                      Sub-classification
-                    </th>
-                    <th
-                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-44"
-                      scope="col"
-                    >
-                      Sub-classification
-                    </th>
-                  </tr>
-                </thead>
-                <tbody
-                  class="MuiTableBody-root"
-                >
-                  <tr
-                    class="MuiTableRow-root"
-                  >
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body"
-                    >
-                      classification
-                    </td>
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body"
-                    >
-                      sub classification 1
-                    </td>
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body"
-                    >
-                      sub classification 2
-                    </td>
-                  </tr>
-                  <tr
-                    class="MuiTableRow-root"
-                  >
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-43"
-                    >
-                      classification again
-                    </td>
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-43"
-                    >
-                      sub classification 1 again
-                    </td>
-                    <td
-                      class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-43"
-                    >
-                      sub classification 2 again
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-46"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-47"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
-              >
-                Funding Sources
-              </h3>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <label
-                aria-disabled="false"
-                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-48 MuiButton-outlinedPrimary"
-                role="button"
-                tabindex="0"
-              >
-                <span
-                  class="MuiButton-label"
-                >
-                  Add Funding Source
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </label>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-item"
-          >
-            <hr
-              class="MuiDivider-root makeStyles-topBorder-50"
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
             />
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-51"
-              >
-                <p
-                  class="MuiTypography-root makeStyles-heading-48 MuiTypography-body1"
-                >
-                  agency name
-                </p>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item"
-            >
-              <button
-                aria-label="Edit Funding Source Information"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Funding Source Information"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-52"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Agency Project ID
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-53"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  ABC123
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-54"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Funding Amount
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-55"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                >
-                  $ 333
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-56"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Funding Dates
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-57"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  04/14/2000 - 04/13/2021
-                </h6>
-              </div>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-58"
-              >
-                <span
-                  class="MuiTypography-root MuiTypography-caption"
-                >
-                  Investment Category
-                </span>
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-59"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle1"
-                  style="word-break: break-all;"
-                >
-                  222
-                </h6>
-              </div>
-            </div>
-          </div>
+          </button>
         </div>
-      </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-60"
-  >
-    <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-61"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+        <dl
+          class="ddInline"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
           >
             <div
-              class="MuiGrid-root MuiGrid-item"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
-              <h3
-                class="MuiTypography-root MuiTypography-h3"
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Partnerships
-              </h3>
+                Focal Species
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                species 1
+              </dd>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                species 2
+              </dd>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
-              <button
-                aria-label="Edit Partnerships"
-                class="MuiButtonBase-root MuiIconButton-root"
-                tabindex="0"
-                title="Edit Partnerships"
-                type="button"
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <span
-                    class="MuiTypography-root MuiTypography-caption"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                      />
-                    </svg>
-                     EDIT
-                  </span>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
+                Anciliary Species
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                species 3
+              </dd>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                species 4
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-23"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-24"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          IUCN Classifications
+        </h3>
+        <button
+          aria-label="Edit General Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          tabindex="0"
+          title="Edit IUCN Classifications"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
                 />
-              </button>
+              </svg>
+            </span>
+            EDIT
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiTableContainer-root"
+      >
+        <table
+          aria-label="iucn-classification-table"
+          class="MuiTable-root"
+        >
+          <thead
+            class="MuiTableHead-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-head"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+                width="33.3333%"
+              >
+                Classification
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+                width="33.3333%"
+              >
+                Sub-classification
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+                width="33.3333%"
+              >
+                Sub-classification
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="MuiTableBody-root"
+          >
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                classification
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                sub classification 1
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                sub classification 2
+              </td>
+            </tr>
+            <tr
+              class="MuiTableRow-root"
+            >
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                classification again
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                sub classification 1 again
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                sub classification 2 again
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-25"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-26"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-27"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Partnerships
+          </h3>
+          <button
+            aria-label="Edit Partnerships"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            tabindex="0"
+            title="Edit Partnerships"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              EDIT
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+      <dl
+        class="ddInline"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <dt
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+            >
+              Indigenous Partnerships
+            </dt>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 1
+            </dd>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 2
+            </dd>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <dt
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+            >
+              Stakeholder Partnerships
+            </dt>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 3
+            </dd>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 4
+            </dd>
+          </div>
+        </div>
+      </dl>
+    </section>
+    <hr
+      class="MuiDivider-root"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-28"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <h3
+              class="MuiTypography-root MuiTypography-h3"
+            >
+              Funding Sources
+            </h3>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <label
+              aria-disabled="false"
+              class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-29 MuiButton-outlinedPrimary"
+              role="button"
+              tabindex="0"
+            >
+              <span
+                class="MuiButton-label"
+              >
+                Add Funding Source
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </label>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-item"
+        >
+          <hr
+            class="MuiDivider-root makeStyles-topBorder-31"
+          />
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-32"
+            >
+              <p
+                class="MuiTypography-root makeStyles-heading-29 MuiTypography-body1"
+              >
+                agency name
+              </p>
             </div>
           </div>
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <button
+              aria-label="Edit Funding Source Information"
+              class="MuiButtonBase-root MuiIconButton-root"
+              tabindex="0"
+              title="Edit Funding Source Information"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-caption"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                   EDIT
+                </span>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiBox-root MuiBox-root-33"
             >
-              <div
-                class="MuiTableContainer-root"
+              <span
+                class="MuiTypography-root MuiTypography-caption"
               >
-                <table
-                  aria-label="indigenous-partnerships-table"
-                  class="MuiTable-root"
-                >
-                  <thead
-                    class="MuiTableHead-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root MuiTableRow-head"
-                    >
-                      <th
-                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-63"
-                        scope="col"
-                      >
-                        Indigenous Partnerships
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    class="MuiTableBody-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body"
-                      >
-                        partner 1
-                      </td>
-                    </tr>
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-62"
-                      >
-                        partner 2
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                Agency Project ID
+              </span>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiBox-root MuiBox-root-34"
             >
-              <div
-                class="MuiTableContainer-root"
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1"
+                style="word-break: break-all;"
               >
-                <table
-                  aria-label="stakeholder-partnerships-table"
-                  class="MuiTable-root"
-                >
-                  <thead
-                    class="MuiTableHead-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root MuiTableRow-head"
-                    >
-                      <th
-                        class="MuiTableCell-root MuiTableCell-head makeStyles-tableHeading-63"
-                        scope="col"
-                      >
-                        Stakeholder Partnerships
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    class="MuiTableBody-root"
-                  >
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body"
-                      >
-                        partner 3
-                      </td>
-                    </tr>
-                    <tr
-                      class="MuiTableRow-root"
-                    >
-                      <td
-                        class="MuiTableCell-root MuiTableCell-body makeStyles-tableCellBorderBottom-62"
-                      >
-                        partner 4
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                ABC123
+              </h6>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-35"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-caption"
+              >
+                Funding Amount
+              </span>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-36"
+            >
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1"
+              >
+                $ 333
+              </h6>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-37"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-caption"
+              >
+                Funding Dates
+              </span>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-38"
+            >
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1"
+                style="word-break: break-all;"
+              >
+                04/14/2000 - 04/13/2021
+              </h6>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-39"
+            >
+              <span
+                class="MuiTypography-root MuiTypography-caption"
+              >
+                Investment Category
+              </span>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-40"
+            >
+              <h6
+                class="MuiTypography-root MuiTypography-subtitle1"
+                style="word-break: break-all;"
+              >
+                222
+              </h6>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </DocumentFragment>
 `;

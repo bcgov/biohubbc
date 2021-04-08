@@ -1,5 +1,4 @@
-import { Box, Grid, IconButton, Typography } from '@material-ui/core';
-import { Edit } from '@material-ui/icons';
+import { Box, Button, Divider, Typography } from '@material-ui/core';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
@@ -19,6 +18,8 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 export interface IProjectObjectivesProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -124,39 +125,26 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Box m={3}>
-        <Grid container spacing={3}>
-          <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="h3">Project Objectives</Typography>
-            </Grid>
-            <Grid item>
-              <IconButton
-                onClick={() => handleDialogEditOpen()}
-                title="Edit Objectives Information"
-                aria-label="Edit Objectives Information">
-                <Typography variant="caption">
-                  <Edit fontSize="inherit" /> EDIT
-                </Typography>
-              </IconButton>
-            </Grid>
-          </Grid>
-          <Grid container item xs={12} spacing={3}>
-            <Grid item xs={12}>
-              <ReadMoreField text={objectives.objectives} maxCharLength={850} />
-            </Grid>
-          </Grid>
-          <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-            <Grid item>
-              <Typography variant="h3">Project Caveats</Typography>
-            </Grid>
-          </Grid>
-          <Grid container item xs={12} spacing={3}>
-            <Grid item xs={12}>
-              <ReadMoreField text={objectives.caveats} maxCharLength={850} />
-            </Grid>
-          </Grid>
-        </Grid>
+      <Box mb={5}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3">Objectives</Typography>
+          <Button
+            className="editButtonSmall"
+            onClick={() => handleDialogEditOpen()}
+            title="Edit Project Objectives"
+            aria-label="Edit Project Objectives"
+            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+            EDIT
+          </Button>
+        </Box>
+        <ReadMoreField text={objectives.objectives} maxCharLength={850} />
+      </Box>
+      <Divider></Divider>
+      <Box mt={4}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Typography variant="h3">Caveats</Typography>
+        </Box>
+        <ReadMoreField text={objectives.caveats} maxCharLength={850} />
       </Box>
     </>
   );
