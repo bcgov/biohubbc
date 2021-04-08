@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectAttachments renders correctly 1`] = `
+exports[`ProjectAttachments renders correctly with no attachments 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
@@ -55,12 +55,64 @@ exports[`ProjectAttachments renders correctly 1`] = `
     class="MuiBox-root MuiBox-root-5"
   >
     <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+      class="MuiBox-root MuiBox-root-6"
     >
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
-        Attachments list placeholder
+        <div
+          class="MuiTableContainer-root"
+        >
+          <table
+            aria-label="attachments-list-table"
+            class="MuiTable-root makeStyles-table-7"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-8"
+                  scope="col"
+                >
+                  Name
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-8"
+                  scope="col"
+                >
+                  Last Modified
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-8"
+                  scope="col"
+                >
+                  File Size
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                />
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <td
+                  class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter"
+                  colspan="3"
+                >
+                  No Attachments
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
