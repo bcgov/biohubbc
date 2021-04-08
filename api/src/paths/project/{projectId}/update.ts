@@ -19,7 +19,7 @@ import {
   IGetPutIUCN,
   GetLocationData
 } from '../../../models/project-update';
-import { GetSpeciesData } from '../../../models/project-view-update';
+import { GetSpeciesData, GetFundingData, PutFundingData } from '../../../models/project-view-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -41,7 +41,8 @@ import {
   deleteAncillarySpeciesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
-  deleteRegionsSQL
+  deleteRegionsSQL,
+  deleteFundingSQL
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
@@ -49,7 +50,8 @@ import {
   getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
   getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL
+  getClimateInitiativesByProjectSQL,
+  getFundingSourceByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -61,7 +63,8 @@ import {
   insertRegion,
   insertProjectActivity,
   insertProjectClimateChangeInitiative,
-  insertStakeholderPartnership
+  insertStakeholderPartnership,
+  insertFundingSource
 } from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
@@ -149,7 +152,7 @@ export interface IGetProjectForUpdate {
   location: any;
   species: any;
   iucn: GetIUCNClassificationData | null;
-  funding: any;
+  funding: GetFundingData | null;
   partnerships: GetPartnershipsData | null;
 }
 
@@ -529,6 +532,10 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectSpeciesData(projectId, entities, connection));
       }
 
+      if (entities?.species) {
+        promises.push(updateProjectFundingData(projectId, entities, connection));
+      }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -644,6 +651,7 @@ export const updateProjectIUCNData = async (
 
   await Promise.all(insertIUCNPromises);
 };
+
 
 export const updateProjectPartnershipsData = async (
   projectId: number,
@@ -776,3 +784,36 @@ export const updateProjectData = async (
 
   await Promise.all([...insertActivityPromises, ...insertClimateInitiativesPromises]);
 };
+
+
+export const updateProjectFundingData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putFundingData = (entities?.funding && new PutFundingData(entities.funding)) || null;
+
+  const sqlDeleteStatement = deleteFundingSQL(projectId);
+
+  if (!sqlDeleteStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+
+  if (!deleteResult) {
+    throw new HTTP409('Failed to update project Funding data');
+  }
+
+  const insertFundingPromises =
+    // putFundingData?.classificationDetails?.map((iucnClassification: IGetPutIUCN) =>
+    //   insertClassificationDetail(iucnClassification.subClassification2, projectId, connection)
+    // ) || [];
+
+    putFundingData?.fundingSources?.map(())
+
+
+  await Promise.all(insertFundingPromises);
+};
+
+

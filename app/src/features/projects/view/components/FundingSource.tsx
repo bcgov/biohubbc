@@ -15,9 +15,7 @@ import ProjectFundingItemForm, {
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForViewResponse
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 
 const useStyles = makeStyles({
   heading: {
@@ -84,8 +82,8 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       investment_action_category_name: fundingSource.investment_action_category_name,
       agency_project_id: fundingSource.agency_project_id,
       funding_amount: fundingSource.funding_amount,
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat,fundingSource.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat,fundingSource.end_date),
+      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
       revision_count: fundingSource.revision_count
     });
 
@@ -94,9 +92,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   const handleDialogEditSave = async (values: IProjectFundingFormArrayItem) => {
     const projectData = {
       funding: {
-        fundingSources: [
-          {...values}
-        ]
+        fundingSources: [{ ...values }]
       }
     };
 
@@ -114,22 +110,24 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   };
   return (
     <>
-    <EditDialog
+      <EditDialog
         dialogTitle={EditFundingI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <ProjectFundingItemForm
-            funding_sources={
-              codes?.funding_source?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            investment_action_category={
-              codes?.investment_action_category?.map((item) => {
-                return { value: item.id, fs_id: item.fs_id, label: item.name };
-              }) || []
-            }
-          />,
+          element: (
+            <ProjectFundingItemForm
+              funding_sources={
+                codes?.funding_source?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              investment_action_category={
+                codes?.investment_action_category?.map((item) => {
+                  return { value: item.id, fs_id: item.fs_id, label: item.name };
+                }) || []
+              }
+            />
+          ),
           initialValues: fundingFormData,
           validationSchema: ProjectFundingFormArrayItemYupSchema
         }}
@@ -165,7 +163,10 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                 </Box>
               </Grid>
               <Grid item>
-                <IconButton onClick={() => handleDialogEditOpen(index)} title="Edit Funding Source Information" aria-label="Edit Funding Source Information">
+                <IconButton
+                  onClick={() => handleDialogEditOpen(index)}
+                  title="Edit Funding Source Information"
+                  aria-label="Edit Funding Source Information">
                   <Typography variant="caption">
                     <Edit fontSize="inherit" /> EDIT
                   </Typography>

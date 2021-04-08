@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
@@ -197,43 +196,6 @@ describe('GetIUCNClassificationData', () => {
           subClassification2: 'subclass2'
         }
       ]);
-    });
-  });
-});
-
-describe('GetFundingData', () => {
-  describe('No values provided', () => {
-    let fundingData: GetFundingData;
-
-    before(() => {
-      fundingData = new GetFundingData([]);
-    });
-
-    it('sets project funding sources', function () {
-      expect(fundingData.fundingSources).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let fundingData: GetFundingData;
-
-    const fundingDataObj = [
-      {
-        agency_id: '123',
-        agency_name: 'Agency name',
-        investment_action_category: 'investment',
-        start_date: '01/01/2020',
-        end_date: '01/01/2021',
-        funding_amount: 123
-      }
-    ];
-
-    before(() => {
-      fundingData = new GetFundingData(fundingDataObj);
-    });
-
-    it('sets project funding sources', function () {
-      expect(fundingData.fundingSources).to.eql(fundingDataObj);
     });
   });
 });

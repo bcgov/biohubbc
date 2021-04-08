@@ -274,3 +274,38 @@ export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | n
 
   return sqlStatement;
 };
+
+
+/**
+ * SQL query to delete project IUCN rows.
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const deleteFundingSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteFundingSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_funding_source
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteFundingSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

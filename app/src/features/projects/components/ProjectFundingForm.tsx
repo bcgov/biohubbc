@@ -74,8 +74,9 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
   const classes = useStyles();
 
   const formikProps = useFormikContext<IProjectFundingForm>();
-  const { values
-   // , touched, errors, handleChange, handleSubmit, resetForm, setFieldValue
+  const {
+    values
+    // , touched, errors, handleChange, handleSubmit, resetForm, setFieldValue
   } = formikProps;
 
   //Tracks information about the current funding source item that is being added/edited
@@ -116,9 +117,12 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                   dialogTitle={AddFundingI18N.addTitle}
                   open={isModalOpen}
                   component={{
-                    element: <ProjectFundingItemForm
-                      funding_sources={props.funding_sources}
-                      investment_action_category={props.investment_action_category} />,
+                    element: (
+                      <ProjectFundingItemForm
+                        funding_sources={props.funding_sources}
+                        investment_action_category={props.investment_action_category}
+                      />
+                    ),
                     initialValues: currentProjectFundingFormArrayItem.values,
                     validationSchema: ProjectFundingFormArrayItemYupSchema
                   }}

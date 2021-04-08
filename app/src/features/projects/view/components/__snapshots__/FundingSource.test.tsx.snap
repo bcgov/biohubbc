@@ -64,10 +64,10 @@ exports[`FundingSource renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
+          aria-label="Edit Funding Source Information"
           class="MuiButtonBase-root MuiIconButton-root"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Funding Source Information"
           type="button"
         >
           <span
@@ -117,7 +117,7 @@ exports[`FundingSource renders correctly 1`] = `
             class="MuiTypography-root MuiTypography-subtitle1"
             style="word-break: break-all;"
           >
-            123
+            ABC123
           </h6>
         </div>
       </div>
@@ -185,7 +185,7 @@ exports[`FundingSource renders correctly 1`] = `
             class="MuiTypography-root MuiTypography-subtitle1"
             style="word-break: break-all;"
           >
-            investment action
+            222
           </h6>
         </div>
       </div>

@@ -48,7 +48,7 @@ export interface IEditDialogProps {
    *
    * @memberof IEditDialogProps
    */
-  onSave: (values: any, helper?:any) => void;
+  onSave: (values: any, helper?: any) => void;
 }
 
 /**
