@@ -48,7 +48,6 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
   });
 });
 
-
 describe('getIndigenousPartnershipsByProjectSQL', () => {
   it('Null projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL((null as unknown) as number);

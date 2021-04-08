@@ -1,5 +1,11 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutCoordinatorData, PutLocationData, PutObjectivesData, PutProjectData, PutFundingSource } from '../../models/project-update';
+import {
+  PutCoordinatorData,
+  PutLocationData,
+  PutObjectivesData,
+  PutProjectData,
+  PutFundingSource
+} from '../../models/project-update';
 import { getLogger } from '../../utils/logger';
 import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 
@@ -240,7 +246,6 @@ export const putProjectSQL = (
     sqlSetStatements.push(SQL`caveats = ${objectives.caveats}`);
   }
 
-
   if (coordinator) {
     sqlSetStatements.push(SQL`coordinator_first_name = ${coordinator.first_name}`);
     sqlSetStatements.push(SQL`coordinator_last_name = ${coordinator.last_name}`);
@@ -313,7 +318,7 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
  * @param {PutFundingSource} fundingSource
  * @returns {SQLStatement} sql query object
  */
- export const putProjectFundingSourceSQL = (
+export const putProjectFundingSourceSQL = (
   fundingSource: PutFundingSource | null,
   projectId: number
 ): SQLStatement | null => {

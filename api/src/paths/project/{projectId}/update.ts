@@ -33,7 +33,7 @@ import {
   getObjectivesByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
-  putProjectSQL,
+  putProjectSQL
 } from '../../../queries/project/project-update-queries';
 import {
   deleteActivitiesSQL,
@@ -796,7 +796,7 @@ export const updateProjectFundingData = async (
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putFundingSource = (entities?.funding && new PutFundingSource(entities.funding));
+  const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
   const sqlDeleteStatement = deleteFundingSQL(putFundingSource?.id);
 

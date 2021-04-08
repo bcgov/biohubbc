@@ -63,10 +63,12 @@ describe('ProjectFundingItemForm', () => {
           dialogError="This is dialog error"
           open={true}
           component={{
-            element: <ProjectFundingItemForm
-              funding_sources={funding_sources}
-              investment_action_category={investment_action_category}
-            />,
+            element: (
+              <ProjectFundingItemForm
+                funding_sources={funding_sources}
+                investment_action_category={investment_action_category}
+              />
+            ),
             initialValues: { existingFormValues },
             validationSchema: ProjectFundingFormArrayItemYupSchema
           }}
@@ -100,10 +102,12 @@ describe('ProjectFundingItemForm', () => {
             dialogError="This is dialog error"
             open={true}
             component={{
-              element: <ProjectFundingItemForm
-                funding_sources={funding_sources}
-                investment_action_category={investment_action_category}
-              />,
+              element: (
+                <ProjectFundingItemForm
+                  funding_sources={funding_sources}
+                  investment_action_category={investment_action_category}
+                />
+              ),
               initialValues: { existingFormValues },
               validationSchema: ProjectFundingFormArrayItemYupSchema
             }}
@@ -136,10 +140,12 @@ describe('ProjectFundingItemForm', () => {
             dialogError="This is dialog error"
             open={true}
             component={{
-              element: <ProjectFundingItemForm
-                funding_sources={funding_sources}
-                investment_action_category={investment_action_category}
-              />,
+              element: (
+                <ProjectFundingItemForm
+                  funding_sources={funding_sources}
+                  investment_action_category={investment_action_category}
+                />
+              ),
               initialValues: { existingFormValues },
               validationSchema: ProjectFundingFormArrayItemYupSchema
             }}
@@ -172,10 +178,12 @@ describe('ProjectFundingItemForm', () => {
             dialogError="This is dialog error"
             open={true}
             component={{
-              element: <ProjectFundingItemForm
-                funding_sources={funding_sources}
-                investment_action_category={investment_action_category}
-              />,
+              element: (
+                <ProjectFundingItemForm
+                  funding_sources={funding_sources}
+                  investment_action_category={investment_action_category}
+                />
+              ),
               initialValues: { existingFormValues },
               validationSchema: ProjectFundingFormArrayItemYupSchema
             }}

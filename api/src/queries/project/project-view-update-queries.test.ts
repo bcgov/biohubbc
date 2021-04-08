@@ -10,7 +10,6 @@ import {
   getFundingSourceByProjectSQL
 } from './project-view-update-queries';
 
-
 describe('getLocationByProjectSQL', () => {
   it('Null projectId', () => {
     const response = getLocationByProjectSQL((null as unknown) as number);
@@ -108,4 +107,3 @@ describe('getFundingSourceByProjectSQL', () => {
     expect(response).to.not.be.null;
   });
 });
-
