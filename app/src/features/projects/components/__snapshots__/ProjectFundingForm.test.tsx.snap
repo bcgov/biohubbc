@@ -141,11 +141,11 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                   <p
                     class="MuiTypography-root makeStyles-title-11 MuiTypography-body1"
                   >
-                    agency 1
+                    Funding source code
                     <span
                       class="makeStyles-titleDesc-12"
                     >
-                      (action 1)
+                      (Investment action category)
                     </span>
                   </p>
                   <button

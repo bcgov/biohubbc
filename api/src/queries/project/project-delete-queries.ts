@@ -274,3 +274,37 @@ export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | n
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete the specific project funding source record.
+ *
+ * @param {pfsId} pfsId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteFundingSQL = (pfsId: number | undefined): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteFundingSQL',
+    message: 'params',
+    pfsId
+  });
+
+  if (!pfsId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_funding_source
+    WHERE
+      id = ${pfsId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteFundingSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

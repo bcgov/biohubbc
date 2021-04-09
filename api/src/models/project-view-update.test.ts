@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetSpeciesData } from './project-view-update';
+import { GetSpeciesData, GetFundingData } from './project-view-update';
 
 describe('GetSpeciesData', () => {
   describe('No values provided', () => {
@@ -73,6 +73,47 @@ describe('GetSpeciesData', () => {
 
     it('sets ancillary_species', function () {
       expect(data.ancillary_species).to.eql(['species 3']);
+    });
+  });
+
+  describe('GetFundingData', () => {
+    describe('No values provided', () => {
+      let fundingData: GetFundingData;
+
+      before(() => {
+        fundingData = new GetFundingData([]);
+      });
+
+      it('sets project funding sources', function () {
+        expect(fundingData.fundingSources).to.eql([]);
+      });
+    });
+
+    describe('All values provided', () => {
+      let fundingData: GetFundingData;
+
+      const fundingDataObj = [
+        {
+          id: 1,
+          agency_id: '123',
+          agency_name: 'Agency name',
+          agency_project_id: 'Agency123',
+          investment_action_category: 'Investment',
+          investment_action_category_name: 'Investment name',
+          start_date: '01/01/2020',
+          end_date: '01/01/2021',
+          funding_amount: 123,
+          revision_count: 0
+        }
+      ];
+
+      before(() => {
+        fundingData = new GetFundingData(fundingDataObj);
+      });
+
+      it('sets project funding sources', function () {
+        expect(fundingData.fundingSources).to.eql(fundingDataObj);
+      });
     });
   });
 });

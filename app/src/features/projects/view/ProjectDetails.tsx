@@ -61,7 +61,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         </Box>
         <Divider />
         <Box component="section" mt={4}>
-          <FundingSource projectForViewData={projectForViewData} />
+          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
       </Box>
     </>

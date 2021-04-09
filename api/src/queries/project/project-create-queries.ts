@@ -216,7 +216,6 @@ export const postProjectFundingSourceSQL = (
     return null;
   }
 
-  // TODO model is missing agency name
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_funding_source (
         p_id,

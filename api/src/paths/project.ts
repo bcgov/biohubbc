@@ -149,10 +149,10 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle funding agencies
+        // Handle funding sources
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.funding.funding_agencies.map((fundingSource: PostFundingSource) =>
+            sanitizedProjectPostData.funding.funding_sources.map((fundingSource: PostFundingSource) =>
               insertFundingSource(fundingSource, projectId, connection)
             )
           )
