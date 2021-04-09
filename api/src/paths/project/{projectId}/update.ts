@@ -550,6 +550,7 @@ function updateProject(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'updateProject', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

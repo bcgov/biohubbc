@@ -61,6 +61,7 @@ function deleteAttachment(): RequestHandler {
       return res.status(200).json(result && result.rowCount);
     } catch (error) {
       defaultLog.debug({ label: 'getProjectAttachments', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
