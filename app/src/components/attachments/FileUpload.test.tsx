@@ -24,7 +24,7 @@ const renderContainer = () => {
 describe('FileUpload', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.uploadProjectArtifacts.mockClear();
+    mockBiohubApi().project.uploadProjectAttachments.mockClear();
   });
 
   it('matches the snapshot', () => {
