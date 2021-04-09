@@ -31,6 +31,29 @@ describe('ProjectAttachments', () => {
     cleanup();
   });
 
+  it('correctly opens and closes the file upload dialog', async () => {
+    const { getByText, queryByText } = render(
+      <Router history={history}>
+        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+      </Router>
+    );
+
+    expect(getByText('Upload')).toBeInTheDocument();
+    expect(queryByText('Upload Attachments')).toBeNull();
+
+    fireEvent.click(getByText('Upload'));
+
+    await waitFor(() => {
+      expect(getByText('Upload Attachments')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Close'));
+
+    await waitFor(() => {
+      expect(queryByText('Upload Attachments')).toBeNull();
+    });
+  });
+
   it('renders correctly with no attachments', () => {
     const { getByText } = render(
       <Router history={history}>

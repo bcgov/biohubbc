@@ -1,10 +1,6 @@
 import { WRITE_ROLES } from '../constants/roles';
 
 export const getAttachmentApiResponseObject = (basicDescription: string, successDescription: string) => {
-  if (!basicDescription || !successDescription) {
-    return null;
-  }
-
   return {
     description: basicDescription,
     tags: ['attachment'],
