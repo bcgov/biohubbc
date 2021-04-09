@@ -16,7 +16,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 
 const useStyles = makeStyles({
   heading: {
@@ -171,6 +171,13 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                   aria-label="Edit Funding Source Information"
                   startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
                   EDIT
+                </Button>
+                <Button
+                  className="trashButtonSmall"
+                  onClick={() => handleDialogEditOpen(index)}
+                  title="Delete Funding Source"
+                  aria-label="Delete Funding Source"
+                  startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}>
                 </Button>
               </Grid>
             </Grid>
