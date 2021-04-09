@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import EditDialog from 'components/dialog/EditDialog';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { Formik } from 'formik';
 import React from 'react';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 import ProjectFundingItemForm, {
@@ -8,9 +8,6 @@ import ProjectFundingItemForm, {
   ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
 } from './ProjectFundingItemForm';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { codes } from 'test-helpers/code-helpers';
-import { Formik } from 'formik';
 
 const funding_sources: IMultiAutocompleteFieldOption[] = [
   {
@@ -133,7 +130,7 @@ describe('ProjectFundingItemForm', () => {
     const existingFormValues: IProjectFundingFormArrayItem = {
       id: 1,
       agency_id: 3,
-      investment_action_category: 41,
+      investment_action_category: 42,
       investment_action_category_name: 'Not Applicable',
       agency_project_id: '555',
       funding_amount: 666,
