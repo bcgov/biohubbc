@@ -100,7 +100,7 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
         {props.dialogError && (
           <DialogContent>
             <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
-            {props?.dialogErrorDetails?.length ? (
+            {!!props?.dialogErrorDetails?.length && (
               <>
                 <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
                   {(isExpanded && 'Hide detailed error message') || 'Show detailed error message'}
@@ -109,8 +109,6 @@ export const ErrorDialog: React.FC<IErrorDialogProps> = (props) => {
                   <ErrorDetailsList errors={props.dialogErrorDetails} />
                 </Collapse>
               </>
-            ) : (
-              <></>
             )}
           </DialogContent>
         )}

@@ -16,7 +16,7 @@ export const ProjectDraftFormYupSchema = yup.object().shape({
 });
 
 /**
- * Create project - General information section
+ * Create Project - Draft form
  *
  * @return {*}
  */

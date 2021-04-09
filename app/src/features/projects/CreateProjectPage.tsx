@@ -18,7 +18,7 @@ import { ArrowBack } from '@material-ui/icons';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { CreateProjectI18N } from 'constants/i18n';
+import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import {
   IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
@@ -360,7 +360,7 @@ const CreateProjectPage: React.FC = () => {
       setOpenDraftDialog(false);
 
       if (!response?.id) {
-        showErrorDialog({
+        showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a draft project ID.'
         });
 
@@ -369,8 +369,13 @@ const CreateProjectPage: React.FC = () => {
 
       setDraft({ id: response.id, date: response.date });
     } catch (error) {
+      setOpenDraftDialog(false);
+
       const apiError = error as APIError;
-      showErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
+      showDraftErrorDialog({
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
     }
   };
 
@@ -391,7 +396,7 @@ const CreateProjectPage: React.FC = () => {
       }
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
+      showCreateErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
     }
   };
 
@@ -405,7 +410,7 @@ const CreateProjectPage: React.FC = () => {
     const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
 
     if (!response?.ids?.length) {
-      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
       return;
     }
 
@@ -424,7 +429,7 @@ const CreateProjectPage: React.FC = () => {
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
-      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
 
@@ -433,8 +438,24 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/projects/${response.id}`);
   };
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
+  const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
+      dialogText: CreateProjectDraftI18N.draftErrorText,
+      ...textDialogProps,
+      open: true
+    });
+  };
+
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: CreateProjectI18N.cancelTitle,
+      dialogText: CreateProjectI18N.createErrorText,
+      ...textDialogProps,
+      open: true
+    });
   };
 
   /**

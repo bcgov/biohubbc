@@ -250,7 +250,7 @@ describe('CreateProjectPage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('the cancel button closes the dialog', async () => {
+    it('closes the dialog on cancel button click', async () => {
       const { getByText, findByText, queryByText, getByRole, asFragment } = renderContainer();
 
       const saveAsDraftButton = await findByText('Save as Draft');
@@ -273,7 +273,7 @@ describe('CreateProjectPage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
-    it('the save button calls the createDraft/updateDraft functions and closes the dialog', async () => {
+    it('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
       mockBiohubApi().draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
@@ -315,6 +315,33 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
 
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
+
+      // Expect dialog to be closed
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('renders an error dialog if the draft submit request fails', async () => {
+      mockBiohubApi().draft.createDraft.mockImplementation(() => {
+        throw new Error('Draft failed exception!');
+      });
+
+      const { getByText, findByText, queryByText, getByLabelText, asFragment } = renderContainer();
+
+      const saveAsDraftButton = await findByText('Save as Draft');
+
+      fireEvent.click(saveAsDraftButton);
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+
+      fireEvent.click(getByText('Save'));
+
+      await waitFor(() => {
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
 

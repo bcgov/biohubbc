@@ -46,4 +46,27 @@ describe('Project Draft Form', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('renders correctly with errors', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={projectDraftFilledValues}
+        initialErrors={{
+          draft_name: 'Error this is a required field'
+        }}
+        initialTouched={{
+          draft_name: true
+        }}
+        validationSchema={ProjectDraftFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <ProjectDraftForm />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

@@ -68,7 +68,7 @@ export interface IDBConnection {
    */
   rollback: () => Promise<void>;
   /**
-   * Performs a query agaisnt this connection, returning the results.
+   * Performs a query against this connection, returning the results.
    *
    * Note: Does nothing if the connection is not open, or was released.
    *
@@ -105,10 +105,10 @@ export interface IDBConnection {
  *   connection.release();
  * }
  *
- * @param {string} keycloakToken
+ * @param {object} keycloakToken
  * @return {*} {IDBConnection}
  */
-export const getDBConnection = function (keycloakToken: string): IDBConnection {
+export const getDBConnection = function (keycloakToken: object): IDBConnection {
   let _client: PoolClient;
 
   let _isOpen = false;
@@ -178,7 +178,7 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
   };
 
   /**
-   * Performs a query agaisnt this connection, returning the results.
+   * Performs a query against this connection, returning the results.
    *
    * Note: Does nothing if the connection is not open, or was released.
    *
@@ -205,8 +205,8 @@ export const getDBConnection = function (keycloakToken: string): IDBConnection {
    */
   const _setUserContext = async () => {
     // Strip the `@<alias>` from the end of the username, which is added in keycloak to IDIR and BCeID usernames
-    const idir = _token['preferred_username']?.split('@')[0];
-    const bceid = _token['preferred_username']?.split('@')[0];
+    const idir = _token?.['preferred_username']?.split('@')[0];
+    const bceid = _token?.['preferred_username']?.split('@')[0];
 
     if (!idir && !bceid) {
       throw new HTTP400('Failed to identify user ID');
