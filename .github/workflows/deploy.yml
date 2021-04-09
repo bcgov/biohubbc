@@ -24,6 +24,23 @@ jobs:
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
 
+  scaleDownPods:
+    name: Scale down the pods for this PR
+    runs-on: ubuntu-16.04
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    steps:
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      - name: Scale down
+        run: |
+          oc project af2668-dev
+          oc get deploymentconfig --selector env-id=$BUILD_ID -o name | awk '{​​​​​​​​​​​print "oc scale --replicas=0  "$1 }​​​​​​​​​​​' | bash
+
   # Build the Database image
   buildDatabase:
     name: Build Database Image
@@ -31,6 +48,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
+    needs:
+      - scaleDownPods
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -77,6 +96,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
+    needs:
+      - scaleDownPods
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -123,6 +144,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
+    needs:
+      - scaleDownPods
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -169,6 +192,8 @@ jobs:
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
+    needs:
+      - scaleDownPods
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
