@@ -12,6 +12,34 @@ const defaultLog = getLogger('paths/draft');
 
 export const POST: Operation = [logRequest('paths/draft', 'POST'), createDraft()];
 
+const postPutResponses = {
+  200: {
+    description: 'Draft post response object.',
+    content: {
+      'application/json': {
+        schema: {
+          ...(draftResponseObject as object)
+        }
+      }
+    }
+  },
+  400: {
+    $ref: '#/components/responses/400'
+  },
+  401: {
+    $ref: '#/components/responses/401'
+  },
+  403: {
+    $ref: '#/components/responses/401'
+  },
+  500: {
+    $ref: '#/components/responses/500'
+  },
+  default: {
+    $ref: '#/components/responses/default'
+  }
+};
+
 POST.apiDoc = {
   description: 'Create a new Draft.',
   tags: ['draft'],
@@ -44,31 +72,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Draft post response object.',
-      content: {
-        'application/json': {
-          schema: {
-            ...(draftResponseObject as object)
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
+    ...postPutResponses
   }
 };
 
@@ -155,31 +159,7 @@ PUT.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Draft put response object.',
-      content: {
-        'application/json': {
-          schema: {
-            ...(draftResponseObject as object)
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
+    ...postPutResponses
   }
 };
 
