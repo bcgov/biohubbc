@@ -179,7 +179,7 @@ describe('putProjectSQL', () => {
         end_date: '2020-05-20T07:00:00.000Z'
       }),
       new PutLocationData({
-        location_description: 'descritpion'
+        location_description: 'description'
       }),
       new PutObjectivesData({
         objectives: 'objectives',
