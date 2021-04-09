@@ -6,12 +6,12 @@ export const CreateProjectI18N = {
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const UploadProjectArtifactsI18N = {
+export const UploadProjectAttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
-  uploadErrorTitle: 'Error Uploading Project Artifacts',
+  uploadErrorTitle: 'Error Uploading Project Attachments',
   uploadErrorText:
-    'An error has occurred while attempting to upload project artifacts, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to upload project attachments, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditPartnershipsI18N = {

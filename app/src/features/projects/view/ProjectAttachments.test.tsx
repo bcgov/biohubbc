@@ -8,7 +8,7 @@ import ProjectAttachments from './ProjectAttachments';
 const history = createMemoryHistory();
 
 describe('ProjectAttachments', () => {
-  it('renders correctly', () => {
+  it('renders correctly with no attachments', () => {
     const { asFragment } = render(
       <Router history={history}>
         <ProjectAttachments projectForViewData={getProjectForViewResponse} />

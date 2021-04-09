@@ -6,6 +6,11 @@ import { HTTP400 } from '../errors/CustomError';
 import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import {
+  getProjectAttachmentByFileNameSQL,
+  postProjectAttachmentSQL,
+  putProjectAttachmentSQL
+} from '../queries/project/project-attachments-queries';
+import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
   postProjectActivitySQL,
@@ -440,4 +445,50 @@ export const insertProjectClimateChangeInitiative = async (
   }
 
   return result.id;
+};
+
+export const upsertProjectAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
+
+  if (!getSqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  if (getResponse && getResponse.rowCount > 0) {
+    const updateSqlStatement = putProjectAttachmentSQL(projectId, file.originalname);
+
+    if (!updateSqlStatement) {
+      throw new HTTP400('Failed to build SQL update statement');
+    }
+
+    const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+    const updateResult = (updateResponse && updateResponse.rowCount) || null;
+
+    if (!updateResult) {
+      throw new HTTP400('Failed to update project attachment data');
+    }
+
+    return updateResult;
+  }
+
+  const insertSqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId);
+
+  if (!insertSqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
+  const insertResult = (insertResponse && insertResponse.rows && insertResponse.rows[0]) || null;
+
+  if (!insertResult || !insertResult.id) {
+    throw new HTTP400('Failed to insert project attachment data');
+  }
+
+  return insertResult.id;
 };

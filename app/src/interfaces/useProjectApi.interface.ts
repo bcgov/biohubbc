@@ -9,6 +9,22 @@ import { IProjectPermitForm } from 'features/projects/components/ProjectPermitFo
 import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { Feature } from 'geojson';
 
+export interface IGetProjectAttachment {
+  fileName: string;
+  lastModified: string;
+  size: number;
+}
+
+/**
+ * Get project attachments response object.
+ *
+ * @export
+ * @interface IGetProjectAttachmentsResponse
+ */
+export interface IGetProjectAttachmentsResponse {
+  attachmentsList: IGetProjectAttachment[];
+}
+
 /**
  * Get projects list response object.
  *

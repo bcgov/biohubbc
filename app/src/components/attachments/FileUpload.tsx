@@ -147,7 +147,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
    */
   const uploadFile = async (fileToUpload: IUploadFile) => {
     biohubApi.project
-      .uploadProjectArtifacts(
+      .uploadProjectAttachments(
         props.projectId,
         [fileToUpload.file],
         fileToUpload.cancelTokenSource,

@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput } from 'aws-sdk/clients/s3';
+import { GetObjectOutput, ManagedUpload, Metadata, ListObjectsOutput, DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
@@ -27,6 +27,24 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput | null
   }
 
   return S3.getObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
+}
+
+/**
+ * Delete a file from S3, based on its key.
+ *
+ * For potential future reference, for deleting the delete marker of a file in S3:
+ * https://docs.aws.amazon.com/AmazonS3/latest/userguide/RemDelMarker.html
+ *
+ * @export
+ * @param {string} key the unique key assigned to the file in S3 when it was originally uploaded
+ * @returns {Promise<GetObjectOutput>} the response from S3 or null if required parameters are null
+ */
+export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput | null> {
+  if (!key) {
+    return null;
+  }
+
+  return S3.deleteObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
 }
 
 /**

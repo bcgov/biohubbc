@@ -7,7 +7,7 @@ import FileUpload from './FileUpload';
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    uploadProjectArtifacts: jest.fn<Promise<any>, []>()
+    uploadProjectAttachments: jest.fn<Promise<any>, []>()
   }
 };
 
@@ -35,7 +35,7 @@ describe('FileUpload', () => {
       resolveRef = resolve;
     });
 
-    mockBiohubApi().project.uploadProjectArtifacts.mockReturnValue(mockUploadPromise);
+    mockBiohubApi().project.uploadProjectAttachments.mockReturnValue(mockUploadPromise);
 
     const { asFragment, getByTestId, getByText } = renderContainer();
 
@@ -46,7 +46,7 @@ describe('FileUpload', () => {
     fireEvent.change(dropZoneInput, { target: { files: [testFile] } });
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.uploadProjectArtifacts).toHaveBeenCalledWith(
+      expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
         projectId,
         [testFile],
         expect.any(Object),
@@ -77,7 +77,7 @@ describe('FileUpload', () => {
       rejectRef = reject;
     });
 
-    mockBiohubApi().project.uploadProjectArtifacts.mockReturnValue(mockUploadPromise);
+    mockBiohubApi().project.uploadProjectAttachments.mockReturnValue(mockUploadPromise);
 
     const { asFragment, getByTestId, getByText, getByTitle } = renderContainer();
 
@@ -88,7 +88,7 @@ describe('FileUpload', () => {
     fireEvent.change(dropZoneInput, { target: { files: [testFile] } });
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.uploadProjectArtifacts).toHaveBeenCalledWith(
+      expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
         projectId,
         [testFile],
         expect.any(Object),
