@@ -19,7 +19,7 @@ describe('ErrorDialog', () => {
     expect(baseElement).toMatchSnapshot();
   });
 
-  it('renders correctly with an error message', () => {
+  it('renders correctly with a non-detailed error message', () => {
     const { baseElement } = render(
       <div id="root">
         <ErrorDialog
@@ -36,7 +36,7 @@ describe('ErrorDialog', () => {
     expect(baseElement).toMatchSnapshot();
   });
 
-  it('renders correctly with error details shown/hidden', async () => {
+  it('renders correctly with a detailed error message', async () => {
     const { baseElement, getByText } = render(
       <div id="root">
         <ErrorDialog
