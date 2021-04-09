@@ -106,7 +106,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                   <TableCell>{row.size / 1000000} MB</TableCell>
                   <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
-                    <IconButton color="primary" aria-label="delete-attachment" onClick={() => deleteAttachment(row)}>
+                    <IconButton
+                      color="primary"
+                      aria-label="delete-attachment"
+                      data-testid="delete-attachment"
+                      onClick={() => deleteAttachment(row)}>
                       <Icon path={mdiTrashCanOutline} size={1} />
                     </IconButton>
                   </TableCell>
