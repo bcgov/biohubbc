@@ -41,7 +41,7 @@ jobs:
       - name: Scale down
         run: |
           oc project af2668-dev
-          oc get deploymentconfig --selector env-id=$BUILD_ID -o name | awk '''{​​​​​​​​​​​print "oc scale --replicas=0  " $1}​​​​​​​​​​​''' | bash
+          oc get deploymentconfig --selector env-id=$BUILD_ID -o name | awk '{print "oc scale --replicas=0  " $1}' | bash
 
   # Build the Database image
   buildDatabase:
