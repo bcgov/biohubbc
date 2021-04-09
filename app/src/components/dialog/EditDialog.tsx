@@ -18,6 +18,16 @@ export interface IEditDialogProps {
    * @memberof IEditDialogProps
    */
   dialogTitle: string;
+
+  /**
+   * The label of the `onSave` button.
+   *
+   * Defaults to `Save Changes` if not specified.
+   *
+   * @type {string}
+   * @memberof IEditDialogProps
+   */
+  dialogSaveButtonLabel?: string;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -91,7 +101,7 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
             </DialogContent>
             <DialogActions>
               <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                Save Changes
+                {props.dialogSaveButtonLabel || 'Save Changes'}
               </Button>
               <Button onClick={props.onCancel} color="primary" variant="outlined">
                 Cancel

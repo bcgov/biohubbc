@@ -15,9 +15,10 @@ import {
   Typography
 } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
+import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { CreateProjectI18N } from 'constants/i18n';
+import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import {
   IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
@@ -73,6 +74,13 @@ import { useHistory } from 'react-router';
 import * as History from 'history';
 import { Prompt } from 'react-router-dom';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import ProjectDraftForm, {
+  IProjectDraftForm,
+  ProjectDraftFormInitialValues,
+  ProjectDraftFormYupSchema
+} from './components/ProjectDraftForm';
+import { getFormattedDate } from 'utils/Utils';
+import { DATE_FORMAT } from 'constants/dateFormats';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -154,6 +162,11 @@ const CreateProjectPage: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
     }
   });
+
+  // Whether or not to show the 'Save as draft' dialog
+  const [openDraftDialog, setOpenDraftDialog] = useState(false);
+
+  const [draft, setDraft] = useState({ id: 0, date: '' });
 
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
@@ -320,42 +333,70 @@ const CreateProjectPage: React.FC = () => {
     history.push('/projects');
   };
 
+  const getProjectFormData = (): ICreateProjectRequest => {
+    return {
+      coordinator: stepForms[0].stepValues as IProjectCoordinatorForm,
+      permit: stepForms[1].stepValues as IProjectPermitForm,
+      project: stepForms[2].stepValues as IProjectDetailsForm,
+      objectives: stepForms[3].stepValues as IProjectObjectivesForm,
+      location: stepForms[4].stepValues as IProjectLocationForm,
+      species: stepForms[5].stepValues as IProjectSpeciesForm,
+      iucn: stepForms[6].stepValues as IProjectIUCNForm,
+      funding: stepForms[7].stepValues as IProjectFundingForm,
+      partnerships: stepForms[8].stepValues as IProjectPartnershipsForm
+    };
+  };
+
+  const handleSubmitDraft = async (values: IProjectDraftForm) => {
+    try {
+      let response;
+
+      if (draft?.id) {
+        response = await biohubApi.draft.updateDraft(draft.id, values.draft_name, getProjectFormData());
+      } else {
+        response = await biohubApi.draft.createDraft(values.draft_name, getProjectFormData());
+      }
+
+      setOpenDraftDialog(false);
+
+      if (!response?.id) {
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a draft project ID.'
+        });
+
+        return;
+      }
+
+      setDraft({ id: response.id, date: response.date });
+    } catch (error) {
+      setOpenDraftDialog(false);
+
+      const apiError = error as APIError;
+      showDraftErrorDialog({
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
+    }
+  };
+
   /**
    * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
     try {
-      const coordinatorData = stepForms[0].stepValues as IProjectCoordinatorForm;
-      const permitData = stepForms[1].stepValues as IProjectPermitForm;
-      const generalData = stepForms[2].stepValues as IProjectDetailsForm;
-      const objectivesData = stepForms[3].stepValues as IProjectObjectivesForm;
-      const locationData = stepForms[4].stepValues as IProjectLocationForm;
-      const speciesData = stepForms[5].stepValues as IProjectSpeciesForm;
-      const iucnData = stepForms[6].stepValues as IProjectIUCNForm;
-      const fundingData = stepForms[7].stepValues as IProjectFundingForm;
-      const partnershipsData = stepForms[8].stepValues as IProjectPartnershipsForm;
+      const formData = getProjectFormData();
 
-      if (!isSamplingConducted(permitData)) {
+      if (!isSamplingConducted(formData.permit)) {
         await createPermitNoSampling({
-          coordinator: coordinatorData,
-          permit: permitData
+          coordinator: formData.coordinator,
+          permit: formData.permit
         });
       } else {
-        await createProject({
-          coordinator: coordinatorData,
-          permit: permitData,
-          project: generalData,
-          objectives: objectivesData,
-          location: locationData,
-          species: speciesData,
-          iucn: iucnData,
-          funding: fundingData,
-          partnerships: partnershipsData
-        });
+        await createProject(formData);
       }
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
+      showCreateErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
     }
   };
 
@@ -369,7 +410,7 @@ const CreateProjectPage: React.FC = () => {
     const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
 
     if (!response?.ids?.length) {
-      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
       return;
     }
 
@@ -388,7 +429,7 @@ const CreateProjectPage: React.FC = () => {
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
-      showErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
 
@@ -397,8 +438,24 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/projects/${response.id}`);
   };
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({ ...openErrorDialogProps, ...textDialogProps, open: true });
+  const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
+      dialogText: CreateProjectDraftI18N.draftErrorText,
+      ...textDialogProps,
+      open: true
+    });
+  };
+
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: CreateProjectI18N.cancelTitle,
+      dialogText: CreateProjectI18N.createErrorText,
+      ...textDialogProps,
+      open: true
+    });
   };
 
   /**
@@ -508,6 +565,18 @@ const CreateProjectPage: React.FC = () => {
         onNo={handleDialogNo}
         onYes={handleDialogYes}
       />
+      <EditDialog
+        dialogTitle="Save Incomplete Project as a Draft"
+        dialogSaveButtonLabel="Save"
+        open={openDraftDialog}
+        component={{
+          element: <ProjectDraftForm />,
+          initialValues: ProjectDraftFormInitialValues,
+          validationSchema: ProjectDraftFormYupSchema
+        }}
+        onCancel={() => setOpenDraftDialog(false)}
+        onSave={(values) => handleSubmitDraft(values)}
+      />
       <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
         <Container maxWidth="md">
@@ -519,8 +588,22 @@ const CreateProjectPage: React.FC = () => {
               </Link>
             </Breadcrumbs>
           </Box>
-          <Box mb={2}>
+          <Box mb={2} display="flex" justifyContent="space-between">
             <Typography variant="h1">Create Project</Typography>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenDraftDialog(true)}
+              className={classes.actionButton}>
+              Save as Draft
+            </Button>
+          </Box>
+          <Box display="flex" justifyContent="flex-end">
+            <Box visibility={(draft?.date && 'visible') || 'hidden'}>
+              <Typography component="span" variant="subtitle2" color="textSecondary">
+                {`Draft saved on ${getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, draft.date)}`}
+              </Typography>
+            </Box>
           </Box>
           <Box mt={5} mb={2}>
             <Divider />
