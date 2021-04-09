@@ -85,7 +85,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
     (values.agency_id === 1 && 'Investment Action') || (values.agency_id === 2 && 'Investment Category') || null;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form data-testid="funding-item-form" onSubmit={handleSubmit}>
       <Box component="fieldset">
         <FormLabel id="agency_details" component="legend">
           Agency Details

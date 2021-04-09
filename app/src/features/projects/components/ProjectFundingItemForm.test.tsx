@@ -5,9 +5,12 @@ import React from 'react';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
-  //ProjectFundingFormArrayItemInitialValues,
+  ProjectFundingFormArrayItemInitialValues,
   ProjectFundingFormArrayItemYupSchema
 } from './ProjectFundingItemForm';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { codes } from 'test-helpers/code-helpers';
+import { Formik } from 'formik';
 
 const funding_sources: IMultiAutocompleteFieldOption[] = [
   {
@@ -44,11 +47,31 @@ const investment_action_category: IInvestmentActionCategoryOption[] = [
 
 describe('ProjectFundingItemForm', () => {
   it('renders correctly with default empty values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectFundingFormArrayItemInitialValues}
+        validationSchema={ProjectFundingFormArrayItemYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingItemForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with agency 1', () => {
     const existingFormValues: IProjectFundingFormArrayItem = {
       id: 1,
       agency_id: 1,
       investment_action_category: 1,
-      investment_action_category_name: 'Something',
+      investment_action_category_name: 'Some investment action',
       agency_project_id: '555',
       funding_amount: 666,
       start_date: '2021-03-14',
@@ -56,144 +79,85 @@ describe('ProjectFundingItemForm', () => {
       revision_count: 2
     };
 
-    const { baseElement } = render(
-      <div id="root">
-        <EditDialog
-          dialogTitle="This is dialog title"
-          dialogError="This is dialog error"
-          open={true}
-          component={{
-            element: (
-              <ProjectFundingItemForm
-                funding_sources={funding_sources}
-                investment_action_category={investment_action_category}
-              />
-            ),
-            initialValues: { existingFormValues },
-            validationSchema: ProjectFundingFormArrayItemYupSchema
-          }}
-          onCancel={() => {}}
-          onSave={() => {}}
-        />
-      </div>
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectFundingFormArrayItemYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingItemForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
+      </Formik>
     );
 
-    expect(baseElement).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
-  describe('renders correctly with existing funding item values', () => {
-    it('with agency_id 1', () => {
-      const existingFormValues: IProjectFundingFormArrayItem = {
-        id: 1,
-        agency_id: 1,
-        investment_action_category: 1,
-        investment_action_category_name: 'Something',
-        agency_project_id: '555',
-        funding_amount: 666,
-        start_date: '2021-03-14',
-        end_date: '2021-04-14',
-        revision_count: 2
-      };
+  it('renders correctly with agency 2', () => {
+    const existingFormValues: IProjectFundingFormArrayItem = {
+      id: 1,
+      agency_id: 2,
+      investment_action_category: 1,
+      investment_action_category_name: 'Some investment category',
+      agency_project_id: '555',
+      funding_amount: 666,
+      start_date: '2021-03-14',
+      end_date: '2021-04-14',
+      revision_count: 2
+    };
 
-      const { baseElement } = render(
-        <div id="root">
-          <EditDialog
-            dialogTitle="This is dialog title"
-            dialogError="This is dialog error"
-            open={true}
-            component={{
-              element: (
-                <ProjectFundingItemForm
-                  funding_sources={funding_sources}
-                  investment_action_category={investment_action_category}
-                />
-              ),
-              initialValues: { existingFormValues },
-              validationSchema: ProjectFundingFormArrayItemYupSchema
-            }}
-            onCancel={() => {}}
-            onSave={() => {}}
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectFundingFormArrayItemYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingItemForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
           />
-        </div>
-      );
+        )}
+      </Formik>
+    );
 
-      expect(baseElement).toMatchSnapshot();
-    });
+    expect(asFragment()).toMatchSnapshot();
+  });
+  it('renders correctly with any agency other than 1 or 2', () => {
+    const existingFormValues: IProjectFundingFormArrayItem = {
+      id: 1,
+      agency_id: 3,
+      investment_action_category: 41,
+      investment_action_category_name: 'Not Applicable',
+      agency_project_id: '555',
+      funding_amount: 666,
+      start_date: '2021-03-14',
+      end_date: '2021-04-14',
+      revision_count: 2
+    };
 
-    it('with agency_id 2', () => {
-      const existingFormValues: IProjectFundingFormArrayItem = {
-        id: 1,
-        agency_id: 2,
-        investment_action_category: 2,
-        investment_action_category_name: 'Something',
-        agency_project_id: '555',
-        funding_amount: 666,
-        start_date: '2021-03-14',
-        end_date: '2021-04-14',
-        revision_count: 2
-      };
-
-      const { baseElement } = render(
-        <div id="root">
-          <EditDialog
-            dialogTitle="This is dialog title"
-            dialogError="This is dialog error"
-            open={true}
-            component={{
-              element: (
-                <ProjectFundingItemForm
-                  funding_sources={funding_sources}
-                  investment_action_category={investment_action_category}
-                />
-              ),
-              initialValues: { existingFormValues },
-              validationSchema: ProjectFundingFormArrayItemYupSchema
-            }}
-            onCancel={() => {}}
-            onSave={() => {}}
+    const { asFragment } = render(
+      <Formik
+        initialValues={existingFormValues}
+        validationSchema={ProjectFundingFormArrayItemYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingItemForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
           />
-        </div>
-      );
+        )}
+      </Formik>
+    );
 
-      expect(baseElement).toMatchSnapshot();
-    });
-
-    it('with agency_id other than 1 or 2', () => {
-      const existingFormValues: IProjectFundingFormArrayItem = {
-        id: 1,
-        agency_id: 3,
-        investment_action_category: 3,
-        investment_action_category_name: 'Something',
-        agency_project_id: '555',
-        funding_amount: 666,
-        start_date: '2021-03-14',
-        end_date: '2021-04-14',
-        revision_count: 2
-      };
-
-      const { baseElement } = render(
-        <div id="root">
-          <EditDialog
-            dialogTitle="This is dialog title"
-            dialogError="This is dialog error"
-            open={true}
-            component={{
-              element: (
-                <ProjectFundingItemForm
-                  funding_sources={funding_sources}
-                  investment_action_category={investment_action_category}
-                />
-              ),
-              initialValues: { existingFormValues },
-              validationSchema: ProjectFundingFormArrayItemYupSchema
-            }}
-            onCancel={() => {}}
-            onSave={() => {}}
-          />
-        </div>
-      );
-
-      expect(baseElement).toMatchSnapshot();
-    });
+    expect(asFragment()).toMatchSnapshot();
   });
 });
