@@ -516,7 +516,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               role="button"
               tabindex="0"
             >
-              type 1
+              type 2
             </div>
             <input
               aria-hidden="true"
@@ -524,7 +524,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               name="project_type"
               required=""
               tabindex="-1"
-              value="type_1"
+              value="2"
             />
             <svg
               aria-hidden="true"

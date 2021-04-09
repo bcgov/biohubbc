@@ -5,17 +5,15 @@ import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
 import {
   GetCoordinatorData,
-  GetFundingData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetPartnershipsData,
   GetProjectData,
   GetLocationData
 } from '../../../models/project-view';
-import { GetSpeciesData } from '../../../models/project-view-update';
+import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
-  getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectSQL
@@ -26,7 +24,8 @@ import {
   getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
   getClimateInitiativesByProjectSQL,
-  getActivitiesByProjectSQL
+  getActivitiesByProjectSQL,
+  getFundingSourceByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';

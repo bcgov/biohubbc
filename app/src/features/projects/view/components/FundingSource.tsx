@@ -1,10 +1,22 @@
-import { Box, Grid, Button, Typography, Divider, IconButton } from '@material-ui/core';
-import React, { Fragment } from 'react';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { Box, Grid, Button, Typography, Divider } from '@material-ui/core';
+import React, { Fragment, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { getFormattedDateRangeString, getFormattedAmount } from 'utils/Utils';
-import { Edit } from '@material-ui/icons';
+import { getFormattedDateRangeString, getFormattedAmount, getFormattedDate } from 'utils/Utils';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { EditFundingI18N } from 'constants/i18n';
+import ProjectFundingItemForm, {
+  IProjectFundingFormArrayItem,
+  ProjectFundingFormArrayItemInitialValues,
+  ProjectFundingFormArrayItemYupSchema
+} from 'features/projects/components/ProjectFundingItemForm';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 const useStyles = makeStyles({
   heading: {
@@ -19,8 +31,10 @@ const useStyles = makeStyles({
   }
 });
 
-export interface IProjectDetailsProps {
+export interface IProjectFundingProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
 }
 
 /**
@@ -28,15 +42,100 @@ export interface IProjectDetailsProps {
  *
  * @return {*}
  */
-const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
+const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   const {
-    projectForViewData: { funding }
+    projectForViewData: { funding, id },
+    codes
   } = props;
 
   const classes = useStyles();
+  const biohubApi = useBiohubApi();
 
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditFundingI18N.editErrorTitle,
+    dialogText: EditFundingI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const [fundingFormData, setFundingFormData] = useState<IProjectFundingFormArrayItem>(
+    ProjectFundingFormArrayItemInitialValues
+  );
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+
+  const handleDialogEditOpen = async (itemIndex: number) => {
+    const fundingSource = funding.fundingSources[itemIndex];
+
+    setFundingFormData({
+      id: fundingSource.id,
+      agency_id: fundingSource.agency_id,
+      investment_action_category: fundingSource.investment_action_category,
+      investment_action_category_name: fundingSource.investment_action_category_name,
+      agency_project_id: fundingSource.agency_project_id,
+      funding_amount: fundingSource.funding_amount,
+      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
+      revision_count: fundingSource.revision_count
+    });
+
+    setOpenEditDialog(true);
+  };
+  const handleDialogEditSave = async (values: IProjectFundingFormArrayItem) => {
+    const projectData = {
+      funding: {
+        fundingSources: [{ ...values }]
+      }
+    };
+
+    try {
+      await biohubApi.project.updateProject(id, projectData);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    props.refresh();
+  };
   return (
     <>
+      <EditDialog
+        dialogTitle={EditFundingI18N.editTitle}
+        open={openEditDialog}
+        component={{
+          element: (
+            <ProjectFundingItemForm
+              funding_sources={
+                codes?.funding_source?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+              investment_action_category={
+                codes?.investment_action_category?.map((item) => {
+                  return { value: item.id, fs_id: item.fs_id, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          initialValues: fundingFormData,
+          validationSchema: ProjectFundingFormArrayItemYupSchema
+        }}
+        onCancel={() => setOpenEditDialog(false)}
+        onSave={handleDialogEditSave}
+      />
+      <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
         <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
           <Grid item>
@@ -53,23 +152,26 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
             </Button>
           </Grid>
         </Grid>
-        {funding.fundingAgencies.map((item: any) => (
-          <Fragment key={item.agency_id}>
+        {funding.fundingSources.map((item: any, index: number) => (
+          <Fragment key={item.id}>
             <Grid container item>
               <Divider className={classes.topBorder} />
             </Grid>
-            <Grid container item spacing={3} xs={12} justify="space-between" alignItems="center">
+            <Grid container item spacing={0} xs={12} justify="space-between" alignItems="center">
               <Grid item xs={12} sm={6} md={4}>
                 <Box>
                   <Typography className={classes.heading}>{item.agency_name}</Typography>
                 </Box>
               </Grid>
               <Grid item>
-                <IconButton title="Edit General Information" aria-label="Edit General Information">
-                  <Typography variant="caption">
-                    <Edit fontSize="inherit" /> EDIT
-                  </Typography>
-                </IconButton>
+                <Button
+                  className="editButtonSmall"
+                  onClick={() => handleDialogEditOpen(index)}
+                  title="Edit Funding Source Information"
+                  aria-label="Edit Funding Source Information"
+                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                  EDIT
+                </Button>
               </Grid>
             </Grid>
             <Grid container item spacing={3} xs={12}>
@@ -79,7 +181,7 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
                 </Box>
                 <Box>
                   <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                    {item.agency_id}
+                    {item.agency_project_id}
                   </Typography>
                 </Box>
               </Grid>
@@ -101,14 +203,14 @@ const FundingSource: React.FC<IProjectDetailsProps> = (props) => {
                   </Typography>
                 </Box>
               </Grid>
-              {item.investment_action_category !== 'Not Applicable' && (
+              {item.investment_action_category_name !== 'Not Applicable' && (
                 <Grid item xs={12} sm={6} md={4}>
                   <Box color="text.disabled">
                     <Typography variant="caption">Investment Category</Typography>
                   </Box>
                   <Box>
                     <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
-                      {item.investment_action_category}
+                      {item.investment_action_category_name}
                     </Typography>
                   </Box>
                 </Grid>

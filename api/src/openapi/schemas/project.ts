@@ -149,7 +149,7 @@ export const projectCreatePostRequestObject = {
       title: 'Project funding sources',
       type: 'object',
       properties: {
-        funding_agencies: {
+        funding_sources: {
           type: 'array',
           items: {
             title: 'Project funding agency',

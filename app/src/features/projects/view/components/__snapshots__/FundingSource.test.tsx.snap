@@ -1,5 +1,202 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`FundingSource opens the edit funding source dialog box when edit button is clicked, cancel and save buttons are pressed 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-25"
+  />
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources
+        </h3>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <label
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-13 MuiButton-outlinedPrimary"
+          role="button"
+          tabindex="0"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </label>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-item"
+    >
+      <hr
+        class="MuiDivider-root makeStyles-topBorder-15"
+      />
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-16"
+        >
+          <p
+            class="MuiTypography-root makeStyles-heading-13 MuiTypography-body1"
+          >
+            agency name
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <button
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          tabindex="0"
+          title="Edit Funding Source Information"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            EDIT
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-17"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Agency Project ID
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-18"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            ABC123
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-19"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Funding Amount
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-20"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+          >
+            $ 333
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-21"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Funding Dates
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-22"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            04/14/2000 - 04/13/2021
+          </h6>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-23"
+        >
+          <span
+            class="MuiTypography-root MuiTypography-caption"
+          >
+            Investment Category
+          </span>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-24"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1"
+            style="word-break: break-all;"
+          >
+            investment action
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`FundingSource renders correctly 1`] = `
 <DocumentFragment>
   <div
@@ -45,7 +242,7 @@ exports[`FundingSource renders correctly 1`] = `
       />
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -64,30 +261,30 @@ exports[`FundingSource renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-item"
       >
         <button
-          aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiIconButton-root"
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
           tabindex="0"
-          title="Edit General Information"
+          title="Edit Funding Source Information"
           type="button"
         >
           <span
-            class="MuiIconButton-label"
+            class="MuiButton-label"
           >
             <span
-              class="MuiTypography-root MuiTypography-caption"
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
               <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeInherit"
-                focusable="false"
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
                 />
               </svg>
-               EDIT
             </span>
+            EDIT
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -117,7 +314,7 @@ exports[`FundingSource renders correctly 1`] = `
             class="MuiTypography-root MuiTypography-subtitle1"
             style="word-break: break-all;"
           >
-            123
+            ABC123
           </h6>
         </div>
       </div>

@@ -106,7 +106,7 @@ export interface IGetProjectForUpdateResponse {
   coordinator?: IGetProjectForUpdateResponseCoordinator;
   species?: IGetProjectForUpdateResponseSpecies;
   iucn?: IGetProjectForUpdateResponseIUCN;
-  funding?: IGetProjectForUpdateResponseFundingSource;
+  funding?: IGetProjectForUpdateResponseFundingData;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
 }
 
@@ -157,17 +157,20 @@ export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
 }
 
-interface IGetProjectForUpdateResponseFundingSourceArrayItem {
+interface IGetProjectForUpdateResponseFundingSource {
+  id: number;
   agency_id: number;
   investment_action_category: number;
+  investment_action_category_name: string;
   agency_project_id: string;
   funding_amount: number;
   start_date: string;
   end_date: string;
+  revision_count: number;
 }
 
-export interface IGetProjectForUpdateResponseFundingSource {
-  fundingAgencies: IGetProjectForUpdateResponseFundingSourceArrayItem[];
+export interface IGetProjectForUpdateResponseFundingData {
+  fundingSources: IGetProjectForUpdateResponseFundingSource[];
 }
 
 export interface IGetProjectForUpdateResponsePartnerships {
@@ -198,7 +201,7 @@ export interface IGetProjectForViewResponse {
   coordinator: IGetProjectForViewResponseCoordinator;
   species: IGetProjectForViewResponseSpecies;
   iucn: IGetProjectForViewResponseIUCN;
-  funding: IGetProjectForViewResponseFundingSource;
+  funding: IGetProjectForViewResponseFundingData;
   partnerships: IGetProjectForViewResponsePartnerships;
 }
 
@@ -240,17 +243,21 @@ export interface IGetProjectForViewResponseIUCN {
   classificationDetails: IGetProjectForViewResponseIUCNArrayItem[];
 }
 
-interface IGetProjectForViewResponseFundingSourceArrayItem {
-  agency_id: string;
+interface IGetProjectForViewResponseFundingSource {
+  id: number;
+  agency_id: number;
   agency_name: string;
-  investment_action_category: string;
+  investment_action_category: number;
+  investment_action_category_name: string;
   funding_amount: number;
   start_date: string;
   end_date: string;
+  agency_project_id: string;
+  revision_count: number;
 }
 
-export interface IGetProjectForViewResponseFundingSource {
-  fundingAgencies: IGetProjectForViewResponseFundingSourceArrayItem[];
+export interface IGetProjectForViewResponseFundingData {
+  fundingSources: IGetProjectForViewResponseFundingSource[];
 }
 
 export interface IGetProjectForViewResponseSpecies {
