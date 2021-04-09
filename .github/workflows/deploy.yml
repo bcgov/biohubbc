@@ -23,6 +23,7 @@ jobs:
           echo Git Event Action: ${{ github.event.action }}
           echo Git Labels: "$LABELS"
           echo PR in Draft: ${{ github.event.pull_request.draft }}
+          awk -V
 
   scaleDownPods:
     name: Scale down the pods for this PR
@@ -42,7 +43,7 @@ jobs:
         run: |
           oc project af2668-dev
           oc get deploymentconfig --selector env-id=$BUILD_ID -o name > list.txt
-          awk '{​​​​​​​​​​​print "oc scale --replicas=0  " $1}​​​​​​​​​​​' list.txt > run.txt
+      # awk '{​​​​​​​​​​​print "oc scale --replicas=0  " $1}​​​​​​​​​​​' list.txt > run.txt
 
   # Build the Database image
   buildDatabase:
