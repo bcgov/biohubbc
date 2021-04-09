@@ -13,7 +13,10 @@ const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{a
 
 export const DELETE: Operation = [deleteAttachment()];
 
-DELETE.apiDoc = getAttachmentApiResponseObject('Delete an attachment of a project.', 'Row count of successfully deleted attachment record');
+DELETE.apiDoc = getAttachmentApiResponseObject(
+  'Delete an attachment of a project.',
+  'Row count of successfully deleted attachment record'
+);
 
 function deleteAttachment(): RequestHandler {
   return async (req, res) => {
