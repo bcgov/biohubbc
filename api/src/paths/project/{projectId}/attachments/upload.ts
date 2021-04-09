@@ -8,7 +8,7 @@ import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
-import { insertProjectAttachment } from '../../../project';
+import { upsertProjectAttachment } from '../../../project';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/upload');
 
@@ -112,7 +112,7 @@ export function uploadMedia(): RequestHandler {
 
       const insertProjectAttachmentsPromises =
         rawMediaArray.map((file: Express.Multer.File) =>
-          insertProjectAttachment(file, Number(req.params.projectId), connection)
+          upsertProjectAttachment(file, Number(req.params.projectId), connection)
         ) || [];
 
       await Promise.all([...insertProjectAttachmentsPromises]);

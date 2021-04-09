@@ -159,3 +159,77 @@ export const postProjectAttachmentSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get an attachment for a single project by project id and filename.
+ *
+ * @param {number} projectId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectAttachmentByFileNameSQL', message: 'params', projectId });
+
+  if (!projectId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      id,
+      file_name,
+      update_date,
+      create_date,
+      file_size
+    from
+      project_attachment
+    where
+      p_id = ${projectId}
+    and
+      file_name = ${fileName};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectAttachmentByFileNameSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update an attachment for a single project by project id and filename.
+ *
+ * @param {number} projectId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const putProjectAttachmentSQL = (projectId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'putProjectAttachmentSQL', message: 'params', projectId });
+
+  if (!projectId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE
+      project_attachment
+    SET
+      file_name = ${fileName}
+    WHERE
+      file_name = ${fileName}
+    AND
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'putProjectAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
