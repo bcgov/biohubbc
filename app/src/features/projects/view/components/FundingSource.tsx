@@ -1,9 +1,8 @@
-import { Box, Grid, Button, Typography, Divider, IconButton } from '@material-ui/core';
+import { Box, Grid, Button, Typography, Divider } from '@material-ui/core';
 import React, { Fragment, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString, getFormattedAmount, getFormattedDate } from 'utils/Utils';
-import { Edit } from '@material-ui/icons';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditFundingI18N } from 'constants/i18n';
@@ -16,6 +15,8 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import Icon from '@mdi/react';
+import { mdiPencilOutline } from '@mdi/js';
 
 const useStyles = makeStyles({
   heading: {
@@ -156,21 +157,21 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
             <Grid container item>
               <Divider className={classes.topBorder} />
             </Grid>
-            <Grid container item spacing={3} xs={12} justify="space-between" alignItems="center">
+            <Grid container item spacing={0} xs={12} justify="space-between" alignItems="center">
               <Grid item xs={12} sm={6} md={4}>
                 <Box>
                   <Typography className={classes.heading}>{item.agency_name}</Typography>
                 </Box>
               </Grid>
               <Grid item>
-                <IconButton
+                <Button
+                  className="editButtonSmall"
                   onClick={() => handleDialogEditOpen(index)}
                   title="Edit Funding Source Information"
-                  aria-label="Edit Funding Source Information">
-                  <Typography variant="caption">
-                    <Edit fontSize="inherit" /> EDIT
-                  </Typography>
-                </IconButton>
+                  aria-label="Edit Funding Source Information"
+                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                  EDIT
+                </Button>
               </Grid>
             </Grid>
             <Grid container item spacing={3} xs={12}>
