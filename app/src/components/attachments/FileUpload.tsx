@@ -113,8 +113,6 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         return;
       }
 
-      console.log(item);
-
       newRejectedFiles.push({
         file: item.file,
         status: UploadFileStatus.PENDING,
