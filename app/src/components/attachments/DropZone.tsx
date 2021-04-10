@@ -2,7 +2,7 @@ import { Box, Link, makeStyles, Typography } from '@material-ui/core';
 import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
-import Dropzone from 'react-dropzone';
+import Dropzone, { FileRejection } from 'react-dropzone';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -13,9 +13,10 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const MAX_FILES = Number(process.env.REACT_APP_MAX_FILES) || 10;
-const MAX_FILE_SIZE_BYTES = Number(process.env.REACT_APP_MAX_FILE_SIZE) || 52428800;
-const MAX_FILE_SIZE_MEGABYTES = Math.round(MAX_FILE_SIZE_BYTES / 1048576);
+const MAX_NUM_FILES = Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10;
+const MAX_FILE_SIZE_BYTES = Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800;
+
+const BYTES_PER_MEGABYTE = 1048576;
 
 export interface IFileUploadProps {
   /**
@@ -26,35 +27,43 @@ export interface IFileUploadProps {
    */
   projectId: number;
   /**
-   * Function called when files are added (via either drag/drop or browsing).
+   * Function called when files are accepted/rejected (via either drag/drop or browsing).
+   *
+   * Note: Files may be rejected due of file size limits or file number limits
    *
    * @memberof IFileUploadProps
    */
-  onFiles: (files: File[]) => void;
+  onFiles: (acceptedFiles: File[], rejectedFiles: FileRejection[]) => void;
   /**
-   * Maximum number of files allowed. Defaults to REACT_APP_MAX_FILES or 10.
+   * Maximum file size allowed (in bytes).
    *
-   * @type {number}
-   * @memberof IFileUploadProps
-   */
-  maxFiles?: number;
-  /**
-   * Maximum file size allowed (in bytes). Defaults to REACT_APP_MAX_FILE_SIZE or 52428800 (50MB).
+   * Note: defaults to `process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE` or `52428800` if not provided
+   * Note: Set to `Infinity` if no size limit is needed.
    *
    * @type {number}
    * @memberof IFileUploadProps
    */
   maxFileSize?: number;
+  /**
+   * Maximum number of files allowed.
+   *
+   * Note: defaults to `process.env.REACT_APP_MAX_UPLOAD_NUM_FILES` or `10` if not provided
+   * Note: Set to `0` if no file number limit is needed.
+   *
+   * @type {number}
+   * @memberof IFileUploadProps
+   */
+  maxNumFiles?: number;
 }
 
 export const DropZone: React.FC<IFileUploadProps> = (props) => {
   const classes = useStyles();
 
+  const maxNumFiles = props.maxNumFiles || MAX_NUM_FILES;
+  const maxFileSize = props.maxFileSize || MAX_FILE_SIZE_BYTES;
+
   return (
-    <Dropzone
-      maxFiles={props.maxFiles || MAX_FILES}
-      maxSize={props.maxFileSize || MAX_FILE_SIZE_BYTES}
-      onDrop={props.onFiles}>
+    <Dropzone maxFiles={maxNumFiles} maxSize={maxFileSize} onDrop={props.onFiles}>
       {({ getRootProps, getInputProps }) => (
         <section>
           <Box {...getRootProps()}>
@@ -64,14 +73,16 @@ export const DropZone: React.FC<IFileUploadProps> = (props) => {
               <Typography variant="h3" className={classes.textSpacing}>
                 Drag your files here, or <Link className={classes.browseLink}>Browse Files</Link>
               </Typography>
-              <Typography
-                component="span"
-                variant="subtitle2"
-                color="textSecondary">{`Maximum file size: ${MAX_FILE_SIZE_MEGABYTES} MB`}</Typography>
-              <Typography
-                component="span"
-                variant="subtitle2"
-                color="textSecondary">{`Maximum file count: ${MAX_FILES}`}</Typography>
+              {!!maxFileSize && maxFileSize !== Infinity && (
+                <Typography component="span" variant="subtitle2" color="textSecondary">
+                  {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
+                </Typography>
+              )}
+              {!!maxNumFiles && (
+                <Typography component="span" variant="subtitle2" color="textSecondary">
+                  {`Maximum file count: ${maxNumFiles}`}
+                </Typography>
+              )}
             </Box>
           </Box>
         </section>
