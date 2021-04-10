@@ -60,7 +60,7 @@ describe('FileUpload', () => {
 
       expect(getByText('testpng.txt')).toBeVisible();
 
-      expect(getByText('uploading')).toBeVisible();
+      expect(getByText('Uploading')).toBeVisible();
     });
 
     // Manually trigger the upload resolve to simulate a successful upload
@@ -68,7 +68,7 @@ describe('FileUpload', () => {
     resolveRef(null);
 
     await waitFor(() => {
-      expect(getByText('complete')).toBeVisible();
+      expect(getByText('Complete')).toBeVisible();
     });
 
     // expect file list item to show complete state
@@ -102,7 +102,7 @@ describe('FileUpload', () => {
 
       expect(getByText('testpng.txt')).toBeVisible();
 
-      expect(getByText('uploading')).toBeVisible();
+      expect(getByText('Uploading')).toBeVisible();
     });
 
     // Manually trigger the upload reject to simulate an unsuccessful upload
@@ -116,7 +116,7 @@ describe('FileUpload', () => {
     // expect file list item to show error state
     expect(asFragment()).toMatchSnapshot();
 
-    const removeButton = getByTitle('Remove File');
+    const removeButton = getByTitle('Clear File');
 
     await waitFor(() => {
       expect(removeButton).toBeVisible();

@@ -312,7 +312,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     if (file.status === UploadFileStatus.FAILED) {
       return (
         <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
-          <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => removeFile(file)}>
+          <IconButton title="Clear File" aria-label="clear file" onClick={() => removeFile(file)}>
             <Icon path={mdiWindowClose} className={classes.errorIcon} size={1} />
           </IconButton>
         </Box>
