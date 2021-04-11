@@ -9,7 +9,7 @@ import {
   deleteIUCNSQL,
   deleteRegionsSQL,
   deleteStakeholderPartnershipsSQL,
-  deleteFundingSQL
+  deleteFundingSourceSQL
 } from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {
@@ -124,15 +124,15 @@ describe('deleteClimateInitiativesSQL', () => {
   });
 });
 
-describe('deleteFundingSQL', () => {
+describe('deleteFundingSourceSQL', () => {
   it('returns null response when null pfsId (project funding source) provided', () => {
-    const response = deleteFundingSQL((null as unknown) as number);
+    const response = deleteFundingSourceSQL((null as unknown) as number, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = deleteFundingSQL(1);
+    const response = deleteFundingSourceSQL(1,1);
 
     expect(response).to.not.be.null;
   });

@@ -109,6 +109,23 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
     props.refresh();
   };
+
+  const handleDelete = async (itemIndex: number) => {
+    const fundingSource = funding.fundingSources[itemIndex];
+
+    try {
+      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    } finally {
+      props.refresh();
+    }
+
+    //props.refresh();
+  };
+
   return (
     <>
       <EditDialog
@@ -174,7 +191,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                 </Button>
                 <Button
                   className="trashButtonSmall"
-                  onClick={() => handleDialogEditOpen(index)}
+                  onClick={() => handleDelete(index)}
                   title="Delete Funding Source"
                   aria-label="Delete Funding Source"
                   startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}>

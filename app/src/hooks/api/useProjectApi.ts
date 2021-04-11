@@ -35,7 +35,8 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Delete project attachment based on project and attachment ID
    *
-   * @param {AxiosInstance} axios
+   * @param {projectId} projectId
+   * @param {attachmentId} attachmentId
    * @returns {*} {Promise<number>}
    */
   const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
@@ -51,7 +52,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<string>}
    */
   const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
-    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/signedUrl`);
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
 
     return data;
   };
@@ -165,6 +166,23 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+
+
+  /**
+   * Delete funding source based on project and funding source ID
+   *
+   * @param {projectId} projectId
+   * @param {pfsId} pfsId
+   * @returns {*} {Promise<any>}
+   */
+   const deleteFundingSource = async (projectId: number, pfsId: number): Promise<any> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`);
+
+    return data;
+  };
+
+
+
   return {
     getProjectsList,
     createProject,
@@ -175,7 +193,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     updateProject,
     getProjectAttachments,
     getAttachmentSignedURL,
-    deleteProjectAttachment
+    deleteProjectAttachment,
+    deleteFundingSource
   };
 };
 
