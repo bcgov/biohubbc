@@ -10,8 +10,86 @@ import {
   PutObjectivesData,
   GetLocationData,
   GetProjectData,
-  PutProjectData
+  PutProjectData,
+  PutIUCNData,
+  GetIUCNClassificationData
 } from './project-update';
+
+describe('GetIUCNClassificationData', () => {
+  describe('No values provided', () => {
+    let data: GetIUCNClassificationData;
+
+    before(() => {
+      data = new GetIUCNClassificationData((null as unknown) as any[]);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    const obj = [
+      {
+        classification: 1,
+        subclassification1: 2,
+        subclassification2: 2
+      }
+    ];
+
+    let data: GetIUCNClassificationData;
+
+    before(() => {
+      data = new GetIUCNClassificationData(obj);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([
+        {
+          classification: 1,
+          subClassification1: 2,
+          subClassification2: 2
+        }
+      ]);
+    });
+  });
+});
+
+describe('PutIUCNData', () => {
+  describe('No values provided', () => {
+    let data: PutIUCNData;
+
+    before(() => {
+      data = new PutIUCNData(null);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    const obj = {
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 2,
+          subClassification2: 2
+        }
+      ]
+    };
+
+    let data: PutIUCNData;
+
+    before(() => {
+      data = new PutIUCNData(obj);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql(obj.classificationDetails);
+    });
+  });
+});
 
 describe('PutPartnershipsData', () => {
   describe('No values provided', () => {
@@ -283,6 +361,48 @@ describe('PutSpeciesData', () => {
 
     before(() => {
       data = new PutSpeciesData({});
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('Values provided but not valid arrays', () => {
+    let data: PutSpeciesData;
+
+    const obj = {
+      focal_species: {},
+      ancillary_species: {}
+    };
+
+    before(() => {
+      data = new PutSpeciesData(obj);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('Values provided but with no length', () => {
+    let data: PutSpeciesData;
+
+    const obj = {
+      focal_species: [],
+      ancillary_species: []
+    };
+
+    before(() => {
+      data = new PutSpeciesData(obj);
     });
 
     it('sets focal_species', () => {

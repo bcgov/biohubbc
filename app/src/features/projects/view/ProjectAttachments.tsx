@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IGetProjectForViewResponse, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -26,30 +26,40 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
-  const getAttachments = async () => {
-    try {
-      const response = await biohubApi.project.getProjectAttachments(projectId);
-
-      if (!response?.attachmentsList) {
+  const getAttachments = useCallback(
+    async (forceFetch: boolean) => {
+      if (attachmentsList.length && !forceFetch) {
         return;
       }
 
-      setAttachmentsList([...response.attachmentsList]);
-    } catch (error) {
-      return error;
-    }
-  };
+      try {
+        const response = await biohubApi.project.getProjectAttachments(projectId);
+
+        if (!response?.attachmentsList) {
+          return;
+        }
+
+        setAttachmentsList([...response.attachmentsList]);
+      } catch (error) {
+        return error;
+      }
+    },
+    [biohubApi.project, projectId, attachmentsList.length]
+  );
 
   useEffect(() => {
-    getAttachments();
-  }, [openUploadAttachments]);
+    getAttachments(false);
+  }, [getAttachments]);
 
   return (
     <>
       <ComponentDialog
         open={openUploadAttachments}
         dialogTitle="Upload Attachments"
-        onClose={() => setOpenUploadAttachments(false)}>
+        onClose={() => {
+          getAttachments(true);
+          setOpenUploadAttachments(false);
+        }}>
         <FileUpload projectId={projectId} />
       </ComponentDialog>
       <Box mb={5}>
