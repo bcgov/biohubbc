@@ -1,4 +1,4 @@
-import { render, fireEvent, act} from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -135,8 +135,7 @@ describe('ProjectFundingForm', () => {
       ]
     };
 
-    const { asFragment, getByTestId, queryByText
-    } = render(
+    const { asFragment, getByTestId, queryByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -156,7 +155,6 @@ describe('ProjectFundingForm', () => {
     fireEvent.click(addButton);
 
     expect(await queryByText('Agency Details')).toBeInTheDocument();
-
   });
 
   it('shows edit funding source dialog on edit click', async () => {
@@ -197,59 +195,58 @@ describe('ProjectFundingForm', () => {
 
       expect(asFragment()).toMatchSnapshot();
 
-      //expect(await queryByText('Agency Details')).toBeInTheDocument();
+      expect(await queryByText('Agency Details')).toBeInTheDocument();
 
-      //const cancelButton = await getByText('Cancel');
-     //expect(cancelButton).toBeInTheDocument();
-      //fireEvent.click(cancelButton);
-      //expect(await queryByText('Cancel')).not.toBeInTheDocument();
+      const cancelButton = await getByText('Cancel');
+      expect(cancelButton).toBeInTheDocument();
+      fireEvent.click(cancelButton);
+      expect(await queryByText('Cancel')).not.toBeInTheDocument();
 
-      //fireEvent.click(editButton);
-      //const saveButton = await getByText('Save Changes');
-      //expect(saveButton).toBeInTheDocument();
-      //fireEvent.click(saveButton);
+      fireEvent.click(editButton);
+      const saveButton = await getByText('Save Changes');
+      expect(saveButton).toBeInTheDocument();
+      fireEvent.click(saveButton);
 
       expect(asFragment()).toMatchSnapshot();
-
     });
   });
 
-  // it('deletes funding source dialog on delete click', async () => {
-  //   await act(async () => {
-  //     const existingFormValues: IProjectFundingForm = {
-  //       funding_sources: [
-  //         {
-  //           id: 11,
-  //           agency_id: 1,
-  //           investment_action_category: 1,
-  //           investment_action_category_name: 'action 1',
-  //           agency_project_id: '111',
-  //           funding_amount: 222,
-  //           start_date: '2021-03-14',
-  //           end_date: '2021-04-14',
-  //           revision_count: 23
-  //         }
-  //       ]
-  //     };
+  it('deletes funding source dialog on delete click', async () => {
+    await act(async () => {
+      const existingFormValues: IProjectFundingForm = {
+        funding_sources: [
+          {
+            id: 11,
+            agency_id: 1,
+            investment_action_category: 1,
+            investment_action_category_name: 'action 1',
+            agency_project_id: '111',
+            funding_amount: 222,
+            start_date: '2021-03-14',
+            end_date: '2021-04-14',
+            revision_count: 23
+          }
+        ]
+      };
 
-  //     const { asFragment, getByTestId, queryByTestId } = render(
-  //       <Formik
-  //         initialValues={existingFormValues}
-  //         validationSchema={ProjectFundingFormYupSchema}
-  //         validateOnBlur={true}
-  //         validateOnChange={false}
-  //         onSubmit={async () => {}}>
-  //         {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
-  //       </Formik>
-  //     );
+      const { asFragment, getByTestId, queryByTestId } = render(
+        <Formik
+          initialValues={existingFormValues}
+          validationSchema={ProjectFundingFormYupSchema}
+          validateOnBlur={true}
+          validateOnChange={false}
+          onSubmit={async () => {}}>
+          {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
+        </Formik>
+      );
 
-  //     const deleteButton = await getByTestId('delete-button-0');
-  //     expect(deleteButton).toBeInTheDocument();
-  //     fireEvent.click(deleteButton);
+      const deleteButton = await getByTestId('delete-button-0');
+      expect(deleteButton).toBeInTheDocument();
+      fireEvent.click(deleteButton);
 
-  //     expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument();
+      expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument();
 
-  //     expect(asFragment()).toMatchSnapshot();
-  //   });
-  // });
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
 });
