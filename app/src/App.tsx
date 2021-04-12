@@ -9,7 +9,6 @@ import Keycloak, { KeycloakInstance } from 'keycloak-js';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import appTheme from 'themes/appTheme';
-import getKeycloakEventHandler from 'utils/KeycloakEventHandler';
 
 const App: React.FC = () => {
   return (
@@ -28,8 +27,7 @@ const App: React.FC = () => {
               <KeycloakProvider
                 keycloak={keycloak}
                 initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
-                LoadingComponent={<CircularProgress />}
-                onEvent={getKeycloakEventHandler()}>
+                LoadingComponent={<CircularProgress />}>
                 <AuthStateContextProvider>
                   <BrowserRouter>
                     <AuthStateContext.Consumer>
