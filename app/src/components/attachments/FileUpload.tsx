@@ -1,13 +1,14 @@
-import { Box, IconButton, LinearProgress, List, ListItem, makeStyles, Typography } from '@material-ui/core';
+import { Box, IconButton, LinearProgress, List, ListItem, makeStyles, Theme, Typography } from '@material-ui/core';
 import { mdiCheck, mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useState } from 'react';
+import { FileError, FileRejection } from 'react-dropzone';
 import DropZone from './DropZone';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
     border: '2px dashed grey',
     cursor: 'default'
@@ -15,17 +16,44 @@ const useStyles = makeStyles(() => ({
   uploadListItem: {
     border: '1px solid grey'
   },
-  uploadListStatus: {
-    textTransform: 'capitalize'
+  completeIcon: {
+    color: theme.palette.success.main
+  },
+  errorIcon: {
+    color: theme.palette.error.main
+  },
+  linearProgressBar: {
+    height: '10px'
+  },
+  uploadingColor: {
+    backgroundColor: 'rgba(25, 118, 210, 0.5)', // primary.main with reduced opacity
+    height: '5px'
+  },
+  uploadingBarColor: {
+    backgroundColor: theme.palette.primary.main
+  },
+  completeColor: {
+    backgroundColor: 'rgba(76, 175, 80, 0.5)', // success.main with reduced opacity
+    height: '5px'
+  },
+  completeBarColor: {
+    backgroundColor: theme.palette.success.main
+  },
+  failedColor: {
+    backgroundColor: 'rgba(244, 67, 54, 0.5)', // error.main with reduced opacity
+    height: '5px'
+  },
+  failedBarColor: {
+    backgroundColor: theme.palette.error.main
   }
 }));
 
 export enum UploadFileStatus {
-  PENDING = 'pending',
-  UPLOADING = 'uploading',
-  PROCESSING = 'finishing upload',
-  FAILED = 'failed',
-  COMPLETE = 'complete'
+  PENDING = 'Pending',
+  UPLOADING = 'Uploading',
+  PROCESSING = 'Finishing Upload',
+  FAILED = 'Failed',
+  COMPLETE = 'Complete'
 }
 
 export interface IUploadFile {
@@ -55,12 +83,14 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
    * Handles files which are added (via either drag/drop or browsing).
    *
    * @param {File[]} filesToAdd files that pass the basic DropZone size/quantity checks
+   * @param {FileRejection[]} rejectedFiles files that did not pass the basic DropZone size/quantity checks
    */
-  const onFiles = (filesToAdd: File[]) => {
+  const onFiles = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     const newAcceptedFiles: IUploadFile[] = [];
+    const newRejectedFiles: IUploadFile[] = [];
 
     // Parse out any files that have already been added
-    filesToAdd.forEach((item) => {
+    acceptedFiles.forEach((item) => {
       const isAlreadyAdded = files.some((existingFile) => existingFile.file.name === item.name);
 
       if (isAlreadyAdded) {
@@ -75,16 +105,39 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       });
     });
 
-    if (!newAcceptedFiles?.length) {
-      // No new files to upload
-      return;
-    }
+    // Parse out any rejected files that have already been added
+    rejectedFiles.forEach((item) => {
+      const isAlreadyRejected = files.some((existingFile) => existingFile.file.name === item.file.name);
+
+      if (isAlreadyRejected) {
+        return;
+      }
+
+      newRejectedFiles.push({
+        file: item.file,
+        status: UploadFileStatus.PENDING,
+        progress: 0,
+        cancelTokenSource: axios.CancelToken.source(),
+        error: getErrorCodeMessage(item.errors[0])
+      });
+    });
 
     setFiles((currentFiles) => {
-      return [...currentFiles, ...newAcceptedFiles];
+      return [...currentFiles, ...newAcceptedFiles, ...newRejectedFiles];
     });
 
     newAcceptedFiles.forEach((item) => startFileUpload(item));
+  };
+
+  const getErrorCodeMessage = (fileError: FileError) => {
+    switch (fileError.code) {
+      case 'file-too-large':
+        return 'File size exceeds maximum';
+      case 'too-many-files':
+        return 'Number of files uploaded at once exceeds maximum';
+      default:
+        return 'Encountered an unexpected error';
+    }
   };
 
   /**
@@ -195,19 +248,42 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     const { file } = progressBarProps;
 
     if (file.status === UploadFileStatus.PROCESSING) {
-      return <LinearProgress variant="indeterminate" />;
+      return (
+        <LinearProgress
+          variant="indeterminate"
+          classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingBarColor }}
+        />
+      );
     }
 
     if (file.status === UploadFileStatus.COMPLETE) {
-      return <LinearProgress variant="determinate" color="primary" value={100} />;
+      return (
+        <LinearProgress
+          variant="determinate"
+          value={100}
+          classes={{ colorPrimary: classes.completeColor, barColorPrimary: classes.completeBarColor }}
+        />
+      );
     }
 
     if (file.status === UploadFileStatus.FAILED) {
-      return <LinearProgress variant="determinate" color="secondary" value={0} />;
+      return (
+        <LinearProgress
+          variant="determinate"
+          value={0}
+          classes={{ colorPrimary: classes.failedColor, barColorPrimary: classes.failedBarColor }}
+        />
+      );
     }
 
     // status is pending or uploading
-    return <LinearProgress variant="determinate" value={file.progress} />;
+    return (
+      <LinearProgress
+        variant="determinate"
+        value={file.progress}
+        classes={{ colorPrimary: classes.uploadingColor, barColorPrimary: classes.uploadingBarColor }}
+      />
+    );
   };
 
   const FileButton = (fileButtonProps: { file: IUploadFile }) => {
@@ -226,7 +302,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     if (file.status === UploadFileStatus.COMPLETE) {
       return (
         <Box width="4rem" p={'0.75rem'} display="flex" justifyContent="flex-end" alignContent="center">
-          <Icon path={mdiCheck} size={1} />
+          <Icon path={mdiCheck} className={classes.completeIcon} size={1} />
         </Box>
       );
     }
@@ -234,8 +310,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     if (file.status === UploadFileStatus.FAILED) {
       return (
         <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
-          <IconButton title="Remove File" aria-label="remove file" onClick={() => removeFile(file)}>
-            <Icon path={mdiWindowClose} size={1} />
+          <IconButton title="Clear File" aria-label="clear file" onClick={() => removeFile(file)}>
+            <Icon path={mdiWindowClose} className={classes.errorIcon} size={1} />
           </IconButton>
         </Box>
       );
@@ -263,7 +339,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
             <Box display="flex" flexDirection="column" width="100%">
               <Box mb={2} display="flex" justifyContent="space-between">
                 <Typography>{file.file.name}</Typography>
-                <Typography className={classes.uploadListStatus}>{file.error || file.status}</Typography>
+                <Typography>{file.error || file.status}</Typography>
               </Box>
               <Box>
                 <ProgressBar file={file} />
