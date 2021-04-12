@@ -322,6 +322,27 @@ describe('PostSpeciesData', () => {
     });
   });
 
+  describe('Values provided but not valid arrays', () => {
+    let data: PostSpeciesData;
+
+    const obj = {
+      focal_species: {},
+      ancillary_species: {}
+    };
+
+    before(() => {
+      data = new PostSpeciesData(obj);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
   describe('Values provided but with no length', () => {
     let data: PostSpeciesData;
 
