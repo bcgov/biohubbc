@@ -4,6 +4,7 @@ import {
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
+  PostCoordinatorData,
   PostPartnershipsData,
   PostPermitData,
   PostProjectData,
@@ -169,6 +170,72 @@ describe('PostPermitData', () => {
           sampling_conducted: true
         }
       ]);
+    });
+  });
+});
+
+describe('PostCoordinatorData', () => {
+  describe('No values provided', () => {
+    let projectCoordinatorData: PostCoordinatorData;
+
+    before(() => {
+      projectCoordinatorData = new PostCoordinatorData(null);
+    });
+
+    it('sets first_name', function () {
+      expect(projectCoordinatorData.first_name).to.eql(null);
+    });
+
+    it('sets last_name', function () {
+      expect(projectCoordinatorData.last_name).to.eql(null);
+    });
+
+    it('sets email_address', function () {
+      expect(projectCoordinatorData.email_address).to.eql(null);
+    });
+
+    it('sets coordinator_agency', function () {
+      expect(projectCoordinatorData.coordinator_agency).to.eql(null);
+    });
+
+    it('sets share_contact_details', function () {
+      expect(projectCoordinatorData.share_contact_details).to.eql(false);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectCoordinatorData: PostCoordinatorData;
+
+    const obj = {
+      first_name: 'first',
+      last_name: 'last',
+      email_address: 'email@example.com',
+      coordinator_agency: 'agency',
+      share_contact_details: 'true'
+    };
+
+    before(() => {
+      projectCoordinatorData = new PostCoordinatorData(obj);
+    });
+
+    it('sets first_name', function () {
+      expect(projectCoordinatorData.first_name).to.eql(obj.first_name);
+    });
+
+    it('sets last_name', function () {
+      expect(projectCoordinatorData.last_name).to.eql(obj.last_name);
+    });
+
+    it('sets email_address', function () {
+      expect(projectCoordinatorData.email_address).to.eql(obj.email_address);
+    });
+
+    it('sets coordinator_agency', function () {
+      expect(projectCoordinatorData.coordinator_agency).to.eql(obj.coordinator_agency);
+    });
+
+    it('sets share_contact_details', function () {
+      expect(projectCoordinatorData.share_contact_details).to.eql(true);
     });
   });
 });
