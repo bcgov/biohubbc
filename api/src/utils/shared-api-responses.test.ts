@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getAttachmentApiResponseObject } from './shared-api-responses';
+import { getAttachmentApiResponseObject } from './shared-api-docs';
 
 describe('getAttachmentApiResponseObject', () => {
   it('returns a valid response object', () => {
