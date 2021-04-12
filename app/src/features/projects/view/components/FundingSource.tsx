@@ -85,16 +85,16 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       const fundingSource = funding.fundingSources[itemIndex];
 
       fundingSourceValues = {
-          id: fundingSource.id,
-          agency_id: fundingSource.agency_id,
-          investment_action_category: fundingSource.investment_action_category,
-          investment_action_category_name: fundingSource.investment_action_category_name,
-          agency_project_id: fundingSource.agency_project_id,
-          funding_amount: fundingSource.funding_amount,
-          start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
-          end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
-          revision_count: fundingSource.revision_count
-        }
+        id: fundingSource.id,
+        agency_id: fundingSource.agency_id,
+        investment_action_category: fundingSource.investment_action_category,
+        investment_action_category_name: fundingSource.investment_action_category_name,
+        agency_project_id: fundingSource.agency_project_id,
+        funding_amount: fundingSource.funding_amount,
+        start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
+        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
+        revision_count: fundingSource.revision_count
+      };
     } else {
       // add a new funding source
       fundingSourceValues = ProjectFundingFormArrayItemInitialValues;

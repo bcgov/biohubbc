@@ -146,11 +146,13 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    const addButton = await getByTestId('add-button');
-    expect(addButton).toBeInTheDocument;
+    const addButton = getByTestId('add-button');
+
+    expect(addButton).toBeInTheDocument();
+
     fireEvent.click(addButton);
 
-    expect(await queryByText('Agency Details')).toBeInTheDocument;
+    expect(await queryByText('Agency Details')).toBeInTheDocument();
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -185,23 +187,23 @@ describe('ProjectFundingForm', () => {
       );
 
       const editButton = await getByTestId('edit-button-0');
-      expect(editButton).toBeInTheDocument;
+      expect(editButton).toBeInTheDocument();
 
       fireEvent.click(editButton);
-      expect(await queryByText('Agency Details')).toBeInTheDocument;
+      expect(await queryByText('Agency Details')).toBeInTheDocument();
 
       expect(asFragment()).toMatchSnapshot();
 
       const cancelButton = await getByText('Cancel');
-      expect(cancelButton).toBeInTheDocument;
+      expect(cancelButton).toBeInTheDocument();
       fireEvent.click(cancelButton);
-      expect(await queryByText('Cancel')).not.toBeInTheDocument;
+      expect(await queryByText('Cancel')).not.toBeInTheDocument();
 
       fireEvent.click(editButton);
       const saveButton = await getByText('Save Changes');
-      expect(saveButton).toBeInTheDocument;
+      expect(saveButton).toBeInTheDocument();
       fireEvent.click(saveButton);
-      expect(await queryByText('Save Changes')).not.toBeInTheDocument;
+      expect(await queryByText('Save Changes')).not.toBeInTheDocument();
     });
   });
 
@@ -235,10 +237,10 @@ describe('ProjectFundingForm', () => {
       );
 
       const deleteButton = await getByTestId('delete-button-0');
-      expect(deleteButton).toBeInTheDocument;
+      expect(deleteButton).toBeInTheDocument();
       fireEvent.click(deleteButton);
 
-      expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument;
+      expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument();
 
       expect(asFragment()).toMatchSnapshot();
     });
