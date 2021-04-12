@@ -112,8 +112,8 @@ const ProjectsListPage: React.FC = () => {
    * Displays project list.
    */
 
-  const hasProjects = projects.length > 0;
-  const hasDrafts = drafts.length > 0;
+  const hasProjects = projects?.length > 0;
+  const hasDrafts = drafts?.length > 0;
 
   if (!hasProjects && !hasDrafts) {
     return (
@@ -175,7 +175,7 @@ const ProjectsListPage: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody data-testid="project-table">
-                  {drafts.map((row) => (
+                  {drafts?.map((row) => (
                     <StyledTableRow data-testid={row.name} key={row.id}>
                       <TableCell>{row.name} (Draft)</TableCell>
                       <TableCell />

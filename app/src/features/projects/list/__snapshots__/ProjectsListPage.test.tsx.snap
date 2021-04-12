@@ -1,5 +1,115 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ProjectsListPage renders with a list of drafts 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-12"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthLg"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-13"
+      >
+        Projects
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+          style="float: right; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Create Project
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-14"
+      >
+        <div
+          class="MuiPaper-root MuiTableContainer-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <table
+            class="MuiTable-root"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head WithStyles(ForwardRef(TableCell))-head-16"
+                  scope="col"
+                >
+                  Project Name
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head WithStyles(ForwardRef(TableCell))-head-16"
+                  scope="col"
+                >
+                  Species
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head WithStyles(ForwardRef(TableCell))-head-16"
+                  scope="col"
+                >
+                  Location
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head WithStyles(ForwardRef(TableCell))-head-16"
+                  scope="col"
+                >
+                  Start Date
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head WithStyles(ForwardRef(TableCell))-head-16"
+                  scope="col"
+                >
+                  End Date
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+              data-testid="project-table"
+            >
+              <tr
+                class="MuiTableRow-root WithStyles(ForwardRef(TableRow))-root-18"
+                data-testid="Draft 1"
+              >
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  Draft 1 (Draft)
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`ProjectsListPage renders with a proper list of projects 1`] = `
 <DocumentFragment>
   <div
