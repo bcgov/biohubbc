@@ -11,8 +11,49 @@ import {
   GetLocationData,
   GetProjectData,
   PutProjectData,
-  PutIUCNData
+  PutIUCNData,
+  GetIUCNClassificationData
 } from './project-update';
+
+describe('GetIUCNClassificationData', () => {
+  describe('No values provided', () => {
+    let data: GetIUCNClassificationData;
+
+    before(() => {
+      data = new GetIUCNClassificationData((null as unknown) as any[]);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    const obj = [
+      {
+        classification: 1,
+        subclassification1: 2,
+        subclassification2: 2
+      }
+    ];
+
+    let data: GetIUCNClassificationData;
+
+    before(() => {
+      data = new GetIUCNClassificationData(obj);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([
+        {
+          classification: 1,
+          subClassification1: 2,
+          subClassification2: 2
+        }
+      ]);
+    });
+  });
+});
 
 describe('PutIUCNData', () => {
   describe('No values provided', () => {
