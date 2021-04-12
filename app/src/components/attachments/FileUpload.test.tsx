@@ -1,4 +1,3 @@
-import { FullscreenExitSharp } from '@material-ui/icons';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
