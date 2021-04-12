@@ -35,7 +35,7 @@ const useStyles = makeStyles({
 export interface IAttachmentsListProps {
   projectId: number;
   attachmentsList: IGetProjectAttachment[];
-  getAttachments: () => void;
+  getAttachments: (forceFetch: boolean) => void;
 }
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
@@ -62,7 +62,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         return;
       }
 
-      props.getAttachments();
+      props.getAttachments(true);
     } catch (error) {
       return error;
     }
