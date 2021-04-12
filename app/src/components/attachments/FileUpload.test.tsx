@@ -22,6 +22,11 @@ const renderContainer = () => {
 };
 
 describe('FileUpload', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().project.uploadProjectAttachments.mockClear();
+  });
+
   it('matches the snapshot', () => {
     const { asFragment } = renderContainer();
 
