@@ -4,7 +4,7 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IGetProjectForViewResponse, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -26,7 +26,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
-  const getAttachments = useCallback(async () => {
+  const getAttachments = async () => {
     try {
       const response = await biohubApi.project.getProjectAttachments(projectId);
 
@@ -38,11 +38,11 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     } catch (error) {
       return error;
     }
-  }, [biohubApi.project, projectId]);
+  };
 
   useEffect(() => {
     getAttachments();
-  }, [getAttachments, openUploadAttachments]);
+  }, [openUploadAttachments]);
 
   return (
     <>

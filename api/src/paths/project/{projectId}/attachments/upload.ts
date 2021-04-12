@@ -117,42 +117,39 @@ export function uploadMedia(): RequestHandler {
 
       await Promise.all([...insertProjectAttachmentsPromises]);
 
+      // Upload files to S3
+      const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
+
+      rawMediaArray.forEach((file: Express.Multer.File) => {
+        if (!file) {
+          return;
+        }
+
+        const key = req.params.projectId + '/' + file.originalname;
+
+        const metadata = {
+          filename: key,
+          username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
+          email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        };
+
+        defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
+
+        s3UploadPromises.push(uploadFileToS3(file, metadata));
+      });
+
+      const results = await Promise.all(s3UploadPromises);
+      defaultLog.debug({ label: 'uploadMedia', message: 'results', results });
+
       await connection.commit();
+
+      return res.status(200).json(results.map((result) => result.Key));
     } catch (error) {
+      defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
+      throw new HTTP400('Upload was not successful');
     } finally {
       connection.release();
     }
-
-    // Upload files to S3
-    const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
-
-    rawMediaArray.forEach((file: Express.Multer.File) => {
-      if (!file) {
-        return;
-      }
-
-      const key = req.params.projectId + '/' + file.originalname;
-
-      const metadata = {
-        filename: key,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
-      };
-
-      defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
-
-      try {
-        s3UploadPromises.push(uploadFileToS3(file, metadata));
-      } catch (error) {
-        defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
-        throw new HTTP400('Upload was not successful');
-      }
-    });
-
-    const results = await Promise.all(s3UploadPromises);
-    defaultLog.debug({ label: 'uploadMedia', message: 'results', results });
-
-    return res.status(200).json(results.map((result) => result.Key));
   };
 }
