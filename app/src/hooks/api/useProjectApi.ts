@@ -183,6 +183,22 @@ const useProjectApi = (axios: AxiosInstance) => {
 
 
 
+  /**
+   * Add new funding source based on projectId
+   *
+   * @param {projectId} projectId
+   * @returns {*} {Promise<any>}
+   */
+   const addFundingSource = async (projectId: number, fundingSource: any): Promise<any> => {
+    const { data } = await axios.post(`/api/project/${projectId}/funding-sources/add`, fundingSource);
+
+    return data;
+  };
+
+
+
+
+
   return {
     getProjectsList,
     createProject,
@@ -194,7 +210,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectAttachments,
     getAttachmentSignedURL,
     deleteProjectAttachment,
-    deleteFundingSource
+    deleteFundingSource,
+    addFundingSource
   };
 };
 

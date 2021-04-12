@@ -6,7 +6,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { deleteFundingSourceSQL } from '../../../../../queries/project/project-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
-import { deleteFundingSourceApiDocObject } from '../../../../../utils/shared-api-responses';
+import { deleteFundingSourceApiDocObject } from '../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/projects/{projectId}/funding-sources/{pfsId}/delete');
 
@@ -43,14 +43,18 @@ function deleteFundingSource(): RequestHandler {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const result = await connection.query(
+      const response = await connection.query(
         deleteFundingSourceSQLStatement.text,
         deleteFundingSourceSQLStatement.values
       );
 
+      if (!response || !response.rowCount) {
+        throw new HTTP400('Failed to delete project funding source');
+      }
+
       await connection.commit();
 
-      return res.status(200).json(result && result.rowCount);
+      return res.status(200).json(response && response.rowCount);
     } catch (error) {
       defaultLog.error({ label: 'deleteFundingSource', message: 'error', error });
       await connection.rollback();

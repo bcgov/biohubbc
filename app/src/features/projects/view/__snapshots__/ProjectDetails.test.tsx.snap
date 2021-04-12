@@ -922,21 +922,36 @@ exports[`ProjectDetails renders correctly 1`] = `
           <div
             class="MuiGrid-root MuiGrid-item"
           >
-            <label
-              aria-disabled="false"
-              class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-heading-29 MuiButton-outlinedPrimary"
-              role="button"
+            <button
+              aria-label="Add Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
               tabindex="0"
+              title="Add Funding Source"
+              type="button"
             >
               <span
                 class="MuiButton-label"
               >
+                <span
+                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.5rem; height: 1.5rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
                 Add Funding Source
               </span>
               <span
                 class="MuiTouchRipple-root"
               />
-            </label>
+            </button>
           </div>
         </div>
         <div

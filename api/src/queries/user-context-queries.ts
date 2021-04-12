@@ -10,7 +10,7 @@ export const setSystemUserContextSQL = (
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'setSystemUserContextSQL', message: 'params', userIdentifier, systemUserType });
 
-  if (!userIdentifier || !systemUserType) {
+  if (!userIdentifier) {
     return null;
   }
 

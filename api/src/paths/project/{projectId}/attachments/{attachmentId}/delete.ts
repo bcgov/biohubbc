@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../errors/CustomError';
 import { deleteProjectAttachmentSQL } from '../../../../../queries/project/project-attachments-queries';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
-import { getAttachmentApiDocObject } from '../../../../../utils/shared-api-responses';
+import { getAttachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/delete');
 

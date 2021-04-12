@@ -5,7 +5,7 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString, getFormattedAmount, getFormattedDate } from 'utils/Utils';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { EditFundingI18N } from 'constants/i18n';
+import { EditFundingI18N, DeleteFundingI18N, AddFundingI18N } from 'constants/i18n';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
@@ -16,7 +16,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import Icon from '@mdi/react';
-import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 
 const useStyles = makeStyles({
   heading: {
@@ -63,9 +64,10 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     }
   });
 
-  const [fundingFormData, setFundingFormData] = useState<IProjectFundingFormArrayItem>(
-    ProjectFundingFormArrayItemInitialValues
-  );
+  const [fundingFormData, setFundingFormData] = useState({
+    index: 0,
+    values: ProjectFundingFormArrayItemInitialValues
+  });
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
@@ -73,57 +75,97 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
   const handleDialogEditOpen = async (itemIndex: number) => {
     const fundingSource = funding.fundingSources[itemIndex];
 
-    setFundingFormData({
-      id: fundingSource.id,
-      agency_id: fundingSource.agency_id,
-      investment_action_category: fundingSource.investment_action_category,
-      investment_action_category_name: fundingSource.investment_action_category_name,
-      agency_project_id: fundingSource.agency_project_id,
-      funding_amount: fundingSource.funding_amount,
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
-      revision_count: fundingSource.revision_count
-    });
+    if (itemIndex < funding.fundingSources.length) {
+      setFundingFormData({
+        index: itemIndex,
+        values: {
+          id: fundingSource.id,
+          agency_id: fundingSource.agency_id,
+          investment_action_category: fundingSource.investment_action_category,
+          investment_action_category_name: fundingSource.investment_action_category_name,
+          agency_project_id: fundingSource.agency_project_id,
+          funding_amount: fundingSource.funding_amount,
+          start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
+          end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
+          revision_count: fundingSource.revision_count
+        }
+      });
+    } else {
+      setFundingFormData({ index: itemIndex, values: ProjectFundingFormArrayItemInitialValues });
+    }
 
     setOpenEditDialog(true);
   };
+
   const handleDialogEditSave = async (values: IProjectFundingFormArrayItem) => {
     const projectData = {
       funding: {
-        fundingSources: [{ ...values }]
+        fundingSources: [{ ...values}]
       }
     };
 
+    if (fundingFormData.index < funding.fundingSources.length) {
+      // update an existing funding source
+
+      try {
+        await biohubApi.project.updateProject(id, projectData);
+      } catch (error) {
+        const apiError = error as APIError;
+        showErrorDialog({ dialogTitle: EditFundingI18N.editErrorTitle, dialogText: apiError.message, open: true });
+        return;
+      } finally {
+        setOpenEditDialog(false);
+      }
+
+      props.refresh();
+    } else {
+      // add a new funding source
+
+      try {
+        await biohubApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
+      } catch (error) {
+        const apiError = error as APIError;
+        showErrorDialog({ dialogTitle: AddFundingI18N.addErrorTitle, dialogText: apiError.message, open: true });
+        return;
+      } finally {
+        setOpenEditDialog(false);
+      }
+
+      props.refresh();
+    }
+  };
+
+
+  const handleDeleteDialogOpen = async (itemIndex: number) => {
+    setFundingFormData({
+      index: itemIndex,
+      values: funding.fundingSources[fundingFormData.index]
+    })
+    setOpenDeleteDialog(true);
+  }
+
+  const handleDeleteDialogClose = async () => {
+    setOpenDeleteDialog(false);
+  }
+
+  const handleDeleteDialogYes = async () => {
+    const fundingSource = funding.fundingSources[fundingFormData.index];
+
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await biohubApi.project.deleteFundingSource(id, fundingSource.id + 100);
+      setOpenDeleteDialog(false);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showErrorDialog({ dialogTitle: DeleteFundingI18N.deleteErrorTitle, dialogText: apiError.message, open: true });
       return;
-    } finally {
-      setOpenEditDialog(false);
     }
 
     props.refresh();
-  };
-
-  const handleDelete = async (itemIndex: number) => {
-    const fundingSource = funding.fundingSources[itemIndex];
-
-    try {
-      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
-      return;
-    } finally {
-      props.refresh();
-    }
-
-    //props.refresh();
   };
 
   return (
@@ -146,11 +188,19 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
               }
             />
           ),
-          initialValues: fundingFormData,
+          initialValues: fundingFormData.values,
           validationSchema: ProjectFundingFormArrayItemYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
+      />
+      <YesNoDialog
+        dialogTitle={DeleteFundingI18N.deleteTitle}
+        dialogText={DeleteFundingI18N.deleteText}
+        open={openDeleteDialog}
+        onClose={handleDeleteDialogClose}
+        onNo={handleDeleteDialogClose}
+        onYes={handleDeleteDialogYes}
       />
       <ErrorDialog {...errorDialogProps} />
       <Grid container spacing={3}>
@@ -161,10 +211,11 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
           <Grid item>
             <Button
               variant="outlined"
-              component="label"
-              size="medium"
               color="primary"
-              className={classes.addButton && classes.heading}>
+              title="Add Funding Source"
+              aria-label="Add Funding Source"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => handleDialogEditOpen(funding.fundingSources.length)}>
               Add Funding Source
             </Button>
           </Grid>
@@ -191,11 +242,10 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                 </Button>
                 <Button
                   className="trashButtonSmall"
-                  onClick={() => handleDelete(index)}
+                  onClick={() => handleDeleteDialogOpen(index)}
                   title="Delete Funding Source"
                   aria-label="Delete Funding Source"
-                  startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}>
-                </Button>
+                  startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}></Button>
               </Grid>
             </Grid>
             <Grid container item spacing={3} xs={12}>

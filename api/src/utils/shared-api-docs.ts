@@ -1,4 +1,5 @@
 import { WRITE_ROLES } from '../constants/roles';
+import { projectFundingSourcePostRequestObject } from '../openapi/schemas/project-funding-source';
 
 export const getAttachmentApiDocObject = (basicDescription: string, successDescription: string) => {
   return {
@@ -95,3 +96,56 @@ export const deleteFundingSourceApiDocObject = (basicDescription: string, succes
     }
   };
 };
+
+
+
+export const addFundingSourceApiDocObject = (basicDescription: string, successDescription: string) => {
+  return {
+    description: basicDescription,
+    tags: ['funding-sources'],
+    security: [
+      {
+        Bearer: WRITE_ROLES
+      }
+    ],
+    parameters: [
+      {
+        in: 'path',
+        name: 'projectId',
+        schema: {
+          type: 'number'
+        },
+        required: true
+      }
+    ],
+    requestBody: {
+      description: 'Add funding source request object.',
+      content: {
+        'application/json': {
+          schema: {
+            ...(projectFundingSourcePostRequestObject as object)
+          }
+        }
+      }
+    },
+    responses: {
+      200: {
+        description: successDescription,
+        content: {
+          'text/plain': {
+            schema: {
+              type: 'number'
+            }
+          }
+        }
+      },
+      401: {
+        $ref: '#/components/responses/401'
+      },
+      default: {
+        $ref: '#/components/responses/default'
+      }
+    }
+  };
+};
+
