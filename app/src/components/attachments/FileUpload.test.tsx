@@ -60,7 +60,7 @@ describe('FileUpload', () => {
 
       expect(getByText('testpng.txt')).toBeVisible();
 
-      expect(getByText('uploading')).toBeVisible();
+      expect(getByText('Uploading')).toBeVisible();
     });
 
     // Manually trigger the upload resolve to simulate a successful upload
@@ -68,14 +68,14 @@ describe('FileUpload', () => {
     resolveRef(null);
 
     await waitFor(() => {
-      expect(getByText('complete')).toBeVisible();
+      expect(getByText('Complete')).toBeVisible();
     });
 
     // expect file list item to show complete state
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('handles file upload failure', async () => {
+  it('handles file upload API rejection', async () => {
     let rejectRef: (reason: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
@@ -102,7 +102,7 @@ describe('FileUpload', () => {
 
       expect(getByText('testpng.txt')).toBeVisible();
 
-      expect(getByText('uploading')).toBeVisible();
+      expect(getByText('Uploading')).toBeVisible();
     });
 
     // Manually trigger the upload reject to simulate an unsuccessful upload
@@ -116,7 +116,7 @@ describe('FileUpload', () => {
     // expect file list item to show error state
     expect(asFragment()).toMatchSnapshot();
 
-    const removeButton = getByTitle('Remove File');
+    const removeButton = getByTitle('Clear File');
 
     await waitFor(() => {
       expect(removeButton).toBeVisible();
@@ -125,6 +125,56 @@ describe('FileUpload', () => {
     fireEvent.click(removeButton);
 
     // expect file list item to be removed
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('handles file upload DropZone rejection for file too large', async () => {
+    const { asFragment, getByTestId, getByText } = renderContainer();
+
+    const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
+    // force file size to be 500MB
+    Object.defineProperty(testFile, 'size', { value: 1024 * 1024 * 500 }); // 500MB file
+
+    const dropZoneInput = getByTestId('drop-zone-input');
+
+    fireEvent.change(dropZoneInput, { target: { files: [testFile] } });
+
+    await waitFor(() => {
+      expect(getByText('testpng.txt')).toBeVisible();
+
+      expect(getByText('File size exceeds maximum')).toBeVisible();
+    });
+
+    // expect file list item to show error state
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('handles file upload DropZone rejection for too many files uploaded at once', async () => {
+    const { asFragment, getByTestId, getByText, getAllByText } = renderContainer();
+
+    const getTestFiles = (num: number): File[] => {
+      const files = [];
+      for (let i = 0; i < num; i++) {
+        files.push(new File([`test png ${i} content`], `testpng${i}.txt`, { type: 'text/plain' }));
+      }
+      return files;
+    };
+
+    const dropZoneInput = getByTestId('drop-zone-input');
+
+    fireEvent.change(dropZoneInput, { target: { files: getTestFiles(11) } });
+
+    await waitFor(() => {
+      const errorMessages = getAllByText('Number of files uploaded at once exceeds maximum');
+      expect(errorMessages.length).toEqual(11);
+    });
+
+    expect(getByText('testpng1.txt')).toBeVisible();
+    expect(getByText('testpng3.txt')).toBeVisible();
+    expect(getByText('testpng7.txt')).toBeVisible();
+    expect(getByText('testpng10.txt')).toBeVisible();
+
+    // expect file list item to show error state
     expect(asFragment()).toMatchSnapshot();
   });
 });
