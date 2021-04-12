@@ -202,7 +202,6 @@ describe('ProjectFundingForm', () => {
       expect(saveButton).toBeInTheDocument;
       fireEvent.click(saveButton);
       expect(await queryByText('Save Changes')).not.toBeInTheDocument;
-
     });
   });
 

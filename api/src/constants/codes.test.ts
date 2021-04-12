@@ -1,10 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import {
-  coordinator_agency,
-  region,
-  species
-} from './codes';
+import { coordinator_agency, region, species } from './codes';
 
 describe('coordinator_agency', () => {
   it('has values', () => {

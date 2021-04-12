@@ -105,7 +105,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   const handleDialogEditSave = async (values: IProjectFundingFormArrayItem) => {
     const projectData = {
       funding: {
-        fundingSources: [{ ...values}]
+        fundingSources: [{ ...values }]
       }
     };
 
@@ -140,18 +140,17 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     }
   };
 
-
   const handleDeleteDialogOpen = async (itemIndex: number) => {
     setFundingFormData({
       index: itemIndex,
       values: funding.fundingSources[fundingFormData.index]
-    })
+    });
     setOpenDeleteDialog(true);
-  }
+  };
 
   const handleDeleteDialogClose = async () => {
     setOpenDeleteDialog(false);
-  }
+  };
 
   const handleDeleteDialogYes = async () => {
     const fundingSource = funding.fundingSources[fundingFormData.index];
@@ -171,7 +170,9 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle={(fundingFormData.index < funding.fundingSources.length ? EditFundingI18N.editTitle : AddFundingI18N.addTitle)}
+        dialogTitle={
+          fundingFormData.index < funding.fundingSources.length ? EditFundingI18N.editTitle : AddFundingI18N.addTitle
+        }
         open={openEditDialog}
         component={{
           element: (

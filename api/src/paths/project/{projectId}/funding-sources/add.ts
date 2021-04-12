@@ -13,14 +13,16 @@ const defaultLog = getLogger('/api/projects/{projectId}/funding-sources/add');
 
 export const POST: Operation = [addFundingSource()];
 
-POST.apiDoc = addFundingSourceApiDocObject(
-  'Add a funding source of a project.',
-  'new project funding source id'
-);
+POST.apiDoc = addFundingSourceApiDocObject('Add a funding source of a project.', 'new project funding source id');
 
 function addFundingSource(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Add project funding source', message: 'params and body', 'req.params': req.params, 'req.body': req.body });
+    defaultLog.debug({
+      label: 'Add project funding source',
+      message: 'params and body',
+      'req.params': req.params,
+      'req.body': req.body
+    });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -30,25 +32,23 @@ function addFundingSource(): RequestHandler {
 
     const sanitizedPostFundingSource = req.body && new PostFundingSource(req.body);
 
-   if (!sanitizedPostFundingSource) {
-    throw new HTTP400('Missing funding source data');
-   }
+    if (!sanitizedPostFundingSource) {
+      throw new HTTP400('Missing funding source data');
+    }
 
     try {
       await connection.open();
 
       const addFundingSourceSQLStatement = postProjectFundingSourceSQL(
-        sanitizedPostFundingSource, Number(req.params.projectId)
+        sanitizedPostFundingSource,
+        Number(req.params.projectId)
       );
 
       if (!addFundingSourceSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const response = await connection.query(
-        addFundingSourceSQLStatement.text,
-        addFundingSourceSQLStatement.values
-      );
+      const response = await connection.query(addFundingSourceSQLStatement.text, addFundingSourceSQLStatement.values);
 
       const result = (response && response.rows && response.rows[0]) || null;
 

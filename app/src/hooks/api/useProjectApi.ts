@@ -166,8 +166,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
-
-
   /**
    * Delete funding source based on project and funding source ID
    *
@@ -175,13 +173,11 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {pfsId} pfsId
    * @returns {*} {Promise<any>}
    */
-   const deleteFundingSource = async (projectId: number, pfsId: number): Promise<any> => {
+  const deleteFundingSource = async (projectId: number, pfsId: number): Promise<any> => {
     const { data } = await axios.delete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`);
 
     return data;
   };
-
-
 
   /**
    * Add new funding source based on projectId
@@ -189,15 +185,11 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {projectId} projectId
    * @returns {*} {Promise<any>}
    */
-   const addFundingSource = async (projectId: number, fundingSource: any): Promise<any> => {
+  const addFundingSource = async (projectId: number, fundingSource: any): Promise<any> => {
     const { data } = await axios.post(`/api/project/${projectId}/funding-sources/add`, fundingSource);
 
     return data;
   };
-
-
-
-
 
   return {
     getProjectsList,

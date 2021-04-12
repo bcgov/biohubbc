@@ -97,8 +97,6 @@ export const deleteFundingSourceApiDocObject = (basicDescription: string, succes
   };
 };
 
-
-
 export const addFundingSourceApiDocObject = (basicDescription: string, successDescription: string) => {
   return {
     description: basicDescription,
@@ -148,4 +146,3 @@ export const addFundingSourceApiDocObject = (basicDescription: string, successDe
     }
   };
 };
-

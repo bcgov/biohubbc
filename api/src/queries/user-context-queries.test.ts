@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { SYSTEM_USER_TYPE } from '../constants/database';
-import {
-  setSystemUserContextSQL
-} from './user-context-queries';
+import { setSystemUserContextSQL } from './user-context-queries';
 
 describe('setSystemUserContextSQL', () => {
   it('has empty userIdentifier', () => {

@@ -7,7 +7,7 @@ describe('PostProjectData', () => {
     let message: string;
 
     before(() => {
-      message = "response message";
+      message = 'response message';
     });
 
     it('sets status code 400', function () {

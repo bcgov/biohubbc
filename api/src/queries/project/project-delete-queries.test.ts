@@ -132,7 +132,7 @@ describe('deleteFundingSourceSQL', () => {
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = deleteFundingSourceSQL(1,1);
+    const response = deleteFundingSourceSQL(1, 1);
 
     expect(response).to.not.be.null;
   });
