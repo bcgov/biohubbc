@@ -78,12 +78,13 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const handleDialogEditOpen = async (itemIndex: number) => {
-    const fundingSource = funding.fundingSources[itemIndex];
+    let fundingSourceValues: IProjectFundingFormArrayItem;
 
     if (itemIndex < funding.fundingSources.length) {
-      setFundingFormData({
-        index: itemIndex,
-        values: {
+      // edit an existing funding source
+      const fundingSource = funding.fundingSources[itemIndex];
+
+      fundingSourceValues = {
           id: fundingSource.id,
           agency_id: fundingSource.agency_id,
           investment_action_category: fundingSource.investment_action_category,
@@ -94,10 +95,12 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
           end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
           revision_count: fundingSource.revision_count
         }
-      });
     } else {
-      setFundingFormData({ index: itemIndex, values: ProjectFundingFormArrayItemInitialValues });
+      // add a new funding source
+      fundingSourceValues = ProjectFundingFormArrayItemInitialValues;
     }
+
+    setFundingFormData({ index: itemIndex, values: fundingSourceValues });
 
     setOpenEditDialog(true);
   };
