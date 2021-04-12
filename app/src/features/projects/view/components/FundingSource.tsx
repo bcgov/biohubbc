@@ -118,6 +118,8 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     try {
       if (isEditing) {
         await biohubApi.project.updateProject(id, projectData);
+      } else {
+        await biohubApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
       }
 
       setOpenEditDialog(false);
