@@ -112,34 +112,21 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       }
     };
 
-    if (fundingFormData.index < funding.fundingSources.length) {
-      // update an existing funding source
+    const isEditing = fundingFormData.index < funding.fundingSources.length;
+    const errorTitle = isEditing ? EditFundingI18N.editErrorTitle : AddFundingI18N.addErrorTitle;
 
-      try {
+    try {
+      if (isEditing) {
         await biohubApi.project.updateProject(id, projectData);
-      } catch (error) {
-        const apiError = error as APIError;
-        showErrorDialog({ dialogTitle: EditFundingI18N.editErrorTitle, dialogText: apiError.message, open: true });
-        return;
-      } finally {
-        setOpenEditDialog(false);
       }
 
-      props.refresh();
-    } else {
-      // add a new funding source
-
-      try {
-        await biohubApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
-      } catch (error) {
-        const apiError = error as APIError;
-        showErrorDialog({ dialogTitle: AddFundingI18N.addErrorTitle, dialogText: apiError.message, open: true });
-        return;
-      } finally {
-        setOpenEditDialog(false);
-      }
+      setOpenEditDialog(false);
 
       props.refresh();
+    } catch (error) {
+      const apiError = error as APIError;
+
+      showErrorDialog({ dialogTitle: errorTitle, dialogText: apiError.message, open: true });
     }
   };
 
