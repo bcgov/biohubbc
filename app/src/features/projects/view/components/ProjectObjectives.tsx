@@ -126,7 +126,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
       />
       <ErrorDialog {...errorDialogProps} />
       <Box mb={5}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Objectives</Typography>
           <Button
             className="editButtonSmall"
@@ -139,13 +139,18 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         </Box>
         <ReadMoreField text={objectives.objectives} maxCharLength={850} />
       </Box>
-      <Divider></Divider>
-      <Box mt={4}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h3">Caveats</Typography>
-        </Box>
-        <ReadMoreField text={objectives.caveats} maxCharLength={850} />
-      </Box>
+
+      {objectives.caveats && (
+        <>
+          <Divider></Divider>
+          <Box mt={4}>
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
+              <Typography variant="h3">Caveats</Typography>
+            </Box>
+            <ReadMoreField text={objectives.caveats} maxCharLength={850} />
+          </Box>
+        </>
+      )}
     </>
   );
 };

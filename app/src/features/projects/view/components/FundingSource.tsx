@@ -1,6 +1,5 @@
-import { Box, Grid, Button, Typography, Divider } from '@material-ui/core';
+import { Box, Grid, Button, Divider, Typography } from '@material-ui/core';
 import React, { Fragment, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString, getFormattedAmount, getFormattedDate } from 'utils/Utils';
 import EditDialog from 'components/dialog/EditDialog';
@@ -17,19 +16,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import Icon from '@mdi/react';
 import { mdiPencilOutline } from '@mdi/js';
-
-const useStyles = makeStyles({
-  heading: {
-    fontWeight: 'bold'
-  },
-  addButton: {
-    border: '2px solid'
-  },
-  topBorder: {
-    color: '#adb5bd',
-    width: '100%'
-  }
-});
 
 export interface IProjectFundingProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -48,7 +34,6 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     codes
   } = props;
 
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -109,6 +94,9 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
     props.refresh();
   };
+
+  const hasFundingSources = funding.fundingSources && funding.fundingSources.length > 0;
+
   return (
     <>
       <EditDialog
@@ -136,89 +124,78 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Grid container spacing={3}>
-        <Grid container item xs={12} spacing={3} justify="space-between" alignItems="center">
-          <Grid item>
-            <Typography variant="h3">Funding Sources</Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              className={classes.addButton && classes.heading}>
-              Add Funding Source
-            </Button>
-          </Grid>
-        </Grid>
-        {funding.fundingSources.map((item: any, index: number) => (
-          <Fragment key={item.id}>
-            <Grid container item>
-              <Divider className={classes.topBorder} />
-            </Grid>
-            <Grid container item spacing={0} xs={12} justify="space-between" alignItems="center">
-              <Grid item xs={12} sm={6} md={4}>
-                <Box>
-                  <Typography className={classes.heading}>{item.agency_name}</Typography>
-                </Box>
-              </Grid>
-              <Grid item>
-                <Button
-                  className="editButtonSmall"
-                  onClick={() => handleDialogEditOpen(index)}
-                  title="Edit Funding Source Information"
-                  aria-label="Edit Funding Source Information"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                  EDIT
-                </Button>
-              </Grid>
-            </Grid>
-            <Grid container item spacing={3} xs={12}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Box color="text.disabled">
-                  <Typography variant="caption">Agency Project ID</Typography>
-                </Box>
-                <Box>
-                  <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
+
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Typography variant="h3">Funding Sources</Typography>
+        <Button variant="outlined" color="primary">
+          Add Funding Source
+        </Button>
+      </Box>
+
+      {funding.fundingSources.map((item: any, index: number) => (
+        <Fragment key={item.id}>
+          <Box mt={3}>
+            <Divider />
+            <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2rem">
+              <Typography variant="h4">{item.agency_name}</Typography>
+              <Button
+                className="editButtonSmall"
+                onClick={() => handleDialogEditOpen(index)}
+                title="Edit Funding Source Information"
+                aria-label="Edit Funding Source Information"
+                startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                EDIT
+              </Button>
+            </Box>
+            <dl>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography component="dt" variant="subtitle2" color="textSecondary">
+                    Agency Project ID
+                  </Typography>
+                  <Typography component="dd" variant="body1">
                     {item.agency_project_id}
                   </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Box color="text.disabled">
-                  <Typography variant="caption">Funding Amount</Typography>
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1">{getFormattedAmount(item.funding_amount)}</Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Box color="text.disabled">
-                  <Typography variant="caption">Funding Dates</Typography>
-                </Box>
-                <Box>
-                  <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography component="dt" variant="subtitle2" color="textSecondary">
+                    Funding Amount
+                  </Typography>
+                  <Typography component="dd" variant="body1">
+                    {getFormattedAmount(item.funding_amount)}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <Typography component="dt" variant="subtitle2" color="textSecondary">
+                    Funding Dates
+                  </Typography>
+                  <Typography component="dd" variant="body1">
                     {getFormattedDateRangeString(DATE_FORMAT.ShortDateFormatMonthFirst, item.start_date, item.end_date)}
                   </Typography>
-                </Box>
-              </Grid>
-              {item.investment_action_category_name !== 'Not Applicable' && (
-                <Grid item xs={12} sm={6} md={4}>
-                  <Box color="text.disabled">
-                    <Typography variant="caption">Investment Category</Typography>
-                  </Box>
-                  <Box>
-                    <Typography style={{ wordBreak: 'break-all' }} variant="subtitle1">
+                </Grid>
+                {item.investment_action_category_name !== 'Not Applicable' && (
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography component="dt" variant="subtitle2" color="textSecondary">
+                      Investment Category
+                    </Typography>
+                    <Typography component="dd" variant="body1">
                       {item.investment_action_category_name}
                     </Typography>
-                  </Box>
-                </Grid>
-              )}
-            </Grid>
-          </Fragment>
-        ))}
-      </Grid>
+                  </Grid>
+                )}
+              </Grid>
+            </dl>
+          </Box>
+        </Fragment>
+      ))}
+
+      {!hasFundingSources && (
+        <Box mt={2}>
+          <Typography component="dd" variant="body1">
+            No Funding Sources
+          </Typography>
+        </Box>
+      )}
     </>
   );
 };

@@ -52,22 +52,32 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
           Indigenous Partnerships
         </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Indigenous Partnerships
+        </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
           Stakeholder Partnerships
         </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Stakeholder Partnerships
+        </dd>
       </div>
     </div>
   </dl>
@@ -126,7 +136,7 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -145,7 +155,7 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
         </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -220,22 +230,32 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
           Indigenous Partnerships
         </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Indigenous Partnerships
+        </dd>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
           Stakeholder Partnerships
         </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          No Stakeholder Partnerships
+        </dd>
       </div>
     </div>
   </dl>
