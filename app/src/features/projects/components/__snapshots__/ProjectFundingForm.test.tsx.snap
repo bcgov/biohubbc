@@ -924,6 +924,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 2`] =
             </span>
             Add Funding Source
           </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
         </button>
       </header>
       <div
@@ -932,6 +935,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 2`] =
         <div
           class="MuiBox-root MuiBox-root-50"
         >
+          <div
+            class="MuiBox-root MuiBox-root-52"
+          />
           <ul
             class="MuiList-root MuiList-dense"
           >
@@ -976,6 +982,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 2`] =
                         />
                       </svg>
                     </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
                   </button>
                   <button
                     aria-label="Delete Funding Source"
@@ -999,6 +1008,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 2`] =
                         />
                       </svg>
                     </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
                   </button>
                 </div>
                 <hr
@@ -1105,6 +1117,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 3`] =
             </span>
             Add Funding Source
           </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
         </button>
       </header>
       <div
@@ -1113,6 +1128,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 3`] =
         <div
           class="MuiBox-root MuiBox-root-50"
         >
+          <div
+            class="MuiBox-root MuiBox-root-52"
+          />
           <ul
             class="MuiList-root MuiList-dense"
           >
@@ -1157,6 +1175,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 3`] =
                         />
                       </svg>
                     </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
                   </button>
                   <button
                     aria-label="Delete Funding Source"
@@ -1180,6 +1201,9 @@ exports[`ProjectFundingForm shows edit funding source dialog on edit click 3`] =
                         />
                       </svg>
                     </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
                   </button>
                 </div>
                 <hr

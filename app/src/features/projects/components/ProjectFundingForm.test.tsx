@@ -190,10 +190,10 @@ describe('ProjectFundingForm', () => {
 
       expect(asFragment()).toMatchSnapshot();
 
-      // const editButton = await getByTestId('edit-button-0');
-      // expect(editButton).toBeInTheDocument();
+      const editButton = await getByTestId('edit-button-0');
+      expect(editButton).toBeInTheDocument();
 
-      // fireEvent.click(editButton);
+      fireEvent.click(editButton);
 
       expect(asFragment()).toMatchSnapshot();
 
