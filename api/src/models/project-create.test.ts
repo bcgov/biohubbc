@@ -147,7 +147,7 @@ describe('PostPermitData', () => {
     });
   });
 
-  describe('All values provided', () => {
+  describe('All values provided with sampling conducted as true', () => {
     let projectPermitData: PostPermitData;
 
     const obj = {
@@ -168,6 +168,32 @@ describe('PostPermitData', () => {
         {
           permit_number: 1,
           sampling_conducted: true
+        }
+      ]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as false', () => {
+    let projectPermitData: PostPermitData;
+
+    const obj = {
+      permits: [
+        {
+          permit_number: 1,
+          sampling_conducted: 'false'
+        }
+      ]
+    };
+
+    before(() => {
+      projectPermitData = new PostPermitData(obj);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: 1,
+          sampling_conducted: false
         }
       ]);
     });
