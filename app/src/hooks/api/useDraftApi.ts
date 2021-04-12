@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IDraftResponse } from 'interfaces/useDraftApi.interface';
+import { IDraftResponse, IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 
 /**
  * Returns a set of supported api methods for working with drafts.
@@ -39,9 +39,21 @@ const useDraftApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get drafts list.
+   *
+   * @return {*}  {Promise<IGetDraftsListResponse[]>}
+   */
+  const getDraftsList = async (): Promise<IGetDraftsListResponse[]> => {
+    const { data } = await axios.get(`/api/drafts`);
+
+    return data;
+  };
+
   return {
     createDraft,
-    updateDraft
+    updateDraft,
+    getDraftsList
   };
 };
 

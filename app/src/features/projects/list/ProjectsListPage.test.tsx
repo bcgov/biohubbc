@@ -11,7 +11,8 @@ const history = createMemoryHistory();
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectsList: jest.fn()
+    getProjectsList: jest.fn(),
+    getDraftsList: jest.fn()
   }
 };
 
@@ -22,6 +23,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 describe('ProjectsListPage', () => {
   beforeEach(() => {
     mockBiohubApi().project.getProjectsList.mockClear();
+    mockBiohubApi().project.getDraftsList.mockClear();
   });
 
   afterEach(() => {
@@ -53,6 +55,28 @@ describe('ProjectsListPage', () => {
           regions_name_list: 'South Coast',
           start_date: null,
           end_date: null
+        }
+      ]);
+
+      const { asFragment, getByTestId } = render(
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('project-table')).toBeInTheDocument();
+        expect(asFragment()).toMatchSnapshot();
+      });
+    });
+  });
+
+  test('renders with a list of drafts', async () => {
+    await act(async () => {
+      mockBiohubApi().project.getDraftsList.mockResolvedValue([
+        {
+          id: 1,
+          name: 'Draft 1'
         }
       ]);
 
