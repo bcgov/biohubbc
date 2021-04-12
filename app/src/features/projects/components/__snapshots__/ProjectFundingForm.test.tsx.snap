@@ -1,5 +1,81 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ProjectFundingForm deletes funding source dialog on delete click 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiBox-root MuiBox-root-75"
+    >
+      <header
+        class="MuiBox-root MuiBox-root-76"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources (0)
+        </h3>
+        <button
+          aria-label="Add Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
+          tabindex="0"
+          title="Add Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </header>
+      <div
+        class="MuiBox-root MuiBox-root-77"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-78"
+        >
+          <ul
+            class="MuiList-root MuiList-dense"
+          >
+            <div
+              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-80"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2"
+                >
+                  No Funding Sources
+                </h6>
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
 exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <form>
@@ -17,6 +93,7 @@ exports[`ProjectFundingForm renders correctly with default empty values 1`] = `
         <button
           aria-label="Add Funding Source"
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
           tabindex="0"
           title="Add Funding Source"
           type="button"
@@ -92,6 +169,7 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
         <button
           aria-label="Add Funding Source"
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
           tabindex="0"
           title="Add Funding Source"
           type="button"
@@ -151,6 +229,7 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                   <button
                     aria-label="Edit Funding Source"
                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="edit-button-0"
                     tabindex="0"
                     title="Edit Funding Source"
                     type="button"
@@ -176,6 +255,7 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                   <button
                     aria-label="Delete Funding Source"
                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="delete-button-0"
                     tabindex="0"
                     title="Delete Funding Source"
                     type="button"
@@ -204,6 +284,638 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                 />
                 <div
                   class="MuiBox-root MuiBox-root-20"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Agency Project ID
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        111
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Funding Amount
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        $ 222
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Start / End Date
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Mar 14, 2021 - Apr 14, 2021
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ProjectFundingForm shows add funding source dialog on add click 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiBox-root MuiBox-root-26"
+    >
+      <header
+        class="MuiBox-root MuiBox-root-27"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources (3)
+        </h3>
+        <button
+          aria-label="Add Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
+          tabindex="0"
+          title="Add Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </header>
+      <div
+        class="MuiBox-root MuiBox-root-28"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-29"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-33"
+          />
+          <ul
+            class="MuiList-root MuiList-dense"
+          >
+            <li
+              class="MuiListItem-root makeStyles-fundingListIem-23 MuiListItem-dense MuiListItem-gutters"
+            >
+              <div
+                class="MuiPaper-root makeStyles-fundingListItemInner-24 MuiPaper-elevation1 MuiPaper-rounded"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular makeStyles-fundingListItemToolbar-25 MuiToolbar-gutters"
+                >
+                  <p
+                    class="MuiTypography-root makeStyles-title-21 MuiTypography-body1"
+                  >
+                    Funding source code
+                    <span
+                      class="makeStyles-titleDesc-22"
+                    >
+                      (Investment action category)
+                    </span>
+                  </p>
+                  <button
+                    aria-label="Edit Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="edit-button-0"
+                    tabindex="0"
+                    title="Edit Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                  <button
+                    aria-label="Delete Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="delete-button-0"
+                    tabindex="0"
+                    title="Delete Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-30"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Agency Project ID
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        111
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Funding Amount
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        $ 222
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Start / End Date
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Mar 14, 2021 - Apr 14, 2021
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li
+              class="MuiListItem-root makeStyles-fundingListIem-23 MuiListItem-dense MuiListItem-gutters"
+            >
+              <div
+                class="MuiPaper-root makeStyles-fundingListItemInner-24 MuiPaper-elevation1 MuiPaper-rounded"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular makeStyles-fundingListItemToolbar-25 MuiToolbar-gutters"
+                >
+                  <p
+                    class="MuiTypography-root makeStyles-title-21 MuiTypography-body1"
+                  >
+                    <span
+                      class="makeStyles-titleDesc-22"
+                    >
+                      ()
+                    </span>
+                  </p>
+                  <button
+                    aria-label="Edit Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="edit-button-1"
+                    tabindex="0"
+                    title="Edit Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                  <button
+                    aria-label="Delete Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="delete-button-1"
+                    tabindex="0"
+                    title="Delete Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-31"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Agency Project ID
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        112
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Funding Amount
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        $ 223
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Start / End Date
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Mar 15, 2021 - Apr 15, 2021
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li
+              class="MuiListItem-root makeStyles-fundingListIem-23 MuiListItem-dense MuiListItem-gutters"
+            >
+              <div
+                class="MuiPaper-root makeStyles-fundingListItemInner-24 MuiPaper-elevation1 MuiPaper-rounded"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular makeStyles-fundingListItemToolbar-25 MuiToolbar-gutters"
+                >
+                  <p
+                    class="MuiTypography-root makeStyles-title-21 MuiTypography-body1"
+                  />
+                  <button
+                    aria-label="Edit Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="edit-button-2"
+                    tabindex="0"
+                    title="Edit Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                  <button
+                    aria-label="Delete Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="delete-button-2"
+                    tabindex="0"
+                    title="Delete Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-32"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Agency Project ID
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        113
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Funding Amount
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        $ 224
+                      </p>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <p
+                        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+                      >
+                        Start / End Date
+                      </p>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Mar 16, 2021 - Apr 16, 2021
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ProjectFundingForm shows edit funding source dialog on edit click 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiBox-root MuiBox-root-47"
+    >
+      <header
+        class="MuiBox-root MuiBox-root-48"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources (1)
+        </h3>
+        <button
+          aria-label="Add Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
+          tabindex="0"
+          title="Add Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </header>
+      <div
+        class="MuiBox-root MuiBox-root-49"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-50"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-52"
+          />
+          <ul
+            class="MuiList-root MuiList-dense"
+          >
+            <li
+              class="MuiListItem-root makeStyles-fundingListIem-44 MuiListItem-dense MuiListItem-gutters"
+            >
+              <div
+                class="MuiPaper-root makeStyles-fundingListItemInner-45 MuiPaper-elevation1 MuiPaper-rounded"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular makeStyles-fundingListItemToolbar-46 MuiToolbar-gutters"
+                >
+                  <p
+                    class="MuiTypography-root makeStyles-title-42 MuiTypography-body1"
+                  >
+                    Funding source code
+                    <span
+                      class="makeStyles-titleDesc-43"
+                    >
+                      (Investment action category)
+                    </span>
+                  </p>
+                  <button
+                    aria-label="Edit Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="edit-button-0"
+                    tabindex="0"
+                    title="Edit Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                  <button
+                    aria-label="Delete Funding Source"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
+                    data-testid="delete-button-0"
+                    tabindex="0"
+                    title="Delete Funding Source"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.5rem; height: 1.5rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-51"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"

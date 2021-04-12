@@ -171,7 +171,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle={EditFundingI18N.editTitle}
+        dialogTitle={(fundingFormData.index < funding.fundingSources.length ? EditFundingI18N.editTitle : AddFundingI18N.addTitle)}
         open={openEditDialog}
         component={{
           element: (

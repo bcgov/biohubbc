@@ -861,6 +861,7 @@ exports[`ProjectStepComponents renders the project funding 1`] = `
         <button
           aria-label="Add Funding Source"
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
           tabindex="0"
           title="Add Funding Source"
           type="button"
