@@ -10,8 +10,45 @@ import {
   PutObjectivesData,
   GetLocationData,
   GetProjectData,
-  PutProjectData
+  PutProjectData,
+  PutIUCNData
 } from './project-update';
+
+describe('PutIUCNData', () => {
+  describe('No values provided', () => {
+    let data: PutIUCNData;
+
+    before(() => {
+      data = new PutIUCNData(null);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    const obj = {
+      classificationDetails: [
+        {
+          classification: 1,
+          subClassification1: 2,
+          subClassification2: 2
+        }
+      ]
+    };
+
+    let data: PutIUCNData;
+
+    before(() => {
+      data = new PutIUCNData(obj);
+    });
+
+    it('sets classification details', () => {
+      expect(data.classificationDetails).to.eql(obj.classificationDetails);
+    });
+  });
+});
 
 describe('PutPartnershipsData', () => {
   describe('No values provided', () => {
