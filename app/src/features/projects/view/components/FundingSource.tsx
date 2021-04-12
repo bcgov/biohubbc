@@ -148,7 +148,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     const fundingSource = funding.fundingSources[fundingFormData.index];
 
     try {
-      await biohubApi.project.deleteFundingSource(id, fundingSource.id + 100);
+      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
       setOpenDeleteDialog(false);
     } catch (error) {
       const apiError = error as APIError;
