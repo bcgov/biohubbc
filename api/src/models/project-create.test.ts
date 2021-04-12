@@ -5,6 +5,7 @@ import {
   PostLocationData,
   PostObjectivesData,
   PostPartnershipsData,
+  PostPermitData,
   PostProjectData,
   PostSpeciesData
 } from './project-create';
@@ -128,6 +129,46 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
+    });
+  });
+});
+
+describe('PostPermitData', () => {
+  describe('No values provided', () => {
+    let projectPermitData: PostPermitData;
+
+    before(() => {
+      projectPermitData = new PostPermitData(null);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectPermitData: PostPermitData;
+
+    const obj = {
+      permits: [
+        {
+          permit_number: 1,
+          sampling_conducted: 'true'
+        }
+      ]
+    };
+
+    before(() => {
+      projectPermitData = new PostPermitData(obj);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: 1,
+          sampling_conducted: true
+        }
+      ]);
     });
   });
 });
