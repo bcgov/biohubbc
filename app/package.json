@@ -110,6 +110,7 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/src/themes/**",
       "!<rootDir>/src/constants/**",
       "!<rootDir>/src/App.tsx",
       "!<rootDir>/src/types/**",

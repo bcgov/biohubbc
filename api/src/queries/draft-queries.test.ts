@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { postDraftSQL, putDraftSQL } from './draft-queries';
+import { getDraftsSQL, postDraftSQL, putDraftSQL } from './draft-queries';
 
 describe('postDraftSQL', () => {
   it('Null systemUserId', () => {
@@ -56,6 +56,18 @@ describe('putDraftSQL', () => {
 
   it('Valid parameters', () => {
     const response = putDraftSQL(1, 'draft name', {});
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getDraftsSQL', () => {
+  it('Null systemUserId', () => {
+    const response = getDraftsSQL((null as unknown) as number);
+    expect(response).to.be.null;
+  });
+
+  it('Valid parameters', () => {
+    const response = getDraftsSQL(1);
     expect(response).to.not.be.null;
   });
 });
