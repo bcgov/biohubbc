@@ -58,6 +58,11 @@ exports[`Species renders correctly with default empty values 1`] = `
           >
             Focal Species
           </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            No Focal Species
+          </dd>
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -67,6 +72,11 @@ exports[`Species renders correctly with default empty values 1`] = `
           >
             Anciliary Species
           </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            No Ancilliary Species
+          </dd>
         </div>
       </div>
     </dl>
@@ -226,6 +236,11 @@ exports[`Species renders correctly with invalid null values 1`] = `
           >
             Focal Species
           </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            No Focal Species
+          </dd>
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -235,6 +250,11 @@ exports[`Species renders correctly with invalid null values 1`] = `
           >
             Anciliary Species
           </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            No Ancilliary Species
+          </dd>
         </div>
       </div>
     </dl>

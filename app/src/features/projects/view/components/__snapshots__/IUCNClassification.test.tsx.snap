@@ -3,6 +3,102 @@
 exports[`IUCNClassification renders correctly with classification details 1`] = `
 <DocumentFragment>
   <div
+    class="MuiBox-root MuiBox-root-6"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h3"
+    >
+      IUCN Classifications
+    </h3>
+    <button
+      aria-label="Edit General Information"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+      tabindex="0"
+      title="Edit IUCN Classifications"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+        EDIT
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
+  </div>
+  <ul
+    class="MuiBox-root MuiBox-root-7 listNoBullets"
+  >
+    <li
+      class="MuiBox-root MuiBox-root-8 makeStyles-iucnListItem-5"
+    >
+      <hr
+        class="MuiDivider-root"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-9"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          classification 
+          <span>
+            &gt;
+          </span>
+           sub classification 1 
+          <span>
+            &gt;
+          </span>
+           sub classification 2
+        </span>
+      </div>
+    </li>
+    <li
+      class="MuiBox-root MuiBox-root-10 makeStyles-iucnListItem-5"
+    >
+      <hr
+        class="MuiDivider-root"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          classification again 
+          <span>
+            &gt;
+          </span>
+           sub classification 1 again 
+          <span>
+            &gt;
+          </span>
+           sub classification 2 again
+        </span>
+      </div>
+    </li>
+  </ul>
+</DocumentFragment>
+`;
+
+exports[`IUCNClassification renders correctly with no classification details 1`] = `
+<DocumentFragment>
+  <div
     class="MuiBox-root MuiBox-root-2"
   >
     <h3
@@ -41,129 +137,18 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       />
     </button>
   </div>
-  <div
-    class="MuiTableContainer-root"
+  <ul
+    class="MuiBox-root MuiBox-root-3 listNoBullets"
   >
-    <table
-      aria-label="iucn-classification-table"
-      class="MuiTable-root"
+    <li
+      class="MuiBox-root MuiBox-root-4 makeStyles-iucnListItem-1"
     >
-      <thead
-        class="MuiTableHead-root"
+      <dd
+        class="MuiTypography-root MuiTypography-body1"
       >
-        <tr
-          class="MuiTableRow-root MuiTableRow-head"
-        >
-          <th
-            class="MuiTableCell-root MuiTableCell-head"
-            scope="col"
-            width="33.3333%"
-          >
-            Classification
-          </th>
-          <th
-            class="MuiTableCell-root MuiTableCell-head"
-            scope="col"
-            width="33.3333%"
-          >
-            Sub-classification
-          </th>
-          <th
-            class="MuiTableCell-root MuiTableCell-head"
-            scope="col"
-            width="33.3333%"
-          >
-            Sub-classification
-          </th>
-        </tr>
-      </thead>
-      <tbody
-        class="MuiTableBody-root"
-      >
-        <tr
-          class="MuiTableRow-root"
-        >
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            classification
-          </td>
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            sub classification 1
-          </td>
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            sub classification 2
-          </td>
-        </tr>
-        <tr
-          class="MuiTableRow-root"
-        >
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            classification again
-          </td>
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            sub classification 1 again
-          </td>
-          <td
-            class="MuiTableCell-root MuiTableCell-body"
-          >
-            sub classification 2 again
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`IUCNClassification renders correctly with no classification details 1`] = `
-<DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-1"
-  >
-    <h3
-      class="MuiTypography-root MuiTypography-h3"
-    >
-      IUCN Classifications
-    </h3>
-    <button
-      aria-label="Edit General Information"
-      class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
-      tabindex="0"
-      title="Edit IUCN Classifications"
-      type="button"
-    >
-      <span
-        class="MuiButton-label"
-      >
-        <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
-        >
-          <svg
-            role="presentation"
-            style="width: 1.3125rem; height: 1.3125rem;"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-              style="fill: currentColor;"
-            />
-          </svg>
-        </span>
-        EDIT
-      </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
-    </button>
-  </div>
+        No IUCN Classifications
+      </dd>
+    </li>
+  </ul>
 </DocumentFragment>
 `;

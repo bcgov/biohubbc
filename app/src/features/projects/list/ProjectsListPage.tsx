@@ -8,9 +8,9 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow,
+  Typography
 } from '@material-ui/core';
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useEffect, useState } from 'react';
@@ -18,47 +18,6 @@ import { useHistory } from 'react-router';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDate } from 'utils/Utils';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
-
-/**
- * Table styling
- * https://material-ui.com/components/tables/
- */
-const StyledTableCell = withStyles((theme: Theme) =>
-  createStyles({
-    head: {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.common.black,
-      fontWeight: 600
-    },
-    body: {}
-  })
-)(TableCell);
-
-const StyledTableRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover
-      }
-    }
-  })
-)(TableRow);
-
-/**
- * Creates a style for an empty list of projects.
- *
- */
-
-const StyledTableCellEmpty = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      backgroundColor: theme.palette.common.white,
-      color: theme.palette.common.black,
-      fontWeight: 400,
-      textAlign: 'center'
-    }
-  })
-)(TableCell);
 
 /**
  * Page to display a list of projects.
@@ -117,86 +76,72 @@ const ProjectsListPage: React.FC = () => {
 
   if (!hasProjects && !hasDrafts) {
     return (
-      <Box my={3}>
-        <Container>
-          <Box mb={3} fontSize={30} fontWeight="fontWeightBold">
-            Projects
-            <Button
-              variant="outlined"
-              size="small"
-              color="primary"
-              style={{ float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}
-              onClick={navigateToCreateProjectPage}>
+      <Box my={4}>
+        <Container maxWidth="xl">
+          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h1">Projects</Typography>
+            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
               Create Project
             </Button>
           </Box>
-          <Box>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow></TableRow>
-                </TableHead>
-                <TableBody>
-                  <TableRow>
-                    <StyledTableCellEmpty>No Projects found</StyledTableCellEmpty>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow></TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>No Projects found</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Container>
       </Box>
     );
   } else {
     return (
-      <Box my={3}>
-        <Container>
-          <Box mb={3} fontSize={30} fontWeight="fontWeightBold">
-            Projects
-            <Button
-              variant="outlined"
-              size="small"
-              color="primary"
-              style={{ float: 'right', border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}
-              onClick={navigateToCreateProjectPage}>
+      <Box my={4}>
+        <Container maxWidth="xl">
+          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h1">Projects</Typography>
+            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
               Create Project
             </Button>
           </Box>
-          <Box>
-            <TableContainer component={Paper}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>Project Name</StyledTableCell>
-                    <StyledTableCell>Species</StyledTableCell>
-                    <StyledTableCell>Location</StyledTableCell>
-                    <StyledTableCell>Start Date</StyledTableCell>
-                    <StyledTableCell>End Date</StyledTableCell>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Project Name</TableCell>
+                  <TableCell>Species</TableCell>
+                  <TableCell>Location</TableCell>
+                  <TableCell>Start Date</TableCell>
+                  <TableCell>End Date</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody data-testid="project-table">
+                {drafts?.map((row) => (
+                  <TableRow data-testid={row.name} key={row.id}>
+                    <TableCell>{row.name} (Draft)</TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
                   </TableRow>
-                </TableHead>
-                <TableBody data-testid="project-table">
-                  {drafts?.map((row) => (
-                    <StyledTableRow data-testid={row.name} key={row.id}>
-                      <TableCell>{row.name} (Draft)</TableCell>
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                    </StyledTableRow>
-                  ))}
-                  {projects.map((row) => (
-                    <StyledTableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
-                      <TableCell>{row.name}</TableCell>
-                      <TableCell>{row.focal_species_name_list}</TableCell>
-                      <TableCell>{row.regions_name_list}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
-                    </StyledTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
+                ))}
+                {projects.map((row) => (
+                  <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.focal_species_name_list}</TableCell>
+                    <TableCell>{row.regions_name_list}</TableCell>
+                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
+                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Container>
       </Box>
     );

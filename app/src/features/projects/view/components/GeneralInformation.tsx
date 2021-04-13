@@ -138,7 +138,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
       />
       <ErrorDialog {...errorDialogProps} />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">General Information</Typography>
           <Button
             className="editButtonSmall"
@@ -161,7 +161,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Type
+                Project Type
               </Typography>
               <Typography component="dd" variant="body1">
                 {project.project_type}
@@ -172,7 +172,20 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
                 Timeline
               </Typography>
               <Typography component="dd" variant="body1">
-                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date, project.end_date)}
+                {project.end_date ? (
+                  <>
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      project.start_date,
+                      project.end_date
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span>Start Date:</span>{' '}
+                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, project.start_date)}
+                  </>
+                )}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -180,7 +193,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
                 Activities
               </Typography>
               <Typography component="dd" variant="body1">
-                {projectActivities}
+                {projectActivities ? <>{projectActivities}</> : 'No Activities'}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -188,7 +201,11 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
                 Climate Change Initiatives
               </Typography>
               <Typography component="dd" variant="body1">
-                {projectClimateChangeInitiatives}
+                {projectClimateChangeInitiatives ? (
+                  <>{projectClimateChangeInitiatives}</>
+                ) : (
+                  'No Climate Change Initiatives'
+                )}
               </Typography>
             </Grid>
           </Grid>
