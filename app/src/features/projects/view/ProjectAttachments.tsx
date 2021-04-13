@@ -76,9 +76,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <Box p={3}>
-          <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
-        </Box>
+        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
       </Box>
     </>
   );
