@@ -1,29 +1,98 @@
-import { AppBar, Toolbar } from '@material-ui/core';
+import { AppBar, Box, Container, makeStyles, Theme, Toolbar } from '@material-ui/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import 'styles/Header.scss';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  govHeader: {
+    borderBottom: '2px solid #fade81'
+  },
+  govHeaderContainer: {
+    paddingLeft: 0,
+    paddingRight: 0
+  },
+  govHeaderToolbar: {
+    height: '70px'
+  },
+  brand: {
+    display: 'flex',
+    flex: '0 0 auto',
+    alignItems: 'center',
+    color: 'inherit',
+    textDecoration: 'none',
+    fontSize: '1.75rem',
+    fontWeight: 700,
+    '& img': {
+      verticalAlign: 'middle'
+    },
+    '& picture': {
+      marginRight: '1.25rem'
+    },
+    '&:hover': {
+      textDecoration: 'none'
+    }
+  },
+  '@media (max-width: 1000px)': {
+    brand: {
+      '& picture': {
+        marginRight: '1rem'
+      }
+    }
+  },
+  mainNav: {
+    backgroundColor: '#38598a'
+  },
+  mainNavContainer: {
+    paddingLeft: 0,
+    paddingRight: 0
+  },
+  mainNavToolbar: {
+    '& a': {
+      display: 'block',
+      padding: theme.spacing(2),
+      color: 'inherit',
+      fontSize: '1rem',
+      textDecoration: 'none'
+    },
+    '& a:hover': {
+      textDecoration: 'underline'
+    },
+    '& a:first-child': {
+      marginLeft: theme.spacing(-2)
+    }
+  }
+}));
+
 const Header: React.FC = () => {
+  const classes = useStyles();
+
   return (
     <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-      <Toolbar className={'headerToolbar'}>
-        <Link to="/projects" className={'brand'} aria-label="Go to BioHub Home">
-          <picture>
-            <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-            <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-            <img src={headerImageSmall} alt={'Government of British Columbia'} />
-          </picture>
-          BioHub
-        </Link>
-      </Toolbar>
-      <Toolbar variant="dense" className={'main-nav'} role="navigation" aria-label="Main Navigation">
-        <Link to="/projects" color={'inherit'}>
-          Projects
-        </Link>
-      </Toolbar>
+      <Box className={classes.govHeader}>
+        <Container maxWidth="xl" className={classes.govHeaderContainer}>
+          <Toolbar className={classes.govHeaderToolbar}>
+            <Link to="/projects" className={classes.brand} aria-label="Go to BioHub Home">
+              <picture>
+                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                <img src={headerImageSmall} alt={'Government of British Columbia'} />
+              </picture>
+              BioHub
+            </Link>
+          </Toolbar>
+        </Container>
+      </Box>
+      <Box className={classes.mainNav}>
+        <Container maxWidth="xl" className={classes.mainNavContainer}>
+          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+            <Link to="/projects" color={'inherit'}>
+              Projects
+            </Link>
+          </Toolbar>
+        </Container>
+      </Box>
     </AppBar>
   );
 };

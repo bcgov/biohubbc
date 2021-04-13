@@ -38,46 +38,6 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
         <div
           class="MuiBox-root MuiBox-root-4"
         >
-          <nav
-            class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-          >
-            <ol
-              class="MuiBreadcrumbs-ol"
-            >
-              <li
-                class="MuiBreadcrumbs-li"
-              >
-                <a
-                  aria-current="page"
-                  color="primary"
-                  href="/projects"
-                >
-                  Projects
-                </a>
-              </li>
-              <li
-                aria-hidden="true"
-                class="MuiBreadcrumbs-separator"
-              >
-                /
-              </li>
-              <li
-                class="MuiBreadcrumbs-li"
-              >
-                <a
-                  aria-current="page"
-                  color="primary"
-                  href="/projects/details"
-                >
-                  Test Project Name
-                </a>
-              </li>
-            </ol>
-          </nav>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-5"
-        >
           <h1
             class="MuiTypography-root MuiTypography-h1"
           >
@@ -85,13 +45,13 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
           </h1>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-6"
+          class="MuiBox-root MuiBox-root-5"
         >
           <h6
             class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
           >
             <span>
-              October 10, 1998 - February 26, 2021
+              Oct 10, 1998 - Feb 26, 2021
             </span>
           </h6>
         </div>
@@ -102,12 +62,13 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-7"
+      class="MuiBox-root MuiBox-root-6"
     >
       <aside
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-7"
       >
         <nav
+          aria-label="Project Navigation"
           class="MuiList-root makeStyles-projectNav-2 MuiList-padding"
         >
           <a
@@ -215,7 +176,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
         </nav>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-8"
       />
     </div>
   </div>

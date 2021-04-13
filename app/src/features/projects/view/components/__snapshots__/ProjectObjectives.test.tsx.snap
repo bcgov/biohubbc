@@ -3,10 +3,10 @@
 exports[`ProjectObjectives renders correctly when both objectives and caveats have length is > 850 characters and are in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-14"
+    class="MuiBox-root MuiBox-root-11"
   >
     <div
-      class="MuiBox-root MuiBox-root-15"
+      class="MuiBox-root MuiBox-root-12"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -45,7 +45,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
       </button>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-16"
+      class="MuiBox-root MuiBox-root-13"
     >
       <p
         class="MuiTypography-root MuiTypography-body1"
@@ -96,7 +96,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
          nisi.
       </p>
       <div
-        class="MuiBox-root MuiBox-root-17"
+        class="MuiBox-root MuiBox-root-14"
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
@@ -119,10 +119,10 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
     class="MuiDivider-root"
   />
   <div
-    class="MuiBox-root MuiBox-root-18"
+    class="MuiBox-root MuiBox-root-15"
   >
     <div
-      class="MuiBox-root MuiBox-root-19"
+      class="MuiBox-root MuiBox-root-16"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -131,7 +131,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
       </h3>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-20"
+      class="MuiBox-root MuiBox-root-17"
     >
       <p
         class="MuiTypography-root MuiTypography-body1"
@@ -182,7 +182,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
          nisi.
       </p>
       <div
-        class="MuiBox-root MuiBox-root-21"
+        class="MuiBox-root MuiBox-root-18"
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
@@ -207,10 +207,10 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-22"
+    class="MuiBox-root MuiBox-root-19"
   >
     <div
-      class="MuiBox-root MuiBox-root-23"
+      class="MuiBox-root MuiBox-root-20"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -249,7 +249,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       </button>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-24"
+      class="MuiBox-root MuiBox-root-21"
     >
       <p
         class="MuiTypography-root MuiTypography-body1"
@@ -273,10 +273,10 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
     class="MuiDivider-root"
   />
   <div
-    class="MuiBox-root MuiBox-root-25"
+    class="MuiBox-root MuiBox-root-22"
   >
     <div
-      class="MuiBox-root MuiBox-root-26"
+      class="MuiBox-root MuiBox-root-23"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -285,7 +285,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       </h3>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-27"
+      class="MuiBox-root MuiBox-root-24"
     >
       <p
         class="MuiTypography-root MuiTypography-body1"
@@ -503,27 +503,6 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
           />
         </button>
       </div>
-    </div>
-  </div>
-  <hr
-    class="MuiDivider-root"
-  />
-  <div
-    class="MuiBox-root MuiBox-root-11"
-  >
-    <div
-      class="MuiBox-root MuiBox-root-12"
-    >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Caveats
-      </h3>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-13"
-    >
-      <p />
     </div>
   </div>
 </DocumentFragment>

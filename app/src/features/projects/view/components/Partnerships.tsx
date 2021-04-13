@@ -96,6 +96,9 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
+  const hasIndigenousPartnerships = indigenous_partnerships && indigenous_partnerships.length > 0;
+  const hasStakeholderPartnerships = stakeholder_partnerships && stakeholder_partnerships.length > 0;
+
   return (
     <>
       <EditDialog
@@ -112,7 +115,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
       <ErrorDialog {...errorDialogProps} />
 
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Partnerships</Typography>
           <Button
             className="editButtonSmall"
@@ -127,7 +130,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
       <dl className="ddInline">
         <Grid container spacing={2}>
-          <Grid item>
+          <Grid item xs={12}>
             <Typography component="dt" variant="subtitle2" color="textSecondary">
               Indigenous Partnerships
             </Typography>
@@ -138,8 +141,14 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
                 </Typography>
               );
             })}
+
+            {!hasIndigenousPartnerships && (
+              <Typography component="dd" variant="body1">
+                No Indigenous Partnerships
+              </Typography>
+            )}
           </Grid>
-          <Grid item>
+          <Grid item xs={12}>
             <Typography component="dt" variant="subtitle2" color="textSecondary">
               Stakeholder Partnerships
             </Typography>
@@ -150,6 +159,12 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
                 </Typography>
               );
             })}
+
+            {!hasStakeholderPartnerships && (
+              <Typography component="dd" variant="body1">
+                No Stakeholder Partnerships
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </dl>

@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
-  TableCell,
-  Typography
-} from '@material-ui/core';
+import { Box, Button, Divider, makeStyles, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -33,6 +23,18 @@ export interface IIUCNClassificationProps {
   refresh: () => void;
 }
 
+const useStyles = makeStyles((theme) => ({
+  iucnListItem: {
+    '& hr': {
+      marginBottom: theme.spacing(2)
+    },
+
+    '& + li': {
+      paddingTop: theme.spacing(2)
+    }
+  }
+}));
+
 /**
  * IUCN Classification content for a project.
  *
@@ -45,6 +47,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   } = props;
 
   const biohubApi = useBiohubApi();
+  const classes = useStyles();
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditIUCNI18N.editErrorTitle,
@@ -107,6 +110,8 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     props.refresh();
   };
 
+  const hasIucnClassifications = iucn.classificationDetails && iucn.classificationDetails.length > 0;
+
   return (
     <>
       <EditDialog
@@ -124,7 +129,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
       />
       <ErrorDialog {...errorDialogProps} />
 
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
         <Typography variant="h3">IUCN Classifications</Typography>
         <Button
           className="editButtonSmall"
@@ -137,28 +142,32 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
       </Box>
 
       {iucn.classificationDetails.length > 0 && (
-        <TableContainer>
-          <Table aria-label="iucn-classification-table">
-            <TableHead>
-              <TableRow>
-                <TableCell width="33.3333%">Classification</TableCell>
-                <TableCell width="33.3333%">Sub-classification</TableCell>
-                <TableCell width="33.3333%">Sub-classification</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>{classificationDetail.classification}</TableCell>
-                    <TableCell>{classificationDetail.subClassification1}</TableCell>
-                    <TableCell>{classificationDetail.subClassification2}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box component="ul" className="listNoBullets">
+          {hasIucnClassifications &&
+            iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+              return (
+                <Box component="li" key={index} className={classes.iucnListItem}>
+                  <Divider />
+                  <Box>
+                    <Typography component="span" variant="body1">
+                      {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
+                      <span>{'>'}</span> {classificationDetail.subClassification2}
+                    </Typography>
+                  </Box>
+                </Box>
+              );
+            })}
+        </Box>
+      )}
+
+      {!hasIucnClassifications && (
+        <Box component="ul" className="listNoBullets">
+          <Box component="li" className={classes.iucnListItem}>
+            <Typography component="dd" variant="body1">
+              No IUCN Classifications
+            </Typography>
+          </Box>
+        </Box>
       )}
     </>
   );

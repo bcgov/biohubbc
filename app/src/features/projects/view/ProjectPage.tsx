@@ -1,6 +1,5 @@
 import {
   Box,
-  Breadcrumbs,
   CircularProgress,
   Container,
   List,
@@ -104,27 +103,29 @@ const ProjectPage: React.FC = () => {
     <>
       <Paper elevation={2} square={true}>
         <Container maxWidth="xl">
-          <Box py={3}>
-            <Box mb={3}>
-              <Breadcrumbs>
-                <Link to="/projects" color="primary" aria-current="page">
-                  Projects
-                </Link>
-                <Link to="details" color="primary" aria-current="page">
-                  {projectWithDetails.project.project_name}
-                </Link>
-              </Breadcrumbs>
-            </Box>
+          <Box py={4}>
             <Box mb={1}>
               <Typography variant="h1">{projectWithDetails.project.project_name}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle1" color="textSecondary">
                 <span>
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.MediumDateFormat,
-                    projectWithDetails.project.start_date,
-                    projectWithDetails.project.end_date
+                  {projectWithDetails.project.end_date ? (
+                    <>
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        projectWithDetails.project.start_date,
+                        projectWithDetails.project.end_date
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span>Start Date:</span>{' '}
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        projectWithDetails.project.start_date
+                      )}
+                    </>
                   )}
                 </span>
               </Typography>
@@ -136,7 +137,7 @@ const ProjectPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box display="flex" flexDirection="row" py={6}>
           <Box component="aside" mr={3} mt={-2}>
-            <List component="nav" className={classes.projectNav}>
+            <List component="nav" className={classes.projectNav} aria-label="Project Navigation">
               <ListItem button component={Link} to="details">
                 <ListItemIcon>
                   <Icon path={mdiInformationOutline} size={1} />

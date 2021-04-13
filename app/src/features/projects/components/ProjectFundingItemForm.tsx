@@ -96,7 +96,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
               <InputLabel id="agency_id-label">Agency Name</InputLabel>
               <Select
                 id="agency_id"
-                name="agency-id"
+                name="agency_id"
                 data-testid="agency-id"
                 labelId="agency_id-label"
                 label="Agency Name"

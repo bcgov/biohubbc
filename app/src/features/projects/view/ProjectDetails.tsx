@@ -1,4 +1,4 @@
-import { Box, Divider, Paper, Typography } from '@material-ui/core';
+import { Box, Divider, makeStyles, Paper, Typography } from '@material-ui/core';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
@@ -17,6 +17,25 @@ export interface IProjectDetailsProps {
   refresh: () => void;
 }
 
+const useStyles = makeStyles((theme) => ({
+  projectDetailsSection: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+
+    '&:last-child': {
+      marginBottom: 0
+    },
+
+    '&:first-child': {
+      marginTop: 0
+    }
+  },
+
+  sectionDivider: {
+    height: '3px'
+  }
+}));
+
 /**
  * Project details content for a project.
  *
@@ -24,6 +43,7 @@ export interface IProjectDetailsProps {
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   const { projectForViewData, codes } = props;
+  const classes = useStyles();
 
   return (
     <>
@@ -32,35 +52,35 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       </Box>
 
       <Box component={Paper} p={4}>
-        <Box component="section" mb={5}>
+        <Box component="section" className={classes.projectDetailsSection}>
           <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <Species projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4} mb={5}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
-        <Divider />
-        <Box component="section" mt={4}>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
           <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
       </Box>

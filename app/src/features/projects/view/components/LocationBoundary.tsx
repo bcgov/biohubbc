@@ -212,7 +212,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
                 Location Description
               </Typography>
               <Typography component="dd" variant="body1">
-                {location.location_description}
+                {location.location_description ? <>{location.location_description}</> : 'No Description'}
               </Typography>
             </Grid>
           </Grid>
