@@ -30,7 +30,7 @@ app.use(function (req: any, res: any, next: any) {
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'max-age=4');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
   next();
 });
