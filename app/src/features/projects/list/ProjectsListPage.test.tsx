@@ -12,6 +12,9 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
     getProjectsList: jest.fn()
+  },
+  draft: {
+    getDraftsList: jest.fn()
   }
 };
 
@@ -22,6 +25,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 describe('ProjectsListPage', () => {
   beforeEach(() => {
     mockBiohubApi().project.getProjectsList.mockClear();
+    mockBiohubApi().draft.getDraftsList.mockClear();
   });
 
   afterEach(() => {
@@ -55,6 +59,29 @@ describe('ProjectsListPage', () => {
           end_date: null
         }
       ]);
+
+      const { asFragment, getByTestId } = render(
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('project-table')).toBeInTheDocument();
+        expect(asFragment()).toMatchSnapshot();
+      });
+    });
+  });
+
+  test('renders with a list of drafts', async () => {
+    await act(async () => {
+      mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+        {
+          id: 1,
+          name: 'Draft 1'
+        }
+      ]);
+      mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
 
       const { asFragment, getByTestId } = render(
         <MemoryRouter>
