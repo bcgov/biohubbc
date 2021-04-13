@@ -99,7 +99,7 @@ describe('ProjectFundingItemForm', () => {
     const existingFormValues: IProjectFundingFormArrayItem = {
       id: 1,
       agency_id: 2,
-      investment_action_category: 1,
+      investment_action_category: 2,
       investment_action_category_name: 'Some investment category',
       agency_project_id: '555',
       funding_amount: 666,
@@ -130,7 +130,7 @@ describe('ProjectFundingItemForm', () => {
     const existingFormValues: IProjectFundingFormArrayItem = {
       id: 1,
       agency_id: 3,
-      investment_action_category: 42,
+      investment_action_category: 3,
       investment_action_category_name: 'Not Applicable',
       agency_project_id: '555',
       funding_amount: 666,

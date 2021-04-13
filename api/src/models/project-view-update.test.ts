@@ -95,7 +95,7 @@ describe('GetSpeciesData', () => {
       const fundingDataObj = [
         {
           id: 1,
-          agency_id: '123',
+          agency_id: '1',
           agency_name: 'Agency name',
           agency_project_id: 'Agency123',
           investment_action_category: 'Investment',

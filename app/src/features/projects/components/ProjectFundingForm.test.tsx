@@ -46,7 +46,7 @@ const investment_action_category: IInvestmentActionCategoryOption[] = [
 
 describe('ProjectFundingForm', () => {
   it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
+    const { baseElement } = render(
       <Formik
         initialValues={ProjectFundingFormInitialValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -62,7 +62,7 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(baseElement).toMatchSnapshot();
   });
 
   it('renders correctly with existing funding values', () => {
@@ -82,7 +82,7 @@ describe('ProjectFundingForm', () => {
       ]
     };
 
-    const { asFragment } = render(
+    const { baseElement } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -93,7 +93,7 @@ describe('ProjectFundingForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(baseElement).toMatchSnapshot();
   });
 
   it('shows add funding source dialog on add click', async () => {
@@ -120,22 +120,11 @@ describe('ProjectFundingForm', () => {
           start_date: '2021-03-15',
           end_date: '2021-04-15',
           revision_count: 24
-        },
-        {
-          id: 13,
-          agency_id: 3,
-          investment_action_category: 3,
-          investment_action_category_name: 'not applicable',
-          agency_project_id: '113',
-          funding_amount: 224,
-          start_date: '2021-03-16',
-          end_date: '2021-04-16',
-          revision_count: 0
         }
       ]
     };
 
-    const { asFragment, getByTestId, queryByText } = render(
+    const { getByTestId, queryByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectFundingFormYupSchema}
@@ -145,8 +134,6 @@ describe('ProjectFundingForm', () => {
         {() => <ProjectStepComponents component="ProjectFunding" codes={codes} />}
       </Formik>
     );
-
-    expect(asFragment()).toMatchSnapshot();
 
     const addButton = getByTestId('add-button');
 
@@ -175,7 +162,7 @@ describe('ProjectFundingForm', () => {
         ]
       };
 
-      const { asFragment, getByTestId, getByText, queryByText } = render(
+      const { getByTestId, getByText, queryByText } = render(
         <Formik
           initialValues={existingFormValues}
           validationSchema={ProjectFundingFormYupSchema}
@@ -186,14 +173,10 @@ describe('ProjectFundingForm', () => {
         </Formik>
       );
 
-      expect(asFragment()).toMatchSnapshot();
-
       const editButton = await getByTestId('edit-button-0');
       expect(editButton).toBeInTheDocument();
 
       fireEvent.click(editButton);
-
-      expect(asFragment()).toMatchSnapshot();
 
       expect(await queryByText('Agency Details')).toBeInTheDocument();
 
@@ -206,8 +189,6 @@ describe('ProjectFundingForm', () => {
       const saveButton = await getByText('Save Changes');
       expect(saveButton).toBeInTheDocument();
       fireEvent.click(saveButton);
-
-      expect(asFragment()).toMatchSnapshot();
     });
   });
 
@@ -229,7 +210,7 @@ describe('ProjectFundingForm', () => {
         ]
       };
 
-      const { asFragment, getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = render(
         <Formik
           initialValues={existingFormValues}
           validationSchema={ProjectFundingFormYupSchema}
@@ -245,8 +226,6 @@ describe('ProjectFundingForm', () => {
       fireEvent.click(deleteButton);
 
       expect(await queryByTestId('delete-button-0')).not.toBeInTheDocument();
-
-      expect(asFragment()).toMatchSnapshot();
     });
   });
 });
