@@ -132,62 +132,67 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         </Button>
       </Box>
 
-      {hasFundingSources && funding.fundingSources.map((item: any, index: number) => (
-        <Fragment key={item.id}>
-          <Box mt={3}>
-            <Divider />
-            <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2rem">
-              <Typography variant="h4">{item.agency_name}</Typography>
-              <Button
-                className="editButtonSmall"
-                onClick={() => handleDialogEditOpen(index)}
-                title="Edit Funding Source Information"
-                aria-label="Edit Funding Source Information"
-                startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                EDIT
-              </Button>
-            </Box>
-            <dl>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Agency Project ID
-                  </Typography>
-                  <Typography component="dd" variant="body1">
-                    {item.agency_project_id}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Funding Amount
-                  </Typography>
-                  <Typography component="dd" variant="body1">
-                    {getFormattedAmount(item.funding_amount)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={4}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Funding Dates
-                  </Typography>
-                  <Typography component="dd" variant="body1">
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortDateFormatMonthFirst, item.start_date, item.end_date)}
-                  </Typography>
-                </Grid>
-                {item.investment_action_category_name !== 'Not Applicable' && (
+      {hasFundingSources &&
+        funding.fundingSources.map((item: any, index: number) => (
+          <Fragment key={item.id}>
+            <Box mt={3}>
+              <Divider />
+              <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2rem">
+                <Typography variant="h4">{item.agency_name}</Typography>
+                <Button
+                  className="editButtonSmall"
+                  onClick={() => handleDialogEditOpen(index)}
+                  title="Edit Funding Source Information"
+                  aria-label="Edit Funding Source Information"
+                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                  EDIT
+                </Button>
+              </Box>
+              <dl>
+                <Grid container spacing={2}>
                   <Grid item xs={12} sm={6} md={4}>
                     <Typography component="dt" variant="subtitle2" color="textSecondary">
-                      Investment Category
+                      Agency Project ID
                     </Typography>
                     <Typography component="dd" variant="body1">
-                      {item.investment_action_category_name}
+                      {item.agency_project_id}
                     </Typography>
                   </Grid>
-                )}
-              </Grid>
-            </dl>
-          </Box>
-        </Fragment>
-      ))}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography component="dt" variant="subtitle2" color="textSecondary">
+                      Funding Amount
+                    </Typography>
+                    <Typography component="dd" variant="body1">
+                      {getFormattedAmount(item.funding_amount)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Typography component="dt" variant="subtitle2" color="textSecondary">
+                      Funding Dates
+                    </Typography>
+                    <Typography component="dd" variant="body1">
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortDateFormatMonthFirst,
+                        item.start_date,
+                        item.end_date
+                      )}
+                    </Typography>
+                  </Grid>
+                  {item.investment_action_category_name !== 'Not Applicable' && (
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Typography component="dt" variant="subtitle2" color="textSecondary">
+                        Investment Category
+                      </Typography>
+                      <Typography component="dd" variant="body1">
+                        {item.investment_action_category_name}
+                      </Typography>
+                    </Grid>
+                  )}
+                </Grid>
+              </dl>
+            </Box>
+          </Fragment>
+        ))}
 
       {!hasFundingSources && (
         <Box mt={2}>

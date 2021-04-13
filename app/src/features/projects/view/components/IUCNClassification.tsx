@@ -143,19 +143,20 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
 
       {iucn.classificationDetails.length > 0 && (
         <Box component="ul" className="listNoBullets">
-          {hasIucnClassifications && iucn.classificationDetails.map((classificationDetail: any, index: number) => {
-            return (
-              <Box component="li" key={index} className={classes.iucnListItem}>
-                <Divider />
-                <Box>
-                  <Typography component="span" variant="body1">
-                    {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
-                    <span>{'>'}</span> {classificationDetail.subClassification2}
-                  </Typography>
+          {hasIucnClassifications &&
+            iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+              return (
+                <Box component="li" key={index} className={classes.iucnListItem}>
+                  <Divider />
+                  <Box>
+                    <Typography component="span" variant="body1">
+                      {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
+                      <span>{'>'}</span> {classificationDetail.subClassification2}
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
-            );
-          })}
+              );
+            })}
         </Box>
       )}
 
