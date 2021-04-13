@@ -5,8 +5,6 @@ import { FeatureGroup, MapContainer } from 'react-leaflet';
 import { Feature } from 'geojson';
 
 describe('MapEditControls.test', () => {
-  const alert = jest.fn();
-
   const geometry: Feature[] = [
     {
       type: 'Feature',
@@ -33,14 +31,13 @@ describe('MapEditControls.test', () => {
     const { container } = render(
       <MapContainer>
         <FeatureGroup>
-          <MapEditControls geometry={geometry} position="topright" onMounted={() => alert('mounted')} />
+          <MapEditControls geometry={geometry} position="topright" />
         </FeatureGroup>
       </MapContainer>
     );
 
     //@ts-ignore
     expect(getByText(container, 'Draw a rectangle')).toBeInTheDocument();
-    expect(alert).toHaveBeenCalledWith('mounted');
   });
 
   test('MapEditControls removes draw controls when specified', () => {
