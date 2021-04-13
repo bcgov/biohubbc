@@ -10,45 +10,61 @@ exports[`PublicLayout renders correctly 1`] = `
       style="box-shadow: none;"
     >
       <div
-        class="MuiToolbar-root MuiToolbar-regular headerToolbar MuiToolbar-gutters"
+        class="MuiBox-root MuiBox-root-10 makeStyles-govHeader-3"
       >
-        <a
-          aria-label="Go to BioHub Home"
-          class="brand"
-          href="/projects"
+        <div
+          class="MuiContainer-root makeStyles-govHeaderContainer-4 MuiContainer-maxWidthXl"
         >
-          <picture>
-            <source
-              media="(min-width: 1200px)"
-              srcset="gov-bc-logo-horiz.png"
-            />
-            <source
-              media="(min-width: 600px)"
-              srcset="gov-bc-logo-vert.png"
-            />
-            <img
-              alt="Government of British Columbia"
-              src="gov-bc-logo-vert.png"
-            />
-          </picture>
-          BioHub
-        </a>
+          <div
+            class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-5 MuiToolbar-gutters"
+          >
+            <a
+              aria-label="Go to BioHub Home"
+              class="makeStyles-brand-6"
+              href="/projects"
+            >
+              <picture>
+                <source
+                  media="(min-width: 1200px)"
+                  srcset="gov-bc-logo-horiz.png"
+                />
+                <source
+                  media="(min-width: 600px)"
+                  srcset="gov-bc-logo-vert.png"
+                />
+                <img
+                  alt="Government of British Columbia"
+                  src="gov-bc-logo-vert.png"
+                />
+              </picture>
+              BioHub
+            </a>
+          </div>
+        </div>
       </div>
       <div
-        aria-label="Main Navigation"
-        class="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
-        role="navigation"
+        class="MuiBox-root MuiBox-root-11 makeStyles-mainNav-7"
       >
-        <a
-          color="inherit"
-          href="/projects"
+        <div
+          class="MuiContainer-root makeStyles-mainNavContainer-8 MuiContainer-maxWidthXl"
         >
-          Projects
-        </a>
+          <div
+            aria-label="Main Navigation"
+            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-9 MuiToolbar-gutters"
+            role="navigation"
+          >
+            <a
+              color="inherit"
+              href="/projects"
+            >
+              Projects
+            </a>
+          </div>
+        </div>
       </div>
     </header>
     <main
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiBox-root MuiBox-root-12"
     >
       <div
         classes="[object Object]"
@@ -59,43 +75,47 @@ exports[`PublicLayout renders correctly 1`] = `
       </div>
     </main>
     <footer
-      class="app-footer"
+      class="makeStyles-appFooter-13"
     >
       <div
-        aria-label="Footer"
-        class="MuiToolbar-root MuiToolbar-regular app-footer-toolbar MuiToolbar-gutters"
-        role="navigation"
+        class="MuiContainer-root makeStyles-appFooterContainer-14 MuiContainer-maxWidthXl"
       >
-        <ul>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/disclaimer"
-            >
-              Disclaimer
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/privacy"
-            >
-              Privacy
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/accessible-government"
-            >
-              Accessibility
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/copyright"
-            >
-              Copyright
-            </a>
-          </li>
-        </ul>
+        <div
+          aria-label="Footer"
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-15 MuiToolbar-gutters"
+          role="navigation"
+        >
+          <ul>
+            <li>
+              <a
+                href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+              >
+                Disclaimer
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.gov.bc.ca/gov/content/home/privacy"
+              >
+                Privacy
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+              >
+                Accessibility
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.gov.bc.ca/gov/content/home/copyright"
+              >
+                Copyright
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </footer>
   </div>

@@ -96,6 +96,9 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
+  const hasFocalSpecies = focal_species && focal_species.length > 0;
+  const hasAnciliarySpecies = ancillary_species && ancillary_species.length > 0;
+
   return (
     <>
       <EditDialog
@@ -112,7 +115,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
       <ErrorDialog {...errorDialogProps} />
 
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Species</Typography>
           <Button
             className="editButtonSmall"
@@ -137,6 +140,11 @@ const Species: React.FC<ISpeciesProps> = (props) => {
                   </Typography>
                 );
               })}
+              {!hasFocalSpecies && (
+                <Typography component="dd" variant="body1">
+                  No Focal Species
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
@@ -149,6 +157,11 @@ const Species: React.FC<ISpeciesProps> = (props) => {
                   </Typography>
                 );
               })}
+              {!hasAnciliarySpecies && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </dl>

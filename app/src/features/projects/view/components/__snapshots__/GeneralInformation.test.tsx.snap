@@ -68,7 +68,7 @@ exports[`ProjectDetails renders correctly with activity and climate initiative d
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Type
+            Project Type
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
@@ -192,7 +192,7 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Type
+            Project Type
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
@@ -224,7 +224,9 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
-          />
+          >
+            No Activities
+          </dd>
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -236,7 +238,9 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
-          />
+          >
+            No Climate Change Initiatives
+          </dd>
         </div>
       </div>
     </dl>

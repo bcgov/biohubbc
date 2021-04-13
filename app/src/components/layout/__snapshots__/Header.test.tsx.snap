@@ -7,41 +7,57 @@ exports[`NotFoundPage renders correctly 1`] = `
     style="box-shadow: none;"
   >
     <div
-      class="MuiToolbar-root MuiToolbar-regular headerToolbar MuiToolbar-gutters"
+      class="MuiBox-root MuiBox-root-8 makeStyles-govHeader-1"
     >
-      <a
-        aria-label="Go to BioHub Home"
-        class="brand"
-        href="/projects"
+      <div
+        class="MuiContainer-root makeStyles-govHeaderContainer-2 MuiContainer-maxWidthXl"
       >
-        <picture>
-          <source
-            media="(min-width: 1200px)"
-            srcset="gov-bc-logo-horiz.png"
-          />
-          <source
-            media="(min-width: 600px)"
-            srcset="gov-bc-logo-vert.png"
-          />
-          <img
-            alt="Government of British Columbia"
-            src="gov-bc-logo-vert.png"
-          />
-        </picture>
-        BioHub
-      </a>
+        <div
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-3 MuiToolbar-gutters"
+        >
+          <a
+            aria-label="Go to BioHub Home"
+            class="makeStyles-brand-4"
+            href="/projects"
+          >
+            <picture>
+              <source
+                media="(min-width: 1200px)"
+                srcset="gov-bc-logo-horiz.png"
+              />
+              <source
+                media="(min-width: 600px)"
+                srcset="gov-bc-logo-vert.png"
+              />
+              <img
+                alt="Government of British Columbia"
+                src="gov-bc-logo-vert.png"
+              />
+            </picture>
+            BioHub
+          </a>
+        </div>
+      </div>
     </div>
     <div
-      aria-label="Main Navigation"
-      class="MuiToolbar-root MuiToolbar-dense main-nav MuiToolbar-gutters"
-      role="navigation"
+      class="MuiBox-root MuiBox-root-9 makeStyles-mainNav-5"
     >
-      <a
-        color="inherit"
-        href="/projects"
+      <div
+        class="MuiContainer-root makeStyles-mainNavContainer-6 MuiContainer-maxWidthXl"
       >
-        Projects
-      </a>
+        <div
+          aria-label="Main Navigation"
+          class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-7 MuiToolbar-gutters"
+          role="navigation"
+        >
+          <a
+            color="inherit"
+            href="/projects"
+          >
+            Projects
+          </a>
+        </div>
+      </div>
     </div>
   </header>
 </DocumentFragment>

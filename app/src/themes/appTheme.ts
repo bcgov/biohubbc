@@ -153,7 +153,7 @@ const appTheme = createMuiTheme({
         verticalAlign: 'top'
       },
       head: {
-        background: '#f7f8fa'
+        fontWeight: 700
       }
     }
   }
