@@ -332,7 +332,7 @@ const CreateProjectPage: React.FC = () => {
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
-      // WHy? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepValues
+      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepValues
       const draftFormData = {
         coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepValues,
         permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepValues,
