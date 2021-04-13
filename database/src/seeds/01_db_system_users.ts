@@ -20,31 +20,52 @@ const systemUsers = [
 ];
 
 /**
- * Insert system_user rows for each member of the development team.
- * This seed will only be necessary while there is no in-app functionality to manage users.
+ * Insert system_user rows for each member of the development team if they don't already exist in the system user table.
+ *
+ * Note: This seed will only be necessary while there is no in-app functionality to manage users.
  */
 export async function seed(knex: Knex): Promise<void> {
-  // Remove the existing system users. Do not remove the `postgres` user which is required for the triggers to work and
-  // which is added as part of the setup migration.
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA};
-
-    DELETE FROM system_user WHERE user_identifier IN (${systemUsers.map((user) => `'${user.identifier}'`).join(',')});
-
-    ALTER SEQUENCE system_user_id_seq RESTART WITH 2;
   `);
 
-  // Seed the system users
-  await knex.raw(`
-    set schema '${DB_SCHEMA}';
-    set search_path = ${DB_SCHEMA};
+  for (const systemUser of systemUsers) {
+    // check if user is already in the system users table
+    const response = await knex.raw(`
+      ${getSystemUserSQL(systemUser.identifier)}
+    `);
 
-    ${systemUsers.map((user) => getInsertSystemUserSQL(user.identifier, user.type)).join(' ')}
-  `);
+    // if the fetch returns no rows, then the user is not in the system users table and should be added
+    if (!response?.rows?.[0]) {
+      await knex.raw(`
+        ${insertSystemUserSQL(systemUser.identifier, systemUser.type)}
+      `);
+    }
+  }
 }
 
-const getInsertSystemUserSQL = (userIdentifier: string, userType: string) => `
+/**
+ * SQL to fetch an existing system user row.
+ *
+ * @param {string} userIdentifier
+ */
+const getSystemUserSQL = (userIdentifier: string) => `
+ SELECT
+   user_identifier
+ FROM
+   system_user
+ WHERE
+   user_identifier = '${userIdentifier}';
+`;
+
+/**
+ * SQL to insert a system user row.
+ *
+ * @param {string} userIdentifier
+ * @param {string} userType
+ */
+const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
   INSERT INTO system_user (
     uis_id,
     user_identifier,
