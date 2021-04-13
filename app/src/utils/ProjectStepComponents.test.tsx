@@ -53,7 +53,7 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project details', () => {
+  it('renders the project details with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectDetailsFormInitialValues}
@@ -62,6 +62,26 @@ describe('ProjectStepComponents', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => <ProjectStepComponents component="ProjectDetails" codes={codes} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project details without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectDetailsFormInitialValues}
+        validationSchema={ProjectDetailsFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents
+            component="ProjectDetails"
+            codes={{ ...codes, project_type: (null as unknown) as any }}
+          />
+        )}
       </Formik>
     );
 
