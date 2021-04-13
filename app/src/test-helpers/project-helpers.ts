@@ -48,10 +48,10 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     fundingSources: [
       {
         id: 0,
-        agency_id: 123,
+        agency_id: 1,
         agency_name: 'agency name',
         agency_project_id: 'ABC123',
-        investment_action_category: 222,
+        investment_action_category: 1,
         investment_action_category_name: 'investment action',
         funding_amount: 333,
         start_date: '2000-04-14',

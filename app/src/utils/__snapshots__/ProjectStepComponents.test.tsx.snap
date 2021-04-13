@@ -752,6 +752,7 @@ exports[`ProjectStepComponents renders the project details 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
+            data-testid="start-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -801,6 +802,7 @@ exports[`ProjectStepComponents renders the project details 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
+            data-testid="end-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
@@ -861,6 +863,7 @@ exports[`ProjectStepComponents renders the project funding 1`] = `
         <button
           aria-label="Add Funding Source"
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
           tabindex="0"
           title="Add Funding Source"
           type="button"

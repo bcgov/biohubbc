@@ -39,6 +39,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -109,6 +110,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              test-dataid="investment_action_category"
             >
               <div
                 aria-haspopup="listbox"
@@ -266,6 +268,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -315,6 +318,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -412,6 +416,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -482,6 +487,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              test-dataid="investment_action_category"
             >
               <div
                 aria-haspopup="listbox"
@@ -492,9 +498,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                 role="button"
                 tabindex="0"
               >
-                <span>
-                  ​
-                </span>
+                category 1
               </div>
               <input
                 aria-hidden="true"
@@ -502,7 +506,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                 name="investment_action_category"
                 required=""
                 tabindex="-1"
-                value="1"
+                value="2"
               />
               <svg
                 aria-hidden="true"
@@ -641,6 +645,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -690,6 +695,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -787,6 +793,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -944,6 +951,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -993,6 +1001,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1090,6 +1099,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -1249,6 +1259,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -1298,6 +1309,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
+              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"

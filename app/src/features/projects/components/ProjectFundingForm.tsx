@@ -89,6 +89,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
         <Box component="header" display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h3">Funding Sources ({values.funding_sources.length})</Typography>
           <Button
+            data-testid="add-button"
             variant="outlined"
             color="primary"
             title="Add Funding Source"
@@ -167,6 +168,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
 
                             <IconButton
                               color="primary"
+                              data-testid={'edit-button-' + index}
                               title="Edit Funding Source"
                               aria-label="Edit Funding Source"
                               onClick={() => {
@@ -180,6 +182,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                             </IconButton>
                             <IconButton
                               color="primary"
+                              data-testid={'delete-button-' + index}
                               title="Delete Funding Source"
                               aria-label="Delete Funding Source"
                               onClick={() => arrayHelpers.remove(index)}>

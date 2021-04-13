@@ -44,7 +44,7 @@ import {
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteRegionsSQL,
-  deleteFundingSQL
+  deleteFundingSourceSQL
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
@@ -799,7 +799,7 @@ export const updateProjectFundingData = async (
 ): Promise<void> => {
   const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
-  const sqlDeleteStatement = deleteFundingSQL(putFundingSource?.id);
+  const sqlDeleteStatement = deleteFundingSourceSQL(projectId, putFundingSource?.id);
 
   if (!sqlDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
