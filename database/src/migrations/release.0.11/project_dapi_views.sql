@@ -1,4 +1,7 @@
  create or replace view activity as select * from biohub.activity;
+ create or replace view administrative_activity as select * from biohub.administrative_activity;
+ create or replace view administrative_activity_status_type as select * from biohub.administrative_activity_status_type;
+ create or replace view administrative_activity_type as select * from biohub.administrative_activity_type;
  create or replace view ancillary_species as select * from biohub.ancillary_species;
  create or replace view climate_change_initiative as select * from biohub.climate_change_initiative;
  create or replace view first_nations as select * from biohub.first_nations;

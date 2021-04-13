@@ -116,9 +116,25 @@ begin
 
   -- test ancillary data
   delete from webform_draft;
-  insert into webform_draft (su_id, name, data) values ((select id from system_user limit 1), 'my draft name','{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}');
+  insert into webform_draft (su_id, name, data) values ((select id from system_user limit 1), 'my draft name', '{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}');
   select count(1) into __count from webform_draft;
   assert __count = 1, 'FAIL webform_draft';
+
+  -- work ledger
+  delete from administrative_activity;
+  insert into administrative_activity (reported_su_id
+    , aat_id
+    , aast_id
+    , description
+    , data) 
+    values (__system_user_id
+    , (select id from administrative_activity_type where name = 'System Access')
+    , (select id from administrative_activity_status_type where name = 'Pending')
+    , 'my activity'
+    , '{ "customer": "John Doe", "items": {"product": "Beer","qty": 6}}')
+  ;
+  select count(1) into __count from administrative_activity;
+  assert __count = 1, 'FAIL administrative_activity';
 end
 $$;
 
