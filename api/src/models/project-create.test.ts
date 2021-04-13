@@ -8,7 +8,8 @@ import {
   PostPartnershipsData,
   PostPermitData,
   PostProjectData,
-  PostSpeciesData
+  PostSpeciesData,
+  PostFundingData
 } from './project-create';
 
 describe('PostProjectData', () => {
@@ -326,8 +327,8 @@ describe('PostSpeciesData', () => {
     let data: PostSpeciesData;
 
     const obj = {
-      focal_species: {},
-      ancillary_species: {}
+      focal_species: null,
+      ancillary_species: null
     };
 
     before(() => {
@@ -482,6 +483,77 @@ describe('PostLocationData', () => {
 
     it('sets the geometry', function () {
       expect(projectLocationData.geometry).to.eql(obj.geometry);
+    });
+  });
+});
+
+describe('PostFundingData', () => {
+  describe('No values provided', () => {
+    let data: PostFundingData;
+
+    before(() => {
+      data = new PostFundingData(null);
+    });
+
+    it('sets funding_sources', () => {
+      expect(data.funding_sources).to.eql([]);
+    });
+  });
+
+  describe('Values provided but not valid arrays', () => {
+    let data: PostFundingData;
+
+    const obj = {
+      funding_sources: null
+    };
+
+    before(() => {
+      data = new PostFundingData(obj);
+    });
+
+    it('sets funding_sources', () => {
+      expect(data.funding_sources).to.eql([]);
+    });
+  });
+
+  describe('Values provided but with no length', () => {
+    let data: PostFundingData;
+
+    const obj = {
+      funding_sources: []
+    };
+
+    before(() => {
+      data = new PostFundingData(obj);
+    });
+
+    it('sets funding_sources', () => {
+      expect(data.funding_sources).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PostFundingData;
+
+    const obj = {
+      funding_sources: [
+        {
+          agency_id: 1,
+          investment_action_category: 1,
+          agency_project_id: 'agency project id',
+          funding_amount: 12,
+          start_date: '2020/04/03',
+          end_date: '2020/05/05'
+        }
+      ]
+    };
+
+    before(() => {
+      data = new PostFundingData(obj);
+    });
+
+    it('sets funding_sources', () => {
+      expect(data.funding_sources).to.eql(obj.funding_sources);
     });
   });
 });
