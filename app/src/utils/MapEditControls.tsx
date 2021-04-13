@@ -40,14 +40,9 @@ const eventHandlers = {
 };
 
 export interface IMapEditControlsProps {
-  onCreated?: Function;
-  onEdited?: Function;
-  onDeleted?: Function;
-  onMounted?: Function;
   draw?: any;
   edit?: any;
   position?: any;
-  leaflet?: any;
   geometry?: Feature[];
   setGeometry?: (geometry: Feature[]) => void;
 }
@@ -82,34 +77,28 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     Used to draw geometries using the controls on the map
   */
   const onDrawCreate = (e: any) => {
-    const { onCreated } = props;
     const container = context.layerContainer || context.map;
 
     container.addLayer(e.layer);
     updateGeosBasedOnLayers(container);
-    onCreated && onCreated(e);
   };
 
   /*
     Used to edit geometries using the controls on the map
   */
   const onDrawEdit = (e: any) => {
-    const { onEdited } = props;
     const container = context.layerContainer || context.map;
 
     updateGeosBasedOnLayers(container);
-    onEdited && onEdited(e);
   };
 
   /*
     Used to delete geometries using the controls on the map
   */
   const onDrawDelete = (e: any) => {
-    const { onDeleted } = props;
     const container = context.layerContainer || context.map;
 
     updateGeosBasedOnLayers(container);
-    onDeleted && onDeleted(e);
   };
 
   const drawGeometries = (geometries: Feature[]) => {
@@ -135,7 +124,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   */
   useEffect(() => {
     const { map } = context;
-    const { onMounted } = props;
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt: any) => {
@@ -155,7 +143,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
       setShowDeleteModal(true);
     });
 
-    onMounted && onMounted(drawRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -179,9 +166,6 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     drawRef.current = createDrawElement(props, context);
     drawRef.current.addTo(map);
 
-    const { onMounted } = props;
-
-    onMounted && onMounted(drawRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.edit, props.position]);
 
