@@ -84,18 +84,9 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
   };
 
   /*
-    Used to edit geometries using the controls on the map
+    Used to edit/delete geometries using the controls on the map
   */
-  const onDrawEdit = (e: any) => {
-    const container = context.layerContainer || context.map;
-
-    updateGeosBasedOnLayers(container);
-  };
-
-  /*
-    Used to delete geometries using the controls on the map
-  */
-  const onDrawDelete = (e: any) => {
+  const onDrawEditDelete = (e: any) => {
     const container = context.layerContainer || context.map;
 
     updateGeosBasedOnLayers(container);
@@ -136,7 +127,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
     }
 
     map.on(eventHandlers.onCreated, onDrawCreate);
-    map.on(eventHandlers.onEdited, onDrawEdit);
+    map.on(eventHandlers.onEdited, onDrawEditDelete);
     map.on(eventHandlers.onDeleted, (e) => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       deleteEvent = e;
@@ -184,7 +175,7 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
       }}
       onYes={() => {
         setShowDeleteModal(false);
-        onDrawDelete(deleteEvent);
+        onDrawEditDelete(deleteEvent);
       }}
     />
   );
