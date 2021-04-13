@@ -91,6 +91,22 @@ describe('GetPartnershipsData', () => {
     let data: GetPartnershipsData;
 
     before(() => {
+      data = new GetPartnershipsData((null as unknown) as any[], (null as unknown) as any[]);
+    });
+
+    it('sets indigenous_partnerships', function () {
+      expect(data.indigenous_partnerships).to.eql([]);
+    });
+
+    it('sets stakeholder_partnerships', function () {
+      expect(data.stakeholder_partnerships).to.eql([]);
+    });
+  });
+
+  describe('Empty arrays as values provided', () => {
+    let data: GetPartnershipsData;
+
+    before(() => {
       data = new GetPartnershipsData([], []);
     });
 
@@ -163,6 +179,18 @@ describe('GetPartnershipsData', () => {
 
 describe('GetIUCNClassificationData', () => {
   describe('No values provided', () => {
+    let iucnClassificationData: GetIUCNClassificationData;
+
+    before(() => {
+      iucnClassificationData = new GetIUCNClassificationData((null as unknown) as any[]);
+    });
+
+    it('sets classification details', function () {
+      expect(iucnClassificationData.classificationDetails).to.eql([]);
+    });
+  });
+
+  describe('Empty array as values provided', () => {
     let iucnClassificationData: GetIUCNClassificationData;
 
     before(() => {
@@ -308,6 +336,26 @@ describe('GetCoordinatorData', () => {
 
 describe('GetLocationData', () => {
   describe('No values provided', () => {
+    let locationData: GetLocationData;
+
+    before(() => {
+      locationData = new GetLocationData(null);
+    });
+
+    it('sets regions', function () {
+      expect(locationData.regions).to.eql([]);
+    });
+
+    it('sets location_description', function () {
+      expect(locationData.location_description).to.equal('');
+    });
+
+    it('sets the geometry', function () {
+      expect(locationData.geometry).to.eql([]);
+    });
+  });
+
+  describe('Empty array values provided', () => {
     let locationData: GetLocationData;
 
     before(() => {
