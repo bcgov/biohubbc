@@ -49,6 +49,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
+    // eslint-disable-next-line
   }, []);
 
   return (
