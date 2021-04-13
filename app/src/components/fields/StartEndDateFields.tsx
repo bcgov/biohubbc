@@ -25,6 +25,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <TextField
           id="start_date"
           name="start_date"
+          data-testid="start-date"
           label="Start Date"
           variant="outlined"
           required={startRequired}
@@ -43,6 +44,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <TextField
           id="end_date"
           name="end_date"
+          data-testid="end-date"
           label="End Date"
           variant="outlined"
           required={endRequired}

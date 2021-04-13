@@ -4,7 +4,7 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString, getFormattedAmount, getFormattedDate } from 'utils/Utils';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { EditFundingI18N } from 'constants/i18n';
+import { EditFundingI18N, DeleteFundingI18N, AddFundingI18N } from 'constants/i18n';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
@@ -15,7 +15,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiPlus, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 
 export interface IProjectFundingProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -48,9 +49,10 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     }
   });
 
-  const [fundingFormData, setFundingFormData] = useState<IProjectFundingFormArrayItem>(
-    ProjectFundingFormArrayItemInitialValues
-  );
+  const [fundingFormData, setFundingFormData] = useState({
+    index: 0,
+    values: ProjectFundingFormArrayItemInitialValues
+  });
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
@@ -58,23 +60,36 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
-  const handleDialogEditOpen = async (itemIndex: number) => {
-    const fundingSource = funding.fundingSources[itemIndex];
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
-    setFundingFormData({
-      id: fundingSource.id,
-      agency_id: fundingSource.agency_id,
-      investment_action_category: fundingSource.investment_action_category,
-      investment_action_category_name: fundingSource.investment_action_category_name,
-      agency_project_id: fundingSource.agency_project_id,
-      funding_amount: fundingSource.funding_amount,
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
-      revision_count: fundingSource.revision_count
-    });
+  const handleDialogEditOpen = async (itemIndex: number) => {
+    let fundingSourceValues: IProjectFundingFormArrayItem;
+
+    if (itemIndex < funding.fundingSources.length) {
+      // edit an existing funding source
+      const fundingSource = funding.fundingSources[itemIndex];
+
+      fundingSourceValues = {
+        id: fundingSource.id,
+        agency_id: fundingSource.agency_id,
+        investment_action_category: fundingSource.investment_action_category,
+        investment_action_category_name: fundingSource.investment_action_category_name,
+        agency_project_id: fundingSource.agency_project_id,
+        funding_amount: fundingSource.funding_amount,
+        start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.start_date),
+        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, fundingSource.end_date),
+        revision_count: fundingSource.revision_count
+      };
+    } else {
+      // add a new funding source
+      fundingSourceValues = ProjectFundingFormArrayItemInitialValues;
+    }
+
+    setFundingFormData({ index: itemIndex, values: fundingSourceValues });
 
     setOpenEditDialog(true);
   };
+
   const handleDialogEditSave = async (values: IProjectFundingFormArrayItem) => {
     const projectData = {
       funding: {
@@ -82,14 +97,48 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       }
     };
 
+    const isEditing = fundingFormData.index < funding.fundingSources.length;
+    const errorTitle = isEditing ? EditFundingI18N.editErrorTitle : AddFundingI18N.addErrorTitle;
+
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      if (isEditing) {
+        await biohubApi.project.updateProject(id, projectData);
+      } else {
+        await biohubApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
+      }
+
+      setOpenEditDialog(false);
+
+      props.refresh();
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+
+      showErrorDialog({ dialogTitle: errorTitle, dialogText: apiError.message, open: true });
+    }
+  };
+
+  const handleDeleteDialogOpen = async (itemIndex: number) => {
+    setFundingFormData({
+      index: itemIndex,
+      values: funding.fundingSources[fundingFormData.index]
+    });
+    setOpenDeleteDialog(true);
+  };
+
+  const handleDeleteDialogClose = async () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleDeleteDialogYes = async () => {
+    const fundingSource = funding.fundingSources[fundingFormData.index];
+
+    try {
+      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
+      setOpenDeleteDialog(false);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogTitle: DeleteFundingI18N.deleteErrorTitle, dialogText: apiError.message, open: true });
       return;
-    } finally {
-      setOpenEditDialog(false);
     }
 
     props.refresh();
@@ -100,7 +149,9 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   return (
     <>
       <EditDialog
-        dialogTitle={EditFundingI18N.editTitle}
+        dialogTitle={
+          fundingFormData.index < funding.fundingSources.length ? EditFundingI18N.editTitle : AddFundingI18N.addTitle
+        }
         open={openEditDialog}
         component={{
           element: (
@@ -117,17 +168,31 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
               }
             />
           ),
-          initialValues: fundingFormData,
+          initialValues: fundingFormData.values,
           validationSchema: ProjectFundingFormArrayItemYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
+      <YesNoDialog
+        dialogTitle={DeleteFundingI18N.deleteTitle}
+        dialogText={DeleteFundingI18N.deleteText}
+        open={openDeleteDialog}
+        onClose={handleDeleteDialogClose}
+        onNo={handleDeleteDialogClose}
+        onYes={handleDeleteDialogYes}
+      />
       <ErrorDialog {...errorDialogProps} />
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h3">Funding Sources</Typography>
-        <Button variant="outlined" color="primary">
+        <Button
+          variant="outlined"
+          color="primary"
+          title="Add Funding Source"
+          aria-label="Add Funding Source"
+          startIcon={<Icon path={mdiPlus} size={1} />}
+          onClick={() => handleDialogEditOpen(funding.fundingSources.length)}>
           Add Funding Source
         </Button>
       </Box>
@@ -139,14 +204,22 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
               <Divider />
               <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2rem">
                 <Typography variant="h4">{item.agency_name}</Typography>
-                <Button
-                  className="editButtonSmall"
-                  onClick={() => handleDialogEditOpen(index)}
-                  title="Edit Funding Source Information"
-                  aria-label="Edit Funding Source Information"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                  EDIT
-                </Button>
+                <Box>
+                  <Button
+                    className="editButtonSmall"
+                    onClick={() => handleDialogEditOpen(index)}
+                    title="Edit Funding Source Information"
+                    aria-label="Edit Funding Source Information"
+                    startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                    EDIT
+                  </Button>
+                  <Button
+                    className="trashButtonSmall"
+                    onClick={() => handleDeleteDialogOpen(index)}
+                    title="Delete Funding Source"
+                    aria-label="Delete Funding Source"
+                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}></Button>
+                </Box>
               </Box>
               <dl>
                 <Grid container spacing={2}>
