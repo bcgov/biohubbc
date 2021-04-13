@@ -12,8 +12,82 @@ import {
   GetProjectData,
   PutProjectData,
   PutIUCNData,
-  GetIUCNClassificationData
+  GetIUCNClassificationData,
+  PutLocationData
 } from './project-update';
+
+describe('PutLocationData', () => {
+  describe('No values provided', () => {
+    let data: PutLocationData;
+
+    before(() => {
+      data = new PutLocationData(null);
+    });
+
+    it('sets regions', () => {
+      expect(data.regions).to.eql([]);
+    });
+
+    it('sets location_description', () => {
+      expect(data.location_description).to.equal(null);
+    });
+
+    it('sets geometry', () => {
+      expect(data.geometry).to.eql([]);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.eql(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutLocationData;
+
+    const obj = {
+      regions: ['region 1', 'region 2'],
+      location_description: 'location',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ],
+      revision_count: 1
+    };
+
+    before(() => {
+      data = new PutLocationData(obj);
+    });
+
+    it('sets regions', () => {
+      expect(data.regions).to.eql(obj.regions);
+    });
+
+    it('sets location_description', () => {
+      expect(data.location_description).to.equal(obj.location_description);
+    });
+
+    it('sets geometry', () => {
+      expect(data.geometry).to.eql(obj.geometry);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.eql(obj.revision_count);
+    });
+  });
+});
 
 describe('GetIUCNClassificationData', () => {
   describe('No values provided', () => {
@@ -360,7 +434,7 @@ describe('PutSpeciesData', () => {
     let data: PutSpeciesData;
 
     before(() => {
-      data = new PutSpeciesData({});
+      data = new PutSpeciesData(null);
     });
 
     it('sets focal_species', () => {
@@ -376,8 +450,8 @@ describe('PutSpeciesData', () => {
     let data: PutSpeciesData;
 
     const obj = {
-      focal_species: {},
-      ancillary_species: {}
+      focal_species: null,
+      ancillary_species: null
     };
 
     before(() => {
@@ -489,7 +563,7 @@ describe('PutObjectivesData', () => {
     let data: PutObjectivesData;
 
     before(() => {
-      data = new PutObjectivesData({});
+      data = new PutObjectivesData(null);
     });
 
     it('sets objectives', () => {
