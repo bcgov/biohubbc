@@ -10,6 +10,7 @@ import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpecies
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
+  id: number;
   fileName: string;
   lastModified: string;
   size: number;

@@ -100,7 +100,7 @@ describe('ProjectAttachments', () => {
       ]
     });
 
-    const { queryByText, getByTestId } = render(
+    const { queryByText, getByTestId, getByText } = render(
       <Router history={history}>
         <ProjectAttachments projectForViewData={getProjectForViewResponse} />
       </Router>
@@ -117,7 +117,95 @@ describe('ProjectAttachments', () => {
     fireEvent.click(getByTestId('delete-attachment'));
 
     await waitFor(() => {
+      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Yes'));
+
+    await waitFor(() => {
       expect(queryByText('filename.test')).toBeNull();
+    });
+  });
+
+  it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
+    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+      attachmentsList: [
+        {
+          id: 1,
+          fileName: 'filename.test',
+          lastModified: '2021-04-09 11:53:53',
+          size: 3028
+        }
+      ]
+    });
+
+    const { queryByText, getByTestId, getByText } = render(
+      <Router history={history}>
+        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(queryByText('filename.test')).toBeInTheDocument();
+    });
+
+    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+      attachmentsList: []
+    });
+
+    fireEvent.click(getByTestId('delete-attachment'));
+
+    await waitFor(() => {
+      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('No'));
+
+    await waitFor(() => {
+      expect(queryByText('filename.test')).toBeInTheDocument();
+    });
+  });
+
+  it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
+    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+      attachmentsList: [
+        {
+          id: 1,
+          fileName: 'filename.test',
+          lastModified: '2021-04-09 11:53:53',
+          size: 3028
+        }
+      ]
+    });
+
+    const { queryByText, getByTestId, getAllByRole } = render(
+      <Router history={history}>
+        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(queryByText('filename.test')).toBeInTheDocument();
+    });
+
+    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+      attachmentsList: []
+    });
+
+    fireEvent.click(getByTestId('delete-attachment'));
+
+    await waitFor(() => {
+      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('filename.test')).toBeInTheDocument();
     });
   });
 });
