@@ -49,7 +49,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   useEffect(() => {
     getAttachments(false);
-  }, [getAttachments]);
+  }, []);
 
   return (
     <>
