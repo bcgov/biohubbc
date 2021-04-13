@@ -143,7 +143,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
 
       {iucn.classificationDetails.length > 0 && (
         <Box component="ul" className="listNoBullets">
-          {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+          {hasIucnClassifications && iucn.classificationDetails.map((classificationDetail: any, index: number) => {
             return (
               <Box component="li" key={index} className={classes.iucnListItem}>
                 <Divider />

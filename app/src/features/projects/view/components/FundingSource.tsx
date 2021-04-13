@@ -132,7 +132,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         </Button>
       </Box>
 
-      {funding.fundingSources.map((item: any, index: number) => (
+      {hasFundingSources && funding.fundingSources.map((item: any, index: number) => (
         <Fragment key={item.id}>
           <Box mt={3}>
             <Divider />
