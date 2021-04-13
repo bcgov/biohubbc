@@ -36,10 +36,7 @@ const useAxios = (): AxiosInstance => {
   return useMemo(() => {
     const instance = axios.create({
       headers: {
-        Authorization: `Bearer ${keycloak?.token}`,
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0'
+        Authorization: `Bearer ${keycloak?.token}`
       },
       baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
     });
