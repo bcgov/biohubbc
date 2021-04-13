@@ -51,7 +51,7 @@ describe('CreateProjectPage', () => {
 
   it('renders the initial default page correctly', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      code_set: []
+      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
 
     const { getByText, asFragment } = renderContainer();
@@ -165,7 +165,7 @@ describe('CreateProjectPage', () => {
 
   it('shows the page title', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      code_set: []
+      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
@@ -176,7 +176,7 @@ describe('CreateProjectPage', () => {
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        code_set: []
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
       history.push('/home');
       history.push('/projects/create');
@@ -195,7 +195,7 @@ describe('CreateProjectPage', () => {
 
     it('it calls history.push() if the user clicks `Yes`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        code_set: []
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
       history.push('/home');
       history.push('/projects/create');
@@ -212,7 +212,7 @@ describe('CreateProjectPage', () => {
 
     it('it does nothing if the user clicks `No`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        code_set: []
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
       history.push('/home');
       history.push('/projects/create');
@@ -231,12 +231,12 @@ describe('CreateProjectPage', () => {
   describe('draft project', () => {
     beforeEach(() => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        code_set: []
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
     });
 
     it('opens the save as draft dialog', async () => {
-      const { getByText, findByText, asFragment } = renderContainer();
+      const { getByText, findByText } = renderContainer();
 
       const saveAsDraftButton = await findByText('Save as Draft');
 
@@ -245,13 +245,10 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
       });
-
-      // Expect dialog to be open
-      expect(asFragment()).toMatchSnapshot();
     });
 
     it('closes the dialog on cancel button click', async () => {
-      const { getByText, findByText, queryByText, getByRole, asFragment } = renderContainer();
+      const { getByText, findByText, queryByText, getByRole } = renderContainer();
 
       const saveAsDraftButton = await findByText('Save as Draft');
 
@@ -268,9 +265,6 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
-
-      // Expect dialog to be closed
-      expect(asFragment()).toMatchSnapshot();
     });
 
     it('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
@@ -279,7 +273,7 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, findByText, queryByText, getByLabelText, asFragment } = renderContainer();
+      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
 
       const saveAsDraftButton = await findByText('Save as Draft');
 
@@ -299,9 +293,6 @@ describe('CreateProjectPage', () => {
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
 
-      // Expect dialog to be closed
-      expect(asFragment()).toMatchSnapshot();
-
       fireEvent.click(getByText('Save as Draft'));
 
       await waitFor(() => {
@@ -317,9 +308,92 @@ describe('CreateProjectPage', () => {
 
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
+    });
 
-      // Expect dialog to be closed
-      expect(asFragment()).toMatchSnapshot();
+    it('calls the createDraft/updateDraft functions with WIP form data', async () => {
+      mockBiohubApi().draft.createDraft.mockResolvedValue({
+        id: 1,
+        date: '2021-01-20'
+      });
+
+      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
+
+      // wait for initial page to load
+      await waitFor(() => {
+        expect(getByText('Project Coordinator')).toBeVisible();
+      });
+
+      // update first name field
+      fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
+
+      const saveAsDraftButton = await findByText('Save as Draft');
+
+      fireEvent.click(saveAsDraftButton);
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+
+      fireEvent.click(getByText('Save'));
+
+      await waitFor(() => {
+        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
+          coordinator: {
+            first_name: 'draft first name',
+            last_name: '',
+            email_address: '',
+            coordinator_agency: '',
+            share_contact_details: 'false'
+          },
+          permit: expect.any(Object),
+          project: expect.any(Object),
+          objectives: expect.any(Object),
+          location: expect.any(Object),
+          species: expect.any(Object),
+          iucn: expect.any(Object),
+          funding: expect.any(Object),
+          partnerships: expect.any(Object)
+        });
+
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
+
+      // update last name field
+      fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'draft last name' } });
+
+      fireEvent.click(getByText('Save as Draft'));
+
+      await waitFor(() => {
+        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+      });
+
+      fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
+
+      fireEvent.click(getByText('Save'));
+
+      await waitFor(() => {
+        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
+          coordinator: {
+            first_name: 'draft first name',
+            last_name: 'draft last name',
+            email_address: '',
+            coordinator_agency: '',
+            share_contact_details: 'false'
+          },
+          permit: expect.any(Object),
+          project: expect.any(Object),
+          objectives: expect.any(Object),
+          location: expect.any(Object),
+          species: expect.any(Object),
+          iucn: expect.any(Object),
+          funding: expect.any(Object),
+          partnerships: expect.any(Object)
+        });
+
+        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+      });
     });
 
     it('renders an error dialog if the draft submit request fails', async () => {
@@ -327,7 +401,7 @@ describe('CreateProjectPage', () => {
         throw new Error('Draft failed exception!');
       });
 
-      const { getByText, findByText, queryByText, getByLabelText, asFragment } = renderContainer();
+      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
 
       const saveAsDraftButton = await findByText('Save as Draft');
 
@@ -344,9 +418,6 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
-
-      // Expect dialog to be closed
-      expect(asFragment()).toMatchSnapshot();
     });
   });
 });
