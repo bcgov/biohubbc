@@ -82,3 +82,36 @@ export const putDraftSQL = (id: number, name: string, data: unknown): SQLStateme
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get a list of drafts from the webform_draft table.
+ *
+ * @param {number} systemUserId
+ * @return {SQLStatement} {(SQLStatement | null)}
+ */
+export const getDraftsSQL = (systemUserId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getDraftsSQL', message: 'params', systemUserId });
+
+  if (!systemUserId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      id,
+      name
+    FROM
+      webform_draft
+    WHERE
+      su_id = ${systemUserId};
+  `;
+
+  defaultLog.debug({
+    label: 'getDraftsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

@@ -17,6 +17,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDate } from 'utils/Utils';
+import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 
 /**
  * Page to display a list of projects.
@@ -29,6 +30,7 @@ const ProjectsListPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
   const [projects, setProjects] = useState<IGetProjectsListResponse[]>([]);
+  const [drafts, setDrafts] = useState<IGetDraftsListResponse[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,8 +52,18 @@ const ProjectsListPage: React.FC = () => {
       });
     };
 
+    const getDrafts = async () => {
+      const draftsResponse = await biohubApi.draft.getDraftsList();
+
+      setDrafts(() => {
+        setIsLoading(false);
+        return draftsResponse;
+      });
+    };
+
     if (isLoading) {
       getProjects();
+      getDrafts();
     }
   }, [biohubApi, isLoading]);
 
@@ -59,9 +71,10 @@ const ProjectsListPage: React.FC = () => {
    * Displays project list.
    */
 
-  let hasProjects = projects.length > 0;
+  const hasProjects = projects?.length > 0;
+  const hasDrafts = drafts?.length > 0;
 
-  if (!hasProjects) {
+  if (!hasProjects && !hasDrafts) {
     return (
       <Box my={4}>
         <Container maxWidth="xl">
@@ -108,6 +121,15 @@ const ProjectsListPage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody data-testid="project-table">
+                {drafts?.map((row) => (
+                  <TableRow data-testid={row.name} key={row.id}>
+                    <TableCell>{row.name} (Draft)</TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                  </TableRow>
+                ))}
                 {projects.map((row) => (
                   <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
                     <TableCell>{row.name}</TableCell>
