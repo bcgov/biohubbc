@@ -79,7 +79,12 @@ describe('ProjectStepComponents', () => {
         {() => (
           <ProjectStepComponents
             component="ProjectDetails"
-            codes={{ ...codes, project_type: (null as unknown) as any }}
+            codes={{
+              ...codes,
+              project_type: (null as unknown) as any,
+              activity: (null as unknown) as any,
+              climate_change_initiative: (null as unknown) as any
+            }}
           />
         )}
       </Formik>
@@ -103,7 +108,24 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project species', () => {
+  it('renders the project species without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectSpeciesFormInitialValues}
+        validationSchema={ProjectSpeciesFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents component="ProjectSpecies" codes={{ ...codes, species: (null as unknown) as any }} />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project species with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectSpeciesFormInitialValues}
@@ -118,7 +140,7 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project IUCN', () => {
+  it('renders the project IUCN with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectIUCNFormInitialValues}
@@ -133,7 +155,32 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project funding', () => {
+  it('renders the project IUCN without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectIUCNFormInitialValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents
+            component="ProjectIUCN"
+            codes={{
+              ...codes,
+              iucn_conservation_action_level_1_classification: (null as unknown) as any,
+              iucn_conservation_action_level_2_subclassification: (null as unknown) as any,
+              iucn_conservation_action_level_3_subclassification: (null as unknown) as any
+            }}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project funding with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectFundingFormInitialValues}
@@ -148,7 +195,31 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project partnerships', () => {
+  it('renders the project funding without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectFundingFormInitialValues}
+        validationSchema={ProjectFundingFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents
+            component="ProjectFunding"
+            codes={{
+              ...codes,
+              funding_source: (null as unknown) as any,
+              investment_action_category: (null as unknown) as any
+            }}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project partnerships with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectPartnershipsFormInitialValues}
@@ -163,7 +234,27 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project location', () => {
+  it('renders the project partnerships without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectPartnershipsFormInitialValues}
+        validationSchema={ProjectPartnershipsFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents
+            component="ProjectPartnerships"
+            codes={{ ...codes, first_nations: (null as unknown) as any, funding_source: (null as unknown) as any }}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project location with the codes values', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
@@ -172,6 +263,23 @@ describe('ProjectStepComponents', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => <ProjectStepComponents component="ProjectLocation" codes={codes} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the project location without the codes values', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={ProjectLocationFormInitialValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectStepComponents component="ProjectLocation" codes={{ ...codes, region: (null as unknown) as any }} />
+        )}
       </Formik>
     );
 
