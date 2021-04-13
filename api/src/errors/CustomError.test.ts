@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { HTTP400, HTTP401, HTTP403, HTTP409, HTTP500 } from './CustomError';
 
-describe('PostProjectData', () => {
+describe('CustomError', () => {
   describe('No error value provided', () => {
     let message: string;
 
