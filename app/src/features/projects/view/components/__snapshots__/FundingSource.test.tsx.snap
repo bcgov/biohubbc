@@ -3,10 +3,10 @@
 exports[`FundingSource opens the edit funding source dialog box when edit button is clicked, cancel and save buttons are pressed 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-9"
   />
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiBox-root MuiBox-root-5"
   >
     <h3
       class="MuiTypography-root MuiTypography-h3"
@@ -14,13 +14,29 @@ exports[`FundingSource opens the edit funding source dialog box when edit button
       Funding Sources
     </h3>
     <button
+      aria-label="Add Funding Source"
       class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
       tabindex="0"
+      title="Add Funding Source"
       type="button"
     >
       <span
         class="MuiButton-label"
       >
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
         Add Funding Source
       </span>
       <span
@@ -29,49 +45,82 @@ exports[`FundingSource opens the edit funding source dialog box when edit button
     </button>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root MuiBox-root-6"
   >
     <hr
       class="MuiDivider-root"
     />
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiBox-root MuiBox-root-7"
     >
       <h4
         class="MuiTypography-root MuiTypography-h4"
       >
         agency name
       </h4>
-      <button
-        aria-label="Edit Funding Source Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
-        tabindex="0"
-        title="Edit Funding Source Information"
-        type="button"
+      <div
+        class="MuiBox-root MuiBox-root-8"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          tabindex="0"
+          title="Edit Funding Source Information"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            EDIT
           </span>
-          EDIT
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          aria-label="Delete Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+          tabindex="0"
+          title="Delete Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
     <dl>
       <div
@@ -150,13 +199,29 @@ exports[`FundingSource renders correctly 1`] = `
       Funding Sources
     </h3>
     <button
+      aria-label="Add Funding Source"
       class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
       tabindex="0"
+      title="Add Funding Source"
       type="button"
     >
       <span
         class="MuiButton-label"
       >
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
         Add Funding Source
       </span>
       <span
@@ -178,36 +243,69 @@ exports[`FundingSource renders correctly 1`] = `
       >
         agency name
       </h4>
-      <button
-        aria-label="Edit Funding Source Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
-        tabindex="0"
-        title="Edit Funding Source Information"
-        type="button"
+      <div
+        class="MuiBox-root MuiBox-root-4"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          tabindex="0"
+          title="Edit Funding Source Information"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            EDIT
           </span>
-          EDIT
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          aria-label="Delete Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+          tabindex="0"
+          title="Delete Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
     <dl>
       <div

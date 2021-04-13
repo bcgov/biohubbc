@@ -7,13 +7,13 @@ import { HTTP400 } from '../../../../../errors/CustomError';
 import { deleteProjectAttachmentSQL } from '../../../../../queries/project/project-attachments-queries';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
-import { getAttachmentApiResponseObject } from '../../../../../utils/shared-api-responses';
+import { getAttachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/delete');
 
 export const DELETE: Operation = [deleteAttachment()];
 
-DELETE.apiDoc = getAttachmentApiResponseObject(
+DELETE.apiDoc = getAttachmentApiDocObject(
   'Delete an attachment of a project.',
   'Row count of successfully deleted attachment record'
 );
@@ -60,7 +60,7 @@ function deleteAttachment(): RequestHandler {
 
       return res.status(200).json(result && result.rowCount);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectAttachments', message: 'error', error });
+      defaultLog.debug({ label: 'deleteAttachment', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
