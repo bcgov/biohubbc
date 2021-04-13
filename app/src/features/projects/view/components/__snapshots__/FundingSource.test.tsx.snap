@@ -3,31 +3,69 @@
 exports[`FundingSource opens the edit funding source dialog box when edit button is clicked, cancel and save buttons are pressed 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-9"
   />
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiBox-root MuiBox-root-5"
   >
     <h3
       class="MuiTypography-root MuiTypography-h3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      Funding Sources
+    </h3>
+    <button
+      aria-label="Add Funding Source"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      title="Add Funding Source"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
       >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
-          Funding Sources
-        </h3>
-      </div>
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+        Add Funding Source
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
+  </div>
+  <div
+    class="MuiBox-root MuiBox-root-6"
+  >
+    <hr
+      class="MuiDivider-root"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-7"
+    >
+      <h4
+        class="MuiTypography-root MuiTypography-h4"
+      >
+        agency name
+      </h4>
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiBox-root MuiBox-root-8"
       >
         <button
-          aria-label="Add Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
           tabindex="0"
-          title="Add Funding Source"
+          title="Edit Funding Source Information"
           type="button"
         >
           <span
@@ -38,73 +76,16 @@ exports[`FundingSource opens the edit funding source dialog box when edit button
             >
               <svg
                 role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
+                style="width: 1.3125rem; height: 1.3125rem;"
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
                   style="fill: currentColor;"
                 />
               </svg>
             </span>
-            Add Funding Source
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-    </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-item"
-    >
-      <span
-        class="MuiButton-label"
-      >
-        Add Funding Source
-      </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
-    </button>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-5"
-  >
-    <hr
-      class="MuiDivider-root"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-6"
-    >
-      <h4
-        class="MuiTypography-root MuiTypography-h4"
-      >
-        agency name
-      </h4>
-      <button
-        aria-label="Edit Funding Source Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
-        tabindex="0"
-        title="Edit Funding Source Information"
-        type="button"
-      >
-        <span
-          class="MuiButton-label"
-        >
-          <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
-          >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+            EDIT
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -215,56 +196,32 @@ exports[`FundingSource renders correctly 1`] = `
     <h3
       class="MuiTypography-root MuiTypography-h3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
-      >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Funding Sources
-        </h3>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item"
-      >
-        <button
-          aria-label="Add Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-          tabindex="0"
-          title="Add Funding Source"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Add Funding Source
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
-    </div>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-item"
+      Funding Sources
+    </h3>
+    <button
+      aria-label="Add Funding Source"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      title="Add Funding Source"
+      type="button"
     >
       <span
         class="MuiButton-label"
       >
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
         Add Funding Source
       </span>
       <span
@@ -286,29 +243,34 @@ exports[`FundingSource renders correctly 1`] = `
       >
         agency name
       </h4>
-      <button
-        aria-label="Edit Funding Source Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
-        tabindex="0"
-        title="Edit Funding Source Information"
-        type="button"
+      <div
+        class="MuiBox-root MuiBox-root-4"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Funding Source Information"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          tabindex="0"
+          title="Edit Funding Source Information"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            EDIT
           </span>
           <span
             class="MuiTouchRipple-root"

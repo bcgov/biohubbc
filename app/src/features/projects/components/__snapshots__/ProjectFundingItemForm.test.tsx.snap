@@ -55,7 +55,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
-                name="agency-id"
+                name="agency_id"
                 required=""
                 tabindex="-1"
                 value="1"
@@ -432,7 +432,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
-                name="agency-id"
+                name="agency_id"
                 required=""
                 tabindex="-1"
                 value="2"
@@ -809,7 +809,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
-                name="agency-id"
+                name="agency_id"
                 required=""
                 tabindex="-1"
                 value="3"
@@ -1117,7 +1117,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
-                name="agency-id"
+                name="agency_id"
                 required=""
                 tabindex="-1"
                 value=""
