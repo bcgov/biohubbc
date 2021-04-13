@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, April 06, 2021 16:50:53
+-- Date Created : Monday, April 12, 2021 17:37:35
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -11,16 +11,16 @@
 --
 
 CREATE TABLE activity(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_3_1 PRIMARY KEY (id)
 )
 ;
@@ -51,19 +51,161 @@ COMMENT ON TABLE activity IS 'A list of project activities.'
 ;
 
 -- 
+-- TABLE: administrative_activity 
+--
+
+CREATE TABLE administrative_activity(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    aat_id            integer           NOT NULL,
+    reported_su_id    integer           NOT NULL,
+    aast_id           integer           NOT NULL,
+    assigned_su_id    integer,
+    description       varchar(3000),
+    data              json,
+    notes             varchar(3000),
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK144" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN administrative_activity.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN administrative_activity.aat_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN administrative_activity.reported_su_id IS 'The system user id who reported the administrative activity.'
+;
+COMMENT ON COLUMN administrative_activity.aast_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN administrative_activity.assigned_su_id IS 'The system user id assigned to the administrative activity.
+'
+;
+COMMENT ON COLUMN administrative_activity.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN administrative_activity.data IS 'The json data associated with the record.'
+;
+COMMENT ON COLUMN administrative_activity.notes IS 'Notes associated with the record.'
+;
+COMMENT ON COLUMN administrative_activity.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN administrative_activity.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN administrative_activity.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE administrative_activity IS 'Administrative activity is a list of activities to be performed in order to maintain the business processes of the system.'
+;
+
+-- 
+-- TABLE: administrative_activity_status_type 
+--
+
+CREATE TABLE administrative_activity_status_type(
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_end_date          date,
+    record_effective_date    date              NOT NULL,
+    description              varchar(250),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk49_2_4_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN administrative_activity_status_type.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity_status_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE administrative_activity_status_type IS 'Administrative activity status type describes a class of statuses that describe the state of an administrative activity record.'
+;
+
+-- 
+-- TABLE: administrative_activity_type 
+--
+
+CREATE TABLE administrative_activity_type(
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_end_date          date,
+    record_effective_date    date              NOT NULL,
+    description              varchar(250),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk49_2_4 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN administrative_activity_type.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN administrative_activity_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN administrative_activity_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN administrative_activity_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN administrative_activity_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN administrative_activity_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN administrative_activity_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN administrative_activity_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN administrative_activity_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE administrative_activity_type IS 'Administrative activity type describes a class of administrative activities that is performed in order to maintain the business processes of the application.'
+;
+
+-- 
 -- TABLE: ancillary_species 
 --
 
 CREATE TABLE ancillary_species(
-    id                          integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                        varchar(300)     NOT NULL,
-    p_id                        integer          NOT NULL,
+    id                          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                        varchar(300)      NOT NULL,
+    p_id                        integer           NOT NULL,
     uniform_resource_locator    varchar(2000),
-    create_date                 timestamp(6)     DEFAULT now() NOT NULL,
-    create_user                 integer          NOT NULL,
-    update_date                 timestamp(6),
+    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                 integer           NOT NULL,
+    update_date                 timestamptz(6),
     update_user                 integer,
-    revision_count              integer          DEFAULT 0 NOT NULL,
+    revision_count              integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk122_1 PRIMARY KEY (id)
 )
 ;
@@ -98,7 +240,7 @@ COMMENT ON TABLE ancillary_species IS 'The ancillary species the project is inve
 CREATE TABLE audit_log(
     id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     system_user_id    integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
+    create_date       TIMESTAMPTZ     DEFAULT now() NOT NULL,
     table_name        varchar(200)    NOT NULL,
     operation         varchar(20)     NOT NULL,
     before_value      json,
@@ -112,6 +254,8 @@ CREATE TABLE audit_log(
 COMMENT ON COLUMN audit_log.id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN audit_log.system_user_id IS 'The system user id affecting the data change.'
+;
+COMMENT ON COLUMN audit_log.create_date IS 'The date and time of record creation.'
 ;
 COMMENT ON COLUMN audit_log.table_name IS 'The table name of the data record.'
 ;
@@ -129,16 +273,16 @@ COMMENT ON TABLE audit_log IS 'Holds record level audit log data for the entire 
 --
 
 CREATE TABLE climate_change_initiative(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)     NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2 PRIMARY KEY (id)
 )
 ;
@@ -173,16 +317,16 @@ COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change ini
 --
 
 CREATE TABLE first_nations(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_3 PRIMARY KEY (id)
 )
 ;
@@ -217,15 +361,15 @@ COMMENT ON TABLE first_nations IS 'A list of first nations.'
 --
 
 CREATE TABLE focal_species(
-    id                          integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                        varchar(300)     NOT NULL,
-    p_id                        integer          NOT NULL,
+    id                          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                        varchar(300)      NOT NULL,
+    p_id                        integer           NOT NULL,
     uniform_resource_locator    varchar(2000),
-    create_date                 timestamp(6)     DEFAULT now() NOT NULL,
-    create_user                 integer          NOT NULL,
-    update_date                 timestamp(6),
+    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                 integer           NOT NULL,
+    update_date                 timestamptz(6),
     update_user                 integer,
-    revision_count              integer          DEFAULT 0 NOT NULL,
+    revision_count              integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK122" PRIMARY KEY (id)
 )
 ;
@@ -258,17 +402,17 @@ COMMENT ON TABLE focal_species IS 'The focal species the project is inventoring 
 --
 
 CREATE TABLE funding_source(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(100)    NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(100)      NOT NULL,
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
     project_id_optional      boolean,
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1 PRIMARY KEY (id)
 )
 ;
@@ -305,17 +449,17 @@ COMMENT ON TABLE funding_source IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE investment_action_category(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    fs_id                    integer         NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    fs_id                    integer           NOT NULL,
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK83" PRIMARY KEY (id)
 )
 ;
@@ -352,16 +496,16 @@ COMMENT ON TABLE investment_action_category IS 'The investment or action categor
 --
 
 CREATE TABLE iucn_conservation_action_level_1_classification(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date             NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_4 PRIMARY KEY (id)
 )
 ;
@@ -396,17 +540,17 @@ COMMENT ON TABLE iucn_conservation_action_level_1_classification IS 'List of IUC
 --
 
 CREATE TABLE iucn_conservation_action_level_2_subclassification(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn1_id                 integer          NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    iucn1_id                 integer           NOT NULL,
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date             NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk83_1 PRIMARY KEY (id)
 )
 ;
@@ -443,17 +587,17 @@ COMMENT ON TABLE iucn_conservation_action_level_2_subclassification IS 'List of 
 --
 
 CREATE TABLE iucn_conservation_action_level_3_subclassification(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn2_id                 integer          NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    iucn2_id                 integer           NOT NULL,
     name                     varchar(300),
     record_end_date          date,
-    record_effective_date    date             NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk83_1_1 PRIMARY KEY (id)
 )
 ;
@@ -491,16 +635,16 @@ COMMENT ON TABLE iucn_conservation_action_level_3_subclassification IS 'List of 
 --
 
 CREATE TABLE management_action_type(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)     NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
     record_end_date          date,
-    record_effective_date    date            NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_1 PRIMARY KEY (id)
 )
 ;
@@ -535,19 +679,19 @@ COMMENT ON TABLE management_action_type IS 'List of Management Actions.'
 --
 
 CREATE TABLE no_sample_permit(
-    id                           integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    number                       varchar(100)    NOT NULL,
+    id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    number                       varchar(100)      NOT NULL,
     issue_date                   date,
     end_date                     date,
-    coordinator_first_name       varchar(50)     NOT NULL,
-    coordinator_last_name        varchar(50)     NOT NULL,
-    coordinator_email_address    varchar(500)    NOT NULL,
-    coordinator_agency_name      varchar(300)    NOT NULL,
-    create_date                  timestamp(6)    DEFAULT now() NOT NULL,
-    create_user                  integer         NOT NULL,
-    update_date                  timestamp(6),
+    coordinator_first_name       varchar(50)       NOT NULL,
+    coordinator_last_name        varchar(50)       NOT NULL,
+    coordinator_email_address    varchar(500)      NOT NULL,
+    coordinator_agency_name      varchar(300)      NOT NULL,
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
     update_user                  integer,
-    revision_count               integer         DEFAULT 0 NOT NULL,
+    revision_count               integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_2_1_1 PRIMARY KEY (id)
 )
 ;
@@ -606,9 +750,9 @@ CREATE TABLE project(
     coordinator_public            boolean                     NOT NULL,
     geometry                      geometry(geometry, 3005),
     geography                     geography(geometry),
-    create_date                   timestamp(6)                DEFAULT now() NOT NULL,
+    create_date                   timestamptz(6)              DEFAULT now() NOT NULL,
     create_user                   integer                     NOT NULL,
-    update_date                   timestamp(6),
+    update_date                   timestamptz(6),
     update_user                   integer,
     revision_count                integer                     DEFAULT 0 NOT NULL,
     CONSTRAINT "PK45" PRIMARY KEY (id)
@@ -667,14 +811,14 @@ COMMENT ON TABLE project IS 'The top level organizational structure for data col
 --
 
 CREATE TABLE project_activity(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
-    a_id              integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    a_id              integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_3_1_1 PRIMARY KEY (id)
 )
 ;
@@ -697,24 +841,26 @@ COMMENT ON COLUMN project_activity.update_user IS 'The id of the user who update
 ;
 COMMENT ON COLUMN project_activity.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE project_activity IS 'A associative entity that joins projects and project activity types.'
+;
 
 -- 
 -- TABLE: project_attachment 
 --
 
 CREATE TABLE project_attachment(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
-    key               varchar(300)    NOT NULL,
+    key               varchar(300)      NOT NULL,
     file_size         integer,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK141" PRIMARY KEY (id)
 )
 ;
@@ -753,14 +899,14 @@ COMMENT ON TABLE project_attachment IS 'A list of project attachments.'
 --
 
 CREATE TABLE project_climate_initiative(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    cci_id            integer         NOT NULL,
-    p_id              integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    cci_id            integer           NOT NULL,
+    p_id              integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_3 PRIMARY KEY (id)
 )
 ;
@@ -783,20 +929,22 @@ COMMENT ON COLUMN project_climate_initiative.update_user IS 'The id of the user 
 ;
 COMMENT ON COLUMN project_climate_initiative.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE project_climate_initiative IS 'A associative entity that joins that joins projects and climate change initiative types.'
+;
 
 -- 
 -- TABLE: project_first_nation 
 --
 
 CREATE TABLE project_first_nation(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
-    fn_id             integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    fn_id             integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_3_1 PRIMARY KEY (id)
 )
 ;
@@ -819,24 +967,26 @@ COMMENT ON COLUMN project_first_nation.update_user IS 'The id of the user who up
 ;
 COMMENT ON COLUMN project_first_nation.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE project_first_nation IS 'A associative entity that joins projects and first nations.'
+;
 
 -- 
 -- TABLE: project_funding_source 
 --
 
 CREATE TABLE project_funding_source(
-    id                           integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                         integer         NOT NULL,
-    iac_id                       integer         NOT NULL,
+    id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id                         integer           NOT NULL,
+    iac_id                       integer           NOT NULL,
     funding_source_project_id    varchar(50),
-    funding_amount               money           NOT NULL,
-    funding_start_date           date            NOT NULL,
-    funding_end_date             date            NOT NULL,
-    create_date                  timestamp(6)    DEFAULT now() NOT NULL,
-    create_user                  integer         NOT NULL,
-    update_date                  timestamp(6),
+    funding_amount               money             NOT NULL,
+    funding_start_date           date              NOT NULL,
+    funding_end_date             date              NOT NULL,
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
     update_user                  integer,
-    revision_count               integer         DEFAULT 0 NOT NULL,
+    revision_count               integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_1 PRIMARY KEY (id)
 )
 ;
@@ -867,7 +1017,7 @@ COMMENT ON COLUMN project_funding_source.update_user IS 'The id of the user who 
 ;
 COMMENT ON COLUMN project_funding_source.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE project_funding_source IS 'Project funding source details.'
+COMMENT ON TABLE project_funding_source IS 'A associative entity that joins projects and funding source details.'
 ;
 
 -- 
@@ -875,14 +1025,14 @@ COMMENT ON TABLE project_funding_source IS 'Project funding source details.'
 --
 
 CREATE TABLE project_iucn_action_classification(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
-    iucn3_id          integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    iucn3_id          integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_1_2 PRIMARY KEY (id)
 )
 ;
@@ -905,7 +1055,7 @@ COMMENT ON COLUMN project_iucn_action_classification.update_user IS 'The id of t
 ;
 COMMENT ON COLUMN project_iucn_action_classification.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE project_iucn_action_classification IS 'Project IUCN classifications.'
+COMMENT ON TABLE project_iucn_action_classification IS 'An associative entity that links projects and IUCN classifications.'
 ;
 
 -- 
@@ -913,14 +1063,14 @@ COMMENT ON TABLE project_iucn_action_classification IS 'Project IUCN classificat
 --
 
 CREATE TABLE project_management_actions(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    mat_id            integer         NOT NULL,
-    p_id              integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    mat_id            integer           NOT NULL,
+    p_id              integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_4 PRIMARY KEY (id)
 )
 ;
@@ -943,21 +1093,23 @@ COMMENT ON COLUMN project_management_actions.update_user IS 'The id of the user 
 ;
 COMMENT ON COLUMN project_management_actions.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE project_management_actions IS 'A associative entity that joins projects and management action types.'
+;
 
 -- 
 -- TABLE: project_participation 
 --
 
 CREATE TABLE project_participation(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
-    su_id             integer         NOT NULL,
-    pr_id             integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    su_id             integer           NOT NULL,
+    pr_id             integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_2 PRIMARY KEY (id)
 )
 ;
@@ -982,7 +1134,7 @@ COMMENT ON COLUMN project_participation.update_user IS 'The id of the user who u
 ;
 COMMENT ON COLUMN project_participation.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE project_participation IS 'A history of the project user participation for the project.'
+COMMENT ON TABLE project_participation IS 'A associative entity that joins projects, system users and project role types.'
 ;
 
 -- 
@@ -990,17 +1142,17 @@ COMMENT ON TABLE project_participation IS 'A history of the project user partici
 --
 
 CREATE TABLE project_permit(
-    id                    integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                  integer         NOT NULL,
-    number                varchar(100)    NOT NULL,
-    sampling_conducted    boolean         NOT NULL,
+    id                    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id                  integer           NOT NULL,
+    number                varchar(100)      NOT NULL,
+    sampling_conducted    boolean           NOT NULL,
     issue_date            date,
     end_date              date,
-    create_date           timestamp(6)    DEFAULT now() NOT NULL,
-    create_user           integer         NOT NULL,
-    update_date           timestamp(6),
+    create_date           timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user           integer           NOT NULL,
+    update_date           timestamptz(6),
     update_user           integer,
-    revision_count        integer         DEFAULT 0 NOT NULL,
+    revision_count        integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_2_1 PRIMARY KEY (id)
 )
 ;
@@ -1037,14 +1189,14 @@ COMMENT ON TABLE project_permit IS 'The scientific permits associated with a pro
 --
 
 CREATE TABLE project_region(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer         NOT NULL,
-    name              varchar(200)    NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    name              varchar(200)      NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK55" PRIMARY KEY (id)
 )
 ;
@@ -1073,17 +1225,17 @@ COMMENT ON COLUMN project_region.revision_count IS 'Revision count used for conc
 --
 
 CREATE TABLE project_role(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)      NOT NULL,
-    record_effective_date    date             NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_effective_date    date              NOT NULL,
     record_end_date          date,
-    description              varchar(250)     NOT NULL,
+    description              varchar(250)      NOT NULL,
     notes                    varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_3 PRIMARY KEY (id)
 )
 ;
@@ -1120,16 +1272,16 @@ COMMENT ON TABLE project_role IS 'Project participation roles.'
 --
 
 CREATE TABLE project_type(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)     NOT NULL,
-    record_effective_date    date            NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_effective_date    date              NOT NULL,
     description              varchar(250),
     record_end_date          date,
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_3_1 PRIMARY KEY (id)
 )
 ;
@@ -1164,14 +1316,14 @@ COMMENT ON TABLE project_type IS 'Broad classification for the project.'
 --
 
 CREATE TABLE stakeholder_partnership(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name              varchar(300),
-    p_id              integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    p_id              integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_2_2 PRIMARY KEY (id)
 )
 ;
@@ -1207,9 +1359,9 @@ CREATE TABLE system_constant(
     character_value    varchar(300),
     numeric_value      numeric(10, 0),
     description        varchar(250),
-    create_date        timestamp(6)      DEFAULT now() NOT NULL,
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
     create_user        integer           NOT NULL,
-    update_date        timestamp(6),
+    update_date        timestamptz(6),
     update_user        integer,
     revision_count     integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK142" PRIMARY KEY (id)
@@ -1246,17 +1398,17 @@ COMMENT ON TABLE system_constant IS 'A list of system constants necessary for sy
 --
 
 CREATE TABLE system_role(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)      NOT NULL,
-    record_effective_date    date             NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_effective_date    date              NOT NULL,
     record_end_date          date,
-    description              varchar(250)     NOT NULL,
+    description              varchar(250)      NOT NULL,
     notes                    varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_2 PRIMARY KEY (id)
 )
 ;
@@ -1293,16 +1445,16 @@ COMMENT ON TABLE system_role IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE system_user(
-    id                       integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    uis_id                   integer         NOT NULL,
-    user_identifier          varchar(200)    NOT NULL,
-    record_effective_date    date            NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    uis_id                   integer           NOT NULL,
+    user_identifier          varchar(200)      NOT NULL,
+    record_effective_date    date              NOT NULL,
     record_end_date          date,
-    create_date              timestamp(6)    DEFAULT now() NOT NULL,
-    create_user              integer         NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer         DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_1 PRIMARY KEY (id)
 )
 ;
@@ -1337,14 +1489,14 @@ COMMENT ON TABLE system_user IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE system_user_role(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    su_id             integer         NOT NULL,
-    sr_id             integer         NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    su_id             integer           NOT NULL,
+    sr_id             integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk55_1_1 PRIMARY KEY (id)
 )
 ;
@@ -1367,23 +1519,25 @@ COMMENT ON COLUMN system_user_role.update_user IS 'The id of the user who update
 ;
 COMMENT ON COLUMN system_user_role.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE system_user_role IS 'A associative entity that joins system users and system role types.'
+;
 
 -- 
 -- TABLE: user_identity_source 
 --
 
 CREATE TABLE user_identity_source(
-    id                       integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)      NOT NULL,
-    record_effective_date    date             NOT NULL,
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_effective_date    date              NOT NULL,
     record_end_date          date,
     description              varchar(250),
     notes                    varchar(3000),
-    create_date              timestamp(6)     DEFAULT now() NOT NULL,
-    create_user              integer          NOT NULL,
-    update_date              timestamp(6),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
     update_user              integer,
-    revision_count           integer          DEFAULT 0 NOT NULL,
+    revision_count           integer           DEFAULT 0 NOT NULL,
     CONSTRAINT pk49_1_2_1 PRIMARY KEY (id)
 )
 ;
@@ -1420,15 +1574,15 @@ COMMENT ON TABLE user_identity_source IS 'The source of the user identifier. Exa
 --
 
 CREATE TABLE webform_draft(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    su_id             integer         NOT NULL,
-    name              varchar(300)    NOT NULL,
-    data              json            NOT NULL,
-    create_date       timestamp(6)    DEFAULT now() NOT NULL,
-    create_user       integer         NOT NULL,
-    update_date       timestamp(6),
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    su_id             integer           NOT NULL,
+    name              varchar(300)      NOT NULL,
+    data              json              NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
     update_user       integer,
-    revision_count    integer         DEFAULT 0 NOT NULL,
+    revision_count    integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK143" PRIMARY KEY (id)
 )
 ;
@@ -1441,7 +1595,7 @@ COMMENT ON COLUMN webform_draft.su_id IS 'System generated surrogate primary key
 ;
 COMMENT ON COLUMN webform_draft.name IS 'The name of the draft record.'
 ;
-COMMENT ON COLUMN webform_draft.data IS 'The json data associated with the draft record.'
+COMMENT ON COLUMN webform_draft.data IS 'The json data associated with the record.'
 ;
 COMMENT ON COLUMN webform_draft.create_date IS 'The datetime the record was created.'
 ;
@@ -1461,6 +1615,42 @@ COMMENT ON TABLE webform_draft IS 'A persistent store for draft webform data. Fo
 --
 
 CREATE UNIQUE INDEX a_nuk1 ON activity(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: "Ref14877" 
+--
+
+CREATE INDEX "Ref14877" ON administrative_activity(aat_id)
+;
+-- 
+-- INDEX: "Ref7878" 
+--
+
+CREATE INDEX "Ref7878" ON administrative_activity(reported_su_id)
+;
+-- 
+-- INDEX: "Ref7879" 
+--
+
+CREATE INDEX "Ref7879" ON administrative_activity(assigned_su_id)
+;
+-- 
+-- INDEX: "Ref15280" 
+--
+
+CREATE INDEX "Ref15280" ON administrative_activity(aast_id)
+;
+-- 
+-- INDEX: aast_nuk1 
+--
+
+CREATE UNIQUE INDEX aast_nuk1 ON administrative_activity_status_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: aat_nuk1 
+--
+
+CREATE UNIQUE INDEX aat_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: as_uk1 
@@ -1810,6 +2000,31 @@ CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is N
 
 CREATE INDEX "Ref7876" ON webform_draft(su_id)
 ;
+-- 
+-- TABLE: administrative_activity 
+--
+
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type77" 
+    FOREIGN KEY (aat_id)
+    REFERENCES administrative_activity_type(id)
+;
+
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user78" 
+    FOREIGN KEY (reported_su_id)
+    REFERENCES system_user(id)
+;
+
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user79" 
+    FOREIGN KEY (assigned_su_id)
+    REFERENCES system_user(id)
+;
+
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type80" 
+    FOREIGN KEY (aast_id)
+    REFERENCES administrative_activity_status_type(id)
+;
+
+
 -- 
 -- TABLE: ancillary_species 
 --
