@@ -35,6 +35,21 @@ describe('ProjectDetails', () => {
     cleanup();
   });
 
+  it('renders correctly with no end date (only start date)', () => {
+    const { asFragment } = render(
+      <ProjectDetails
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          project: { ...getProjectForViewResponse.project, end_date: (null as unknown) as string }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   it('renders correctly with no activity and climate initiative data', () => {
     const { asFragment } = render(
       <ProjectDetails

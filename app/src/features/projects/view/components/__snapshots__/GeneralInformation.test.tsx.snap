@@ -3,10 +3,10 @@
 exports[`ProjectDetails renders correctly with activity and climate initiative data 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-5"
   >
     <div
-      class="MuiBox-root MuiBox-root-4"
+      class="MuiBox-root MuiBox-root-6"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -127,10 +127,10 @@ exports[`ProjectDetails renders correctly with activity and climate initiative d
 exports[`ProjectDetails renders correctly with no activity and climate initiative data 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root MuiBox-root-3"
   >
     <div
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiBox-root MuiBox-root-4"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
@@ -240,6 +240,133 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
             class="MuiTypography-root MuiTypography-body1"
           >
             No Climate Change Initiatives
+          </dd>
+        </div>
+      </div>
+    </dl>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ProjectDetails renders correctly with no end date (only start date) 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        General Information
+      </h3>
+      <button
+        aria-label="Edit General Information"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        tabindex="0"
+        title="Edit General Information"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          EDIT
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Project Name
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Test Project Name
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Project Type
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            1
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Timeline
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            <span>
+              Start Date:
+            </span>
+             Oct 10, 1998
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Activities
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Activity code
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Climate Change Initiatives
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Climate code
           </dd>
         </div>
       </div>

@@ -54,6 +54,21 @@ describe('LocationBoundary', () => {
     }
   ];
 
+  test('matches the snapshot when there is no location description', () => {
+    const { asFragment } = render(
+      <LocationBoundary
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          location: { ...getProjectForViewResponse.location, location_description: (null as unknown) as string }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   test('matches the snapshot when there is no geometry', () => {
     const { asFragment } = render(
       <LocationBoundary
