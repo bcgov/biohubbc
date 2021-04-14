@@ -294,6 +294,6 @@ export class PutFundingSource {
     this.funding_amount = fundingSource?.funding_amount || null;
     this.start_date = fundingSource?.start_date || null;
     this.end_date = fundingSource?.end_date || null;
-    this.revision_count = fundingSource?.revision_count || null;
+    this.revision_count = fundingSource?.revision_count ?? null;
   }
 }

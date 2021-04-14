@@ -9,8 +9,149 @@ import {
   PostPermitData,
   PostProjectData,
   PostSpeciesData,
-  PostFundingData
+  PostFundingData,
+  PostProjectObject,
+  PostFundingSource
 } from './project-create';
+
+describe('PostProjectObject', () => {
+  describe('No values provided', () => {
+    let projectPostObject: PostProjectObject;
+
+    before(() => {
+      projectPostObject = new PostProjectObject(null);
+    });
+
+    it('sets coordinator', function () {
+      expect(projectPostObject.coordinator).to.equal(null);
+    });
+
+    it('sets permit', function () {
+      expect(projectPostObject.permit).to.equal(null);
+    });
+
+    it('sets project', function () {
+      expect(projectPostObject.project).to.equal(null);
+    });
+
+    it('sets objectives', function () {
+      expect(projectPostObject.objectives).to.equal(null);
+    });
+
+    it('sets location', function () {
+      expect(projectPostObject.location).to.equal(null);
+    });
+
+    it('sets species', function () {
+      expect(projectPostObject.species).to.equal(null);
+    });
+
+    it('sets iucn', function () {
+      expect(projectPostObject.iucn).to.equal(null);
+    });
+
+    it('sets funding', function () {
+      expect(projectPostObject.funding).to.equal(null);
+    });
+
+    it('sets partnerships', function () {
+      expect(projectPostObject.partnerships).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectPostObject: PostProjectObject;
+
+    const obj = {
+      coordinator: {
+        first_name: 'first',
+        last_name: 'last',
+        email_address: 'email@example.com',
+        coordinator_agency: 'agency',
+        share_contact_details: 'true'
+      },
+      permit: {
+        permits: [
+          {
+            permit_number: 1,
+            sampling_conducted: 'true'
+          }
+        ]
+      },
+      project: {
+        project_name: 'name_test_data',
+        project_type: 'test_type',
+        project_activities: [1, 2],
+        climate_change_initiatives: [1, 2],
+        start_date: 'start_date_test_data',
+        end_date: 'end_date_test_data',
+        comments: 'comments_test_data'
+      },
+      species: {
+        focal_species: ['species 1', 'species 2'],
+        ancillary_species: ['species 3']
+      },
+      objectives: {
+        objectives: 'these are the project objectives',
+        caveats: 'these are some interesting caveats'
+      },
+      location: {
+        regions: ['Northeast'],
+        location_description: 'a location description',
+        geometry: [
+          {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-128, 55],
+                [-128, 55.5],
+                [-128, 56],
+                [-126, 58],
+                [-128, 55]
+              ]
+            ],
+            properties: {
+              name: 'Biohub Islands'
+            }
+          }
+        ]
+      },
+      funding: {
+        funding_sources: [
+          {
+            agency_id: 1,
+            investment_action_category: 1,
+            agency_project_id: 'agency project id',
+            funding_amount: 12,
+            start_date: '2020/04/03',
+            end_date: '2020/05/05'
+          }
+        ]
+      },
+      iucn: {
+        classificationDetails: [
+          {
+            classification: 1,
+            subClassification1: 2,
+            subClassification2: 3
+          }
+        ]
+      },
+      partnerships: {
+        indigenous_partnerships: [1, 2],
+        stakeholder_partnerships: ['partner1, partner2']
+      }
+    };
+
+    before(() => {
+      projectPostObject = new PostProjectObject(obj);
+    });
+
+    it('sets coordinator', function () {
+      expect(projectPostObject.coordinator.first_name).to.equal(obj.coordinator.first_name);
+    });
+  });
+});
 
 describe('PostProjectData', () => {
   describe('No values provided', () => {
@@ -365,24 +506,99 @@ describe('PostSpeciesData', () => {
     });
   });
 
-  describe('All values provided', () => {
-    let data: PostSpeciesData;
-
+  describe('all values provided', () => {
     const obj = {
       focal_species: ['species 1', 'species 2'],
-      ancillary_species: ['species 3']
+      ancillary_species: ['species 3', 'species 4']
     };
+
+    let data: PostSpeciesData;
 
     before(() => {
       data = new PostSpeciesData(obj);
     });
 
     it('sets focal_species', () => {
-      expect(data.focal_species).to.eql(['species 1', 'species 2']);
+      expect(data.focal_species).to.eql(obj.focal_species);
     });
 
     it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql(['species 3']);
+      expect(data.ancillary_species).to.eql(obj.ancillary_species);
+    });
+  });
+});
+
+describe('PostFundingSource', () => {
+  describe('No values provided', () => {
+    let projectFundingData: PostFundingSource;
+
+    before(() => {
+      projectFundingData = new PostFundingSource(null);
+    });
+
+    it('sets agency_id', () => {
+      expect(projectFundingData.agency_id).to.equal(null);
+    });
+
+    it('sets investment_action_category', () => {
+      expect(projectFundingData.investment_action_category).to.equal(null);
+    });
+
+    it('sets agency_project_id', () => {
+      expect(projectFundingData.agency_project_id).to.equal(null);
+    });
+
+    it('sets funding_amount', () => {
+      expect(projectFundingData.funding_amount).to.equal(null);
+    });
+
+    it('sets start_date', () => {
+      expect(projectFundingData.start_date).to.equal(null);
+    });
+
+    it('sets end_date', () => {
+      expect(projectFundingData.end_date).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let projectFundingData: PostFundingSource;
+
+    const obj = {
+      agency_id: 1,
+      investment_action_category: 1,
+      agency_project_id: 'agency project id',
+      funding_amount: 20,
+      start_date: '2020/04/04',
+      end_date: '2020/05/05'
+    };
+
+    before(() => {
+      projectFundingData = new PostFundingSource(obj);
+    });
+
+    it('sets agency_id', () => {
+      expect(projectFundingData.agency_id).to.equal(obj.agency_id);
+    });
+
+    it('sets investment_action_category', () => {
+      expect(projectFundingData.investment_action_category).to.equal(obj.investment_action_category);
+    });
+
+    it('sets agency_project_id', () => {
+      expect(projectFundingData.agency_project_id).to.equal(obj.agency_project_id);
+    });
+
+    it('sets funding_amount', () => {
+      expect(projectFundingData.funding_amount).to.equal(obj.funding_amount);
+    });
+
+    it('sets start_date', () => {
+      expect(projectFundingData.start_date).to.equal(obj.start_date);
+    });
+
+    it('sets end_date', () => {
+      expect(projectFundingData.end_date).to.equal(obj.end_date);
     });
   });
 });
