@@ -97,8 +97,6 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       }
     };
 
-    console.log(projectData);
-
     const isEditing = fundingFormData.index < funding.fundingSources.length;
     const errorTitle = isEditing ? EditFundingI18N.editErrorTitle : AddFundingI18N.addErrorTitle;
 
