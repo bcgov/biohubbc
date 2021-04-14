@@ -13,7 +13,7 @@ import {
   getIUCNConservationActionLevel3SubclassificationSQL
 } from './code-queries';
 
-describe('postDraftSQL', () => {
+describe('getManagementActionTypeSQL', () => {
   it('returns valid sql statement', () => {
     const response = getManagementActionTypeSQL();
     expect(response).to.not.be.null;
