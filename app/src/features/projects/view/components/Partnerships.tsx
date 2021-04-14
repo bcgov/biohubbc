@@ -1,20 +1,23 @@
-import { Box, Button, Grid, Typography } from '@material-ui/core';
-import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { EditPartnershipsI18N } from 'constants/i18n';
 import {
   IProjectPartnershipsForm,
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { EditPartnershipsI18N } from 'constants/i18n';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import React, { useState } from 'react';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;

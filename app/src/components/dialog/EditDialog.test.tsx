@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { useFormikContext } from 'formik';

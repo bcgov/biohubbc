@@ -1,4 +1,9 @@
-import { Box, Button, Divider, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
@@ -18,8 +23,6 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
 
 export interface IProjectObjectivesProps {
   projectForViewData: IGetProjectForViewResponse;

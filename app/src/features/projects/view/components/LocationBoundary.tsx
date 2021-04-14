@@ -1,28 +1,31 @@
-import { Box, Button, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import bbox from '@turf/bbox';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import MapContainer from 'components/map/MapContainer';
+import { EditLocationBoundaryI18N } from 'constants/i18n';
+import {
+  IProjectLocationForm,
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from 'features/projects/components/ProjectLocationForm';
+import { Feature } from 'geojson';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseLocation,
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
-import MapContainer from 'components/map/MapContainer';
-import { Feature } from 'geojson';
-import { v4 as uuidv4 } from 'uuid';
-import bbox from '@turf/bbox';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import {
-  IProjectLocationForm,
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from 'features/projects/components/ProjectLocationForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { EditLocationBoundaryI18N } from 'constants/i18n';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;

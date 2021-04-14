@@ -1,4 +1,7 @@
-import { Box, CssBaseline, makeStyles, Theme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import React from 'react';
