@@ -18,69 +18,58 @@ import { ArrowBack } from '@material-ui/icons';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { DATE_FORMAT } from 'constants/dateFormats';
 import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import {
-  IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import {
-  IProjectDetailsForm,
   ProjectDetailsFormInitialValues,
   ProjectDetailsFormYupSchema
 } from 'features/projects/components/ProjectDetailsForm';
 import {
-  IProjectFundingForm,
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from 'features/projects/components/ProjectFundingForm';
+import { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from 'features/projects/components/ProjectIUCNForm';
 import {
-  IProjectIUCNForm,
-  ProjectIUCNFormInitialValues,
-  ProjectIUCNFormYupSchema
-} from 'features/projects/components/ProjectIUCNForm';
-import {
-  IProjectLocationForm,
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
 import {
-  IProjectObjectivesForm,
   ProjectObjectivesFormInitialValues,
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
+import {
+  ProjectPartnershipsFormInitialValues,
+  ProjectPartnershipsFormYupSchema
+} from 'features/projects/components/ProjectPartnershipsForm';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitFormInitialValues,
   ProjectPermitFormYupSchema
 } from 'features/projects/components/ProjectPermitForm';
 import {
-  IProjectSpeciesForm,
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
-import {
-  IProjectPartnershipsForm,
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from 'features/projects/components/ProjectPartnershipsForm';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
+import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useEffect, useState } from 'react';
+import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
-import * as History from 'history';
 import { Prompt } from 'react-router-dom';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { getFormattedDate } from 'utils/Utils';
 import ProjectDraftForm, {
   IProjectDraftForm,
   ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from './components/ProjectDraftForm';
-import { getFormattedDate } from 'utils/Utils';
-import { DATE_FORMAT } from 'constants/dateFormats';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -146,6 +135,10 @@ const CreateProjectPage: React.FC = () => {
 
   // All possible step forms, and their current state
   const [stepForms, setStepForms] = useState<ICreateProjectStep[]>([]);
+
+  // Reference to pass to the formik component in order to access its state at any time
+  // Used by the draft logic to fetch the values of a step form that has not been validated/completed
+  const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Whether or not to show the 'Are you sure you want to cancel' dialog
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
@@ -333,28 +326,29 @@ const CreateProjectPage: React.FC = () => {
     history.push('/projects');
   };
 
-  const getProjectFormData = (): ICreateProjectRequest => {
-    return {
-      coordinator: stepForms[0].stepValues as IProjectCoordinatorForm,
-      permit: stepForms[1].stepValues as IProjectPermitForm,
-      project: stepForms[2].stepValues as IProjectDetailsForm,
-      objectives: stepForms[3].stepValues as IProjectObjectivesForm,
-      location: stepForms[4].stepValues as IProjectLocationForm,
-      species: stepForms[5].stepValues as IProjectSpeciesForm,
-      iucn: stepForms[6].stepValues as IProjectIUCNForm,
-      funding: stepForms[7].stepValues as IProjectFundingForm,
-      partnerships: stepForms[8].stepValues as IProjectPartnershipsForm
-    };
-  };
-
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
     try {
       let response;
 
+      // Get the form data for all steps
+      // Fetch the data from the formikRef for whichever step is the active step
+      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepValues
+      const draftFormData = {
+        coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepValues,
+        permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepValues,
+        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepValues,
+        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepValues,
+        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepValues,
+        species: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepValues,
+        iucn: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepValues,
+        funding: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepValues,
+        partnerships: (activeStep === 8 && formikRef?.current?.values) || stepForms[8].stepValues
+      };
+
       if (draft?.id) {
-        response = await biohubApi.draft.updateDraft(draft.id, values.draft_name, getProjectFormData());
+        response = await biohubApi.draft.updateDraft(draft.id, values.draft_name, draftFormData);
       } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, getProjectFormData());
+        response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
       }
 
       setOpenDraftDialog(false);
@@ -384,15 +378,23 @@ const CreateProjectPage: React.FC = () => {
    */
   const handleSubmit = async () => {
     try {
-      const formData = getProjectFormData();
-
-      if (!isSamplingConducted(formData.permit)) {
+      if (!isSamplingConducted(stepForms[1].stepValues)) {
         await createPermitNoSampling({
-          coordinator: formData.coordinator,
-          permit: formData.permit
+          coordinator: stepForms[0].stepValues,
+          permit: stepForms[1].stepValues
         });
       } else {
-        await createProject(formData);
+        await createProject({
+          coordinator: stepForms[0].stepValues,
+          permit: stepForms[1].stepValues,
+          project: stepForms[2].stepValues,
+          objectives: stepForms[3].stepValues,
+          location: stepForms[4].stepValues,
+          species: stepForms[5].stepValues,
+          iucn: stepForms[6].stepValues,
+          funding: stepForms[7].stepValues,
+          partnerships: stepForms[8].stepValues
+        });
       }
     } catch (error) {
       const apiError = error as APIError;
@@ -483,6 +485,7 @@ const CreateProjectPage: React.FC = () => {
           <StepContent>
             <Box my={3}>
               <Formik
+                innerRef={formikRef}
                 initialValues={stepForms[index].stepValues}
                 validationSchema={stepForms[index].stepValidation}
                 validateOnBlur={true}
