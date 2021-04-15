@@ -58,6 +58,7 @@ import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useEffect, useRef, useState } from 'react';
@@ -121,9 +122,12 @@ const CreateProjectPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
+  const queryParams = useQuery();
+
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
@@ -160,6 +164,38 @@ const CreateProjectPage: React.FC = () => {
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
 
   const [draft, setDraft] = useState({ id: 0, date: '' });
+  const [initialProjectFieldData, setInitialProjectFieldData] = useState<ICreateProjectRequest>({
+    coordinator: ProjectCoordinatorInitialValues,
+    permit: ProjectPermitFormInitialValues,
+    project: ProjectDetailsFormInitialValues,
+    objectives: ProjectObjectivesFormInitialValues,
+    species: ProjectSpeciesFormInitialValues,
+    location: ProjectLocationFormInitialValues,
+    iucn: ProjectIUCNFormInitialValues,
+    funding: ProjectFundingFormInitialValues,
+    partnerships: ProjectPartnershipsFormInitialValues
+  });
+
+  // Get draft project fields if draft id exists
+  useEffect(() => {
+    const getDraftProjectFields = async () => {
+      const response = await biohubApi.draft.getDraft(queryParams.draftId);
+
+      setHasLoadedDraftData(true);
+
+      if (!response || !response.data) {
+        return;
+      }
+
+      setInitialProjectFieldData(response.data);
+    };
+
+    if (!queryParams.draftId) {
+      return;
+    }
+
+    getDraftProjectFields();
+  }, [useBiohubApi]);
 
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
@@ -185,7 +221,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Initialize the forms for each step of the workflow
   useEffect(() => {
-    if (!codes) {
+    if (!codes || !hasLoadedDraftData) {
       return;
     }
 
@@ -198,7 +234,7 @@ const CreateProjectPage: React.FC = () => {
         stepTitle: 'Project Coordinator',
         stepSubTitle: 'Enter contact details for the project coordinator',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
-        stepValues: ProjectCoordinatorInitialValues,
+        stepValues: initialProjectFieldData.coordinator,
         stepValidation: ProjectCoordinatorYupSchema
       },
       {
@@ -215,60 +251,60 @@ const CreateProjectPage: React.FC = () => {
             }}
           />
         ),
-        stepValues: ProjectPermitFormInitialValues,
+        stepValues: initialProjectFieldData.permit,
         stepValidation: ProjectPermitFormYupSchema
       },
       {
         stepTitle: 'General Information',
         stepSubTitle: 'General information and details about this project',
         stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
-        stepValues: ProjectDetailsFormInitialValues,
+        stepValues: initialProjectFieldData.project,
         stepValidation: ProjectDetailsFormYupSchema
       },
       {
         stepTitle: 'Objectives',
         stepSubTitle: 'Enter the objectives and potential caveats for this project',
         stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
-        stepValues: ProjectObjectivesFormInitialValues,
+        stepValues: initialProjectFieldData.objectives,
         stepValidation: ProjectObjectivesFormYupSchema
       },
       {
         stepTitle: 'Location',
         stepSubTitle: 'Specify project regions and boundary information',
         stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
-        stepValues: ProjectLocationFormInitialValues,
+        stepValues: initialProjectFieldData.location,
         stepValidation: ProjectLocationFormYupSchema
       },
       {
         stepTitle: 'Species',
         stepSubTitle: 'Information about species this project is inventorying or monitoring',
         stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
-        stepValues: ProjectSpeciesFormInitialValues,
+        stepValues: initialProjectFieldData.species,
         stepValidation: ProjectSpeciesFormYupSchema
       },
       {
         stepTitle: 'IUCN Classification',
         stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
         stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
-        stepValues: ProjectIUCNFormInitialValues,
+        stepValues: initialProjectFieldData.iucn,
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding',
         stepSubTitle: 'Specify funding sources for the project',
         stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
-        stepValues: ProjectFundingFormInitialValues,
+        stepValues: initialProjectFieldData.funding,
         stepValidation: ProjectFundingFormYupSchema
       },
       {
         stepTitle: 'Partnerships',
         stepSubTitle: 'Specify partnerships for the project',
         stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
-        stepValues: ProjectPartnershipsFormInitialValues,
+        stepValues: initialProjectFieldData.partnerships,
         stepValidation: ProjectPartnershipsFormYupSchema
       }
     ]);
-  }, [codes, stepForms]);
+  }, [codes, stepForms, initialProjectFieldData]);
 
   /**
    * Return true if the user has indicated that sampling has been conducted.
@@ -345,8 +381,10 @@ const CreateProjectPage: React.FC = () => {
         partnerships: (activeStep === 8 && formikRef?.current?.values) || stepForms[8].stepValues
       };
 
-      if (draft?.id) {
-        response = await biohubApi.draft.updateDraft(draft.id, values.draft_name, draftFormData);
+      const draftId = Number(queryParams.draftId) || draft?.id;
+
+      if (draftId) {
+        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
       } else {
         response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
       }

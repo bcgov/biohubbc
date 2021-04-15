@@ -34,7 +34,12 @@ const ProjectsListPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const navigateToCreateProjectPage = () => {
+  const navigateToCreateProjectPage = (draftId?: number) => {
+    if (draftId) {
+      history.push(`/projects/create?draftId=${draftId}`);
+      return;
+    }
+
     history.push('/projects/create');
   };
 
@@ -80,7 +85,7 @@ const ProjectsListPage: React.FC = () => {
         <Container maxWidth="xl">
           <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
             <Typography variant="h1">Projects</Typography>
-            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateProjectPage()}>
               Create Project
             </Button>
           </Box>
@@ -105,7 +110,7 @@ const ProjectsListPage: React.FC = () => {
         <Container maxWidth="xl">
           <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
             <Typography variant="h1">Projects</Typography>
-            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateProjectPage()}>
               Create Project
             </Button>
           </Box>
@@ -122,7 +127,7 @@ const ProjectsListPage: React.FC = () => {
               </TableHead>
               <TableBody data-testid="project-table">
                 {drafts?.map((row) => (
-                  <TableRow data-testid={row.name} key={row.id}>
+                  <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToCreateProjectPage(row.id)}>
                     <TableCell>{row.name} (Draft)</TableCell>
                     <TableCell />
                     <TableCell />

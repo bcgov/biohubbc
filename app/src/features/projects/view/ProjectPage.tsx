@@ -39,8 +39,6 @@ const useStyles = makeStyles((theme) => ({
 /**
  * Page to display a single Project.
  *
- * // TODO WIP
- *
  * @return {*}
  */
 const ProjectPage: React.FC = () => {
