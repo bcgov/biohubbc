@@ -215,6 +215,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                   </Button>
                   <Button
                     className="trashButtonSmall"
+                    data-testid="delete-funding-source"
                     onClick={() => handleDeleteDialogOpen(index)}
                     title="Delete Funding Source"
                     aria-label="Delete Funding Source"

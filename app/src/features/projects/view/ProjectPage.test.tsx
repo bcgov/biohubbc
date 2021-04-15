@@ -68,6 +68,34 @@ describe('ProjectPage', () => {
     });
   });
 
+  it('renders correctly with no end date', async () => {
+    await act(async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue({
+        ...getProjectForViewResponse,
+        project: {
+          ...getProjectForViewResponse.project,
+          end_date: (null as unknown) as string
+        }
+      });
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        activity: [{ id: 1, name: 'activity 1' }],
+        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+      } as any);
+
+      const { asFragment, findByText } = render(
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      );
+
+      const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+      expect(projectHeaderText).toBeVisible();
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
   it('shows the project details when pathname includes /details', async () => {
     await act(async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);

@@ -10,8 +10,9 @@ const mockRefresh = jest.fn();
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForUpdate: jest.fn<Promise<object>, []>(),
-    updateProject: jest.fn()
+    updateProject: jest.fn(),
+    addFundingSource: jest.fn(),
+    deleteFundingSource: jest.fn()
   }
 };
 
@@ -22,8 +23,9 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 describe('FundingSource', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
     mockBiohubApi().project.updateProject.mockClear();
+    mockBiohubApi().project.addFundingSource.mockClear();
+    mockBiohubApi().project.deleteFundingSource.mockClear();
   });
 
   afterEach(() => {
@@ -38,8 +40,8 @@ describe('FundingSource', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('opens the edit funding source dialog box when edit button is clicked, cancel and save buttons are pressed', async () => {
-    const { asFragment, getByText, queryByText } = render(
+  it('opens the edit funding source dialog box when edit button is clicked, and cancel button works as expected', async () => {
+    const { getByText, queryByText } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -49,8 +51,6 @@ describe('FundingSource', () => {
 
     fireEvent.click(getByText('EDIT'));
 
-    expect(asFragment()).toMatchSnapshot();
-
     await waitFor(() => {
       expect(getByText('Edit Funding Source')).toBeVisible();
     });
@@ -58,23 +58,53 @@ describe('FundingSource', () => {
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Cancel')).not.toBeInTheDocument();
+      expect(queryByText('Edit Funding Source')).not.toBeInTheDocument();
+    });
+  });
+
+  it('editing a funding source works in the dialog', async () => {
+    const { getByText } = render(
+      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
     fireEvent.click(getByText('EDIT'));
 
     await waitFor(() => {
-      expect(getByText('Save Changes')).toBeVisible();
+      expect(getByText('Agency Details')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(queryByText('Save Changes')).not.toBeInTheDocument();
+      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toBeCalledTimes(1);
     });
+  });
+
+  it('deleting a funding source works as expected', async () => {
+    const { getByText, getByTestId } = render(
+      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
 
     await waitFor(() => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('delete-funding-source'));
+
+    await waitFor(() => {
+      expect(getByText('Are you sure you want to delete?')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Yes'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.deleteFundingSource).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 });
