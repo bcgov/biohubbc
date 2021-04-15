@@ -965,6 +965,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             <button
               aria-label="Delete Funding Source"
               class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+              data-testid="delete-funding-source"
               tabindex="0"
               title="Delete Funding Source"
               type="button"
