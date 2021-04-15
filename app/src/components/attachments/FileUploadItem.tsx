@@ -102,6 +102,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
     const handleFileUploadProgress = (progressEvent: ProgressEvent) => {
       if (!isMounted()) {
+        // component is unmounted, don't perform any state changes when the upload request emits progress
         return;
       }
 
@@ -114,18 +115,20 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
     const handleFileUploadSuccess = () => {
       if (!isMounted()) {
+        // component is unmounted, don't perform any state changes when the upload request resolves
         return;
       }
 
       setStatus(UploadFileStatus.COMPLETE);
       setProgress(100);
 
+      // the upload request has finished and its safe to call the onCancel prop
       setIsSafeToCancel(true);
     };
 
     biohubApi.project
       .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => setError(error.message))
+      .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
@@ -133,13 +136,16 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   useEffect(() => {
     if (!isMounted()) {
+      // component is unmounted, don't perform any state changes when the upload request rejects
       return;
     }
 
     if (error && !initiateCancel && !isSafeToCancel) {
+      // the api request will reject if it is cancelled OR if it fails, so only conditionally treat the upload as a failure
       handleFileUploadError();
     }
 
+    // the upload request has finished (either from failing or cancelling) and its safe to call the onCancel prop
     setIsSafeToCancel(true);
   }, [error, initiateCancel, isSafeToCancel, isMounted, handleFileUploadError]);
 
@@ -224,14 +230,14 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
   if (props.status === UploadFileStatus.FAILED) {
     return (
       <Box width="4rem" display="flex" justifyContent="flex-end" alignContent="center">
-        <IconButton title="Clear File" aria-label="clear file" onClick={() => props.onCancel()}>
+        <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
           <Icon path={mdiWindowClose} className={classes.errorIcon} size={1} />
         </IconButton>
       </Box>
     );
   }
 
-  // status is Finishing Upload, show no action button
+  // status is FINISHING_UPLOAD, show no action button
   return <Box width="4rem" />;
 };
 
@@ -284,7 +290,7 @@ const ProgressBar: React.FC<IProgressBarProps> = (props) => {
     );
   }
 
-  // status is pending or uploading
+  // status is PENDING or UPLOADING
   return (
     <LinearProgress
       variant="determinate"
