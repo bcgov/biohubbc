@@ -1,4 +1,9 @@
-import { Box, Divider, makeStyles, Paper, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
@@ -17,7 +22,7 @@ export interface IProjectDetailsProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   projectDetailsSection: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5),

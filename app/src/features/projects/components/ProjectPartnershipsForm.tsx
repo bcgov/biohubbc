@@ -1,4 +1,4 @@
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';

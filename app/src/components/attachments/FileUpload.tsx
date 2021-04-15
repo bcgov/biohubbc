@@ -1,4 +1,11 @@
-import { Box, IconButton, LinearProgress, List, ListItem, makeStyles, Theme, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiCheck, mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';

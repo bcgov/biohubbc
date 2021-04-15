@@ -1,7 +1,7 @@
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import { useFormikContext } from 'formik';
 import React from 'react';
 import NumberFormat from 'react-number-format';
-import { useFormikContext } from 'formik';
 
 export interface IDollarAmountFieldProps {
   required?: boolean;

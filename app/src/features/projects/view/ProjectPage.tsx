@@ -1,30 +1,29 @@
-import {
-  Box,
-  CircularProgress,
-  Container,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Paper,
-  Typography
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import ProjectSurveys from 'features/projects/view/ProjectSurveys';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import Icon from '@mdi/react';
-import { mdiPaperclip, mdiClipboardCheckMultipleOutline, mdiInformationOutline } from '@mdi/js';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
     minWidth: '15rem',
     '& a': {

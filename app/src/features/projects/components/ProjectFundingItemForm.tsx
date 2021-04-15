@@ -1,22 +1,20 @@
-import {
-  Box,
-  Divider,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import DollarAmountField from 'components/fields/DollarAmountField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import { IInvestmentActionCategoryOption } from './ProjectFundingForm';
-import DollarAmountField from 'components/fields/DollarAmountField';
 
 export interface IProjectFundingFormArrayItem {
   id: number;

@@ -1,4 +1,9 @@
-import { Box, Button, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
@@ -19,8 +24,6 @@ import {
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;

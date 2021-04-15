@@ -1,4 +1,5 @@
-import { Grid, TextField } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import { DATE_LIMIT } from 'constants/dateFormats';
 import React from 'react';
 

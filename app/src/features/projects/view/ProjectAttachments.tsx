@@ -1,13 +1,15 @@
-import { Box, Button, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import AttachmentsList from 'components/attachments/AttachmentsList';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import { IGetProjectForViewResponse, IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router';
-import AttachmentsList from 'components/attachments/AttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;

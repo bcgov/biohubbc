@@ -1,5 +1,7 @@
-import { Checkbox, TextField } from '@material-ui/core';
-import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
+import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@material-ui/core/TextField';
+import CheckBox from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
 import React from 'react';
