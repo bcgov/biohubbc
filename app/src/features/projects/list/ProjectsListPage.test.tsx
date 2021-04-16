@@ -96,38 +96,9 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('navigating to the create project page works (without projects)', async () => {
+  test('navigating to the create project page works', async () => {
     await act(async () => {
       mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
-
-      const { getByText } = render(
-        <Router history={history}>
-          <ProjectsListPage />
-        </Router>
-      );
-
-      fireEvent.click(getByText('Create Project'));
-
-      await waitFor(() => {
-        expect(history.location.pathname).toEqual('/projects/create');
-        expect(history.location.search).toEqual('');
-      });
-    });
-  });
-
-  test('navigating to the create project page works (with projects)', async () => {
-    await act(async () => {
-      mockBiohubApi().project.getProjectsList.mockResolvedValue([
-        {
-          id: 1,
-          name: 'Project 1',
-          focal_species_name_list: null,
-          location_description: 'location',
-          regions_name_list: 'South Coast',
-          start_date: null,
-          end_date: null
-        }
-      ]);
 
       const { getByText } = render(
         <Router history={history}>
