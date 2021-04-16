@@ -271,7 +271,7 @@ describe('CreateProjectPage', () => {
 
       render(
         <MemoryRouter initialEntries={['?draftId=1']}>
-          <CreateProjectPage />,
+          <CreateProjectPage />
         </MemoryRouter>
       );
 
