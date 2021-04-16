@@ -417,10 +417,14 @@ const CreateProjectPage: React.FC = () => {
 
     try {
       if (!isFullProject) {
-        await createPermitNoSampling({
+        const response = await createPermitNoSampling({
           coordinator: stepForms[0].stepValues,
           permit: stepForms[1].stepValues
         });
+
+        if (!response) {
+          return;
+        }
 
         // when project has been created, if a draft is still associated to the project, delete it
         if (draftId) {
@@ -492,7 +496,10 @@ const CreateProjectPage: React.FC = () => {
 
     if (!response?.ids?.length) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
+      return;
     }
+
+    return response;
   };
 
   /**
