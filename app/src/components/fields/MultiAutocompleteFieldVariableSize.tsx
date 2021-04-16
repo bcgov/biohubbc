@@ -1,8 +1,10 @@
-import { Checkbox, TextField } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import { makeStyles } from '@material-ui/core/styles';
-import { CheckBox, CheckBoxOutlineBlank } from '@material-ui/icons';
+import TextField from '@material-ui/core/TextField';
+import CheckBox from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';

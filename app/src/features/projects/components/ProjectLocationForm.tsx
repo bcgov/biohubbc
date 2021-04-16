@@ -1,17 +1,21 @@
-import { Grid, TextField, Box, Typography, Button } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+//@ts-ignore
+import { kml } from '@tmcw/togeojson';
+import bbox from '@turf/bbox';
 import {
   default as MultiAutocompleteFieldVariableSize,
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { useFormikContext } from 'formik';
-import { makeStyles } from '@material-ui/core/styles';
-import React, { useState, useEffect } from 'react';
-import yup from 'utils/YupSchema';
-//@ts-ignore
-import { kml } from '@tmcw/togeojson';
-import bbox from '@turf/bbox';
 import MapContainer from 'components/map/MapContainer';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
+import React, { useEffect, useState } from 'react';
+import yup from 'utils/YupSchema';
 import { v4 as uuidv4 } from 'uuid';
 
 const useStyles = makeStyles({

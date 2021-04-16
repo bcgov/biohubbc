@@ -1,21 +1,26 @@
-import { Box, Button, Divider, makeStyles, Typography } from '@material-ui/core';
-import React, { useState } from 'react';
-import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { EditIUCNI18N } from 'constants/i18n';
 import {
   IProjectIUCNForm,
-  ProjectIUCNFormYupSchema,
   ProjectIUCNFormArrayItemInitialValues,
-  ProjectIUCNFormInitialValues
+  ProjectIUCNFormInitialValues,
+  ProjectIUCNFormYupSchema
 } from 'features/projects/components/ProjectIUCNForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { EditIUCNI18N } from 'constants/i18n';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import React, { useState } from 'react';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -23,7 +28,7 @@ export interface IIUCNClassificationProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   iucnListItem: {
     '& hr': {
       marginBottom: theme.spacing(2)

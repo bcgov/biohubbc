@@ -1,9 +1,13 @@
-import { AppBar, Box, Container, makeStyles, Theme, Toolbar } from '@material-ui/core';
-import React from 'react';
-import { Link } from 'react-router-dom';
-
+import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Toolbar from '@material-ui/core/Toolbar';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {

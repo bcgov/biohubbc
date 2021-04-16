@@ -1,20 +1,19 @@
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  CircularProgress,
-  Container,
-  Divider,
-  Link,
-  makeStyles,
-  Paper,
-  Step,
-  StepContent,
-  StepLabel,
-  Stepper,
-  Typography
-} from '@material-ui/core';
-import { ArrowBack } from '@material-ui/icons';
+import Box from '@material-ui/core/Box';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
+import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
+import Step from '@material-ui/core/Step';
+import StepContent from '@material-ui/core/StepContent';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Typography from '@material-ui/core/Typography';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -80,7 +79,7 @@ export interface ICreateProjectStep {
   stepValidation?: any;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {

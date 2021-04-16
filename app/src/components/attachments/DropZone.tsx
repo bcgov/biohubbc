@@ -1,4 +1,7 @@
-import { Box, Link, makeStyles, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';

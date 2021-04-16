@@ -1,4 +1,5 @@
-import { Container, Grid } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { Link } from 'react-router-dom';
 

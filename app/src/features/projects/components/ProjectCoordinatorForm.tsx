@@ -1,16 +1,15 @@
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  FormLabel,
-  Grid,
-  makeStyles,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -48,7 +47,7 @@ export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   legend: {
     marginTop: '1rem',
     float: 'left',

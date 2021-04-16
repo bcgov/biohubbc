@@ -1,4 +1,4 @@
-import { CircularProgress } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React from 'react';
 import PublicLayout from './PublicLayout';

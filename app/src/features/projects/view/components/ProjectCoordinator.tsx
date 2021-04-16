@@ -1,4 +1,9 @@
-import { Box, Button, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { mdiPencilOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditCoordinatorI18N } from 'constants/i18n';
@@ -17,8 +22,6 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import Icon from '@mdi/react';
-import { mdiPencilOutline } from '@mdi/js';
 
 export interface IProjectCoordinatorProps {
   projectForViewData: IGetProjectForViewResponse;
