@@ -492,7 +492,6 @@ const CreateProjectPage: React.FC = () => {
 
     if (!response?.ids?.length) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
-      return;
     }
   };
 
