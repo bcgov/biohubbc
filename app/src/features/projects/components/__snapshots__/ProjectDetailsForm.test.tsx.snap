@@ -339,7 +339,6 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="start-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -361,6 +360,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -389,7 +389,6 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="end-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
@@ -405,6 +404,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -858,7 +858,6 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="start-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -880,6 +879,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -908,7 +908,6 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="end-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -924,6 +923,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
                 min="1900-01-01"

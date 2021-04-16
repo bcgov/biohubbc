@@ -39,7 +39,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -55,6 +54,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="agency-id"
                 name="agency_id"
                 required=""
                 tabindex="-1"
@@ -110,7 +110,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              test-dataid="investment_action_category"
             >
               <div
                 aria-haspopup="listbox"
@@ -126,6 +125,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="investment_action_category"
                 name="investment_action_category"
                 required=""
                 tabindex="-1"
@@ -238,6 +238,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="funding_amount"
                 id="funding_amount"
                 inputmode="numeric"
                 name="funding_amount"
@@ -268,7 +269,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -290,6 +290,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
                   id="start_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -318,7 +319,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -340,6 +340,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
                   id="end_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -416,7 +417,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -432,6 +432,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="agency-id"
                 name="agency_id"
                 required=""
                 tabindex="-1"
@@ -487,7 +488,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              test-dataid="investment_action_category"
             >
               <div
                 aria-haspopup="listbox"
@@ -503,6 +503,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="investment_action_category"
                 name="investment_action_category"
                 required=""
                 tabindex="-1"
@@ -615,6 +616,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="funding_amount"
                 id="funding_amount"
                 inputmode="numeric"
                 name="funding_amount"
@@ -645,7 +647,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -667,6 +668,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
                   id="start_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -695,7 +697,6 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -717,6 +718,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
                   id="end_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -793,7 +795,6 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -809,6 +810,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="agency-id"
                 name="agency_id"
                 required=""
                 tabindex="-1"
@@ -921,6 +923,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="funding_amount"
                 id="funding_amount"
                 inputmode="numeric"
                 name="funding_amount"
@@ -951,7 +954,6 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -973,6 +975,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
                   id="start_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -1001,7 +1004,6 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1023,6 +1025,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
                   id="end_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -1099,7 +1102,6 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              data-testid="agency-id"
             >
               <div
                 aria-haspopup="listbox"
@@ -1117,6 +1119,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
               <input
                 aria-hidden="true"
                 class="MuiSelect-nativeInput"
+                data-testid="agency-id"
                 name="agency_id"
                 required=""
                 tabindex="-1"
@@ -1229,6 +1232,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="funding_amount"
                 id="funding_amount"
                 inputmode="numeric"
                 name="funding_amount"
@@ -1259,7 +1263,6 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="start-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -1281,6 +1284,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="start-date"
                   id="start_date"
                   max="2100-12-31"
                   min="1900-01-01"
@@ -1309,7 +1313,6 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
           >
             <div
               class="MuiFormControl-root MuiTextField-root"
-              data-testid="end-date"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -1331,6 +1334,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
                 <input
                   aria-invalid="false"
                   class="MuiInputBase-input MuiOutlinedInput-input"
+                  data-testid="end-date"
                   id="end_date"
                   max="2100-12-31"
                   min="1900-01-01"
