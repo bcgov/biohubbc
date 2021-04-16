@@ -189,7 +189,7 @@ const CreateProjectPage: React.FC = () => {
       setInitialProjectFieldData(response.data);
     };
 
-    if (!queryParams.draftId) {
+    if (hasLoadedDraftData) {
       return;
     }
 
@@ -202,9 +202,7 @@ const CreateProjectPage: React.FC = () => {
     const getAllCodeSets = async () => {
       const response = await biohubApi.codes.getAllCodeSets();
 
-      if (!response) {
-        // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
-      }
+      // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
 
       setCodes(() => {
         setIsLoadingCodes(false);
@@ -419,32 +417,52 @@ const CreateProjectPage: React.FC = () => {
 
     try {
       if (!isFullProject) {
-        await createPermitNoSampling(
-          {
-            coordinator: stepForms[0].stepValues,
-            permit: stepForms[1].stepValues
-          },
-          draftId
-        );
+        await createPermitNoSampling({
+          coordinator: stepForms[0].stepValues,
+          permit: stepForms[1].stepValues
+        });
+
+        // when project has been created, if a draft is still associated to the project, delete it
+        if (draftId) {
+          await deleteDraft(draftId);
+        }
+
+        setEnableCancelCheck(false);
+
+        history.push(`/projects`);
       } else {
-        await createProject(
-          {
-            coordinator: stepForms[0].stepValues,
-            permit: stepForms[1].stepValues,
-            project: stepForms[2].stepValues,
-            objectives: stepForms[3].stepValues,
-            location: stepForms[4].stepValues,
-            species: stepForms[5].stepValues,
-            iucn: stepForms[6].stepValues,
-            funding: stepForms[7].stepValues,
-            partnerships: stepForms[8].stepValues
-          },
-          draftId
-        );
+        const response = await createProject({
+          coordinator: stepForms[0].stepValues,
+          permit: stepForms[1].stepValues,
+          project: stepForms[2].stepValues,
+          objectives: stepForms[3].stepValues,
+          location: stepForms[4].stepValues,
+          species: stepForms[5].stepValues,
+          iucn: stepForms[6].stepValues,
+          funding: stepForms[7].stepValues,
+          partnerships: stepForms[8].stepValues
+        });
+
+        if (!response) {
+          return;
+        }
+
+        // when project has been created, if a draft is still associated to the project, delete it
+        if (draftId) {
+          await deleteDraft(draftId);
+        }
+
+        setEnableCancelCheck(false);
+
+        history.push(`/projects/${response.id}`);
       }
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
+      showCreateErrorDialog({
+        dialogTitle: 'Error Creating Project',
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
     }
   };
 
@@ -456,12 +474,10 @@ const CreateProjectPage: React.FC = () => {
    * @returns {*}
    */
   const deleteDraft = async (draftId: number) => {
-    const response = await biohubApi.draft.deleteDraft(draftId);
-
-    if (!response) {
-      showCreateErrorDialog({
-        dialogError: 'Your project was created successfully, but your old draft was not deleted successfully.'
-      });
+    try {
+      await biohubApi.draft.deleteDraft(draftId);
+    } catch (error) {
+      return error;
     }
   };
 
@@ -471,27 +487,13 @@ const CreateProjectPage: React.FC = () => {
    * @param {ICreatePermitNoSamplingRequest} projectNoSamplingPostObject
    * @return {*}
    */
-  const createPermitNoSampling = async (
-    projectNoSamplingPostObject: ICreatePermitNoSamplingRequest,
-    draftId: number
-  ) => {
+  const createPermitNoSampling = async (projectNoSamplingPostObject: ICreatePermitNoSamplingRequest) => {
     const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
 
     if (!response?.ids?.length) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
       return;
     }
-
-    // when project has been created, if a draft is still associated to the project, delete it
-    if (!draftId) {
-      return;
-    }
-
-    await deleteDraft(draftId);
-
-    setEnableCancelCheck(false);
-
-    history.push(`/projects`);
   };
 
   /**
@@ -500,7 +502,7 @@ const CreateProjectPage: React.FC = () => {
    * @param {ICreateProjectRequest} projectPostObject
    * @return {*}
    */
-  const createProject = async (projectPostObject: ICreateProjectRequest, draftId: number) => {
+  const createProject = async (projectPostObject: ICreateProjectRequest) => {
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
@@ -508,16 +510,7 @@ const CreateProjectPage: React.FC = () => {
       return;
     }
 
-    // when project has been created, if a draft is still associated to the project, delete it
-    if (!draftId) {
-      return;
-    }
-
-    await deleteDraft(draftId);
-
-    setEnableCancelCheck(false);
-
-    history.push(`/projects/${response.id}`);
+    return response;
   };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
