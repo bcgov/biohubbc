@@ -131,10 +131,12 @@ describe('FundingSource', () => {
       expect(getByText('Agency Details')).toBeInTheDocument();
     });
 
+    /*
+      Triggering onChange on Material UI Select elements
+      https://stackoverflow.com/questions/55184037/react-testing-library-on-change-for-material-ui-select-component
+    */
     fireEvent.mouseDown(getAllByRole('button')[0]);
-
     const agencyNameListbox = within(getByRole('listbox'));
-
     fireEvent.click(agencyNameListbox.getByText(/Funding source code/i));
 
     await waitFor(() => {
