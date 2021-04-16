@@ -22,7 +22,7 @@ const AppRouter: React.FC = () => {
         component={AccessDenied}
         layout={PublicLayout}></AppRoute>
 
-<AppRoute
+      <AppRoute
         path="/access-request"
         title={getTitle('Access Request')}
         component={AccessRequestPage}
@@ -38,6 +38,7 @@ const AppRouter: React.FC = () => {
         component={ProjectsRouter}
         layout={AuthLayout}
         title={getTitle('Projects')}
+        //validRoles={['something']}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>

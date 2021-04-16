@@ -1,8 +1,9 @@
 import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+import { Route, RouteProps, Redirect } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
+  validRoles?: string[];
   component: React.ComponentType<any>;
   layout: React.ComponentType<any>;
   componentProps?: any;
@@ -15,13 +16,18 @@ interface IPrivateRouteProps extends RouteProps {
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
   const keycloakWrapper = useKeycloakWrapper();
 
-  let { component: Component, layout: Layout, ...rest } = props;
+  let { validRoles, component: Component, layout: Layout, ...rest } = props;
 
   return (
     <Route
       {...rest}
+
       render={(props) => {
+
         if (!!keycloakWrapper.keycloak?.authenticated) {
+          if (validRoles) {
+            return <Redirect to="/access-request" />
+          }
           return (
             <Layout>
               <Component {...props} {...rest.componentProps} />

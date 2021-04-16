@@ -7,6 +7,7 @@ export type IAppRouteProps = RouteProps & {
   layout?: React.ComponentType<any>;
   protected?: boolean;
   title: string;
+  validRoles?: string[];
 };
 
 const AppRoute: React.FC<IAppRouteProps> = ({
@@ -14,6 +15,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   layout,
   protected: usePrivateRoute,
   title,
+  validRoles,
   ...rest
 }) => {
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
@@ -21,7 +23,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   document.title = title;
 
   if (!!usePrivateRoute) {
-    return <PrivateRoute {...rest} component={Component} layout={Layout} />;
+    return <PrivateRoute {...rest} validRoles={validRoles} component={Component} layout={Layout} />;
   }
 
   return (
