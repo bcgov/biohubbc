@@ -5,13 +5,13 @@
 do $$
 declare
   __count integer = 0;
-begin  
+begin
   set role postgres;
   set search_path=biohub;
 
   delete from system_user where user_identifier = 'myIDIR';
 
-  insert into system_user (uis_id, user_identifier, record_effective_date, create_date, create_user) select id, 'myIDIR', now(), now(), 1 from user_identity_source where name = 'IDIR' and record_end_date is null;
+  insert into system_user (uis_id, user_identifier, record_effective_date) values ((select id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now());
 
   select count(1) into __count from system_user;
   assert __count > 1, 'FAIL system_user';
@@ -33,7 +33,8 @@ begin
   set search_path to biohub_dapi_v1, biohub, public, topology;
 
   -- set security context
-  select api_set_context('myIDIR', null) into __system_user_id;
+  select api_set_context('myIDIR', 'IDIR') into __system_user_id;
+  --select api_set_context('biohub_api', 'DATABASE') into __system_user_id;
 
   -- test project data
   -- delete all project data
@@ -126,7 +127,7 @@ begin
     , aat_id
     , aast_id
     , description
-    , data) 
+    , data)
     values (__system_user_id
     , (select id from administrative_activity_type where name = 'System Access')
     , (select id from administrative_activity_status_type where name = 'Pending')

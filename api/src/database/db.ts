@@ -1,8 +1,8 @@
 import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
-import { SYSTEM_USER_TYPE } from '../constants/database';
-import { setSystemUserContextSQL } from '../queries/user-context-queries';
-import { getLogger } from '../utils/logger';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
+import { setSystemUserContextSQL } from '../queries/user-context-queries';
+import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
+import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('database/db');
 
@@ -204,19 +204,15 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Sets the _systemUserId if successful.
    */
   const _setUserContext = async () => {
-    // Strip the `@<alias>` from the end of the username, which is added in keycloak to IDIR and BCeID usernames
-    const idir = _token?.['preferred_username']?.split('@')[0];
-    const bceid = _token?.['preferred_username']?.split('@')[0];
+    const userIdentifier = getUserIdentifier(_token);
+    const userIdentitySource = getUserIdentitySource(_token);
 
-    if (!idir && !bceid) {
-      throw new HTTP400('Failed to identify user ID');
+    if (!userIdentifier || !userIdentitySource) {
+      throw new HTTP400('Failed to identify authenticated user');
     }
 
-    const userIdentifier = idir || bceid;
-    const systemUserType = (idir && SYSTEM_USER_TYPE.IDIR) || (bceid && SYSTEM_USER_TYPE.BCEID) || null;
-
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = setSystemUserContextSQL(userIdentifier, systemUserType);
+    const setSystemUserContextSQLStatement = setSystemUserContextSQL(userIdentifier, userIdentitySource);
 
     if (!setSystemUserContextSQLStatement) {
       throw new HTTP400('Failed to build SQL user context statement');
@@ -242,4 +238,17 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     rollback: _rollback,
     systemUserId: _getSystemUserID
   };
+};
+
+/**
+ * Returns an IDBConnection where the system user context is set to the API's system user.
+ *
+ * Note: Use of this should be limited to requests that are impossible to initiated under a real user context (ie: when
+ * an unknown user is requesting access to BioHub and therefore does not yet have a user in the system).
+ *
+ * @return {*}  {IDBConnection}
+ */
+// TODO currently this sets the API's user source to IDIR, as only IDIR or BCEID are supported currently
+export const getAPIUserDBConnection = (): IDBConnection => {
+  return getDBConnection({ preferred_username: 'postgres@database' });
 };

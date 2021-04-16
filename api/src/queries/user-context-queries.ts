@@ -1,12 +1,12 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { SYSTEM_USER_TYPE } from '../constants/database';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('queries/template-queries');
+const defaultLog = getLogger('queries/user-context-queries');
 
 export const setSystemUserContextSQL = (
   userIdentifier: string,
-  systemUserType: SYSTEM_USER_TYPE
+  systemUserType: SYSTEM_IDENTITY_SOURCE
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'setSystemUserContextSQL', message: 'params', userIdentifier, systemUserType });
 
@@ -14,13 +14,7 @@ export const setSystemUserContextSQL = (
     return null;
   }
 
-  let sqlStatement;
-
-  if (systemUserType === SYSTEM_USER_TYPE.IDIR) {
-    sqlStatement = SQL`select api_set_context(${userIdentifier}, null);`;
-  } else {
-    sqlStatement = SQL`select api_set_context(null, ${userIdentifier});`;
-  }
+  const sqlStatement = SQL`select api_set_context(${userIdentifier}, ${systemUserType});`;
 
   defaultLog.debug({
     label: 'postTemplateSQL',
