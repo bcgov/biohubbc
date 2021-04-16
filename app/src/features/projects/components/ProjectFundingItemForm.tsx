@@ -95,7 +95,6 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
               <Select
                 id="agency_id"
                 name="agency_id"
-                data-testid="agency-id"
                 labelId="agency_id-label"
                 label="Agency Name"
                 value={values.agency_id}
@@ -118,7 +117,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 }}
                 error={touched.agency_id && Boolean(errors.agency_id)}
                 displayEmpty
-                inputProps={{ 'aria-label': 'Agency Name' }}>
+                inputProps={{ 'aria-label': 'Agency Name', 'data-testid': 'agency-id' }}>
                 {props.funding_sources.map((item) => (
                   <MenuItem key={item.value} value={item.value}>
                     {item.label}
@@ -135,14 +134,16 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
                 <Select
                   id="investment_action_category"
                   name="investment_action_category"
-                  test-dataid="investment_action_category"
                   labelId="investment_action_category-label"
                   label={investment_action_category_label}
                   value={values.investment_action_category}
                   onChange={handleChange}
                   error={touched.investment_action_category && Boolean(errors.investment_action_category)}
                   displayEmpty
-                  inputProps={{ 'aria-label': `${investment_action_category_label}` }}>
+                  inputProps={{
+                    'aria-label': `${investment_action_category_label}`,
+                    'data-testid': 'investment_action_category'
+                  }}>
                   {props.investment_action_category
                     // Only show the investment action categories whose fs_id matches the agency_id id
                     .filter((item) => item.fs_id === values.agency_id)
@@ -176,13 +177,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
         <FormLabel component="legend">Funding Details</FormLabel>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            <DollarAmountField
-              test-dataid="funding-amount"
-              required={true}
-              id="funding_amount"
-              name="funding_amount"
-              label="Funding Amount"
-            />
+            <DollarAmountField required={true} id="funding_amount" name="funding_amount" label="Funding Amount" />
           </Grid>
           <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />
         </Grid>

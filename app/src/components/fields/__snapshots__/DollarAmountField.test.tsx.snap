@@ -26,6 +26,7 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
         aria-describedby="id-helper-text"
         aria-invalid="true"
         class="MuiInputBase-input MuiOutlinedInput-input"
+        data-testid="name"
         id="id"
         inputmode="numeric"
         name="name"
@@ -81,6 +82,7 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
       <input
         aria-invalid="false"
         class="MuiInputBase-input MuiOutlinedInput-input"
+        data-testid="name"
         id="id"
         inputmode="numeric"
         name="name"

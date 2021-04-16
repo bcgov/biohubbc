@@ -60,6 +60,7 @@ const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
       InputProps={{
         inputComponent: NumberFormatCustom as any
       }}
+      inputProps={{ 'data-testid': name }}
     />
   );
 };

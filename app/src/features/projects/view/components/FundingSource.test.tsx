@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, cleanup } from '@testing-library/react';
+import { fireEvent, render, waitFor, cleanup, within } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
@@ -30,6 +30,7 @@ describe('FundingSource', () => {
 
   afterEach(() => {
     cleanup();
+    jest.clearAllMocks();
   });
 
   it('renders correctly', () => {
@@ -62,7 +63,7 @@ describe('FundingSource', () => {
     });
   });
 
-  it('editing a funding source works in the dialog', async () => {
+  it('edits a funding source correctly in the dialog', async () => {
     const { getByText } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
@@ -85,7 +86,7 @@ describe('FundingSource', () => {
     });
   });
 
-  it('deleting a funding source works as expected', async () => {
+  it('deletes a funding source as expected', async () => {
     const { getByText, getByTestId } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
@@ -104,6 +105,55 @@ describe('FundingSource', () => {
 
     await waitFor(() => {
       expect(mockBiohubApi().project.deleteFundingSource).toHaveBeenCalledTimes(1);
+      expect(mockRefresh).toBeCalledTimes(1);
+    });
+  });
+
+  it('adds a funding source as expected', async () => {
+    const { getByText, getByTestId, getAllByRole, getByRole } = render(
+      <FundingSource
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          funding: { ...getProjectForViewResponse.funding, fundingSources: [] }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Funding Sources')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Add Funding Source'));
+
+    await waitFor(() => {
+      expect(getByText('Agency Details')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('button')[0]);
+
+    const agencyNameListbox = within(getByRole('listbox'));
+
+    fireEvent.click(agencyNameListbox.getByText(/Funding source code/i));
+
+    await waitFor(() => {
+      expect(getByTestId('investment_action_category')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('button')[1]);
+
+    const investmentActionCategoryListbox = within(getByRole('listbox'));
+
+    fireEvent.click(investmentActionCategoryListbox.getByText(/Investment action category/i));
+    fireEvent.change(getByTestId('funding_amount'), { target: { value: 100 } });
+    fireEvent.change(getByTestId('start-date'), { target: { value: '2021-03-14' } });
+    fireEvent.change(getByTestId('end-date'), { target: { value: '2021-05-14' } });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().project.addFundingSource).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
