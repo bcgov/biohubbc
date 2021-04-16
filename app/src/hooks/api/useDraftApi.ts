@@ -52,7 +52,7 @@ const useDraftApi = (axios: AxiosInstance) => {
 
   /**
    * Get details for a single draft based on its id.
-   * 
+   *
    * @return {*} {Promise<IGetDraftResponse>}
    */
   const getDraft = async (draftId: number): Promise<IGetDraftResponse> => {
@@ -61,11 +61,23 @@ const useDraftApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Delete a single draft based on its id.
+   *
+   * @return {*} {Promise<any>}
+   */
+  const deleteDraft = async (draftId: number): Promise<any> => {
+    const { data } = await axios.delete(`api/draft/${draftId}/delete`);
+
+    return data;
+  };
+
   return {
     createDraft,
     updateDraft,
     getDraftsList,
-    getDraft
+    getDraft,
+    deleteDraft
   };
 };
 

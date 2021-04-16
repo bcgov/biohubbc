@@ -1,4 +1,4 @@
-import { ICreateProjectRequest } from "./useProjectApi.interface";
+import { ICreateProjectRequest } from './useProjectApi.interface';
 
 /**
  * Create/Update draft response object.
@@ -24,7 +24,7 @@ export interface IGetDraftsListResponse {
 
 /**
  * Get single draft response object.
- * 
+ *
  * @export
  * @interface IGetDraftResponse
  */

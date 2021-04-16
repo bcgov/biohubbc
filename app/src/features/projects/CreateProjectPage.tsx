@@ -414,28 +414,55 @@ const CreateProjectPage: React.FC = () => {
    * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
+    const isFullProject = isSamplingConducted(stepForms[1].stepValues);
+    const draftId = Number(queryParams.draftId);
+
     try {
-      if (!isSamplingConducted(stepForms[1].stepValues)) {
-        await createPermitNoSampling({
-          coordinator: stepForms[0].stepValues,
-          permit: stepForms[1].stepValues
-        });
+      if (!isFullProject) {
+        await createPermitNoSampling(
+          {
+            coordinator: stepForms[0].stepValues,
+            permit: stepForms[1].stepValues
+          },
+          draftId
+        );
       } else {
-        await createProject({
-          coordinator: stepForms[0].stepValues,
-          permit: stepForms[1].stepValues,
-          project: stepForms[2].stepValues,
-          objectives: stepForms[3].stepValues,
-          location: stepForms[4].stepValues,
-          species: stepForms[5].stepValues,
-          iucn: stepForms[6].stepValues,
-          funding: stepForms[7].stepValues,
-          partnerships: stepForms[8].stepValues
-        });
+        await createProject(
+          {
+            coordinator: stepForms[0].stepValues,
+            permit: stepForms[1].stepValues,
+            project: stepForms[2].stepValues,
+            objectives: stepForms[3].stepValues,
+            location: stepForms[4].stepValues,
+            species: stepForms[5].stepValues,
+            iucn: stepForms[6].stepValues,
+            funding: stepForms[7].stepValues,
+            partnerships: stepForms[8].stepValues
+          },
+          draftId
+        );
       }
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({ dialogError: apiError?.message, dialogErrorDetails: apiError?.errors });
+    }
+  };
+
+  /**
+   * Deletes a draft record
+   * (called when project is successfully created for record which was once a draft)
+   *
+   * @param {number} draftId
+   * @returns {*}
+   */
+  const deleteDraft = async (draftId: number) => {
+    const response = await biohubApi.draft.deleteDraft(draftId);
+
+    if (!response) {
+      showCreateErrorDialog({
+        dialogError: 'Your project was created successfully, but your old draft was not deleted successfully.'
+      });
+      return;
     }
   };
 
@@ -445,13 +472,23 @@ const CreateProjectPage: React.FC = () => {
    * @param {ICreatePermitNoSamplingRequest} projectNoSamplingPostObject
    * @return {*}
    */
-  const createPermitNoSampling = async (projectNoSamplingPostObject: ICreatePermitNoSamplingRequest) => {
+  const createPermitNoSampling = async (
+    projectNoSamplingPostObject: ICreatePermitNoSamplingRequest,
+    draftId: number
+  ) => {
     const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
 
     if (!response?.ids?.length) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
       return;
     }
+
+    // when project has been created, if a draft is still associated to the project, delete it
+    if (!draftId) {
+      return;
+    }
+
+    await deleteDraft(draftId);
 
     setEnableCancelCheck(false);
 
@@ -464,13 +501,20 @@ const CreateProjectPage: React.FC = () => {
    * @param {ICreateProjectRequest} projectPostObject
    * @return {*}
    */
-  const createProject = async (projectPostObject: ICreateProjectRequest) => {
+  const createProject = async (projectPostObject: ICreateProjectRequest, draftId: number) => {
     const response = await biohubApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
       return;
     }
+
+    // when project has been created, if a draft is still associated to the project, delete it
+    if (!draftId) {
+      return;
+    }
+
+    await deleteDraft(draftId);
 
     setEnableCancelCheck(false);
 

@@ -118,7 +118,7 @@ export const getDraftsSQL = (systemUserId: number): SQLStatement | null => {
 
 /**
  * SQL query to get a single draft from the webform_draft table.
- * 
+ *
  * @param {number} draftId
  * @return {SQLStatement} {(SQLStatement | null)}
  */
@@ -142,6 +142,34 @@ export const getDraftSQL = (draftId: number): SQLStatement | null => {
 
   defaultLog.debug({
     label: 'getDraftSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete a single draft from the webform_draft table.
+ *
+ * @param {number} draftId
+ * @return {SQLStatement} {(SQLStatement) | null}
+ */
+export const deleteDraftSQL = (draftId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteDraftSQL', message: 'params', draftId });
+
+  if (!draftId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE from webform_draft
+    WHERE id = ${draftId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteDraftSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

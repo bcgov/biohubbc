@@ -1,7 +1,7 @@
 import { WRITE_ROLES } from '../constants/roles';
 import { projectFundingSourcePostRequestObject } from '../openapi/schemas/project-funding-source';
 
-export const getAttachmentApiDocObject = (basicDescription: string, successDescription: string) => {
+export const attachmentApiDocObject = (basicDescription: string, successDescription: string) => {
   return {
     description: basicDescription,
     tags: ['attachment'],
