@@ -10,11 +10,11 @@ import { uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { upsertProjectAttachment } from '../../../project';
 
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/upload');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 
 export const POST: Operation = [uploadMedia()];
 POST.apiDoc = {
-  description: 'Upload project-specific artifacts.',
+  description: 'Upload project-specific attachments.',
   tags: ['artifacts'],
   security: [
     {
@@ -37,7 +37,7 @@ POST.apiDoc = {
           properties: {
             media: {
               type: 'array',
-              description: 'An array of artifacts to upload',
+              description: 'An array of attachments to upload',
               items: {
                 type: 'string',
                 format: 'binary'
@@ -50,7 +50,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Artifacts upload response.',
+      description: 'Attachments upload response.',
       content: {
         'application/json': {
           schema: {

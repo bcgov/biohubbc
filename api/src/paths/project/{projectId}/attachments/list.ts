@@ -9,7 +9,7 @@ import { GetAttachmentsData } from '../../../../models/project-attachments';
 import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/view');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
 
 export const GET: Operation = [getAttachments()];
 

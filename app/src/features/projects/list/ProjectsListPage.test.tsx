@@ -110,6 +110,35 @@ describe('ProjectsListPage', () => {
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/projects/create');
+        expect(history.location.search).toEqual('');
+      });
+    });
+  });
+
+  test('navigating to the create project page works on draft projects', async () => {
+    await act(async () => {
+      mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+        {
+          id: 1,
+          name: 'Draft 1'
+        }
+      ]);
+
+      const { getByTestId } = render(
+        <Router history={history}>
+          <ProjectsListPage />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(getByTestId('project-table')).toBeInTheDocument();
+      });
+
+      fireEvent.click(getByTestId('Draft 1'));
+
+      await waitFor(() => {
+        expect(history.location.pathname).toEqual('/projects/create');
+        expect(history.location.search).toEqual('?draftId=1');
       });
     });
   });

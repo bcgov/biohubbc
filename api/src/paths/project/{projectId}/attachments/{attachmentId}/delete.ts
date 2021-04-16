@@ -7,13 +7,13 @@ import { HTTP400 } from '../../../../../errors/CustomError';
 import { deleteProjectAttachmentSQL } from '../../../../../queries/project/project-attachments-queries';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
-import { getAttachmentApiDocObject } from '../../../../../utils/shared-api-docs';
+import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/delete');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/delete');
 
 export const DELETE: Operation = [deleteAttachment()];
 
-DELETE.apiDoc = getAttachmentApiDocObject(
+DELETE.apiDoc = attachmentApiDocObject(
   'Delete an attachment of a project.',
   'Row count of successfully deleted attachment record'
 );

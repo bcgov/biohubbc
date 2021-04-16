@@ -7,13 +7,13 @@ import { getLogger } from '../../../../../utils/logger';
 import { getDBConnection } from '../../../../../database/db';
 import { getProjectAttachmentS3KeySQL } from '../../../../../queries/project/project-attachments-queries';
 import { getS3SignedURL } from '../../../../../utils/file-utils';
-import { getAttachmentApiDocObject } from '../../../../../utils/shared-api-docs';
+import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
 
-const defaultLog = getLogger('/api/projects/{projectId}/artifacts/attachments/{attachmentId}/view');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
 export const GET: Operation = [getSingleAttachmentURL()];
 
-GET.apiDoc = getAttachmentApiDocObject(
+GET.apiDoc = attachmentApiDocObject(
   'Retrieves the signed url of an attachment in a project by its file name.',
   'GET response containing the signed url of an attachment.'
 );
