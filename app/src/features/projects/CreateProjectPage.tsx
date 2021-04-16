@@ -462,7 +462,6 @@ const CreateProjectPage: React.FC = () => {
       showCreateErrorDialog({
         dialogError: 'Your project was created successfully, but your old draft was not deleted successfully.'
       });
-      return;
     }
   };
 
