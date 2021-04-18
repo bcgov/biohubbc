@@ -39,7 +39,7 @@ export interface IGetPermit {
 
 /**
  * Pre-processes GET /projects/{id} permit data
- * 
+ *
  * @export
  * @class GetPermitData
  */

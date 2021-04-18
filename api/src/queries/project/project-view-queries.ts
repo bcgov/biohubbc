@@ -193,7 +193,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => {
+export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectPermitsSQL', message: 'params', projectId });
 
   if (!projectId) {
