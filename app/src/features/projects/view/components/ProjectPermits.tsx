@@ -1,4 +1,3 @@
-
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -61,36 +60,37 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         </Button>
       </Box>
 
-      {hasPermits && permit.permits.map((permit: any, index: number) => (
-        <TableContainer key={permit.permit_number}>
-          <Table className={classes.table} aria-label="permits-list-table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.heading}>Permit Number</TableCell>
-                <TableCell className={classes.heading}>Sampling Conducted</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  {permit.permit_number}
-                </TableCell>
-                <TableCell>{permit.sampling_conducted ? 'Yes' : 'No'}</TableCell>
-                <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
-                <Button
-                  className="editButtonSmall"
-                  title="Edit Permit"
-                  aria-label="Edit Permit"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                  EDIT
-                </Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ))}
+      {hasPermits &&
+        permit.permits.map((permit: any, index: number) => (
+          <TableContainer key={permit.permit_number}>
+            <Table className={classes.table} aria-label="permits-list-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.heading}>Permit Number</TableCell>
+                  <TableCell className={classes.heading}>Sampling Conducted</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    {permit.permit_number}
+                  </TableCell>
+                  <TableCell>{permit.sampling_conducted ? 'Yes' : 'No'}</TableCell>
+                  <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
+                    <Button
+                      className="editButtonSmall"
+                      title="Edit Permit"
+                      aria-label="Edit Permit"
+                      startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+                      EDIT
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ))}
     </Box>
   );
 };

@@ -11,10 +11,12 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     project_activities: [1]
   },
   permit: {
-    permits: [{
-      permit_number: '123',
-      sampling_conducted: true
-    }]
+    permits: [
+      {
+        permit_number: '123',
+        sampling_conducted: true
+      }
+    ]
   },
   location: {
     location_description: 'Location description',
