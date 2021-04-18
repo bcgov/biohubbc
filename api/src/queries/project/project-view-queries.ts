@@ -186,3 +186,36 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get permits.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectPermitsSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      number,
+      sampling_conducted
+    FROM
+      project_permit
+    WHERE
+      p_id = ${projectId}
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectPermitsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

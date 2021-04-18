@@ -10,6 +10,12 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     climate_change_initiatives: [1],
     project_activities: [1]
   },
+  permit: {
+    permits: [{
+      permit_number: '123',
+      sampling_conducted: true
+    }]
+  },
   location: {
     location_description: 'Location description',
     regions: ['Region 1', 'Region 2'],
