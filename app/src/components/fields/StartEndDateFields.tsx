@@ -26,13 +26,12 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <TextField
           id="start_date"
           name="start_date"
-          data-testid="start-date"
           label="Start Date"
           variant="outlined"
           required={startRequired}
           value={values.start_date}
           type="date"
-          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
+          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }}
           onChange={handleChange}
           error={touched.start_date && Boolean(errors.start_date)}
           helperText={errors.start_date}
@@ -45,13 +44,12 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
         <TextField
           id="end_date"
           name="end_date"
-          data-testid="end-date"
           label="End Date"
           variant="outlined"
           required={endRequired}
           value={values.end_date}
           type="date"
-          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max }}
+          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'end-date' }}
           onChange={handleChange}
           error={touched.end_date && Boolean(errors.end_date)}
           helperText={errors.end_date}

@@ -32,7 +32,12 @@ const ProjectsListPage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  const navigateToCreateProjectPage = () => {
+  const navigateToCreateProjectPage = (draftId?: number) => {
+    if (draftId) {
+      history.push(`/projects/create?draftId=${draftId}`);
+      return;
+    }
+
     history.push('/projects/create');
   };
 
@@ -65,85 +70,80 @@ const ProjectsListPage: React.FC = () => {
     }
   }, [biohubApi, isLoading]);
 
+  const getProjectsTableData = () => {
+    const hasProjects = projects?.length > 0;
+    const hasDrafts = drafts?.length > 0;
+
+    if (!hasProjects && !hasDrafts) {
+      return (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow></TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>No Projects found</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    } else {
+      return (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Project Name</TableCell>
+                <TableCell>Species</TableCell>
+                <TableCell>Location</TableCell>
+                <TableCell>Start Date</TableCell>
+                <TableCell>End Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody data-testid="project-table">
+              {drafts?.map((row) => (
+                <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToCreateProjectPage(row.id)}>
+                  <TableCell>{row.name} (Draft)</TableCell>
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
+                </TableRow>
+              ))}
+              {projects?.map((row) => (
+                <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.focal_species_name_list}</TableCell>
+                  <TableCell>{row.regions_name_list}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    }
+  };
+
   /**
    * Displays project list.
    */
-
-  const hasProjects = projects?.length > 0;
-  const hasDrafts = drafts?.length > 0;
-
-  if (!hasProjects && !hasDrafts) {
-    return (
-      <Box my={4}>
-        <Container maxWidth="xl">
-          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-            <Typography variant="h1">Projects</Typography>
-            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
-              Create Project
-            </Button>
-          </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow></TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell>No Projects found</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </Box>
-    );
-  } else {
-    return (
-      <Box my={4}>
-        <Container maxWidth="xl">
-          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-            <Typography variant="h1">Projects</Typography>
-            <Button variant="outlined" color="primary" onClick={navigateToCreateProjectPage}>
-              Create Project
-            </Button>
-          </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Project Name</TableCell>
-                  <TableCell>Species</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Start Date</TableCell>
-                  <TableCell>End Date</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody data-testid="project-table">
-                {drafts?.map((row) => (
-                  <TableRow data-testid={row.name} key={row.id}>
-                    <TableCell>{row.name} (Draft)</TableCell>
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                  </TableRow>
-                ))}
-                {projects.map((row) => (
-                  <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell>{row.focal_species_name_list}</TableCell>
-                    <TableCell>{row.regions_name_list}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </Box>
-    );
-  }
+  return (
+    <Box my={4}>
+      <Container maxWidth="xl">
+        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h1">Projects</Typography>
+          <Button variant="outlined" color="primary" onClick={() => navigateToCreateProjectPage()}>
+            Create Project
+          </Button>
+        </Box>
+        {getProjectsTableData()}
+      </Container>
+    </Box>
+  );
 };
 
 export default ProjectsListPage;

@@ -785,7 +785,6 @@ exports[`ProjectStepComponents renders the project details with the codes values
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="start-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -807,6 +806,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -835,7 +835,6 @@ exports[`ProjectStepComponents renders the project details with the codes values
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="end-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
@@ -851,6 +850,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -1218,7 +1218,6 @@ exports[`ProjectStepComponents renders the project details without the codes val
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="start-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -1240,6 +1239,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="start-date"
                 id="start_date"
                 max="2100-12-31"
                 min="1900-01-01"
@@ -1268,7 +1268,6 @@ exports[`ProjectStepComponents renders the project details without the codes val
         >
           <div
             class="MuiFormControl-root MuiTextField-root"
-            data-testid="end-date"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
@@ -1284,6 +1283,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
               <input
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="end-date"
                 id="end_date"
                 max="2100-12-31"
                 min="1900-01-01"

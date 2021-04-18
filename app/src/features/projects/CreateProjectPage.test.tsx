@@ -4,12 +4,21 @@ import {
   getByText as rawGetByText,
   fireEvent,
   render,
-  waitFor
+  waitFor,
+  screen
 } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { Router } from 'react-router';
+import { MemoryRouter, Router } from 'react-router';
+import { ProjectDetailsFormInitialValues } from './components/ProjectDetailsForm';
+import { ProjectFundingFormInitialValues } from './components/ProjectFundingForm';
+import { ProjectIUCNFormInitialValues } from './components/ProjectIUCNForm';
+import { ProjectLocationFormInitialValues } from './components/ProjectLocationForm';
+import { ProjectObjectivesFormInitialValues } from './components/ProjectObjectivesForm';
+import { ProjectPartnershipsFormInitialValues } from './components/ProjectPartnershipsForm';
+import { ProjectPermitFormInitialValues } from './components/ProjectPermitForm';
+import { ProjectSpeciesFormInitialValues } from './components/ProjectSpeciesForm';
 import CreateProjectPage from './CreateProjectPage';
 
 const history = createMemoryHistory();
@@ -21,7 +30,8 @@ const mockUseBiohubApi = {
   },
   draft: {
     createDraft: jest.fn<Promise<object>, []>(),
-    updateDraft: jest.fn<Promise<object>, []>()
+    updateDraft: jest.fn<Promise<object>, []>(),
+    getDraft: jest.fn()
   }
 };
 
@@ -43,6 +53,7 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().draft.createDraft.mockClear();
     mockBiohubApi().draft.updateDraft.mockClear();
+    mockBiohubApi().draft.getDraft.mockClear();
   });
 
   afterEach(() => {
@@ -232,6 +243,42 @@ describe('CreateProjectPage', () => {
     beforeEach(() => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+      });
+    });
+
+    it('preloads draft data and populates on form fields', async () => {
+      mockBiohubApi().draft.getDraft.mockResolvedValue({
+        id: 1,
+        name: 'My draft',
+        data: {
+          coordinator: {
+            first_name: 'Draft first name',
+            last_name: 'Draft last name',
+            email_address: 'draftemail@example.com',
+            coordinator_agency: '',
+            share_contact_details: 'false'
+          },
+          permit: ProjectPermitFormInitialValues,
+          project: ProjectDetailsFormInitialValues,
+          objectives: ProjectObjectivesFormInitialValues,
+          species: ProjectSpeciesFormInitialValues,
+          location: ProjectLocationFormInitialValues,
+          iucn: ProjectIUCNFormInitialValues,
+          funding: ProjectFundingFormInitialValues,
+          partnerships: ProjectPartnershipsFormInitialValues
+        }
+      });
+
+      render(
+        <MemoryRouter initialEntries={['?draftId=1']}>
+          <CreateProjectPage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('Draft first name')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('Draft last name')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('draftemail@example.com')).toBeInTheDocument();
       });
     });
 
