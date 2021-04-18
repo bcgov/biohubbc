@@ -61,8 +61,8 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       </Box>
 
       {hasPermits &&
-        permit.permits.map((permit: any, index: number) => (
-          <TableContainer key={permit.permit_number}>
+        permit.permits.map((item: any, index: number) => (
+          <TableContainer key={item.permit_number}>
             <Table className={classes.table} aria-label="permits-list-table">
               <TableHead>
                 <TableRow>
@@ -74,9 +74,9 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
               <TableBody>
                 <TableRow>
                   <TableCell component="th" scope="row">
-                    {permit.permit_number}
+                    {item.permit_number}
                   </TableCell>
-                  <TableCell>{permit.sampling_conducted ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>{item.sampling_conducted ? 'Yes' : 'No'}</TableCell>
                   <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                     <Button
                       className="editButtonSmall"
