@@ -30,7 +30,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Project Objectives"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Project Objectives"
             type="button"
@@ -52,7 +52,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -114,7 +114,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit General Information"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit General Information"
             type="button"
@@ -136,7 +136,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -240,7 +240,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Project Coordinator Information"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Project Coordinator Information"
             type="button"
@@ -262,7 +262,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -338,7 +338,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Location / Project Boundary"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Location / Project Boundary"
             type="button"
@@ -360,7 +360,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -599,7 +599,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Species"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Species"
             type="button"
@@ -621,7 +621,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -692,7 +692,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         </h3>
         <button
           aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
           tabindex="0"
           title="Edit IUCN Classifications"
           type="button"
@@ -714,7 +714,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 />
               </svg>
             </span>
-            EDIT
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -793,7 +793,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Partnerships"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Partnerships"
             type="button"
@@ -815,7 +815,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -876,7 +876,7 @@ exports[`ProjectDetails renders correctly 1`] = `
     <section
       class="MuiBox-root MuiBox-root-36 makeStyles-projectDetailsSection-1"
     >
-      <div
+      <header
         class="MuiBox-root MuiBox-root-37"
       >
         <h3
@@ -914,7 +914,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiTouchRipple-root"
           />
         </button>
-      </div>
+      </header>
       <div
         class="MuiBox-root MuiBox-root-38"
       >
@@ -933,10 +933,10 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiBox-root MuiBox-root-40"
           >
             <button
-              aria-label="Edit Funding Source Information"
-              class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+              aria-label="Edit Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               tabindex="0"
-              title="Edit Funding Source Information"
+              title="Edit Funding Source"
               type="button"
             >
               <span
@@ -956,18 +956,18 @@ exports[`ProjectDetails renders correctly 1`] = `
                     />
                   </svg>
                 </span>
-                EDIT
+                Edit
               </span>
               <span
                 class="MuiTouchRipple-root"
               />
             </button>
             <button
-              aria-label="Delete Funding Source"
-              class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+              aria-label="Remove Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               data-testid="delete-funding-source"
               tabindex="0"
-              title="Delete Funding Source"
+              title="Remove Funding Source"
               type="button"
             >
               <span
@@ -987,6 +987,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     />
                   </svg>
                 </span>
+                Remove
               </span>
               <span
                 class="MuiTouchRipple-root"

@@ -121,12 +121,14 @@ const Species: React.FC<ISpeciesProps> = (props) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Species</Typography>
           <Button
-            className="editButtonSmall"
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
             title="Edit Species"
             aria-label="Edit Species"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            EDIT
+            Edit
           </Button>
         </Box>
 

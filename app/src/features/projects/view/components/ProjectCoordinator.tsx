@@ -133,12 +133,14 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h3">Project Coordinator</Typography>
           <Button
-            className="editButtonSmall"
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
             title="Edit Project Coordinator Information"
             aria-label="Edit Project Coordinator Information"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            EDIT
+            Edit
           </Button>
         </Box>
         <dl>

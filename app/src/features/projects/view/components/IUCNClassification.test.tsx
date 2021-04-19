@@ -79,7 +79,7 @@ describe('IUCNClassification', () => {
       expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
@@ -97,7 +97,7 @@ describe('IUCNClassification', () => {
       expect(queryByText('Edit IUCN Classifications')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit IUCN Classifications')).toBeVisible();
@@ -134,7 +134,7 @@ describe('IUCNClassification', () => {
       expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Error Editing IUCN Classifications')).toBeVisible();
@@ -156,7 +156,7 @@ describe('IUCNClassification', () => {
       expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
@@ -189,7 +189,7 @@ describe('IUCNClassification', () => {
       expect(getByText('IUCN Classifications')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [

@@ -15,7 +15,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
       </h3>
       <button
         aria-label="Edit Project Objectives"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Project Objectives"
         type="button"
@@ -37,7 +37,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -219,7 +219,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       </h3>
       <button
         aria-label="Edit Project Objectives"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Project Objectives"
         type="button"
@@ -241,7 +241,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -323,7 +323,7 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
       </h3>
       <button
         aria-label="Edit Project Objectives"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Project Objectives"
         type="button"
@@ -345,7 +345,7 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -405,7 +405,7 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
       </h3>
       <button
         aria-label="Edit Project Objectives"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Project Objectives"
         type="button"
@@ -427,7 +427,7 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"

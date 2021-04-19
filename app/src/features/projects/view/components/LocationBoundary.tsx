@@ -192,12 +192,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h3">Location / Project Boundary</Typography>
           <Button
-            className="editButtonSmall"
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
             title="Edit Location / Project Boundary"
             aria-label="Edit Location / Project Boundary"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            EDIT
+            Edit
           </Button>
         </Box>
         <dl>

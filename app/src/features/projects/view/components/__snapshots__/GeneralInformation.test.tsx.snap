@@ -15,7 +15,7 @@ exports[`ProjectDetails renders correctly with activity and climate initiative d
       </h3>
       <button
         aria-label="Edit General Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit General Information"
         type="button"
@@ -37,7 +37,7 @@ exports[`ProjectDetails renders correctly with activity and climate initiative d
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -139,7 +139,7 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
       </h3>
       <button
         aria-label="Edit General Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit General Information"
         type="button"
@@ -161,7 +161,7 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -263,7 +263,7 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
       </h3>
       <button
         aria-label="Edit General Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit General Information"
         type="button"
@@ -285,7 +285,7 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"

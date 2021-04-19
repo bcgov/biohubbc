@@ -186,11 +186,11 @@ exports[`ProjectFundingForm renders correctly with existing funding values 1`] =
                       />
                     </button>
                     <button
-                      aria-label="Delete Funding Source"
+                      aria-label="Remove Funding Source"
                       class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
                       data-testid="delete-button-0"
                       tabindex="0"
-                      title="Delete Funding Source"
+                      title="Remove Funding Source"
                       type="button"
                     >
                       <span

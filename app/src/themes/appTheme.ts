@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
-import 'styles.scss';
+import 'styles.scss'
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -62,7 +62,11 @@ const appTheme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        fontWeight: 700
+      },
+      startIcon: {
+        marginTop: '-1px'
       }
     },
     MuiCircularProgress: {
