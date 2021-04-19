@@ -523,6 +523,34 @@ describe('PutPermitData', () => {
     });
   });
 
+  describe('All values provided are null', () => {
+    let projectPermitData: PutPermitData;
+
+    before(() => {
+      projectPermitData = new PutPermitData({
+        permits: null
+      });
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided are empty arrays', () => {
+    let projectPermitData: PutPermitData;
+
+    before(() => {
+      projectPermitData = new PutPermitData({
+        permits: []
+      });
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
   describe('All values provided with sampling conducted as true', () => {
     let projectPermitData: PutPermitData;
 

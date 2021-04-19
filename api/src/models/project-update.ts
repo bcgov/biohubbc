@@ -321,7 +321,7 @@ export class PutPermitData {
 
     this.permits =
       (obj?.permits?.length &&
-        obj?.permits?.map((item: any) => {
+        obj.permits.map((item: any) => {
           return {
             permit_number: item.permit_number,
             sampling_conducted: (item.sampling_conducted === 'true' && true) || false
