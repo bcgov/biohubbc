@@ -1,5 +1,5 @@
 import { createMuiTheme } from '@material-ui/core';
-import 'styles.scss'
+import 'styles.scss';
 
 const appTheme = createMuiTheme({
   breakpoints: {
