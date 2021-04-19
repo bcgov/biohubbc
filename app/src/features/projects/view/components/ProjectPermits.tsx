@@ -93,8 +93,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       return;
     }
 
-    console.log(permitResponseData);
-
     setPermitFormData({
       permits: permitResponseData.permits
     });
@@ -103,7 +101,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   };
 
   const handleDialogEditSave = async (values: IProjectPermitForm) => {
-    console.log('values', values);
     const projectData = { permit: values };
 
     try {

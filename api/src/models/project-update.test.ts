@@ -14,7 +14,9 @@ import {
   PutIUCNData,
   GetIUCNClassificationData,
   PutLocationData,
-  PutFundingSource
+  PutFundingSource,
+  PutPermitData,
+  GetPermitData
 } from './project-update';
 
 describe('PutLocationData', () => {
@@ -442,6 +444,134 @@ describe('PutCoordinatorData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(1);
+    });
+  });
+});
+
+describe('GetPermitData', () => {
+  describe('No values provided', () => {
+    let projectPermitData: GetPermitData;
+
+    before(() => {
+      projectPermitData = new GetPermitData((null as unknown) as any[]);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as true', () => {
+    let projectPermitData: GetPermitData;
+
+    const permits = [
+      {
+        number: '1',
+        sampling_conducted: true
+      }
+    ];
+
+    before(() => {
+      projectPermitData = new GetPermitData(permits);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: 'true'
+        }
+      ]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as false', () => {
+    let projectPermitData: GetPermitData;
+
+    const permits = [
+      {
+        number: '1',
+        sampling_conducted: false
+      }
+    ];
+
+    before(() => {
+      projectPermitData = new GetPermitData(permits);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: 'false'
+        }
+      ]);
+    });
+  });
+});
+
+describe('PutPermitData', () => {
+  describe('No values provided', () => {
+    let projectPermitData: PutPermitData;
+
+    before(() => {
+      projectPermitData = new PutPermitData(null);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as true', () => {
+    let projectPermitData: PutPermitData;
+
+    const obj = {
+      permits: [
+        {
+          permit_number: '1',
+          sampling_conducted: 'true'
+        }
+      ]
+    };
+
+    before(() => {
+      projectPermitData = new PutPermitData(obj);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: true
+        }
+      ]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as false', () => {
+    let projectPermitData: PutPermitData;
+
+    const obj = {
+      permits: [
+        {
+          permit_number: '1',
+          sampling_conducted: 'false'
+        }
+      ]
+    };
+
+    before(() => {
+      projectPermitData = new PutPermitData(obj);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: false
+        }
+      ]);
     });
   });
 });

@@ -37,11 +37,9 @@ yup.addMethod(yup.array, 'isUniquePermitsAndAtLeastOneSamplingConducted', functi
       return false;
     }
 
-    const isSamplingConducted = values.some((permit) => {
+    return values.some((permit) => {
       return permit.sampling_conducted === 'true';
     });
-
-    return isSamplingConducted;
   });
 });
 

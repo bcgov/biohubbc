@@ -295,7 +295,7 @@ describe('PostPermitData', () => {
     const obj = {
       permits: [
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: 'true'
         }
       ]
@@ -308,7 +308,7 @@ describe('PostPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: true
         }
       ]);
@@ -321,7 +321,7 @@ describe('PostPermitData', () => {
     const obj = {
       permits: [
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: 'false'
         }
       ]
@@ -334,7 +334,7 @@ describe('PostPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: false
         }
       ]);
