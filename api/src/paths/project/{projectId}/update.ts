@@ -613,9 +613,6 @@ export const updateProjectPermitData = async (
     throw new HTTP409('Failed to delete project permit data');
   }
 
-  console.log('$$$$$$$$$$$$$$$$$$$$$');
-  console.log(putPermitData);
-
   const insertPermitPromises =
     putPermitData?.permits?.map((permit: IPutPermit) =>
       insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)

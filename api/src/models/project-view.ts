@@ -53,9 +53,6 @@ export class GetPermitData {
       permitData: permitData
     });
 
-    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
-    console.log(permitData);
-
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {

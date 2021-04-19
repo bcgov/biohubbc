@@ -319,9 +319,6 @@ export class PutPermitData {
       obj
     });
 
-    console.log('(&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&)');
-    console.log(obj);
-
     this.permits =
       (obj?.permits?.length &&
         obj?.permits?.map((item: any) => {
