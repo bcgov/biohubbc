@@ -15,7 +15,7 @@ exports[`Species renders correctly with default empty values 1`] = `
       </h3>
       <button
         aria-label="Edit Species"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Species"
         type="button"
@@ -37,7 +37,7 @@ exports[`Species renders correctly with default empty values 1`] = `
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -99,7 +99,7 @@ exports[`Species renders correctly with existing species values 1`] = `
       </h3>
       <button
         aria-label="Edit Species"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Species"
         type="button"
@@ -121,7 +121,7 @@ exports[`Species renders correctly with existing species values 1`] = `
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -193,7 +193,7 @@ exports[`Species renders correctly with invalid null values 1`] = `
       </h3>
       <button
         aria-label="Edit Species"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Species"
         type="button"
@@ -215,7 +215,7 @@ exports[`Species renders correctly with invalid null values 1`] = `
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"

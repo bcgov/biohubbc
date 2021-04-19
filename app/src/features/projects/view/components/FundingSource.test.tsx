@@ -50,7 +50,7 @@ describe('FundingSource', () => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Funding Source')).toBeVisible();
@@ -72,7 +72,7 @@ describe('FundingSource', () => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Agency Details')).toBeVisible();
@@ -98,7 +98,7 @@ describe('FundingSource', () => {
     fireEvent.click(getByTestId('delete-funding-source'));
 
     await waitFor(() => {
-      expect(getByText('Are you sure you want to delete?')).toBeVisible();
+      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
     });
 
     fireEvent.click(getByText('Yes'));

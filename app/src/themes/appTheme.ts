@@ -62,7 +62,11 @@ const appTheme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        fontWeight: 700
+      },
+      startIcon: {
+        marginTop: '-1px'
       }
     },
     MuiCircularProgress: {

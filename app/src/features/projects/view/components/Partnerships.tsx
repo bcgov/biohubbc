@@ -121,12 +121,14 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Partnerships</Typography>
           <Button
-            className="editButtonSmall"
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
             title="Edit Partnerships"
             aria-label="Edit Partnerships"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            EDIT
+            Edit
           </Button>
         </Box>
       </Box>

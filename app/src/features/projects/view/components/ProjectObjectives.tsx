@@ -132,12 +132,14 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Objectives</Typography>
           <Button
-            className="editButtonSmall"
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
             title="Edit Project Objectives"
             aria-label="Edit Project Objectives"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            EDIT
+            Edit
           </Button>
         </Box>
         <ReadMoreField text={objectives.objectives} maxCharLength={850} />

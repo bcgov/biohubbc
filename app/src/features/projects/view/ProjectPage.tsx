@@ -20,17 +20,24 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
     minWidth: '15rem',
     '& a': {
-      color: theme.palette.primary.main
+      color: theme.palette.text.secondary,
+      '&:hover': {
+        background: 'rgba(0, 51, 102, 0.05)'
+      }
     },
-    '& svg': {
-      color: theme.palette.primary.main
+    '& a.active': {
+      color: theme.palette.primary.main,
+      background: 'rgba(0, 51, 102, 0.05)',
+      '& svg': {
+        color: theme.palette.primary.main
+      }
     }
   }
 }));
@@ -133,27 +140,29 @@ const ProjectPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box display="flex" flexDirection="row" py={6}>
-          <Box component="aside" mr={3} mt={-2}>
-            <List component="nav" className={classes.projectNav} aria-label="Project Navigation">
-              <ListItem button component={Link} to="details">
-                <ListItemIcon>
-                  <Icon path={mdiInformationOutline} size={1} />
-                </ListItemIcon>
-                <ListItemText>Project Details</ListItemText>
-              </ListItem>
-              <ListItem button component={Link} to="surveys">
-                <ListItemIcon>
-                  <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
-                </ListItemIcon>
-                <ListItemText>Surveys</ListItemText>
-              </ListItem>
-              <ListItem button component={Link} to="attachments">
-                <ListItemIcon>
-                  <Icon path={mdiPaperclip} size={1} />
-                </ListItemIcon>
-                <ListItemText>Attachments</ListItemText>
-              </ListItem>
-            </List>
+          <Box component="aside" mr={6} mt={-2}>
+            <Paper>
+              <List component="nav" role="navigation" className={classes.projectNav} aria-label="Project Navigation">
+                <ListItem component={NavLink} to="details">
+                  <ListItemIcon>
+                    <Icon path={mdiInformationOutline} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>Project Details</ListItemText>
+                </ListItem>
+                <ListItem component={NavLink} to="surveys">
+                  <ListItemIcon>
+                    <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>Surveys</ListItemText>
+                </ListItem>
+                <ListItem component={NavLink} to="attachments">
+                  <ListItemIcon>
+                    <Icon path={mdiPaperclip} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>Attachments</ListItemText>
+                </ListItem>
+              </List>
+            </Paper>
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
