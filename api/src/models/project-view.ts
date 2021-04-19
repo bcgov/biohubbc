@@ -32,6 +32,39 @@ export class GetProjectData {
   }
 }
 
+export interface IGetPermit {
+  permit_number: string;
+  sampling_conducted: boolean;
+}
+
+/**
+ * Pre-processes GET /projects/{id} permit data
+ *
+ * @export
+ * @class GetPermitData
+ */
+export class GetPermitData {
+  permits: IGetPermit[];
+
+  constructor(permitData?: any[]) {
+    defaultLog.debug({
+      label: 'GetPermitData',
+      message: 'params',
+      permitData: permitData
+    });
+
+    this.permits =
+      (permitData?.length &&
+        permitData.map((item: any) => {
+          return {
+            permit_number: item.number,
+            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+          };
+        })) ||
+      [];
+  }
+}
+
 /**
  * Pre-processes GET /projects/{id} location data
  *

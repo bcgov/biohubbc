@@ -4,6 +4,7 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getProjectListSQL,
+  getProjectPermitsSQL,
   getProjectSQL
 } from './project-view-queries';
 
@@ -57,6 +58,20 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getProjectPermitsSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = getProjectPermitsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = getProjectPermitsSQL(1);
 
     expect(response).to.not.be.null;
   });

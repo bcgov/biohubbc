@@ -9,14 +9,16 @@ import {
   GetObjectivesData,
   GetPartnershipsData,
   GetProjectData,
-  GetLocationData
+  GetLocationData,
+  GetPermitData
 } from '../../../models/project-view';
 import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
-  getProjectSQL
+  getProjectSQL,
+  getProjectPermitsSQL
 } from '../../../queries/project/project-view-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
@@ -92,6 +94,7 @@ function getProjectForView(): RequestHandler {
 
     try {
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
+      const getProjectPermitsSQLStatement = getProjectPermitsSQL(Number(req.params.projectId));
       const getProjectLocationSQLStatement = getLocationByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
       const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
@@ -110,6 +113,7 @@ function getProjectForView(): RequestHandler {
 
       if (
         !getProjectSQLStatement ||
+        !getProjectPermitsSQLStatement ||
         !getProjectLocationSQLStatement ||
         !getProjectActivitiesSQLStatement ||
         !getProjectClimateInitiativesSQLStatement ||
@@ -127,6 +131,7 @@ function getProjectForView(): RequestHandler {
 
       const [
         projectData,
+        permitData,
         locationData,
         activityData,
         climateInitiativeData,
@@ -138,6 +143,7 @@ function getProjectForView(): RequestHandler {
         stakeholderPartnerships
       ] = await Promise.all([
         await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
+        await connection.query(getProjectPermitsSQLStatement.text, getProjectPermitsSQLStatement.values),
         await connection.query(getProjectLocationSQLStatement.text, getProjectLocationSQLStatement.values),
         await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
         await connection.query(
@@ -176,6 +182,8 @@ function getProjectForView(): RequestHandler {
           new GetProjectData(projectData.rows[0], activityData.rows, climateInitiativeData.rows)) ||
         null;
 
+      const getPermitData = (permitData && permitData.rows && new GetPermitData(permitData.rows)) || null;
+
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
 
       const getLocationData = (locationData && locationData.rows && new GetLocationData(locationData.rows)) || null;
@@ -210,6 +218,7 @@ function getProjectForView(): RequestHandler {
       const result = {
         id: req.params.projectId,
         project: getProjectData,
+        permit: getPermitData,
         coordinator: getCoordinatorData,
         objectives: getObjectivesData,
         location: getLocationData,

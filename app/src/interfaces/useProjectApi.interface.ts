@@ -213,6 +213,7 @@ export interface IUpdateProjectRequest extends IGetProjectForUpdateResponse {}
 export interface IGetProjectForViewResponse {
   id: number;
   project: IGetProjectForViewResponseDetails;
+  permit: IGetProjectForViewResponsePermit;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
@@ -229,6 +230,15 @@ export interface IGetProjectForViewResponseDetails {
   climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
+}
+
+interface IGetProjectForViewResponsePermitArrayItem {
+  permit_number: string;
+  sampling_conducted: boolean;
+}
+
+export interface IGetProjectForViewResponsePermit {
+  permits: IGetProjectForViewResponsePermitArrayItem[];
 }
 
 export interface IGetProjectForViewResponseObjectives {
