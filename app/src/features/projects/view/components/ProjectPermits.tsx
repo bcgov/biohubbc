@@ -127,7 +127,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
           element: <ProjectPermitForm />,
           initialValues: permitFormData?.permits?.length
             ? permitFormData
-            : { permit: [ProjectPermitFormArrayItemInitialValues] },
+            : { permits: [ProjectPermitFormArrayItemInitialValues] },
           validationSchema: ProjectPermitEditFormYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
