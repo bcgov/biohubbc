@@ -497,7 +497,7 @@ describe('GetPermitData', () => {
     let projectPermitData: GetPermitData;
 
     before(() => {
-      projectPermitData = new GetPermitData(null);
+      projectPermitData = new GetPermitData((null as unknown) as any[]);
     });
 
     it('sets permits', function () {
@@ -508,17 +508,15 @@ describe('GetPermitData', () => {
   describe('All values provided with sampling conducted as true', () => {
     let projectPermitData: GetPermitData;
 
-    const obj = {
-      permits: [
-        {
-          permit_number: 1,
-          sampling_conducted: 'true'
-        }
-      ]
-    };
+    const permits = [
+      {
+        number: 1,
+        sampling_conducted: 'true'
+      }
+    ];
 
     before(() => {
-      projectPermitData = new GetPermitData(obj);
+      projectPermitData = new GetPermitData(permits);
     });
 
     it('sets permits', function () {
@@ -534,17 +532,15 @@ describe('GetPermitData', () => {
   describe('All values provided with sampling conducted as false', () => {
     let projectPermitData: GetPermitData;
 
-    const obj = {
-      permits: [
-        {
-          permit_number: 1,
-          sampling_conducted: 'false'
-        }
-      ]
-    };
+    const permits = [
+      {
+        number: 1,
+        sampling_conducted: 'false'
+      }
+    ];
 
     before(() => {
-      projectPermitData = new GetPermitData(obj);
+      projectPermitData = new GetPermitData(permits);
     });
 
     it('sets permits', function () {
