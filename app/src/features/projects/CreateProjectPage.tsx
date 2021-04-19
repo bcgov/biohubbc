@@ -194,7 +194,7 @@ const CreateProjectPage: React.FC = () => {
     }
 
     getDraftProjectFields();
-  }, [useBiohubApi]);
+  }, [biohubApi.draft, hasLoadedDraftData, queryParams.draftId]);
 
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
@@ -301,7 +301,7 @@ const CreateProjectPage: React.FC = () => {
         stepValidation: ProjectPartnershipsFormYupSchema
       }
     ]);
-  }, [codes, stepForms, initialProjectFieldData]);
+  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData]);
 
   /**
    * Return true if the user has indicated that sampling has been conducted.
