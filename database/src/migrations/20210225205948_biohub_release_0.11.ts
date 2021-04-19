@@ -31,6 +31,7 @@ export async function up(knex: Knex): Promise<void> {
   const tr_project_funding_source = fs.readFileSync(
     path.join(__dirname, 'release.0.11', 'tr_project_funding_source.sql')
   );
+  const api_delete_project = fs.readFileSync(path.join(__dirname, 'release.0.11', 'api_delete_project.sql'));
 
   const populate_first_nations = fs.readFileSync(path.join(__dirname, 'release.0.11', 'populate_first_nations.sql'));
   const populate_climate_change_initiatives = fs.readFileSync(
@@ -76,6 +77,7 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
+    ${api_delete_project}
 
     -- populate look up tables
     set search_path = biohub;
