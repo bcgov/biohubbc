@@ -297,3 +297,72 @@ export class PutFundingSource {
     this.revision_count = fundingSource?.revision_count ?? null;
   }
 }
+
+export interface IPutPermit {
+  permit_number: string;
+  sampling_conducted: boolean;
+}
+
+/**
+ * Pre-processes PUT /projects/{projectId}/update permit data
+ *
+ * @export
+ * @class PutPermitData
+ */
+export class PutPermitData {
+  permits: IPutPermit[];
+
+  constructor(obj?: any) {
+    defaultLog.debug({
+      label: 'PutPermitData',
+      message: 'params',
+      obj
+    });
+
+    console.log('(&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&)');
+    console.log(obj);
+
+    this.permits =
+      (obj?.permits?.length &&
+        obj?.permits?.map((item: any) => {
+          return {
+            permit_number: item.permit_number,
+            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+          };
+        })) ||
+      [];
+  }
+}
+
+interface IGetPermit {
+  permit_number: string;
+  sampling_conducted: string;
+}
+
+/**
+ * Pre-processes GET /projects/{projectId}/update permit data
+ *
+ * @export
+ * @class GetPermitData
+ */
+export class GetPermitData {
+  permits: IGetPermit[];
+
+  constructor(permitData?: any[]) {
+    defaultLog.debug({
+      label: 'GetPermitData',
+      message: 'params',
+      permitData: permitData
+    });
+
+    this.permits =
+      (permitData?.length &&
+        permitData.map((item: any) => {
+          return {
+            permit_number: item.number,
+            sampling_conducted: item.sampling_conducted ? 'true' : 'false'
+          };
+        })) ||
+      [];
+  }
+}

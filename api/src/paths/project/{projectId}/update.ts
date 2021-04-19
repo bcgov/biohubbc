@@ -18,7 +18,10 @@ import {
   PutSpeciesData,
   IGetPutIUCN,
   GetLocationData,
-  PutFundingSource
+  PutFundingSource,
+  GetPermitData,
+  IPutPermit,
+  PutPermitData
 } from '../../../models/project-update';
 import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
 import {
@@ -31,6 +34,7 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
+  getPermitsByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
   putProjectSQL
@@ -44,7 +48,8 @@ import {
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteRegionsSQL,
-  deleteFundingSourceSQL
+  deleteFundingSourceSQL,
+  deletePermitSQL
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
@@ -64,7 +69,8 @@ import {
   insertRegion,
   insertProjectActivity,
   insertProjectClimateChangeInitiative,
-  insertStakeholderPartnership
+  insertStakeholderPartnership,
+  insertPermitNumber
 } from '../../project';
 
 const defaultLog = getLogger('paths/project/{projectId}');
@@ -198,6 +204,14 @@ function getProjectForUpdate(): RequestHandler {
         );
       }
 
+      if (entities.includes(GET_ENTITIES.permit)) {
+        promises.push(
+          getPermitData(projectId, connection).then((value) => {
+            results.permit = value;
+          })
+        );
+      }
+
       if (entities.includes(GET_ENTITIES.partnerships)) {
         promises.push(
           getPartnershipsData(projectId, connection).then((value) => {
@@ -266,6 +280,24 @@ function getProjectForUpdate(): RequestHandler {
     }
   };
 }
+
+export const getPermitData = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getPermitsByProjectSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get project permit data');
+  }
+
+  return new GetPermitData(result);
+};
 
 export const getLocationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getLocationByProjectSQL(projectId);
@@ -527,6 +559,10 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectData(projectId, entities, connection));
       }
 
+      if (entities?.permit) {
+        promises.push(updateProjectPermitData(projectId, entities, connection));
+      }
+
       if (entities?.location) {
         promises.push(updateProjectRegionsData(projectId, entities, connection));
       }
@@ -558,6 +594,36 @@ function updateProject(): RequestHandler {
   };
 }
 
+export const updateProjectPermitData = async (
+  projectId: number,
+  entities: IUpdateProject,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPermitData = (entities?.permit && new PutPermitData(entities.permit)) || null;
+
+  const sqlDeleteStatement = deletePermitSQL(projectId);
+
+  if (!sqlDeleteStatement) {
+    throw new HTTP400('Failed to build SQL delete statement');
+  }
+
+  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+
+  if (!deleteResult) {
+    throw new HTTP409('Failed to delete project permit data');
+  }
+
+  console.log('$$$$$$$$$$$$$$$$$$$$$');
+  console.log(putPermitData);
+
+  const insertPermitPromises =
+    putPermitData?.permits?.map((permit: IPutPermit) =>
+      insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+    ) || [];
+
+  await Promise.all(insertPermitPromises);
+};
+
 export const updateProjectRegionsData = async (
   projectId: number,
   entities: IUpdateProject,
@@ -568,7 +634,7 @@ export const updateProjectRegionsData = async (
   const sqlDeleteRegionsStatement = deleteRegionsSQL(projectId);
 
   if (!sqlDeleteRegionsStatement) {
-    throw new HTTP400('Failed to build SQL statement');
+    throw new HTTP400('Failed to build SQL delete statement');
   }
 
   const deleteRegionsResult = await connection.query(sqlDeleteRegionsStatement.text, sqlDeleteRegionsStatement.values);
@@ -594,7 +660,7 @@ export const updateProjectSpeciesData = async (
   const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
 
   if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL delete statement');
   }
 
   const deleteFocalSpeciesPromises = connection.query(
@@ -643,13 +709,13 @@ export const updateProjectIUCNData = async (
   const sqlDeleteStatement = deleteIUCNSQL(projectId);
 
   if (!sqlDeleteStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL delete statement');
   }
 
   const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
 
   if (!deleteResult) {
-    throw new HTTP409('Failed to update project IUCN data');
+    throw new HTTP409('Failed to delete project IUCN data');
   }
 
   const insertIUCNPromises =
@@ -671,7 +737,7 @@ export const updateProjectPartnershipsData = async (
   const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
 
   if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL delete statement');
   }
 
   const deleteIndigenousPartnershipsPromises = connection.query(

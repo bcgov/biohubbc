@@ -53,12 +53,15 @@ export class GetPermitData {
       permitData: permitData
     });
 
+    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY');
+    console.log(permitData);
+
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {
           return {
             permit_number: item.number,
-            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+            sampling_conducted: item.sampling_conducted
           };
         })) ||
       [];

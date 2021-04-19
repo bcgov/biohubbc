@@ -118,6 +118,7 @@ export enum UPDATE_GET_ENTITIES {
  */
 export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
+  permit?: IGetProjectForUpdateResponsePermit;
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
@@ -135,6 +136,15 @@ export interface IGetProjectForUpdateResponseDetails {
   start_date: string;
   end_date: string;
   revision_count: number;
+}
+
+interface IGetProjectForUpdateResponsePermitArrayItem {
+  permit_number: string;
+  sampling_conducted: string;
+}
+
+export interface IGetProjectForUpdateResponsePermit {
+  permits: IGetProjectForUpdateResponsePermitArrayItem[];
 }
 
 export interface IGetProjectForUpdateResponseObjectives {
