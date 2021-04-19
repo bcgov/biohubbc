@@ -364,9 +364,6 @@ export const insertPermitNumber = async (
   sampling_conducted: boolean,
   connection: IDBConnection
 ): Promise<number> => {
-  console.log('############################');
-  console.log(permit_number, project_id, sampling_conducted);
-
   const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
 
   if (!sqlStatement) {

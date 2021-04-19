@@ -75,7 +75,6 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   useEffect(() => {
-    console.log(values);
     props?.onValuesChange?.(values);
   }, [values, props]);
 
