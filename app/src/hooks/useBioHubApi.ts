@@ -2,6 +2,7 @@ import useAxios from './api/useAxios';
 import useProjectApi from './api/useProjectApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
+import useAccessRequestApi from './api/useAdministrativeActivityApi';
 
 /**
  * Returns a set of supported api methods.
@@ -17,9 +18,12 @@ export const useBiohubApi = () => {
 
   const draft = useDraftApi(axios);
 
+  const accessRequest = useAccessRequestApi(axios);
+
   return {
     project,
     codes,
-    draft
+    draft,
+    accessRequest
   };
 };

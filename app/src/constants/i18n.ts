@@ -90,3 +90,7 @@ export const DeleteFundingI18N = {
   deleteErrorText:
     'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const AccessRequestI18N = {
+  accessRequestErrorTitle: 'Error Deleting Funding Source'
+};

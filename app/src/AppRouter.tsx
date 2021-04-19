@@ -3,7 +3,7 @@ import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
-import AccessRequestPage from 'pages/access/AccessRequestPage';
+import AccessRequestForm from 'pages/access/AccessRequestForm';
 import React from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
@@ -21,11 +21,10 @@ const AppRouter: React.FC = () => {
         title={getTitle('Forbidden')}
         component={AccessDenied}
         layout={PublicLayout}></AppRoute>
-
       <AppRoute
         path="/access-request"
         title={getTitle('Access Request')}
-        component={AccessRequestPage}
+        component={AccessRequestForm}
         layout={PublicLayout}></AppRoute>
       <AppRoute
         path="/page-not-found"
