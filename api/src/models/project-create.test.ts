@@ -289,13 +289,41 @@ describe('PostPermitData', () => {
     });
   });
 
+  describe('All values provided are null', () => {
+    let projectPermitData: PostPermitData;
+
+    before(() => {
+      projectPermitData = new PostPermitData({
+        permits: null
+      });
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided are empty arrays', () => {
+    let projectPermitData: PostPermitData;
+
+    before(() => {
+      projectPermitData = new PostPermitData({
+        permits: []
+      });
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
   describe('All values provided with sampling conducted as true', () => {
     let projectPermitData: PostPermitData;
 
     const obj = {
       permits: [
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: 'true'
         }
       ]
@@ -308,7 +336,7 @@ describe('PostPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: true
         }
       ]);
@@ -321,7 +349,7 @@ describe('PostPermitData', () => {
     const obj = {
       permits: [
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: 'false'
         }
       ]
@@ -334,7 +362,7 @@ describe('PostPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: false
         }
       ]);
