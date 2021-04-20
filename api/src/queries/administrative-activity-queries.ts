@@ -43,4 +43,3 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
 
   return sqlStatement;
 };
-

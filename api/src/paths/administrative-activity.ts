@@ -96,17 +96,26 @@ function createAdministrativeActivity(): RequestHandler {
         throw new HTTP400('Failed to build SQL insert statement');
       }
 
-      const createAdministrativeActivityResponse = await connection.query(postAdministrativeActivitySQLStatement.text, postAdministrativeActivitySQLStatement.values);
+      const createAdministrativeActivityResponse = await connection.query(
+        postAdministrativeActivitySQLStatement.text,
+        postAdministrativeActivitySQLStatement.values
+      );
 
       await connection.commit();
 
-      const administrativeActivityResult = (createAdministrativeActivityResponse && createAdministrativeActivityResponse.rows && createAdministrativeActivityResponse.rows[0]) || null;
+      const administrativeActivityResult =
+        (createAdministrativeActivityResponse &&
+          createAdministrativeActivityResponse.rows &&
+          createAdministrativeActivityResponse.rows[0]) ||
+        null;
 
       if (!administrativeActivityResult || !administrativeActivityResult.id) {
         throw new HTTP400('Failed to submit administrative activity');
       }
 
-      return res.status(200).json({ id: administrativeActivityResult.id, date: administrativeActivityResult.create_date });
+      return res
+        .status(200)
+        .json({ id: administrativeActivityResult.id, date: administrativeActivityResult.create_date });
     } catch (error) {
       defaultLog.debug({ label: 'administrativeActivity', message: 'error', error });
       await connection.rollback();

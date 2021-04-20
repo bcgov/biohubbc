@@ -73,7 +73,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
     await connection.query(getProjectTypeSQL().text),
-    await connection.query(getSystemRolesSQL().text),
+    await connection.query(getSystemRolesSQL().text)
   ]);
 
   await connection.commit();

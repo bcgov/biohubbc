@@ -130,26 +130,14 @@ export const AccessRequestPage: React.FC = () => {
     }
   }, [biohubApi, isLoadingCodes, codes]);
 
-  // const formikProps = useFormik<IAccessRequestForm>({
-  //   initialValues: AccessRequestFormInitialValues,
-  //   validationSchema: AccessRequestFormYupSchema,
-  //   validateOnBlur: true,
-  //   validateOnChange: true,
-  //   onSubmit: (values) => {
-  //     alert(JSON.stringify(values, null, 2));
-
-  //     handleSubmitAccessRequest(values);
-  //   }
-  // });
-
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
+    console.log('at the beginning of handle submit ' + values);
     try {
       let response;
-
-      // Get the form data for all steps
-      // Fetch the data from the formikRef for whichever step is the active step
-      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepValues
       const accessRequestFormData = { values };
+
+      console.log('accessRequestFormData');
+      console.log(accessRequestFormData);
 
       response = await biohubApi.accessRequest.createAdministrativeActivity(accessRequestFormData);
 
@@ -185,7 +173,6 @@ export const AccessRequestPage: React.FC = () => {
           validateOnChange={false}
           onSubmit={(values) => {
             alert(JSON.stringify(values, null, 2));
-
             handleSubmitAccessRequest(values);
           }}>
           {(props) => (
@@ -266,10 +253,12 @@ export const AccessRequestPage: React.FC = () => {
                               <MultiAutocompleteFieldVariableSize
                                 id={'regional_offices'}
                                 label={'Regions'}
-                                options={codes?.regional_offices?.map((item) => {
-                                  return { value: item.id, label: item.name };
-                                }) || []}
-                                required={true}
+                                options={
+                                  codes?.regional_offices?.map((item) => {
+                                    return { value: item.id, label: item.name };
+                                  }) || []
+                                }
+                                required={false}
                               />
                             </Grid>
                           )}
