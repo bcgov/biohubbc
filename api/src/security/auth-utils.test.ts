@@ -45,8 +45,8 @@ describe('userHasValidSystemRoles', () => {
     });
   });
 
-  describe('validSystemRoles is a string', () => {
-    describe('userSystemRoles is an array', () => {
+  describe('validSystemRoles is an array', () => {
+    describe('userSystemRoles is a string', () => {
       it('returns false if the user has no roles', () => {
         const response = userHasValidSystemRoles(['admin'], '');
 

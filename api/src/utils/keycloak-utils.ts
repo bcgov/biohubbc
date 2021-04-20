@@ -37,6 +37,6 @@ export const getUserIdentitySource = (keycloakToken: object): SYSTEM_IDENTITY_SO
     return SYSTEM_IDENTITY_SOURCE.DATABASE;
   }
 
-  // Covers users created directly in keycloak, that wouldn't have an
+  // Covers users created directly in keycloak, that wouldn't have identity source
   return SYSTEM_IDENTITY_SOURCE.DATABASE;
 };

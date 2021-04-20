@@ -145,7 +145,8 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 
   const userObject = new UserObject(systemUserWithRoles);
 
-  const hasValidSystemRole = userHasValidSystemRoles(scopes, userObject.role_names);
+  // TODO replace `[]` with the `scopes` param when we are ready to enforce system roles on endpoints
+  const hasValidSystemRole = userHasValidSystemRoles([], userObject.role_names);
 
   if (!hasValidSystemRole) {
     defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });
