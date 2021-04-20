@@ -96,3 +96,41 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get all users.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getUserListSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getUserListSQL', message: 'getUserListSQL' });
+
+  const sqlStatement = SQL`
+    SELECT
+      su.id,
+      su.user_identifier,
+      array_agg(sr.name) as role_names
+    FROM
+      system_user su
+    LEFT JOIN
+      system_user_role sur
+    ON
+      su.id = sur.su_id
+    LEFT JOIN
+      system_role sr
+    ON
+      sur.sr_id = sr.id
+    GROUP BY
+      su.id,
+      su.user_identifier;
+  `;
+
+  defaultLog.debug({
+    label: 'getUserListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

@@ -97,7 +97,6 @@ const AccessRequestList: React.FC = () => {
               <TableCell>Regional Offices</TableCell>
               <TableCell>Request Date</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody data-testid="access-request-table">

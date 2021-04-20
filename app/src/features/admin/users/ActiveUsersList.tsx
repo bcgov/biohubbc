@@ -8,9 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { DATE_FORMAT } from 'constants/dateFormats';
-import React, { useState } from 'react';
-import { getFormattedDate } from 'utils/Utils';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import React, { useState, useEffect } from 'react';
 
 /**
  * Table to display a list of active users.
@@ -18,18 +18,35 @@ import { getFormattedDate } from 'utils/Utils';
  * @return {*}
  */
 const ActiveUsersList: React.FC = () => {
-  const activeUsers = [{
-    id: 1,
-    name: 'Jane Doe',
-    username: 'IDIR/JDOE',
-    company: 'Company A',
-    regionalOffices: 'Office A, Office B',
-    roles: 'System Administrator',
-    create_date: '2020/04/04'
-  }];
+  const biohubApi = useBiohubApi();
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [activeUsers, setActiveUsers] = useState<IGetUserResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    const getActiveUsers = async () => {
+      const activeUsersResponse = await biohubApi.user.getUsersList();
+
+      console.log(activeUsersResponse);
+
+      setActiveUsers(() => {
+        setHasLoaded(true);
+        setIsLoading(false);
+        return activeUsersResponse;
+      });
+    };
+
+    if (hasLoaded || isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    getActiveUsers();
+  }, [biohubApi, isLoading]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -43,7 +60,7 @@ const ActiveUsersList: React.FC = () => {
   return (
     <Paper>
       <Box p={2}>
-        <Typography variant="h2">Access Requests ({activeUsers?.length || 0})</Typography>
+        <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
       </Box>
       <TableContainer>
         <Table>
@@ -55,30 +72,27 @@ const ActiveUsersList: React.FC = () => {
               <TableCell>Regional Offices</TableCell>
               <TableCell>Roles</TableCell>
               <TableCell>Last Active</TableCell>
-              <TableCell></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody data-testid="active-users-table">
             {!activeUsers?.length && (
-              <TableRow>
+              <TableRow data-testid={'active-users-row-0'}>
                 <TableCell colSpan={6} style={{ textAlign: 'center' }}>
                   No Active Users
                 </TableCell>
               </TableRow>
             )}
-            {activeUsers?.map((activeUser: any) => {
-              return (
-                <TableRow key={activeUser.id}>
-                  <TableCell>{activeUser.name  || 'Not Applicable'}</TableCell>
-                  <TableCell>{activeUser.username  || 'Not Applicable'}</TableCell>
-                  <TableCell>{activeUser.company || 'Not Applicable'}</TableCell>
-                  <TableCell>{activeUser.regionalOffices || 'Not Applicable'}</TableCell>
-                  <TableCell>{activeUser.roles || 'Not Applicable'}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat, activeUser.create_date) || 'Not Applicable'}</TableCell>
+            {activeUsers.length > 0 &&
+              activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
+                  <TableCell></TableCell>
+                  <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
+                  <TableCell></TableCell>
+                  <TableCell></TableCell>
+                  <TableCell>{row.role_names.join(', ') || 'Not Applicable'}</TableCell>
                   <TableCell></TableCell>
                 </TableRow>
-              );
-            })}
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

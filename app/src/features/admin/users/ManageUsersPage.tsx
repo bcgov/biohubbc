@@ -3,6 +3,7 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import React from 'react';
+import ActiveUsersList from './ActiveUsersList';
 
 /**
  * Page to display user management data/functionality.
@@ -18,6 +19,9 @@ const ManageUsersPage: React.FC = () => {
         </Box>
         <Box>
           <AccessRequestList />
+        </Box>
+        <Box pt={3}>
+          <ActiveUsersList />
         </Box>
       </Container>
     </Box>
