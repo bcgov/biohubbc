@@ -45,6 +45,20 @@ export const ProjectPermitFormYupSchema = yup.object().shape({
     .isUniquePermitNumber('Permit numbers must be unique')
 });
 
+export const ProjectPermitEditFormYupSchema = yup.object().shape({
+  permits: yup
+    .array()
+    .of(
+      yup.object().shape({
+        permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        sampling_conducted: yup.string().required('Required')
+      })
+    )
+    .isUniquePermitsAndAtLeastOneSamplingConducted(
+      'Permit numbers must be unique and you must have at least one permit with sampling conducted'
+    )
+});
+
 export interface IProjectPermitFormProps {
   /**
    * Emits every time a form value changes.

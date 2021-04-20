@@ -71,7 +71,7 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         </Box>
         <Divider className={classes.sectionDivider} />
         <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectPermits projectForViewData={projectForViewData} codes={codes} />
+          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
         <Divider className={classes.sectionDivider} />
         <Box component="section" className={classes.projectDetailsSection}>

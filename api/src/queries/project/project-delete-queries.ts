@@ -72,6 +72,40 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
 };
 
 /**
+ * SQL query to delete project permit rows (project_permit)
+ *
+ * @param {projectId} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deletePermitSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deletePermitSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_permit
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'deletePermitSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete project stakeholder partnership rows
  *
  * @param {projectId} projectId

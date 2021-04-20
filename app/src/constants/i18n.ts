@@ -90,3 +90,10 @@ export const DeleteFundingI18N = {
   deleteErrorText:
     'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const EditPermitI18N = {
+  editTitle: 'Edit Permits',
+  editErrorTitle: 'Error Editing Permits',
+  editErrorText:
+    'An error has occurred while attempting to edit your permit details, please try again. If the error persists, please contact your system administrator.'
+};
