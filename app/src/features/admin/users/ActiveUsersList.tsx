@@ -30,8 +30,6 @@ const ActiveUsersList: React.FC = () => {
     const getActiveUsers = async () => {
       const activeUsersResponse = await biohubApi.user.getUsersList();
 
-      console.log(activeUsersResponse);
-
       setActiveUsers(() => {
         setHasLoaded(true);
         setIsLoading(false);
