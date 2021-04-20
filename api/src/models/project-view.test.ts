@@ -510,8 +510,8 @@ describe('GetPermitData', () => {
 
     const permits = [
       {
-        number: 1,
-        sampling_conducted: 'true'
+        number: '1',
+        sampling_conducted: true
       }
     ];
 
@@ -522,7 +522,7 @@ describe('GetPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: true
         }
       ]);
@@ -534,8 +534,8 @@ describe('GetPermitData', () => {
 
     const permits = [
       {
-        number: 1,
-        sampling_conducted: 'false'
+        number: '1',
+        sampling_conducted: false
       }
     ];
 
@@ -546,7 +546,7 @@ describe('GetPermitData', () => {
     it('sets permits', function () {
       expect(projectPermitData.permits).to.eql([
         {
-          permit_number: 1,
+          permit_number: '1',
           sampling_conducted: false
         }
       ]);
