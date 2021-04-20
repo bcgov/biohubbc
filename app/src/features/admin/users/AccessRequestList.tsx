@@ -113,10 +113,10 @@ const AccessRequestList: React.FC = () => {
 
               return (
                 <TableRow data-testid={`access-request-row-${index}`} key={accessItem.id}>
-                  <TableCell>{'Some User' || accessItem.name}</TableCell>
-                  <TableCell>{'someuser' || accessItem.username}</TableCell>
-                  <TableCell>{'Company' || accessItem.company}</TableCell>
-                  <TableCell>{'Regional Office' || accessItem.regionalOffices}</TableCell>
+                  <TableCell>{accessItem.name || 'Not Applicable'}</TableCell>
+                  <TableCell>{accessItem.username || 'Not Applicable'}</TableCell>
+                  <TableCell>{accessItem.company || 'Not Applicable'}</TableCell>
+                  <TableCell>{accessItem.regional_offices || 'Not Applicable'}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, accessItem.create_date)}</TableCell>
                   <TableCell>
                     <Chip

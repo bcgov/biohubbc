@@ -25,7 +25,7 @@ export class GetAccessRequestListItem {
   name: string;
   username: string;
   company: string;
-  regionalOffices: string[];
+  regional_offices: string[];
 
   constructor(obj?: any) {
     this.id = obj?.id || null;
@@ -38,6 +38,6 @@ export class GetAccessRequestListItem {
     this.name = obj?.data?.name || null;
     this.username = obj?.data?.username || null;
     this.company = obj?.data?.company || null;
-    this.regionalOffices = (obj?.data?.regionalOffices?.length && obj.regionalOffices) || [];
+    this.regional_offices = (obj?.data?.regional_offices?.length && obj.regional_offices) || [];
   }
 }
