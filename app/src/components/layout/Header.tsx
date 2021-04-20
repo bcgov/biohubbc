@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     '&:hover': {
       textDecoration: 'none'
+    },
+    '&:focus': {
+      outlineOffset: '6px'
     }
   },
   '@media (max-width: 1000px)': {

@@ -6,22 +6,43 @@ exports[`NotFoundPage renders correctly 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthLg"
   >
     <div
-      class="MuiGrid-root MuiGrid-container"
+      class="MuiBox-root MuiBox-root-1"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <svg
+        role="presentation"
+        style="width: 3rem; height: 3rem;"
+        viewBox="0 0 24 24"
       >
-        <h1>
-          Access Denied
-        </h1>
-        <h2>
-          You do not have permission to view this page
-        </h2>
-        <a
-          href="/projects"
+        <path
+          d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z"
+          style="fill: #ff5252;"
+        />
+      </svg>
+      <h1>
+        Access Denied
+      </h1>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        You do not have permissions to access this application.
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-2"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          tabindex="0"
+          type="submit"
         >
-          Go back to the projects page
-        </a>
+          <span
+            class="MuiButton-label"
+          >
+            Request Access
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </div>

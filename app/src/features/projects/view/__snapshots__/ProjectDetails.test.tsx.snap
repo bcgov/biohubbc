@@ -30,7 +30,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Project Objectives"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Project Objectives"
             type="button"
@@ -52,7 +52,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -114,7 +114,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit General Information"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit General Information"
             type="button"
@@ -136,7 +136,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -240,7 +240,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Project Coordinator Information"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Project Coordinator Information"
             type="button"
@@ -262,7 +262,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -326,10 +326,109 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiBox-root MuiBox-root-18 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-19"
+        class="MuiBox-root MuiBox-root-22"
       >
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-23"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Permits
+          </h3>
+          <button
+            aria-label="Edit Permits"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            tabindex="0"
+            title="Edit Permits"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Edit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <div
+          class="MuiTableContainer-root"
+        >
+          <table
+            aria-label="permits-list-table"
+            class="MuiTable-root makeStyles-table-19"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-20"
+                  scope="col"
+                >
+                  Permit Number
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-20"
+                  scope="col"
+                >
+                  Sampling Conducted
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  123
+                </th>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  Yes
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <hr
+      class="MuiDivider-root makeStyles-sectionDivider-2"
+    />
+    <section
+      class="MuiBox-root MuiBox-root-24 makeStyles-projectDetailsSection-1"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-25"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-26"
         >
           <h3
             class="MuiTypography-root MuiTypography-h3"
@@ -338,7 +437,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Location / Project Boundary"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Location / Project Boundary"
             type="button"
@@ -360,7 +459,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -402,7 +501,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </div>
         </dl>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-27"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -584,13 +683,13 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiDivider-root makeStyles-sectionDivider-2"
     />
     <section
-      class="MuiBox-root MuiBox-root-22 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-28 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-23"
+        class="MuiBox-root MuiBox-root-29"
       >
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-30"
         >
           <h3
             class="MuiTypography-root MuiTypography-h3"
@@ -599,7 +698,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Species"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Species"
             type="button"
@@ -621,7 +720,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -680,10 +779,10 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiDivider-root makeStyles-sectionDivider-2"
     />
     <section
-      class="MuiBox-root MuiBox-root-25 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-31 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-27"
+        class="MuiBox-root MuiBox-root-33"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -691,8 +790,8 @@ exports[`ProjectDetails renders correctly 1`] = `
           IUCN Classifications
         </h3>
         <button
-          aria-label="Edit General Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          aria-label="Edit IUCN Classifications"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
           tabindex="0"
           title="Edit IUCN Classifications"
           type="button"
@@ -714,7 +813,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                 />
               </svg>
             </span>
-            EDIT
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -722,16 +821,16 @@ exports[`ProjectDetails renders correctly 1`] = `
         </button>
       </div>
       <ul
-        class="MuiBox-root MuiBox-root-28 listNoBullets"
+        class="MuiBox-root MuiBox-root-34 listNoBullets"
       >
         <li
-          class="MuiBox-root MuiBox-root-29 makeStyles-iucnListItem-26"
+          class="MuiBox-root MuiBox-root-35 makeStyles-iucnListItem-32"
         >
           <hr
             class="MuiDivider-root"
           />
           <div
-            class="MuiBox-root MuiBox-root-30"
+            class="MuiBox-root MuiBox-root-36"
           >
             <span
               class="MuiTypography-root MuiTypography-body1"
@@ -749,13 +848,13 @@ exports[`ProjectDetails renders correctly 1`] = `
           </div>
         </li>
         <li
-          class="MuiBox-root MuiBox-root-31 makeStyles-iucnListItem-26"
+          class="MuiBox-root MuiBox-root-37 makeStyles-iucnListItem-32"
         >
           <hr
             class="MuiDivider-root"
           />
           <div
-            class="MuiBox-root MuiBox-root-32"
+            class="MuiBox-root MuiBox-root-38"
           >
             <span
               class="MuiTypography-root MuiTypography-body1"
@@ -778,13 +877,13 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiDivider-root makeStyles-sectionDivider-2"
     />
     <section
-      class="MuiBox-root MuiBox-root-33 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-39 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-34"
+        class="MuiBox-root MuiBox-root-40"
       >
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-41"
         >
           <h3
             class="MuiTypography-root MuiTypography-h3"
@@ -793,7 +892,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </h3>
           <button
             aria-label="Edit Partnerships"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
             title="Edit Partnerships"
             type="button"
@@ -815,7 +914,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   />
                 </svg>
               </span>
-              EDIT
+              Edit
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -874,10 +973,10 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiDivider-root makeStyles-sectionDivider-2"
     />
     <section
-      class="MuiBox-root MuiBox-root-36 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-42 makeStyles-projectDetailsSection-1"
     >
-      <div
-        class="MuiBox-root MuiBox-root-37"
+      <header
+        class="MuiBox-root MuiBox-root-43"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -914,15 +1013,15 @@ exports[`ProjectDetails renders correctly 1`] = `
             class="MuiTouchRipple-root"
           />
         </button>
-      </div>
+      </header>
       <div
-        class="MuiBox-root MuiBox-root-38"
+        class="MuiBox-root MuiBox-root-44"
       >
         <hr
           class="MuiDivider-root"
         />
         <div
-          class="MuiBox-root MuiBox-root-39"
+          class="MuiBox-root MuiBox-root-45"
         >
           <h4
             class="MuiTypography-root MuiTypography-h4"
@@ -930,13 +1029,13 @@ exports[`ProjectDetails renders correctly 1`] = `
             agency name
           </h4>
           <div
-            class="MuiBox-root MuiBox-root-40"
+            class="MuiBox-root MuiBox-root-46"
           >
             <button
-              aria-label="Edit Funding Source Information"
-              class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+              aria-label="Edit Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               tabindex="0"
-              title="Edit Funding Source Information"
+              title="Edit Funding Source"
               type="button"
             >
               <span
@@ -956,18 +1055,18 @@ exports[`ProjectDetails renders correctly 1`] = `
                     />
                   </svg>
                 </span>
-                EDIT
+                Edit
               </span>
               <span
                 class="MuiTouchRipple-root"
               />
             </button>
             <button
-              aria-label="Delete Funding Source"
-              class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+              aria-label="Remove Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               data-testid="delete-funding-source"
               tabindex="0"
-              title="Delete Funding Source"
+              title="Remove Funding Source"
               type="button"
             >
               <span
@@ -987,6 +1086,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                     />
                   </svg>
                 </span>
+                Remove
               </span>
               <span
                 class="MuiTouchRipple-root"

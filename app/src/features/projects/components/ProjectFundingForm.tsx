@@ -193,8 +193,8 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
                             <IconButton
                               color="primary"
                               data-testid={'delete-button-' + index}
-                              title="Delete Funding Source"
-                              aria-label="Delete Funding Source"
+                              title="Remove Funding Source"
+                              aria-label="Remove Funding Source"
                               onClick={() => arrayHelpers.remove(index)}>
                               <Icon path={mdiTrashCanOutline} size={1} />
                             </IconButton>

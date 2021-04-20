@@ -91,7 +91,7 @@ describe('Partnerships', () => {
       expect(getByText('Partnerships')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
@@ -109,7 +109,7 @@ describe('Partnerships', () => {
       expect(queryByText('Edit Partnerships')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Partnerships')).toBeVisible();
@@ -143,7 +143,7 @@ describe('Partnerships', () => {
       expect(getByText('Partnerships')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Error Editing Partnerships')).toBeVisible();
@@ -167,7 +167,7 @@ describe('Partnerships', () => {
       expect(getByText('Partnerships')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
@@ -199,7 +199,7 @@ describe('Partnerships', () => {
       expect(getByText('Partnerships')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [

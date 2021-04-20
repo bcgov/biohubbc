@@ -11,8 +11,8 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       IUCN Classifications
     </h3>
     <button
-      aria-label="Edit General Information"
-      class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+      aria-label="Edit IUCN Classifications"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
       tabindex="0"
       title="Edit IUCN Classifications"
       type="button"
@@ -34,7 +34,7 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
             />
           </svg>
         </span>
-        EDIT
+        Edit
       </span>
       <span
         class="MuiTouchRipple-root"
@@ -107,8 +107,8 @@ exports[`IUCNClassification renders correctly with no classification details 1`]
       IUCN Classifications
     </h3>
     <button
-      aria-label="Edit General Information"
-      class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+      aria-label="Edit IUCN Classifications"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
       tabindex="0"
       title="Edit IUCN Classifications"
       type="button"
@@ -130,7 +130,7 @@ exports[`IUCNClassification renders correctly with no classification details 1`]
             />
           </svg>
         </span>
-        EDIT
+        Edit
       </span>
       <span
         class="MuiTouchRipple-root"

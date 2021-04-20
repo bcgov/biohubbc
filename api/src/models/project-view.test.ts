@@ -6,6 +6,7 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
+  GetPermitData,
   GetProjectData
 } from './project-view';
 
@@ -487,6 +488,68 @@ describe('GetProjectData', () => {
 
     it('sets end_date', () => {
       expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
+    });
+  });
+});
+
+describe('GetPermitData', () => {
+  describe('No values provided', () => {
+    let projectPermitData: GetPermitData;
+
+    before(() => {
+      projectPermitData = new GetPermitData((null as unknown) as any[]);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as true', () => {
+    let projectPermitData: GetPermitData;
+
+    const permits = [
+      {
+        number: '1',
+        sampling_conducted: true
+      }
+    ];
+
+    before(() => {
+      projectPermitData = new GetPermitData(permits);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: true
+        }
+      ]);
+    });
+  });
+
+  describe('All values provided with sampling conducted as false', () => {
+    let projectPermitData: GetPermitData;
+
+    const permits = [
+      {
+        number: '1',
+        sampling_conducted: false
+      }
+    ];
+
+    before(() => {
+      projectPermitData = new GetPermitData(permits);
+    });
+
+    it('sets permits', function () {
+      expect(projectPermitData.permits).to.eql([
+        {
+          permit_number: '1',
+          sampling_conducted: false
+        }
+      ]);
     });
   });
 });

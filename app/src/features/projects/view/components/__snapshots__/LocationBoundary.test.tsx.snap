@@ -15,7 +15,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -37,7 +37,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -282,7 +282,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -304,7 +304,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -561,7 +561,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -583,7 +583,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -828,7 +828,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -850,7 +850,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -1095,7 +1095,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -1117,7 +1117,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -1339,7 +1339,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       </h3>
       <button
         aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Location / Project Boundary"
         type="button"
@@ -1361,7 +1361,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"

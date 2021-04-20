@@ -188,7 +188,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       />
       <ErrorDialog {...errorDialogProps} />
 
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+      <Box component="header" display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h3">Funding Sources</Typography>
         <Button
           variant="outlined"
@@ -206,24 +206,30 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
           <Fragment key={item.id}>
             <Box mt={3}>
               <Divider />
-              <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2rem">
+              <Box display="flex" alignItems="center" justifyContent="space-between" my={2} height="2.25rem">
                 <Typography variant="h4">{item.agency_name}</Typography>
                 <Box>
                   <Button
-                    className="editButtonSmall"
+                    variant="text"
+                    color="primary"
+                    className="sectionHeaderButton"
                     onClick={() => handleDialogEditOpen(index)}
-                    title="Edit Funding Source Information"
-                    aria-label="Edit Funding Source Information"
+                    title="Edit Funding Source"
+                    aria-label="Edit Funding Source"
                     startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                    EDIT
+                    Edit
                   </Button>
                   <Button
-                    className="trashButtonSmall"
+                    variant="text"
+                    color="primary"
+                    className="sectionHeaderButton"
                     data-testid="delete-funding-source"
                     onClick={() => handleDeleteDialogOpen(index)}
-                    title="Delete Funding Source"
-                    aria-label="Delete Funding Source"
-                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}></Button>
+                    title="Remove Funding Source"
+                    aria-label="Remove Funding Source"
+                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}>
+                    Remove
+                  </Button>
                 </Box>
               </Box>
               <dl>

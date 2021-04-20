@@ -84,13 +84,16 @@ export const EditFundingI18N = {
 };
 
 export const DeleteFundingI18N = {
-  deleteTitle: 'Delete Funding Source',
-  deleteText: 'Are you sure you want to delete?',
-  deleteErrorTitle: 'Error Deleting Funding Source',
+  deleteTitle: 'Remove Funding Source',
+  deleteText: 'Are you sure you want to remove this funding source?',
+  deleteErrorTitle: 'Error Removing Funding Source',
   deleteErrorText:
     'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const AccessRequestI18N = {
-  accessRequestErrorTitle: 'Error Deleting Funding Source'
+export const EditPermitI18N = {
+  editTitle: 'Edit Permits',
+  editErrorTitle: 'Error Editing Permits',
+  editErrorText:
+    'An error has occurred while attempting to edit your permit details, please try again. If the error persists, please contact your system administrator.'
 };

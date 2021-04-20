@@ -223,7 +223,7 @@ describe('LocationBoundary', () => {
       expect(getByText('Location / Project Boundary')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
@@ -241,7 +241,7 @@ describe('LocationBoundary', () => {
       expect(queryByText('Edit Location / Project Boundary')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Edit Location / Project Boundary')).toBeVisible();
@@ -277,7 +277,7 @@ describe('LocationBoundary', () => {
       expect(getByText('Location / Project Boundary')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(getByText('Error Editing Location / Project Boundary')).toBeVisible();
@@ -301,7 +301,7 @@ describe('LocationBoundary', () => {
       expect(getByText('Location / Project Boundary')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
@@ -333,7 +333,7 @@ describe('LocationBoundary', () => {
       expect(getByText('Location / Project Boundary')).toBeVisible();
     });
 
-    fireEvent.click(getByText('EDIT'));
+    fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [

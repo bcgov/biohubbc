@@ -25,11 +25,9 @@ legend.MuiFormLabel-root {
   }
 }
 
-.MuiButton-root.editButtonSmall {
-  font-weight: 700 !important;
-
-  .MuiButton-startIcon {
-    margin-top: -1px;
+.sectionHeaderButton {
+  & + button {
+    margin-left: 0.5rem;
   }
 }
 

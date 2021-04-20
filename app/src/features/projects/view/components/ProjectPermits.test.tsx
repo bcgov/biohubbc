@@ -1,10 +1,10 @@
-import { render, cleanup, waitFor, fireEvent } from '@testing-library/react';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import React from 'react';
-import IUCNClassification from './IUCNClassification';
-import { codes } from 'test-helpers/code-helpers';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import ProjectPermits from './ProjectPermits';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -21,12 +21,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 const mockRefresh = jest.fn();
 
 const renderContainer = () => {
-  return render(
-    <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
-  );
+  return render(<ProjectPermits projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />);
 };
 
-describe('IUCNClassification', () => {
+describe('ProjectPermits', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
@@ -37,13 +35,20 @@ describe('IUCNClassification', () => {
     cleanup();
   });
 
-  it('renders correctly with no classification details', () => {
+  it('renders correctly with sampling conducted true', () => {
+    const { asFragment } = renderContainer();
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders correctly with sampling conducted false', () => {
     const { asFragment } = render(
-      <IUCNClassification
+      <ProjectPermits
         projectForViewData={{
           ...getProjectForViewResponse,
-          iucn: {
-            classificationDetails: []
+          permit: {
+            ...getProjectForViewResponse.permit,
+            permits: [{ permit_number: '123', sampling_conducted: false }]
           }
         }}
         codes={codes}
@@ -54,20 +59,30 @@ describe('IUCNClassification', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with classification details', () => {
-    const { asFragment } = renderContainer();
+  it('renders correctly with no permits', () => {
+    const { asFragment } = render(
+      <ProjectPermits
+        projectForViewData={{
+          ...getProjectForViewResponse,
+          permit: {
+            permits: []
+          }
+        }}
+        codes={codes}
+        refresh={mockRefresh}
+      />
+    );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('editing the IUCN classification works in the dialog', async () => {
+  it('editing the permits works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      iucn: {
-        classificationDetails: [
+      permit: {
+        permits: [
           {
-            classification: 1,
-            subClassification1: 1,
-            subClassification2: 1
+            permit_number: '123',
+            sampling_conducted: 'true'
           }
         ]
       }
@@ -76,31 +91,31 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.iucn
+        UPDATE_GET_ENTITIES.permit
       ]);
     });
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classifications')).toBeVisible();
+      expect(getByText('Edit Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Edit IUCN Classifications')).not.toBeInTheDocument();
+      expect(queryByText('Edit Permits')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classifications')).toBeVisible();
+      expect(getByText('Edit Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -108,12 +123,11 @@ describe('IUCNClassification', () => {
     await waitFor(() => {
       expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
-        iucn: {
-          classificationDetails: [
+        permit: {
+          permits: [
             {
-              classification: 1,
-              subClassification1: 1,
-              subClassification2: 1
+              permit_number: '123',
+              sampling_conducted: 'true'
             }
           ]
         }
@@ -125,35 +139,35 @@ describe('IUCNClassification', () => {
 
   it('displays an error dialog when fetching the update data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      iucn: null
+      permit: null
     });
 
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing IUCN Classifications')).toBeVisible();
+      expect(getByText('Error Editing Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(queryByText('Error Editing IUCN Classifications')).not.toBeInTheDocument();
+      expect(queryByText('Error Editing Permits')).not.toBeInTheDocument();
     });
   });
 
-  it('shows error dialog with API error message when getting IUCN data for update fails', async () => {
+  it('shows error dialog with API error message when getting permit data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -169,14 +183,13 @@ describe('IUCNClassification', () => {
     });
   });
 
-  it('shows error dialog with API error message when updating IUCN data fails', async () => {
+  it('shows error dialog with API error message when updating permit data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
-      iucn: {
-        classificationDetails: [
+      permit: {
+        permits: [
           {
-            classification: 1,
-            subClassification1: 1,
-            subClassification2: 1
+            permit_number: '123',
+            sampling_conducted: 'true'
           }
         ]
       }
@@ -186,19 +199,19 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.iucn
+        UPDATE_GET_ENTITIES.permit
       ]);
     });
 
     await waitFor(() => {
-      expect(getByText('Edit IUCN Classifications')).toBeVisible();
+      expect(getByText('Edit Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));

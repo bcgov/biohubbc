@@ -15,7 +15,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
       </h3>
       <button
         aria-label="Edit Project Coordinator Information"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
         title="Edit Project Coordinator Information"
         type="button"
@@ -37,7 +37,7 @@ exports[`ProjectCoordinator renders correctly 1`] = `
               />
             </svg>
           </span>
-          EDIT
+          Edit
         </span>
         <span
           class="MuiTouchRipple-root"

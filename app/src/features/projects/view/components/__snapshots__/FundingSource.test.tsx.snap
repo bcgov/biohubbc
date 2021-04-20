@@ -2,7 +2,7 @@
 
 exports[`FundingSource renders correctly 1`] = `
 <DocumentFragment>
-  <div
+  <header
     class="MuiBox-root MuiBox-root-1"
   >
     <h3
@@ -40,7 +40,7 @@ exports[`FundingSource renders correctly 1`] = `
         class="MuiTouchRipple-root"
       />
     </button>
-  </div>
+  </header>
   <div
     class="MuiBox-root MuiBox-root-2"
   >
@@ -59,10 +59,10 @@ exports[`FundingSource renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-4"
       >
         <button
-          aria-label="Edit Funding Source Information"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text editButtonSmall"
+          aria-label="Edit Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
           tabindex="0"
-          title="Edit Funding Source Information"
+          title="Edit Funding Source"
           type="button"
         >
           <span
@@ -82,18 +82,18 @@ exports[`FundingSource renders correctly 1`] = `
                 />
               </svg>
             </span>
-            EDIT
+            Edit
           </span>
           <span
             class="MuiTouchRipple-root"
           />
         </button>
         <button
-          aria-label="Delete Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text trashButtonSmall"
+          aria-label="Remove Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
           data-testid="delete-funding-source"
           tabindex="0"
-          title="Delete Funding Source"
+          title="Remove Funding Source"
           type="button"
         >
           <span
@@ -113,6 +113,7 @@ exports[`FundingSource renders correctly 1`] = `
                 />
               </svg>
             </span>
+            Remove
           </span>
           <span
             class="MuiTouchRipple-root"

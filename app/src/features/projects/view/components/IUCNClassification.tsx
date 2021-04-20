@@ -137,31 +137,32 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
         <Typography variant="h3">IUCN Classifications</Typography>
         <Button
-          className="editButtonSmall"
+          variant="text"
+          color="primary"
+          className="sectionHeaderButton"
           onClick={() => handleDialogEditOpen()}
           title="Edit IUCN Classifications"
-          aria-label="Edit General Information"
+          aria-label="Edit IUCN Classifications"
           startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-          EDIT
+          Edit
         </Button>
       </Box>
 
-      {iucn.classificationDetails.length > 0 && (
+      {hasIucnClassifications && (
         <Box component="ul" className="listNoBullets">
-          {hasIucnClassifications &&
-            iucn.classificationDetails.map((classificationDetail: any, index: number) => {
-              return (
-                <Box component="li" key={index} className={classes.iucnListItem}>
-                  <Divider />
-                  <Box>
-                    <Typography component="span" variant="body1">
-                      {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
-                      <span>{'>'}</span> {classificationDetail.subClassification2}
-                    </Typography>
-                  </Box>
+          {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+            return (
+              <Box component="li" key={index} className={classes.iucnListItem}>
+                <Divider />
+                <Box>
+                  <Typography component="span" variant="body1">
+                    {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
+                    <span>{'>'}</span> {classificationDetail.subClassification2}
+                  </Typography>
                 </Box>
-              );
-            })}
+              </Box>
+            );
+          })}
         </Box>
       )}
 

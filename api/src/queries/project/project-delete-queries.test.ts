@@ -9,7 +9,8 @@ import {
   deleteIUCNSQL,
   deleteRegionsSQL,
   deleteStakeholderPartnershipsSQL,
-  deleteFundingSourceSQL
+  deleteFundingSourceSQL,
+  deletePermitSQL
 } from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {
@@ -21,6 +22,20 @@ describe('deleteIUCNSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deleteIUCNSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deletePermitSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = deletePermitSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = deletePermitSQL(1);
 
     expect(response).to.not.be.null;
   });

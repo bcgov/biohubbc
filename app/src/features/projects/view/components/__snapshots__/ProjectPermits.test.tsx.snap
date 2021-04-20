@@ -1,23 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Partnerships renders correctly with default empty values 1`] = `
+exports[`ProjectPermits renders correctly with no permits 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root MuiBox-root-14"
   >
     <div
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiBox-root MuiBox-root-15"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Permits
       </h3>
       <button
-        aria-label="Edit Partnerships"
+        aria-label="Edit Permits"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Partnerships"
+        title="Edit Permits"
         type="button"
       >
         <span
@@ -44,64 +44,41 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
         />
       </button>
     </div>
-  </div>
-  <dl
-    class="ddInline"
-  >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    <ul
+      class="MuiBox-root MuiBox-root-16 listNoBullets"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <li
+        class="MuiBox-root MuiBox-root-17"
       >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Indigenous Partnerships
-        </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1"
         >
-          No Indigenous Partnerships
+          No Permits
         </dd>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Stakeholder Partnerships
-        </dt>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          No Stakeholder Partnerships
-        </dd>
-      </div>
-    </div>
-  </dl>
+      </li>
+    </ul>
+  </div>
 </DocumentFragment>
 `;
 
-exports[`Partnerships renders correctly with existing partnership values 1`] = `
+exports[`ProjectPermits renders correctly with sampling conducted false 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root MuiBox-root-9"
   >
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiBox-root MuiBox-root-10"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Permits
       </h3>
       <button
-        aria-label="Edit Partnerships"
+        aria-label="Edit Permits"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Partnerships"
+        title="Edit Permits"
         type="button"
       >
         <span
@@ -128,74 +105,77 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
         />
       </button>
     </div>
-  </div>
-  <dl
-    class="ddInline"
-  >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiTableContainer-root"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <table
+        aria-label="permits-list-table"
+        class="MuiTable-root makeStyles-table-6"
       >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        <thead
+          class="MuiTableHead-root"
         >
-          Indigenous Partnerships
-        </dt>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
+          <tr
+            class="MuiTableRow-root MuiTableRow-head"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
+              scope="col"
+            >
+              Permit Number
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
+              scope="col"
+            >
+              Sampling Conducted
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          class="MuiTableBody-root"
         >
-          partner 1
-        </dd>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          partner 2
-        </dd>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Stakeholder Partnerships
-        </dt>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          partner 3
-        </dd>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          partner 4
-        </dd>
-      </div>
+          <tr
+            class="MuiTableRow-root"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-body"
+              role="cell"
+              scope="row"
+            >
+              123
+            </th>
+            <td
+              class="MuiTableCell-root MuiTableCell-body"
+            >
+              No
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </dl>
+  </div>
 </DocumentFragment>
 `;
 
-exports[`Partnerships renders correctly with invalid null values 1`] = `
+exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-4"
   >
     <div
-      class="MuiBox-root MuiBox-root-4"
+      class="MuiBox-root MuiBox-root-5"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Permits
       </h3>
       <button
-        aria-label="Edit Partnerships"
+        aria-label="Edit Permits"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Partnerships"
+        title="Edit Permits"
         type="button"
       >
         <span
@@ -222,42 +202,55 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
         />
       </button>
     </div>
-  </div>
-  <dl
-    class="ddInline"
-  >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiTableContainer-root"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <table
+        aria-label="permits-list-table"
+        class="MuiTable-root makeStyles-table-1"
       >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        <thead
+          class="MuiTableHead-root"
         >
-          Indigenous Partnerships
-        </dt>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
+          <tr
+            class="MuiTableRow-root MuiTableRow-head"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
+              scope="col"
+            >
+              Permit Number
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
+              scope="col"
+            >
+              Sampling Conducted
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          class="MuiTableBody-root"
         >
-          No Indigenous Partnerships
-        </dd>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <dt
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Stakeholder Partnerships
-        </dt>
-        <dd
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          No Stakeholder Partnerships
-        </dd>
-      </div>
+          <tr
+            class="MuiTableRow-root"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-body"
+              role="cell"
+              scope="row"
+            >
+              123
+            </th>
+            <td
+              class="MuiTableCell-root MuiTableCell-body"
+            >
+              Yes
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </dl>
+  </div>
 </DocumentFragment>
 `;

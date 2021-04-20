@@ -15,6 +15,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import Species from './components/Species';
+import ProjectPermits from './components/ProjectPermits';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -67,6 +68,10 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Divider className={classes.sectionDivider} />
         <Box component="section" className={classes.projectDetailsSection}>
           <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+        </Box>
+        <Divider className={classes.sectionDivider} />
+        <Box component="section" className={classes.projectDetailsSection}>
+          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
         </Box>
         <Divider className={classes.sectionDivider} />
         <Box component="section" className={classes.projectDetailsSection}>
