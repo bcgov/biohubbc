@@ -1,32 +1,34 @@
-import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
-import { Formik } from 'formik';
-import React from 'react';
-import yup from 'utils/YupSchema';
-import TextField from '@material-ui/core/TextField';
-import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-//import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-//import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormLabel from '@material-ui/core/FormLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+//import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import Paper from '@material-ui/core/Paper';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { Formik } from 'formik';
+//import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import React, {
+  useEffect,
+  //,useRef,
+  useState
+} from 'react';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -82,33 +84,11 @@ const AccessRequestFormYupSchema = yup.object().shape({
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
-export interface IAccessRequestFormProps {
-  role: IMultiAutocompleteFieldOption[];
-  regional_offices: IMultiAutocompleteFieldOption[];
-  codes: IGetAllCodeSetsResponse;
-};
-
-const temp_system_roles = [
-  {
-    id: 1,
-    name: 'System Administrator'
-  },
-  {
-    id: 2,
-    name: 'Project Administrator'
-  }
-];
-
-const temp_offices = [
-  {
-    value: 1,
-    label: 'Office 1'
-  },
-  {
-    value: 2,
-    label: 'Office 2'
-  }
-];
+// export interface IAccessRequestFormProps {
+//   role: IMultiAutocompleteFieldOption[];
+//   regional_offices: IMultiAutocompleteFieldOption[];
+//   //codes: IGetAllCodeSetsResponse;
+// }
 
 // const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
 //   setOpenErrorDialogProps({
@@ -125,9 +105,30 @@ const temp_offices = [
  *
  * @return {*}
  */
-export const AccessRequestPage: React.FC<IAccessRequestFormProps> = (props) => {
+export const AccessRequestPage: React.FC = () => {
   //const { codes } = props;
   const classes = useStyles();
+  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  const biohubApi = useBiohubApi();
+
+  useEffect(() => {
+    const getAllCodeSets = async () => {
+      const response = await biohubApi.codes.getAllCodeSets();
+
+      // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
+
+      setCodes(() => {
+        setIsLoadingCodes(false);
+        return response;
+      });
+    };
+
+    if (!isLoadingCodes && !codes) {
+      getAllCodeSets();
+      setIsLoadingCodes(true);
+    }
+  }, [biohubApi, isLoadingCodes, codes]);
 
   // const formikProps = useFormik<IAccessRequestForm>({
   //   initialValues: AccessRequestFormInitialValues,
@@ -174,10 +175,6 @@ export const AccessRequestPage: React.FC<IAccessRequestFormProps> = (props) => {
     }
   };
 
-  //const { values, touched, errors, handleChange, handleSubmit } = formikProps;
-
-  const biohubApi = useBiohubApi();
-
   return (
     <Box>
       <Container maxWidth="md">
@@ -185,129 +182,144 @@ export const AccessRequestPage: React.FC<IAccessRequestFormProps> = (props) => {
           initialValues={AccessRequestFormInitialValues}
           validationSchema={AccessRequestFormYupSchema}
           validateOnBlur={true}
-          validateOnChange={true}
+          validateOnChange={false}
           onSubmit={(values) => {
             alert(JSON.stringify(values, null, 2));
 
             handleSubmitAccessRequest(values);
-          }}
-        >
-        {(props) => (
-          <>
-            <Box>
-              <h1>Request Access to BioHub</h1>
-              <Typography variant="subtitle1">
-                You will need to provide some additional details before accessing this application. Complete the form below
-                to request access.
-              </Typography>
-              <Paper elevation={2} square={true} className={classes.finishContainer}>
-                <h2>Request Details</h2>
-                <Box mb={3}>
-                  <form onSubmit={props.handleSubmit}>
-                    <Box my={3}>
-                      <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                          <h3> Select which role you want to be assigned</h3>
-                          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                            <InputLabel id="role-label">Role</InputLabel>
-                            <Select
-                              id="role"
-                              name="role"
-                              labelId="role-label"
-                              label="Role"
-                              value={props.values.role}
-                              labelWidth={300}
-                              onChange={props.handleChange}
-                              error={props.touched.role && Boolean(props.errors.role)}
-                              displayEmpty
-                              inputProps={{ 'aria-label': 'Role' }}>
-                              {temp_system_roles.map((item) => (
-                                <MenuItem key={item.id} value={item.id}>
-                                  {item.name}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            <FormHelperText>{props.errors.role}</FormHelperText>
-                          </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                          <FormControl
-                            required={true}
-                            component="fieldset"
-                            error={props.touched.work_from_regional_office && Boolean(props.errors.work_from_regional_office)}>
-                            <FormLabel component="legend" className={classes.legend}>
-                              Do you work for a Regional Office?
-                            </FormLabel>
-                            <Box mt={2}>
-                              <RadioGroup
-                                name="work_from_regional_office"
-                                aria-label="work_from_regional_office"
-                                value={props.values.work_from_regional_office}
-                                onChange={props.handleChange}>
-                                <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
-                                <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
-                                <FormHelperText>{props.errors.work_from_regional_office}</FormHelperText>
-                              </RadioGroup>
-                            </Box>
-                          </FormControl>
-                        </Grid>
-
-                        {props.values.work_from_regional_office === "true" && (
+          }}>
+          {(props) => (
+            <>
+              <Box>
+                <h1>Request Access to BioHub</h1>
+                <Typography variant="subtitle1">
+                  You will need to provide some additional details before accessing this application. Complete the form
+                  below to request access.
+                </Typography>
+                <Paper elevation={2} square={true} className={classes.finishContainer}>
+                  <h2>Request Details</h2>
+                  <Box mb={3}>
+                    <form onSubmit={props.handleSubmit}>
+                      <Box my={3}>
+                        <Grid container spacing={3}>
                           <Grid item xs={12}>
-                            <h3>Which Regional Offices do you work for? </h3>
-                            <MultiAutocompleteFieldVariableSize
-                              id="regional_offices"
-                              label="Regional offices"
-                              options={temp_offices}
-                              required={false}
+                            <h3> Select which role you want to be assigned</h3>
+                            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+                              <InputLabel id="role-label">Role</InputLabel>
+                              <Select
+                                id="role"
+                                name="role"
+                                labelId="role-label"
+                                label="Role"
+                                value={props.values.role}
+                                labelWidth={300}
+                                onChange={props.handleChange}
+                                error={props.touched.role && Boolean(props.errors.role)}
+                                displayEmpty
+                                inputProps={{ 'aria-label': 'Role' }}>
+                                {codes?.system_roles.map((item) => (
+                                  <MenuItem key={item.id} value={item.id}>
+                                    {item.name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              <FormHelperText>{props.errors.role}</FormHelperText>
+                            </FormControl>
+                          </Grid>
+
+                          <Grid item xs={12}>
+                            <FormControl
+                              required={true}
+                              component="fieldset"
+                              error={
+                                props.touched.work_from_regional_office &&
+                                Boolean(props.errors.work_from_regional_office)
+                              }>
+                              <FormLabel component="legend" className={classes.legend}>
+                                Do you work for a Regional Office?
+                              </FormLabel>
+                              <Box mt={2}>
+                                <RadioGroup
+                                  name="work_from_regional_office"
+                                  aria-label="work_from_regional_office"
+                                  value={props.values.work_from_regional_office}
+                                  onChange={props.handleChange}>
+                                  <FormControlLabel
+                                    value="true"
+                                    control={<Radio required={true} color="primary" />}
+                                    label="Yes"
+                                  />
+                                  <FormControlLabel
+                                    value="false"
+                                    control={<Radio required={true} color="primary" />}
+                                    label="No"
+                                  />
+                                  <FormHelperText>{props.errors.work_from_regional_office}</FormHelperText>
+                                </RadioGroup>
+                              </Box>
+                            </FormControl>
+                          </Grid>
+
+                          {props.values.work_from_regional_office === 'true' && (
+                            <Grid item xs={12}>
+                              <h3>Which Regional Offices do you work for? </h3>
+                              <MultiAutocompleteFieldVariableSize
+                                id={'regional_offices'}
+                                label={'Regions'}
+                                options={codes?.regional_offices?.map((item) => {
+                                  return { value: item.id, label: item.name };
+                                }) || []}
+                                required={true}
+                              />
+                            </Grid>
+                          )}
+
+                          <Grid item xs={12}>
+                            <h3>Additional comments</h3>
+                            <TextField
+                              fullWidth
+                              id="comments"
+                              name="comments"
+                              label="Comments "
+                              variant="outlined"
+                              multiline
+                              rows={4}
+                              value={props.values.comments}
+                              onChange={props.handleChange}
+                              error={props.touched.comments && Boolean(props.errors.comments)}
+                              helperText={props.errors.comments}
                             />
                           </Grid>
-                        )}
-
-                        <Grid item xs={12}>
-                          <h3>Additional comments</h3>
-                          <TextField
-                            fullWidth
-                            id="comments"
-                            name="comments"
-                            label="Comments "
-                            variant="outlined"
-                            multiline
-                            rows={4}
-                            value={props.values.comments}
-                            onChange={props.handleChange}
-                            error={props.touched.comments && Boolean(props.errors.comments)}
-                            helperText={props.errors.comments}
-                          />
                         </Grid>
-                      </Grid>
-                      <Box my={4}>
-                        <Divider />
-                      </Box>
-                      <Box display="flex" justifyContent="flex-end">
-                        <Box>
-                          <Button type="submit" variant="contained" color="primary" className={classes.actionButton}>
-                            Submit Request
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={async () => {
-                              window.location.href = "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=" + encodeURI(window.location.origin) + "%2Faccess-request";
-                            }}
-                            className={classes.actionButton}>
-                            Log out
-                          </Button>
+                        <Box my={4}>
+                          <Divider />
+                        </Box>
+                        <Box display="flex" justifyContent="flex-end">
+                          <Box>
+                            <Button type="submit" variant="contained" color="primary" className={classes.actionButton}>
+                              Submit Request
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              color="primary"
+                              onClick={async () => {
+                                window.location.href =
+                                  'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
+                                  encodeURI(window.location.origin) +
+                                  '%2Faccess-request';
+                              }}
+                              className={classes.actionButton}>
+                              Log out
+                            </Button>
+                          </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  </form>
-                </Box>
-              </Paper>
-            </Box>
-          </>
-        )}
+                    </form>
+                  </Box>
+                </Paper>
+              </Box>
+            </>
+          )}
         </Formik>
       </Container>
     </Box>

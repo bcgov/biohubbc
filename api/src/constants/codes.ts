@@ -626,3 +626,9 @@ export const species = [
   { id: 345, name: 'Yellow-breasted Chat auricollis subspecies [Icteria virens  auricollis]' },
   { id: 346, name: 'Yelloweye Rockfish [Sebastes ruberrimus]' }
 ];
+
+export const regional_offices = [
+  { id: 1, name: 'Office 1' },
+  { id: 2, name: 'Office 2' },
+  { id: 3, name: 'Office 3' }
+]
