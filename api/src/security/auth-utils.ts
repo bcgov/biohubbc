@@ -1,7 +1,11 @@
 import { decode, verify } from 'jsonwebtoken';
 import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
-import { HTTP401 } from '../errors/CustomError';
+import { getAPIUserDBConnection } from '../database/db';
+import { HTTP401, HTTP403 } from '../errors/CustomError';
+import { UserObject } from '../models/user';
+import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
+import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('security/auth-utils');
@@ -9,40 +13,31 @@ const defaultLog = getLogger('security/auth-utils');
 const KEYCLOAK_URL =
   process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs';
 
-// Ignore keycloak token expiration - for development purposes only
-const TOKEN_IGNORE_EXPIRATION: boolean =
-  process.env.TOKEN_IGNORE_EXPIRATION === 'true' || process.env.DB_HOST === 'localhost' || false;
-
 /**
- * Authenticate the current user against the current route.
+ * Authenticate the request by validating the authorization bearer token.
  *
  * @param {*} req
- * @param {*} authOrSecDef
- * @param {*} token
- * @param {*} callback
- * @returns {*} {Promise<boolean>} True if the user is authenticated, false otherwise
+ * @return {*} {Promise<true>} true if the token is authenticated
+ * @throws {HTTP401} if the token is not authenticated
  */
-export const authenticate = async function (req: any, scopes: string[]): Promise<boolean> {
+export const authenticate = async function (req: any): Promise<true> {
   try {
-    defaultLog.debug({ label: 'authenticate', message: 'authenticating user', scopes });
-
-    if (!req.headers || !req.headers.authorization) {
-      defaultLog.warn({ label: 'authenticate', message: 'token was null' });
+    if (!req?.headers?.authorization) {
+      defaultLog.warn({ label: 'authenticate', message: 'authorization headers were null or missing' });
       throw new HTTP401('Access Denied');
     }
 
-    const token = req.headers.authorization;
-
-    defaultLog.debug({ label: 'authenticate', message: 'authenticating user', token });
-
-    if (token.indexOf('Bearer ') !== 0) {
-      defaultLog.warn({ label: 'authenticate', message: 'token did not have a bearer' });
-      throw new HTTP401('Access Denied');
-    }
-
-    // Validate the 'Authorization' header.
     // Authorization header should be a string with format: Bearer xxxxxx.yyyyyyy.zzzzzz
-    const tokenString = token.split(' ')[1];
+    const authorizationHeaderString = req.headers.authorization;
+
+    // Check if the header is a valid bearer format
+    if (authorizationHeaderString.indexOf('Bearer ') !== 0) {
+      defaultLog.warn({ label: 'authenticate', message: 'authorization header did not have a bearer' });
+      throw new HTTP401('Access Denied');
+    }
+
+    // Parse out token portion of the authorization header
+    const tokenString = authorizationHeaderString.split(' ')[1];
 
     if (!tokenString) {
       defaultLog.warn({ label: 'authenticate', message: 'token string was null' });
@@ -57,10 +52,10 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
       throw new HTTP401('Access Denied');
     }
 
-    // Get token header kid
+    // Get token header kid (key id)
     const kid = decodedToken.header && decodedToken.header.kid;
 
-    if (!decodedToken) {
+    if (!kid) {
       defaultLog.warn({ label: 'authenticate', message: 'decoded token header kid was null' });
       throw new HTTP401('Access Denied');
     }
@@ -73,20 +68,19 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
     const key = await getSigningKeyAsync(kid);
 
     if (!key) {
-      defaultLog.warn({ label: 'authenticate', message: 'get signing key' });
+      defaultLog.warn({ label: 'authenticate', message: 'signing key was null' });
       throw new HTTP401('Access Denied');
     }
 
+    // Parse out public portion of signing key
     const signingKey = key['publicKey'] || key['rsaPublicKey'];
 
-    // Verify token using signing key
+    // Verify token using public signing key
     const verifiedToken = verifyToken(tokenString, signingKey);
 
     if (!verifiedToken) {
       throw new HTTP401('Access Denied');
     }
-
-    defaultLog.debug({ label: 'verifyToken', message: 'verifiedToken', verifiedToken });
 
     // Add the verified token to the request for future use, if needed
     req.keycloak_token = verifiedToken;
@@ -106,31 +100,122 @@ export const authenticate = async function (req: any, scopes: string[]): Promise
  * @returns {*} verifiedToken
  */
 const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
-  return verify(
-    tokenString,
-    secretOrPublicKey,
-    { ignoreExpiration: TOKEN_IGNORE_EXPIRATION },
-    function (verificationError: any, verifiedToken: any): any {
-      if (verificationError) {
-        defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
-        return null;
-      }
-
-      // Verify that the token came from the expected issuer
-      // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
-      if (!KEYCLOAK_URL.includes(verifiedToken.iss)) {
-        defaultLog.warn({
-          label: 'verifyToken',
-          message: 'jwt verification error: issuer mismatch',
-          'found token issuer': verifiedToken.iss,
-          'expected to be a substring of': KEYCLOAK_URL
-        });
-        return null;
-      }
-
-      defaultLog.debug({ label: 'verifyToken', message: 'jwt verification success' });
-
-      return verifiedToken;
+  return verify(tokenString, secretOrPublicKey, function (verificationError: any, verifiedToken: any): any {
+    if (verificationError) {
+      defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
+      return null;
     }
-  );
+
+    // Verify that the token came from the expected issuer
+    // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
+    if (!KEYCLOAK_URL.includes(verifiedToken?.iss)) {
+      defaultLog.warn({
+        label: 'verifyToken',
+        message: 'jwt verification error: issuer mismatch',
+        'actual token issuer': verifiedToken?.iss,
+        'expected to be a substring of': KEYCLOAK_URL
+      });
+      return null;
+    }
+
+    return verifiedToken;
+  });
+};
+
+/**
+ * Authenticate the current user against the current route by validating their roles against the route scopes (roles).
+ *
+ * @param {*} req
+ * @param {string[]} scopes identifiers (typically roles) that the user roles/rules/etc must be valid against
+ * @returns {*} {Promise<true>} true if the user is authorized
+ * @throws {HTTP403} if the user is not authorized
+ */
+export const authorize = async function (req: any, scopes: string[]): Promise<true> {
+  if (!req?.keycloak_token) {
+    defaultLog.warn({ label: 'authorize', message: 'request is missing a keycloak token' });
+    throw new HTTP403('Access Denied');
+  }
+
+  const systemUserWithRoles = await getSystemUser(req.keycloak_token);
+
+  if (!systemUserWithRoles) {
+    defaultLog.warn({ label: 'authorize', message: 'failed to get system user' });
+    throw new HTTP403('Access Denied');
+  }
+
+  const userObject = new UserObject(systemUserWithRoles);
+
+  // TODO replace `[]` with the `scopes` param when we are ready to enforce system roles on endpoints
+  const hasValidSystemRole = userHasValidSystemRoles([], userObject.role_names);
+
+  if (!hasValidSystemRole) {
+    defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });
+    throw new HTTP403('Access Denied');
+  }
+
+  return true;
+};
+/**
+ * Finds a single user based on their keycloak token information.
+ *
+ * @param {object} keycloakToken
+ * @return {*}
+ */
+export const getSystemUser = async function (keycloakToken: object) {
+  const userIdentifier = getUserIdentifier(keycloakToken);
+
+  if (!userIdentifier) {
+    return null;
+  }
+
+  const connection = getAPIUserDBConnection();
+
+  try {
+    await connection.open();
+
+    const sqlStatement = getUserByUserIdentifierSQL(userIdentifier);
+
+    if (!sqlStatement) {
+      return null;
+    }
+
+    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    await connection.commit();
+
+    return (response && response?.rowCount && response.rows[0]) || null;
+  } catch (error) {
+    defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
+    throw error;
+  } finally {
+    connection.release();
+  }
+};
+
+/**
+ * Checks a set of user system roles against a set of valid system roles.
+ *
+ * @param {(string | string[])} validSystemRoles one or more valid roles to match against
+ * @param {(string | string[])} userSystemRoles one or more user roles to check against the valid roles
+ * @return {boolean} true if the user has at least 1 of the valid roles, false otherwise
+ */
+export const userHasValidSystemRoles = function (
+  validSystemRoles: string | string[],
+  userSystemRoles: string | string[]
+): boolean {
+  if (!Array.isArray(validSystemRoles)) {
+    validSystemRoles = [validSystemRoles];
+  }
+
+  if (!Array.isArray(userSystemRoles)) {
+    userSystemRoles = [userSystemRoles];
+  }
+
+  for (const validRole of validSystemRoles) {
+    if (userSystemRoles.includes(validRole)) {
+      return true;
+    }
+  }
+
+  return false;
 };
