@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
-import { getAdministrativeActivitySQL } from '../queries/administrative-activity/administrative-activity-queries';
+import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -24,7 +24,8 @@ GET.apiDoc = {
       in: 'query',
       name: 'type',
       schema: {
-        type: 'string'
+        type: 'string',
+        enum: ['System Access']
       }
     }
   ],
@@ -38,7 +39,24 @@ GET.apiDoc = {
             items: {
               type: 'object',
               properties: {
-                // TODO finalize
+                id: {
+                  type: 'number'
+                },
+                description: {
+                  type: 'string'
+                },
+                notes: {
+                  type: 'string'
+                },
+                data: {
+                  type: 'object',
+                  properties: {
+                    // Don't specify as this is a JSON blob column
+                  }
+                },
+                create_date: {
+                  type: 'string'
+                }
               }
             }
           }
@@ -75,7 +93,7 @@ function getAdministrativeActivities(): RequestHandler {
     try {
       const administrativeActivityTypeName = (req.query?.type as string) || undefined;
 
-      const sqlStatement = getAdministrativeActivitySQL(administrativeActivityTypeName);
+      const sqlStatement = getAdministrativeActivitiesSQL(administrativeActivityTypeName);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');

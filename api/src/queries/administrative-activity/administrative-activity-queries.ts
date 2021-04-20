@@ -4,18 +4,18 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-view-queries');
 
 /**
- * SQL query to get a administrative activities.
+ * SQL query to get a list of administrative activities, optionally filtered by the administrative activity type name.
  *
  * @param {string} [administrativeActivityTypeName]
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativeActivitySQL = (administrativeActivityTypeName?: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getAdministrativeActivitySQL', message: 'params', administrativeActivityTypeName });
+export const getAdministrativeActivitiesSQL = (administrativeActivityTypeName?: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getAdministrativeActivitiesSQL', message: 'params', administrativeActivityTypeName });
 
   const sqlStatement = SQL`
     SELECT
-      aat.id,
-      aast.id,
+      aat.id as aat,
+      aast.id as aast,
       aa.description,
       aa.data,
       aa.notes,
@@ -35,14 +35,14 @@ export const getAdministrativeActivitySQL = (administrativeActivityTypeName?: st
   if (administrativeActivityTypeName) {
     sqlStatement.append(SQL`
       WHERE
-        aat.name = ${administrativeActivityTypeName};
+        aat.name = '${administrativeActivityTypeName}'
     `);
   }
 
   sqlStatement.append(';');
 
   defaultLog.debug({
-    label: 'getAdministrativeActivitySQL',
+    label: 'getAdministrativeActivitiesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
