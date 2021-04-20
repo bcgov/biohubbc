@@ -9,7 +9,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-//import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -20,7 +20,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
-//import { APIError } from 'hooks/api/useAxios';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, {
@@ -29,6 +29,7 @@ import React, {
   useState
 } from 'react';
 import yup from 'utils/YupSchema';
+import { AccessRequestI18N } from 'constants/i18n';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -84,22 +85,6 @@ const AccessRequestFormYupSchema = yup.object().shape({
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
-// export interface IAccessRequestFormProps {
-//   role: IMultiAutocompleteFieldOption[];
-//   regional_offices: IMultiAutocompleteFieldOption[];
-//   //codes: IGetAllCodeSetsResponse;
-// }
-
-// const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-//   setOpenErrorDialogProps({
-//     ...openErrorDialogProps,
-//     dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
-//     dialogText: CreateProjectDraftI18N.draftErrorText,
-//     ...textDialogProps,
-//     open: true
-//   });
-// };
-
 /**
  * Access Request form
  *
@@ -112,11 +97,23 @@ export const AccessRequestPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
 
+  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: AccessRequestI18N.requestTitle,
+    dialogText: AccessRequestI18N.requestText,
+    open: false,
+    onClose: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    },
+    onOk: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    }
+  });
+
   useEffect(() => {
     const getAllCodeSets = async () => {
       const response = await biohubApi.codes.getAllCodeSets();
 
-      // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
+      // TODO error handling/user messaging - Cant submit an access request if required code sets fail to fetch
 
       setCodes(() => {
         setIsLoadingCodes(false);
@@ -130,36 +127,36 @@ export const AccessRequestPage: React.FC = () => {
     }
   }, [biohubApi, isLoadingCodes, codes]);
 
+  const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: AccessRequestI18N.requestTitle,
+      dialogText: AccessRequestI18N.requestText,
+      ...textDialogProps,
+      open: true
+    });
+  };
+
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
-    console.log('at the beginning of handle submit ' + values);
     try {
       let response;
       const accessRequestFormData = { values };
 
-      console.log('accessRequestFormData');
-      console.log(accessRequestFormData);
-
       response = await biohubApi.accessRequest.createAdministrativeActivity(accessRequestFormData);
 
       if (!response?.id) {
-        // showCreateErrorDialog({
-        //   dialogError: 'The response from the server was null, or did not contain a draft project ID.'
-        // });
+        showAccessRequestErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a draft project ID.'
+        });
 
         return;
       }
-
-      //setDraft({ id: response.id, date: response.date });
     } catch (error) {
-      //setOpenDraftDialog(false);
-
-      // const apiError = error as APIError;
-      // showDraftErrorDialog({
-      //   dialogError: apiError?.message,
-      //   dialogErrorDetails: apiError?.errors
-      // });
-
-      console.log(error);
+      const apiError = error as APIError;
+      showAccessRequestErrorDialog({
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
     }
   };
 
@@ -307,6 +304,7 @@ export const AccessRequestPage: React.FC = () => {
                   </Box>
                 </Paper>
               </Box>
+              <ErrorDialog {...openErrorDialogProps} />
             </>
           )}
         </Formik>
