@@ -24,7 +24,7 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
       aast_id,
       data
     ) VALUES (
-      1,
+      ${systemUserId},
       1,
       1,
       ${data}

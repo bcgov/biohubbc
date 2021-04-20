@@ -84,11 +84,11 @@ function createAdministrativeActivity(): RequestHandler {
     try {
       await connection.open();
 
-      //const systemUserId = connection.systemUserId();
-      const systemUserId = 1;
-      // if (!systemUserId) {
-      //   throw new HTTP400('Failed to identify system user ID');
-      // }
+      const systemUserId = connection.systemUserId();
+
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
 
       const postAdministrativeActivitySQLStatement = postAdministrativeActivitySQL(systemUserId, req?.body?.data);
 
