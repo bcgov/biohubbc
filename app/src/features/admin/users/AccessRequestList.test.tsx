@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, findByText, render, waitFor } from '@testing-library/react';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
@@ -68,7 +68,7 @@ describe('AccessRequestList', () => {
     });
   });
 
-  it('shows a table row for a pending access request', async () => {
+  it('shows a table row for a rejected access request', async () => {
     mockBiohubApi().admin.getAccessRequests.mockReturnValue([
       {
         id: 1,
@@ -98,7 +98,7 @@ describe('AccessRequestList', () => {
     });
   });
 
-  it('shows a table row for a rejected access request', async () => {
+  it('shows a table row for a actioned access request', async () => {
     mockBiohubApi().admin.getAccessRequests.mockReturnValue([
       {
         id: 1,
@@ -122,6 +122,29 @@ describe('AccessRequestList', () => {
       expect(getByText('test user')).toBeVisible();
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('test company')).toBeVisible();
+      expect(getByText('April-20-2020')).toBeVisible();
+      expect(getByText('Actioned')).toBeVisible();
+      expect(getByRole('button')).toHaveTextContent('Review');
+    });
+  });
+
+  it('shows a table row when the json data is empty', async () => {
+    mockBiohubApi().admin.getAccessRequests.mockReturnValue([
+      {
+        id: 1,
+        status: 1,
+        status_name: 'Actioned',
+        description: 'test description',
+        notes: 'test notes',
+        data: '',
+        create_date: '2020-04-20'
+      }
+    ]);
+
+    const { getByText, getAllByText, getByRole } = renderContainer();
+
+    await waitFor(() => {
+      expect(getAllByText('Not Applicable').length).toEqual(4);
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Actioned')).toBeVisible();
       expect(getByRole('button')).toHaveTextContent('Review');

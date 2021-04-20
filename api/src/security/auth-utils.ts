@@ -185,7 +185,7 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     return (response && response?.rowCount && response.rows[0]) || null;
   } catch (error) {
-    defaultLog.debug({ label: 'getUserWithRoles', message: 'error', error });
+    defaultLog.debug({ label: 'getSystemUser', message: 'error', error });
     throw error;
   } finally {
     connection.release();
@@ -209,6 +209,10 @@ export const userHasValidSystemRoles = function (
 
   if (!Array.isArray(userSystemRoles)) {
     userSystemRoles = [userSystemRoles];
+  }
+
+  if (!validSystemRoles?.length) {
+    return true;
   }
 
   for (const validRole of validSystemRoles) {
