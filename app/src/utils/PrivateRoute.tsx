@@ -26,7 +26,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
 
         if (!!keycloakWrapper.keycloak?.authenticated) {
           if (validRoles) {
-            return <Redirect to="/access-request" />
+            return <Redirect to="/forbidden" />
           }
           return (
             <Layout>
