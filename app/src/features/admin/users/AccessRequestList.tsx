@@ -100,7 +100,7 @@ const AccessRequestList: React.FC = () => {
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody data-testid="project-table">
+          <TableBody data-testid="access-request-table">
             {!accessRequests?.length && (
               <TableRow data-testid={'access-request-row-0'}>
                 <TableCell colSpan={6} style={{ textAlign: 'center' }}>
