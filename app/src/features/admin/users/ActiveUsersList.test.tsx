@@ -38,7 +38,7 @@ describe('ActiveUsersList', () => {
     });
   });
 
-  it('shows a table row for an active user', async () => {
+  it('shows a table row for an active user with all fields having values', async () => {
     mockBiohubApi().user.getUsersList.mockReturnValue([
       {
         id: 1,
@@ -52,6 +52,22 @@ describe('ActiveUsersList', () => {
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
       expect(getByText('role 1, role 2')).toBeVisible();
+    });
+  });
+
+  it('shows a table row for an active user with fields not having values', async () => {
+    mockBiohubApi().user.getUsersList.mockReturnValue([
+      {
+        id: 1,
+        user_identifier: '',
+        role_names: []
+      }
+    ]);
+
+    const { getAllByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getAllByText('Not Applicable').length).toEqual(2);
     });
   });
 });
