@@ -12,8 +12,6 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Get user access requests
    *
-   * // TODO update response interface
-   *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<IGetAccessRequestsListResponse>}
    */

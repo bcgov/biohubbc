@@ -116,7 +116,7 @@ const AccessRequestList: React.FC = () => {
                   <TableCell>{accessItem.name || 'Not Applicable'}</TableCell>
                   <TableCell>{accessItem.username || 'Not Applicable'}</TableCell>
                   <TableCell>{accessItem.company || 'Not Applicable'}</TableCell>
-                  <TableCell>{accessItem.regional_offices || 'Not Applicable'}</TableCell>
+                  <TableCell>{accessItem.regional_offices.join(', ') || 'Not Applicable'}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, accessItem.create_date)}</TableCell>
                   <TableCell>
                     <Chip
