@@ -1,3 +1,4 @@
+import AdminRouter from 'features/admin/AdminRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';
@@ -35,6 +36,7 @@ const AppRouter: React.FC = () => {
         title={getTitle('Projects')}
         validRoles={['something']}
       />
+      <AppRoute protected path="/admin" component={AdminRouter} layout={AuthLayout} title={getTitle('Admin')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

@@ -109,8 +109,7 @@ export async function up(knex: Knex): Promise<void> {
     alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
 
     set search_path = biohub;
-    grant execute on function api_set_context(idir_user_id system_user.user_identifier%type, bceid_user_id system_user.user_identifier%type) to ${DB_USER_API};
-
+    grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
   `);
 }
 

@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPI } from 'openapi-types';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
-import { authenticate } from './security/auth-utils';
+import { authenticate, authorize } from './security/auth-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -53,8 +53,8 @@ initialize({
   },
   securityHandlers: {
     // applies authentication logic
-    Bearer: function (req, scopes) {
-      return authenticate(req, scopes);
+    Bearer: async function (req: any, scopes: string[]) {
+      return (await authenticate(req)) && authorize(req, scopes);
     }
   },
   securityFilter: async (req, res) => {
