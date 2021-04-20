@@ -15,11 +15,7 @@ const AppRouter: React.FC = () => {
   return (
     <Switch>
       <Redirect exact from="/" to="/projects" />
-      <AppRoute
-        path="/forbidden"
-        title={getTitle('Forbidden')}
-        component={AccessDenied}
-        layout={PublicLayout}></AppRoute>
+      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={AuthLayout}></AppRoute>
       <AppRoute
         path="/page-not-found"
         title={getTitle('Page Not Found')}
