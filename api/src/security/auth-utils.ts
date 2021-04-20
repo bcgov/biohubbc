@@ -3,6 +3,7 @@ import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP401, HTTP403 } from '../errors/CustomError';
+import { UserObject } from '../models/user';
 import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
@@ -142,8 +143,9 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
     throw new HTTP403('Access Denied');
   }
 
-  // TODO update this to actually check real roles
-  const hasValidSystemRole = userHasValidSystemRoles(scopes, scopes);
+  const userObject = new UserObject(systemUserWithRoles);
+
+  const hasValidSystemRole = userHasValidSystemRoles(scopes, userObject.role_names);
 
   if (!hasValidSystemRole) {
     defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });

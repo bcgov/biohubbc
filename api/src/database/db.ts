@@ -248,7 +248,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  *
  * @return {*}  {IDBConnection}
  */
-// TODO currently this sets the API's user source to IDIR, as only IDIR or BCEID are supported currently
 export const getAPIUserDBConnection = (): IDBConnection => {
-  return getDBConnection({ preferred_username: 'postgres@database' });
+  return getDBConnection({ preferred_username: 'biohub_api@database' });
 };

@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 
 /**
  * Returns a set of supported api methods for working with users.
@@ -10,9 +11,9 @@ const useUserApi = (axios: AxiosInstance) => {
   /**
    * Get user details for the currently authenticated user.
    *
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<IGetUserResponse>}
    */
-  const getUser = async (): Promise<any> => {
+  const getUser = async (): Promise<IGetUserResponse> => {
     const { data } = await axios.get('/api/user');
 
     return data;

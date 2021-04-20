@@ -20,8 +20,10 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
 
   const sqlStatement = SQL`
     SELECT
-      *
-    from
+      su.id,
+      su.user_identifier,
+      array_agg(sr.name) as role_names
+    FROM
       system_user su
     LEFT JOIN
       system_user_role sur
@@ -31,8 +33,11 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
       system_role sr
     ON
       sur.sr_id = sr.id
-    where
-      su.user_identifier = ${userIdentifier};
+    WHERE
+      su.user_identifier = ${userIdentifier}
+    GROUP BY
+      su.id,
+      su.user_identifier;
   `;
 
   defaultLog.debug({
@@ -62,8 +67,10 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      *
-    from
+      su.id,
+      su.user_identifier,
+      array_agg(sr.name) as role_names
+    FROM
       system_user su
     LEFT JOIN
       system_user_role sur
@@ -73,8 +80,11 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       system_role sr
     ON
       sur.sr_id = sr.id
-    where
-      su.id = ${userId};
+    WHERE
+      su.id = ${userId}
+    GROUP BY
+      su.id,
+      su.user_identifier;
   `;
 
   defaultLog.debug({

@@ -1,4 +1,5 @@
 import { useKeycloak } from '@react-keycloak/web';
+import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import { useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
@@ -49,7 +50,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   const biohubApi = useBiohubApi();
 
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<IGetUserResponse>();
 
   const [isUserLoading, setIsUserLoading] = useState<boolean>(false);
   const [hasUserLoaded, setHasUserLoaded] = useState<boolean>(false);
@@ -73,8 +74,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloak, user, hasUserLoaded, isUserLoading, biohubApi.user]);
 
   const getSystemRoles = (): string[] => {
-    // TODO return real system roles
-    return [];
+    return user?.role_names || [];
   };
 
   const hasSystemRole = (validSystemRoles: string[]) => {
