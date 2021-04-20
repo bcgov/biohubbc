@@ -73,3 +73,10 @@ export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatem
  */
 export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatement =>
   SQL`SELECT id, iucn2_id, name from iucn_conservation_action_level_3_subclassification;`;
+
+/**
+ * SQL query to fetch system role codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getSystemRolesSQL = (): SQLStatement => SQL`SELECT id, name from system_role;`;
