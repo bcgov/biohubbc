@@ -3,24 +3,24 @@
 exports[`PublicLayout renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiBox-root MuiBox-root-1"
   >
     <header
       class="MuiPaper-root MuiAppBar-root MuiAppBar-positionSticky MuiAppBar-colorPrimary MuiPaper-elevation4"
       style="box-shadow: none;"
     >
       <div
-        class="MuiBox-root MuiBox-root-10 makeStyles-govHeader-3"
+        class="MuiBox-root MuiBox-root-9 makeStyles-govHeader-2"
       >
         <div
-          class="MuiContainer-root makeStyles-govHeaderContainer-4 MuiContainer-maxWidthXl"
+          class="MuiContainer-root makeStyles-govHeaderContainer-3 MuiContainer-maxWidthXl"
         >
           <div
-            class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-5 MuiToolbar-gutters"
+            class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-4 MuiToolbar-gutters"
           >
             <a
               aria-label="Go to BioHub Home"
-              class="makeStyles-brand-6"
+              class="makeStyles-brand-5"
               href="/projects"
             >
               <picture>
@@ -43,14 +43,14 @@ exports[`PublicLayout renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-11 makeStyles-mainNav-7"
+        class="MuiBox-root MuiBox-root-10 makeStyles-mainNav-6"
       >
         <div
-          class="MuiContainer-root makeStyles-mainNavContainer-8 MuiContainer-maxWidthXl"
+          class="MuiContainer-root makeStyles-mainNavContainer-7 MuiContainer-maxWidthXl"
         >
           <div
             aria-label="Main Navigation"
-            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-9 MuiToolbar-gutters"
+            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-8 MuiToolbar-gutters"
             role="navigation"
           >
             <a
@@ -59,30 +59,34 @@ exports[`PublicLayout renders correctly 1`] = `
             >
               Projects
             </a>
+            <a
+              color="inherit"
+              href="/admin/users"
+            >
+              Manage Users
+            </a>
           </div>
         </div>
       </div>
     </header>
     <main
-      class="MuiBox-root MuiBox-root-12"
+      class="MuiBox-root MuiBox-root-11"
     >
-      <div
-        classes="[object Object]"
-      >
+      <div>
         <p>
           The public layout content
         </p>
       </div>
     </main>
     <footer
-      class="makeStyles-appFooter-13"
+      class="makeStyles-appFooter-12"
     >
       <div
-        class="MuiContainer-root makeStyles-appFooterContainer-14 MuiContainer-maxWidthXl"
+        class="MuiContainer-root makeStyles-appFooterContainer-13 MuiContainer-maxWidthXl"
       >
         <div
           aria-label="Footer"
-          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-15 MuiToolbar-gutters"
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-14 MuiToolbar-gutters"
           role="navigation"
         >
           <ul>

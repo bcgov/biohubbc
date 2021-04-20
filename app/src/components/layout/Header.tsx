@@ -97,6 +97,9 @@ const Header: React.FC = () => {
             <Link to="/projects" color={'inherit'}>
               Projects
             </Link>
+            <Link to="/admin/users" color={'inherit'}>
+              Manage Users
+            </Link>
           </Toolbar>
         </Container>
       </Box>
