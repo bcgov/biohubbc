@@ -2,6 +2,7 @@ import AdminRouter from 'features/admin/AdminRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import AuthLayout from 'layouts/AuthLayout';
 import PublicLayout from 'layouts/PublicLayout';
+import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
@@ -35,6 +36,14 @@ const AppRouter: React.FC = () => {
         layout={AuthLayout}
         title={getTitle('Projects')}
         validRoles={['something']}
+      />
+      <AppRoute
+        protected
+        path="/access-submitted"
+        component={RequestSubmitted}
+        layout={AuthLayout}
+        title={getTitle('Request submitted')}
+        //validRoles={['something']}
       />
       <AppRoute protected path="/admin" component={AdminRouter} layout={AuthLayout} title={getTitle('Admin')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

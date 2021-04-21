@@ -115,9 +115,6 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       return [];
     }
 
-    console.log('exisiting values: ' + existingValues);
-    console.log('options' + props.options.toString);
-
     return props.options.filter((option) => existingValues.includes(option.value));
   };
 

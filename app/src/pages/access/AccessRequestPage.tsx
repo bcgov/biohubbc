@@ -30,6 +30,7 @@ import React, {
 } from 'react';
 import yup from 'utils/YupSchema';
 import { AccessRequestI18N } from 'constants/i18n';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -96,6 +97,7 @@ export const AccessRequestPage: React.FC = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
+  const history = useHistory();
 
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: AccessRequestI18N.requestTitle,
@@ -151,6 +153,8 @@ export const AccessRequestPage: React.FC = () => {
 
         return;
       }
+      history.push('/access-request');
+
     } catch (error) {
       const apiError = error as APIError;
       showAccessRequestErrorDialog({
