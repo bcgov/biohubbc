@@ -59,9 +59,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     const getUser = async () => {
       const userDetails = await biohubApi.user.getUser();
 
-      setHasUserLoaded(true);
-
-      setUser(userDetails);
+      setUser(() => {
+        setHasUserLoaded(true);
+        return userDetails;
+      });
     };
 
     if (hasUserLoaded || isUserLoading) {

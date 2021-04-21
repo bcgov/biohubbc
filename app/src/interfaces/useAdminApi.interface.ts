@@ -1,10 +1,10 @@
 export interface IGetAccessRequestsListResponse {
   id: number;
-  status: string;
+  status: number;
   status_name: string;
   description: string;
   notes: string;
-  data: object;
+  data: string;
   create_date: string;
 }
 
@@ -13,15 +13,18 @@ export interface IGetAccessRequestsListResponse {
  *
  * @export
  * @class GetAccessRequestListItem
+ * @implements {IGetAccessRequestsListResponse}
  */
-export class GetAccessRequestListItem {
+export class GetAccessRequestListItem implements IGetAccessRequestsListResponse {
   id: number;
   status: number;
   status_name: string;
   description: string;
   notes: string;
+  data: string;
   create_date: string;
 
+  // Fields parsed from `data`
   name: string;
   username: string;
   company: string;
@@ -33,11 +36,14 @@ export class GetAccessRequestListItem {
     this.status_name = obj?.status_name || null;
     this.description = obj?.description || null;
     this.notes = obj?.notes || null;
+    this.data = obj?.data || null;
     this.create_date = obj?.create_date || null;
 
-    this.name = obj?.data?.name || null;
-    this.username = obj?.data?.username || null;
-    this.company = obj?.data?.company || null;
-    this.regional_offices = (obj?.data?.regional_offices?.length && obj.regional_offices) || [];
+    const dataObject = (this.data && JSON.parse(this.data)) || null;
+
+    this.name = dataObject?.name || null;
+    this.username = dataObject?.username || null;
+    this.company = dataObject?.company || null;
+    this.regional_offices = (dataObject?.regional_offices?.length && dataObject.regional_offices) || [];
   }
 }
