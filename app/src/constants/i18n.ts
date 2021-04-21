@@ -104,4 +104,3 @@ export const AccessRequestI18N = {
   requestErrorText:
     'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
 };
-

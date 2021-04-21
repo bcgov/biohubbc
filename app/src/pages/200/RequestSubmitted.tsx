@@ -6,9 +6,7 @@ import Icon from '@mdi/react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
-
 const RequestSubmitted = () => {
-
   return (
     <Container>
       <Box pt={6} textAlign="center">

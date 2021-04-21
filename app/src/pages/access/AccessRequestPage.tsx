@@ -221,10 +221,7 @@ export const AccessRequestPage: React.FC = () => {
                             <FormControl
                               required={true}
                               component="fieldset"
-                              error={
-                                touched.work_from_regional_office &&
-                                Boolean(errors.work_from_regional_office)
-                              }>
+                              error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
                               <FormLabel component="legend" className={classes.legend}>
                                 Do you work for a Regional Office?
                               </FormLabel>
@@ -276,7 +273,7 @@ export const AccessRequestPage: React.FC = () => {
                               variant="outlined"
                               multiline
                               rows={4}
-                              value={JSON.stringify(values,null,2)}
+                              value={JSON.stringify(values, null, 2)}
                               onChange={handleChange}
                               error={touched.comments && Boolean(errors.comments)}
                               helperText={errors.comments}
