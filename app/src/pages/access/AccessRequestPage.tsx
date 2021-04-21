@@ -9,7 +9,6 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -18,19 +17,16 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { AccessRequestI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, {
-  useEffect,
-  //,useRef,
-  useState
-} from 'react';
-import yup from 'utils/YupSchema';
-import { AccessRequestI18N } from 'constants/i18n';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -82,7 +78,9 @@ const AccessRequestFormInitialValues: IAccessRequestForm = {
 const AccessRequestFormYupSchema = yup.object().shape({
   role: yup.string().required('Required'),
   work_from_regional_office: yup.string().required('Required'),
-  regional_offices: yup.array().of(yup.number()).min(1).required('Required'),
+  regional_offices: yup
+    .array()
+    .when('work_from_regional_office', { is: 'true', then: yup.array().min(1).required('Required') }),
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
@@ -178,7 +176,7 @@ export const AccessRequestPage: React.FC = () => {
             alert(JSON.stringify(values, null, 2));
             handleSubmitAccessRequest(values);
           }}>
-          {({ values, touched, errors, handleChange, handleSubmit }) => (
+          {({ values, touched, errors, handleChange, handleSubmit, setFieldValue }) => (
             <>
               <Box>
                 <h1>Request Access to BioHub</h1>
@@ -221,6 +219,14 @@ export const AccessRequestPage: React.FC = () => {
                             <FormControl
                               required={true}
                               component="fieldset"
+                              onChange={(event: any) => {
+                                console.log('event: ', event.target.value);
+
+                                if (event.target.value === 'false') {
+                                  setFieldValue('regional_offices', []);
+                                  console.log('set regional office to empty');
+                                }
+                              }}
                               error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
                               <FormLabel component="legend" className={classes.legend}>
                                 Do you work for a Regional Office?
@@ -258,7 +264,6 @@ export const AccessRequestPage: React.FC = () => {
                                     return { value: item.id, label: item.name };
                                   }) || []
                                 }
-                                required={values.work_from_regional_office === 'true'}
                               />
                             </Grid>
                           )}
