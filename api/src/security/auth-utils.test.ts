@@ -5,6 +5,12 @@ import { userHasValidSystemRoles } from './auth-utils';
 describe('userHasValidSystemRoles', () => {
   describe('validSystemRoles is a string', () => {
     describe('userSystemRoles is a string', () => {
+      it('returns true if the valid roles is empty', () => {
+        const response = userHasValidSystemRoles('', '');
+
+        expect(response).to.be.true;
+      });
+
       it('returns false if the user has no roles', () => {
         const response = userHasValidSystemRoles('admin', '');
 
@@ -25,6 +31,12 @@ describe('userHasValidSystemRoles', () => {
     });
 
     describe('userSystemRoles is an array', () => {
+      it('returns true if the valid roles is empty', () => {
+        const response = userHasValidSystemRoles('', []);
+
+        expect(response).to.be.true;
+      });
+
       it('returns false if the user has no matching roles', () => {
         const response = userHasValidSystemRoles('admin', []);
 
@@ -47,6 +59,12 @@ describe('userHasValidSystemRoles', () => {
 
   describe('validSystemRoles is an array', () => {
     describe('userSystemRoles is a string', () => {
+      it('returns true if the valid roles is empty', () => {
+        const response = userHasValidSystemRoles([], '');
+
+        expect(response).to.be.true;
+      });
+
       it('returns false if the user has no roles', () => {
         const response = userHasValidSystemRoles(['admin'], '');
 
@@ -67,6 +85,12 @@ describe('userHasValidSystemRoles', () => {
     });
 
     describe('userSystemRoles is an array', () => {
+      it('returns true if the valid roles is empty', () => {
+        const response = userHasValidSystemRoles([], []);
+
+        expect(response).to.be.true;
+      });
+
       it('returns false if the user has no matching roles', () => {
         const response = userHasValidSystemRoles(['admin'], []);
 
