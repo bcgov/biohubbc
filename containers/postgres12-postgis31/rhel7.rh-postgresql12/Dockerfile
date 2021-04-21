@@ -18,10 +18,10 @@ ENV POSTGIS_EXTENSION=N \
     PGUSER=postgres \
     LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
     APP_DATA=/opt/app-root
-    
+
 ENV POSTGISV 3
 ENV TZ America/Vancouver
-ENV PORT 5432 
+ENV PORT 5432
 
 ENV SUMMARY="PostgreSQL is an advanced Object-Relational database management system" \
     DESCRIPTION="PostgreSQL is an advanced Object-Relational database management system (DBMS). \
@@ -79,7 +79,7 @@ RUN rm /etc/rhsm-host && \
     /usr/libexec/fix-permissions /var/lib/pgsql /var/run/postgresql
 
 RUN touch /etc/yum/pluginconf.d/rhnplugin.conf && \
-    echo  exclude=postgresql* >> /etc/yum/pluginconf.d/rhnplugin.conf    
+    echo  exclude=postgresql* >> /etc/yum/pluginconf.d/rhnplugin.conf
 
 RUN bash /usr/libexec/fix-permissions /var/run/postgresql
 
@@ -110,13 +110,15 @@ RUN yum install -y postgis31_12 postgis31_12-client pgrouting_12
 RUN /usr/bin/install -c -m 755  /usr/pgsql-12/lib/postgis* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-12/lib/libpgrouting* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 755  /usr/pgsql-12/lib/pgcrypto* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
-    /usr/bin/install -c -m 755  /usr/pgsql-12/lib/fuzzystrmatch* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \    
+    /usr/bin/install -c -m 755  /usr/pgsql-12/lib/fuzzystrmatch* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
+    /usr/bin/install -c -m 755  /usr/pgsql-12/lib/uuid-ossp* '/opt/rh/rh-postgresql12/root/usr/lib64/pgsql/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/postgis* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/pgrouting* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/pgcrypto* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
     /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/fuzzystrmatch* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
-    mv /usr/pgsql-12/share/contrib/postgis-3.1/ /opt/rh/rh-postgresql12/root/usr/share/pgsql/contrib/ 
-   
+    /usr/bin/install -c -m 644 /usr/pgsql-12/share/extension/uuid-ossp* '/opt/rh/rh-postgresql12/root/usr/share/pgsql/extension/' && \
+    mv /usr/pgsql-12/share/contrib/postgis-3.1/ /opt/rh/rh-postgresql12/root/usr/share/pgsql/contrib/
+
 RUN rm -rf /tmp/pgdg-redhat-repo-latest.noarch.rpm /var/cache/yum
 
 # Remove entitlements and Subscription Manager configs
