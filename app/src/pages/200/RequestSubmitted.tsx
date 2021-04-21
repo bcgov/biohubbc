@@ -1,18 +1,18 @@
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import React from 'react';
-import { mdiAlertCircleOutline } from '@mdi/js';
+import { mdiCheck } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-//import { useHistory } from 'react-router';
+
 
 const RequestSubmitted = () => {
 
   return (
     <Container>
       <Box pt={6} textAlign="center">
-        <Icon path={mdiAlertCircleOutline} size={2} color="#4caf50" />
+        <Icon path={mdiCheck} size={2} color="#4caf50" />
         <h1>Access Request Submitted</h1>
         <Typography>Your access request has been submitted for review.</Typography>
         <Box pt={4}>

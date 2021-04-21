@@ -68,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface IAccessRequestForm {
   role: number;
   work_from_regional_office: string;
-  regional_offices: string[];
+  regional_offices: number[];
   comments: string;
 }
 
@@ -82,7 +82,7 @@ const AccessRequestFormInitialValues: IAccessRequestForm = {
 const AccessRequestFormYupSchema = yup.object().shape({
   role: yup.string().required('Required'),
   work_from_regional_office: yup.string().required('Required'),
-  regional_offices: yup.array().required('Required'),
+  regional_offices: yup.array().of(yup.number()).min(1).required('Required'),
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
@@ -142,6 +142,7 @@ export const AccessRequestPage: React.FC = () => {
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
       let response;
+
       const accessRequestFormData = { values };
 
       response = await biohubApi.accessRequest.createAdministrativeActivity(accessRequestFormData);
@@ -153,8 +154,9 @@ export const AccessRequestPage: React.FC = () => {
 
         return;
       }
-      history.push('/access-request');
 
+      console.log(' Request submitted');
+      history.push('/request-submitted');
     } catch (error) {
       const apiError = error as APIError;
       showAccessRequestErrorDialog({
@@ -176,7 +178,7 @@ export const AccessRequestPage: React.FC = () => {
             alert(JSON.stringify(values, null, 2));
             handleSubmitAccessRequest(values);
           }}>
-          {(props) => (
+          {({ values, touched, errors, handleChange, handleSubmit }) => (
             <>
               <Box>
                 <h1>Request Access to BioHub</h1>
@@ -187,7 +189,7 @@ export const AccessRequestPage: React.FC = () => {
                 <Paper elevation={2} square={true} className={classes.finishContainer}>
                   <h2>Request Details</h2>
                   <Box mb={3}>
-                    <form onSubmit={props.handleSubmit}>
+                    <form onSubmit={handleSubmit}>
                       <Box my={3}>
                         <Grid container spacing={3}>
                           <Grid item xs={12}>
@@ -199,10 +201,10 @@ export const AccessRequestPage: React.FC = () => {
                                 name="role"
                                 labelId="role-label"
                                 label="Role"
-                                value={props.values.role}
+                                value={values.role}
                                 labelWidth={300}
-                                onChange={props.handleChange}
-                                error={props.touched.role && Boolean(props.errors.role)}
+                                onChange={handleChange}
+                                error={touched.role && Boolean(errors.role)}
                                 displayEmpty
                                 inputProps={{ 'aria-label': 'Role' }}>
                                 {codes?.system_roles.map((item) => (
@@ -211,7 +213,7 @@ export const AccessRequestPage: React.FC = () => {
                                   </MenuItem>
                                 ))}
                               </Select>
-                              <FormHelperText>{props.errors.role}</FormHelperText>
+                              <FormHelperText>{errors.role}</FormHelperText>
                             </FormControl>
                           </Grid>
 
@@ -220,8 +222,8 @@ export const AccessRequestPage: React.FC = () => {
                               required={true}
                               component="fieldset"
                               error={
-                                props.touched.work_from_regional_office &&
-                                Boolean(props.errors.work_from_regional_office)
+                                touched.work_from_regional_office &&
+                                Boolean(errors.work_from_regional_office)
                               }>
                               <FormLabel component="legend" className={classes.legend}>
                                 Do you work for a Regional Office?
@@ -230,8 +232,8 @@ export const AccessRequestPage: React.FC = () => {
                                 <RadioGroup
                                   name="work_from_regional_office"
                                   aria-label="work_from_regional_office"
-                                  value={props.values.work_from_regional_office}
-                                  onChange={props.handleChange}>
+                                  value={values.work_from_regional_office}
+                                  onChange={handleChange}>
                                   <FormControlLabel
                                     value="true"
                                     control={<Radio required={true} color="primary" />}
@@ -242,13 +244,13 @@ export const AccessRequestPage: React.FC = () => {
                                     control={<Radio required={true} color="primary" />}
                                     label="No"
                                   />
-                                  <FormHelperText>{props.errors.work_from_regional_office}</FormHelperText>
+                                  <FormHelperText>{errors.work_from_regional_office}</FormHelperText>
                                 </RadioGroup>
                               </Box>
                             </FormControl>
                           </Grid>
 
-                          {props.values.work_from_regional_office === 'true' && (
+                          {values.work_from_regional_office === 'true' && (
                             <Grid item xs={12}>
                               <h3>Which Regional Offices do you work for? </h3>
                               <MultiAutocompleteFieldVariableSize
@@ -259,7 +261,7 @@ export const AccessRequestPage: React.FC = () => {
                                     return { value: item.id, label: item.name };
                                   }) || []
                                 }
-                                required={false}
+                                required={values.work_from_regional_office === 'true'}
                               />
                             </Grid>
                           )}
@@ -274,10 +276,10 @@ export const AccessRequestPage: React.FC = () => {
                               variant="outlined"
                               multiline
                               rows={4}
-                              value={props.values.comments}
-                              onChange={props.handleChange}
-                              error={props.touched.comments && Boolean(props.errors.comments)}
-                              helperText={props.errors.comments}
+                              value={JSON.stringify(values,null,2)}
+                              onChange={handleChange}
+                              error={touched.comments && Boolean(errors.comments)}
+                              helperText={errors.comments}
                             />
                           </Grid>
                         </Grid>

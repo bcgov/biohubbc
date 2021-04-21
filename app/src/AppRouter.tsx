@@ -35,11 +35,11 @@ const AppRouter: React.FC = () => {
         component={ProjectsRouter}
         layout={AuthLayout}
         title={getTitle('Projects')}
-        validRoles={['something']}
+        //validRoles={['something']}
       />
       <AppRoute
         protected
-        path="/access-submitted"
+        path="/request-submitted"
         component={RequestSubmitted}
         layout={AuthLayout}
         title={getTitle('Request submitted')}
