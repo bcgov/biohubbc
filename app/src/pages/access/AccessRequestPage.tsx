@@ -147,13 +147,10 @@ export const AccessRequestPage: React.FC = () => {
 
       if (!response?.id) {
         showAccessRequestErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a draft project ID.'
+          dialogError: 'The response from the server was null.'
         });
-
         return;
       }
-
-      console.log(' Request submitted');
       history.push('/request-submitted');
     } catch (error) {
       const apiError = error as APIError;

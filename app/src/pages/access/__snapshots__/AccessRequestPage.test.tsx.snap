@@ -1,0 +1,350 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotFoundPage renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-8"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthMd"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-9"
+      >
+        <h1>
+          Request Access to BioHub
+        </h1>
+        <h6
+          class="MuiTypography-root MuiTypography-subtitle1"
+        >
+          You will need to provide some additional details before accessing this application. Complete the form below to request access.
+        </h6>
+        <div
+          class="MuiPaper-root makeStyles-finishContainer-4 MuiPaper-elevation2"
+        >
+          <h2>
+            Request Details
+          </h2>
+          <div
+            class="MuiBox-root MuiBox-root-10"
+          >
+            <form>
+              <div
+                class="MuiBox-root MuiBox-root-11"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  >
+                    <h3>
+                       Select which role you want to be assigned
+                    </h3>
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                      style="width: 100%;"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                        data-shrink="false"
+                        id="role-label"
+                      >
+                        Role
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="Role"
+                          aria-labelledby="role-label role"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                          id="role"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="role"
+                          required=""
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-14"
+                          >
+                            <span>
+                              Role
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  >
+                    <fieldset
+                      class="MuiFormControl-root"
+                    >
+                      <legend
+                        class="MuiFormLabel-root makeStyles-legend-7 Mui-required"
+                      >
+                        Do you work for a Regional Office?
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk"
+                        >
+                           *
+                        </span>
+                      </legend>
+                      <div
+                        class="MuiBox-root MuiBox-root-16"
+                      >
+                        <div
+                          aria-label="work_from_regional_office"
+                          class="MuiFormGroup-root"
+                          role="radiogroup"
+                        >
+                          <label
+                            class="MuiFormControlLabel-root"
+                          >
+                            <span
+                              aria-disabled="false"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-17 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <input
+                                  class="PrivateSwitchBase-input-20"
+                                  name="work_from_regional_office"
+                                  required=""
+                                  type="radio"
+                                  value="true"
+                                />
+                                <div
+                                  class="PrivateRadioButtonIcon-root-21"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                    />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-22"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                    />
+                                  </svg>
+                                </div>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </span>
+                            <span
+                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                            >
+                              Yes
+                            </span>
+                          </label>
+                          <label
+                            class="MuiFormControlLabel-root"
+                          >
+                            <span
+                              aria-disabled="false"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-17 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <input
+                                  class="PrivateSwitchBase-input-20"
+                                  name="work_from_regional_office"
+                                  required=""
+                                  type="radio"
+                                  value="false"
+                                />
+                                <div
+                                  class="PrivateRadioButtonIcon-root-21"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                    />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-22"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                    />
+                                  </svg>
+                                </div>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </span>
+                            <span
+                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                            >
+                              No
+                            </span>
+                          </label>
+                          <p
+                            class="MuiFormHelperText-root Mui-required"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  >
+                    <h3>
+                      Additional comments
+                    </h3>
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+                        data-shrink="true"
+                        for="comments"
+                        id="comments-label"
+                      >
+                        Comments 
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                      >
+                        <textarea
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                          id="comments"
+                          name="comments"
+                          rows="4"
+                        >
+                          {
+  "role": "",
+  "work_from_regional_office": "",
+  "regional_offices": [],
+  "comments": ""
+}
+                        </textarea>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                          >
+                            <span>
+                              Comments 
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiBox-root MuiBox-root-24"
+                >
+                  <hr
+                    class="MuiDivider-root"
+                  />
+                </div>
+                <div
+                  class="MuiBox-root MuiBox-root-25"
+                >
+                  <div
+                    class="MuiBox-root MuiBox-root-26"
+                  >
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
+                      tabindex="0"
+                      type="submit"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        Submit Request
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                    <button
+                      class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+                      tabindex="0"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        Log out
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
