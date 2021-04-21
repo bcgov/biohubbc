@@ -170,7 +170,6 @@ export const AccessRequestPage: React.FC = () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={(values) => {
-            alert(JSON.stringify(values, null, 2));
             handleSubmitAccessRequest(values);
           }}>
           {({ values, touched, errors, handleChange, handleSubmit, setFieldValue }) => (
@@ -275,7 +274,7 @@ export const AccessRequestPage: React.FC = () => {
                               variant="outlined"
                               multiline
                               rows={4}
-                              value={JSON.stringify(values, null, 2)}
+                              value={values.comments}
                               onChange={handleChange}
                               error={touched.comments && Boolean(errors.comments)}
                               helperText={errors.comments}

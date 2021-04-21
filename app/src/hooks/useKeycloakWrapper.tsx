@@ -36,7 +36,7 @@ export interface IKeycloakWrapper {
    *
    * @memberof IKeycloakWrapper
    */
-  hasSystemRole: (validSystemRoles: string[]) => boolean;
+  hasSystemRole: (validSystemRoles?: string[]) => boolean;
 }
 
 /**
@@ -78,7 +78,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return user?.role_names || [];
   };
 
-  const hasSystemRole = (validSystemRoles: string[]) => {
+  const hasSystemRole = (validSystemRoles?: string[]) => {
+    if (!validSystemRoles || !validSystemRoles.length) {
+      return true;
+    }
     const userSystemRoles = getSystemRoles();
 
     for (const validRole of validSystemRoles) {
