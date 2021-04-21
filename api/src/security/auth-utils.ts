@@ -203,16 +203,16 @@ export const userHasValidSystemRoles = function (
   validSystemRoles: string | string[],
   userSystemRoles: string | string[]
 ): boolean {
+  if (!validSystemRoles || !validSystemRoles?.length) {
+    return true;
+  }
+
   if (!Array.isArray(validSystemRoles)) {
     validSystemRoles = [validSystemRoles];
   }
 
   if (!Array.isArray(userSystemRoles)) {
     userSystemRoles = [userSystemRoles];
-  }
-
-  if (!validSystemRoles?.length) {
-    return true;
   }
 
   for (const validRole of validSystemRoles) {
