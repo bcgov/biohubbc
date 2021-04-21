@@ -35,7 +35,7 @@ export const getAdministrativeActivitiesSQL = (administrativeActivityTypeName?: 
   if (administrativeActivityTypeName) {
     sqlStatement.append(SQL`
       WHERE
-        aat.name = '${administrativeActivityTypeName}'
+        aat.name = ${administrativeActivityTypeName}
     `);
   }
 

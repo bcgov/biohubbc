@@ -80,7 +80,7 @@ const AccessRequestList: React.FC = () => {
     setIsLoading(true);
 
     getAccessRequests();
-  }, [biohubApi, isLoading]);
+  }, [biohubApi, isLoading, hasLoaded]);
 
   return (
     <Paper>
