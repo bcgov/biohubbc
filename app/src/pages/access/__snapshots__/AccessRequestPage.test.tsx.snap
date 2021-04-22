@@ -256,8 +256,8 @@ exports[`NotFoundPage renders correctly 1`] = `
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                        data-shrink="true"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                        data-shrink="false"
                         for="comments"
                         id="comments-label"
                       >
@@ -272,20 +272,13 @@ exports[`NotFoundPage renders correctly 1`] = `
                           id="comments"
                           name="comments"
                           rows="4"
-                        >
-                          {
-  "role": "",
-  "work_from_regional_office": "",
-  "regional_offices": [],
-  "comments": ""
-}
-                        </textarea>
+                        />
                         <fieldset
                           aria-hidden="true"
                           class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                            class="PrivateNotchedOutline-legendLabelled-14"
                           >
                             <span>
                               Comments 
