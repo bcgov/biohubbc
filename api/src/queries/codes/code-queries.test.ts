@@ -10,7 +10,8 @@ import {
   getInvestmentActionCategorySQL,
   getIUCNConservationActionLevel1ClassificationSQL,
   getIUCNConservationActionLevel2SubclassificationSQL,
-  getIUCNConservationActionLevel3SubclassificationSQL
+  getIUCNConservationActionLevel3SubclassificationSQL,
+  getSystemRolesSQL
 } from './code-queries';
 
 describe('getManagementActionTypeSQL', () => {
@@ -79,6 +80,13 @@ describe('getIUCNConservationActionLevel2SubclassificationSQL', () => {
 describe('getIUCNConservationActionLevel3SubclassificationSQL', () => {
   it('returns valid sql statement', () => {
     const response = getIUCNConservationActionLevel3SubclassificationSQL();
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSystemRolesSQL', () => {
+  it('returns valid sql statement', () => {
+    const response = getSystemRolesSQL();
     expect(response).to.not.be.null;
   });
 });

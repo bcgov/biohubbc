@@ -17,6 +17,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
@@ -90,7 +91,6 @@ const AccessRequestFormYupSchema = yup.object().shape({
  * @return {*}
  */
 export const AccessRequestPage: React.FC = () => {
-  //const { codes } = props;
   const classes = useStyles();
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
@@ -108,6 +108,8 @@ export const AccessRequestPage: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
     }
   });
+
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState<Boolean>(false);
 
   useEffect(() => {
     const getAllCodeSets = async () => {
@@ -137,11 +139,35 @@ export const AccessRequestPage: React.FC = () => {
     });
   };
 
+  //const [isLoading, setIsLoading] = useState(false);
+  //const [hasLoaded, setHasLoaded] = useState(false);
+
+  // useEffect(() => {
+  //   const getAccessRequests = async () => {
+  //     const accessRequestResponse = await biohubApi.admin.getAccessRequests();
+
+  //     setAccessRequests(() => {
+  //       setHasLoaded(true);
+  //       setIsLoading(false);
+  //       return accessRequestResponse;
+  //     });
+  //   };
+
+  //   if (hasLoaded || isLoading) {
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+
+  //   getAccessRequests();
+  // }, [biohubApi, isLoading, hasLoaded]);
+
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
       let response;
 
       const accessRequestFormData = { values };
+      console.log(isSubmittingRequest);
 
       response = await biohubApi.accessRequest.createAdministrativeActivity(accessRequestFormData);
 
@@ -158,6 +184,8 @@ export const AccessRequestPage: React.FC = () => {
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
+    } finally {
+      setIsSubmittingRequest(false);
     }
   };
 
@@ -170,6 +198,8 @@ export const AccessRequestPage: React.FC = () => {
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={(values) => {
+            setIsSubmittingRequest(true);
+
             handleSubmitAccessRequest(values);
           }}>
           {({ values, touched, errors, handleChange, handleSubmit, setFieldValue }) => (
@@ -287,6 +317,7 @@ export const AccessRequestPage: React.FC = () => {
                         <Box display="flex" justifyContent="flex-end">
                           <Box>
                             <Button type="submit" variant="contained" color="primary" className={classes.actionButton}>
+                              {isSubmittingRequest && <CircularProgress size={1} color="inherit"></CircularProgress>}
                               Submit Request
                             </Button>
                             <Button
