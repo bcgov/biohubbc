@@ -139,29 +139,6 @@ export const AccessRequestPage: React.FC = () => {
     });
   };
 
-  //const [isLoading, setIsLoading] = useState(false);
-  //const [hasLoaded, setHasLoaded] = useState(false);
-
-  // useEffect(() => {
-  //   const getAccessRequests = async () => {
-  //     const accessRequestResponse = await biohubApi.admin.getAccessRequests();
-
-  //     setAccessRequests(() => {
-  //       setHasLoaded(true);
-  //       setIsLoading(false);
-  //       return accessRequestResponse;
-  //     });
-  //   };
-
-  //   if (hasLoaded || isLoading) {
-  //     return;
-  //   }
-
-  //   setIsLoading(true);
-
-  //   getAccessRequests();
-  // }, [biohubApi, isLoading, hasLoaded]);
-
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
       let response;
@@ -246,11 +223,8 @@ export const AccessRequestPage: React.FC = () => {
                               required={true}
                               component="fieldset"
                               onChange={(event: any) => {
-                                console.log('event: ', event.target.value);
-
                                 if (event.target.value === 'false') {
                                   setFieldValue('regional_offices', []);
-                                  console.log('set regional office to empty');
                                 }
                               }}
                               error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
