@@ -86,6 +86,38 @@ describe('FundingSource', () => {
     });
   });
 
+  it('shows error dialog with API error message when editing a funding source fails', async () => {
+    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getAllByRole } = render(
+      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Funding Sources')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Edit'));
+
+    await waitFor(() => {
+      expect(getByText('Agency Details')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
   it('deletes a funding source as expected', async () => {
     const { getByText, getByTestId } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
@@ -106,6 +138,72 @@ describe('FundingSource', () => {
     await waitFor(() => {
       expect(mockBiohubApi().project.deleteFundingSource).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toBeCalledTimes(1);
+    });
+  });
+
+  it('closes the delete dialog when user decides not to delete their funding source', async () => {
+    const { getByText, queryByText, getByTestId, getAllByRole } = render(
+      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Funding Sources')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('delete-funding-source'));
+
+    await waitFor(() => {
+      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('No'));
+
+    await waitFor(() => {
+      expect(queryByText('Are you sure you want to remove this funding source?')).toBeNull();
+    });
+
+    fireEvent.click(getByTestId('delete-funding-source'));
+
+    await waitFor(() => {
+      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('Are you sure you want to remove this funding source?')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when deleting a funding source fails', async () => {
+    mockBiohubApi().project.deleteFundingSource = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getByTestId } = render(
+      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    );
+
+    await waitFor(() => {
+      expect(getByText('Funding Sources')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('delete-funding-source'));
+
+    await waitFor(() => {
+      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Yes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
     });
   });
 
