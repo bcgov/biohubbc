@@ -11,6 +11,7 @@ export const codes: IGetAllCodeSetsResponse = {
   project_type: [{ id: 1, name: 'Project type' }],
   region: [{ id: 1, name: 'Region code' }],
   species: [{ id: 1, name: 'Species code' }],
+  permit_type: [{ id: 1, name: 'Permit type' }],
   iucn_conservation_action_level_1_classification: [{ id: 1, name: 'IUCN class' }],
   iucn_conservation_action_level_2_subclassification: [{ id: 1, iucn1_id: 1, name: 'IUCN subclass 1' }],
   iucn_conservation_action_level_3_subclassification: [{ id: 1, iucn2_id: 1, name: 'IUCN subclass 2' }]

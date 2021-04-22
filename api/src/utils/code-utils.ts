@@ -12,7 +12,7 @@ import {
   getProjectTypeSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
-import { coordinator_agency, region, species } from '../constants/codes';
+import { coordinator_agency, region, species, permit_type } from '../constants/codes';
 
 const defaultLog = getLogger('queries/code-queries');
 
@@ -27,6 +27,7 @@ export interface IAllCodeSets {
   coordinator_agency: object;
   region: object;
   species: object;
+  permit_type: object;
   iucn_conservation_action_level_1_classification: object;
   iucn_conservation_action_level_2_subclassification: object;
   iucn_conservation_action_level_3_subclassification: object;
@@ -94,6 +95,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
-    species
+    species,
+    permit_type
   };
 }

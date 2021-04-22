@@ -50,7 +50,8 @@ export interface IProjectPermitsProps {
  */
 const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const {
-    projectForViewData: { permit, id }
+    projectForViewData: { permit, id },
+    codes
   } = props;
 
   const biohubApi = useBiohubApi();
@@ -118,13 +119,23 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
 
   const hasPermits = permit.permits && permit.permits.length > 0;
 
+  console.log(permit.permits);
+
   return (
     <>
       <EditDialog
         dialogTitle={EditPermitI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <ProjectPermitForm />,
+          element: (
+            <ProjectPermitForm
+              permit_type={
+                codes?.permit_type?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          ),
           initialValues: permitFormData?.permits?.length
             ? permitFormData
             : { permits: [ProjectPermitFormArrayItemInitialValues] },
@@ -155,6 +166,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
               <TableHead>
                 <TableRow>
                   <TableCell className={classes.heading}>Permit Number</TableCell>
+                  <TableCell className={classes.heading}>Permit Type</TableCell>
                   <TableCell className={classes.heading}>Sampling Conducted</TableCell>
                 </TableRow>
               </TableHead>
@@ -163,6 +175,9 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
                   <TableRow>
                     <TableCell component="th" scope="row">
                       {item.permit_number}
+                    </TableCell>
+                    <TableCell component="th" scope="row">
+                      {item.permit_type}
                     </TableCell>
                     <TableCell>{item.sampling_conducted ? 'Yes' : 'No'}</TableCell>
                   </TableRow>

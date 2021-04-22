@@ -246,6 +246,11 @@ const CreateProjectPage: React.FC = () => {
                 setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
               }
             }}
+            permit_type={
+              codes?.permit_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
           />
         ),
         stepValues: initialProjectFieldData.permit,

@@ -1,3 +1,9 @@
+export const permit_type = [
+  { id: 1, name: 'Park Use Permit' },
+  { id: 2, name: 'Wildlife Permit - General' },
+  { id: 3, name: 'Scientific Fish Collection Permit' }
+];
+
 export const coordinator_agency = [
   { id: 1, name: 'A Rocha Canada' },
   { id: 2, name: 'Aarde Environmental Ltd.' },

@@ -11,12 +11,14 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectPermitFormArrayItem {
   permit_number: string;
+  permit_type: string;
   sampling_conducted: string;
 }
 
@@ -26,6 +28,7 @@ export interface IProjectPermitForm {
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
   permit_number: '',
+  permit_type: '',
   sampling_conducted: 'true'
 };
 
@@ -39,6 +42,7 @@ export const ProjectPermitFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        permit_type: yup.string().required('Required'),
         sampling_conducted: yup.string().required('Required')
       })
     )
@@ -51,6 +55,7 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        permit_type: yup.string().required('Required'),
         sampling_conducted: yup.string().required('Required')
       })
     )
@@ -60,6 +65,7 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
 });
 
 export interface IProjectPermitFormProps {
+  permit_type: IMultiAutocompleteFieldOption[];
   /**
    * Emits every time a form value changes.
    */
@@ -75,6 +81,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   useEffect(() => {
+    console.log(values);
     props?.onValuesChange?.(values);
   }, [values, props]);
 
@@ -87,11 +94,12 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
             <Grid container direction="row" spacing={3}>
               {values.permits?.map((permit, index) => {
                 const permitNumberMeta = getFieldMeta(`permits.[${index}].permit_number`);
+                const permitTypeMeta = getFieldMeta(`permits.[${index}].permit_type`);
                 const samplingConductedMeta = getFieldMeta(`permits.[${index}].sampling_conducted`);
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="70%" pr={1}>
+                      <Box flexBasis="30%" pr={1}>
                         <TextField
                           fullWidth
                           required={true}
@@ -104,6 +112,29 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                           error={permitNumberMeta.touched && Boolean(permitNumberMeta.error)}
                           helperText={permitNumberMeta.error}
                         />
+                      </Box>
+                      <Box flexBasis="40%" pl={1}>
+                        <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
+                          <InputLabel id="permit_type-label">Permit Type</InputLabel>
+                          <Select
+                            id={`permits.[${index}].permit_type`}
+                            name={`permits.[${index}].permit_type`}
+                            labelId={`permits.[${index}].permit_type-label`}
+                            label="Permit Type"
+                            value={permit.permit_type}
+                            labelWidth={300}
+                            onChange={handleChange}
+                            error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
+                            displayEmpty
+                            inputProps={{ 'aria-label': 'Permit Type' }}>
+                            {props.permit_type.map((item) => (
+                              <MenuItem key={item.value} value={item.value}>
+                                {item.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText>{permitTypeMeta.error}</FormHelperText>
+                        </FormControl>
                       </Box>
                       <Box flexBasis="30%" pl={1}>
                         <FormControl variant="outlined" required={true} style={{ width: '100%' }}>

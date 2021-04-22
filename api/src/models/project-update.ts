@@ -300,6 +300,7 @@ export class PutFundingSource {
 
 export interface IPutPermit {
   permit_number: string;
+  permit_type: string;
   sampling_conducted: boolean;
 }
 
@@ -324,6 +325,7 @@ export class PutPermitData {
         obj.permits.map((item: any) => {
           return {
             permit_number: item.permit_number,
+            permit_type: item.permit_type,
             sampling_conducted: (item.sampling_conducted === 'true' && true) || false
           };
         })) ||
@@ -333,6 +335,7 @@ export class PutPermitData {
 
 interface IGetPermit {
   permit_number: string;
+  permit_type: number;
   sampling_conducted: string;
 }
 
@@ -355,8 +358,12 @@ export class GetPermitData {
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {
+          console.log('%%%%%%%%%%%%%%%%%%%%%');
+          console.log(item.type);
+          console.log(Number(item.type));
           return {
             permit_number: item.number,
+            permit_type: Number(item.type),
             sampling_conducted: item.sampling_conducted ? 'true' : 'false'
           };
         })) ||

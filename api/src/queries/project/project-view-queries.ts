@@ -202,6 +202,7 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
   const sqlStatement = SQL`
     SELECT
       number,
+      type,
       sampling_conducted
     FROM
       project_permit
