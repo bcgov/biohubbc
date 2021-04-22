@@ -245,6 +245,7 @@ export interface IGetProjectForViewResponseDetails {
 
 interface IGetProjectForViewResponsePermitArrayItem {
   permit_number: string;
+  permit_type: string;
   sampling_conducted: boolean;
 }
 

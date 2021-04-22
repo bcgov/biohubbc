@@ -48,7 +48,9 @@ describe('ProjectPermits', () => {
           ...getProjectForViewResponse,
           permit: {
             ...getProjectForViewResponse.permit,
-            permits: [{ permit_number: '123', sampling_conducted: false }]
+            permits: [
+              { permit_number: '123', permit_type: 'Scientific Fish Collection Permit', sampling_conducted: false }
+            ]
           }
         }}
         codes={codes}
@@ -82,6 +84,7 @@ describe('ProjectPermits', () => {
         permits: [
           {
             permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit',
             sampling_conducted: 'true'
           }
         ]
@@ -127,6 +130,7 @@ describe('ProjectPermits', () => {
           permits: [
             {
               permit_number: '123',
+              permit_type: 'Scientific Fish Collection Permit',
               sampling_conducted: 'true'
             }
           ]
@@ -189,6 +193,7 @@ describe('ProjectPermits', () => {
         permits: [
           {
             permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit',
             sampling_conducted: 'true'
           }
         ]
