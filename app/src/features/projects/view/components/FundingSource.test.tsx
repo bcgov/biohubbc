@@ -119,7 +119,7 @@ describe('FundingSource', () => {
   });
 
   it('deletes a funding source as expected', async () => {
-    const { getByText, getByTestId, queryByText } = render(
+    const { getByText, getByTestId } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
