@@ -215,10 +215,6 @@ export const userHasValidSystemRoles = function (
     userSystemRoles = [userSystemRoles];
   }
 
-  if (!validSystemRoles.length) {
-    return true;
-  }
-
   for (const validRole of validSystemRoles) {
     if (userSystemRoles.includes(validRole)) {
       return true;

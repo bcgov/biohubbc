@@ -44,7 +44,7 @@ const ActiveUsersList: React.FC = () => {
     setIsLoading(true);
 
     getActiveUsers();
-  }, [biohubApi, isLoading]);
+  }, [biohubApi, isLoading, hasLoaded]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
