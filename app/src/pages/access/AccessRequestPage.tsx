@@ -109,7 +109,7 @@ export const AccessRequestPage: React.FC = () => {
     }
   });
 
-  const [isSubmittingRequest, setIsSubmittingRequest] = useState<Boolean>(false);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
   useEffect(() => {
     const getAllCodeSets = async () => {
