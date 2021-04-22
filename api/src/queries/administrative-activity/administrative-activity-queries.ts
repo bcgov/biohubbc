@@ -9,8 +9,8 @@ const defaultLog = getLogger('queries/project/project-view-queries');
  * @param {string} [administrativeActivityTypeName]
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativeActivitiesSQL = (administrativeActivityTypeName?: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getAdministrativeActivitiesSQL', message: 'params', administrativeActivityTypeName });
+export const getAdministrativeActivitiesSQL = (administrativeActivityTypeName?: string, userIdentifier?: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getAdministrativeActivitiesSQL', message: 'params', administrativeActivityTypeName, userIdentifier });
 
   const sqlStatement = SQL`
     SELECT
@@ -38,6 +38,14 @@ export const getAdministrativeActivitiesSQL = (administrativeActivityTypeName?: 
         aat.name = ${administrativeActivityTypeName}
     `);
   }
+
+  if (userIdentifier) {
+    sqlStatement.append(SQL`
+      WHERE
+        aa.data -> 'username' = ${userIdentifier}
+    `);
+  }
+
 
   sqlStatement.append(';');
 

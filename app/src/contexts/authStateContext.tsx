@@ -14,7 +14,7 @@ export const AuthStateContextProvider: React.FC = (props) => {
 
   return (
     <AuthStateContext.Provider
-      value={{ ready: keycloakWrapper.keycloak?.authenticated && keycloakWrapper.hasUserLoaded }}>
+      value={{ ready: keycloakWrapper.keycloak?.authenticated && keycloakWrapper.hasLoadedUserRelevantInfo }}>
       {props.children}
     </AuthStateContext.Provider>
   );

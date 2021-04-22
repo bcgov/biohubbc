@@ -8,7 +8,7 @@ const AuthLayout: React.FC = (props) => {
     <AuthStateContext.Consumer>
       {(context) => {
         if (!context.ready) {
-          return <CircularProgress></CircularProgress>;
+          return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
         }
 
         return <PublicLayout>{props.children}</PublicLayout>;

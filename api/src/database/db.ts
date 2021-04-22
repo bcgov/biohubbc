@@ -207,6 +207,10 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     const userIdentifier = getUserIdentifier(_token);
     const userIdentitySource = getUserIdentitySource(_token);
 
+    console.log('userIdentifier', userIdentifier);
+    console.log('userIdentitySource', userIdentitySource);
+
+
     if (!userIdentifier || !userIdentitySource) {
       throw new HTTP400('Failed to identify authenticated user');
     }

@@ -18,6 +18,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Redirect } from 'react-router-dom';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
@@ -28,6 +29,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
+import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -97,6 +99,8 @@ export const AccessRequestPage: React.FC = () => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
+  const keycloakWrapper = useKeycloakWrapper();
+
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: AccessRequestI18N.requestTitle,
     dialogText: AccessRequestI18N.requestText,
@@ -111,6 +115,10 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
+  const [isPendingStatusDetermined, setIsPendingStatusDetermined] = useState(false);
+
+  const [hasPendingAdministrativeActivities, setHasPendingAdministrativeActivities] = useState(false);
+
   useEffect(() => {
     const getAllCodeSets = async () => {
       const response = await biohubApi.codes.getAllCodeSets();
@@ -123,11 +131,23 @@ export const AccessRequestPage: React.FC = () => {
       });
     };
 
+    const determinePendingStatus = async () => {
+      const hasPending = await biohubApi.accessRequest.hasPendingAdministrativeActivities();
+      console.log('before set: this is what the access request page knows of pending requests ', hasPending);
+      setHasPendingAdministrativeActivities(hasPending === 'true');
+      console.log('after set: this is what the access request page knows of pending requests ', hasPending);
+      setIsPendingStatusDetermined(true);
+    };
+
     if (!isLoadingCodes && !codes) {
       getAllCodeSets();
       setIsLoadingCodes(true);
     }
-  }, [biohubApi, isLoadingCodes, codes]);
+
+    if (!isPendingStatusDetermined) {
+      determinePendingStatus();
+    }
+  }, [biohubApi, isLoadingCodes, codes, isPendingStatusDetermined, hasPendingAdministrativeActivities]);
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({
@@ -141,12 +161,9 @@ export const AccessRequestPage: React.FC = () => {
 
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
-      let response;
 
-      const accessRequestFormData = { values };
-      console.log(isSubmittingRequest);
 
-      response = await biohubApi.accessRequest.createAdministrativeActivity(accessRequestFormData);
+      const response = await biohubApi.accessRequest.createAdministrativeActivity({...values, username: keycloakWrapper.getUserIdentifier()});
 
       if (!response?.id) {
         showAccessRequestErrorDialog({
@@ -165,6 +182,14 @@ export const AccessRequestPage: React.FC = () => {
       setIsSubmittingRequest(false);
     }
   };
+
+  if (!isPendingStatusDetermined) {
+    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
+  }
+
+  if (hasPendingAdministrativeActivities) {
+    return <Redirect to="/request-submitted" />;
+  }
 
   return (
     <Box>
@@ -289,24 +314,41 @@ export const AccessRequestPage: React.FC = () => {
                           <Divider />
                         </Box>
                         <Box display="flex" justifyContent="flex-end">
-                          <Box>
-                            <Button type="submit" variant="contained" color="primary" className={classes.actionButton}>
-                              {isSubmittingRequest && <CircularProgress size={1} color="inherit"></CircularProgress>}
+                          <Box className="buttonWrapper" mr={1}>
+                            <Button
+                              type="submit"
+                              variant="contained"
+                              color="primary"
+                              className={classes.actionButton}
+                              disabled={isSubmittingRequest}>
                               Submit Request
                             </Button>
-                            <Button
-                              variant="outlined"
-                              color="primary"
-                              onClick={async () => {
-                                window.location.href =
-                                  'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
-                                  encodeURI(window.location.origin) +
-                                  '%2Faccess-request';
-                              }}
-                              className={classes.actionButton}>
-                              Log out
-                            </Button>
+                            {isSubmittingRequest && (
+                              <CircularProgress
+                                className="buttonProgress"
+                                variant="indeterminate"
+                                size={20}
+                                color="primary"
+                              />
+                            )}
                           </Box>
+                          {/*
+                              CircularProgress styling examples:
+                              https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
+                              https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
+                            */}
+                          <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={async () => {
+                              window.location.href =
+                                'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
+                                encodeURI(window.location.origin) +
+                                '%2Faccess-request';
+                            }}
+                            className={classes.actionButton}>
+                            Log out
+                          </Button>
                         </Box>
                       </Box>
                     </form>

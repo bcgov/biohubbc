@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IAccessRequestResponse } from 'interfaces/useAdministrativeActivityApi.interface';
+import { IAccessRequestResponse, IHasPendingAccessRequestResponse } from 'interfaces/useAdministrativeActivityApi.interface';
 
 /**
  * Returns a set of supported api methods for working with access requests.
@@ -11,18 +11,31 @@ const useAdministrativeActivityApi = (axios: AxiosInstance) => {
   /**
    * Create a new access request record.
    *
-
-   * @param {unknown} accessRequestData
+   * @param {unknown} administrativeActivityData
    * @return {*}  {Promise<IAccessRequestResponse>}
    */
   const createAdministrativeActivity = async (administrativeActivityData: unknown): Promise<IAccessRequestResponse> => {
-    const { data } = await axios.post('/api/administrative-activity', { data: administrativeActivityData });
+    const { data } = await axios.post('/api/administrative-activity', administrativeActivityData);
 
     return data;
   };
 
+  /**
+   * Has pending access requests.
+   *
+   * @return {*}  {Promise<string>}
+   */
+  const hasPendingAdministrativeActivities = async (): Promise<string> => {
+    const { hasPending } = await axios.get('/api/administrative-activity', {}) as IHasPendingAccessRequestResponse;
+
+    console.log ('hasPending in useAdministrativeActivityApi', hasPending);
+
+    return hasPending;
+  };
+
   return {
-    createAdministrativeActivity
+    createAdministrativeActivity,
+    hasPendingAdministrativeActivities
   };
 };
 

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
-import { getDBConnection } from '../database/db';
+import { getAPIUserDBConnection} from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
 import { getLogger } from '../utils/logger';
@@ -26,6 +26,13 @@ GET.apiDoc = {
       schema: {
         type: 'string',
         enum: ['System Access']
+      }
+    },
+    {
+      in: 'query',
+      name: 'userIdentifier',
+      schema: {
+        type: 'string'
       }
     }
   ],
@@ -88,12 +95,14 @@ GET.apiDoc = {
  */
 function getAdministrativeActivities(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getAPIUserDBConnection();
 
     try {
       const administrativeActivityTypeName = (req.query?.type as string) || undefined;
 
-      const sqlStatement = getAdministrativeActivitiesSQL(administrativeActivityTypeName);
+      const userIdentifier = (req.query?.userIdentifier as string) || undefined;
+
+      const sqlStatement = getAdministrativeActivitiesSQL(administrativeActivityTypeName, userIdentifier);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');

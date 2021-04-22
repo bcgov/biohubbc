@@ -22,16 +22,23 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     <Route
       {...rest}
       render={(props) => {
-        if (!!keycloakWrapper.keycloak?.authenticated) {
-          if (!keycloakWrapper.hasSystemRole(validRoles)) {
+          if (!!keycloakWrapper.keycloak?.authenticated) {
+            if (!keycloakWrapper.hasSystemRole(validRoles)) {
+              if (keycloakWrapper.hasAccessRequest) {
+                return <Redirect to="/request-submitted" />;
+              } else {
+                return <Redirect to="/forbidden" />;
+              }
+            }
+
+            return (
+              <Layout>
+                <Component {...props} {...rest.componentProps} />
+              </Layout>
+            );
+          } else {
             return <Redirect to="/forbidden" />;
           }
-          return (
-            <Layout>
-              <Component {...props} {...rest.componentProps} />
-            </Layout>
-          );
-        }
       }}
     />
   );

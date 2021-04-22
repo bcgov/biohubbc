@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { READ_ROLES } from '../constants/roles';
-import { getDBConnection } from '../database/db';
+import { getAPIUserDBConnection } from '../database/db';
 import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
@@ -234,7 +234,7 @@ GET.apiDoc = {
  */
 function getAllCodes(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getAPIUserDBConnection();
 
     try {
       const allCodeSets = await getAllCodeSets(connection);
