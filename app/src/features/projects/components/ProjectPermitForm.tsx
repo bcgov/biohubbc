@@ -11,7 +11,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
@@ -65,7 +64,6 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
 });
 
 export interface IProjectPermitFormProps {
-  permit_type: IMultiAutocompleteFieldOption[];
   /**
    * Emits every time a form value changes.
    */
@@ -81,7 +79,6 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   useEffect(() => {
-    console.log(values);
     props?.onValuesChange?.(values);
   }, [values, props]);
 
@@ -115,23 +112,26 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                       </Box>
                       <Box flexBasis="40%" pl={1}>
                         <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="permit_type-label">Permit Type</InputLabel>
+                          <InputLabel id="permit_type">Permit Type</InputLabel>
                           <Select
                             id={`permits.[${index}].permit_type`}
                             name={`permits.[${index}].permit_type`}
-                            labelId={`permits.[${index}].permit_type-label`}
+                            labelId="permit_type"
                             label="Permit Type"
                             value={permit.permit_type}
-                            labelWidth={300}
                             onChange={handleChange}
                             error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'Permit Type' }}>
-                            {props.permit_type.map((item) => (
-                              <MenuItem key={item.value} value={item.value}>
-                                {item.label}
-                              </MenuItem>
-                            ))}
+                            <MenuItem key={1} value="Park Use Permit">
+                              Park Use Permit
+                            </MenuItem>
+                            <MenuItem key={2} value="Wildlife Permit - General">
+                              Wildlife Permit - General
+                            </MenuItem>
+                            <MenuItem key={3} value="Scientific Fish Collection Permit">
+                              Scientific Fish Collection Permit
+                            </MenuItem>
                           </Select>
                           <FormHelperText>{permitTypeMeta.error}</FormHelperText>
                         </FormControl>

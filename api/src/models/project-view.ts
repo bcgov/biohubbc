@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import { permit_type } from '../constants/codes';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-view');
@@ -58,11 +57,9 @@ export class GetPermitData {
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {
-          console.log(permit_type);
-          console.log(item.type);
           return {
             permit_number: item.number,
-            permit_type: permit_type.find((p) => p.id == item.type)?.name || '',
+            permit_type: item.type,
             sampling_conducted: item.sampling_conducted
           };
         })) ||

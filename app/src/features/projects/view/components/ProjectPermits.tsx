@@ -50,8 +50,7 @@ export interface IProjectPermitsProps {
  */
 const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const {
-    projectForViewData: { permit, id },
-    codes
+    projectForViewData: { permit, id }
   } = props;
 
   const biohubApi = useBiohubApi();
@@ -119,23 +118,13 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
 
   const hasPermits = permit.permits && permit.permits.length > 0;
 
-  console.log(permit.permits);
-
   return (
     <>
       <EditDialog
         dialogTitle={EditPermitI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: (
-            <ProjectPermitForm
-              permit_type={
-                codes?.permit_type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          ),
+          element: <ProjectPermitForm />,
           initialValues: permitFormData?.permits?.length
             ? permitFormData
             : { permits: [ProjectPermitFormArrayItemInitialValues] },

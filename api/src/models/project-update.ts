@@ -335,7 +335,7 @@ export class PutPermitData {
 
 interface IGetPermit {
   permit_number: string;
-  permit_type: number;
+  permit_type: string;
   sampling_conducted: string;
 }
 
@@ -358,12 +358,9 @@ export class GetPermitData {
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {
-          console.log('%%%%%%%%%%%%%%%%%%%%%');
-          console.log(item.type);
-          console.log(Number(item.type));
           return {
             permit_number: item.number,
-            permit_type: Number(item.type),
+            permit_type: item.type,
             sampling_conducted: item.sampling_conducted ? 'true' : 'false'
           };
         })) ||

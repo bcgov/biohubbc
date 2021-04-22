@@ -128,20 +128,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              permit_type: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
               region: {
                 type: 'array',
                 items: {
