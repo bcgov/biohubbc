@@ -60,7 +60,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 /**
  * SQL query to get all projects.
  *
- * @param {string} projectId
  * @returns {SQLStatement} sql query object
  */
 export const getProjectListSQL = (): SQLStatement | null => {

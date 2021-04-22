@@ -11,6 +11,9 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   admin: {
     getAccessRequests: jest.fn()
+  },
+  user: {
+    getUsersList: jest.fn()
   }
 };
 
@@ -22,14 +25,16 @@ describe('ManageUsersPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().admin.getAccessRequests.mockClear();
+    mockBiohubApi().user.getUsersList.mockClear();
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  it('renders correctly', async () => {
+  it('renders the main page content correctly', async () => {
     mockBiohubApi().admin.getAccessRequests.mockReturnValue([]);
+    mockBiohubApi().user.getUsersList.mockReturnValue([]);
 
     const { getByText } = renderContainer();
 
@@ -38,13 +43,15 @@ describe('ManageUsersPage', () => {
     });
   });
 
-  it('renders the access requests component', async () => {
+  it('renders the access requests and active users component', async () => {
     mockBiohubApi().admin.getAccessRequests.mockReturnValue([]);
+    mockBiohubApi().user.getUsersList.mockReturnValue([]);
 
     const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('No Access Requests')).toBeVisible();
+      expect(getByText('No Active Users')).toBeVisible();
     });
   });
 });

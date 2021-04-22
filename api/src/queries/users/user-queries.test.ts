@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getUserByIdSQL, getUserByUserIdentifierSQL } from './user-queries';
+import { getUserByIdSQL, getUserByUserIdentifierSQL, getUserListSQL } from './user-queries';
 
 describe('getUserByUserIdentifierSQL', () => {
   it('returns null response when null userIdentifier provided', () => {
@@ -25,6 +25,14 @@ describe('getUserByIdSQL', () => {
 
   it('returns non null response when valid userId provided', () => {
     const response = getUserByIdSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getUserListSQL', () => {
+  it('returns the expected response', () => {
+    const response = getUserListSQL();
 
     expect(response).to.not.be.null;
   });
