@@ -17,6 +17,7 @@ import yup from 'utils/YupSchema';
 
 export interface IProjectPermitFormArrayItem {
   permit_number: string;
+  permit_type: string;
   sampling_conducted: string;
 }
 
@@ -26,6 +27,7 @@ export interface IProjectPermitForm {
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
   permit_number: '',
+  permit_type: '',
   sampling_conducted: 'true'
 };
 
@@ -39,6 +41,7 @@ export const ProjectPermitFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        permit_type: yup.string().required('Required'),
         sampling_conducted: yup.string().required('Required')
       })
     )
@@ -51,6 +54,7 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+        permit_type: yup.string().required('Required'),
         sampling_conducted: yup.string().required('Required')
       })
     )
@@ -87,11 +91,12 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
             <Grid container direction="row" spacing={3}>
               {values.permits?.map((permit, index) => {
                 const permitNumberMeta = getFieldMeta(`permits.[${index}].permit_number`);
+                const permitTypeMeta = getFieldMeta(`permits.[${index}].permit_type`);
                 const samplingConductedMeta = getFieldMeta(`permits.[${index}].sampling_conducted`);
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="70%" pr={1}>
+                      <Box flexBasis="30%" pr={1}>
                         <TextField
                           fullWidth
                           required={true}
@@ -104,6 +109,32 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                           error={permitNumberMeta.touched && Boolean(permitNumberMeta.error)}
                           helperText={permitNumberMeta.error}
                         />
+                      </Box>
+                      <Box flexBasis="40%" pl={1}>
+                        <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
+                          <InputLabel id="permit_type">Permit Type</InputLabel>
+                          <Select
+                            id={`permits.[${index}].permit_type`}
+                            name={`permits.[${index}].permit_type`}
+                            labelId="permit_type"
+                            label="Permit Type"
+                            value={permit.permit_type}
+                            onChange={handleChange}
+                            error={permitTypeMeta.touched && Boolean(permitTypeMeta.error)}
+                            displayEmpty
+                            inputProps={{ 'aria-label': 'Permit Type' }}>
+                            <MenuItem key={1} value="Park Use Permit">
+                              Park Use Permit
+                            </MenuItem>
+                            <MenuItem key={2} value="Wildlife Permit - General">
+                              Wildlife Permit - General
+                            </MenuItem>
+                            <MenuItem key={3} value="Scientific Fish Collection Permit">
+                              Scientific Fish Collection Permit
+                            </MenuItem>
+                          </Select>
+                          <FormHelperText>{permitTypeMeta.error}</FormHelperText>
+                        </FormControl>
                       </Box>
                       <Box flexBasis="30%" pl={1}>
                         <FormControl variant="outlined" required={true} style={{ width: '100%' }}>

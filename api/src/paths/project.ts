@@ -180,7 +180,13 @@ function createProject(): RequestHandler {
         promises.push(
           Promise.all(
             sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
-              insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+              insertPermitNumber(
+                permit.permit_number,
+                permit.permit_type,
+                projectId,
+                permit.sampling_conducted,
+                connection
+              )
             )
           )
         );
@@ -360,11 +366,12 @@ export const insertStakeholderPartnership = async (
 
 export const insertPermitNumber = async (
   permit_number: string,
+  permit_type: string,
   project_id: number,
   sampling_conducted: boolean,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectPermitSQL(permit_number, project_id, sampling_conducted);
+  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id, sampling_conducted);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

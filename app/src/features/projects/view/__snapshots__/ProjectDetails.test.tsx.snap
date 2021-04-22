@@ -390,6 +390,12 @@ exports[`ProjectDetails renders correctly 1`] = `
                   class="MuiTableCell-root MuiTableCell-head makeStyles-heading-20"
                   scope="col"
                 >
+                  Permit Type
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-20"
+                  scope="col"
+                >
                   Sampling Conducted
                 </th>
               </tr>
@@ -406,6 +412,13 @@ exports[`ProjectDetails renders correctly 1`] = `
                   scope="row"
                 >
                   123
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  Permit type
                 </th>
                 <td
                   class="MuiTableCell-root MuiTableCell-body"

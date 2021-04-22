@@ -615,7 +615,7 @@ export const updateProjectPermitData = async (
 
   const insertPermitPromises =
     putPermitData?.permits?.map((permit: IPutPermit) =>
-      insertPermitNumber(permit.permit_number, projectId, permit.sampling_conducted, connection)
+      insertPermitNumber(permit.permit_number, permit.permit_type, projectId, permit.sampling_conducted, connection)
     ) || [];
 
   await Promise.all(insertPermitPromises);

@@ -286,6 +286,78 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                     style="width: 100%;"
                                   >
                                     <label
+                                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                                      data-shrink="false"
+                                      id="permit_type"
+                                    >
+                                      Permit Type
+                                      <span
+                                        aria-hidden="true"
+                                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                                      >
+                                         *
+                                      </span>
+                                    </label>
+                                    <div
+                                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                                    >
+                                      <div
+                                        aria-haspopup="listbox"
+                                        aria-label="Permit Type"
+                                        aria-labelledby="permit_type permits.[0].permit_type"
+                                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                                        id="permits.[0].permit_type"
+                                        role="button"
+                                        tabindex="0"
+                                      >
+                                        <span>
+                                          ​
+                                        </span>
+                                      </div>
+                                      <input
+                                        aria-hidden="true"
+                                        class="MuiSelect-nativeInput"
+                                        name="permits.[0].permit_type"
+                                        required=""
+                                        tabindex="-1"
+                                        value=""
+                                      />
+                                      <svg
+                                        aria-hidden="true"
+                                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          d="M7 10l5 5 5-5z"
+                                        />
+                                      </svg>
+                                      <fieldset
+                                        aria-hidden="true"
+                                        class="PrivateNotchedOutline-root-90 MuiOutlinedInput-notchedOutline"
+                                      >
+                                        <legend
+                                          class="PrivateNotchedOutline-legendLabelled-92"
+                                        >
+                                          <span>
+                                            Permit Type
+                                          </span>
+                                        </legend>
+                                      </fieldset>
+                                    </div>
+                                    <p
+                                      class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                                    />
+                                  </div>
+                                </div>
+                                <div
+                                  class="MuiBox-root MuiBox-root-95"
+                                >
+                                  <div
+                                    class="MuiFormControl-root"
+                                    style="width: 100%;"
+                                  >
+                                    <label
                                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                                       data-shrink="true"
                                       id="sampling_conducted"
@@ -350,7 +422,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                   </div>
                                 </div>
                                 <div
-                                  class="MuiBox-root MuiBox-root-95"
+                                  class="MuiBox-root MuiBox-root-96"
                                 >
                                   <button
                                     aria-label="remove permit"
