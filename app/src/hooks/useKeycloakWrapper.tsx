@@ -125,7 +125,14 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     getSystemAccessRequest();
-  }, [biohubApi.admin, getUserIdentifier, keycloakUserInfo, shouldLoadAccessRequest]);
+  }, [
+    biohubApi.accessRequest,
+    biohubApi.admin,
+    getUserIdentifier,
+    hasAccessRequest,
+    keycloakUserInfo,
+    shouldLoadAccessRequest
+  ]);
 
   useEffect(() => {
     const loadUserInfo = async () => {
