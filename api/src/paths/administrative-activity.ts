@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { READ_ROLES, WRITE_ROLES } from '../constants/roles';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import {
@@ -11,16 +10,14 @@ import {
   postAdministrativeActivitySQL,
   countPendingAdministrativeActivitiesSQL
 } from '../queries/administrative-activity-queries';
+import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
 export const POST: Operation = [logRequest('paths/administrative-activity', 'POST'), createAdministrativeActivity()];
-export const GET: Operation = [
-  logRequest('paths/administrative-activity', 'GET'),
-  hasPendingAdministrativeActivities()
-];
+export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getPendingAccessRequestsCount()];
 
 const postPutResponses = {
   200: {
@@ -83,7 +80,7 @@ POST.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: []
     }
   ],
   requestBody: {
@@ -108,7 +105,7 @@ GET.apiDoc = {
   tags: ['access request'],
   security: [
     {
-      Bearer: READ_ROLES
+      Bearer: []
     }
   ],
   requestBody: {
@@ -183,52 +180,40 @@ function createAdministrativeActivity(): RequestHandler {
 }
 
 /**
- * GET Has Pending Administrative Activities.
+ * Get all projects.
  *
  * @returns {RequestHandler}
  */
-function hasPendingAdministrativeActivities(): RequestHandler {
+function getPendingAccessRequestsCount(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
     try {
+      const userIdentifier = getUserIdentifier(req['keycloak_token']);
+
+      if (!userIdentifier) {
+        throw new HTTP400('Missing required query param : userIdentifier ');
+      }
+
+      const sqlStatement = countPendingAdministrativeActivitiesSQL(userIdentifier);
+
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL get statement');
+      }
+
       await connection.open();
 
-      const systemUserId = connection.systemUserId();
-
-      if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
-
-      const countPendingAdministrativeActivitiesSQLStatement = countPendingAdministrativeActivitiesSQL(systemUserId);
-
-      if (!countPendingAdministrativeActivitiesSQLStatement) {
-        throw new HTTP500('Failed to build SQL query statement');
-      }
-
-      const countPendingAdministrativeActivitiesResponse = await connection.query(
-        countPendingAdministrativeActivitiesSQLStatement.text,
-        countPendingAdministrativeActivitiesSQLStatement.values
-      );
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
       await connection.commit();
 
-      const countPendingAdministrativeActivitiesResult =
-        (countPendingAdministrativeActivitiesResponse &&
-          countPendingAdministrativeActivitiesResponse.rows &&
-          countPendingAdministrativeActivitiesResponse.rows[0]) ||
-        null;
+      const result = (response && response.rowCount) || 0;
 
-      if (!countPendingAdministrativeActivitiesResult || !countPendingAdministrativeActivitiesResult.cnt) {
-        throw new HTTP500('Failed to count pending administrative activities');
-      }
-
-      const hasPending = countPendingAdministrativeActivitiesResult.cnt > 0 ? true : false;
-
-      return res.status(200).json({ hasPending: hasPending });
+      return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'hasPending', message: 'error', error });
-      await connection.rollback();
+      defaultLog.debug({ label: 'getPendingAccessRequestsCount', message: 'error', error });
+      console.log(error);
+
       throw error;
     } finally {
       connection.release();

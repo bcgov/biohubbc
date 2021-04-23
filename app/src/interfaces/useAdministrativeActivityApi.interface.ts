@@ -9,12 +9,3 @@ export interface IAccessRequestResponse {
   date: string;
 }
 
-/**
- * `Has Pending Access Request` response object.
- *
- * @export
- * @interface IHasPendingAccessRequestResponse
- */
- export interface IHasPendingAccessRequestResponse {
-  hasPending: string;
-}

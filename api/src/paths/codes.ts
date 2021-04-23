@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { READ_ROLES } from '../constants/roles';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
@@ -16,7 +15,7 @@ GET.apiDoc = {
   tags: ['code'],
   security: [
     {
-      Bearer: READ_ROLES
+      Bearer: []
     }
   ],
   responses: {

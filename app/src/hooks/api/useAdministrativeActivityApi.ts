@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IAccessRequestResponse, IHasPendingAccessRequestResponse } from 'interfaces/useAdministrativeActivityApi.interface';
+import { IAccessRequestResponse } from 'interfaces/useAdministrativeActivityApi.interface';
 
 /**
  * Returns a set of supported api methods for working with access requests.
@@ -25,12 +25,12 @@ const useAdministrativeActivityApi = (axios: AxiosInstance) => {
    *
    * @return {*}  {Promise<string>}
    */
-  const hasPendingAdministrativeActivities = async (): Promise<string> => {
-    const { hasPending } = await axios.get('/api/administrative-activity', {}) as IHasPendingAccessRequestResponse;
+  const hasPendingAdministrativeActivities = async (): Promise<number> => {
+    const { data } = await axios.get('/api/administrative-activity');
 
-    console.log ('hasPending in useAdministrativeActivityApi', hasPending);
+    console.log('hasPending in useAdministrativeActivityApi', data);
 
-    return hasPending;
+    return data;
   };
 
   return {

@@ -60,6 +60,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const [hasLoadedUserRelevantInfo, setHasLoadedUserRelevantInfo] = useState<boolean>(false);
   const [keycloakUserInfo, setKeycloakUserInfo] = useState<any>(null);
   const [hasAccessRequest, setHasAccessRequest] = useState<boolean>(false);
+  const [shouldLoadAccessRequest, setShouldLoadAccessRequest] = useState<boolean>(false);
 
   /**
    * Parses out the preferred_username name from the token.
@@ -79,13 +80,20 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   useEffect(() => {
     const getUser = async () => {
-      const userDetails = await biohubApi.user.getUser();
+      let userDetails: IGetUserResponse;
+
+      try {
+        userDetails = await biohubApi.user.getUser();
+      } catch {}
 
       setUser(() => {
         setHasUserLoaded(true);
-        if (userDetails.role_names.length) {
+        if (userDetails?.role_names?.length) {
           setHasLoadedUserRelevantInfo(true);
+        } else {
+          setShouldLoadAccessRequest(true);
         }
+
         return userDetails;
       });
     };
@@ -101,20 +109,21 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   useEffect(() => {
     const getSystemAccessRequest = async () => {
-      const accessRequests = await biohubApi.admin.getAccessRequests(getUserIdentifier() || undefined);
+      const accessRequests = await biohubApi.accessRequest.hasPendingAdministrativeActivities();
+      console.log('accessRequests', accessRequests);
 
       setHasAccessRequest(() => {
         setHasLoadedUserRelevantInfo(true);
-        return accessRequests.some((item) => item.status_name === 'Pending');
+        return accessRequests > 0;
       });
     };
 
-    if (!keycloakUserInfo) {
+    if (!keycloakUserInfo || !shouldLoadAccessRequest) {
       return;
     }
 
     getSystemAccessRequest();
-  }, [biohubApi.admin, getUserIdentifier, keycloakUserInfo]);
+  }, [biohubApi.admin, getUserIdentifier, keycloakUserInfo, shouldLoadAccessRequest]);
 
   useEffect(() => {
     const loadUserInfo = async () => {

@@ -35,6 +35,7 @@ const AppRouter: React.FC = () => {
         component={ProjectsRouter}
         layout={AuthLayout}
         title={getTitle('Projects')}
+        validRoles={['abc']}
       />
       <AppRoute
         protected

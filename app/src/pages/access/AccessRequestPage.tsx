@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -17,19 +18,17 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Redirect } from 'react-router-dom';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -115,10 +114,6 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  const [isPendingStatusDetermined, setIsPendingStatusDetermined] = useState(false);
-
-  const [hasPendingAdministrativeActivities, setHasPendingAdministrativeActivities] = useState(false);
-
   useEffect(() => {
     const getAllCodeSets = async () => {
       const response = await biohubApi.codes.getAllCodeSets();
@@ -131,23 +126,14 @@ export const AccessRequestPage: React.FC = () => {
       });
     };
 
-    const determinePendingStatus = async () => {
-      const hasPending = await biohubApi.accessRequest.hasPendingAdministrativeActivities();
-      console.log('before set: this is what the access request page knows of pending requests ', hasPending);
-      setHasPendingAdministrativeActivities(hasPending === 'true');
-      console.log('after set: this is what the access request page knows of pending requests ', hasPending);
-      setIsPendingStatusDetermined(true);
-    };
+
 
     if (!isLoadingCodes && !codes) {
       getAllCodeSets();
       setIsLoadingCodes(true);
     }
 
-    if (!isPendingStatusDetermined) {
-      determinePendingStatus();
-    }
-  }, [biohubApi, isLoadingCodes, codes, isPendingStatusDetermined, hasPendingAdministrativeActivities]);
+  }, [biohubApi, isLoadingCodes, codes]);
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({
@@ -182,14 +168,6 @@ export const AccessRequestPage: React.FC = () => {
       setIsSubmittingRequest(false);
     }
   };
-
-  if (!isPendingStatusDetermined) {
-    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
-  }
-
-  if (hasPendingAdministrativeActivities) {
-    return <Redirect to="/request-submitted" />;
-  }
 
   return (
     <Box>

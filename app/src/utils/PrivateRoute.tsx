@@ -23,8 +23,15 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
       {...rest}
       render={(props) => {
           if (!!keycloakWrapper.keycloak?.authenticated) {
+              console.log('keycloakWrapper.keycloak?.authenticated', keycloakWrapper.keycloak?.authenticated);
+              console.log('keycloakWrapper.hasSystemRole', keycloakWrapper.hasSystemRole(validRoles));
+              console.log('keycloakWrapper.hasAccessRequest', keycloakWrapper.hasAccessRequest);
+
             if (!keycloakWrapper.hasSystemRole(validRoles)) {
+
               if (keycloakWrapper.hasAccessRequest) {
+
+
                 return <Redirect to="/request-submitted" />;
               } else {
                 return <Redirect to="/forbidden" />;
