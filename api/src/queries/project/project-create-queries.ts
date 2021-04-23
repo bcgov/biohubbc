@@ -341,6 +341,7 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
  */
 export const postProjectPermitSQL = (
   permit_number: string,
+  permit_type: string,
   projectId: number,
   sampling_conducted: boolean
 ): SQLStatement | null => {
@@ -348,11 +349,12 @@ export const postProjectPermitSQL = (
     label: 'postProjectPermitSQL',
     message: 'params',
     permit_number,
+    permit_type,
     sampling_conducted,
     projectId
   });
 
-  if (!permit_number || !projectId) {
+  if (!permit_number || !permit_type || !projectId) {
     return null;
   }
 
@@ -360,10 +362,12 @@ export const postProjectPermitSQL = (
       INSERT INTO project_permit (
         p_id,
         number,
+        type,
         sampling_conducted
       ) VALUES (
         ${projectId},
         ${permit_number},
+        ${permit_type},
         ${sampling_conducted}
       )
       RETURNING

@@ -324,6 +324,7 @@ describe('PostPermitData', () => {
       permits: [
         {
           permit_number: '1',
+          permit_type: 'permit type',
           sampling_conducted: 'true'
         }
       ]
@@ -337,6 +338,7 @@ describe('PostPermitData', () => {
       expect(projectPermitData.permits).to.eql([
         {
           permit_number: '1',
+          permit_type: 'permit type',
           sampling_conducted: true
         }
       ]);
@@ -350,6 +352,7 @@ describe('PostPermitData', () => {
       permits: [
         {
           permit_number: '1',
+          permit_type: 'permit type',
           sampling_conducted: 'false'
         }
       ]
@@ -363,6 +366,7 @@ describe('PostPermitData', () => {
       expect(projectPermitData.permits).to.eql([
         {
           permit_number: '1',
+          permit_type: 'permit type',
           sampling_conducted: false
         }
       ]);

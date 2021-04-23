@@ -14,6 +14,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     permits: [
       {
         permit_number: '123',
+        permit_type: 'Permit type',
         sampling_conducted: true
       }
     ]

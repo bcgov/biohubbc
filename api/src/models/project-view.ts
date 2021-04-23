@@ -34,6 +34,7 @@ export class GetProjectData {
 
 export interface IGetPermit {
   permit_number: string;
+  permit_type: string;
   sampling_conducted: boolean;
 }
 
@@ -58,6 +59,7 @@ export class GetPermitData {
         permitData.map((item: any) => {
           return {
             permit_number: item.number,
+            permit_type: item.type,
             sampling_conducted: item.sampling_conducted
           };
         })) ||
