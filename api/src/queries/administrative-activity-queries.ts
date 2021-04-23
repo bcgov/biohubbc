@@ -71,7 +71,7 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
     ON
       aa.aast_id = aast.id
       WHERE
-      (aa.data -> 'username')::text =  ${userIdentifier}
+      (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
     AND aast.name = 'Pending';
   `;
 

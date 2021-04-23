@@ -10,7 +10,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
 
-const AppRouter: React.FC = () => {
+const AppRouter: React.FC = (props: any) => {
   const getTitle = (page: string) => {
     return `BioHub - ${page}`;
   };

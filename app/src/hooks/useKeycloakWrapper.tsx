@@ -116,6 +116,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
         setHasLoadedUserRelevantInfo(true);
         return accessRequests > 0;
       });
+
+      console.log('hasAccessRequest: ', hasAccessRequest);
     };
 
     if (!keycloakUserInfo || !shouldLoadAccessRequest) {

@@ -1,6 +1,7 @@
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
+//import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
 import { Route, RouteProps, Redirect } from 'react-router-dom';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 interface IPrivateRouteProps extends RouteProps {
   validRoles?: string[];
@@ -14,7 +15,7 @@ interface IPrivateRouteProps extends RouteProps {
  * @param props - Properties to pass { component, role, claim }
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const keycloakWrapper = useKeycloakWrapper();
+  const { keycloakWrapper } = React.useContext(AuthStateContext);
 
   let { validRoles, component: Component, layout: Layout, ...rest } = props;
 
@@ -22,30 +23,23 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     <Route
       {...rest}
       render={(props) => {
-          if (!!keycloakWrapper.keycloak?.authenticated) {
-              console.log('keycloakWrapper.keycloak?.authenticated', keycloakWrapper.keycloak?.authenticated);
-              console.log('keycloakWrapper.hasSystemRole', keycloakWrapper.hasSystemRole(validRoles));
-              console.log('keycloakWrapper.hasAccessRequest', keycloakWrapper.hasAccessRequest);
-
-            if (!keycloakWrapper.hasSystemRole(validRoles)) {
-
-              if (keycloakWrapper.hasAccessRequest) {
-
-
-                return <Redirect to="/request-submitted" />;
-              } else {
-                return <Redirect to="/forbidden" />;
-              }
+        if (!!keycloakWrapper?.keycloak?.authenticated) {
+          if (!keycloakWrapper.hasSystemRole(validRoles)) {
+            if (keycloakWrapper.hasAccessRequest) {
+              return <Redirect to="/request-submitted" />;
+            } else {
+              return <Redirect to="/forbidden" />;
             }
-
-            return (
-              <Layout>
-                <Component {...props} {...rest.componentProps} />
-              </Layout>
-            );
-          } else {
-            return <Redirect to="/forbidden" />;
           }
+
+          return (
+            <Layout>
+              <Component {...props} {...rest.componentProps} />
+            </Layout>
+          );
+        } else {
+          return <Redirect to="/forbidden" />;
+        }
       }}
     />
   );

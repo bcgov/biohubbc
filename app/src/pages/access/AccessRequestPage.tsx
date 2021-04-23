@@ -21,13 +21,13 @@ import Typography from '@material-ui/core/Typography';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router';
+import { Redirect, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -98,7 +98,7 @@ export const AccessRequestPage: React.FC = () => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
-  const keycloakWrapper = useKeycloakWrapper();
+  const { keycloakWrapper } = React.useContext(AuthStateContext);
 
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: AccessRequestI18N.requestTitle,
@@ -126,13 +126,10 @@ export const AccessRequestPage: React.FC = () => {
       });
     };
 
-
-
     if (!isLoadingCodes && !codes) {
       getAllCodeSets();
       setIsLoadingCodes(true);
     }
-
   }, [biohubApi, isLoadingCodes, codes]);
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -147,9 +144,10 @@ export const AccessRequestPage: React.FC = () => {
 
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
-
-
-      const response = await biohubApi.accessRequest.createAdministrativeActivity({...values, username: keycloakWrapper.getUserIdentifier()});
+      const response = await biohubApi.accessRequest.createAdministrativeActivity({
+        ...values,
+        username: keycloakWrapper?.getUserIdentifier()
+      });
 
       if (!response?.id) {
         showAccessRequestErrorDialog({
@@ -168,6 +166,10 @@ export const AccessRequestPage: React.FC = () => {
       setIsSubmittingRequest(false);
     }
   };
+
+  if (keycloakWrapper?.hasAccessRequest) {
+    return <Redirect to="/request-submitted" />;
+  }
 
   return (
     <Box>

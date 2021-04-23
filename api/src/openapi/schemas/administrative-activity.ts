@@ -19,13 +19,7 @@ export const administrativeActivityResponseObject = {
 /**
  * Response object for GET 'has pending administrative activities' operation
  */
- export const hasPendingAdministrativeActivitiesResponseObject = {
+export const hasPendingAdministrativeActivitiesResponseObject = {
   title: '`Has Pending Administrative Activities` Response Object',
-  type: 'object',
-  required: ['hasPending'],
-  properties: {
-    hasPending: {
-      type: 'boolean'
-    }
-  }
+  type: 'number'
 };

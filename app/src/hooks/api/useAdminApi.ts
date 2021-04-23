@@ -17,7 +17,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    */
   const getAccessRequests = async (userIdentifier?: string): Promise<IGetAccessRequestsListResponse[]> => {
     const { data } = await axios.get(`/api/administrative-activities`, {
-      params: { type: 'System Access' , userIdentifier},
+      params: { type: 'System Access', userIdentifier },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }

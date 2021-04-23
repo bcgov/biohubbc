@@ -300,7 +300,7 @@ exports[`NotFoundPage renders correctly 1`] = `
                   class="MuiBox-root MuiBox-root-25"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-26"
+                    class="MuiBox-root MuiBox-root-26 buttonWrapper"
                   >
                     <button
                       class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
@@ -316,21 +316,21 @@ exports[`NotFoundPage renders correctly 1`] = `
                         class="MuiTouchRipple-root"
                       />
                     </button>
-                    <button
-                      class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
-                      tabindex="0"
-                      type="button"
-                    >
-                      <span
-                        class="MuiButton-label"
-                      >
-                        Log out
-                      </span>
-                      <span
-                        class="MuiTouchRipple-root"
-                      />
-                    </button>
                   </div>
+                  <button
+                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiButton-label"
+                    >
+                      Log out
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
                 </div>
               </div>
             </form>
