@@ -199,7 +199,7 @@ export const AccessRequestPage: React.FC = () => {
                       <Box my={3}>
                         <Grid container spacing={3}>
                           <Grid item xs={12}>
-                            <h3> Select which role you want to be assigned</h3>
+                            <h3> Select which role you want to be assigned to</h3>
                             <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
                               <InputLabel id="role-label">Role</InputLabel>
                               <Select

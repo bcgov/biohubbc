@@ -39,7 +39,7 @@ exports[`NotFoundPage renders correctly 1`] = `
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                   >
                     <h3>
-                       Select which role you want to be assigned
+                       Select which role you want to be assigned to
                     </h3>
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"

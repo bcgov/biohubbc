@@ -130,8 +130,6 @@ const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
  * @throws {HTTP403} if the user is not authorized
  */
 export const authorize = async function (req: any, scopes: string[]): Promise<true> {
-  console.log('scopes', scopes);
-
   if (!req?.keycloak_token) {
     defaultLog.warn({ label: 'authorize', message: 'request is missing a keycloak token' });
     throw new HTTP403('Access Denied');
@@ -187,15 +185,11 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     const sqlStatement = getUserByIdSQL(systemUserId);
 
-    console.log('sql statement for getUserByUserIdentifierSQL', sqlStatement);
-
     if (!sqlStatement) {
       return null;
     }
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-    console.log('response for getUserByUserIdentifierSQL', response);
 
     await connection.commit();
 

@@ -212,7 +212,6 @@ function getPendingAccessRequestsCount(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'getPendingAccessRequestsCount', message: 'error', error });
-      console.log(error);
 
       throw error;
     } finally {

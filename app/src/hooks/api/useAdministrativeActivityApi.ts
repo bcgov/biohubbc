@@ -28,8 +28,6 @@ const useAdministrativeActivityApi = (axios: AxiosInstance) => {
   const hasPendingAdministrativeActivities = async (): Promise<number> => {
     const { data } = await axios.get('/api/administrative-activity');
 
-    console.log('hasPending in useAdministrativeActivityApi', data);
-
     return data;
   };
 

@@ -109,7 +109,6 @@ export interface IDBConnection {
  * @return {*} {IDBConnection}
  */
 export const getDBConnection = function (keycloakToken: object): IDBConnection {
-  console.log("we're using the getDBConncetion");
   let _client: PoolClient;
 
   let _isOpen = false;
@@ -208,9 +207,6 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     const userIdentifier = getUserIdentifier(_token);
     const userIdentitySource = getUserIdentitySource(_token);
 
-    console.log('userIdentifier', userIdentifier);
-    console.log('userIdentitySource', userIdentitySource);
-
     if (!userIdentifier || !userIdentitySource) {
       throw new HTTP400('Failed to identify authenticated user');
     }
@@ -253,6 +249,5 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
  * @return {*}  {IDBConnection}
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
-  console.log("we're using the getAPIUserCOnncetion");
   return getDBConnection({ preferred_username: 'biohub_api@database' });
 };

@@ -8,6 +8,11 @@ describe('postAdministrativeActivitySQL', () => {
     expect(response).to.be.null;
   });
 
+  it('has null data', () => {
+    const response = postAdministrativeActivitySQL((null as unknown) as number, null);
+    expect(response).to.be.null;
+  });
+
   it('Valid parameters', () => {
     const response = postAdministrativeActivitySQL(1, {});
     expect(response).to.not.be.null;

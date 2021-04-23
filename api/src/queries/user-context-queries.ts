@@ -14,9 +14,6 @@ export const setSystemUserContextSQL = (
     return null;
   }
 
-  console.log('useridentifier', userIdentifier);
-  console.log('systemUserType', systemUserType);
-
   const sqlStatement = SQL`select api_set_context(${userIdentifier}, ${systemUserType});`;
 
   defaultLog.debug({

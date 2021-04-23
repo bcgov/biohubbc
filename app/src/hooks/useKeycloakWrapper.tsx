@@ -110,14 +110,11 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   useEffect(() => {
     const getSystemAccessRequest = async () => {
       const accessRequests = await biohubApi.accessRequest.hasPendingAdministrativeActivities();
-      console.log('accessRequests', accessRequests);
 
       setHasAccessRequest(() => {
         setHasLoadedUserRelevantInfo(true);
         return accessRequests > 0;
       });
-
-      console.log('hasAccessRequest: ', hasAccessRequest);
     };
 
     if (!keycloakUserInfo || !shouldLoadAccessRequest) {
