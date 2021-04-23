@@ -1,4 +1,3 @@
-//import useKeycloakWrapper from 'hooks/useKeycloakWrapper';
 import React from 'react';
 import { Route, RouteProps, Redirect } from 'react-router-dom';
 import { AuthStateContext } from 'contexts/authStateContext';
