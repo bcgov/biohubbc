@@ -1,11 +1,20 @@
+export interface IAccessRequestDataObject {
+  name: string;
+  username: string;
+  identitySource: string;
+  company: string;
+  regional_offices: string[];
+}
+
 export interface IGetAccessRequestsListResponse {
   id: number;
   status: number;
   status_name: string;
   description: string;
   notes: string;
-  data: string;
   create_date: string;
+
+  data: IAccessRequestDataObject;
 }
 
 /**
@@ -21,14 +30,9 @@ export class GetAccessRequestListItem implements IGetAccessRequestsListResponse 
   status_name: string;
   description: string;
   notes: string;
-  data: string;
   create_date: string;
 
-  // Fields parsed from `data`
-  name: string;
-  username: string;
-  company: string;
-  regional_offices: string[];
+  data: IAccessRequestDataObject;
 
   constructor(obj?: any) {
     this.id = obj?.id || null;
@@ -36,14 +40,14 @@ export class GetAccessRequestListItem implements IGetAccessRequestsListResponse 
     this.status_name = obj?.status_name || null;
     this.description = obj?.description || null;
     this.notes = obj?.notes || null;
-    this.data = obj?.data || null;
     this.create_date = obj?.create_date || null;
 
-    const dataObject = (this.data && JSON.parse(this.data)) || null;
-
-    this.name = dataObject?.name || null;
-    this.username = dataObject?.username || null;
-    this.company = dataObject?.company || null;
-    this.regional_offices = (dataObject?.regional_offices?.length && dataObject.regional_offices) || [];
+    this.data = obj?.data && {
+      name: obj.data?.name || null,
+      username: obj.data?.username || null,
+      identitySource: obj.data?.identitySource || null,
+      company: obj.data?.company || null,
+      regional_offices: (obj.data?.regional_offices?.length && obj.data.regional_offices) || []
+    };
   }
 }

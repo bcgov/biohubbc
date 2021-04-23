@@ -23,12 +23,14 @@ const AppRouter: React.FC = (props: any) => {
         path="/access-request"
         title={getTitle('Access Request')}
         component={AccessRequestPage}
-        layout={PublicLayout}></AppRoute>
+        layout={PublicLayout}
+      />
       <AppRoute
         path="/page-not-found"
         title={getTitle('Page Not Found')}
         component={NotFoundPage}
-        layout={PublicLayout}></AppRoute>
+        layout={PublicLayout}
+      />
       <AppRoute
         protected
         path="/projects"

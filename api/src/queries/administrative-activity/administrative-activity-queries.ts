@@ -22,8 +22,9 @@ export const getAdministrativeActivitiesSQL = (
 
   const sqlStatement = SQL`
     SELECT
-      aat.id as aat,
-      aast.id as aast,
+      aat.id as id,
+      aast.id as status,
+      aast.name as status_name,
       aa.description,
       aa.data,
       aa.notes,
@@ -140,6 +141,49 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
 
   defaultLog.debug({
     label: 'countPendingAdministrativeActivitiesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query update and existing administrative activity record.
+ *
+ * @param {number} administrativeActivityId
+ * @param {number} administrativeActivityStatusTypeId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const putAdministrativeActivitySQL = (
+  administrativeActivityId: number,
+  administrativeActivityStatusTypeId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'putAdministrativeActivitySQL',
+    message: 'params',
+    administrativeActivityId,
+    administrativeActivityStatusTypeId
+  });
+
+  if (!administrativeActivityId || !administrativeActivityStatusTypeId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      administrative_activity
+    SET
+      aast_id = ${administrativeActivityStatusTypeId}
+    WHERE
+      id = ${administrativeActivityId}
+    RETURNING
+      id;
+  `;
+
+  defaultLog.debug({
+    label: 'putAdministrativeActivitySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
