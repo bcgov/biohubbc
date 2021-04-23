@@ -90,7 +90,8 @@
     "jest": "~24.9.0",
     "jest-sonar-reporter": "~2.0.0",
     "prettier": "~2.2.1",
-    "react-scripts": "~3.4.4"
+    "react-scripts": "~3.4.4",
+    "axios-mock-adapter": "~1.19.0"
   },
   "browserslist": {
     "production": [
