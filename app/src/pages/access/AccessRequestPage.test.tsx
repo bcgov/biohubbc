@@ -6,7 +6,7 @@ import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
 
-describe('NotFoundPage', () => {
+describe('AccessRequestPage', () => {
   it('renders correctly', () => {
     const { asFragment } = render(
       <Router history={history}>

@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import RequestSubmitted from './RequestSubmitted';
 
-describe('NotFoundPage', () => {
+describe('RequestSubmitted', () => {
   it('renders correctly', () => {
     const { asFragment } = render(<RequestSubmitted />);
 

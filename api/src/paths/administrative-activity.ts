@@ -9,7 +9,7 @@ import {
 import {
   postAdministrativeActivitySQL,
   countPendingAdministrativeActivitiesSQL
-} from '../queries/administrative-activity-queries';
+} from '../queries/administrative-activity/administrative-activity-queries';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';

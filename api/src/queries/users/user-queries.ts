@@ -22,7 +22,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
     SELECT
       su.id,
       su.user_identifier,
-      array_agg(sr.name) as role_names
+      array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN
@@ -69,7 +69,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
     SELECT
       su.id,
       su.user_identifier,
-      array_agg(sr.name) as role_names
+      array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN

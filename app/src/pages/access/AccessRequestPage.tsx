@@ -155,14 +155,17 @@ export const AccessRequestPage: React.FC = () => {
         });
         return;
       }
+      setIsSubmittingRequest(false);
+
       history.push('/request-submitted');
     } catch (error) {
       const apiError = error as APIError;
+
       showAccessRequestErrorDialog({
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
-    } finally {
+
       setIsSubmittingRequest(false);
     }
   };
