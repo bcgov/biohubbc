@@ -22,11 +22,12 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ConfigContext } from 'contexts/configContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 
@@ -97,6 +98,7 @@ export const AccessRequestPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
   const history = useHistory();
+  const config = useContext(ConfigContext);
 
   const { keycloakWrapper } = React.useContext(AuthStateContext);
 
@@ -323,11 +325,16 @@ export const AccessRequestPage: React.FC = () => {
                           <Button
                             variant="outlined"
                             color="primary"
-                            onClick={async () => {
-                              window.location.href =
-                                'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
-                                encodeURI(window.location.origin) +
-                                '%2Faccess-request';
+                            onClick={() => {
+                              if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
+                                return;
+                              }
+
+                              window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
+                                config.KEYCLOAK_CONFIG.realm
+                              }/protocol/openid-connect/logout?redirect_uri=${encodeURI(
+                                window.location.origin
+                              )}/${encodeURI('access-request')}`;
                             }}
                             className={classes.actionButton}>
                             Log out

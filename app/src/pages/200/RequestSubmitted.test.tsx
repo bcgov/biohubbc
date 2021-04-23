@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import React from 'react';
 import RequestSubmitted from './RequestSubmitted';
 
@@ -9,41 +10,73 @@ describe('RequestSubmitted', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  describe('Logout functionality', (): void => {
+  describe('Logout', () => {
     const { location } = window;
 
-    beforeAll((): void => {
+    beforeAll(() => {
       // @ts-ignore
       delete window.location;
 
       // @ts-ignore
       window.location = {
-        href: ''
+        href: '',
+        origin: ''
       };
     });
 
-    afterAll((): void => {
+    afterAll(() => {
       window.location = location;
     });
 
-    it('should change the location.href appropriately on logout success', async () => {
+    it('should not logout when no config provided', () => {
       const target = 'https://example.com/';
 
       window.location.href = target;
 
       expect(window.location.href).toBe(target);
 
-      const { getByText } = render(<RequestSubmitted />);
+      const { getByText } = render(
+        <ConfigContext.Provider value={(null as unknown) as IConfig}>
+          <RequestSubmitted />
+        </ConfigContext.Provider>
+      );
 
       fireEvent.click(getByText('Logout'));
 
-      await waitFor(() => {
-        expect(window.location.href).toEqual(
-          'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
-            encodeURI(window.location.origin) +
-            '%2Faccess-request'
-        );
-      });
+      expect(window.location.href).toBe(target);
+    });
+
+    it('should change the location.href appropriately on logout success', () => {
+      const target = 'https://example.com/';
+      const config = {
+        API_HOST: '',
+        CHANGE_VERSION: '',
+        NODE_ENV: '',
+        VERSION: '',
+        KEYCLOAK_CONFIG: {
+          url: 'https://www.mylogoutworks.com/auth',
+          realm: 'myrealm',
+          clientId: ''
+        }
+      };
+
+      window.location.href = target;
+
+      expect(window.location.href).toBe(target);
+
+      const { getByText } = render(
+        <ConfigContext.Provider value={config}>
+          <RequestSubmitted />
+        </ConfigContext.Provider>
+      );
+
+      fireEvent.click(getByText('Logout'));
+
+      expect(window.location.href).toEqual(
+        'https://www.mylogoutworks.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=' +
+          encodeURI(window.location.origin) +
+          '/access-request'
+      );
     });
   });
 });
