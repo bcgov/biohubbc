@@ -35,7 +35,6 @@ const AppRouter: React.FC = (props: any) => {
         component={ProjectsRouter}
         layout={AuthLayout}
         title={getTitle('Projects')}
-        validRoles={['abc']}
       />
       <AppRoute
         protected
@@ -50,7 +49,6 @@ const AppRouter: React.FC = (props: any) => {
         component={AdminRouter}
         layout={AuthLayout}
         title={getTitle('Admin')}
-        validRoles={['abc']}
       />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
