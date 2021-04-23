@@ -69,18 +69,6 @@ const appTheme = createMuiTheme({
         marginTop: '-1px'
       }
     },
-    MuiCircularProgress: {
-      // https://material-ui.com/api/circular-progress/
-      root: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        height: '60px !important',
-        width: '60px !important',
-        marginLeft: '-30px',
-        marginTop: '-30px'
-      }
-    },
     MuiContainer: {
       // https://material-ui.com/api/container/
       root: {

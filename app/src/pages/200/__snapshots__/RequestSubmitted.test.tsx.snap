@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RequestSubmitted renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthLg"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-1"
+    >
+      <svg
+        role="presentation"
+        style="width: 3rem; height: 3rem;"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+          style="fill: #4caf50;"
+        />
+      </svg>
+      <h1>
+        Access Request Submitted
+      </h1>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Your access request has been submitted for review.
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-2"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          tabindex="0"
+          type="submit"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Logout
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

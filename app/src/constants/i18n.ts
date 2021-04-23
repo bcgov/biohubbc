@@ -97,3 +97,10 @@ export const EditPermitI18N = {
   editErrorText:
     'An error has occurred while attempting to edit your permit details, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const AccessRequestI18N = {
+  requestTitle: 'Access Request',
+  requestText: 'Error requesting access',
+  requestErrorText:
+    'An error has occurred while attempting to make an access request, please try again. If the error persists, please contact your system administrator.'
+};

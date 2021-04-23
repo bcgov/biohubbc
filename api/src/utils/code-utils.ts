@@ -9,10 +9,11 @@ import {
   getIUCNConservationActionLevel2SubclassificationSQL,
   getIUCNConservationActionLevel3SubclassificationSQL,
   getActivitySQL,
-  getProjectTypeSQL
+  getProjectTypeSQL,
+  getSystemRolesSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
-import { coordinator_agency, region, species } from '../constants/codes';
+import { coordinator_agency, region, species, regional_offices } from '../constants/codes';
 
 const defaultLog = getLogger('queries/code-queries');
 
@@ -30,6 +31,8 @@ export interface IAllCodeSets {
   iucn_conservation_action_level_1_classification: object;
   iucn_conservation_action_level_2_subclassification: object;
   iucn_conservation_action_level_3_subclassification: object;
+  system_roles: object;
+  regional_offices: object;
 }
 
 /**
@@ -57,7 +60,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_1_classification,
     iucn_conservation_action_level_2_subclassification,
     iucn_conservation_action_level_3_subclassification,
-    project_type
+    project_type,
+    system_roles
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getClimateChangeInitiativeSQL().text),
@@ -68,7 +72,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
-    await connection.query(getProjectTypeSQL().text)
+    await connection.query(getProjectTypeSQL().text),
+    await connection.query(getSystemRolesSQL().text)
   ]);
 
   await connection.commit();
@@ -91,9 +96,11 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
       (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
       [],
     project_type: (project_type && project_type.rows) || [],
+    system_roles: (system_roles && system_roles.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
-    species
+    species,
+    regional_offices
   };
 }

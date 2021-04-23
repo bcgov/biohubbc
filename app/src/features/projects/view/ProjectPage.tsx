@@ -100,7 +100,7 @@ const ProjectPage: React.FC = () => {
   }, [urlParams, biohubApi, isLoadingProject, projectWithDetails, getProject]);
 
   if (!codes || !projectWithDetails) {
-    return <CircularProgress></CircularProgress>;
+    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
   }
 
   return (

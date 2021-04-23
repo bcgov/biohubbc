@@ -1,11 +1,10 @@
 import { decode, verify } from 'jsonwebtoken';
 import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
-import { getAPIUserDBConnection } from '../database/db';
+import { getDBConnection } from '../database/db';
 import { HTTP401, HTTP403 } from '../errors/CustomError';
 import { UserObject } from '../models/user';
-import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
-import { getUserIdentifier } from '../utils/keycloak-utils';
+import { getUserByIdSQL } from '../queries/users/user-queries';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('security/auth-utils');
@@ -136,7 +135,18 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
     throw new HTTP403('Access Denied');
   }
 
-  const systemUserWithRoles = await getSystemUser(req.keycloak_token);
+  if (!scopes || !scopes.length) {
+    return true;
+  }
+
+  let systemUserWithRoles;
+
+  try {
+    systemUserWithRoles = await getSystemUser(req.keycloak_token);
+  } catch {
+    defaultLog.warn({ label: 'authorize', message: 'failed to get system user' });
+    throw new HTTP403('Access Denied');
+  }
 
   if (!systemUserWithRoles) {
     defaultLog.warn({ label: 'authorize', message: 'failed to get system user' });
@@ -162,18 +172,18 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
  * @return {*}
  */
 export const getSystemUser = async function (keycloakToken: object) {
-  const userIdentifier = getUserIdentifier(keycloakToken);
-
-  if (!userIdentifier) {
-    return null;
-  }
-
-  const connection = getAPIUserDBConnection();
+  const connection = getDBConnection(keycloakToken);
 
   try {
     await connection.open();
 
-    const sqlStatement = getUserByUserIdentifierSQL(userIdentifier);
+    const systemUserId = connection.systemUserId();
+
+    if (!systemUserId) {
+      return;
+    }
+
+    const sqlStatement = getUserByIdSQL(systemUserId);
 
     if (!sqlStatement) {
       return null;

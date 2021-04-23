@@ -622,7 +622,7 @@ const CreateProjectPage: React.FC = () => {
   };
 
   if (!stepForms.length) {
-    return <CircularProgress />;
+    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
   }
 
   const handleLocationChange = (location: History.Location, action: History.Action) => {

@@ -3,7 +3,7 @@
 exports[`ProjectPage renders a spinner if no project is loaded 1`] = `
 <DocumentFragment>
   <div
-    class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style="width: 40px; height: 40px;"
   >
@@ -322,7 +322,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
 exports[`ProjectPage shows the project attachments when pathname includes /attachments 1`] = `
 <DocumentFragment>
   <div
-    class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style="width: 40px; height: 40px;"
   >
@@ -346,7 +346,7 @@ exports[`ProjectPage shows the project attachments when pathname includes /attac
 exports[`ProjectPage shows the project details when pathname includes /details 1`] = `
 <DocumentFragment>
   <div
-    class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style="width: 40px; height: 40px;"
   >
@@ -370,7 +370,7 @@ exports[`ProjectPage shows the project details when pathname includes /details 1
 exports[`ProjectPage shows the project surveys when pathname includes /surveys 1`] = `
 <DocumentFragment>
   <div
-    class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
     role="progressbar"
     style="width: 40px; height: 40px;"
   >
