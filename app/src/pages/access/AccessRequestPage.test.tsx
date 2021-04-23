@@ -1,4 +1,5 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -12,6 +13,9 @@ jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
+  },
+  accessRequest: {
+    createAdministrativeActivity: jest.fn()
   }
 };
 
@@ -131,6 +135,175 @@ describe('AccessRequestPage', () => {
             '/access-request'
         );
       });
+    });
+  });
+
+  it('shows and hides the regional offices section when the regional offices radio button is selected (respectively)', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      regional_offices: [{ id: 1, name: 'Office 1' }]
+    });
+
+    const { queryByText, getByText, getByTestId } = render(
+      <Router history={history}>
+        <AccessRequestPage />
+      </Router>
+    );
+
+    expect(queryByText('Which Regional Offices do you work for?')).toBeNull();
+
+    fireEvent.click(getByTestId('yes-regional-office'));
+
+    await waitFor(() => {
+      expect(getByText('Which Regional Offices do you work for?')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('no-regional-office'));
+
+    expect(queryByText('Which Regional Offices do you work for?')).toBeNull();
+  });
+
+  it('processes a successful request submission', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      regional_offices: [{ id: 1, name: 'Office 1' }]
+    });
+
+    mockBiohubApi().accessRequest.createAdministrativeActivity.mockResolvedValue({
+      id: 1
+    });
+
+    const { getByText, getAllByRole, getByRole, getByTestId } = render(
+      <Router history={history}>
+        <AccessRequestPage />
+      </Router>
+    );
+
+    fireEvent.mouseDown(getAllByRole('button')[0]);
+
+    const systemRoleListbox = within(getByRole('listbox'));
+
+    await waitFor(() => {
+      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
+    fireEvent.click(getByTestId('no-regional-office'));
+    fireEvent.click(getByText('Submit Request'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toEqual('/request-submitted');
+    });
+  });
+
+  it('takes the user to the request-submitted page immediately if they already have an access request', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      regional_offices: [{ id: 1, name: 'Office 1' }]
+    });
+
+    const authState = {
+      ready: true,
+      keycloakWrapper: {
+        keycloak: {},
+        hasLoadedUserRelevantInfo: true,
+        systemRoles: [],
+        getUserIdentifier: jest.fn(),
+        hasAccessRequest: true,
+        hasSystemRole: jest.fn()
+      }
+    };
+
+    render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <AccessRequestPage />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(history.location.pathname).toEqual('/request-submitted');
+    });
+  });
+
+  it('shows error dialog with api error message when submission fails', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      regional_offices: [{ id: 1, name: 'Office 1' }]
+    });
+
+    mockBiohubApi().accessRequest.createAdministrativeActivity = jest.fn(() =>
+      Promise.reject(new Error('API Error is Here'))
+    );
+
+    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = render(
+      <Router history={history}>
+        <AccessRequestPage />
+      </Router>
+    );
+
+    fireEvent.mouseDown(getAllByRole('button')[0]);
+
+    const systemRoleListbox = within(getByRole('listbox'));
+
+    await waitFor(() => {
+      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
+    fireEvent.click(getByTestId('no-regional-office'));
+    fireEvent.click(getByText('Submit Request'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      regional_offices: [{ id: 1, name: 'Office 1' }]
+    });
+
+    mockBiohubApi().accessRequest.createAdministrativeActivity.mockResolvedValue({
+      id: null
+    });
+
+    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = render(
+      <Router history={history}>
+        <AccessRequestPage />
+      </Router>
+    );
+
+    fireEvent.mouseDown(getAllByRole('button')[0]);
+
+    const systemRoleListbox = within(getByRole('listbox'));
+
+    await waitFor(() => {
+      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+    });
+
+    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
+    fireEvent.click(getByTestId('no-regional-office'));
+    fireEvent.click(getByText('Submit Request'));
+
+    await waitFor(() => {
+      expect(queryByText('The response from the server was null.')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('The response from the server was null.')).toBeNull();
     });
   });
 });

@@ -3,19 +3,19 @@
 exports[`AccessRequestPage renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-8"
+    class="MuiBox-root MuiBox-root-9"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-10"
       >
         <h1>
           Request Access to BioHub
         </h1>
         <h6
-          class="MuiTypography-root MuiTypography-subtitle1"
+          class="MuiTypography-root makeStyles-spacingBottom-7 MuiTypography-subtitle1"
         >
           You will need to provide some additional details before accessing this application. Complete the form below to request access.
         </h6>
@@ -26,11 +26,11 @@ exports[`AccessRequestPage renders correctly 1`] = `
             Request Details
           </h2>
           <div
-            class="MuiBox-root MuiBox-root-10"
+            class="MuiBox-root MuiBox-root-11"
           >
             <form>
               <div
-                class="MuiBox-root MuiBox-root-11"
+                class="MuiBox-root MuiBox-root-12"
               >
                 <div
                   class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -94,10 +94,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-14"
+                            class="PrivateNotchedOutline-legendLabelled-15"
                           >
                             <span>
                               Role
@@ -117,7 +117,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       class="MuiFormControl-root"
                     >
                       <legend
-                        class="MuiFormLabel-root makeStyles-legend-7 Mui-required"
+                        class="MuiFormLabel-root makeStyles-legend-8 Mui-required"
                       >
                         Do you work for a Regional Office?
                         <span
@@ -128,7 +128,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </span>
                       </legend>
                       <div
-                        class="MuiBox-root MuiBox-root-16"
+                        class="MuiBox-root MuiBox-root-17"
                       >
                         <div
                           aria-label="work_from_regional_office"
@@ -137,23 +137,24 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         >
                           <label
                             class="MuiFormControlLabel-root"
+                            data-testid="yes-regional-office"
                           >
                             <span
                               aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-17 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-18 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                             >
                               <span
                                 class="MuiIconButton-label"
                               >
                                 <input
-                                  class="PrivateSwitchBase-input-20"
+                                  class="PrivateSwitchBase-input-21"
                                   name="work_from_regional_office"
                                   required=""
                                   type="radio"
                                   value="true"
                                 />
                                 <div
-                                  class="PrivateRadioButtonIcon-root-21"
+                                  class="PrivateRadioButtonIcon-root-22"
                                 >
                                   <svg
                                     aria-hidden="true"
@@ -167,7 +168,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                                   </svg>
                                   <svg
                                     aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-22"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-23"
                                     focusable="false"
                                     viewBox="0 0 24 24"
                                   >
@@ -189,23 +190,24 @@ exports[`AccessRequestPage renders correctly 1`] = `
                           </label>
                           <label
                             class="MuiFormControlLabel-root"
+                            data-testid="no-regional-office"
                           >
                             <span
                               aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-17 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-18 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                             >
                               <span
                                 class="MuiIconButton-label"
                               >
                                 <input
-                                  class="PrivateSwitchBase-input-20"
+                                  class="PrivateSwitchBase-input-21"
                                   name="work_from_regional_office"
                                   required=""
                                   type="radio"
                                   value="false"
                                 />
                                 <div
-                                  class="PrivateRadioButtonIcon-root-21"
+                                  class="PrivateRadioButtonIcon-root-22"
                                 >
                                   <svg
                                     aria-hidden="true"
@@ -219,7 +221,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                                   </svg>
                                   <svg
                                     aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-22"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-23"
                                     focusable="false"
                                     viewBox="0 0 24 24"
                                   >
@@ -275,10 +277,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-14"
+                            class="PrivateNotchedOutline-legendLabelled-15"
                           >
                             <span>
                               Comments 
@@ -290,17 +292,17 @@ exports[`AccessRequestPage renders correctly 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiBox-root MuiBox-root-24"
+                  class="MuiBox-root MuiBox-root-25"
                 >
                   <hr
                     class="MuiDivider-root"
                   />
                 </div>
                 <div
-                  class="MuiBox-root MuiBox-root-25"
+                  class="MuiBox-root MuiBox-root-26"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-26 buttonWrapper"
+                    class="MuiBox-root MuiBox-root-27 buttonWrapper"
                   >
                     <button
                       class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"

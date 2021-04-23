@@ -56,6 +56,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   stepTitle: {
     marginBottom: '0.45rem'
   },
+  spacingBottom: {
+    marginBottom: '0.9rem'
+  },
   legend: {
     marginTop: '1rem',
     float: 'left',
@@ -100,7 +103,7 @@ export const AccessRequestPage: React.FC = () => {
   const history = useHistory();
   const config = useContext(ConfigContext);
 
-  const { keycloakWrapper } = React.useContext(AuthStateContext);
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: AccessRequestI18N.requestTitle,
@@ -193,7 +196,7 @@ export const AccessRequestPage: React.FC = () => {
             <>
               <Box>
                 <h1>Request Access to BioHub</h1>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" className={classes.spacingBottom}>
                   You will need to provide some additional details before accessing this application. Complete the form
                   below to request access.
                 </Typography>
@@ -249,11 +252,13 @@ export const AccessRequestPage: React.FC = () => {
                                   onChange={handleChange}>
                                   <FormControlLabel
                                     value="true"
+                                    data-testid="yes-regional-office"
                                     control={<Radio required={true} color="primary" />}
                                     label="Yes"
                                   />
                                   <FormControlLabel
                                     value="false"
+                                    data-testid="no-regional-office"
                                     control={<Radio required={true} color="primary" />}
                                     label="No"
                                   />
