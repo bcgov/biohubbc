@@ -210,7 +210,8 @@ describe('AccessRequestPage', () => {
         systemRoles: [],
         getUserIdentifier: jest.fn(),
         hasAccessRequest: true,
-        hasSystemRole: jest.fn()
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn()
       }
     };
 

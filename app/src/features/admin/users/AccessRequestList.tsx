@@ -232,10 +232,10 @@ const AccessRequestList: React.FC = () => {
               {accessRequests?.map((row, index) => {
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data.name || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data.username || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data.company || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data.regional_offices.join(', ') || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.name || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.username || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.regional_offices?.join(', ') || 'Not Applicable'}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
                     <TableCell>
                       <Chip

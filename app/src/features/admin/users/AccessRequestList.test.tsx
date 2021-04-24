@@ -11,6 +11,9 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   admin: {
     getAccessRequests: jest.fn()
+  },
+  codes: {
+    getAllCodeSets: jest.fn()
   }
 };
 
@@ -22,6 +25,16 @@ describe('AccessRequestList', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().admin.getAccessRequests.mockClear();
+    mockBiohubApi().codes.getAllCodeSets.mockClear();
+
+    // mock code set response
+    mockBiohubApi().codes.getAllCodeSets.mockReturnValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      administrative_activity_status_type: [
+        { id: 1, name: 'Actioned' },
+        { id: 1, name: 'Rejected' }
+      ]
+    });
   });
 
   afterEach(() => {
@@ -46,12 +59,13 @@ describe('AccessRequestList', () => {
         status_name: 'Pending',
         description: 'test description',
         notes: 'test notes',
-        data: JSON.stringify({
+        data: {
           name: 'test user',
           username: 'testusername',
+          identitySource: 'idir',
           company: 'test company',
           regional_offices: ['office 1', 'office 2']
-        }),
+        },
         create_date: '2020-04-20'
       }
     ]);
@@ -76,17 +90,18 @@ describe('AccessRequestList', () => {
         status_name: 'Rejected',
         description: 'test description',
         notes: 'test notes',
-        data: JSON.stringify({
+        data: {
           name: 'test user',
           username: 'testusername',
+          identitySource: 'idir',
           company: 'test company',
           regional_offices: ['office 1', 'office 2']
-        }),
+        },
         create_date: '2020-04-20'
       }
     ]);
 
-    const { getByText, getByRole } = renderContainer();
+    const { getByText, queryByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('test user')).toBeVisible();
@@ -94,7 +109,7 @@ describe('AccessRequestList', () => {
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Rejected')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
@@ -106,17 +121,18 @@ describe('AccessRequestList', () => {
         status_name: 'Actioned',
         description: 'test description',
         notes: 'test notes',
-        data: JSON.stringify({
+        data: {
           name: 'test user',
           username: 'testusername',
+          identitySource: 'idir',
           company: 'test company',
           regional_offices: ['office 1', 'office 2']
-        }),
+        },
         create_date: '2020-04-20'
       }
     ]);
 
-    const { getByText, getByRole } = renderContainer();
+    const { getByText, queryByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('test user')).toBeVisible();
@@ -124,11 +140,11 @@ describe('AccessRequestList', () => {
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Actioned')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
-  it('shows a table row when the json data is empty', async () => {
+  it('shows a table row when the data object is null', async () => {
     mockBiohubApi().admin.getAccessRequests.mockReturnValue([
       {
         id: 1,
@@ -136,18 +152,17 @@ describe('AccessRequestList', () => {
         status_name: 'Actioned',
         description: 'test description',
         notes: 'test notes',
-        data: '',
+        data: null,
         create_date: '2020-04-20'
       }
     ]);
 
-    const { getByText, getAllByText, getByRole } = renderContainer();
+    const { getByText, getAllByText } = renderContainer();
 
     await waitFor(() => {
       expect(getAllByText('Not Applicable').length).toEqual(4);
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Actioned')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
     });
   });
 });

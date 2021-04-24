@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import { IAccessRequestResponse } from 'interfaces/useAdministrativeActivityApi.interface';
+import { IAccessRequestResponse } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
 /**

@@ -42,12 +42,23 @@ export class GetAccessRequestListItem implements IGetAccessRequestsListResponse 
     this.notes = obj?.notes || null;
     this.create_date = obj?.create_date || null;
 
-    this.data = obj?.data && {
-      name: obj.data?.name || null,
-      username: obj.data?.username || null,
-      identitySource: obj.data?.identitySource || null,
-      company: obj.data?.company || null,
-      regional_offices: (obj.data?.regional_offices?.length && obj.data.regional_offices) || []
+    this.data = {
+      name: obj?.data?.name || null,
+      username: obj?.data?.username || null,
+      identitySource: obj?.data?.identitySource || null,
+      company: obj?.data?.company || null,
+      regional_offices: (obj?.data?.regional_offices?.length && obj.data.regional_offices) || []
     };
   }
+}
+
+/**
+ * Create/Update draft response object.
+ *
+ * @export
+ * @interface IAccessRequestResponse
+ */
+export interface IAccessRequestResponse {
+  id: number;
+  date: string;
 }

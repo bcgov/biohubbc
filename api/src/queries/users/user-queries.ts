@@ -157,7 +157,11 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
       Select id FROM user_identity_source WHERE name = ${identitySource},
       ${userIdentifier},
       now()
-    );
+    )
+    RETURNING
+      uis_id,
+      user_identifier,
+      record_effective_date;
   `;
 
   defaultLog.debug({
