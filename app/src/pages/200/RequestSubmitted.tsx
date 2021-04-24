@@ -1,12 +1,15 @@
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import React from 'react';
+import React, { useContext } from 'react';
 import { mdiCheck } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import { ConfigContext } from 'contexts/configContext';
 
 const RequestSubmitted = () => {
+  const config = useContext(ConfigContext);
+
   return (
     <Container>
       <Box pt={6} textAlign="center">
@@ -15,11 +18,16 @@ const RequestSubmitted = () => {
         <Typography>Your access request has been submitted for review.</Typography>
         <Box pt={4}>
           <Button
-            onClick={async () => {
-              window.location.href =
-                'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/logout?redirect_uri=' +
-                encodeURI(window.location.origin) +
-                '%2Faccess-request';
+            onClick={() => {
+              if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
+                return;
+              }
+
+              window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
+                config.KEYCLOAK_CONFIG.realm
+              }/protocol/openid-connect/logout?redirect_uri=${encodeURI(window.location.origin)}/${encodeURI(
+                'access-request'
+              )}`;
             }}
             type="submit"
             size="large"

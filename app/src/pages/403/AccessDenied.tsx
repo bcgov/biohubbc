@@ -9,6 +9,7 @@ import { useHistory } from 'react-router';
 
 const AccessDenied = () => {
   const history = useHistory();
+
   return (
     <Container>
       <Box pt={6} textAlign="center">

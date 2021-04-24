@@ -1,7 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getAdministrativeActivitiesSQL } from './administrative-activity-queries';
-import { postAdministrativeActivitySQL } from './administrative-activity-queries';
+import {
+  getAdministrativeActivitiesSQL,
+  countPendingAdministrativeActivitiesSQL,
+  postAdministrativeActivitySQL
+} from './administrative-activity-queries';
 
 describe('getAdministrativeActivitiesSQL', () => {
   it('returns non null response when no administrativeActivityTypeName provided', () => {
@@ -12,6 +15,12 @@ describe('getAdministrativeActivitiesSQL', () => {
 
   it('returns non null response when valid administrativeActivityTypeName provided', () => {
     const response = getAdministrativeActivitiesSQL('type');
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid administrativeActivityTypeName provided with userIdentifier', () => {
+    const response = getAdministrativeActivitiesSQL('type', 'userIdentifier');
 
     expect(response).to.not.be.null;
   });
@@ -30,6 +39,18 @@ describe('postAdministrativeActivitySQL', () => {
 
   it('Valid parameters', () => {
     const response = postAdministrativeActivitySQL(1, {});
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('countPendingAdministrativeActivitiesSQL', () => {
+  it('has a null userIdentifier', () => {
+    const response = countPendingAdministrativeActivitiesSQL((null as unknown) as string);
+    expect(response).to.be.null;
+  });
+
+  it('has a valid userIdentifier', () => {
+    const response = countPendingAdministrativeActivitiesSQL('username');
     expect(response).to.not.be.null;
   });
 });
