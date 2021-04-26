@@ -39,7 +39,18 @@ export interface IKeycloakWrapper {
   hasSystemRole: (validSystemRoles?: string[]) => boolean;
 
   hasAccessRequest: boolean;
+  /**
+   * Get out the username portion of the preferred_username from the token.
+   *
+   * @memberof IKeycloakWrapper
+   */
   getUserIdentifier: () => string | null;
+  /**
+   * Get the identity source portion of the preferred_username from the token.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  getIdentitySource: () => string | null;
 }
 
 /**
@@ -63,7 +74,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const [shouldLoadAccessRequest, setShouldLoadAccessRequest] = useState<boolean>(false);
 
   /**
-   * Parses out the preferred_username name from the token.
+   * Parses out the username portion of the preferred_username from the token.
    *
    * @param {object} keycloakToken
    * @return {*} {(string | null)}
@@ -76,6 +87,22 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     return userIdentifier;
+  }, [keycloakUserInfo]);
+
+  /**
+   * Parses out the identity source portion of the preferred_username from the token.
+   *
+   * @param {object} keycloakToken
+   * @return {*} {(string | null)}
+   */
+  const getIdentitySource = useCallback((): string | null => {
+    const identitySource = keycloakUserInfo?.['preferred_username']?.split('@')?.[1];
+
+    if (!identitySource) {
+      return null;
+    }
+
+    return identitySource;
   }, [keycloakUserInfo]);
 
   useEffect(() => {
@@ -109,7 +136,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   useEffect(() => {
     const getSystemAccessRequest = async () => {
-      const accessRequests = await biohubApi.accessRequest.hasPendingAdministrativeActivities();
+      const accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
 
       setHasAccessRequest(() => {
         setHasLoadedUserRelevantInfo(true);
@@ -122,14 +149,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     getSystemAccessRequest();
-  }, [
-    biohubApi.accessRequest,
-    biohubApi.admin,
-    getUserIdentifier,
-    hasAccessRequest,
-    keycloakUserInfo,
-    shouldLoadAccessRequest
-  ]);
+  }, [biohubApi.admin, getUserIdentifier, hasAccessRequest, keycloakUserInfo, shouldLoadAccessRequest]);
 
   useEffect(() => {
     const loadUserInfo = async () => {
@@ -169,7 +189,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     systemRoles: getSystemRoles(),
     hasSystemRole,
     hasAccessRequest,
-    getUserIdentifier
+    getUserIdentifier,
+    getIdentitySource
   };
 }
 

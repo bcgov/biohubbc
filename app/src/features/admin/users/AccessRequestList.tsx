@@ -12,16 +12,25 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
+import { ReviewAccessRequestI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { GetAccessRequestListItem, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import React, { useEffect, useState } from 'react';
+import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import React, { useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+import ReviewAccessRequestForm, {
+  IReviewAccessRequestForm,
+  ReviewAccessRequestFormInitialValues,
+  ReviewAccessRequestFormYupSchema
+} from './ReviewAccessRequestForm';
 
 export enum administrativeActivityStatus {
-  PENDING = 'pending',
-  ACTIONED = 'actioned',
-  REJECTED = 'rejected'
+  PENDING = 'Pending',
+  ACTIONED = 'Actioned',
+  REJECTED = 'Rejected'
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -47,103 +56,182 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+export interface IAccessRequestListProps {
+  accessRequests: IGetAccessRequestsListResponse[];
+  codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
+}
+
 /**
  * Page to display a list of user access.
  *
+ * @param {*} props
  * @return {*}
  */
-const AccessRequestList: React.FC = () => {
+const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
+  const { accessRequests, codes, refresh } = props;
+
   const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
-  const [accessRequests, setAccessRequests] = useState<IGetAccessRequestsListResponse[]>([]);
+  const approvedCodeId = codes?.administrative_activity_status_type.find(
+    (item) => item.name === administrativeActivityStatus.ACTIONED
+  )?.id as any;
+  const rejectedCodeId = codes?.administrative_activity_status_type.find(
+    (item) => item.name === administrativeActivityStatus.REJECTED
+  )?.id as any;
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [activeReviewDialog, setActiveReviewDialog] = useState<{
+    open: boolean;
+    request: IGetAccessRequestsListResponse | any;
+  }>({
+    open: false,
+    request: null
+  });
 
-  useEffect(() => {
-    const getAccessRequests = async () => {
-      const accessRequestResponse = await biohubApi.admin.getAccessRequests();
-
-      setAccessRequests(() => {
-        setHasLoaded(true);
-        setIsLoading(false);
-        return accessRequestResponse;
-      });
-    };
-
-    if (hasLoaded || isLoading) {
-      return;
+  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: ReviewAccessRequestI18N.reviewErrorTitle,
+    dialogText: ReviewAccessRequestI18N.reviewErrorText,
+    open: false,
+    onClose: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    },
+    onOk: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
     }
+  });
 
-    setIsLoading(true);
+  const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
+    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
-    getAccessRequests();
-  }, [biohubApi, isLoading, hasLoaded]);
+    setActiveReviewDialog({ open: false, request: null });
+
+    try {
+      await biohubApi.admin.updateAccessRequest(
+        updatedRequest.data.username,
+        updatedRequest.data.identitySource,
+        updatedRequest.id,
+        approvedCodeId,
+        values.system_roles
+      );
+
+      refresh();
+    } catch (error) {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
+    }
+  };
+
+  const handleReviewDialogDeny = async () => {
+    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
+
+    setActiveReviewDialog({ open: false, request: null });
+
+    try {
+      await biohubApi.admin.updateAccessRequest(
+        updatedRequest.data.username,
+        updatedRequest.data.identitySource,
+        updatedRequest.id,
+        rejectedCodeId
+      );
+
+      refresh();
+    } catch (error) {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
+    }
+  };
 
   return (
-    <Paper>
-      <Box p={2}>
-        <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
-      </Box>
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Username</TableCell>
-              <TableCell>Company</TableCell>
-              <TableCell>Regional Offices</TableCell>
-              <TableCell>Request Date</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody data-testid="access-request-table">
-            {!accessRequests?.length && (
-              <TableRow data-testid={'access-request-row-0'}>
-                <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                  No Access Requests
-                </TableCell>
+    <>
+      <ErrorDialog {...openErrorDialogProps} />
+      <RequestDialog
+        dialogTitle={'Review Access Request'}
+        open={activeReviewDialog.open}
+        onClose={() => setActiveReviewDialog({ open: false, request: null })}
+        onDeny={handleReviewDialogDeny}
+        onApprove={handleReviewDialogApprove}
+        component={{
+          initialValues: {
+            ...ReviewAccessRequestFormInitialValues,
+            system_roles: [activeReviewDialog.request?.data?.role]
+          },
+          validationSchema: ReviewAccessRequestFormYupSchema,
+          element: (
+            <ReviewAccessRequestForm
+              request={activeReviewDialog.request}
+              system_roles={
+                codes?.system_roles?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          )
+        }}
+      />
+      <Paper>
+        <Box p={2}>
+          <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
+        </Box>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Username</TableCell>
+                <TableCell>Company</TableCell>
+                <TableCell>Regional Offices</TableCell>
+                <TableCell>Request Date</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell></TableCell>
               </TableRow>
-            )}
-            {accessRequests?.map((row, index) => {
-              const accessItem = new GetAccessRequestListItem(row);
-
-              return (
-                <TableRow data-testid={`access-request-row-${index}`} key={accessItem.id}>
-                  <TableCell>{accessItem.name || 'Not Applicable'}</TableCell>
-                  <TableCell>{accessItem.username || 'Not Applicable'}</TableCell>
-                  <TableCell>{accessItem.company || 'Not Applicable'}</TableCell>
-                  <TableCell>{accessItem.regional_offices.join(', ') || 'Not Applicable'}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, accessItem.create_date)}</TableCell>
-                  <TableCell>
-                    <Chip
-                      className={clsx(
-                        classes.chip,
-                        (administrativeActivityStatus.ACTIONED === accessItem.status_name?.toLowerCase() &&
-                          classes.chipActioned) ||
-                          (administrativeActivityStatus.REJECTED === accessItem.status_name?.toLowerCase() &&
-                            classes.chipRejected) ||
-                          classes.chipPending
-                      )}
-                      label={accessItem.status_name}
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <Button className={classes.actionButton} color="primary" variant="outlined">
-                      Review
-                    </Button>
+            </TableHead>
+            <TableBody data-testid="access-request-table">
+              {!accessRequests?.length && (
+                <TableRow data-testid={'access-request-row-0'}>
+                  <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                    No Access Requests
                   </TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
+              )}
+              {accessRequests?.map((row, index) => {
+                return (
+                  <TableRow data-testid={`access-request-row-${index}`} key={index}>
+                    <TableCell>{row.data?.name || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.username || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.regional_offices?.join(', ') || 'Not Applicable'}</TableCell>
+                    <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        className={clsx(
+                          classes.chip,
+                          (administrativeActivityStatus.ACTIONED === row.status_name && classes.chipActioned) ||
+                            (administrativeActivityStatus.REJECTED === row.status_name && classes.chipRejected) ||
+                            classes.chipPending
+                        )}
+                        label={row.status_name}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      {row.status_name === administrativeActivityStatus.PENDING && (
+                        <Button
+                          className={classes.actionButton}
+                          color="primary"
+                          variant="outlined"
+                          onClick={() => setActiveReviewDialog({ open: true, request: row })}>
+                          Review
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </>
   );
 };
 

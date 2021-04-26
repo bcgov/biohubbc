@@ -14,6 +14,9 @@ const mockUseBiohubApi = {
   },
   user: {
     getUsersList: jest.fn()
+  },
+  codes: {
+    getAllCodeSets: jest.fn()
   }
 };
 
@@ -26,6 +29,16 @@ describe('ManageUsersPage', () => {
     // clear mocks before each test
     mockBiohubApi().admin.getAccessRequests.mockClear();
     mockBiohubApi().user.getUsersList.mockClear();
+    mockBiohubApi().codes.getAllCodeSets.mockClear();
+
+    // mock code set response
+    mockBiohubApi().codes.getAllCodeSets.mockReturnValue({
+      system_roles: [{ id: 1, name: 'Role 1' }],
+      administrative_activity_status_type: [
+        { id: 1, name: 'Actioned' },
+        { id: 1, name: 'Rejected' }
+      ]
+    });
   });
 
   afterEach(() => {

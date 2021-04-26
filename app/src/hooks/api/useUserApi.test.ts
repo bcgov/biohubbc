@@ -14,7 +14,7 @@ describe('useUserApi', () => {
   });
 
   it('getUser works as expected', async () => {
-    mock.onGet('/api/user').reply(200, {
+    mock.onGet('/api/user/self').reply(200, {
       id: 1,
       user_identifier: 'myidirboss',
       role_names: ['role 1', 'role 2']

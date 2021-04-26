@@ -1,37 +1,21 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { codes } from 'test-helpers/code-helpers';
+import { render, waitFor } from '@testing-library/react';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 
-const renderContainer = () => {
-  return render(<AccessRequestList />);
+const renderContainer = (
+  accessRequests: IGetAccessRequestsListResponse[],
+  codes: IGetAllCodeSetsResponse,
+  refresh: () => void
+) => {
+  return render(<AccessRequestList accessRequests={accessRequests} codes={codes} refresh={refresh} />);
 };
-
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
-  admin: {
-    getAccessRequests: jest.fn()
-  }
-};
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 describe('AccessRequestList', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().admin.getAccessRequests.mockClear();
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
-
   it('shows `No Access Requests` when there are no access requests', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([]);
-
-    const { getByText } = renderContainer();
+    const { getByText } = renderContainer([], codes, () => {});
 
     await waitFor(() => {
       expect(getByText('No Access Requests')).toBeVisible();
@@ -39,24 +23,29 @@ describe('AccessRequestList', () => {
   });
 
   it('shows a table row for a pending access request', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([
-      {
-        id: 1,
-        status: 1,
-        status_name: 'Pending',
-        description: 'test description',
-        notes: 'test notes',
-        data: JSON.stringify({
-          name: 'test user',
-          username: 'testusername',
-          company: 'test company',
-          regional_offices: ['office 1', 'office 2']
-        }),
-        create_date: '2020-04-20'
-      }
-    ]);
-
-    const { getByText, getByRole } = renderContainer();
+    const { getByText, getByRole } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Pending',
+          description: 'test description',
+          notes: 'test notes',
+          data: {
+            name: 'test user',
+            username: 'testusername',
+            identitySource: 'idir',
+            company: 'test company',
+            regional_offices: ['office 1', 'office 2']
+          },
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      () => {}
+    );
 
     await waitFor(() => {
       expect(getByText('test user')).toBeVisible();
@@ -69,24 +58,29 @@ describe('AccessRequestList', () => {
   });
 
   it('shows a table row for a rejected access request', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([
-      {
-        id: 1,
-        status: 1,
-        status_name: 'Rejected',
-        description: 'test description',
-        notes: 'test notes',
-        data: JSON.stringify({
-          name: 'test user',
-          username: 'testusername',
-          company: 'test company',
-          regional_offices: ['office 1', 'office 2']
-        }),
-        create_date: '2020-04-20'
-      }
-    ]);
-
-    const { getByText, getByRole } = renderContainer();
+    const { getByText, queryByRole } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Rejected',
+          description: 'test description',
+          notes: 'test notes',
+          data: {
+            name: 'test user',
+            username: 'testusername',
+            identitySource: 'idir',
+            company: 'test company',
+            regional_offices: ['office 1', 'office 2']
+          },
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      () => {}
+    );
 
     await waitFor(() => {
       expect(getByText('test user')).toBeVisible();
@@ -94,29 +88,34 @@ describe('AccessRequestList', () => {
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Rejected')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
   it('shows a table row for a actioned access request', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([
-      {
-        id: 1,
-        status: 1,
-        status_name: 'Actioned',
-        description: 'test description',
-        notes: 'test notes',
-        data: JSON.stringify({
-          name: 'test user',
-          username: 'testusername',
-          company: 'test company',
-          regional_offices: ['office 1', 'office 2']
-        }),
-        create_date: '2020-04-20'
-      }
-    ]);
-
-    const { getByText, getByRole } = renderContainer();
+    const { getByText, queryByRole } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Actioned',
+          description: 'test description',
+          notes: 'test notes',
+          data: {
+            name: 'test user',
+            username: 'testusername',
+            identitySource: 'idir',
+            company: 'test company',
+            regional_offices: ['office 1', 'office 2']
+          },
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      () => {}
+    );
 
     await waitFor(() => {
       expect(getByText('test user')).toBeVisible();
@@ -124,30 +123,33 @@ describe('AccessRequestList', () => {
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Actioned')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
+      expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
-  it('shows a table row when the json data is empty', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([
-      {
-        id: 1,
-        status: 1,
-        status_name: 'Actioned',
-        description: 'test description',
-        notes: 'test notes',
-        data: '',
-        create_date: '2020-04-20'
-      }
-    ]);
-
-    const { getByText, getAllByText, getByRole } = renderContainer();
+  it('shows a table row when the data object is null', async () => {
+    const { getByText, getAllByText } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Actioned',
+          description: 'test description',
+          notes: 'test notes',
+          data: (null as unknown) as IAccessRequestDataObject,
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      () => {}
+    );
 
     await waitFor(() => {
       expect(getAllByText('Not Applicable').length).toEqual(4);
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('Actioned')).toBeVisible();
-      expect(getByRole('button')).toHaveTextContent('Review');
     });
   });
 });

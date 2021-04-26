@@ -10,7 +10,8 @@ import {
   getIUCNConservationActionLevel3SubclassificationSQL,
   getActivitySQL,
   getProjectTypeSQL,
-  getSystemRolesSQL
+  getSystemRolesSQL,
+  getAdministrativeActivityStatusTypeSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
 import { coordinator_agency, region, species, regional_offices } from '../constants/codes';
@@ -33,6 +34,7 @@ export interface IAllCodeSets {
   iucn_conservation_action_level_3_subclassification: object;
   system_roles: object;
   regional_offices: object;
+  administrative_activity_status_type: object;
 }
 
 /**
@@ -61,7 +63,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_2_subclassification,
     iucn_conservation_action_level_3_subclassification,
     project_type,
-    system_roles
+    system_roles,
+    administrative_activity_status_type
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getClimateChangeInitiativeSQL().text),
@@ -73,7 +76,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
     await connection.query(getProjectTypeSQL().text),
-    await connection.query(getSystemRolesSQL().text)
+    await connection.query(getSystemRolesSQL().text),
+    await connection.query(getAdministrativeActivityStatusTypeSQL().text)
   ]);
 
   await connection.commit();
@@ -97,6 +101,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
       [],
     project_type: (project_type && project_type.rows) || [],
     system_roles: (system_roles && system_roles.rows) || [],
+    administrative_activity_status_type:
+      (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
