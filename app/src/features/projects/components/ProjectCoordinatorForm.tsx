@@ -11,8 +11,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { useFormikContext } from 'formik';
-import React from 'react';
+import { FormikErrors, useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectCoordinatorForm {
@@ -45,6 +45,11 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
 
 export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
+  handleValuesChange?: (
+    values: any,
+    formFieldIndex: number,
+    validateForm: (values?: any) => Promise<FormikErrors<any>>
+  ) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -63,7 +68,18 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
+  const {
+    values,
+    touched,
+    errors,
+    handleChange,
+    handleSubmit,
+    validateForm
+  } = useFormikContext<IProjectCoordinatorForm>();
+
+  useEffect(() => {
+    props.handleValuesChange && props.handleValuesChange(values, 0, validateForm);
+  }, [values]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -79,7 +95,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.first_name}
             onChange={handleChange}
             error={touched.first_name && Boolean(errors.first_name)}
-            helperText={errors.first_name}
+            helperText={touched.first_name && errors.first_name}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -93,7 +109,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.last_name}
             onChange={handleChange}
             error={touched.last_name && Boolean(errors.last_name)}
-            helperText={errors.last_name}
+            helperText={touched.last_name && errors.last_name}
           />
         </Grid>
         <Grid item xs={12}>
@@ -107,7 +123,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.email_address}
             onChange={handleChange}
             error={touched.email_address && Boolean(errors.email_address)}
-            helperText={errors.email_address}
+            helperText={touched.last_name && errors.email_address}
           />
         </Grid>
         <Grid item xs={12}>

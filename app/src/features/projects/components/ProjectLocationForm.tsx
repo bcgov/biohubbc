@@ -12,7 +12,7 @@ import {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import MapContainer from 'components/map/MapContainer';
-import { useFormikContext } from 'formik';
+import { FormikErrors, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
@@ -43,6 +43,11 @@ export const ProjectLocationFormYupSchema = yup.object().shape({
 
 export interface IProjectLocationFormProps {
   region: IMultiAutocompleteFieldOption[];
+  handleValuesChange?: (
+    values: any,
+    formFieldIndex: number,
+    validateForm: (values?: any) => Promise<FormikErrors<any>>
+  ) => void;
 }
 
 /**
@@ -55,11 +60,15 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, setFieldValue, validateForm } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    props.handleValuesChange && props.handleValuesChange(values, 4, validateForm);
+  }, [values]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -133,7 +142,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             value={values.location_description}
             onChange={handleChange}
             error={touched.location_description && Boolean(errors.location_description)}
-            helperText={errors.location_description}
+            helperText={touched.location_description && errors.location_description}
           />
         </Grid>
         <Grid item xs={12}>

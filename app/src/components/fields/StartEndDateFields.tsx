@@ -34,7 +34,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }}
           onChange={handleChange}
           error={touched.start_date && Boolean(errors.start_date)}
-          helperText={errors.start_date}
+          helperText={touched.start_date && errors.start_date}
           InputLabelProps={{
             shrink: true
           }}

@@ -53,7 +53,7 @@ import {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
-import { Formik, FormikProps } from 'formik';
+import { Formik, FormikErrors, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -70,6 +70,7 @@ import ProjectDraftForm, {
   ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from './components/ProjectDraftForm';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -133,6 +134,9 @@ const CreateProjectPage: React.FC = () => {
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
+  // Tracks if sections of the form have been completed
+  const [formsComplete, setFormsComplete] = useState([false, true, false, false, false, true, true, true, true]);
+
   // The number of steps listed in the UI based on the current state of the component/forms
   const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_ALL_PROJECT_STEPS);
 
@@ -174,6 +178,23 @@ const CreateProjectPage: React.FC = () => {
     funding: ProjectFundingFormInitialValues,
     partnerships: ProjectPartnershipsFormInitialValues
   });
+
+  const handleValuesChange = (
+    values: any,
+    formFieldIndex: number,
+    validateForm: (values?: any) => Promise<FormikErrors<any>>
+  ) => {
+    //@ts-ignore
+    setStepForms((currentStepForms: ICreateProjectStep[]) => {
+      let updatedStepForms = [...currentStepForms];
+
+      updatedStepForms[formFieldIndex].stepValues = values;
+
+      return updatedStepForms;
+    });
+
+    validateFormFieldsAndReportCompletion(values, validateForm, setFormsComplete, formFieldIndex);
+  };
 
   // Get draft project fields if draft id exists
   useEffect(() => {
@@ -230,7 +251,9 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'Project Coordinator',
         stepSubTitle: 'Enter contact details for the project coordinator',
-        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectCoordinator" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.coordinator,
         stepValidation: ProjectCoordinatorYupSchema
       },
@@ -246,6 +269,7 @@ const CreateProjectPage: React.FC = () => {
                 setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
               }
             }}
+            handleValuesChange={handleValuesChange}
           />
         ),
         stepValues: initialProjectFieldData.permit,
@@ -254,49 +278,67 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'General Information',
         stepSubTitle: 'General information and details about this project',
-        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectDetails" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.project,
         stepValidation: ProjectDetailsFormYupSchema
       },
       {
         stepTitle: 'Objectives',
         stepSubTitle: 'Enter the objectives and potential caveats for this project',
-        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectObjectives" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.objectives,
         stepValidation: ProjectObjectivesFormYupSchema
       },
       {
         stepTitle: 'Location',
         stepSubTitle: 'Specify project regions and boundary information',
-        stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectLocation" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.location,
         stepValidation: ProjectLocationFormYupSchema
       },
       {
         stepTitle: 'Species',
         stepSubTitle: 'Information about species this project is inventorying or monitoring',
-        stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectSpecies" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.species,
         stepValidation: ProjectSpeciesFormYupSchema
       },
       {
         stepTitle: 'IUCN Classification',
         stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
-        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectIUCN" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.iucn,
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding',
         stepSubTitle: 'Specify funding sources for the project',
-        stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents component="ProjectFunding" codes={codes} handleValuesChange={handleValuesChange} />
+        ),
         stepValues: initialProjectFieldData.funding,
         stepValidation: ProjectFundingFormYupSchema
       },
       {
         stepTitle: 'Partnerships',
         stepSubTitle: 'Specify partnerships for the project',
-        stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
+        stepContent: (
+          <ProjectStepComponents
+            component="ProjectPartnerships"
+            codes={codes}
+            handleValuesChange={handleValuesChange}
+          />
+        ),
         stepValues: initialProjectFieldData.partnerships,
         stepValidation: ProjectPartnershipsFormYupSchema
       }
@@ -315,32 +357,6 @@ const CreateProjectPage: React.FC = () => {
     }
 
     return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
-  };
-
-  const updateSteps = (values: any) => {
-    setStepForms((currentStepForms) => {
-      let updatedStepForms = [...currentStepForms];
-      updatedStepForms[activeStep].stepValues = values;
-      return updatedStepForms;
-    });
-  };
-
-  const handleSaveAndNext = (values: any) => {
-    updateSteps(values);
-    goToNextStep();
-  };
-
-  const handleSaveAndBack = (values: any) => {
-    updateSteps(values);
-    goToPreviousStep();
-  };
-
-  const goToNextStep = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const goToPreviousStep = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
   const handleCancel = () => {
@@ -412,6 +428,31 @@ const CreateProjectPage: React.FC = () => {
    * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
+    let formCompletionStatus = true;
+    let incompleteStep: number = (null as unknown) as number;
+
+    for (let i = 0; i < formsComplete.length; i++) {
+      const section = formsComplete[i];
+
+      if (!section) {
+        incompleteStep = i;
+        formCompletionStatus = false;
+
+        break;
+      }
+    }
+
+    if (!formCompletionStatus) {
+      setActiveStep(incompleteStep);
+
+      showCreateErrorDialog({
+        dialogTitle: 'Create Project Form Incomplete',
+        dialogText: 'The form is missing some required fields/sections. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
     const isFullProject = isSamplingConducted(stepForms[1].stepValues);
     const draftId = Number(queryParams.draftId);
 
@@ -539,6 +580,10 @@ const CreateProjectPage: React.FC = () => {
     });
   };
 
+  const handleStep = (step: number) => () => {
+    setActiveStep(step);
+  };
+
   /**
    * Build an array of form steps, based on the current value of `numberOfSteps`
    *
@@ -553,7 +598,7 @@ const CreateProjectPage: React.FC = () => {
     for (let index = 0; index < numberOfSteps; index++) {
       stepsToRender.push(
         <Step key={stepForms[index].stepTitle}>
-          <StepLabel>
+          <StepLabel onClick={handleStep(index)}>
             <Box>
               <Typography variant="h2" className={classes.stepTitle}>
                 {stepForms[index].stepTitle}
@@ -569,9 +614,7 @@ const CreateProjectPage: React.FC = () => {
                 validationSchema={stepForms[index].stepValidation}
                 validateOnBlur={true}
                 validateOnChange={false}
-                onSubmit={(values) => {
-                  handleSaveAndNext(values);
-                }}>
+                onSubmit={() => setActiveStep((prevActiveStep) => prevActiveStep + 1)}>
                 {(props) => (
                   <>
                     {stepForms[index].stepContent}
@@ -585,7 +628,7 @@ const CreateProjectPage: React.FC = () => {
                             disabled={!activeStep}
                             variant="outlined"
                             color="primary"
-                            onClick={() => handleSaveAndBack(props.values)}
+                            onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}
                             className={classes.actionButton}>
                             Previous
                           </Button>
@@ -691,7 +734,7 @@ const CreateProjectPage: React.FC = () => {
             <Divider />
           </Box>
           <Box>
-            <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
+            <Stepper nonLinear activeStep={activeStep} orientation="vertical" className={classes.stepper}>
               {getProjectSteps()}
             </Stepper>
             {activeStep === numberOfSteps && (
@@ -704,7 +747,7 @@ const CreateProjectPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={goToPreviousStep}
+                      onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}
                       className={classes.actionButton}>
                       Previous
                     </Button>

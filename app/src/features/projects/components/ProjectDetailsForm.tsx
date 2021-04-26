@@ -9,8 +9,8 @@ import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
-import { useFormikContext } from 'formik';
-import React from 'react';
+import { FormikErrors, useFormikContext } from 'formik';
+import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectDetailsForm {
@@ -42,6 +42,11 @@ export interface IProjectDetailsFormProps {
   project_type: IMultiAutocompleteFieldOption[];
   activity: IMultiAutocompleteFieldOption[];
   climate_change_initiative: IMultiAutocompleteFieldOption[];
+  handleValuesChange?: (
+    values: any,
+    formFieldIndex: number,
+    validateForm: (values?: any) => Promise<FormikErrors<any>>
+  ) => void;
 }
 
 /**
@@ -52,7 +57,11 @@ export interface IProjectDetailsFormProps {
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectDetailsForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, validateForm } = formikProps;
+
+  useEffect(() => {
+    props.handleValuesChange && props.handleValuesChange(values, 2, validateForm);
+  }, [values]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -68,7 +77,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             value={values.project_name}
             onChange={handleChange}
             error={touched.project_name && Boolean(errors.project_name)}
-            helperText={errors.project_name}
+            helperText={touched.project_name && errors.project_name}
           />
         </Grid>
         <Grid item xs={12}>
@@ -91,7 +100,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{errors.project_type}</FormHelperText>
+            <FormHelperText>{touched.project_type && errors.project_type}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
