@@ -40,7 +40,24 @@ GET.apiDoc = {
               type: 'object',
               properties: {
                 id: {
-                  type: 'number'
+                  type: 'number',
+                  description: 'Administrative activity row ID'
+                },
+                type: {
+                  type: 'number',
+                  description: 'Administrative activity type ID'
+                },
+                type_name: {
+                  type: 'string',
+                  description: 'Administrative activity type name'
+                },
+                status: {
+                  type: 'number',
+                  description: 'Administrative activity status type ID'
+                },
+                status_name: {
+                  type: 'string',
+                  description: 'Administrative activity status type name'
                 },
                 description: {
                   type: 'string'
@@ -50,6 +67,7 @@ GET.apiDoc = {
                 },
                 data: {
                   type: 'object',
+                  description: 'JSON data blob containing additional information about the activity record',
                   properties: {
                     // Don't specify as this is a JSON blob column
                   }
