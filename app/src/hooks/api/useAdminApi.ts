@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IAccessRequestResponse, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
 /**
@@ -76,9 +76,9 @@ const useAdminApi = (axios: AxiosInstance) => {
    * Create a new access request record.
    *
    * @param {unknown} administrativeActivityData
-   * @return {*} {Promise<IAccessRequestResponse>}
+   * @return {*} {Promise<IGetAccessRequestsListResponse>}
    */
-  const createAdministrativeActivity = async (administrativeActivityData: unknown): Promise<IAccessRequestResponse> => {
+  const createAdministrativeActivity = async (administrativeActivityData: unknown): Promise<IGetAccessRequestsListResponse> => {
     const { data } = await axios.post('/api/administrative-activity', administrativeActivityData);
 
     return data;

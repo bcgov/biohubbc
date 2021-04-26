@@ -89,7 +89,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Additional Comments
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.notes}
+                {props.request.data.comments}
               </Typography>
             </Grid>
           </Grid>
