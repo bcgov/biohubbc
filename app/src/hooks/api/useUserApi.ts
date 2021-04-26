@@ -14,7 +14,7 @@ const useUserApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetUserResponse>}
    */
   const getUser = async (): Promise<IGetUserResponse> => {
-    const { data } = await axios.get('/api/user');
+    const { data } = await axios.get('/api/user/self');
 
     return data;
   };

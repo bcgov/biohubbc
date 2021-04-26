@@ -8,43 +8,24 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
+export interface IActiveUsersListProps {
+  activeUsers: IGetUserResponse[];
+}
 
 /**
  * Table to display a list of active users.
  *
+ * @param {*} props
  * @return {*}
  */
-const ActiveUsersList: React.FC = () => {
-  const biohubApi = useBiohubApi();
+const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
+  const { activeUsers } = props;
 
-  const [activeUsers, setActiveUsers] = useState<IGetUserResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
-
-  useEffect(() => {
-    const getActiveUsers = async () => {
-      const activeUsersResponse = await biohubApi.user.getUsersList();
-
-      setActiveUsers(() => {
-        setHasLoaded(true);
-        setIsLoading(false);
-        return activeUsersResponse;
-      });
-    };
-
-    if (hasLoaded || isLoading) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    getActiveUsers();
-  }, [biohubApi, isLoading, hasLoaded]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

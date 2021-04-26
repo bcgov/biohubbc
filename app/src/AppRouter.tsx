@@ -20,21 +20,16 @@ const AppRouter: React.FC = (props: any) => {
       <Redirect exact from="/" to="/projects" />
       <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={AuthLayout}></AppRoute>
       <AppRoute
-        path="/access-request"
-        title={getTitle('Access Request')}
-        component={AccessRequestPage}
-        layout={PublicLayout}></AppRoute>
-      <AppRoute
         path="/page-not-found"
         title={getTitle('Page Not Found')}
         component={NotFoundPage}
-        layout={PublicLayout}></AppRoute>
+        layout={PublicLayout}
+      />
       <AppRoute
-        protected
-        path="/projects"
-        component={ProjectsRouter}
-        layout={AuthLayout}
-        title={getTitle('Projects')}
+        path="/access-request"
+        title={getTitle('Access Request')}
+        component={AccessRequestPage}
+        layout={PublicLayout}
       />
       <AppRoute
         protected
@@ -43,7 +38,22 @@ const AppRouter: React.FC = (props: any) => {
         layout={AuthLayout}
         title={getTitle('Request submitted')}
       />
-      <AppRoute protected path="/admin" component={AdminRouter} layout={AuthLayout} title={getTitle('Admin')} />
+      <AppRoute
+        protected
+        path="/projects"
+        component={ProjectsRouter}
+        layout={AuthLayout}
+        title={getTitle('Projects')}
+        validRoles={['System Administrator', 'Project Administrator']}
+      />
+      <AppRoute
+        protected
+        path="/admin"
+        component={AdminRouter}
+        layout={AuthLayout}
+        title={getTitle('Admin')}
+        validRoles={['System Administrator']}
+      />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

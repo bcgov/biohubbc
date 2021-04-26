@@ -2,7 +2,6 @@ import useAxios from './api/useAxios';
 import useProjectApi from './api/useProjectApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
-import useAdministrativeActivityApi from './api/useAdministrativeActivityApi';
 import useUserApi from './api/useUserApi';
 import useAdminApi from './api/useAdminApi';
 
@@ -20,8 +19,6 @@ export const useBiohubApi = () => {
 
   const draft = useDraftApi(axios);
 
-  const accessRequest = useAdministrativeActivityApi(axios);
-
   const user = useUserApi(axios);
 
   const admin = useAdminApi(axios);
@@ -30,7 +27,6 @@ export const useBiohubApi = () => {
     project,
     codes,
     draft,
-    accessRequest,
     user,
     admin
   };

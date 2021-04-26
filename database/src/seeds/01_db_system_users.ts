@@ -4,19 +4,19 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_ADMIN = process.env.DB_ADMIN;
 
 const systemUsers = [
-  { identifier: 'aagahche', type: 'IDIR' },
-  { identifier: 'cgarrett', type: 'IDIR' },
-  { identifier: 'istest1', type: 'IDIR' },
-  { identifier: 'jrpopkin', type: 'IDIR' },
-  { identifier: 'jxdunsdo', type: 'IDIR' },
-  { identifier: 'mbaerg', type: 'IDIR' },
-  { identifier: 'nphura', type: 'IDIR' },
-  { identifier: 'opieross', type: 'IDIR' },
-  { identifier: 'postman', type: 'IDIR' },
-  { identifier: 'robmunro', type: 'IDIR' },
-  { identifier: 'rstens', type: 'IDIR' },
-  { identifier: 'tadekens', type: 'IDIR' },
-  { identifier: 'sdevalap', type: 'IDIR' }
+  { identifier: 'aagahche', type: 'IDIR', roleId: 1 },
+  { identifier: 'cgarrett', type: 'IDIR', roleId: 1 },
+  { identifier: 'istest1', type: 'IDIR', roleId: 1 },
+  { identifier: 'jrpopkin', type: 'IDIR', roleId: 1 },
+  { identifier: 'jxdunsdo', type: 'IDIR', roleId: 1 },
+  { identifier: 'mbaerg', type: 'IDIR', roleId: 1 },
+  { identifier: 'nphura', type: 'IDIR', roleId: 1 },
+  { identifier: 'opieross', type: 'IDIR', roleId: 1 },
+  { identifier: 'postman', type: 'IDIR', roleId: 2 },
+  { identifier: 'robmunro', type: 'IDIR', roleId: 1 },
+  { identifier: 'rstens', type: 'IDIR', roleId: 1 },
+  { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
+  { identifier: 'sdevalap', type: 'IDIR', roleId: 1 }
 ];
 
 /**
@@ -38,8 +38,14 @@ export async function seed(knex: Knex): Promise<void> {
 
     // if the fetch returns no rows, then the user is not in the system users table and should be added
     if (!response?.rows?.[0]) {
+      // Add system user
       await knex.raw(`
         ${insertSystemUserSQL(systemUser.identifier, systemUser.type)}
+      `);
+
+      // Add system administrator role
+      await knex.raw(`
+        ${insertSystemUserRoleSQL(systemUser.identifier, systemUser.roleId)}
       `);
     }
   }
@@ -85,4 +91,20 @@ const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
     name = '${userType}'
   AND
     record_end_date is null;
+`;
+
+/**
+ * SQL to insert a system user role row.
+ *
+ * @param {string} userIdentifier
+ * @param {number} roleId
+ */
+const insertSystemUserRoleSQL = (userIdentifier: string, roleId: number) => `
+ INSERT INTO system_user_role (
+   su_id,
+   sr_id
+ ) VALUES (
+   (SELECT id from system_user where user_identifier = '${userIdentifier}'),
+   ${roleId}
+ );
 `;

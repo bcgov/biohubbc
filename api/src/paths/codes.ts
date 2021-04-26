@@ -202,6 +202,20 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              system_role: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }

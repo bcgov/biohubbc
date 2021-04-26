@@ -149,9 +149,10 @@ export const AccessRequestPage: React.FC = () => {
 
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
-      const response = await biohubApi.accessRequest.createAdministrativeActivity({
+      const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
-        username: keycloakWrapper?.getUserIdentifier()
+        username: keycloakWrapper?.getUserIdentifier(),
+        identitySource: keycloakWrapper?.getIdentitySource()
       });
 
       if (!response?.id) {

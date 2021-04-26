@@ -26,7 +26,7 @@ describe('UserObject', () => {
   describe('valid values provided, no roles', () => {
     let data: UserObject;
 
-    const userObject = { id: 1, user_identifier: 'test name', role_names: [] };
+    const userObject = { id: 1, user_identifier: 'test name', role_ids: [], role_names: [] };
 
     before(() => {
       data = new UserObject(userObject);
@@ -38,6 +38,10 @@ describe('UserObject', () => {
 
     it('sets user_identifier', function () {
       expect(data.user_identifier).to.equal('test name');
+    });
+
+    it('sets role_ids', function () {
+      expect(data.role_ids).to.eql([]);
     });
 
     it('sets role_names', function () {
@@ -48,7 +52,7 @@ describe('UserObject', () => {
   describe('valid values provided', () => {
     let data: UserObject;
 
-    const userObject = { id: 1, user_identifier: 'test name', role_names: ['role 1', 'role 2'] };
+    const userObject = { id: 1, user_identifier: 'test name', role_ids: [1, 2], role_names: ['role 1', 'role 2'] };
 
     before(() => {
       data = new UserObject(userObject);
@@ -60,6 +64,10 @@ describe('UserObject', () => {
 
     it('sets user_identifier', function () {
       expect(data.user_identifier).to.equal('test name');
+    });
+
+    it('sets role_ids', function () {
+      expect(data.role_ids).to.eql([1, 2]);
     });
 
     it('sets role_names', function () {
