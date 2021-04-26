@@ -83,6 +83,17 @@ PUT.apiDoc = {
   }
 };
 
+/**
+ * Updates an access request.
+ *
+ * key steps performed:
+ * - Get the user by their user identifier
+ * - If user is not found, add them
+ * - Determine if there are any new roles to add, and add them if there are
+ * - Update the administrative activity record status
+ *
+ * @return {*}  {RequestHandler}
+ */
 function updateAccessRequest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'updateAccessRequest', message: 'params', req_body: req.body });
@@ -126,8 +137,14 @@ function updateAccessRequest(): RequestHandler {
       let userData = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
 
       if (!userData) {
+        const systemUserId = connection.systemUserId();
+
+        if (!systemUserId) {
+          throw new HTTP400('Failed to identify system user ID');
+        }
+
         // Found no existing user, add them
-        userData = await addSystemUser(userIdentifier, identitySource, connection);
+        userData = await addSystemUser(userIdentifier, identitySource, systemUserId, connection);
       }
 
       const userObject = new UserObject(userData);
@@ -137,11 +154,11 @@ function updateAccessRequest(): RequestHandler {
       }
 
       // Filter out any system roles that have already been added to the user
-      const rolesToAdd = roleIds.filter((roleId) => !userObject.role_ids.includes(roleId));
+      const rolesIdsToAdd = roleIds.filter((roleId) => !userObject.role_ids.includes(roleId));
 
-      if (rolesToAdd?.length) {
+      if (rolesIdsToAdd?.length) {
         // Add any missing roles (if any)
-        await addSystemRoles(userObject.id, roleIds, connection);
+        await addSystemRoles(userObject.id, rolesIdsToAdd, connection);
       }
 
       // Update the access request record status

@@ -139,12 +139,23 @@ export const getUserListSQL = (): SQLStatement | null => {
  *
  * @param {string} userIdentifier
  * @param {string} identitySource
+ * @param {number} systemUserId
  * @return {*}  {(SQLStatement | null)}
  */
-export const addSystemUserSQL = (userIdentifier: string, identitySource: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'addSystemUserSQL', message: 'addSystemUserSQL' });
+export const addSystemUserSQL = (
+  userIdentifier: string,
+  identitySource: string,
+  systemUserId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'addSystemUserSQL',
+    message: 'addSystemUserSQL',
+    userIdentifier,
+    identitySource,
+    systemUserId
+  });
 
-  if (!userIdentifier || !identitySource) {
+  if (!userIdentifier || !identitySource || !systemUserId) {
     return null;
   }
 
@@ -152,13 +163,16 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
     INSERT INTO system_user (
       uis_id,
       user_identifier,
-      record_effective_date
+      record_effective_date,
+      create_user
     ) VALUES (
-      Select id FROM user_identity_source WHERE name = ${identitySource},
+      (Select id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
       ${userIdentifier},
-      now()
+      now(),
+      ${systemUserId}
     )
     RETURNING
+      id,
       uis_id,
       user_identifier,
       record_effective_date;

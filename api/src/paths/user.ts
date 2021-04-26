@@ -83,13 +83,19 @@ function addUser(): RequestHandler {
     }
 
     try {
-      const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource);
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
+
+      const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource, systemUserId);
 
       if (!addSystemUserSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const response = await connection.query(addSystemUserSQLStatement.text, addSystemUserSQLStatement.values);
 
@@ -118,10 +124,16 @@ function addUser(): RequestHandler {
  *
  * @param {string} userIdentifier
  * @param {string} identitySource
+ * @param {number} systemUserId
  * @param {IDBConnection} connection
  */
-export const addSystemUser = async (userIdentifier: string, identitySource: string, connection: IDBConnection) => {
-  const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource);
+export const addSystemUser = async (
+  userIdentifier: string,
+  identitySource: string,
+  systemUserId: number,
+  connection: IDBConnection
+) => {
+  const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource, systemUserId);
 
   if (!addSystemUserSQLStatement) {
     throw new HTTP400('Failed to build SQL get statement');
