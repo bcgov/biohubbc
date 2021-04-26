@@ -8,6 +8,8 @@ export interface IAccessRequestDataObject {
 
 export interface IGetAccessRequestsListResponse {
   id: number;
+  type: number;
+  type_name: string;
   status: number;
   status_name: string;
   description: string;
@@ -26,6 +28,8 @@ export interface IGetAccessRequestsListResponse {
  */
 export class GetAccessRequestListItem implements IGetAccessRequestsListResponse {
   id: number;
+  type: number;
+  type_name: string;
   status: number;
   status_name: string;
   description: string;
@@ -36,6 +40,8 @@ export class GetAccessRequestListItem implements IGetAccessRequestsListResponse 
 
   constructor(obj?: any) {
     this.id = obj?.id || null;
+    this.type = obj?.type || null;
+    this.type_name = obj?.type_name || null;
     this.status = obj?.status || null;
     this.status_name = obj?.status_name || null;
     this.description = obj?.description || null;

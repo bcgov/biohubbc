@@ -29,9 +29,9 @@ import ReviewAccessRequestForm, {
 } from './ReviewAccessRequestForm';
 
 export enum administrativeActivityStatus {
-  PENDING = 'pending',
-  ACTIONED = 'actioned',
-  REJECTED = 'rejected'
+  PENDING = 'Pending',
+  ACTIONED = 'Actioned',
+  REJECTED = 'Rejected'
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -72,8 +72,12 @@ const AccessRequestList: React.FC = () => {
   const [hasLoadedAccessRequests, setHasLoadedAccessRequests] = useState(false);
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const approvedCodeId = codes?.administrative_activity_status_type.find((item) => item.name === 'Actioned')?.id as any;
-  const rejectedCodeId = codes?.administrative_activity_status_type.find((item) => item.name === 'Rejected')?.id as any;
+  const approvedCodeId = codes?.administrative_activity_status_type.find(
+    (item) => item.name === administrativeActivityStatus.ACTIONED
+  )?.id as any;
+  const rejectedCodeId = codes?.administrative_activity_status_type.find(
+    (item) => item.name === administrativeActivityStatus.REJECTED
+  )?.id as any;
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
@@ -96,6 +100,12 @@ const AccessRequestList: React.FC = () => {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
     }
   });
+
+  const getAccessRequests = async () => {
+    const accessResponse = await biohubApi.admin.getAccessRequests();
+
+    setAccessRequests(accessResponse);
+  };
 
   useEffect(() => {
     const getAccessRequests = async () => {
@@ -154,13 +164,15 @@ const AccessRequestList: React.FC = () => {
         approvedCodeId,
         values.system_roles
       );
+
+      await getAccessRequests();
     } catch (error) {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
     }
   };
 
   const handleReviewDialogDeny = async () => {
-    const updatedRequest = activeReviewDialog.request;
+    const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
     setActiveReviewDialog({ open: false, request: null });
 
@@ -171,6 +183,8 @@ const AccessRequestList: React.FC = () => {
         updatedRequest.id,
         rejectedCodeId
       );
+
+      await getAccessRequests();
     } catch (error) {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
     }
@@ -241,10 +255,8 @@ const AccessRequestList: React.FC = () => {
                       <Chip
                         className={clsx(
                           classes.chip,
-                          (administrativeActivityStatus.ACTIONED === row.status_name?.toLowerCase() &&
-                            classes.chipActioned) ||
-                            (administrativeActivityStatus.REJECTED === row.status_name?.toLowerCase() &&
-                              classes.chipRejected) ||
+                          (administrativeActivityStatus.ACTIONED === row.status_name && classes.chipActioned) ||
+                            (administrativeActivityStatus.REJECTED === row.status_name && classes.chipRejected) ||
                             classes.chipPending
                         )}
                         label={row.status_name}
@@ -252,7 +264,7 @@ const AccessRequestList: React.FC = () => {
                     </TableCell>
 
                     <TableCell>
-                      {row.status_name === 'Pending' && (
+                      {row.status_name === administrativeActivityStatus.PENDING && (
                         <Button
                           className={classes.actionButton}
                           color="primary"

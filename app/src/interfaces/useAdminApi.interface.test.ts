@@ -12,6 +12,14 @@ describe('GetAccessRequestListItem', () => {
       expect(data.id).toEqual(null);
     });
 
+    it('set type', () => {
+      expect(data.type).toEqual(null);
+    });
+
+    it('set type_name', () => {
+      expect(data.type_name).toEqual(null);
+    });
+
     it('set status', () => {
       expect(data.status).toEqual(null);
     });
@@ -64,6 +72,14 @@ describe('GetAccessRequestListItem', () => {
       expect(data.id).toEqual(null);
     });
 
+    it('set type', () => {
+      expect(data.type).toEqual(null);
+    });
+
+    it('set type_name', () => {
+      expect(data.type_name).toEqual(null);
+    });
+
     it('set status', () => {
       expect(data.status).toEqual(null);
     });
@@ -111,6 +127,8 @@ describe('GetAccessRequestListItem', () => {
     beforeAll(() => {
       data = new GetAccessRequestListItem({
         id: 1,
+        type: 3,
+        type_name: 'Access Request',
         status: 2,
         status_name: 'Rejected',
         description: 'test description',
@@ -122,6 +140,14 @@ describe('GetAccessRequestListItem', () => {
 
     it('set id', () => {
       expect(data.id).toEqual(1);
+    });
+
+    it('set type', () => {
+      expect(data.type).toEqual(3);
+    });
+
+    it('set type_name', () => {
+      expect(data.type_name).toEqual('Access Request');
     });
 
     it('set status', () => {
@@ -171,6 +197,8 @@ describe('GetAccessRequestListItem', () => {
     beforeAll(() => {
       data = new GetAccessRequestListItem({
         id: 1,
+        type: 3,
+        type_name: 'Access Request',
         status: 2,
         status_name: 'Rejected',
         description: 'test description',
@@ -182,6 +210,14 @@ describe('GetAccessRequestListItem', () => {
 
     it('set id', () => {
       expect(data.id).toEqual(1);
+    });
+
+    it('set type', () => {
+      expect(data.type).toEqual(3);
+    });
+
+    it('set type_name', () => {
+      expect(data.type_name).toEqual('Access Request');
     });
 
     it('set status', () => {
@@ -235,6 +271,8 @@ describe('GetAccessRequestListItem', () => {
     beforeAll(() => {
       data = new GetAccessRequestListItem({
         id: 1,
+        type: 3,
+        type_name: 'Access Request',
         status: 2,
         status_name: 'Rejected',
         description: 'test description',
@@ -251,6 +289,14 @@ describe('GetAccessRequestListItem', () => {
 
     it('set id', () => {
       expect(data.id).toEqual(1);
+    });
+
+    it('set type', () => {
+      expect(data.type).toEqual(3);
+    });
+
+    it('set type_name', () => {
+      expect(data.type_name).toEqual('Access Request');
     });
 
     it('set status', () => {

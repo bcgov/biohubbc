@@ -22,7 +22,9 @@ export const getAdministrativeActivitiesSQL = (
 
   const sqlStatement = SQL`
     SELECT
-      aat.id as id,
+      aa.id as id,
+      aat.id as type,
+      aat.name as type_name,
       aast.id as status,
       aast.name as status_name,
       aa.description,
