@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import React from 'react';
 import RequestSubmitted from './RequestSubmitted';

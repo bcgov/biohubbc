@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -20,7 +19,7 @@ import { ReviewAccessRequestI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
@@ -57,29 +56,31 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+export interface IAccessRequestListProps {
+  accessRequests: IGetAccessRequestsListResponse[];
+  codes: IGetAllCodeSetsResponse;
+  refresh: () => void;
+}
+
 /**
  * Page to display a list of user access.
  *
+ * @param {*} props
  * @return {*}
  */
-const AccessRequestList: React.FC = () => {
+const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
+  const { accessRequests, codes, refresh } = props;
+
   const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
-  const [accessRequests, setAccessRequests] = useState<IGetAccessRequestsListResponse[]>([]);
-  const [isLoadingAccessRequests, setIsLoadingAccessRequests] = useState(false);
-  const [hasLoadedAccessRequests, setHasLoadedAccessRequests] = useState(false);
-
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const approvedCodeId = codes?.administrative_activity_status_type.find(
     (item) => item.name === administrativeActivityStatus.ACTIONED
   )?.id as any;
   const rejectedCodeId = codes?.administrative_activity_status_type.find(
     (item) => item.name === administrativeActivityStatus.REJECTED
   )?.id as any;
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
     open: boolean;
@@ -101,56 +102,6 @@ const AccessRequestList: React.FC = () => {
     }
   });
 
-  const getAccessRequests = async () => {
-    const accessResponse = await biohubApi.admin.getAccessRequests();
-
-    setAccessRequests(accessResponse);
-  };
-
-  useEffect(() => {
-    const getAccessRequests = async () => {
-      const accessResponse = await biohubApi.admin.getAccessRequests();
-
-      setAccessRequests(() => {
-        setHasLoadedAccessRequests(true);
-        setIsLoadingAccessRequests(false);
-        return accessResponse;
-      });
-    };
-
-    if (isLoadingAccessRequests || hasLoadedAccessRequests) {
-      return;
-    }
-
-    setIsLoadingAccessRequests(true);
-
-    getAccessRequests();
-  }, [biohubApi.admin, isLoadingAccessRequests, hasLoadedAccessRequests]);
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(() => {
-        setIsLoadingCodes(false);
-        return codesResponse;
-      });
-    };
-
-    if (isLoadingCodes || codes) {
-      return;
-    }
-
-    setIsLoadingCodes(true);
-
-    getCodes();
-  }, [biohubApi.codes, isLoadingCodes, codes]);
-
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
     const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
 
@@ -165,7 +116,7 @@ const AccessRequestList: React.FC = () => {
         values.system_roles
       );
 
-      await getAccessRequests();
+      refresh();
     } catch (error) {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
     }
@@ -184,15 +135,11 @@ const AccessRequestList: React.FC = () => {
         rejectedCodeId
       );
 
-      await getAccessRequests();
+      refresh();
     } catch (error) {
       setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
     }
   };
-
-  if (!hasLoadedAccessRequests || !codes) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
 
   return (
     <>

@@ -1,37 +1,15 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { render, waitFor } from '@testing-library/react';
+import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React from 'react';
 import ActiveUsersList from './ActiveUsersList';
 
-const renderContainer = () => {
-  return render(<ActiveUsersList />);
+const renderContainer = (activeUsers: IGetUserResponse[]) => {
+  return render(<ActiveUsersList activeUsers={activeUsers} />);
 };
-
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
-  user: {
-    getUsersList: jest.fn()
-  }
-};
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
 
 describe('ActiveUsersList', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().user.getUsersList.mockClear();
-  });
-
-  afterEach(() => {
-    cleanup();
-  });
-
   it('shows `No Active Users` when there are no active users', async () => {
-    mockBiohubApi().user.getUsersList.mockReturnValue([]);
-
-    const { getByText } = renderContainer();
+    const { getByText } = renderContainer([]);
 
     await waitFor(() => {
       expect(getByText('No Active Users')).toBeVisible();
@@ -39,15 +17,13 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with all fields having values', async () => {
-    mockBiohubApi().user.getUsersList.mockReturnValue([
+    const { getByText } = renderContainer([
       {
         id: 1,
         user_identifier: 'username',
         role_names: ['role 1', 'role 2']
       }
     ]);
-
-    const { getByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
@@ -56,15 +32,13 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with fields not having values', async () => {
-    mockBiohubApi().user.getUsersList.mockReturnValue([
+    const { getAllByText } = renderContainer([
       {
         id: 1,
         user_identifier: '',
         role_names: []
       }
     ]);
-
-    const { getAllByText } = renderContainer();
 
     await waitFor(() => {
       expect(getAllByText('Not Applicable').length).toEqual(2);
