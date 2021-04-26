@@ -14,7 +14,7 @@ const mockUseBiohubApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
   },
-  accessRequest: {
+  admin: {
     createAdministrativeActivity: jest.fn()
   }
 };
@@ -27,6 +27,7 @@ describe('AccessRequestPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi().admin.createAdministrativeActivity.mockClear();
   });
 
   afterEach(() => {
@@ -169,7 +170,7 @@ describe('AccessRequestPage', () => {
       regional_offices: [{ id: 1, name: 'Office 1' }]
     });
 
-    mockBiohubApi().accessRequest.createAdministrativeActivity.mockResolvedValue({
+    mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
       id: 1
     });
 
@@ -234,9 +235,7 @@ describe('AccessRequestPage', () => {
       regional_offices: [{ id: 1, name: 'Office 1' }]
     });
 
-    mockBiohubApi().accessRequest.createAdministrativeActivity = jest.fn(() =>
-      Promise.reject(new Error('API Error is Here'))
-    );
+    mockBiohubApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = render(
       <Router history={history}>
@@ -273,7 +272,7 @@ describe('AccessRequestPage', () => {
       regional_offices: [{ id: 1, name: 'Office 1' }]
     });
 
-    mockBiohubApi().accessRequest.createAdministrativeActivity.mockResolvedValue({
+    mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
       id: null
     });
 
