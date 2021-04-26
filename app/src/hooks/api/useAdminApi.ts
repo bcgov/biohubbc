@@ -87,7 +87,7 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Has pending access requests.
    *
-   * @return {*} {Promise<string>}
+   * @return {*} {Promise<number>}
    */
   const hasPendingAdministrativeActivities = async (): Promise<number> => {
     const { data } = await axios.get('/api/administrative-activity');
