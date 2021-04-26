@@ -152,7 +152,7 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
 };
 
 /**
- * SQL query update and existing administrative activity record.
+ * SQL query update an existing administrative activity record.
  *
  * @param {number} administrativeActivityId
  * @param {number} administrativeActivityStatusTypeId
