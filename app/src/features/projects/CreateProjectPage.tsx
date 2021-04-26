@@ -580,10 +580,6 @@ const CreateProjectPage: React.FC = () => {
     });
   };
 
-  const handleStep = (step: number) => () => {
-    setActiveStep(step);
-  };
-
   /**
    * Build an array of form steps, based on the current value of `numberOfSteps`
    *
@@ -598,7 +594,7 @@ const CreateProjectPage: React.FC = () => {
     for (let index = 0; index < numberOfSteps; index++) {
       stepsToRender.push(
         <Step key={stepForms[index].stepTitle}>
-          <StepLabel onClick={handleStep(index)}>
+          <StepLabel onClick={() => setActiveStep(index)}>
             <Box>
               <Typography variant="h2" className={classes.stepTitle}>
                 {stepForms[index].stepTitle}
