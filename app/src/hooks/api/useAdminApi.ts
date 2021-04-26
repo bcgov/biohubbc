@@ -78,7 +78,9 @@ const useAdminApi = (axios: AxiosInstance) => {
    * @param {unknown} administrativeActivityData
    * @return {*} {Promise<IGetAccessRequestsListResponse>}
    */
-  const createAdministrativeActivity = async (administrativeActivityData: unknown): Promise<IGetAccessRequestsListResponse> => {
+  const createAdministrativeActivity = async (
+    administrativeActivityData: unknown
+  ): Promise<IGetAccessRequestsListResponse> => {
     const { data } = await axios.post('/api/administrative-activity', administrativeActivityData);
 
     return data;
