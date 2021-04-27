@@ -29,6 +29,8 @@ describe('ProjectObjectivesForm', () => {
       caveats: 'a nice little caveat'
     };
 
+    const handleValuesChange = jest.fn();
+
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
@@ -36,7 +38,7 @@ describe('ProjectObjectivesForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectObjectivesForm />}
+        {() => <ProjectObjectivesForm handleValuesChange={handleValuesChange} />}
       </Formik>
     );
 

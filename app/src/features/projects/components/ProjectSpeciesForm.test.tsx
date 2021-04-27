@@ -41,6 +41,8 @@ describe('ProjectSpeciesForm', () => {
       ancillary_species: ['species 2']
     };
 
+    const handleValuesChange = jest.fn();
+
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
@@ -48,7 +50,7 @@ describe('ProjectSpeciesForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectSpeciesForm species={species} />}
+        {() => <ProjectSpeciesForm species={species} handleValuesChange={handleValuesChange} />}
       </Formik>
     );
 

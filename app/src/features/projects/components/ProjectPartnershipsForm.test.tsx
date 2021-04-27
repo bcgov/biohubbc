@@ -54,6 +54,8 @@ describe('ProjectPartnershipsForm', () => {
       stakeholder_partnerships: ['partner 1']
     };
 
+    const handleValuesChange = jest.fn();
+
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
@@ -62,7 +64,11 @@ describe('ProjectPartnershipsForm', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => (
-          <ProjectPartnershipsForm first_nations={first_nations} stakeholder_partnerships={stakeholder_partnerships} />
+          <ProjectPartnershipsForm
+            first_nations={first_nations}
+            stakeholder_partnerships={stakeholder_partnerships}
+            handleValuesChange={handleValuesChange}
+          />
         )}
       </Formik>
     );
