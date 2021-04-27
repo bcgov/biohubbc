@@ -308,10 +308,10 @@ describe('CreateProjectPage', () => {
       });
     });
 
-    it('opens the save as draft dialog', async () => {
+    it('opens the save as draft and exit dialog', async () => {
       const { getByText, findByText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft');
+      const saveAsDraftButton = await findByText('Save as Draft and Exit');
 
       fireEvent.click(saveAsDraftButton);
 
@@ -323,7 +323,7 @@ describe('CreateProjectPage', () => {
     it('closes the dialog on cancel button click', async () => {
       const { getByText, findByText, queryByText, getByRole } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft');
+      const saveAsDraftButton = await findByText('Save as Draft and Exit');
 
       fireEvent.click(saveAsDraftButton);
 
@@ -348,7 +348,7 @@ describe('CreateProjectPage', () => {
 
       const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft');
+      const saveAsDraftButton = await findByText('Save as Draft and Exit');
 
       fireEvent.click(saveAsDraftButton);
 
@@ -366,7 +366,7 @@ describe('CreateProjectPage', () => {
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
 
-      fireEvent.click(getByText('Save as Draft'));
+      fireEvent.click(getByText('Save as Draft and Exit'));
 
       await waitFor(() => {
         expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
@@ -399,7 +399,7 @@ describe('CreateProjectPage', () => {
       // update first name field
       fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
 
-      const saveAsDraftButton = await findByText('Save as Draft');
+      const saveAsDraftButton = await findByText('Save as Draft and Exit');
 
       fireEvent.click(saveAsDraftButton);
 
@@ -436,7 +436,7 @@ describe('CreateProjectPage', () => {
       // update last name field
       fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'draft last name' } });
 
-      fireEvent.click(getByText('Save as Draft'));
+      fireEvent.click(getByText('Save as Draft and Exit'));
 
       await waitFor(() => {
         expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
@@ -476,7 +476,7 @@ describe('CreateProjectPage', () => {
 
       const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft');
+      const saveAsDraftButton = await findByText('Save as Draft and Exit');
 
       fireEvent.click(saveAsDraftButton);
 

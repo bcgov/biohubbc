@@ -422,6 +422,9 @@ const CreateProjectPage: React.FC = () => {
       }
 
       setDraft({ id: response.id, date: response.date });
+      setEnableCancelCheck(false);
+
+      history.push(`/projects`);
     } catch (error) {
       setOpenDraftDialog(false);
 
@@ -725,7 +728,7 @@ const CreateProjectPage: React.FC = () => {
               color="primary"
               onClick={() => setOpenDraftDialog(true)}
               className={classes.actionButton}>
-              Save as Draft
+              Save as Draft and Exit
             </Button>
           </Box>
           <Box display="flex" justifyContent="flex-end">

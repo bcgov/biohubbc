@@ -60,7 +60,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
           <span
             class="MuiButton-label"
           >
-            Save as Draft
+            Save as Draft and Exit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -619,7 +619,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
           <span
             class="MuiButton-label"
           >
-            Save as Draft
+            Save as Draft and Exit
           </span>
           <span
             class="MuiTouchRipple-root"
