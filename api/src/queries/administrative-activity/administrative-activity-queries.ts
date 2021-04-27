@@ -11,13 +11,13 @@ const defaultLog = getLogger('queries/administrative-activity/administrative-act
  */
 export const getAdministrativeActivitiesSQL = (
   administrativeActivityTypeName?: string,
-  userIdentifier?: string
+  administrativeActivityStatusTypes?: string[]
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'getAdministrativeActivitiesSQL',
     message: 'params',
     administrativeActivityTypeName,
-    userIdentifier
+    administrativeActivityStatusTypes
   });
 
   const sqlStatement = SQL`
@@ -41,23 +41,35 @@ export const getAdministrativeActivitiesSQL = (
       administrative_activity_type aat
     ON
       aa.aat_id = aat.id
+    WHERE
+      1 = 1
   `;
 
   if (administrativeActivityTypeName) {
     sqlStatement.append(SQL`
-      WHERE
+      AND
         aat.name = ${administrativeActivityTypeName}
     `);
   }
 
-  if (userIdentifier) {
+  if (administrativeActivityStatusTypes?.length) {
     sqlStatement.append(SQL`
-      WHERE
-        aa.data -> 'username' = ${userIdentifier}
+      AND
+        aast.name IN (
     `);
+
+    // Add first element
+    sqlStatement.append(SQL`${administrativeActivityStatusTypes[0]}`);
+
+    for (let idx = 1; idx < administrativeActivityStatusTypes.length; idx++) {
+      // Add subsequent elements, which get a comma prefix
+      sqlStatement.append(SQL`, ${administrativeActivityStatusTypes[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
   }
 
-  sqlStatement.append(';');
+  sqlStatement.append(`;`);
 
   defaultLog.debug({
     label: 'getAdministrativeActivitiesSQL',

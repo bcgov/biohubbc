@@ -16,6 +16,7 @@ import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { ReviewAccessRequestI18N } from 'constants/i18n';
+import { AdministrativeActivityStatusType } from 'constants/misc';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -26,12 +27,6 @@ import ReviewAccessRequestForm, {
   ReviewAccessRequestFormInitialValues,
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
-
-export enum administrativeActivityStatus {
-  PENDING = 'Pending',
-  ACTIONED = 'Actioned',
-  REJECTED = 'Rejected'
-}
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
@@ -76,10 +71,10 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const biohubApi = useBiohubApi();
 
   const approvedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === administrativeActivityStatus.ACTIONED
+    (item) => item.name === AdministrativeActivityStatusType.ACTIONED
   )?.id as any;
   const rejectedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === administrativeActivityStatus.REJECTED
+    (item) => item.name === AdministrativeActivityStatusType.REJECTED
   )?.id as any;
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
@@ -141,6 +136,24 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     }
   };
 
+  const getChipIcon = (status_name: string) => {
+    let chipLabel;
+    let chipStatusClass;
+
+    if (AdministrativeActivityStatusType.REJECTED === status_name) {
+      chipLabel = 'DENIED';
+      chipStatusClass = classes.chipRejected;
+    } else if (AdministrativeActivityStatusType.ACTIONED === status_name) {
+      chipLabel = 'APPROVED';
+      chipStatusClass = classes.chipActioned;
+    } else {
+      chipLabel = 'PENDING';
+      chipStatusClass = classes.chipPending;
+    }
+
+    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
+
   return (
     <>
       <ErrorDialog {...openErrorDialogProps} />
@@ -164,6 +177,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              regional_offices={codes?.regional_offices}
             />
           )
         }}
@@ -194,27 +208,21 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                 </TableRow>
               )}
               {accessRequests?.map((row, index) => {
+                const regional_offices = row.data?.regional_offices
+                  .map((regionId) => codes.regional_offices.find((code) => code.id === regionId)?.name)
+                  .join(', ');
+
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data?.name || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.name || ''}</TableCell>
                     <TableCell>{row.data?.username || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data?.regional_offices?.join(', ') || 'Not Applicable'}</TableCell>
+                    <TableCell>{row.data?.company || ''}</TableCell>
+                    <TableCell>{regional_offices || 'Not Applicable'}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
-                    <TableCell>
-                      <Chip
-                        className={clsx(
-                          classes.chip,
-                          (administrativeActivityStatus.ACTIONED === row.status_name && classes.chipActioned) ||
-                            (administrativeActivityStatus.REJECTED === row.status_name && classes.chipRejected) ||
-                            classes.chipPending
-                        )}
-                        label={row.status_name}
-                      />
-                    </TableCell>
+                    <TableCell>{getChipIcon(row.status_name)}</TableCell>
 
                     <TableCell>
-                      {row.status_name === administrativeActivityStatus.PENDING && (
+                      {row.status_name === AdministrativeActivityStatusType.PENDING && (
                         <Button
                           className={classes.actionButton}
                           color="primary"

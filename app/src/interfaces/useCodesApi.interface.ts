@@ -1,19 +1,18 @@
 /**
  * A single code value.
  *
+ * @export
  * @interface ICode
  */
-interface ICode {
+export interface ICode {
   id: number;
   name: string;
 }
 
 /**
  * A code set (an array of ICode values).
- *
- * @interface CodeSet
  */
-type CodeSet<T extends ICode = ICode> = T[];
+export type CodeSet<T extends ICode = ICode> = T[];
 
 /**
  * Get all codes response object.

@@ -8,20 +8,38 @@ import {
 } from './administrative-activity-queries';
 
 describe('getAdministrativeActivitiesSQL', () => {
-  it('returns non null response when no administrativeActivityTypeName provided', () => {
+  it('returns non null response when no administrativeActivityTypeName or administrativeActivityStatusTypes provided', () => {
     const response = getAdministrativeActivitiesSQL();
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when valid administrativeActivityTypeName provided', () => {
-    const response = getAdministrativeActivitiesSQL('type');
+  it('returns non null response when administrativeActivityStatusTypes is null and administrativeActivityStatusTypes is valid', () => {
+    const response = getAdministrativeActivitiesSQL((null as unknown) as string, ['status']);
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when valid administrativeActivityTypeName provided with userIdentifier', () => {
-    const response = getAdministrativeActivitiesSQL('type', 'userIdentifier');
+  it('returns non null response when administrativeActivityStatusTypes is empty string and administrativeActivityStatusTypes is valid', () => {
+    const response = getAdministrativeActivitiesSQL('', ['status']);
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is null', () => {
+    const response = getAdministrativeActivitiesSQL('type', (null as unknown) as string[]);
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is empty', () => {
+    const response = getAdministrativeActivitiesSQL('type', []);
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid parameters provided', () => {
+    const response = getAdministrativeActivitiesSQL('type', ['status']);
 
     expect(response).to.not.be.null;
   });

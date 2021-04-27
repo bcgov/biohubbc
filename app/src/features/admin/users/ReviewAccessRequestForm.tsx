@@ -7,6 +7,7 @@ import MultiAutocompleteFieldVariableSize, {
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { useFormikContext } from 'formik';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { CodeSet, ICode } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -26,6 +27,7 @@ export const ReviewAccessRequestFormYupSchema = yup.object().shape({
 export interface IReviewAccessRequestFormProps {
   request: IGetAccessRequestsListResponse;
   system_roles: IMultiAutocompleteFieldOption[];
+  regional_offices: CodeSet<ICode>;
 }
 
 /**
@@ -35,6 +37,10 @@ export interface IReviewAccessRequestFormProps {
  */
 const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props) => {
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
+
+  const regional_offices = props.request.data.regional_offices
+    .map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
+    .join(', ');
 
   return (
     <Box>
@@ -73,7 +79,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Regional Offices
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.regional_offices.join(', ')}
+                {regional_offices}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -104,7 +110,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
             <Grid item xs={12}>
               <MultiAutocompleteFieldVariableSize
                 id={'system_roles'}
-                label={'System Roles'}
+                label={'Requested Role'}
                 options={props.system_roles}
                 required={true}
               />
