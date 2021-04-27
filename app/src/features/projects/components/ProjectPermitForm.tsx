@@ -107,7 +107,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                           value={permit.permit_number}
                           onChange={handleChange}
                           error={permitNumberMeta.touched && Boolean(permitNumberMeta.error)}
-                          helperText={permitNumberMeta.error}
+                          helperText={permitNumberMeta.touched && permitNumberMeta.error}
                         />
                       </Box>
                       <Box flexBasis="40%" pl={1}>
@@ -133,7 +133,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                               Scientific Fish Collection Permit
                             </MenuItem>
                           </Select>
-                          <FormHelperText>{permitTypeMeta.error}</FormHelperText>
+                          <FormHelperText>{permitTypeMeta.touched && permitTypeMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
                       <Box flexBasis="30%" pl={1}>

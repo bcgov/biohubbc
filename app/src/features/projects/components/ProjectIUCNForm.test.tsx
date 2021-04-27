@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor, within, screen } from '@testing-library/react';
 import { Formik } from 'formik';
 import React from 'react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -98,6 +98,49 @@ describe('ProjectIUCNForm', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('changes fields on the IUCN menu items as expected', async () => {
+    const { asFragment, getAllByRole, getByRole, queryByTestId, getByText } = render(
+      <Formik
+        initialValues={ProjectIUCNFormInitialValues}
+        validationSchema={ProjectIUCNFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectIUCNForm
+            classifications={classifications}
+            subClassifications1={subClassifications1}
+            subClassifications2={subClassifications2}
+          />
+        )}
+      </Formik>
+    );
+
+    expect(queryByTestId('iucn-classification-grid')).toBeNull();
+
+    fireEvent.click(getByText('Add Classification'));
+
+    await waitFor(() => {
+      expect(queryByTestId('iucn-classification-grid')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('button')[0]);
+    const classificationListbox = within(getByRole('listbox'));
+    fireEvent.click(classificationListbox.getByText(/Class 1/i));
+
+    fireEvent.mouseDown(getAllByRole('button')[1]);
+    const subClassification1Listbox = within(getByRole('listbox'));
+    fireEvent.click(subClassification1Listbox.getByText(/A Sub-class 1/i));
+
+    fireEvent.mouseDown(getAllByRole('button')[2]);
+    const subClassification2Listbox = within(getByRole('listbox'));
+    fireEvent.click(subClassification2Listbox.getByText(/A Sub-class 2/i));
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('adds an IUCN classification when the add button is clicked', async () => {

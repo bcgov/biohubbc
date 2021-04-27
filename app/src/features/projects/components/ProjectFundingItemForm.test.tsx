@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -21,6 +21,10 @@ const funding_sources: IMultiAutocompleteFieldOption[] = [
   {
     value: 3,
     label: 'agency 3'
+  },
+  {
+    value: 4,
+    label: 'agency 4'
   }
 ];
 
@@ -126,6 +130,7 @@ describe('ProjectFundingItemForm', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
   it('renders correctly with any agency other than 1 or 2', () => {
     const existingFormValues: IProjectFundingFormArrayItem = {
       id: 1,
@@ -156,5 +161,55 @@ describe('ProjectFundingItemForm', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  describe('auto selection of investment action category', () => {
+    const component = (
+      <Formik
+        initialValues={ProjectFundingFormArrayItemInitialValues}
+        validationSchema={ProjectFundingFormArrayItemYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => (
+          <ProjectFundingItemForm
+            funding_sources={funding_sources}
+            investment_action_category={investment_action_category}
+          />
+        )}
+      </Formik>
+    );
+
+    it('works if an agency_id with a matching NA investment action category is chosen', async () => {
+      const { asFragment, getByText, getAllByRole, getByRole } = render(component);
+
+      await waitFor(() => {
+        expect(getByText('Agency Details')).toBeInTheDocument();
+      });
+
+      fireEvent.mouseDown(getAllByRole('button')[0]);
+      const agencyNameListbox = within(getByRole('listbox'));
+      fireEvent.click(agencyNameListbox.getByText(/agency 3/i));
+
+      await waitFor(() => {
+        expect(asFragment()).toMatchSnapshot();
+      });
+    });
+
+    it('works if an agency_id with a non-matching investment action category is chosen', async () => {
+      const { asFragment, getByText, getAllByRole, getByRole } = render(component);
+
+      await waitFor(() => {
+        expect(getByText('Agency Details')).toBeInTheDocument();
+      });
+
+      fireEvent.mouseDown(getAllByRole('button')[0]);
+      const agencyNameListbox = within(getByRole('listbox'));
+      fireEvent.click(agencyNameListbox.getByText(/agency 4/i));
+
+      await waitFor(() => {
+        expect(asFragment()).toMatchSnapshot();
+      });
+    });
   });
 });

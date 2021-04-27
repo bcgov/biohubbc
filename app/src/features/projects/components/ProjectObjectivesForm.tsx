@@ -48,7 +48,7 @@ const ProjectObjectivesForm = () => {
             value={values.objectives}
             onChange={handleChange}
             error={touched.objectives && Boolean(errors.objectives)}
-            helperText={errors.objectives}
+            helperText={touched.objectives && errors.objectives}
           />
         </Grid>
 

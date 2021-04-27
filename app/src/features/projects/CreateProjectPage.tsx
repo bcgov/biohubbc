@@ -11,9 +11,9 @@ import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import ArrowBack from '@material-ui/icons/ArrowBack';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -63,6 +63,7 @@ import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interface
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate } from 'utils/Utils';
 import ProjectDraftForm, {
@@ -132,6 +133,9 @@ const CreateProjectPage: React.FC = () => {
 
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
+
+  // Tracks if sections of the form have been completed
+  const [formStepsValid, setFormStepsValid] = useState([false, true, false, false, false, true, true, true, true]);
 
   // The number of steps listed in the UI based on the current state of the component/forms
   const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_ALL_PROJECT_STEPS);
@@ -317,21 +321,50 @@ const CreateProjectPage: React.FC = () => {
     return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
   };
 
-  const updateSteps = (values: any) => {
+  const updateSteps = () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
     setStepForms((currentStepForms) => {
       let updatedStepForms = [...currentStepForms];
-      updatedStepForms[activeStep].stepValues = values;
+      updatedStepForms[activeStep].stepValues = formikRef.current?.values;
       return updatedStepForms;
     });
   };
 
-  const handleSaveAndNext = (values: any) => {
-    updateSteps(values);
+  const updateFormStepValidity = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    setFormStepsValid((currentFormsComplete: boolean[]) => {
+      let newFormsCompleteState = [...currentFormsComplete];
+      newFormsCompleteState[activeStep] = isValid;
+      return newFormsCompleteState;
+    });
+  };
+
+  const handleSaveAndChangeStep = async (step: number) => {
+    updateSteps();
+    await updateFormStepValidity();
+    goToStep(step);
+  };
+
+  const handleSaveAndNext = async () => {
+    updateSteps();
+    await updateFormStepValidity();
     goToNextStep();
   };
 
-  const handleSaveAndBack = (values: any) => {
-    updateSteps(values);
+  const handleSaveAndBack = async () => {
+    updateSteps();
+    await updateFormStepValidity();
     goToPreviousStep();
   };
 
@@ -341,6 +374,10 @@ const CreateProjectPage: React.FC = () => {
 
   const goToPreviousStep = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const goToStep = (index: number) => {
+    setActiveStep(index);
   };
 
   const handleCancel = () => {
@@ -397,6 +434,9 @@ const CreateProjectPage: React.FC = () => {
       }
 
       setDraft({ id: response.id, date: response.date });
+      setEnableCancelCheck(false);
+
+      history.push(`/projects`);
     } catch (error) {
       setOpenDraftDialog(false);
 
@@ -409,9 +449,38 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
+   * Returns the step index for the first invalid form step, or `-1` if all steps are valid
+   *
+   * @return {*} {number}
+   */
+  const getFirstInvalidFormStep = (): number => {
+    for (let i = 0; i < formStepsValid.length; i++) {
+      if (!formStepsValid[i]) {
+        return i;
+      }
+    }
+
+    // All steps are valid
+    return -1;
+  };
+
+  /**
    * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
+    const invalidStepIndex = getFirstInvalidFormStep();
+
+    if (invalidStepIndex >= 0) {
+      setActiveStep(invalidStepIndex);
+
+      showCreateErrorDialog({
+        dialogTitle: 'Create Project Form Incomplete',
+        dialogText: 'The form is missing some required fields/sections. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
     const isFullProject = isSamplingConducted(stepForms[1].stepValues);
     const draftId = Number(queryParams.draftId);
 
@@ -553,7 +622,7 @@ const CreateProjectPage: React.FC = () => {
     for (let index = 0; index < numberOfSteps; index++) {
       stepsToRender.push(
         <Step key={stepForms[index].stepTitle}>
-          <StepLabel>
+          <StepLabel onClick={() => handleSaveAndChangeStep(index)}>
             <Box>
               <Typography variant="h2" className={classes.stepTitle}>
                 {stepForms[index].stepTitle}
@@ -570,7 +639,7 @@ const CreateProjectPage: React.FC = () => {
                 validateOnBlur={true}
                 validateOnChange={false}
                 onSubmit={(values) => {
-                  handleSaveAndNext(values);
+                  handleSaveAndNext();
                 }}>
                 {(props) => (
                   <>
@@ -585,7 +654,7 @@ const CreateProjectPage: React.FC = () => {
                             disabled={!activeStep}
                             variant="outlined"
                             color="primary"
-                            onClick={() => handleSaveAndBack(props.values)}
+                            onClick={() => handleSaveAndBack()}
                             className={classes.actionButton}>
                             Previous
                           </Button>
@@ -654,7 +723,10 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name: stepForms[2].stepValues.project_name || ProjectDraftFormInitialValues.draft_name
+            draft_name:
+              (activeStep === 2 && formikRef.current?.values.project_name) ||
+              stepForms[2].stepValues.project_name ||
+              ProjectDraftFormInitialValues.draft_name
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
@@ -679,7 +751,7 @@ const CreateProjectPage: React.FC = () => {
               color="primary"
               onClick={() => setOpenDraftDialog(true)}
               className={classes.actionButton}>
-              Save as Draft
+              Save as Draft and Exit
             </Button>
           </Box>
           <Box display="flex" justifyContent="flex-end">
@@ -693,7 +765,7 @@ const CreateProjectPage: React.FC = () => {
             <Divider />
           </Box>
           <Box>
-            <Stepper activeStep={activeStep} orientation="vertical" className={classes.stepper}>
+            <Stepper nonLinear activeStep={activeStep} orientation="vertical" className={classes.stepper}>
               {getProjectSteps()}
             </Stepper>
             {activeStep === numberOfSteps && (
@@ -706,7 +778,9 @@ const CreateProjectPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={goToPreviousStep}
+                      onClick={async () => {
+                        goToPreviousStep();
+                      }}
                       className={classes.actionButton}>
                       Previous
                     </Button>

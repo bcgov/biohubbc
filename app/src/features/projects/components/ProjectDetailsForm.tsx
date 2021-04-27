@@ -68,7 +68,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             value={values.project_name}
             onChange={handleChange}
             error={touched.project_name && Boolean(errors.project_name)}
-            helperText={errors.project_name}
+            helperText={touched.project_name && errors.project_name}
           />
         </Grid>
         <Grid item xs={12}>
@@ -91,7 +91,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{errors.project_type}</FormHelperText>
+            <FormHelperText>{touched.project_type && errors.project_type}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
