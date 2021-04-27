@@ -668,7 +668,7 @@ const CreateProjectPage: React.FC = () => {
   };
 
   if (!stepForms.length) {
-    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   const handleLocationChange = (location: History.Location, action: History.Action) => {
@@ -699,7 +699,9 @@ const CreateProjectPage: React.FC = () => {
         open={openDraftDialog}
         component={{
           element: <ProjectDraftForm />,
-          initialValues: ProjectDraftFormInitialValues,
+          initialValues: {
+            draft_name: stepForms[2].stepValues.project_name || ProjectDraftFormInitialValues.draft_name
+          },
           validationSchema: ProjectDraftFormYupSchema
         }}
         onCancel={() => setOpenDraftDialog(false)}

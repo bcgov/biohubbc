@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getAdministrativeActivitiesSQL,
   countPendingAdministrativeActivitiesSQL,
-  postAdministrativeActivitySQL
+  getAdministrativeActivitiesSQL,
+  postAdministrativeActivitySQL,
+  putAdministrativeActivitySQL
 } from './administrative-activity-queries';
 
 describe('getAdministrativeActivitiesSQL', () => {
@@ -51,6 +52,23 @@ describe('countPendingAdministrativeActivitiesSQL', () => {
 
   it('has a valid userIdentifier', () => {
     const response = countPendingAdministrativeActivitiesSQL('username');
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putAdministrativeActivitySQL', () => {
+  it('has a null administrativeActivityId', () => {
+    const response = putAdministrativeActivitySQL((null as unknown) as number, 1);
+    expect(response).to.be.null;
+  });
+
+  it('has a null administrativeActivityStatusTypeId', () => {
+    const response = putAdministrativeActivitySQL((null as unknown) as number, 1);
+    expect(response).to.be.null;
+  });
+
+  it('has valid parameters', () => {
+    const response = putAdministrativeActivitySQL(1, 1);
     expect(response).to.not.be.null;
   });
 });

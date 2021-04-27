@@ -18,7 +18,7 @@ const App: React.FC = () => {
         <ConfigContext.Consumer>
           {(config) => {
             if (!config) {
-              return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
+              return <CircularProgress className="pageProgress" size={40} />;
             }
 
             //@ts-ignore
@@ -28,13 +28,13 @@ const App: React.FC = () => {
               <KeycloakProvider
                 keycloak={keycloak}
                 initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
-                LoadingComponent={<CircularProgress className="pageProgress" size={40}></CircularProgress>}>
+                LoadingComponent={<CircularProgress className="pageProgress" size={40} />}>
                 <AuthStateContextProvider>
                   <BrowserRouter>
                     <AuthStateContext.Consumer>
                       {(context: IAuthState) => {
                         if (!context.ready) {
-                          return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
+                          return <CircularProgress className="pageProgress" size={40} />;
                         }
                         return <AppRouter />;
                       }}

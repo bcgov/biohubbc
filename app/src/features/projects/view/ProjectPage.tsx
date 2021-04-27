@@ -77,30 +77,28 @@ const ProjectPage: React.FC = () => {
       getCodes();
       setIsLoadingCodes(true);
     }
-  }, [urlParams, biohubApi, isLoadingCodes, codes]);
+  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const codesResponse = await biohubApi.codes.getAllCodeSets();
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
-    if (!projectWithDetailsResponse || !codesResponse) {
+    if (!projectWithDetailsResponse) {
       // TODO error handling/messaging
       return;
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-    setCodes(codesResponse);
-  }, [biohubApi.codes, biohubApi.project, urlParams]);
+  }, [biohubApi.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {
       getProject();
       setIsLoadingProject(true);
     }
-  }, [urlParams, biohubApi, isLoadingProject, projectWithDetails, getProject]);
+  }, [isLoadingProject, projectWithDetails, getProject]);
 
   if (!codes || !projectWithDetails) {
-    return <CircularProgress className="pageProgress" size={40}></CircularProgress>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (

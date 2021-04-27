@@ -1,14 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getAPIUserDBConnection } from '../database/db';
+import { WRITE_ROLES } from '../constants/roles';
+import { getAPIUserDBConnection, getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import {
   administrativeActivityResponseObject,
   hasPendingAdministrativeActivitiesResponseObject
 } from '../openapi/schemas/administrative-activity';
 import {
+  countPendingAdministrativeActivitiesSQL,
   postAdministrativeActivitySQL,
-  countPendingAdministrativeActivitiesSQL
+  putAdministrativeActivitySQL
 } from '../queries/administrative-activity/administrative-activity-queries';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
@@ -18,62 +20,6 @@ const defaultLog = getLogger('paths/administrative-activity-request');
 
 export const POST: Operation = [logRequest('paths/administrative-activity', 'POST'), createAdministrativeActivity()];
 export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getPendingAccessRequestsCount()];
-
-const postPutResponses = {
-  200: {
-    description: 'Administrative activity post response object.',
-    content: {
-      'application/json': {
-        schema: {
-          ...(administrativeActivityResponseObject as object)
-        }
-      }
-    }
-  },
-  400: {
-    $ref: '#/components/responses/400'
-  },
-  401: {
-    $ref: '#/components/responses/401'
-  },
-  403: {
-    $ref: '#/components/responses/401'
-  },
-  500: {
-    $ref: '#/components/responses/500'
-  },
-  default: {
-    $ref: '#/components/responses/default'
-  }
-};
-
-const getResponses = {
-  200: {
-    description: '`Has Pending Administrative Activities` get response object.',
-    content: {
-      'application/json': {
-        schema: {
-          ...(hasPendingAdministrativeActivitiesResponseObject as object)
-        }
-      }
-    }
-  },
-  400: {
-    $ref: '#/components/responses/400'
-  },
-  401: {
-    $ref: '#/components/responses/401'
-  },
-  403: {
-    $ref: '#/components/responses/401'
-  },
-  500: {
-    $ref: '#/components/responses/500'
-  },
-  default: {
-    $ref: '#/components/responses/default'
-  }
-};
 
 POST.apiDoc = {
   description: 'Create a new Administrative Activity.',
@@ -96,7 +42,31 @@ POST.apiDoc = {
     }
   },
   responses: {
-    ...postPutResponses
+    200: {
+      description: 'Administrative activity post response object.',
+      content: {
+        'application/json': {
+          schema: {
+            ...(administrativeActivityResponseObject as object)
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
   }
 };
 
@@ -121,7 +91,31 @@ GET.apiDoc = {
     }
   },
   responses: {
-    ...getResponses
+    200: {
+      description: '`Has Pending Administrative Activities` get response object.',
+      content: {
+        'application/json': {
+          schema: {
+            ...(hasPendingAdministrativeActivitiesResponseObject as object)
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
   }
 };
 
@@ -219,3 +213,130 @@ function getPendingAccessRequestsCount(): RequestHandler {
     }
   };
 }
+
+export const PUT: Operation = [
+  logRequest('paths/administrative-activity', 'PUT'),
+  getUpdateAdministrativeActivityHandler()
+];
+
+PUT.apiDoc = {
+  description: 'Update an existing administrative activity.',
+  tags: ['admin'],
+  security: [
+    {
+      Bearer: WRITE_ROLES
+    }
+  ],
+  requestBody: {
+    description: 'Administrative activity request object.',
+    content: {
+      'application/json': {
+        schema: {
+          title: 'Administrative activity put object',
+          type: 'object',
+          required: ['id', 'status'],
+          properties: {
+            id: {
+              title: 'administrative activity record ID',
+              type: 'number'
+            },
+            status: {
+              title: 'administrative activity status type code ID',
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Put administrative activity OK'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Get a request handler to update an existing administrative activity.
+ *
+ * @returns {RequestHandler}
+ */
+function getUpdateAdministrativeActivityHandler(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({
+      label: 'updateAdministrativeActivity',
+      message: 'params',
+      req_body: req.body
+    });
+
+    const administrativeActivityId = Number(req.body?.id);
+    const administrativeActivityStatusTypeId = Number(req.body?.status);
+
+    if (!administrativeActivityId) {
+      throw new HTTP400('Missing required body parameter: id');
+    }
+
+    if (!administrativeActivityStatusTypeId) {
+      throw new HTTP400('Missing required body parameter: status');
+    }
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      await updateAdministrativeActivity(administrativeActivityId, administrativeActivityStatusTypeId, connection);
+
+      await connection.commit();
+
+      return res.status(200).send();
+    } catch (error) {
+      defaultLog.debug({ label: 'updateAdministrativeActivity', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+/**
+ * Update an existing administrative activity.
+ *
+ * @param {number} administrativeActivityId
+ * @param {number} administrativeActivityStatusTypeId
+ * @param {IDBConnection} connection
+ */
+export const updateAdministrativeActivity = async (
+  administrativeActivityId: number,
+  administrativeActivityStatusTypeId: number,
+  connection: IDBConnection
+) => {
+  const sqlStatement = putAdministrativeActivitySQL(administrativeActivityId, administrativeActivityStatusTypeId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL put statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rowCount) || null;
+
+  if (!result) {
+    throw new HTTP500('Failed to update administrative activity');
+  }
+};

@@ -13,7 +13,7 @@ export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'
 
 GET.apiDoc = {
   description: 'Get a list of administrative activities based on the provided criteria.',
-  tags: ['project'],
+  tags: ['admin'],
   security: [
     {
       Bearer: READ_ROLES
@@ -40,7 +40,24 @@ GET.apiDoc = {
               type: 'object',
               properties: {
                 id: {
-                  type: 'number'
+                  type: 'number',
+                  description: 'Administrative activity row ID'
+                },
+                type: {
+                  type: 'number',
+                  description: 'Administrative activity type ID'
+                },
+                type_name: {
+                  type: 'string',
+                  description: 'Administrative activity type name'
+                },
+                status: {
+                  type: 'number',
+                  description: 'Administrative activity status type ID'
+                },
+                status_name: {
+                  type: 'string',
+                  description: 'Administrative activity status type name'
                 },
                 description: {
                   type: 'string'
@@ -50,6 +67,7 @@ GET.apiDoc = {
                 },
                 data: {
                   type: 'object',
+                  description: 'JSON data blob containing additional information about the activity record',
                   properties: {
                     // Don't specify as this is a JSON blob column
                   }
@@ -82,7 +100,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projects.
+ * Get all administrative activities for the specified type, or all if no type is provided.
  *
  * @returns {RequestHandler}
  */
@@ -105,7 +123,7 @@ function getAdministrativeActivities(): RequestHandler {
 
       await connection.commit();
 
-      const result = (response && response.rows && response.rows[0]) || [];
+      const result = (response && response.rowCount && response.rows) || [];
 
       return res.status(200).json(result);
     } catch (error) {

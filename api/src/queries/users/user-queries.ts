@@ -6,8 +6,6 @@ const defaultLog = getLogger('queries/user/user-queries');
 /**
  * SQL query to get a single user and their system roles, based on their user_identifier.
  *
- * // TODO SQL needs finalizing/optimizing
- *
  * @param {string} userIdentifier
  * @returns {SQLStatement} sql query object
  */
@@ -22,6 +20,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
     SELECT
       su.id,
       su.user_identifier,
+      array_remove(array_agg(sr.id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
@@ -53,8 +52,6 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
 /**
  * SQL query to get a single user and their system roles, based on their id.
  *
- * // TODO SQL needs finalizing/optimizing
- *
  * @param {number} userId
  * @returns {SQLStatement} sql query object
  */
@@ -69,6 +66,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
     SELECT
       su.id,
       su.user_identifier,
+      array_remove(array_agg(sr.id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
@@ -109,7 +107,8 @@ export const getUserListSQL = (): SQLStatement | null => {
     SELECT
       su.id,
       su.user_identifier,
-      array_agg(sr.name) as role_names
+      array_remove(array_agg(sr.id), NULL) AS role_ids,
+      array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN
@@ -127,6 +126,60 @@ export const getUserListSQL = (): SQLStatement | null => {
 
   defaultLog.debug({
     label: 'getUserListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to add a new system user.
+ *
+ * @param {string} userIdentifier
+ * @param {string} identitySource
+ * @param {number} systemUserId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const addSystemUserSQL = (
+  userIdentifier: string,
+  identitySource: string,
+  systemUserId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'addSystemUserSQL',
+    message: 'addSystemUserSQL',
+    userIdentifier,
+    identitySource,
+    systemUserId
+  });
+
+  if (!userIdentifier || !identitySource || !systemUserId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    INSERT INTO system_user (
+      uis_id,
+      user_identifier,
+      record_effective_date,
+      create_user
+    ) VALUES (
+      (Select id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
+      ${userIdentifier},
+      now(),
+      ${systemUserId}
+    )
+    RETURNING
+      id,
+      uis_id,
+      user_identifier,
+      record_effective_date;
+  `;
+
+  defaultLog.debug({
+    label: 'addSystemUserSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
