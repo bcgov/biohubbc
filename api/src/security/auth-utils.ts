@@ -185,11 +185,15 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     const sqlStatement = getUserByIdSQL(systemUserId);
 
+    console.log('sqlstatement that gets user', sqlStatement);
+
     if (!sqlStatement) {
       return null;
     }
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+    console.log('response for the user', response);
 
     await connection.commit();
 
