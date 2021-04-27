@@ -79,7 +79,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.first_name}
             onChange={handleChange}
             error={touched.first_name && Boolean(errors.first_name)}
-            helperText={errors.first_name}
+            helperText={touched.first_name && errors.first_name}
           />
         </Grid>
         <Grid item xs={12} md={6}>
@@ -93,7 +93,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.last_name}
             onChange={handleChange}
             error={touched.last_name && Boolean(errors.last_name)}
-            helperText={errors.last_name}
+            helperText={touched.last_name && errors.last_name}
           />
         </Grid>
         <Grid item xs={12}>
@@ -107,7 +107,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.email_address}
             onChange={handleChange}
             error={touched.email_address && Boolean(errors.email_address)}
-            helperText={errors.email_address}
+            helperText={touched.last_name && errors.email_address}
           />
         </Grid>
         <Grid item xs={12}>

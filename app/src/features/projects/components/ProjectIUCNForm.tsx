@@ -123,7 +123,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                                 </MenuItem>
                               ))}
                             </Select>
-                            <FormHelperText>{classificationMeta.error}</FormHelperText>
+                            <FormHelperText>{classificationMeta.touched && classificationMeta.error}</FormHelperText>
                           </FormControl>
                         </Box>
                         <Box className={classes.iucnInput} my={2} pr={2}>
@@ -151,7 +151,9 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                                   </MenuItem>
                                 ))}
                             </Select>
-                            <FormHelperText>{subClassification1Meta.error}</FormHelperText>
+                            <FormHelperText>
+                              {subClassification1Meta.touched && subClassification1Meta.error}
+                            </FormHelperText>
                           </FormControl>
                         </Box>
                         <Box my={2} pr={2} className={classes.iucnInput}>
@@ -176,7 +178,9 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                                   </MenuItem>
                                 ))}
                             </Select>
-                            <FormHelperText>{subClassification2Meta.error}</FormHelperText>
+                            <FormHelperText>
+                              {subClassification2Meta.touched && subClassification2Meta.error}
+                            </FormHelperText>
                           </FormControl>
                         </Box>
                       </Box>

@@ -133,7 +133,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             value={values.location_description}
             onChange={handleChange}
             error={touched.location_description && Boolean(errors.location_description)}
-            helperText={errors.location_description}
+            helperText={touched.location_description && errors.location_description}
           />
         </Grid>
         <Grid item xs={12}>

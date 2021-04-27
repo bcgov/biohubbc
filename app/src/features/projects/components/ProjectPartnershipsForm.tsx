@@ -31,8 +31,10 @@ export interface IProjectPartnershipsFormProps {
 const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectPartnershipsForm>();
 
+  const { handleSubmit } = formikProps;
+
   return (
-    <form onSubmit={formikProps.handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <Grid container spacing={3} direction="column">
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize

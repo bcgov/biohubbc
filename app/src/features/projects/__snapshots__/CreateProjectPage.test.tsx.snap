@@ -60,7 +60,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
           <span
             class="MuiButton-label"
           >
-            Save as Draft
+            Save as Draft and Exit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -94,7 +94,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
           class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-45 MuiPaper-elevation0"
         >
           <div
-            class="MuiStep-root MuiStep-vertical MuiStep-completed"
+            class="MuiStep-root MuiStep-vertical"
           >
             <span
               class="MuiStepLabel-root MuiStepLabel-vertical"
@@ -104,20 +104,30 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiStepIcon-root MuiStepIcon-completed"
+                  class="MuiSvgIcon-root MuiStepIcon-root"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm-2 17l-5-5 1.4-1.4 3.6 3.6 7.6-7.6L19 8l-9 9z"
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="12"
                   />
+                  <text
+                    class="MuiStepIcon-text"
+                    text-anchor="middle"
+                    x="12"
+                    y="16"
+                  >
+                    1
+                  </text>
                 </svg>
               </span>
               <span
                 class="MuiStepLabel-labelContainer"
               >
                 <span
-                  class="MuiTypography-root MuiStepLabel-label MuiStepLabel-completed MuiTypography-body2 MuiTypography-displayBlock"
+                  class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
                 >
                   <div
                     class="MuiBox-root MuiBox-root-54"
@@ -609,7 +619,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
           <span
             class="MuiButton-label"
           >
-            Save as Draft
+            Save as Draft and Exit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -1140,7 +1150,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </div>
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1150,7 +1160,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1201,12 +1211,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="2"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1216,7 +1225,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1267,12 +1276,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="3"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1282,7 +1290,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1333,12 +1341,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="4"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1348,7 +1355,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1399,12 +1406,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="5"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1414,7 +1420,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1465,12 +1471,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="6"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1480,7 +1485,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1531,12 +1536,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="7"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1546,7 +1550,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1597,12 +1601,11 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root"
-              disabled=""
               icon="8"
             />
           </div>
           <div
-            class="MuiStepConnector-root MuiStepConnector-vertical Mui-disabled"
+            class="MuiStepConnector-root MuiStepConnector-vertical"
           >
             <span
               class="MuiStepConnector-line MuiStepConnector-lineVertical"
@@ -1612,7 +1615,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             class="MuiStep-root MuiStep-vertical"
           >
             <span
-              class="MuiStepLabel-root MuiStepLabel-vertical Mui-disabled"
+              class="MuiStepLabel-root MuiStepLabel-vertical"
             >
               <span
                 class="MuiStepLabel-iconContainer"
@@ -1663,7 +1666,6 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </span>
             <div
               class="MuiStepContent-root MuiStepContent-last"
-              disabled=""
               icon="9"
             />
           </div>
