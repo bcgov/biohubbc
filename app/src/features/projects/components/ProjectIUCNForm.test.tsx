@@ -80,8 +80,6 @@ describe('ProjectIUCNForm', () => {
       ]
     };
 
-    const handleValuesChange = jest.fn();
-
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
@@ -94,7 +92,6 @@ describe('ProjectIUCNForm', () => {
             classifications={classifications}
             subClassifications1={subClassifications1}
             subClassifications2={subClassifications2}
-            handleValuesChange={handleValuesChange}
           />
         )}
       </Formik>

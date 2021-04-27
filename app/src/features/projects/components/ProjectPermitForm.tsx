@@ -11,7 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { FieldArray, FormikErrors, useFormikContext } from 'formik';
+import { FieldArray, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
 
@@ -68,11 +68,6 @@ export interface IProjectPermitFormProps {
    * Emits every time a form value changes.
    */
   onValuesChange?: (values: IProjectPermitForm) => void;
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 /**
@@ -81,22 +76,11 @@ export interface IProjectPermitFormProps {
  * @return {*}
  */
 const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
-  const {
-    values,
-    handleChange,
-    handleSubmit,
-    getFieldMeta,
-    errors,
-    validateForm
-  } = useFormikContext<IProjectPermitForm>();
+  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   useEffect(() => {
     props?.onValuesChange?.(values);
   }, [values, props]);
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 1, validateForm);
-  }, [values]);
 
   return (
     <form onSubmit={handleSubmit}>

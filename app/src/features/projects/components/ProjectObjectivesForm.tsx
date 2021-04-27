@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import { FormikErrors, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import { useFormikContext } from 'formik';
+import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectObjectivesForm {
@@ -22,27 +22,15 @@ export const ProjectObjectivesFormYupSchema = yup.object().shape({
   caveats: yup.string().max(3000, 'Cannot exceed 3000 characters')
 });
 
-export interface IProjectObjectivesFormProps {
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
-}
-
 /**
  * Create project - Objectives section
  *
  * @return {*}
  */
-const ProjectObjectivesForm: React.FC<IProjectObjectivesFormProps> = (props) => {
+const ProjectObjectivesForm = () => {
   const formikProps = useFormikContext<IProjectObjectivesForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit, validateForm } = formikProps;
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 3, validateForm);
-  }, [values]);
+  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>

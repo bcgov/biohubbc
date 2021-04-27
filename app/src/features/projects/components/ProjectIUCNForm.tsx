@@ -13,8 +13,8 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { FieldArray, FormikErrors, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import { FieldArray, useFormikContext } from 'formik';
+import React from 'react';
 import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -73,11 +73,6 @@ export interface IProjectIUCNFormProps {
   classifications: IMultiAutocompleteFieldOption[];
   subClassifications1: IMultiAutocompleteFieldOption[];
   subClassifications2: IMultiAutocompleteFieldOption[];
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 /**
@@ -88,18 +83,7 @@ export interface IProjectIUCNFormProps {
 const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
   const classes = useStyles();
 
-  const {
-    values,
-    handleChange,
-    handleSubmit,
-    getFieldMeta,
-    errors,
-    validateForm
-  } = useFormikContext<IProjectIUCNForm>();
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 6, validateForm);
-  }, [values]);
+  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectIUCNForm>();
 
   return (
     <form onSubmit={handleSubmit}>

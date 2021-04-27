@@ -2,8 +2,8 @@ import Grid from '@material-ui/core/Grid';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { FormikErrors, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import { useFormikContext } from 'formik';
+import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectSpeciesForm {
@@ -23,11 +23,6 @@ export const ProjectSpeciesFormYupSchema = yup.object().shape({
 
 export interface IProjectSpeciesFormProps {
   species: IMultiAutocompleteFieldOption[];
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 /**
@@ -37,11 +32,7 @@ export interface IProjectSpeciesFormProps {
  */
 const ProjectSpeciesForm: React.FC<IProjectSpeciesFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectSpeciesForm>();
-  const { handleSubmit, values, validateForm } = formikProps;
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 5, validateForm);
-  }, [values]);
+  const { handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>

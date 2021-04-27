@@ -6,18 +6,12 @@ import ProjectLocationForm from 'features/projects/components/ProjectLocationFor
 import ProjectObjectivesForm from 'features/projects/components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from 'features/projects/components/ProjectPartnershipsForm';
 import ProjectSpeciesForm from 'features/projects/components/ProjectSpeciesForm';
-import { FormikErrors } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 
 export interface IProjectStepComponentsProps {
   component: string;
   codes: IGetAllCodeSetsResponse;
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 /**
@@ -26,7 +20,7 @@ export interface IProjectStepComponentsProps {
  * @return {*}
  */
 const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => {
-  const { component, codes, handleValuesChange } = props;
+  const { component, codes } = props;
 
   return (
     <>
@@ -37,7 +31,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return item.name;
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
@@ -58,11 +51,10 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.id, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
-      {component === 'ProjectObjectives' && <ProjectObjectivesForm handleValuesChange={handleValuesChange} />}
+      {component === 'ProjectObjectives' && <ProjectObjectivesForm />}
 
       {component === 'ProjectLocation' && (
         <ProjectLocationForm
@@ -71,7 +63,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.name, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
@@ -82,7 +73,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.name, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
@@ -103,7 +93,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
@@ -119,7 +108,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.id, fs_id: item.fs_id, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
 
@@ -135,7 +123,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.name, label: item.name };
             }) || []
           }
-          handleValuesChange={handleValuesChange}
         />
       )}
     </>

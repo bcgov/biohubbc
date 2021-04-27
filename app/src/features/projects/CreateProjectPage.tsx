@@ -11,9 +11,9 @@ import StepContent from '@material-ui/core/StepContent';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import ArrowBack from '@material-ui/icons/ArrowBack';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
@@ -53,7 +53,7 @@ import {
   ProjectSpeciesFormInitialValues,
   ProjectSpeciesFormYupSchema
 } from 'features/projects/components/ProjectSpeciesForm';
-import { Formik, FormikErrors, FormikProps } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -63,6 +63,7 @@ import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interface
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate } from 'utils/Utils';
 import ProjectDraftForm, {
@@ -70,7 +71,6 @@ import ProjectDraftForm, {
   ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from './components/ProjectDraftForm';
-import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 export interface ICreateProjectStep {
   stepTitle: string;
@@ -179,32 +179,6 @@ const CreateProjectPage: React.FC = () => {
     partnerships: ProjectPartnershipsFormInitialValues
   });
 
-  const handleValuesChange = async (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => {
-    //@ts-ignore
-    setStepForms((currentStepForms: ICreateProjectStep[]) => {
-      let updatedStepForms = [...currentStepForms];
-
-      updatedStepForms[formFieldIndex].stepValues = values;
-
-      return updatedStepForms;
-    });
-
-    const isValid = await validateFormFieldsAndReportCompletion(values, validateForm);
-
-    //@ts-ignore
-    setFormStepsValid((currentFormStepsValid: boolean[]) => {
-      let newFormStepsValid = [...currentFormStepsValid];
-
-      newFormStepsValid[formFieldIndex] = isValid;
-
-      return newFormStepsValid;
-    });
-  };
-
   // Get draft project fields if draft id exists
   useEffect(() => {
     const getDraftProjectFields = async () => {
@@ -260,9 +234,7 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'Project Coordinator',
         stepSubTitle: 'Enter contact details for the project coordinator',
-        stepContent: (
-          <ProjectStepComponents component="ProjectCoordinator" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
         stepValues: initialProjectFieldData.coordinator,
         stepValidation: ProjectCoordinatorYupSchema
       },
@@ -278,7 +250,6 @@ const CreateProjectPage: React.FC = () => {
                 setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
               }
             }}
-            handleValuesChange={handleValuesChange}
           />
         ),
         stepValues: initialProjectFieldData.permit,
@@ -287,67 +258,49 @@ const CreateProjectPage: React.FC = () => {
       {
         stepTitle: 'General Information',
         stepSubTitle: 'General information and details about this project',
-        stepContent: (
-          <ProjectStepComponents component="ProjectDetails" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
         stepValues: initialProjectFieldData.project,
         stepValidation: ProjectDetailsFormYupSchema
       },
       {
         stepTitle: 'Objectives',
         stepSubTitle: 'Enter the objectives and potential caveats for this project',
-        stepContent: (
-          <ProjectStepComponents component="ProjectObjectives" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
         stepValues: initialProjectFieldData.objectives,
         stepValidation: ProjectObjectivesFormYupSchema
       },
       {
         stepTitle: 'Location',
         stepSubTitle: 'Specify project regions and boundary information',
-        stepContent: (
-          <ProjectStepComponents component="ProjectLocation" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
         stepValues: initialProjectFieldData.location,
         stepValidation: ProjectLocationFormYupSchema
       },
       {
         stepTitle: 'Species',
         stepSubTitle: 'Information about species this project is inventorying or monitoring',
-        stepContent: (
-          <ProjectStepComponents component="ProjectSpecies" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
         stepValues: initialProjectFieldData.species,
         stepValidation: ProjectSpeciesFormYupSchema
       },
       {
         stepTitle: 'IUCN Classification',
         stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
-        stepContent: (
-          <ProjectStepComponents component="ProjectIUCN" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
         stepValues: initialProjectFieldData.iucn,
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding',
         stepSubTitle: 'Specify funding sources for the project',
-        stepContent: (
-          <ProjectStepComponents component="ProjectFunding" codes={codes} handleValuesChange={handleValuesChange} />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
         stepValues: initialProjectFieldData.funding,
         stepValidation: ProjectFundingFormYupSchema
       },
       {
         stepTitle: 'Partnerships',
         stepSubTitle: 'Specify partnerships for the project',
-        stepContent: (
-          <ProjectStepComponents
-            component="ProjectPartnerships"
-            codes={codes}
-            handleValuesChange={handleValuesChange}
-          />
-        ),
+        stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
         stepValues: initialProjectFieldData.partnerships,
         stepValidation: ProjectPartnershipsFormYupSchema
       }
@@ -366,6 +319,65 @@ const CreateProjectPage: React.FC = () => {
     }
 
     return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
+  };
+
+  const updateSteps = () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    setStepForms((currentStepForms) => {
+      let updatedStepForms = [...currentStepForms];
+      updatedStepForms[activeStep].stepValues = formikRef.current?.values;
+      return updatedStepForms;
+    });
+  };
+
+  const updateFormStepValidity = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    setFormStepsValid((currentFormsComplete: boolean[]) => {
+      let newFormsCompleteState = [...currentFormsComplete];
+      newFormsCompleteState[activeStep] = isValid;
+      return newFormsCompleteState;
+    });
+  };
+
+  const handleSaveAndChangeStep = async (step: number) => {
+    updateSteps();
+    await updateFormStepValidity();
+    goToStep(step);
+  };
+
+  const handleSaveAndNext = async () => {
+    updateSteps();
+    await updateFormStepValidity();
+    goToNextStep();
+  };
+
+  const handleSaveAndBack = async () => {
+    updateSteps();
+    await updateFormStepValidity();
+    goToPreviousStep();
+  };
+
+  const goToNextStep = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const goToPreviousStep = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const goToStep = (index: number) => {
+    setActiveStep(index);
   };
 
   const handleCancel = () => {
@@ -437,23 +449,29 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
-   * Handle creation of partial or full projects.
+   * Returns the step index for the first invalid form step, or `-1` if all steps are valid
+   *
+   * @return {*} {number}
    */
-  const handleSubmit = async () => {
-    let isTotalFormValid = true;
-    let incompleteStep: number = (null as unknown) as number;
-
+  const getFirstInvalidFormStep = (): number => {
     for (let i = 0; i < formStepsValid.length; i++) {
       if (!formStepsValid[i]) {
-        incompleteStep = i;
-        isTotalFormValid = false;
-
-        break;
+        return i;
       }
     }
 
-    if (!isTotalFormValid) {
-      setActiveStep(incompleteStep);
+    // All steps are valid
+    return -1;
+  };
+
+  /**
+   * Handle creation of partial or full projects.
+   */
+  const handleSubmit = async () => {
+    const invalidStepIndex = getFirstInvalidFormStep();
+
+    if (invalidStepIndex >= 0) {
+      setActiveStep(invalidStepIndex);
 
       showCreateErrorDialog({
         dialogTitle: 'Create Project Form Incomplete',
@@ -604,7 +622,7 @@ const CreateProjectPage: React.FC = () => {
     for (let index = 0; index < numberOfSteps; index++) {
       stepsToRender.push(
         <Step key={stepForms[index].stepTitle}>
-          <StepLabel onClick={() => setActiveStep(index)}>
+          <StepLabel onClick={() => handleSaveAndChangeStep(index)}>
             <Box>
               <Typography variant="h2" className={classes.stepTitle}>
                 {stepForms[index].stepTitle}
@@ -620,7 +638,9 @@ const CreateProjectPage: React.FC = () => {
                 validationSchema={stepForms[index].stepValidation}
                 validateOnBlur={true}
                 validateOnChange={false}
-                onSubmit={() => setActiveStep((prevActiveStep) => prevActiveStep + 1)}>
+                onSubmit={(values) => {
+                  handleSaveAndNext();
+                }}>
                 {(props) => (
                   <>
                     {stepForms[index].stepContent}
@@ -634,7 +654,7 @@ const CreateProjectPage: React.FC = () => {
                             disabled={!activeStep}
                             variant="outlined"
                             color="primary"
-                            onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}
+                            onClick={() => handleSaveAndBack()}
                             className={classes.actionButton}>
                             Previous
                           </Button>
@@ -703,7 +723,10 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name: stepForms[2].stepValues.project_name || ProjectDraftFormInitialValues.draft_name
+            draft_name:
+              (activeStep === 2 && formikRef.current?.values.project_name) ||
+              stepForms[2].stepValues.project_name ||
+              ProjectDraftFormInitialValues.draft_name
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
@@ -755,7 +778,9 @@ const CreateProjectPage: React.FC = () => {
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => setActiveStep((prevActiveStep) => prevActiveStep - 1)}
+                      onClick={async () => {
+                        goToPreviousStep();
+                      }}
                       className={classes.actionButton}>
                       Previous
                     </Button>

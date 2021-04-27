@@ -16,8 +16,8 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { AddFundingI18N } from 'constants/i18n';
-import { FieldArray, FormikErrors, useFormikContext } from 'formik';
-import React, { useState, useEffect } from 'react';
+import { FieldArray, useFormikContext } from 'formik';
+import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import ProjectFundingItemForm, {
@@ -43,11 +43,6 @@ export interface IInvestmentActionCategoryOption extends IMultiAutocompleteField
 export interface IProjectFundingFormProps {
   funding_sources: IMultiAutocompleteFieldOption[];
   investment_action_category: IInvestmentActionCategoryOption[];
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -88,11 +83,7 @@ const ProjectFundingForm: React.FC<IProjectFundingFormProps> = (props) => {
   const classes = useStyles();
 
   const formikProps = useFormikContext<IProjectFundingForm>();
-  const { values, validateForm } = formikProps;
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 7, validateForm);
-  }, [values]);
+  const { values } = formikProps;
 
   //Tracks information about the current funding source item that is being added/edited
   const [currentProjectFundingFormArrayItem, setCurrentProjectFundingFormArrayItem] = useState({

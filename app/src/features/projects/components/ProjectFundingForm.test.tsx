@@ -1,4 +1,4 @@
-import { render, fireEvent, act } from '@testing-library/react';
+import { render, fireEvent, act, waitFor } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -141,7 +141,9 @@ describe('ProjectFundingForm', () => {
 
     fireEvent.click(addButton);
 
-    expect(await queryByText('Agency Details')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByText('Agency Details')).toBeInTheDocument();
+    });
   });
 
   it('shows edit funding source dialog on edit click', async () => {

@@ -11,8 +11,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { FormikErrors, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import { useFormikContext } from 'formik';
+import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectCoordinatorForm {
@@ -45,11 +45,6 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
 
 export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
-  handleValuesChange?: (
-    values: any,
-    formFieldIndex: number,
-    validateForm: (values?: any) => Promise<FormikErrors<any>>
-  ) => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -68,18 +63,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
-  const {
-    values,
-    touched,
-    errors,
-    handleChange,
-    handleSubmit,
-    validateForm
-  } = useFormikContext<IProjectCoordinatorForm>();
-
-  useEffect(() => {
-    props.handleValuesChange && props.handleValuesChange(values, 0, validateForm);
-  }, [values]);
+  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
 
   return (
     <form onSubmit={handleSubmit}>
