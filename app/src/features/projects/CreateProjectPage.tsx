@@ -135,7 +135,7 @@ const CreateProjectPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
 
   // Tracks if sections of the form have been completed
-  const [formsComplete, setFormsComplete] = useState([false, true, false, false, false, true, true, true, true]);
+  const [formStepsValid, setFormStepsValid] = useState([false, true, false, false, false, true, true, true, true]);
 
   // The number of steps listed in the UI based on the current state of the component/forms
   const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_ALL_PROJECT_STEPS);
@@ -179,7 +179,7 @@ const CreateProjectPage: React.FC = () => {
     partnerships: ProjectPartnershipsFormInitialValues
   });
 
-  const handleValuesChange = (
+  const handleValuesChange = async (
     values: any,
     formFieldIndex: number,
     validateForm: (values?: any) => Promise<FormikErrors<any>>
@@ -193,7 +193,16 @@ const CreateProjectPage: React.FC = () => {
       return updatedStepForms;
     });
 
-    validateFormFieldsAndReportCompletion(values, validateForm, setFormsComplete, formFieldIndex);
+    const isValid = await validateFormFieldsAndReportCompletion(values, validateForm);
+
+    //@ts-ignore
+    setFormStepsValid((currentFormStepsValid: boolean[]) => {
+      let newFormStepsValid = [...currentFormStepsValid];
+
+      newFormStepsValid[formFieldIndex] = isValid;
+
+      return newFormStepsValid;
+    });
   };
 
   // Get draft project fields if draft id exists
@@ -428,21 +437,19 @@ const CreateProjectPage: React.FC = () => {
    * Handle creation of partial or full projects.
    */
   const handleSubmit = async () => {
-    let formCompletionStatus = true;
+    let isTotalFormValid = true;
     let incompleteStep: number = (null as unknown) as number;
 
-    for (let i = 0; i < formsComplete.length; i++) {
-      const section = formsComplete[i];
-
-      if (!section) {
+    for (let i = 0; i < formStepsValid.length; i++) {
+      if (!formStepsValid[i]) {
         incompleteStep = i;
-        formCompletionStatus = false;
+        isTotalFormValid = false;
 
         break;
       }
     }
 
-    if (!formCompletionStatus) {
+    if (!isTotalFormValid) {
       setActiveStep(incompleteStep);
 
       showCreateErrorDialog({

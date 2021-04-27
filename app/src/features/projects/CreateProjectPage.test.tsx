@@ -184,6 +184,32 @@ describe('CreateProjectPage', () => {
     expect(PageTitle).toBeVisible();
   });
 
+  it('navigates to a different section on click of that section label', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+    });
+    const { getByText, queryByLabelText } = renderContainer();
+
+    // wait for initial page to load
+    await waitFor(() => {
+      expect(getByText('Project Coordinator')).toBeVisible();
+
+      expect(getByText('Permits')).toBeVisible();
+
+      expect(getByText('General Information')).toBeVisible();
+
+      expect(queryByLabelText('Project Type')).toBeNull();
+    });
+
+    fireEvent.click(getByText('General Information'));
+
+    await waitFor(() => {
+      expect(getByText('General Information')).toBeVisible();
+
+      expect(queryByLabelText('Project Type')).toBeVisible();
+    });
+  });
+
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({

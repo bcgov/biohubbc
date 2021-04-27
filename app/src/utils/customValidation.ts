@@ -2,9 +2,7 @@ import { FormikErrors } from 'formik';
 
 export const validateFormFieldsAndReportCompletion = async (
   values: any,
-  validateForm: (values?: any) => Promise<FormikErrors<any>>,
-  setFormsComplete: (formsComplete: boolean[]) => void,
-  formFieldIndex: number
+  validateForm: (values?: any) => Promise<FormikErrors<any>>
 ) => {
   const validationResult = await validateForm(values);
   let isValid = false;
@@ -13,12 +11,5 @@ export const validateFormFieldsAndReportCompletion = async (
     isValid = true;
   }
 
-  //@ts-ignore
-  setFormsComplete((currentFormsComplete: boolean[]) => {
-    let newFormsCompleteState = [...currentFormsComplete];
-
-    newFormsCompleteState[formFieldIndex] = isValid;
-
-    return newFormsCompleteState;
-  });
+  return isValid;
 };
