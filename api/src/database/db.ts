@@ -251,3 +251,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({ preferred_username: 'biohub_api@database' });
 };
+
+export const anissa = () => {
+  return 10;
+}
