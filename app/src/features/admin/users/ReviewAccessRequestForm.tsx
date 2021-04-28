@@ -21,7 +21,7 @@ export const ReviewAccessRequestFormInitialValues: IReviewAccessRequestForm = {
 };
 
 export const ReviewAccessRequestFormYupSchema = yup.object().shape({
-  system_roles: yup.array().min(1).required('Required')
+  system_roles: yup.array().of(yup.number()).min(1, 'Required').required('Required')
 });
 
 export interface IReviewAccessRequestFormProps {

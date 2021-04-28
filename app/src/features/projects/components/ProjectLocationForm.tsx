@@ -37,7 +37,7 @@ export const ProjectLocationFormInitialValues: IProjectLocationForm = {
 };
 
 export const ProjectLocationFormYupSchema = yup.object().shape({
-  regions: yup.array().of(yup.string()).min(1).required('Required'),
+  regions: yup.array().of(yup.string()).min(1, 'Required').required('Required'),
   location_description: yup.string().max(3000, 'Cannot exceed 3000 characters')
 });
 
