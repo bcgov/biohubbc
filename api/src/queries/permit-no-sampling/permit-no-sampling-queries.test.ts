@@ -15,6 +15,7 @@ describe('postPermitNoSamplingSQL', () => {
     it('returns a SQLStatement when all fields are passed in as expected', () => {
       const response = postPermitNoSamplingSQL({
         permit_number: '123',
+        permit_type: 'permit type',
         first_name: 'first',
         last_name: 'last',
         email_address: 'email',
@@ -24,7 +25,7 @@ describe('postPermitNoSamplingSQL', () => {
 
       expect(response).to.not.be.null;
 
-      expect(response?.values.length).to.equal(5);
+      expect(response?.values.length).to.equal(6);
 
       expect(response?.values).to.deep.include('123');
       expect(response?.values).to.deep.include('first');
