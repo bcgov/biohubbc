@@ -273,25 +273,36 @@ describe('authorize', function () {
       expect(actualError.message).to.contain('Access Denied');
     }
   });
+
   it('should authorize a user with valid roles', function () {
-    const stubbedSystemUser: {
-      id: 1;
-      user_identifier: 'identifier';
-      role_ids: [1, 2];
-      role_names: ['role 1', 'role 2'];
-    };
-
-    sinon.stub(auth_utils, 'getSystemUser').returns(stubbedSystemUser);
-
-    // const userObject = {
-    //       id: 1,
-    //       user_identifier: 'identifier',
-    //       role_ids: [1, 2],
-    //       role_names: ['role 1', 'role 2']
+    // const sampleReq = {
+    //   keycloak_token: {}
     // };
 
-    // const hasValidSystemRole = auth_utils.authorize({ keycloak_token: 'some token' }, ['abc']);
+    // let expectedResult = {
+    //   id: null,
+    //   user_identifier: null,x
+    //   role_ids: null,
+    //   role_names: null
+    // };
 
-    // expect(result).to.be.true;
+    // const sampleRes = {
+    //   status: (status: number) => {
+    //     return {
+    //       json: (result: any) => {
+    //         expectedResult = result;
+    //       }
+    //     };
+    //   }
+    // };
+    const stubbedSystemUser= {
+      id: 1,
+      user_identifier: 'identifier',
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
+    };
+
+    sinon.stub(auth_utils, 'getSystemUser').resolves(stubbedSystemUser);
+
   });
 });
