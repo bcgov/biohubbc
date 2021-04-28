@@ -219,7 +219,7 @@ export const userHasValidSystemRoles = function (
   validSystemRoles: string | string[],
   userSystemRoles: string | string[]
 ): boolean {
-  if (!validSystemRoles || !validSystemRoles?.length) {
+  if (!validSystemRoles || !validSystemRoles.length) {
     return true;
   }
 

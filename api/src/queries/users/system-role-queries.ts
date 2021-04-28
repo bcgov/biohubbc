@@ -52,7 +52,7 @@ export const postSystemRolesSQL = (userId: number, roleIds: number[]): SQLStatem
  * @param {number[]} roleIds
  * @return {*}  {(SQLStatement | null)}
  */
-export const deleteSystemRolesSQL = (userId: number, roleIds: string[]): SQLStatement | null => {
+export const deleteSystemRolesSQL = (userId: number, roleIds: number[]): SQLStatement | null => {
   defaultLog.debug({ label: 'deleteSystemRolesSQL', message: 'params', userId, roleIds });
 
   if (!userId || !roleIds?.length) {
@@ -65,12 +65,17 @@ export const deleteSystemRolesSQL = (userId: number, roleIds: string[]): SQLStat
     WHERE
       su_id = ${userId}
     AND
-      sr_id IN (
-        ${roleIds.join(', ')}
-      );
-  `;
+      sr_id IN (`;
 
-  sqlStatement.append(';');
+  // Add first element
+  sqlStatement.append(SQL`${roleIds[0]}`);
+
+  for (let idx = 1; idx < roleIds.length; idx++) {
+    // Add subsequent elements, which get a comma prefix
+    sqlStatement.append(SQL`, ${roleIds[idx]}`);
+  }
+
+  sqlStatement.append(SQL`);`);
 
   defaultLog.debug({
     label: 'deleteSystemRolesSQL',

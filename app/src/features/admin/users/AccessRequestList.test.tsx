@@ -36,9 +36,12 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
+            role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: ['office 1', 'office 2']
+            regional_offices: [1, 2],
+            comments: 'test comment'
           },
           create_date: '2020-04-20'
         }
@@ -52,7 +55,7 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('Pending')).toBeVisible();
+      expect(getByText('PENDING')).toBeVisible();
       expect(getByRole('button')).toHaveTextContent('Review');
     });
   });
@@ -71,9 +74,12 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
+            role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: ['office 1', 'office 2']
+            regional_offices: [1, 2],
+            comments: 'test comment'
           },
           create_date: '2020-04-20'
         }
@@ -87,7 +93,7 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('Rejected')).toBeVisible();
+      expect(getByText('DENIED')).toBeVisible();
       expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
@@ -106,9 +112,12 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
+            role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: ['office 1', 'office 2']
+            regional_offices: [1, 2],
+            comments: 'test comment'
           },
           create_date: '2020-04-20'
         }
@@ -122,7 +131,7 @@ describe('AccessRequestList', () => {
       expect(getByText('testusername')).toBeVisible();
       expect(getByText('test company')).toBeVisible();
       expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('Actioned')).toBeVisible();
+      expect(getByText('APPROVED')).toBeVisible();
       expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
@@ -135,7 +144,7 @@ describe('AccessRequestList', () => {
           type: 1,
           type_name: 'test type',
           status: 1,
-          status_name: 'Actioned',
+          status_name: 'Pending',
           description: 'test description',
           notes: 'test notes',
           data: (null as unknown) as IAccessRequestDataObject,
@@ -147,9 +156,9 @@ describe('AccessRequestList', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByText('Not Applicable').length).toEqual(4);
+      expect(getAllByText('Not Applicable').length).toEqual(2);
       expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('Actioned')).toBeVisible();
+      expect(getByText('PENDING')).toBeVisible();
     });
   });
 });

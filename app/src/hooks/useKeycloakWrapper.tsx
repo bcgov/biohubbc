@@ -4,6 +4,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
 /**
+ * IUserInfo interface, represents the userinfo provided by keycloak.
+ */
+export interface IUserInfo {
+  name?: string;
+  preferred_username?: string;
+  given_name?: string;
+  username?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
+/**
  * Interface defining the objects and helper functions returned by `useKeycloakWrapper`
  *
  * @export
@@ -37,7 +50,12 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   hasSystemRole: (validSystemRoles?: string[]) => boolean;
-
+  /**
+   * True if the user has at least 1 pending access request.
+   *
+   * @type {boolean}
+   * @memberof IKeycloakWrapper
+   */
   hasAccessRequest: boolean;
   /**
    * Get out the username portion of the preferred_username from the token.
@@ -51,6 +69,11 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   getIdentitySource: () => string | null;
+  username: string | undefined;
+  displayName: string | undefined;
+  email: string | undefined;
+  firstName: string | undefined;
+  lastName: string | undefined;
 }
 
 /**
@@ -69,7 +92,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   const [isUserLoading, setIsUserLoading] = useState<boolean>(false);
   const [hasUserLoaded, setHasUserLoaded] = useState<boolean>(false);
   const [hasLoadedUserRelevantInfo, setHasLoadedUserRelevantInfo] = useState<boolean>(false);
-  const [keycloakUserInfo, setKeycloakUserInfo] = useState<any>(null);
+  const [keycloakUserInfo, setKeycloakUserInfo] = useState<IUserInfo | null>(null);
   const [hasAccessRequest, setHasAccessRequest] = useState<boolean>(false);
   const [shouldLoadAccessRequest, setShouldLoadAccessRequest] = useState<boolean>(false);
 
@@ -153,7 +176,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   useEffect(() => {
     const loadUserInfo = async () => {
-      const user = await keycloak?.loadUserInfo();
+      const user = (await keycloak?.loadUserInfo()) as IUserInfo;
       setKeycloakUserInfo(user);
     };
 
@@ -183,6 +206,26 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return false;
   };
 
+  const username = (): string | undefined => {
+    return keycloakUserInfo?.preferred_username;
+  };
+
+  const displayName = (): string | undefined => {
+    return keycloakUserInfo?.name || keycloakUserInfo?.preferred_username;
+  };
+
+  const email = (): string | undefined => {
+    return keycloakUserInfo?.email;
+  };
+
+  const firstName = (): string | undefined => {
+    return keycloakUserInfo?.firstName;
+  };
+
+  const lastName = (): string | undefined => {
+    return keycloakUserInfo?.lastName;
+  };
+
   return {
     keycloak: keycloak,
     hasLoadedUserRelevantInfo,
@@ -190,7 +233,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     hasSystemRole,
     hasAccessRequest,
     getUserIdentifier,
-    getIdentitySource
+    getIdentitySource,
+    username: username(),
+    email: email(),
+    displayName: displayName(),
+    firstName: firstName(),
+    lastName: lastName()
   };
 }
 

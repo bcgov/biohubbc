@@ -183,7 +183,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'query',
-      name: 'role',
+      name: 'roleId',
       schema: {
         type: 'array',
         items: {
@@ -220,20 +220,20 @@ function removeSystemRoles(): RequestHandler {
     defaultLog.debug({ label: 'removeSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
 
     const userId = Number(req.params?.userId) || null;
-    const roles = (req.query?.role as string[]) || [];
+    const roleIds: number[] = (req.query?.roleId as string[]).map((item: any) => Number(item)) || [];
 
     if (!userId) {
       throw new HTTP400('Missing required path param: userId');
     }
 
-    if (!roles?.length) {
+    if (!roleIds?.length) {
       throw new HTTP400('Missing required body param: roles');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const sqlStatement = deleteSystemRolesSQL(userId, roles);
+      const sqlStatement = deleteSystemRolesSQL(userId, roleIds);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');

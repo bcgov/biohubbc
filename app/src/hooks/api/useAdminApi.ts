@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { AdministrativeActivityType, AdministrativeActivityStatusType } from 'constants/misc';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
@@ -12,12 +13,14 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Get user access requests
    *
-   * @param {AxiosInstance} axios
+   * @param {AdministrativeActivityStatusType[]} [status=[]]
    * @returns {*} {Promise<IGetAccessRequestsListResponse>}
    */
-  const getAccessRequests = async (userIdentifier?: string): Promise<IGetAccessRequestsListResponse[]> => {
+  const getAccessRequests = async (
+    status: AdministrativeActivityStatusType[] = []
+  ): Promise<IGetAccessRequestsListResponse[]> => {
     const { data } = await axios.get(`/api/administrative-activities`, {
-      params: { type: 'System Access', userIdentifier },
+      params: { type: AdministrativeActivityType.SYSTEM_ACCESS, status },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }
@@ -119,7 +122,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    */
   const removeSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
     const { data } = await axios.delete(`/api/user/${userId}/system-roles`, {
-      params: { role: roleIds },
+      params: { roleId: roleIds },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }

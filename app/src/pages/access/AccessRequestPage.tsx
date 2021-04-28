@@ -151,7 +151,9 @@ export const AccessRequestPage: React.FC = () => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
+        name: keycloakWrapper?.displayName,
         username: keycloakWrapper?.getUserIdentifier(),
+        email: keycloakWrapper?.email,
         identitySource: keycloakWrapper?.getIdentitySource()
       });
 
@@ -181,7 +183,7 @@ export const AccessRequestPage: React.FC = () => {
   }
 
   return (
-    <Box>
+    <Box mb={4}>
       <Container maxWidth="md">
         <Formik
           initialValues={AccessRequestFormInitialValues}
@@ -205,7 +207,7 @@ export const AccessRequestPage: React.FC = () => {
                   <h2>Request Details</h2>
                   <Box mb={3}>
                     <form onSubmit={handleSubmit}>
-                      <Box my={3}>
+                      <Box>
                         <Grid container spacing={3}>
                           <Grid item xs={12}>
                             <h3> Select which role you want to be assigned to</h3>
@@ -271,10 +273,10 @@ export const AccessRequestPage: React.FC = () => {
 
                           {values.work_from_regional_office === 'true' && (
                             <Grid item xs={12}>
-                              <h3>Which Regional Offices do you work for? </h3>
+                              <h3>Which Regional Offices do you work for?</h3>
                               <MultiAutocompleteFieldVariableSize
                                 id={'regional_offices'}
-                                label={'Regions'}
+                                label={'Regional Offices'}
                                 options={
                                   codes?.regional_offices?.map((item) => {
                                     return { value: item.id, label: item.name };
