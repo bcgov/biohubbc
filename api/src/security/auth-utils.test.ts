@@ -242,27 +242,25 @@ describe('authorize', function () {
   it('throws HTTP403 when the keycloak_token is empty', async function () {
     try {
       await auth_utils.authorize({ keycloak_token: '' }, ['abc']);
-    } catch (e) {
-      expect(JSON.stringify(e)).to.contain('Access Denied');
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.message).to.contain('Access Denied');
     }
   });
 
   it('returns true without scopes', async function () {
-    const ret = await auth_utils.authorize({ keycloak_token: 'some token' }, []);
-    expect(ret).to.be.true;
+    const result = await auth_utils.authorize({ keycloak_token: 'some token' }, []);
+    expect(result).to.be.true;
   });
 
   it('throws HTTP403 when stubbed getSystemUser returns null', async function () {
-    const getSystemUserStub = sinon.stub(auth_utils, 'getSystemUser');
+    sinon.stub(auth_utils, 'getSystemUser').resolves(null);
 
     try {
       await auth_utils.authorize({ keycloak_token: 'some token' }, ['abc']);
-    } catch (e) {
-      expect(JSON.stringify(e)).to.contain('Access Denied');
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.message).to.contain('Access Denied');
     }
-
-    expect(getSystemUserStub).to.have.been.calledWith('some token');
-    expect(getSystemUserStub).to.have.been.calledOnce;
-    expect(getSystemUserStub).is.not.null;
   });
 });
