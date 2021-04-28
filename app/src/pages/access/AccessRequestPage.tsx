@@ -153,6 +153,7 @@ export const AccessRequestPage: React.FC = () => {
         ...values,
         name: keycloakWrapper?.displayName,
         username: keycloakWrapper?.getUserIdentifier(),
+        email: keycloakWrapper?.email,
         identitySource: keycloakWrapper?.getIdentitySource()
       });
 
