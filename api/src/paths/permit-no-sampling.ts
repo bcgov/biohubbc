@@ -76,7 +76,7 @@ function createNoSamplePermits(): RequestHandler {
 
       const result = await Promise.all(
         sanitizedNoSamplePermitPostData.permit.permits.map((permit: IPostPermitNoSampling) =>
-          insertNoSamplePermitNumber(permit, sanitizedNoSamplePermitPostData.coordinator, connection)
+          insertNoSamplePermit(permit, sanitizedNoSamplePermitPostData.coordinator, connection)
         )
       );
 
@@ -93,7 +93,7 @@ function createNoSamplePermits(): RequestHandler {
   };
 }
 
-export const insertNoSamplePermitNumber = async (
+export const insertNoSamplePermit = async (
   permit: IPostPermitNoSampling,
   coordinator: PostCoordinatorData,
   connection: IDBConnection

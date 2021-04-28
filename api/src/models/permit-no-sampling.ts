@@ -23,6 +23,7 @@ export class PostPermitNoSamplingObject {
 
 export interface IPostPermitNoSampling {
   permit_number: string;
+  permit_type: string;
 }
 
 /**
@@ -41,7 +42,8 @@ export class PostPermitNoSamplingData {
       (obj?.permits?.length &&
         obj.permits.map((item: any) => {
           return {
-            permit_number: item.permit_number
+            permit_number: item.permit_number,
+            permit_type: item.permit_type
           };
         })) ||
       [];

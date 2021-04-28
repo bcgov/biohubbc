@@ -27,12 +27,14 @@ export const postPermitNoSamplingSQL = (
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO no_sample_permit (
         number,
+        type,
         coordinator_first_name,
         coordinator_last_name,
         coordinator_email_address,
         coordinator_agency_name
       ) VALUES (
         ${noSamplePermit.permit_number},
+        ${noSamplePermit.permit_type},
         ${noSamplePermit.first_name},
         ${noSamplePermit.last_name},
         ${noSamplePermit.email_address},

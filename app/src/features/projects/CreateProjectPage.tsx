@@ -469,8 +469,10 @@ const CreateProjectPage: React.FC = () => {
    */
   const handleSubmit = async () => {
     const invalidStepIndex = getFirstInvalidFormStep();
+    const isFullProject = isSamplingConducted(stepForms[1].stepValues);
+    const draftId = Number(queryParams.draftId);
 
-    if (invalidStepIndex >= 0) {
+    if ((isFullProject && invalidStepIndex >= 0) || (!isFullProject && [0, 1].includes(invalidStepIndex))) {
       setActiveStep(invalidStepIndex);
 
       showCreateErrorDialog({
@@ -480,9 +482,6 @@ const CreateProjectPage: React.FC = () => {
 
       return;
     }
-
-    const isFullProject = isSamplingConducted(stepForms[1].stepValues);
-    const draftId = Number(queryParams.draftId);
 
     try {
       if (!isFullProject) {

@@ -165,6 +165,7 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 
   return true;
 };
+
 /**
  * Finds a single user based on their keycloak token information.
  *
@@ -180,7 +181,7 @@ export const getSystemUser = async function (keycloakToken: object) {
     const systemUserId = connection.systemUserId();
 
     if (!systemUserId) {
-      return;
+      return null;
     }
 
     const sqlStatement = getUserByIdSQL(systemUserId);
@@ -193,7 +194,7 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     await connection.commit();
 
-    return (response && response?.rowCount && response.rows[0]) || null;
+    return (response && response.rowCount && response.rows[0]) || null;
   } catch (error) {
     defaultLog.debug({ label: 'getSystemUser', message: 'error', error });
     throw error;
