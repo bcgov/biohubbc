@@ -86,7 +86,7 @@ const AccessRequestFormYupSchema = yup.object().shape({
   work_from_regional_office: yup.string().required('Required'),
   regional_offices: yup
     .array()
-    .when('work_from_regional_office', { is: 'true', then: yup.array().min(1).required('Required') }),
+    .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }),
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 

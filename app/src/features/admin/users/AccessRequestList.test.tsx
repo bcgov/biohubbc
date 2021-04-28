@@ -1,9 +1,21 @@
 import { codes } from 'test-helpers/code-helpers';
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+
+jest.mock('../../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  admin: {
+    updateAccessRequest: jest.fn()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
 
 const renderContainer = (
   accessRequests: IGetAccessRequestsListResponse[],
@@ -14,6 +26,15 @@ const renderContainer = (
 };
 
 describe('AccessRequestList', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().admin.updateAccessRequest.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   it('shows `No Access Requests` when there are no access requests', async () => {
     const { getByText } = renderContainer([], codes, () => {});
 
@@ -159,6 +180,100 @@ describe('AccessRequestList', () => {
       expect(getAllByText('Not Applicable').length).toEqual(2);
       expect(getByText('April-20-2020')).toBeVisible();
       expect(getByText('PENDING')).toBeVisible();
+    });
+  });
+
+  it('opens the review dialog and calls updateAccessRequest on approval', async () => {
+    const refresh = jest.fn();
+
+    const { getByText, getByRole } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Pending',
+          description: 'test description',
+          notes: 'test notes',
+          data: {
+            name: 'test user',
+            username: 'testusername',
+            email: 'email@email.com',
+            role: 2,
+            identitySource: 'idir',
+            company: 'test company',
+            regional_offices: [1, 2],
+            comments: 'test comment'
+          },
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      refresh
+    );
+
+    const reviewButton = getByRole('button');
+    expect(reviewButton).toHaveTextContent('Review');
+    fireEvent.click(reviewButton);
+
+    await waitFor(() => {
+      // wait for dialog to open
+      expect(getByText('Review Access Request')).toBeVisible();
+      fireEvent.click(getByText('Approve'));
+    });
+
+    await waitFor(() => {
+      expect(refresh).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+    });
+  });
+
+  it('opens the review dialog and calls updateAccessRequest on denial', async () => {
+    const refresh = jest.fn();
+
+    const { getByText, getByRole } = renderContainer(
+      [
+        {
+          id: 1,
+          type: 1,
+          type_name: 'test type',
+          status: 1,
+          status_name: 'Pending',
+          description: 'test description',
+          notes: 'test notes',
+          data: {
+            name: 'test user',
+            username: 'testusername',
+            email: 'email@email.com',
+            role: 1,
+            identitySource: 'idir',
+            company: 'test company',
+            regional_offices: [1, 2],
+            comments: 'test comment'
+          },
+          create_date: '2020-04-20'
+        }
+      ],
+      codes,
+      refresh
+    );
+
+    const reviewButton = getByRole('button');
+    expect(reviewButton).toHaveTextContent('Review');
+    fireEvent.click(reviewButton);
+
+    await waitFor(() => {
+      // wait for dialog to open
+      expect(getByText('Review Access Request')).toBeVisible();
+      fireEvent.click(getByText('Deny'));
+    });
+
+    await waitFor(() => {
+      expect(refresh).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
     });
   });
 });
