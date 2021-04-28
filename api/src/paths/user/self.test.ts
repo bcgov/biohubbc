@@ -63,6 +63,7 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
+      // eslint-disable-next-line
       //@ts-ignore
       await result(sampleReq, null, null);
     } catch (actualError) {
@@ -83,6 +84,7 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
+      // eslint-disable-next-line
       //@ts-ignore
       await result(sampleReq, null, null);
     } catch (actualError) {
@@ -116,6 +118,7 @@ describe('getUser', function () {
 
     const result = self.getUser();
 
+    // eslint-disable-next-line
     //@ts-ignore
     await result(sampleReq, sampleRes, null);
 
@@ -138,6 +141,7 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
+      // eslint-disable-next-line
       //@ts-ignore
       await result(sampleReq, null, null);
       expect.fail();
@@ -164,6 +168,7 @@ describe('getUser', function () {
 
     const result = self.getUser();
 
+    // eslint-disable-next-line
     //@ts-ignore
     await result(sampleReq, sampleRes, null);
 
