@@ -39,7 +39,7 @@ describe('getAdministrativeActivitiesSQL', () => {
   });
 
   it('returns non null response when valid parameters provided', () => {
-    const response = getAdministrativeActivitiesSQL('type', ['status']);
+    const response = getAdministrativeActivitiesSQL('type', ['status 1', 'status 2']);
 
     expect(response).to.not.be.null;
   });
