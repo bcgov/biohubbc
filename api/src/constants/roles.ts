@@ -1,16 +1,23 @@
-export enum ROLE {
-  SYSADMIN = 'sysadmin',
-  ADMIN = 'admin',
-  WRITE = 'write',
-  READ = 'read'
+/**
+ * System level roles
+ *
+ * @export
+ * @enum {number}
+ */
+export enum SYSTEM_ROLE {
+  SYSTEM_ADMIN = 'System Administrator',
+  PROJECT_ADMIN = 'Project Administrator'
 }
 
-export const READ_ROLES = [ROLE.SYSADMIN, ROLE.ADMIN, ROLE.WRITE, ROLE.READ];
-
-export const WRITE_ROLES = [ROLE.SYSADMIN, ROLE.ADMIN, ROLE.WRITE];
-
-export const ADMIN_ROLES = [ROLE.SYSADMIN, ROLE.ADMIN];
-
+/**
+ * Used when adding/updating an object in S3 storage to mark the object as requiring authentication.
+ *
+ * Note: All objects in S3 should be marked as requiring authentication, as all access to the objects should be
+ * governed/proxied by the BioHub API.
+ *
+ * @export
+ * @enum {number}
+ */
 export enum S3_ROLE {
   AUTH_READ = 'authenticated-read'
 }

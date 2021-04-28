@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../constants/roles';
+import { SYSTEM_ROLE } from '../constants/roles';
 import { getAPIUserDBConnection, getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import {
@@ -224,7 +224,7 @@ PUT.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
   requestBody: {
