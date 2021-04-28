@@ -14,7 +14,14 @@ export const codes: IGetAllCodeSetsResponse = {
   iucn_conservation_action_level_1_classification: [{ id: 1, name: 'IUCN class' }],
   iucn_conservation_action_level_2_subclassification: [{ id: 1, iucn1_id: 1, name: 'IUCN subclass 1' }],
   iucn_conservation_action_level_3_subclassification: [{ id: 1, iucn2_id: 1, name: 'IUCN subclass 2' }],
-  system_roles: [{ id: 1, name: 'Role 1' }],
+  system_roles: [
+    { id: 1, name: 'Role 1' },
+    { id: 2, name: 'Role 2' }
+  ],
   regional_offices: [{ id: 1, name: 'Office 1' }],
-  administrative_activity_status_type: [{ id: 1, name: 'Pending' }]
+  administrative_activity_status_type: [
+    { id: 1, name: 'Pending' },
+    { id: 2, name: 'Actioned' },
+    { id: 3, name: 'Rejected' }
+  ]
 };
