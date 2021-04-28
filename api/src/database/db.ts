@@ -254,4 +254,4 @@ export const getAPIUserDBConnection = (): IDBConnection => {
 
 export const anissa = () => {
   return 10;
-}
+};

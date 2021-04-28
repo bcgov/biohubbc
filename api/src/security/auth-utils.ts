@@ -173,22 +173,14 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
  * @return {*}
  */
 export const getSystemUser = async function (keycloakToken: object) {
-  console.log('hehehehe')
   const connection = getDBConnection(keycloakToken);
 
-  console.log('eeeee')
+  console.log(connection);
 
   try {
-    console.log('in here')
-
     await connection.open();
 
-    console.log('in here')
-    console.log(connection)
-
     const systemUserId = connection.systemUserId();
-
-    console.log('in here', systemUserId)
 
     if (!systemUserId) {
       return null;
@@ -196,20 +188,17 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     const sqlStatement = getUserByIdSQL(systemUserId);
 
-    console.log('sqlstatement that gets user', sqlStatement);
-
     if (!sqlStatement) {
       return null;
     }
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    console.log('response for the user', response);
-
     await connection.commit();
 
-    return (response && response?.rowCount && response.rows[0]) || null;
+    return (response && response.rowCount && response.rows[0]) || null;
   } catch (error) {
+    console.log('error', error);
     defaultLog.debug({ label: 'getSystemUser', message: 'error', error });
     throw error;
   } finally {

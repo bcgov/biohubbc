@@ -33,10 +33,12 @@ describe('postPermitNoSamplingObject', () => {
       permit: {
         permits: [
           {
-            permit_number: '123'
+            permit_number: '123',
+            permit_type: 'type 1'
           },
           {
-            permit_number: '456'
+            permit_number: '456',
+            permit_type: 'type 2'
           }
         ]
       }
@@ -60,10 +62,12 @@ describe('postPermitNoSamplingObject', () => {
       expect(postPermitNoSamplingObject.permit).to.deep.equal({
         permits: [
           {
-            permit_number: '123'
+            permit_number: '123',
+            permit_type: 'type 1'
           },
           {
-            permit_number: '456'
+            permit_number: '456',
+            permit_type: 'type 2'
           }
         ]
       });
@@ -115,7 +119,7 @@ describe('PostPermitNoSamplingData', () => {
   describe('All values provided where permits is a valid array', () => {
     let postPermitNoSamplingData: PostPermitNoSamplingData;
 
-    const obj = { permits: [{ permit_number: 1 }] };
+    const obj = { permits: [{ permit_number: 1, permit_type: 'type' }] };
 
     before(() => {
       postPermitNoSamplingData = new PostPermitNoSamplingData(obj);
@@ -124,7 +128,8 @@ describe('PostPermitNoSamplingData', () => {
     it('sets permits', function () {
       expect(postPermitNoSamplingData.permits).to.eql([
         {
-          permit_number: 1
+          permit_number: 1,
+          permit_type: 'type'
         }
       ]);
     });

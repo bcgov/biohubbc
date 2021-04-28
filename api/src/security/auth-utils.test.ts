@@ -4,6 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as auth_utils from './auth-utils';
 import * as db from '../database/db';
+import * as user_queries from '../queries/users/user-queries';
+import { QueryResult } from 'pg';
+import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -117,7 +120,7 @@ describe('userHasValidSystemRoles', () => {
   });
 });
 
-describe("getSystemUser", function () {
+describe('getSystemUser', function () {
   afterEach(() => {
     sinon.restore();
   });
@@ -126,21 +129,108 @@ describe("getSystemUser", function () {
     key: 'value'
   };
 
-  it("should return null when no system user id", async function () {
-    sinon.stub(db, 'getDBConnection').resolves({
-      systemUserId: () => {
-        return null;
-      }
-    });
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return null;
+    },
+    open: async () => {},
+    release: () => {},
+    commit: async () => {},
+    rollback: async () => {},
+    query: async () => {}
+  };
+
+  it('should return null when no system user id', async function () {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const result = await auth_utils.getSystemUser(keycloakToken);
 
     expect(result).to.be.null;
+  });
 
-    // const result = await getDBConnectionStub(keycloakToken);
-    // console.log(result.systemUserId());
+  it('should return null when getUserByIdSql fails', async function () {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
 
-    // console.log(result);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(null);
+
+    const result = await auth_utils.getSystemUser(keycloakToken);
+
+    expect(result).to.be.null;
+  });
+
+  it('should return the user row on success', async function () {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: async () => {
+        return {
+          rowCount: 1,
+          rows: [
+            {
+              id: 1,
+              user_identifier: 'identifier',
+              role_ids: [1, 2],
+              role_names: ['role 1', 'role 2']
+            }
+          ]
+        } as QueryResult<any>;
+      }
+    });
+
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+
+    const result = await auth_utils.getSystemUser(keycloakToken);
+
+    expect(result.id).to.equal(1);
+    expect(result.user_identifier).to.equal('identifier');
+    expect(result.role_ids).to.eql([1, 2]);
+    expect(result.role_names).to.eql(['role 1', 'role 2']);
+  });
+
+  it('should return null when response has no rowCount (no user found)', async function () {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: async () => {
+        return ({
+          rowCount: 0,
+          rows: []
+        } as unknown) as QueryResult<any>;
+      }
+    });
+
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+
+    const result = await auth_utils.getSystemUser(keycloakToken);
+
+    expect(result).to.be.null;
+  });
+
+  it('should throw an error when a failure occurs', async function () {
+    const expectedError = new Error('cannot process query');
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        throw expectedError;
+      }
+    });
+
+    try {
+      await auth_utils.getSystemUser(keycloakToken);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.message).to.equal(expectedError.message);
+    }
   });
 });
 
