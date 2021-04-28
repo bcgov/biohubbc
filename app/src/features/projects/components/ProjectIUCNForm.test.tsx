@@ -1,13 +1,12 @@
-import { fireEvent, render, waitFor, within, screen } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import ProjectIUCNForm, {
-  IProjectIUCNForm,
-  ProjectIUCNFormInitialValues,
-  ProjectIUCNFormYupSchema,
   IIUCNSubClassification1Option,
-  IIUCNSubClassification2Option
+  IIUCNSubClassification2Option, IProjectIUCNForm,
+  ProjectIUCNFormInitialValues,
+  ProjectIUCNFormYupSchema
 } from './ProjectIUCNForm';
 
 const classifications: IMultiAutocompleteFieldOption[] = [
