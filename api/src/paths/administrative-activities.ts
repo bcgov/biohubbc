@@ -11,6 +11,15 @@ const defaultLog = getLogger('paths/administrative-activity');
 
 export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getAdministrativeActivities()];
 
+export enum ADMINISTRATIVE_ACTIVITY_STATUS_TYPE {
+  PENDING = 'Pending',
+  ACTIONED = 'Actioned',
+  REJECTED = 'Rejected'
+}
+
+export const getAllAdministrativeActivityStatusTypes = (): string[] =>
+  Object.values(ADMINISTRATIVE_ACTIVITY_STATUS_TYPE);
+
 GET.apiDoc = {
   description: 'Get a list of administrative activities based on the provided criteria.',
   tags: ['admin'],
@@ -26,6 +35,17 @@ GET.apiDoc = {
       schema: {
         type: 'string',
         enum: ['System Access']
+      }
+    },
+    {
+      in: 'query',
+      name: 'status',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: getAllAdministrativeActivityStatusTypes()
+        }
       }
     }
   ],
@@ -111,7 +131,13 @@ function getAdministrativeActivities(): RequestHandler {
     try {
       const administrativeActivityTypeName = (req.query?.type as string) || undefined;
 
-      const sqlStatement = getAdministrativeActivitiesSQL(administrativeActivityTypeName);
+      const administrativeActivityStatusTypes: string[] =
+        (req.query?.status as string[]) || getAllAdministrativeActivityStatusTypes();
+
+      const sqlStatement = getAdministrativeActivitiesSQL(
+        administrativeActivityTypeName,
+        administrativeActivityStatusTypes
+      );
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');

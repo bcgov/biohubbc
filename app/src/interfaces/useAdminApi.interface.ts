@@ -4,7 +4,7 @@ export interface IAccessRequestDataObject {
   identitySource: string;
   role: number;
   company: string;
-  regional_offices: string[];
+  regional_offices: number[];
   comments: string;
 }
 
