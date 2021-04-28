@@ -175,8 +175,6 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 export const getSystemUser = async function (keycloakToken: object) {
   const connection = getDBConnection(keycloakToken);
 
-  console.log(connection);
-
   try {
     await connection.open();
 
@@ -198,7 +196,6 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     return (response && response.rowCount && response.rows[0]) || null;
   } catch (error) {
-    console.log('error', error);
     defaultLog.debug({ label: 'getSystemUser', message: 'error', error });
     throw error;
   } finally {
