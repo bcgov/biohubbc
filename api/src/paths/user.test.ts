@@ -37,27 +37,28 @@ describe('user', () => {
       sinon.restore();
     });
 
-    it('should throw a 400 error when no sql statement produced', () => {
+    it('should throw a 400 error when no sql statement produced', async () => {
       sinon.stub(user_queries, 'addSystemUserSQL').returns(null);
 
       try {
-        user.addSystemUser('userIdentifier', 'identitySource', 10, {
+        await user.addSystemUser('userIdentifier', 'identitySource', 10, {
           ...dbConnectionObj,
           systemUserId: () => {
             return 10;
           }
         });
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Failed to build SQL get statement');
       }
     });
 
-    it('should throw a 500 response when response has no rows', () => {
+    it('should throw a 500 response when response has no rows', async () => {
       sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`some query`);
 
       try {
-        user.addSystemUser('userIdentifier', 'identitySource', 10, {
+        await user.addSystemUser('userIdentifier', 'identitySource', 10, {
           ...dbConnectionObj,
           systemUserId: () => {
             return 10;
@@ -68,6 +69,7 @@ describe('user', () => {
             } as unknown) as QueryResult<any>;
           }
         });
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(500);
         expect(actualError.message).to.equal('Failed to add system user');
@@ -127,9 +129,8 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result({ ...sampleReq, body: null }, null, null);
+        await result({ ...(sampleReq as any), body: null }, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Missing required body param: userIdentifier');
@@ -142,9 +143,12 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result({ ...sampleReq, body: { ...sampleReq.body, userIdentifier: null } }, null, null);
+        await result(
+          { ...(sampleReq as any), body: { ...sampleReq.body, userIdentifier: null } },
+          (null as unknown) as any,
+          (null as unknown) as any
+        );
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Missing required body param: userIdentifier');
@@ -157,9 +161,12 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result({ ...sampleReq, body: { ...sampleReq.body, identitySource: null } }, null, null);
+        await result(
+          { ...(sampleReq as any), body: { ...sampleReq.body, identitySource: null } },
+          (null as unknown) as any,
+          (null as unknown) as any
+        );
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Missing required body param: identitySource');
@@ -172,9 +179,8 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result(sampleReq, null, null);
+        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Failed to identify system user ID');
@@ -193,9 +199,8 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result(sampleReq, null, null);
+        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Failed to build SQL get statement');
@@ -215,9 +220,7 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result(sampleReq, null, null);
+        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
         expect(actualError.message).to.equal(expectedError.message);
@@ -241,9 +244,8 @@ describe('user', () => {
       try {
         const result = user.addUser();
 
-        // eslint-disable-next-line
-        // @ts-ignore
-        await result(sampleReq, sampleRes, null);
+        await result(sampleReq as any, sampleRes as any, (null as unknown) as any);
+        expect.fail();
       } catch (actualError) {
         expect(actualError.status).to.equal(500);
         expect(actualError.message).to.equal('Failed to add system user');
@@ -274,9 +276,7 @@ describe('user', () => {
 
       const result = user.addUser();
 
-      // eslint-disable-next-line
-      // @ts-ignore
-      await result(sampleReq, sampleRes, null);
+      await result(sampleReq as any, sampleRes as any, (null as unknown) as any);
 
       expect(actualStatus).to.equal(200);
     });

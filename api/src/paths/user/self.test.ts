@@ -38,7 +38,7 @@ describe('getUser', () => {
 
   const sampleReq = {
     keycloak_token: {}
-  };
+  } as any;
 
   let actualResult = {
     id: null,
@@ -63,9 +63,8 @@ describe('getUser', () => {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      // @ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to identify system user ID');
@@ -84,9 +83,8 @@ describe('getUser', () => {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      // @ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build SQL get statement');
@@ -118,9 +116,7 @@ describe('getUser', () => {
 
     const result = self.getUser();
 
-    // eslint-disable-next-line
-    // @ts-ignore
-    await result(sampleReq, sampleRes, null);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult.id).to.equal(1);
     expect(actualResult.user_identifier).to.equal('identifier');
@@ -141,9 +137,7 @@ describe('getUser', () => {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      // @ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.message).to.equal(expectedError.message);
@@ -168,9 +162,7 @@ describe('getUser', () => {
 
     const result = self.getUser();
 
-    // eslint-disable-next-line
-    // @ts-ignore
-    await result(sampleReq, sampleRes, null);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.null;
   });
