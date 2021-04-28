@@ -133,11 +133,21 @@ describe('getSystemUser', function () {
     systemUserId: () => {
       return null;
     },
-    open: async () => {},
-    release: () => {},
-    commit: async () => {},
-    rollback: async () => {},
-    query: async () => {}
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
   };
 
   it('should return null when no system user id', async function () {
