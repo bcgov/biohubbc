@@ -1,6 +1,7 @@
 export interface IAccessRequestDataObject {
   name: string;
   username: string;
+  email: string;
   identitySource: string;
   role: number;
   company: string;

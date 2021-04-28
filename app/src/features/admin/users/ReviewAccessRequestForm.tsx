@@ -71,7 +71,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Email Address
               </Typography>
               <Typography component="dd" variant="body1">
-                TODO Placeholder
+                {props.request.data.email}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>

@@ -36,6 +36,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
             role: 2,
             identitySource: 'idir',
             company: 'test company',
@@ -73,6 +74,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
             role: 2,
             identitySource: 'idir',
             company: 'test company',
@@ -110,6 +112,7 @@ describe('AccessRequestList', () => {
           data: {
             name: 'test user',
             username: 'testusername',
+            email: 'email@email.com',
             role: 2,
             identitySource: 'idir',
             company: 'test company',

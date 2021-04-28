@@ -212,7 +212,12 @@ describe('AccessRequestPage', () => {
         getUserIdentifier: jest.fn(),
         hasAccessRequest: true,
         hasSystemRole: jest.fn(),
-        getIdentitySource: jest.fn()
+        getIdentitySource: jest.fn(),
+        username: '',
+        displayName: '',
+        email: '',
+        firstName: '',
+        lastName: ''
       }
     };
 
