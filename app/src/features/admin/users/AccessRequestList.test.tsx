@@ -186,7 +186,7 @@ describe('AccessRequestList', () => {
   it('opens the review dialog and calls updateAccessRequest on approval', async () => {
     const refresh = jest.fn();
 
-    const { getByText, getByRole, getByLabelText } = renderContainer(
+    const { getByText, getByRole } = renderContainer(
       [
         {
           id: 1,

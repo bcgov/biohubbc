@@ -30,7 +30,7 @@ const renderContainer = (accessRequest: IGetAccessRequestsListResponse) => {
 };
 
 describe('ReviewAccessRequestForm', () => {
-  it('shows `No Access Requests` when there are no access requests', async () => {
+  it('renders all fields from the request object', async () => {
     const { getByText } = renderContainer({
       id: 1,
       type: 2,
