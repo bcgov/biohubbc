@@ -143,9 +143,6 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 
   try {
     systemUserWithRoles = await getSystemUser(req.keycloak_token);
-
-    console.log('systemUserWithRoles', systemUserWithRoles);
-
   } catch {
     defaultLog.warn({ label: 'authorize', message: 'failed to get system user' });
     throw new HTTP403('Access Denied');
@@ -157,11 +154,9 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
   }
 
   const userObject = new UserObject(systemUserWithRoles);
-  console.log('userObject', userObject);
 
   // TODO replace `[]` with the `scopes` param when we are ready to enforce system roles on endpoints
   const hasValidSystemRole = userHasValidSystemRoles([], userObject.role_names);
-  console.log('hasValidSystemRole', hasValidSystemRole);
 
   if (!hasValidSystemRole) {
     defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });

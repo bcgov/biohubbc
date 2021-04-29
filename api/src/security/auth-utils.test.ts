@@ -7,6 +7,7 @@ import * as db from '../database/db';
 import * as user_queries from '../queries/users/user-queries';
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { HTTP401, HTTP403 } from '../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -254,7 +255,14 @@ describe('authorize', function () {
       await auth_utils.authorize({ keycloak_token: '' }, ['abc']);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.contain('Access Denied');
+      expect(actualError).instanceOf(HTTP403);
+    }
+
+    try {
+      await auth_utils.authorize(undefined, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
     }
   });
 
@@ -270,39 +278,161 @@ describe('authorize', function () {
       await auth_utils.authorize({ keycloak_token: 'some token' }, ['abc']);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.contain('Access Denied');
+      expect(actualError).instanceOf(HTTP403);
     }
   });
 
-  it('should authorize a user with valid roles', function () {
-    // const sampleReq = {
-    //   keycloak_token: {}
-    // };
+  it('throws HTTP403 when stubbed getSystemUser throws error', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').callsFake(async function (keycloak_token: object) {
+      if (!keycloak_token || keycloak_token) {
+        throw new Error();
+      }
+    });
 
-    // let expectedResult = {
-    //   id: null,
-    //   user_identifier: null,x
-    //   role_ids: null,
-    //   role_names: null
-    // };
-
-    // const sampleRes = {
-    //   status: (status: number) => {
-    //     return {
-    //       json: (result: any) => {
-    //         expectedResult = result;
-    //       }
-    //     };
-    //   }
-    // };
-    const stubbedSystemUser= {
-      id: 1,
-      user_identifier: 'identifier',
-      role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    };
-
-    sinon.stub(auth_utils, 'getSystemUser').resolves(stubbedSystemUser);
-
+    try {
+      await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
+    }
   });
+
+  it('throws HTTP403 when stubbed getSystemUser returns user with no roles', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').resolves({
+      id: 0,
+      user_identifier: 'somebody',
+      role_ids: [],
+      role_names: []
+    });
+    sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(false);
+
+    try {
+      await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
+    }
+  });
+
+  it('authorizes a user with valid roles', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').resolves({
+      id: 0,
+      user_identifier: 'somebody',
+      role_ids: [],
+      role_names: []
+    });
+
+    try {
+      const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+      expect(result).to.be.true;
+    } catch {
+      expect.fail();
+    }
+  });
+});
+
+describe('authenticate', function () {
+  it('throws HTTP401 when authorization headers were null or missing', async function () {
+    try {
+      await auth_utils.authenticate(undefined);
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({});
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {}
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+  });
+
+  it('throws HTTP401 when authorization header containing valid bearer token', async function () {
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Not a bearer token'
+        }
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Bearer '
+        }
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Bearer not-encoded'
+        }
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          // sample encoded json web token from jwt.io (without kid header)
+          authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+        }
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          // sample encoded json web token from jwt.io (with kid header)
+          authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNvbWUgaWQifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.rXYCCTRmi7EAHVRy1QqHvysMxLZaH4EsI226hrJLtgM'
+        }
+      });
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+  });
+
+  //TODO:  figure out how to stub the callback parameter of the function
+
+  // import * as jsonwebtoken from 'jsonwebtoken';
+  // it('returns a validated token through verifyToken', async function () {
+  //   sinon
+  //     .stub(jsonwebtoken, 'verify')
+  //     .withArgs(
+  //       'token',
+  //       'secretOrPublicKey'
+  //       // ,'callback'
+  //       )
+  //     .callsFake(function (
+  //       token: string,
+  //       secretOrPublicKey: jsonwebtoken.Secret | jsonwebtoken.GetPublicKeyOrSecret,
+  //       // callback?: jsonwebtoken.VerifyCallback
+  //     ): void {
+  //       // callback && callback(null, undefined);
+  //     });
+
+  //   try {
+  //     await auth_utils.authenticate({});
+  //   } catch (actualError) {
+  //     expect(actualError).instanceOf(HTTP401);
+  //   }
+  // });
 });
