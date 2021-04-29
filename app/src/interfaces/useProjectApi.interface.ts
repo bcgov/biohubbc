@@ -132,7 +132,6 @@ export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
   project_type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -238,7 +237,6 @@ export interface IGetProjectForViewResponseDetails {
   project_name: string;
   project_type: string;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
 }

@@ -14,7 +14,6 @@ import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
   postProjectActivitySQL,
-  postProjectClimateChangeInitiativeSQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
@@ -205,15 +204,6 @@ function createProject(): RequestHandler {
           Promise.all(
             sanitizedProjectPostData.project.project_activities.map((activityId: number) =>
               insertProjectActivity(activityId, projectId, connection)
-            )
-          )
-        );
-
-        // Handle project climate change initiatives
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.project.climate_change_initiatives.map((climateChangeInitiativeId: number) =>
-              insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
             )
           )
         );
@@ -427,28 +417,6 @@ export const insertProjectActivity = async (
 
   if (!result || !result.id) {
     throw new HTTP400('Failed to insert project activity data');
-  }
-
-  return result.id;
-};
-
-export const insertProjectClimateChangeInitiative = async (
-  climateChangeInitiativeId: number,
-  projectId: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = postProjectClimateChangeInitiativeSQL(climateChangeInitiativeId, projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project climate change initiative data');
   }
 
   return result.id;

@@ -879,10 +879,6 @@ describe('GetProjectData', () => {
       expect(data.project_activities).to.eql([]);
     });
 
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([]);
-    });
-
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -907,12 +903,10 @@ describe('GetProjectData', () => {
 
     const activityData = [{ a_id: 1 }, { a_id: 2 }];
 
-    const climateInitiativeData = [{ cci_id: 1 }, { cci_id: 2 }, { cci_id: 3 }];
-
     let data: GetProjectData;
 
     before(() => {
-      data = new GetProjectData(projectData, activityData, climateInitiativeData);
+      data = new GetProjectData(projectData, activityData);
     });
 
     it('sets name', () => {
@@ -925,10 +919,6 @@ describe('GetProjectData', () => {
 
     it('sets project_activities', () => {
       expect(data.project_activities).to.eql([1, 2]);
-    });
-
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([1, 2, 3]);
     });
 
     it('sets start_date', () => {
@@ -965,10 +955,6 @@ describe('PutProjectData', () => {
       expect(data.project_activities).to.eql([]);
     });
 
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([]);
-    });
-
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
@@ -987,7 +973,6 @@ describe('PutProjectData', () => {
       project_name: 'project name',
       project_type: 4,
       project_activities: [1, 2],
-      climate_change_initiatives: [1, 2, 3],
       start_date: '2020-04-20T07:00:00.000Z',
       end_date: '2020-05-20T07:00:00.000Z',
       revision_count: 1
@@ -1009,10 +994,6 @@ describe('PutProjectData', () => {
 
     it('sets project_activities', () => {
       expect(data.project_activities).to.eql([1, 2]);
-    });
-
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([1, 2, 3]);
     });
 
     it('sets start_date', () => {

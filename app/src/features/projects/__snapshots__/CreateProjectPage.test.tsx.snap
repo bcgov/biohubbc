@@ -140,7 +140,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Enter contact details for the project coordinator
+                      Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.
                     </h6>
                   </div>
                 </span>
@@ -205,7 +205,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Enter permits associated with this project
+                      Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).
                     </h6>
                   </div>
                 </span>
@@ -699,7 +699,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Enter contact details for the project coordinator
+                      Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.
                     </h6>
                   </div>
                 </span>
@@ -1203,7 +1203,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Enter permits associated with this project
+                      Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).
                     </h6>
                   </div>
                 </span>
@@ -1268,7 +1268,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      General information and details about this project
+                      Enter general information and details about this project.
                     </h6>
                   </div>
                 </span>
@@ -1333,7 +1333,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Enter the objectives and potential caveats for this project
+                      Describe the objectives of the project and list any caveats, or cautionary detail to be considered when evaluating, or interpreting this project.
                     </h6>
                   </div>
                 </span>
@@ -1393,12 +1393,12 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
                     >
-                      Location
+                      Locations
                     </h2>
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Specify project regions and boundary information
+                      Specify FLNRO region, location description and spatial boundary information for the overall project area.
                     </h6>
                   </div>
                 </span>
@@ -1463,7 +1463,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Information about species this project is inventorying or monitoring
+                      Specify which species were the primary target of the project and any ancillary species which were secondary to the targeted species.
                     </h6>
                   </div>
                 </span>
@@ -1523,12 +1523,12 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
                     >
-                      IUCN Classification
+                      IUCN Conservation Actions Classification
                     </h2>
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Lorem ipsum dolor sit amet, consectur whatever whatever
+                      Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.
                     </h6>
                   </div>
                 </span>
@@ -1593,7 +1593,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Specify funding sources for the project
+                      Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.
                     </h6>
                   </div>
                 </span>
@@ -1653,12 +1653,12 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
                     >
-                      Partnerships
+                      Other Partnerships
                     </h2>
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
                     >
-                      Specify partnerships for the project
+                      Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.
                     </h6>
                   </div>
                 </span>

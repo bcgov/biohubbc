@@ -82,7 +82,6 @@ describe('PostProjectObject', () => {
         project_name: 'name_test_data',
         project_type: 'test_type',
         project_activities: [1, 2],
-        climate_change_initiatives: [1, 2],
         start_date: 'start_date_test_data',
         end_date: 'end_date_test_data',
         comments: 'comments_test_data'
@@ -173,10 +172,6 @@ describe('PostProjectData', () => {
       expect(projectPostData.project_activities).to.have.length(0);
     });
 
-    it('sets climate change initiatives', function () {
-      expect(projectPostData.climate_change_initiatives).to.have.length(0);
-    });
-
     it('sets start_date', function () {
       expect(projectPostData.start_date).to.equal(null);
     });
@@ -197,7 +192,6 @@ describe('PostProjectData', () => {
       project_name: 'name_test_data',
       project_type: 'test_type',
       project_activities: [1, 2],
-      climate_change_initiatives: [1, 2],
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
       comments: 'comments_test_data'
@@ -217,10 +211,6 @@ describe('PostProjectData', () => {
 
     it('sets activities', function () {
       expect(projectPostData.project_activities).to.eql([1, 2]);
-    });
-
-    it('sets climate initiatives', function () {
-      expect(projectPostData.climate_change_initiatives).to.eql([1, 2]);
     });
 
     it('sets start_date', function () {

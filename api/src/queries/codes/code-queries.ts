@@ -8,13 +8,6 @@ import { SQL, SQLStatement } from 'sql-template-strings';
 export const getManagementActionTypeSQL = (): SQLStatement => SQL`SELECT id, name from management_action_type;`;
 
 /**
- * SQL query to fetch climate change initiative codes.
- *
- * @returns {SQLStatement} sql query object
- */
-export const getClimateChangeInitiativeSQL = (): SQLStatement => SQL`SELECT id, name from climate_change_initiative;`;
-
-/**
  * SQL query to fetch first nation codes.
  *
  * @returns {SQLStatement} sql query object

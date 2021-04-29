@@ -119,7 +119,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Partnerships</Typography>
+          <Typography variant="h3">Other Partnerships</Typography>
           <Button
             variant="text"
             color="primary"

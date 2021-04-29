@@ -675,109 +675,6 @@ exports[`ProjectStepComponents renders the project details with the codes values
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="climate_change_initiatives"
-              id="climate_change_initiatives-label"
-            >
-              Climate Change Initiatives
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="climate_change_initiatives"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-16"
-                >
-                  <span>
-                    Climate Change Initiatives
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
@@ -1100,109 +997,6 @@ exports[`ProjectStepComponents renders the project details without the codes val
                 >
                   <span>
                     Project Activities
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="climate_change_initiatives"
-              id="climate_change_initiatives-label"
-            >
-              Climate Change Initiatives
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="climate_change_initiatives"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-21"
-                >
-                  <span>
-                    Climate Change Initiatives
                   </span>
                 </legend>
               </fieldset>
@@ -1579,6 +1373,15 @@ exports[`ProjectStepComponents renders the project location with the codes value
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root MuiBox-root-82"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -1628,7 +1431,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-82"
+          class="MuiBox-root MuiBox-root-83"
         >
           <label
             aria-disabled="false"
@@ -1653,10 +1456,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-83"
+          class="MuiBox-root MuiBox-root-84"
         />
         <div
-          class="MuiBox-root MuiBox-root-84"
+          class="MuiBox-root MuiBox-root-85"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2025,10 +1828,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-87 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-89"
+                  class="PrivateNotchedOutline-legendLabelled-90"
                 >
                   <span>
                     Regions *
@@ -2037,6 +1840,15 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </fieldset>
             </div>
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-92"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
         </div>
       </div>
       <div
@@ -2065,10 +1877,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-87 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-89"
+                class="PrivateNotchedOutline-legendLabelled-90"
               >
                 <span>
                   Location Description
@@ -2082,12 +1894,12 @@ exports[`ProjectStepComponents renders the project location without the codes va
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-85 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-86 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-91"
+          class="MuiBox-root MuiBox-root-93"
         >
           <label
             aria-disabled="false"
@@ -2112,10 +1924,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-92"
+          class="MuiBox-root MuiBox-root-94"
         />
         <div
-          class="MuiBox-root MuiBox-root-93"
+          class="MuiBox-root MuiBox-root-95"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2604,7 +2416,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
-              Stakeholder Partnerships
+              Other Partnerships
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -2682,7 +2494,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
                   class="PrivateNotchedOutline-legendLabelled-69"
                 >
                   <span>
-                    Stakeholder Partnerships
+                    Other Partnerships
                   </span>
                 </legend>
               </fieldset>
@@ -2821,7 +2633,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
-              Stakeholder Partnerships
+              Other Partnerships
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -2899,7 +2711,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
                   class="PrivateNotchedOutline-legendLabelled-74"
                 >
                   <span>
-                    Stakeholder Partnerships
+                    Other Partnerships
                   </span>
                 </legend>
               </fieldset>

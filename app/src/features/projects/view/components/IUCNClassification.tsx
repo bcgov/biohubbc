@@ -135,7 +135,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
       <ErrorDialog {...errorDialogProps} />
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-        <Typography variant="h3">IUCN Classifications</Typography>
+        <Typography variant="h3">IUCN Conservation Actions Classifications</Typography>
         <Button
           variant="text"
           color="primary"

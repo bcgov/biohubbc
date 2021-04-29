@@ -233,14 +233,16 @@ const CreateProjectPage: React.FC = () => {
     setStepForms([
       {
         stepTitle: 'Project Coordinator',
-        stepSubTitle: 'Enter contact details for the project coordinator',
+        stepSubTitle:
+          'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
         stepValues: initialProjectFieldData.coordinator,
         stepValidation: ProjectCoordinatorYupSchema
       },
       {
         stepTitle: 'Permits',
-        stepSubTitle: 'Enter permits associated with this project',
+        stepSubTitle:
+          'Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).',
         stepContent: (
           <ProjectPermitForm
             onValuesChange={(values) => {
@@ -257,49 +259,54 @@ const CreateProjectPage: React.FC = () => {
       },
       {
         stepTitle: 'General Information',
-        stepSubTitle: 'General information and details about this project',
+        stepSubTitle: 'Enter general information and details about this project.',
         stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
         stepValues: initialProjectFieldData.project,
         stepValidation: ProjectDetailsFormYupSchema
       },
       {
         stepTitle: 'Objectives',
-        stepSubTitle: 'Enter the objectives and potential caveats for this project',
+        stepSubTitle:
+          'Describe the objectives of the project and list any caveats, or cautionary detail to be considered when evaluating, or interpreting this project.',
         stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
         stepValues: initialProjectFieldData.objectives,
         stepValidation: ProjectObjectivesFormYupSchema
       },
       {
-        stepTitle: 'Location',
-        stepSubTitle: 'Specify project regions and boundary information',
+        stepTitle: 'Locations',
+        stepSubTitle:
+          'Specify FLNRO region, location description and spatial boundary information for the overall project area.',
         stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
         stepValues: initialProjectFieldData.location,
         stepValidation: ProjectLocationFormYupSchema
       },
       {
         stepTitle: 'Species',
-        stepSubTitle: 'Information about species this project is inventorying or monitoring',
+        stepSubTitle:
+          'Specify which species were the primary target of the project and any ancillary species which were secondary to the targeted species.',
         stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
         stepValues: initialProjectFieldData.species,
         stepValidation: ProjectSpeciesFormYupSchema
       },
       {
-        stepTitle: 'IUCN Classification',
-        stepSubTitle: 'Lorem ipsum dolor sit amet, consectur whatever whatever',
+        stepTitle: 'IUCN Conservation Actions Classification',
+        stepSubTitle: `Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.`,
         stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
         stepValues: initialProjectFieldData.iucn,
         stepValidation: ProjectIUCNFormYupSchema
       },
       {
         stepTitle: 'Funding',
-        stepSubTitle: 'Specify funding sources for the project',
+        stepSubTitle:
+          'Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.',
         stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
         stepValues: initialProjectFieldData.funding,
         stepValidation: ProjectFundingFormYupSchema
       },
       {
-        stepTitle: 'Partnerships',
-        stepSubTitle: 'Specify partnerships for the project',
+        stepTitle: 'Other Partnerships',
+        stepSubTitle:
+          'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
         stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
         stepValues: initialProjectFieldData.partnerships,
         stepValidation: ProjectPartnershipsFormYupSchema

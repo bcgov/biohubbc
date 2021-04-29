@@ -46,11 +46,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
               return { value: item.id, label: item.name };
             }) || []
           }
-          climate_change_initiative={
-            codes?.climate_change_initiative?.map((item) => {
-              return { value: item.id, label: item.name };
-            }) || []
-          }
         />
       )}
 

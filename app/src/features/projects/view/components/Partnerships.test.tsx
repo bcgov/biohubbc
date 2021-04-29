@@ -88,7 +88,7 @@ describe('Partnerships', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Partnerships')).toBeVisible();
+      expect(getByText('Other Partnerships')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -140,7 +140,7 @@ describe('Partnerships', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Partnerships')).toBeVisible();
+      expect(getByText('Other Partnerships')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -164,7 +164,7 @@ describe('Partnerships', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Partnerships')).toBeVisible();
+      expect(getByText('Other Partnerships')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -196,7 +196,7 @@ describe('Partnerships', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Partnerships')).toBeVisible();
+      expect(getByText('Other Partnerships')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));

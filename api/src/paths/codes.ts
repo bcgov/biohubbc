@@ -40,20 +40,6 @@ GET.apiDoc = {
                   }
                 }
               },
-              climate_change_initiative: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
               first_nations: {
                 type: 'array',
                 items: {

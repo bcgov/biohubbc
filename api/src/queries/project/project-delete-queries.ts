@@ -276,40 +276,6 @@ export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
 };
 
 /**
- * SQL query to delete project climate initiative rows.
- *
- * @param {projectId} projectId
- * @returns {SQLStatement} sql query object
- */
-export const deleteClimateInitiativesSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteClimateInitiativesSQL',
-    message: 'params',
-    projectId
-  });
-
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    DELETE FROM
-      project_climate_initiative
-    WHERE
-      p_id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'deleteClimateInitiativesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete the specific project funding source record.
  *
  * @param {projectId} projectId

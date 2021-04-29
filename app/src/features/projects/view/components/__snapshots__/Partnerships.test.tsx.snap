@@ -11,7 +11,7 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Other Partnerships
       </h3>
       <button
         aria-label="Edit Partnerships"
@@ -95,7 +95,7 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Other Partnerships
       </h3>
       <button
         aria-label="Edit Partnerships"
@@ -189,7 +189,7 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Partnerships
+        Other Partnerships
       </h3>
       <button
         aria-label="Edit Partnerships"
