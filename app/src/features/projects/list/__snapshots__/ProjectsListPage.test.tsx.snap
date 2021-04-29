@@ -226,13 +226,19 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
               </th>
               <td
                 class="MuiTableCell-root MuiTableCell-body"
-              />
+              >
+                project type
+              </td>
               <td
                 class="MuiTableCell-root MuiTableCell-body"
-              />
+              >
+                1, 2, 3
+              </td>
               <td
                 class="MuiTableCell-root MuiTableCell-body"
-              />
+              >
+                coordinator agency
+              </td>
               <td
                 class="MuiTableCell-root MuiTableCell-body"
               />
