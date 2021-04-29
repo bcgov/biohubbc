@@ -1,0 +1,87 @@
+import chai, { expect } from 'chai';
+import { describe } from 'mocha';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import * as codes from './codes';
+import * as db from '../database/db';
+import * as code_utils from '../utils/code-utils';
+
+chai.use(sinonChai);
+
+describe('codes', () => {
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return null;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const sampleReq = {
+    keycloak_token: {}
+  } as any;
+
+  let actualResult = {
+    management_action_type: null,
+    climate_change_initiative: null
+  };
+
+  const sampleRes = {
+    status: (status: number) => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
+
+  describe('getAllCodes', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw a 500 error when fails to fetch codes', async () => {
+      sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
+      sinon.stub(code_utils, 'getAllCodeSets').resolves(null);
+
+      try {
+        const result = codes.getAllCodes();
+
+        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
+      } catch (actualError) {
+        expect(actualError.status).to.equal(500);
+        expect(actualError.message).to.equal('Failed to fetch codes');
+      }
+    });
+
+    it('should return the fetched codes on success', async () => {
+      sinon.stub(db, 'getAPIUserDBConnection').returns(dbConnectionObj);
+      sinon.stub(code_utils, 'getAllCodeSets').resolves({
+        management_action_type: { id: 1, name: 'management action type' },
+        climate_change_initiative: { id: 1, name: 'climate change' }
+      } as any);
+
+      const result = codes.getAllCodes();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult.management_action_type).to.eql({ id: 1, name: 'management action type' });
+      expect(actualResult.climate_change_initiative).to.eql({ id: 1, name: 'climate change' });
+    });
+  });
+});
