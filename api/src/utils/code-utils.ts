@@ -46,10 +46,6 @@ export interface IAllCodeSets {
 export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCodeSets | null> {
   defaultLog.debug({ message: 'getAllCodeSets' });
 
-  if (!connection) {
-    return null;
-  }
-
   await connection.open();
 
   const [
