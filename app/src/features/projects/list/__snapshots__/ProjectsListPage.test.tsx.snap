@@ -53,13 +53,19 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                 class="MuiTableCell-root MuiTableCell-head"
                 scope="col"
               >
-                Species
+                Project Type
               </th>
               <th
                 class="MuiTableCell-root MuiTableCell-head"
                 scope="col"
               >
-                Location
+                Permits
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+              >
+                Coordinator Agency
               </th>
               <th
                 class="MuiTableCell-root MuiTableCell-head"
@@ -94,6 +100,9 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   Draft 1 (Draft)
                 </button>
               </th>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              />
               <td
                 class="MuiTableCell-root MuiTableCell-body"
               />
@@ -168,13 +177,19 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
                 class="MuiTableCell-root MuiTableCell-head"
                 scope="col"
               >
-                Species
+                Project Type
               </th>
               <th
                 class="MuiTableCell-root MuiTableCell-head"
                 scope="col"
               >
-                Location
+                Permits
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head"
+                scope="col"
+              >
+                Coordinator Agency
               </th>
               <th
                 class="MuiTableCell-root MuiTableCell-head"
@@ -214,9 +229,10 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
               />
               <td
                 class="MuiTableCell-root MuiTableCell-body"
-              >
-                South Coast
-              </td>
+              />
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              />
               <td
                 class="MuiTableCell-root MuiTableCell-body"
               />

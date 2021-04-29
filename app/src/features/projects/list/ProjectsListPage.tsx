@@ -97,8 +97,9 @@ const ProjectsListPage: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Project Name</TableCell>
-                <TableCell>Species</TableCell>
-                <TableCell>Location</TableCell>
+                <TableCell>Project Type</TableCell>
+                <TableCell>Permits</TableCell>
+                <TableCell>Coordinator Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
               </TableRow>
@@ -120,6 +121,7 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell />
                   <TableCell />
                   <TableCell />
+                  <TableCell />
                 </TableRow>
               ))}
               {projects?.map((row) => (
@@ -134,8 +136,9 @@ const ProjectsListPage: React.FC = () => {
                       {row.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.focal_species_name_list}</TableCell>
-                  <TableCell>{row.regions_name_list}</TableCell>
+                  <TableCell>{row.project_type}</TableCell>
+                  <TableCell>{row.permits_list}</TableCell>
+                  <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                 </TableRow>
