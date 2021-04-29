@@ -10,7 +10,7 @@ import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('getUser', function () {
+describe('getUser', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -38,9 +38,9 @@ describe('getUser', function () {
 
   const sampleReq = {
     keycloak_token: {}
-  };
+  } as any;
 
-  let expectedResult = {
+  let actualResult = {
     id: null,
     user_identifier: null,
     role_ids: null,
@@ -51,7 +51,7 @@ describe('getUser', function () {
     status: (status: number) => {
       return {
         json: (result: any) => {
-          expectedResult = result;
+          actualResult = result;
         }
       };
     }
@@ -63,9 +63,8 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      //@ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to identify system user ID');
@@ -84,9 +83,8 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      //@ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build SQL get statement');
@@ -118,14 +116,12 @@ describe('getUser', function () {
 
     const result = self.getUser();
 
-    // eslint-disable-next-line
-    //@ts-ignore
-    await result(sampleReq, sampleRes, null);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(expectedResult.id).to.equal(1);
-    expect(expectedResult.user_identifier).to.equal('identifier');
-    expect(expectedResult.role_ids).to.eql([1, 2]);
-    expect(expectedResult.role_names).to.eql(['role 1', 'role 2']);
+    expect(actualResult.id).to.equal(1);
+    expect(actualResult.user_identifier).to.equal('identifier');
+    expect(actualResult.role_ids).to.eql([1, 2]);
+    expect(actualResult.role_names).to.eql(['role 1', 'role 2']);
   });
 
   it('should throw an error when a failure occurs', async () => {
@@ -141,16 +137,14 @@ describe('getUser', function () {
     try {
       const result = self.getUser();
 
-      // eslint-disable-next-line
-      //@ts-ignore
-      await result(sampleReq, null, null);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.message).to.equal(expectedError.message);
     }
   });
 
-  it('should return null when response has no rowCount (no user found)', async function () {
+  it('should return null when response has no rowCount (no user found)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -168,10 +162,8 @@ describe('getUser', function () {
 
     const result = self.getUser();
 
-    // eslint-disable-next-line
-    //@ts-ignore
-    await result(sampleReq, sampleRes, null);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(expectedResult).to.be.null;
+    expect(actualResult).to.be.null;
   });
 });

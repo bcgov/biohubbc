@@ -67,7 +67,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function addUser(): RequestHandler {
+export function addUser(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -107,7 +107,7 @@ function addUser(): RequestHandler {
         throw new HTTP500('Failed to add system user');
       }
 
-      return res.status(200).json();
+      return res.send(200);
     } catch (error) {
       defaultLog.debug({ label: 'getUser', message: 'error', error });
       throw error;
