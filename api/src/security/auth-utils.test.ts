@@ -257,7 +257,9 @@ describe('authorize', function () {
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP403);
     }
+  });
 
+  it('throws HTTP403 when the keycloak_token is undefined', async function () {
     try {
       await auth_utils.authorize(undefined, ['abc']);
       expect.fail();
@@ -283,21 +285,17 @@ describe('authorize', function () {
   });
 
   it('throws HTTP403 when stubbed getSystemUser throws error', async function () {
-    sinon.stub(auth_utils, 'getSystemUser').callsFake(async function (keycloak_token: object) {
-      if (!keycloak_token || keycloak_token) {
-        throw new Error();
-      }
-    });
-
+    sinon.stub(auth_utils, 'getSystemUser').rejects(new Error());
     try {
       await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
       expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP403);
+      expect(actualError.message).to.equal('Access Denied');
     }
   });
 
-  it('throws HTTP403 when stubbed getSystemUser returns user with no roles', async function () {
+  it('throws HTTP403 when userHasValidSystemRoles returns falsie', async function () {
     sinon.stub(auth_utils, 'getSystemUser').resolves({
       id: 0,
       user_identifier: 'somebody',
@@ -322,12 +320,8 @@ describe('authorize', function () {
       role_names: []
     });
 
-    try {
-      const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
-      expect(result).to.be.true;
-    } catch {
-      expect.fail();
-    }
+    const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+    expect(result).to.be.true;
   });
 });
 
@@ -335,12 +329,14 @@ describe('authenticate', function () {
   it('throws HTTP401 when authorization headers were null or missing', async function () {
     try {
       await auth_utils.authenticate(undefined);
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
 
     try {
       await auth_utils.authenticate({});
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
@@ -349,18 +345,20 @@ describe('authenticate', function () {
       await auth_utils.authenticate({
         headers: {}
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
   });
 
-  it('throws HTTP401 when authorization header containing valid bearer token', async function () {
+  it('throws HTTP401 when authorization header contains an invalid bearer token', async function () {
     try {
       await auth_utils.authenticate({
         headers: {
           authorization: 'Not a bearer token'
         }
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
@@ -371,6 +369,7 @@ describe('authenticate', function () {
           authorization: 'Bearer '
         }
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
@@ -381,6 +380,7 @@ describe('authenticate', function () {
           authorization: 'Bearer not-encoded'
         }
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
@@ -393,6 +393,7 @@ describe('authenticate', function () {
             'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
         }
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
@@ -405,34 +406,9 @@ describe('authenticate', function () {
             'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNvbWUgaWQifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.rXYCCTRmi7EAHVRy1QqHvysMxLZaH4EsI226hrJLtgM'
         }
       });
+      expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
   });
-
-  //TODO:  figure out how to stub the callback parameter of the function
-
-  // import * as jsonwebtoken from 'jsonwebtoken';
-  // it('returns a validated token through verifyToken', async function () {
-  //   sinon
-  //     .stub(jsonwebtoken, 'verify')
-  //     .withArgs(
-  //       'token',
-  //       'secretOrPublicKey'
-  //       // ,'callback'
-  //       )
-  //     .callsFake(function (
-  //       token: string,
-  //       secretOrPublicKey: jsonwebtoken.Secret | jsonwebtoken.GetPublicKeyOrSecret,
-  //       // callback?: jsonwebtoken.VerifyCallback
-  //     ): void {
-  //       // callback && callback(null, undefined);
-  //     });
-
-  //   try {
-  //     await auth_utils.authenticate({});
-  //   } catch (actualError) {
-  //     expect(actualError).instanceOf(HTTP401);
-  //   }
-  // });
 });
