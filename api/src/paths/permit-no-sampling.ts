@@ -65,7 +65,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createNoSamplePermits(): RequestHandler {
+export function createNoSamplePermits(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
