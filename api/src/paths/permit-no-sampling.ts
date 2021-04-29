@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { WRITE_ROLES } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/CustomError';
 import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../models/permit-no-sampling';
 import { PostCoordinatorData } from '../models/project-create';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../openapi/schemas/permit-no-sampling';
@@ -70,6 +71,14 @@ export function createNoSamplePermits(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     const sanitizedNoSamplePermitPostData = new PostPermitNoSamplingObject(req.body);
+
+    if (!sanitizedNoSamplePermitPostData.permit || !sanitizedNoSamplePermitPostData.permit.permits.length) {
+      throw new HTTP400('Missing request body param `permit`');
+    }
+
+    if (!sanitizedNoSamplePermitPostData.coordinator) {
+      throw new HTTP400('Missing request body param `coordinator`');
+    }
 
     try {
       await connection.open();
