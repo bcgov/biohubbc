@@ -397,18 +397,5 @@ describe('authenticate', function () {
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
-
-    try {
-      await auth_utils.authenticate({
-        headers: {
-          // sample encoded json web token from jwt.io (with kid header)
-          authorization:
-            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InNvbWUgaWQifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.rXYCCTRmi7EAHVRy1QqHvysMxLZaH4EsI226hrJLtgM'
-        }
-      });
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError).instanceOf(HTTP401);
-    }
   });
 });
