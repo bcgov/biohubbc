@@ -10,6 +10,8 @@ const history = createMemoryHistory();
 
 describe('NotFoundPage', () => {
   it('renders correctly with project admin role', () => {
+    const mockHasSystemRole = () => false;
+
     const authState = {
       ready: true,
       keycloakWrapper: {
@@ -18,7 +20,7 @@ describe('NotFoundPage', () => {
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
         getUserIdentifier: jest.fn(),
         hasAccessRequest: false,
-        hasSystemRole: jest.fn(),
+        hasSystemRole: mockHasSystemRole,
         getIdentitySource: jest.fn(),
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -41,6 +43,8 @@ describe('NotFoundPage', () => {
   });
 
   it('renders correctly with system admin role', () => {
+    const mockHasSystemRole = () => true;
+
     const authState = {
       ready: true,
       keycloakWrapper: {
@@ -49,7 +53,7 @@ describe('NotFoundPage', () => {
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
         getUserIdentifier: jest.fn(),
         hasAccessRequest: false,
-        hasSystemRole: jest.fn(),
+        hasSystemRole: mockHasSystemRole,
         getIdentitySource: jest.fn(),
         username: 'testusername',
         displayName: 'testdisplayname',

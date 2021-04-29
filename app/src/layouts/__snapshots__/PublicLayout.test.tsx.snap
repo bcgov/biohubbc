@@ -59,12 +59,6 @@ exports[`PublicLayout renders correctly 1`] = `
             >
               Projects
             </a>
-            <a
-              color="inherit"
-              href="/admin/users"
-            >
-              Manage Users
-            </a>
           </div>
         </div>
       </div>
