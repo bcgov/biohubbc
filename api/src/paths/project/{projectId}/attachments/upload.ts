@@ -3,7 +3,7 @@
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { WRITE_ROLES } from '../../../../constants/roles';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { uploadFileToS3 } from '../../../../utils/file-utils';
@@ -18,7 +18,7 @@ POST.apiDoc = {
   tags: ['artifacts'],
   security: [
     {
-      Bearer: WRITE_ROLES
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
   parameters: [

@@ -1,4 +1,4 @@
-import { decode, verify } from 'jsonwebtoken';
+import { decode, GetPublicKeyOrSecret, Secret, verify, VerifyErrors } from 'jsonwebtoken';
 import JwksRsa, { JwksClient } from 'jwks-rsa';
 import { promisify } from 'util';
 import { getDBConnection } from '../database/db';
@@ -94,31 +94,43 @@ export const authenticate = async function (req: any): Promise<true> {
 /**
  * Verify jwt token.
  *
- * @param {*} tokenString
- * @param {*} secretOrPublicKey
- * @returns {*} verifiedToken
+ * @param {string} tokenString
+ * @param {(Secret | GetPublicKeyOrSecret)} secretOrPublicKey
+ * @return {*} The decoded token, or null.
  */
-const verifyToken = function (tokenString: any, secretOrPublicKey: any): any {
-  return verify(tokenString, secretOrPublicKey, function (verificationError: any, verifiedToken: any): any {
-    if (verificationError) {
-      defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
-      return null;
-    }
+const verifyToken = function (tokenString: string, secretOrPublicKey: Secret | GetPublicKeyOrSecret): any {
+  return verify(tokenString, secretOrPublicKey, verifyTokenCallback);
+};
 
-    // Verify that the token came from the expected issuer
-    // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
-    if (!KEYCLOAK_URL.includes(verifiedToken?.iss)) {
-      defaultLog.warn({
-        label: 'verifyToken',
-        message: 'jwt verification error: issuer mismatch',
-        'actual token issuer': verifiedToken?.iss,
-        'expected to be a substring of': KEYCLOAK_URL
-      });
-      return null;
-    }
+/**
+ * Callback that returns the decoded token, or null.
+ *
+ * @param {(VerifyErrors | null)} verificationError
+ * @param {(object | undefined)} verifiedToken
+ * @return {*} {(object | null | undefined)}
+ */
+const verifyTokenCallback = function (
+  verificationError: VerifyErrors | null,
+  verifiedToken: object | undefined
+): object | null | undefined {
+  if (verificationError) {
+    defaultLog.warn({ label: 'verifyToken', message: 'jwt verification error', verificationError });
+    return null;
+  }
 
-    return verifiedToken;
-  });
+  // Verify that the token came from the expected issuer
+  // Example: when running in prod, only accept tokens from `sso.pathfinder...` and not `sso-dev.pathfinder...`, etc
+  if (!KEYCLOAK_URL.includes(verifiedToken?.['iss'])) {
+    defaultLog.warn({
+      label: 'verifyToken',
+      message: 'jwt verification error: issuer mismatch',
+      'actual token issuer': verifiedToken?.['iss'],
+      'expected to be a substring of': KEYCLOAK_URL
+    });
+    return null;
+  }
+
+  return verifiedToken;
 };
 
 /**
@@ -155,8 +167,7 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 
   const userObject = new UserObject(systemUserWithRoles);
 
-  // TODO replace `[]` with the `scopes` param when we are ready to enforce system roles on endpoints
-  const hasValidSystemRole = userHasValidSystemRoles([], userObject.role_names);
+  const hasValidSystemRole = userHasValidSystemRoles(scopes, userObject.role_names);
 
   if (!hasValidSystemRole) {
     defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });

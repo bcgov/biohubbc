@@ -2,11 +2,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Toolbar from '@material-ui/core/Toolbar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Toolbar from '@material-ui/core/Toolbar';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
-import React from 'react';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -75,6 +77,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
 
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
   return (
     <AppBar position="sticky" style={{ boxShadow: 'none' }}>
       <Box className={classes.govHeader}>
@@ -97,9 +101,11 @@ const Header: React.FC = () => {
             <Link to="/projects" color={'inherit'}>
               Projects
             </Link>
-            <Link to="/admin/users" color={'inherit'}>
-              Manage Users
-            </Link>
+            {keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) && (
+              <Link to="/admin/users" color={'inherit'}>
+                Manage Users
+              </Link>
+            )}
           </Toolbar>
         </Container>
       </Box>
