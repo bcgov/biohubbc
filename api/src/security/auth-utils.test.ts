@@ -317,10 +317,10 @@ describe('authorize', function () {
       id: 0,
       user_identifier: 'somebody',
       role_ids: [],
-      role_names: []
+      role_names: ['Role 1']
     });
 
-    const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+    const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['Role 1']);
     expect(result).to.be.true;
   });
 });
