@@ -304,7 +304,7 @@ const CreateProjectPage: React.FC = () => {
         stepValidation: ProjectFundingFormYupSchema
       },
       {
-        stepTitle: 'Other Partnerships',
+        stepTitle: 'Partnerships',
         stepSubTitle:
           'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
         stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,

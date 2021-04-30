@@ -786,7 +786,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         <h3
           class="MuiTypography-root MuiTypography-h3"
         >
-          IUCN Conservation Actions Classifications
+          IUCN Conservation Actions Classification
         </h3>
         <button
           aria-label="Edit IUCN Classifications"
@@ -887,7 +887,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3"
           >
-            Other Partnerships
+            Partnerships
           </h3>
           <button
             aria-label="Edit Partnerships"
@@ -952,7 +952,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             <dt
               class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
-              Stakeholder Partnerships
+              Other Partnerships
             </dt>
             <dd
               class="MuiTypography-root MuiTypography-body1"

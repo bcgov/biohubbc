@@ -119,7 +119,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Other Partnerships</Typography>
+          <Typography variant="h3">Partnerships</Typography>
           <Button
             variant="text"
             color="primary"
@@ -155,7 +155,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
           </Grid>
           <Grid item xs={12}>
             <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Stakeholder Partnerships
+              Other Partnerships
             </Typography>
             {stakeholder_partnerships?.map((stakeholderPartnership: string, index: number) => {
               return (
@@ -167,7 +167,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
             {!hasStakeholderPartnerships && (
               <Typography component="dd" variant="body1">
-                No Stakeholder Partnerships
+                No Other Partnerships
               </Typography>
             )}
           </Grid>

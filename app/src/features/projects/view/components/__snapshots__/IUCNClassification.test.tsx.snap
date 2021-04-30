@@ -8,7 +8,7 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
     <h3
       class="MuiTypography-root MuiTypography-h3"
     >
-      IUCN Conservation Actions Classifications
+      IUCN Conservation Actions Classification
     </h3>
     <button
       aria-label="Edit IUCN Classifications"
@@ -104,7 +104,7 @@ exports[`IUCNClassification renders correctly with no classification details 1`]
     <h3
       class="MuiTypography-root MuiTypography-h3"
     >
-      IUCN Conservation Actions Classifications
+      IUCN Conservation Actions Classification
     </h3>
     <button
       aria-label="Edit IUCN Classifications"

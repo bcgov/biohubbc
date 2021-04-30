@@ -1653,7 +1653,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     <h2
                       class="MuiTypography-root makeStyles-stepTitle-6 MuiTypography-h2"
                     >
-                      Other Partnerships
+                      Partnerships
                     </h2>
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"

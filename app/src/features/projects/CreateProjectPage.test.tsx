@@ -84,7 +84,7 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Funding')).toBeVisible();
 
-      expect(getByText('Other Partnerships')).toBeVisible();
+      expect(getByText('Partnerships')).toBeVisible();
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -114,7 +114,7 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Funding')).toBeVisible();
 
-      expect(getByText('Other Partnerships')).toBeVisible();
+      expect(getByText('Partnerships')).toBeVisible();
     });
 
     // populate coordinator form
@@ -168,7 +168,7 @@ describe('CreateProjectPage', () => {
 
       expect(queryByText('Funding')).toBeNull();
 
-      expect(queryByText('Other Partnerships')).toBeNull();
+      expect(queryByText('Partnerships')).toBeNull();
 
       expect(asFragment()).toMatchSnapshot();
     });
