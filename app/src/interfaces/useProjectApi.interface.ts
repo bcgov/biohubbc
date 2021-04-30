@@ -9,6 +9,15 @@ import { IProjectPermitForm } from 'features/projects/components/ProjectPermitFo
 import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { Feature } from 'geojson';
 
+export interface IGetProjectSurvey {
+  id: number;
+  name: string;
+  species: string;
+  start_date: string;
+  end_date: string;
+  status_name: string;
+}
+
 export interface IGetProjectAttachment {
   id: number;
   fileName: string;
