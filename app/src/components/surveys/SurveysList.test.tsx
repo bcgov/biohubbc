@@ -24,14 +24,16 @@ describe('SurveysList', () => {
       }
     ];
 
-    const { asFragment } = render(<SurveysList surveysList={surveysList} />);
+    const { getByText, queryByText } = render(<SurveysList surveysList={surveysList} />);
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(queryByText('No Surveys')).toBeNull();
+    expect(getByText('Moose Survey 1')).toBeInTheDocument();
+    expect(getByText('Moose Survey 2')).toBeInTheDocument();
   });
 
   it('renders correctly with no surveys', () => {
-    const { asFragment } = render(<SurveysList surveysList={[]} />);
+    const { getByText } = render(<SurveysList surveysList={[]} />);
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('No Surveys')).toBeInTheDocument();
   });
 });

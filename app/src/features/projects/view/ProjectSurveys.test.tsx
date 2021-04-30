@@ -4,8 +4,10 @@ import ProjectSurveys from './ProjectSurveys';
 
 describe('ProjectSurveys', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(<ProjectSurveys />);
+    const { getByText } = render(<ProjectSurveys />);
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Surveys')).toBeInTheDocument();
+    expect(getByText('Add Survey')).toBeInTheDocument();
+    expect(getByText('Moose Survey 1')).toBeInTheDocument();
   });
 });
