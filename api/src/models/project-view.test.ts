@@ -434,10 +434,6 @@ describe('GetProjectData', () => {
       expect(data.project_activities).to.eql([]);
     });
 
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([]);
-    });
-
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -458,12 +454,10 @@ describe('GetProjectData', () => {
 
     const activityData = [{ a_id: 1 }, { a_id: 2 }];
 
-    const climateInitiativeData = [{ cci_id: 1 }, { cci_id: 2 }, { cci_id: 3 }];
-
     let data: GetProjectData;
 
     before(() => {
-      data = new GetProjectData(projectData, activityData, climateInitiativeData);
+      data = new GetProjectData(projectData, activityData);
     });
 
     it('sets name', () => {
@@ -476,10 +470,6 @@ describe('GetProjectData', () => {
 
     it('sets project_activities', () => {
       expect(data.project_activities).to.eql([1, 2]);
-    });
-
-    it('sets climate_change_initiatives', () => {
-      expect(data.climate_change_initiatives).to.eql([1, 2, 3]);
     });
 
     it('sets start_date', () => {

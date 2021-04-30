@@ -51,8 +51,7 @@ describe('ProjectPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        activity: [{ id: 1, name: 'activity 1' }],
-        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+        activity: [{ id: 1, name: 'activity 1' }]
       } as any);
 
       const { asFragment, findByText } = render(
@@ -79,8 +78,7 @@ describe('ProjectPage', () => {
       });
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        activity: [{ id: 1, name: 'activity 1' }],
-        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+        activity: [{ id: 1, name: 'activity 1' }]
       } as any);
 
       const { asFragment, findByText } = render(
@@ -101,8 +99,7 @@ describe('ProjectPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        activity: [{ id: 1, name: 'activity 1' }],
-        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+        activity: [{ id: 1, name: 'activity 1' }]
       } as any);
 
       history.push('/details');
@@ -122,8 +119,7 @@ describe('ProjectPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        activity: [{ id: 1, name: 'activity 1' }],
-        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+        activity: [{ id: 1, name: 'activity 1' }]
       } as any);
 
       history.push('/surveys');
@@ -143,8 +139,7 @@ describe('ProjectPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        activity: [{ id: 1, name: 'activity 1' }],
-        climate_change_initiative: [{ id: 1, name: 'climate change initiative 1' }]
+        activity: [{ id: 1, name: 'activity 1' }]
       } as any);
 
       history.push('/attachments');

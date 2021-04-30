@@ -41,7 +41,6 @@ import {
 } from '../../../queries/project/project-update-queries';
 import {
   deleteActivitiesSQL,
-  deleteClimateInitiativesSQL,
   deleteIUCNSQL,
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
@@ -56,8 +55,7 @@ import {
   getFocalSpeciesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
-  getActivitiesByProjectSQL,
-  getClimateInitiativesByProjectSQL
+  getActivitiesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
@@ -68,7 +66,6 @@ import {
   insertIndigenousNation,
   insertRegion,
   insertProjectActivity,
-  insertProjectClimateChangeInitiative,
   insertStakeholderPartnership,
   insertPermitNumber
 } from '../../project';
@@ -430,22 +427,18 @@ export const getObjectivesData = async (projectId: number, connection: IDBConnec
 export const getProjectData = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatementDetails = getProjectByProjectSQL(projectId);
   const sqlStatementActivities = getActivitiesByProjectSQL(projectId);
-  const sqlStatementClimateInitiatives = getClimateInitiativesByProjectSQL(projectId);
 
-  if (!sqlStatementDetails || !sqlStatementActivities || !sqlStatementClimateInitiatives) {
+  if (!sqlStatementDetails || !sqlStatementActivities) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
-  const [responseDetails, responseActivities, responseClimateInitiatives] = await Promise.all([
+  const [responseDetails, responseActivities] = await Promise.all([
     connection.query(sqlStatementDetails.text, sqlStatementDetails.values),
-    connection.query(sqlStatementActivities.text, sqlStatementActivities.values),
-    connection.query(sqlStatementClimateInitiatives.text, sqlStatementClimateInitiatives.values)
+    connection.query(sqlStatementActivities.text, sqlStatementActivities.values)
   ]);
 
   const resultDetails = (responseDetails && responseDetails.rows && responseDetails.rows[0]) || null;
   const resultActivities = (responseActivities && responseActivities.rows && responseActivities.rows) || null;
-  const resultClimateInitiatives =
-    (responseClimateInitiatives && responseClimateInitiatives.rows && responseClimateInitiatives.rows) || null;
 
   if (!resultDetails) {
     throw new HTTP400('Failed to get project details data');
@@ -455,11 +448,7 @@ export const getProjectData = async (projectId: number, connection: IDBConnectio
     throw new HTTP400('Failed to get project activities data');
   }
 
-  if (!resultClimateInitiatives) {
-    throw new HTTP400('Failed to get project climate initiatives data');
-  }
-
-  return new GetProjectData(resultDetails, resultActivities, resultClimateInitiatives);
+  return new GetProjectData(resultDetails, resultActivities);
 };
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
@@ -817,28 +806,14 @@ export const updateProjectData = async (
   }
 
   const sqlDeleteActivities = deleteActivitiesSQL(projectId);
-  const sqlDeleteClimateInitiatives = deleteClimateInitiativesSQL(projectId);
 
-  if (!sqlDeleteActivities || !sqlDeleteClimateInitiatives) {
+  if (!sqlDeleteActivities) {
     throw new HTTP400('Failed to build SQL delete statement');
   }
 
-  const deleteActivitiesPromises = connection.query(sqlDeleteActivities.text, sqlDeleteActivities.values);
-  const deleteClimateInitiativesPromises = connection.query(
-    sqlDeleteClimateInitiatives.text,
-    sqlDeleteClimateInitiatives.values
-  );
-
-  const [deleteActivitiesResult, deleteClimateInitiativesResult] = await Promise.all([
-    deleteActivitiesPromises,
-    deleteClimateInitiativesPromises
-  ]);
+  const deleteActivitiesResult = await connection.query(sqlDeleteActivities.text, sqlDeleteActivities.values);
 
   if (!deleteActivitiesResult) {
-    throw new HTTP409('Failed to update project activity data');
-  }
-
-  if (!deleteClimateInitiativesResult) {
     throw new HTTP409('Failed to update project activity data');
   }
 
@@ -847,12 +822,7 @@ export const updateProjectData = async (
       insertProjectActivity(activityId, projectId, connection)
     ) || [];
 
-  const insertClimateInitiativesPromises =
-    putProjectData?.climate_change_initiatives?.map((climateChangeInitiativeId: number) =>
-      insertProjectClimateChangeInitiative(climateChangeInitiativeId, projectId, connection)
-    ) || [];
-
-  await Promise.all([...insertActivityPromises, ...insertClimateInitiativesPromises]);
+  await Promise.all([...insertActivityPromises]);
 };
 
 export const updateProjectFundingData = async (

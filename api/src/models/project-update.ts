@@ -38,7 +38,6 @@ export class PutProjectData {
   name: string;
   type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -49,7 +48,6 @@ export class PutProjectData {
     this.name = obj?.project_name || null;
     this.type = obj?.project_type || null;
     this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
-    this.climate_change_initiatives = (obj?.climate_change_initiatives?.length && obj.climate_change_initiatives) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
@@ -255,19 +253,16 @@ export class GetProjectData {
   project_name: string;
   project_type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
 
-  constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
-    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
+  constructor(projectData?: any, activityData?: any[]) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.pt_id || '';
     this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
-    this.climate_change_initiatives =
-      (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.revision_count = projectData?.revision_count ?? null;

@@ -35,18 +35,11 @@ export interface IGetProjectAttachmentsResponse {
 export interface IGetProjectsListResponse {
   id: number;
   name: string;
-  objectives: string;
-  location_description: string;
   start_date: string;
   end_date: string;
-  caveats: string;
-  comments: string;
-  coordinator_first_name: string;
-  coordinator_last_name: string;
-  coordinator_email_address: string;
-  coordinator_agency_name: string;
-  focal_species_name_list: string;
-  regions_name_list: string;
+  coordinator_agency: string;
+  project_type: string;
+  permits_list: string;
 }
 
 /**
@@ -132,7 +125,6 @@ export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
   project_type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   revision_count: number;
@@ -238,7 +230,6 @@ export interface IGetProjectForViewResponseDetails {
   project_name: string;
   project_type: string;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
 }

@@ -47,7 +47,7 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
             id={'stakeholder_partnerships'}
-            label={'Stakeholder Partnerships'}
+            label={'Other Partnerships'}
             options={props.stakeholder_partnerships}
             required={false}
           />

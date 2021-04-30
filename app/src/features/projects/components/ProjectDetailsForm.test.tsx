@@ -38,21 +38,6 @@ const activity: IMultiAutocompleteFieldOption[] = [
   }
 ];
 
-const climate_change_initiative: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'initiative 1'
-  },
-  {
-    value: 2,
-    label: 'initiative 2'
-  },
-  {
-    value: 3,
-    label: 'initiative 3'
-  }
-];
-
 describe('ProjectDetailsForm', () => {
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
@@ -62,13 +47,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => (
-          <ProjectDetailsForm
-            project_type={project_type}
-            activity={activity}
-            climate_change_initiative={climate_change_initiative}
-          />
-        )}
+        {() => <ProjectDetailsForm project_type={project_type} activity={activity} />}
       </Formik>
     );
 
@@ -80,7 +59,6 @@ describe('ProjectDetailsForm', () => {
       project_name: 'name 1',
       project_type: 2,
       project_activities: [2, 3],
-      climate_change_initiatives: [1, 2],
       start_date: '2021-03-14',
       end_date: '2021-04-14'
     };
@@ -92,13 +70,7 @@ describe('ProjectDetailsForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => (
-          <ProjectDetailsForm
-            project_type={project_type}
-            activity={activity}
-            climate_change_initiative={climate_change_initiative}
-          />
-        )}
+        {() => <ProjectDetailsForm project_type={project_type} activity={activity} />}
       </Formik>
     );
 

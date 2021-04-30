@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectDetails renders correctly with activity and climate initiative data 1`] = `
+exports[`ProjectDetails renders correctly with activity data 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-5"
@@ -104,27 +104,13 @@ exports[`ProjectDetails renders correctly with activity and climate initiative d
             Activity code
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Climate Change Initiatives
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Climate code
-          </dd>
-        </div>
       </div>
     </dl>
   </div>
 </DocumentFragment>
 `;
 
-exports[`ProjectDetails renders correctly with no activity and climate initiative data 1`] = `
+exports[`ProjectDetails renders correctly with no activity data 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-3"
@@ -226,20 +212,6 @@ exports[`ProjectDetails renders correctly with no activity and climate initiativ
             class="MuiTypography-root MuiTypography-body1"
           >
             No Activities
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Climate Change Initiatives
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            No Climate Change Initiatives
           </dd>
         </div>
       </div>
@@ -353,20 +325,6 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
             class="MuiTypography-root MuiTypography-body1"
           >
             Activity code
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Climate Change Initiatives
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Climate code
           </dd>
         </div>
       </div>

@@ -23,7 +23,6 @@ export type CodeSet<T extends ICode = ICode> = T[];
 export interface IGetAllCodeSetsResponse {
   coordinator_agency: CodeSet;
   management_action_type: CodeSet;
-  climate_change_initiative: CodeSet;
   first_nations: CodeSet;
   funding_source: CodeSet;
   investment_action_category: CodeSet<{ id: number; fs_id: number; name: string }>;

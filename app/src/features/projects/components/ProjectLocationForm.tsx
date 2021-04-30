@@ -17,6 +17,7 @@ import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 as uuidv4 } from 'uuid';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles({
   bold: {
@@ -120,6 +121,18 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize id={'regions'} label={'Regions'} options={props.region} required={true} />
+          <Box pt={2}>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() => {
+                window.open(
+                  'https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts'
+                );
+              }}>
+              Click here to view FLNRO map regions.
+            </Link>
+          </Box>
         </Grid>
         <Grid item xs={12}>
           <TextField

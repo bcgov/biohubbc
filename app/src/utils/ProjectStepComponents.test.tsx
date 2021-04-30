@@ -82,8 +82,7 @@ describe('ProjectStepComponents', () => {
             codes={{
               ...codes,
               project_type: (null as unknown) as any,
-              activity: (null as unknown) as any,
-              climate_change_initiative: (null as unknown) as any
+              activity: (null as unknown) as any
             }}
           />
         )}

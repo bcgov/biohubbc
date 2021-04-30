@@ -25,7 +25,6 @@ import {
   getFocalSpeciesByProjectSQL,
   getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
-  getClimateInitiativesByProjectSQL,
   getActivitiesByProjectSQL,
   getFundingSourceByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
@@ -97,7 +96,6 @@ function getProjectForView(): RequestHandler {
       const getProjectPermitsSQLStatement = getProjectPermitsSQL(Number(req.params.projectId));
       const getProjectLocationSQLStatement = getLocationByProjectSQL(Number(req.params.projectId));
       const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
-      const getProjectClimateInitiativesSQLStatement = getClimateInitiativesByProjectSQL(Number(req.params.projectId));
       const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
         Number(req.params.projectId)
       );
@@ -116,7 +114,6 @@ function getProjectForView(): RequestHandler {
         !getProjectPermitsSQLStatement ||
         !getProjectLocationSQLStatement ||
         !getProjectActivitiesSQLStatement ||
-        !getProjectClimateInitiativesSQLStatement ||
         !getProjectIUCNActionClassificationSQLStatement ||
         !getProjectFundingSourceSQLStatement ||
         !getProjectFocalSpeciesSQLStatement ||
@@ -134,7 +131,6 @@ function getProjectForView(): RequestHandler {
         permitData,
         locationData,
         activityData,
-        climateInitiativeData,
         iucnClassificationData,
         fundingData,
         focalSpecies,
@@ -146,10 +142,6 @@ function getProjectForView(): RequestHandler {
         await connection.query(getProjectPermitsSQLStatement.text, getProjectPermitsSQLStatement.values),
         await connection.query(getProjectLocationSQLStatement.text, getProjectLocationSQLStatement.values),
         await connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
-        await connection.query(
-          getProjectClimateInitiativesSQLStatement.text,
-          getProjectClimateInitiativesSQLStatement.values
-        ),
         await connection.query(
           getProjectIUCNActionClassificationSQLStatement.text,
           getProjectIUCNActionClassificationSQLStatement.values
@@ -177,9 +169,7 @@ function getProjectForView(): RequestHandler {
           projectData.rows &&
           activityData &&
           activityData.rows &&
-          climateInitiativeData &&
-          climateInitiativeData.rows &&
-          new GetProjectData(projectData.rows[0], activityData.rows, climateInitiativeData.rows)) ||
+          new GetProjectData(projectData.rows[0], activityData.rows)) ||
         null;
 
       const getPermitData = (permitData && permitData.rows && new GetPermitData(permitData.rows)) || null;

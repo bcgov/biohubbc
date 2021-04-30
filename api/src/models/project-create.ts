@@ -100,7 +100,6 @@ export class PostProjectData {
   name: string;
   type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   comments: string;
@@ -111,7 +110,6 @@ export class PostProjectData {
     this.name = obj?.project_name || null;
     this.type = obj?.project_type || null;
     this.project_activities = (obj?.project_activities?.length && obj.project_activities) || [];
-    this.climate_change_initiatives = (obj?.climate_change_initiatives?.length && obj.climate_change_initiatives) || [];
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;

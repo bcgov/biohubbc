@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import {
   getActivitySQL,
   getAdministrativeActivityStatusTypeSQL,
-  getClimateChangeInitiativeSQL,
   getFirstNationsSQL,
   getFundingSourceSQL,
   getInvestmentActionCategorySQL,
@@ -18,13 +17,6 @@ import {
 describe('getManagementActionTypeSQL', () => {
   it('returns valid sql statement', () => {
     const response = getManagementActionTypeSQL();
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getClimateChangeInitiativeSQL', () => {
-  it('returns valid sql statement', () => {
-    const response = getClimateChangeInitiativeSQL();
     expect(response).to.not.be.null;
   });
 });

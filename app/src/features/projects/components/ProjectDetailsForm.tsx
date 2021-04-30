@@ -17,7 +17,6 @@ export interface IProjectDetailsForm {
   project_name: string;
   project_type: number;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
 }
@@ -26,7 +25,6 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
   project_name: '',
   project_type: ('' as unknown) as number,
   project_activities: [],
-  climate_change_initiatives: [],
   start_date: '',
   end_date: ''
 };
@@ -41,7 +39,6 @@ export const ProjectDetailsFormYupSchema = yup.object().shape({
 export interface IProjectDetailsFormProps {
   project_type: IMultiAutocompleteFieldOption[];
   activity: IMultiAutocompleteFieldOption[];
-  climate_change_initiative: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -99,14 +96,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             id={'project_activities'}
             label={'Project Activities'}
             options={props.activity}
-            required={false}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'climate_change_initiatives'}
-            label={'Climate Change Initiatives'}
-            options={props.climate_change_initiative}
             required={false}
           />
         </Grid>

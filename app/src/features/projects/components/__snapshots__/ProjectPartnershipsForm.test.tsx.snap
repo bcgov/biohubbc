@@ -126,7 +126,7 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
-              Stakeholder Partnerships
+              Other Partnerships
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -204,7 +204,7 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
                   class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
-                    Stakeholder Partnerships
+                    Other Partnerships
                   </span>
                 </legend>
               </fieldset>
@@ -387,7 +387,7 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
               for="stakeholder_partnerships"
               id="stakeholder_partnerships-label"
             >
-              Stakeholder Partnerships
+              Other Partnerships
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -465,7 +465,7 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
                   class="PrivateNotchedOutline-legendLabelled-9"
                 >
                   <span>
-                    Stakeholder Partnerships
+                    Other Partnerships
                   </span>
                 </legend>
               </fieldset>

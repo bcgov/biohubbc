@@ -88,7 +88,6 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
       project_name: detailsResponseData.project_name,
       project_type: detailsResponseData.project_type,
       project_activities: detailsResponseData.project_activities,
-      climate_change_initiatives: detailsResponseData.climate_change_initiatives,
       start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.start_date),
       end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.end_date)
     } as any);
@@ -119,12 +118,6 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
       ?.filter((item) => project.project_activities.includes(item.id))
       ?.map((item) => item.name)
       .join(', ') || '';
-
-  const projectClimateChangeInitiatives =
-    codes?.climate_change_initiative
-      ?.filter((item) => project.climate_change_initiatives.includes(item.id))
-      ?.map((item) => item.name)
-      ?.join(', ') || '';
 
   return (
     <>
@@ -199,18 +192,6 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
               </Typography>
               <Typography component="dd" variant="body1">
                 {projectActivities ? <>{projectActivities}</> : 'No Activities'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Climate Change Initiatives
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {projectClimateChangeInitiatives ? (
-                  <>{projectClimateChangeInitiatives}</>
-                ) : (
-                  'No Climate Change Initiatives'
-                )}
               </Typography>
             </Grid>
           </Grid>

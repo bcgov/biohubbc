@@ -50,12 +50,12 @@ describe('ProjectDetails', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with no activity and climate initiative data', () => {
+  it('renders correctly with no activity data', () => {
     const { asFragment } = render(
       <ProjectDetails
         projectForViewData={{
           ...getProjectForViewResponse,
-          project: { ...getProjectForViewResponse.project, climate_change_initiatives: [], project_activities: [] }
+          project: { ...getProjectForViewResponse.project, project_activities: [] }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -65,7 +65,7 @@ describe('ProjectDetails', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with activity and climate initiative data', () => {
+  it('renders correctly with activity data', () => {
     const { asFragment } = renderContainer();
 
     expect(asFragment()).toMatchSnapshot();
@@ -77,7 +77,6 @@ describe('ProjectDetails', () => {
         project_name: 'project name',
         project_type: 1,
         project_activities: [1, 2],
-        climate_change_initiatives: [1, 2, 3],
         start_date: '2020-04-20',
         end_date: '2020-05-20',
         revision_count: 2
@@ -123,7 +122,6 @@ describe('ProjectDetails', () => {
           project_name: 'project name',
           project_type: 1,
           project_activities: [1, 2],
-          climate_change_initiatives: [1, 2, 3],
           start_date: '2020-04-20',
           end_date: '2020-05-20',
           revision_count: 2
@@ -188,7 +186,6 @@ describe('ProjectDetails', () => {
         project_name: 'project name',
         project_type: 1,
         project_activities: [1, 2],
-        climate_change_initiatives: [1, 2, 3],
         start_date: '2020-04-20',
         end_date: '2020-05-20',
         revision_count: 2

@@ -52,11 +52,11 @@ describe('ProjectsListPage', () => {
         {
           id: 1,
           name: 'Project 1',
-          focal_species_name_list: null,
-          location_description: 'location',
-          regions_name_list: 'South Coast',
           start_date: null,
-          end_date: null
+          end_date: null,
+          coordinator_agency: 'coordinator agency',
+          project_type: 'project type',
+          permits_list: '1, 2, 3'
         }
       ]);
 
@@ -149,11 +149,11 @@ describe('ProjectsListPage', () => {
         {
           id: 1,
           name: 'Project 1',
-          focal_species_name_list: null,
-          location_description: 'location',
-          regions_name_list: 'South Coast',
           start_date: null,
-          end_date: null
+          end_date: null,
+          coordinator_agency: 'coordinator agency',
+          project_type: 'project type',
+          permits_list: '1, 2, 3'
         }
       ]);
 

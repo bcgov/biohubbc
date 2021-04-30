@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -96,16 +97,27 @@ const ProjectsListPage: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Project Name</TableCell>
-                <TableCell>Species</TableCell>
-                <TableCell>Location</TableCell>
+                <TableCell>Project Type</TableCell>
+                <TableCell>Permits</TableCell>
+                <TableCell>Coordinator Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
               {drafts?.map((row) => (
-                <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToCreateProjectPage(row.id)}>
-                  <TableCell>{row.name} (Draft)</TableCell>
+                <TableRow key={row.id}>
+                  <TableCell component="th" scope="row">
+                    <Link
+                      data-testid={row.name}
+                      underline="always"
+                      component="button"
+                      variant="body2"
+                      onClick={() => navigateToCreateProjectPage(row.id)}>
+                      {row.name} (Draft)
+                    </Link>
+                  </TableCell>
+                  <TableCell />
                   <TableCell />
                   <TableCell />
                   <TableCell />
@@ -113,10 +125,20 @@ const ProjectsListPage: React.FC = () => {
                 </TableRow>
               ))}
               {projects?.map((row) => (
-                <TableRow data-testid={row.name} key={row.id} onClick={() => navigateToProjectPage(row.id)}>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.focal_species_name_list}</TableCell>
-                  <TableCell>{row.regions_name_list}</TableCell>
+                <TableRow key={row.id}>
+                  <TableCell component="th" scope="row">
+                    <Link
+                      data-testid={row.name}
+                      underline="always"
+                      component="button"
+                      variant="body2"
+                      onClick={() => navigateToProjectPage(row.id)}>
+                      {row.name}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{row.project_type}</TableCell>
+                  <TableCell>{row.permits_list}</TableCell>
+                  <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                 </TableRow>

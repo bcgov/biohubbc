@@ -65,28 +65,28 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 export const getProjectListSQL = (): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectListSQL', message: 'getProjectListSQL' });
 
-  // TODO these fields were chosen arbitrarily based on having a small
   const sqlStatement = SQL`
     SELECT
       p.id,
       p.name,
       p.start_date,
       p.end_date,
-      p.location_description,
-      string_agg(DISTINCT pr.name, ', ') as regions_name_list,
-      string_agg(DISTINCT pfs.name, ', ') as focal_species_name_list
+      p.coordinator_agency_name,
+      pt.name as project_type,
+      string_agg(DISTINCT pp.number, ', ') as permits_list
     from
       project as p
-    left outer join project_region as pr
-      on p.id = pr.p_id
-    left outer join focal_species as pfs
-      on p.id = pfs.p_id
+    left outer join project_type as pt
+      on p.pt_id = pt.id
+    left outer join project_permit as pp
+      on p.id = pp.p_id
     group by
       p.id,
       p.name,
       p.start_date,
       p.end_date,
-      p.location_description;
+      p.coordinator_agency_name,
+      pt.name;
   `;
 
   defaultLog.debug({

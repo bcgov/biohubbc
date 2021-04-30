@@ -65,12 +65,6 @@ export const projectCreatePostRequestObject = {
             type: 'number'
           }
         },
-        climate_change_initiatives: {
-          type: 'array',
-          items: {
-            type: 'number'
-          }
-        },
         start_date: {
           type: 'string',
           description: 'ISO 8601 date string'
