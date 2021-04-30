@@ -107,14 +107,14 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             value={values.email_address}
             onChange={handleChange}
             error={touched.email_address && Boolean(errors.email_address)}
-            helperText={touched.last_name && errors.email_address}
+            helperText={touched.email_address && errors.email_address}
           />
         </Grid>
         <Grid item xs={12}>
           <AutocompleteField
             id="coordinator_agency"
             name="Coordinator Agency"
-            label={'Coordinator Agency'}
+            label="Coordinator Agency"
             value={values.coordinator_agency}
             options={props.coordinator_agency}
             required={true}

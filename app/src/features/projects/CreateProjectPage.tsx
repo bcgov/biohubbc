@@ -321,7 +321,7 @@ const CreateProjectPage: React.FC = () => {
    * @return {boolean} {boolean}
    */
   const isSamplingConducted = (permitFormValues: IProjectPermitForm): boolean => {
-    if (!permitFormValues.permits.length) {
+    if (!permitFormValues?.permits?.length) {
       return true;
     }
 
