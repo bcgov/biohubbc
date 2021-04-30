@@ -7,6 +7,7 @@ import * as db from '../database/db';
 import * as user_queries from '../queries/users/user-queries';
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
+import { HTTP401, HTTP403 } from '../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -254,7 +255,16 @@ describe('authorize', function () {
       await auth_utils.authorize({ keycloak_token: '' }, ['abc']);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.contain('Access Denied');
+      expect(actualError).instanceOf(HTTP403);
+    }
+  });
+
+  it('throws HTTP403 when the keycloak_token is undefined', async function () {
+    try {
+      await auth_utils.authorize(undefined, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
     }
   });
 
@@ -270,7 +280,122 @@ describe('authorize', function () {
       await auth_utils.authorize({ keycloak_token: 'some token' }, ['abc']);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.contain('Access Denied');
+      expect(actualError).instanceOf(HTTP403);
+    }
+  });
+
+  it('throws HTTP403 when stubbed getSystemUser throws error', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').rejects(new Error());
+    try {
+      await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
+      expect(actualError.message).to.equal('Access Denied');
+    }
+  });
+
+  it('throws HTTP403 when userHasValidSystemRoles returns falsie', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').resolves({
+      id: 0,
+      user_identifier: 'somebody',
+      role_ids: [],
+      role_names: []
+    });
+    sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(false);
+
+    try {
+      await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP403);
+    }
+  });
+
+  it('authorizes a user with valid roles', async function () {
+    sinon.stub(auth_utils, 'getSystemUser').resolves({
+      id: 0,
+      user_identifier: 'somebody',
+      role_ids: [],
+      role_names: []
+    });
+
+    const result = await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
+    expect(result).to.be.true;
+  });
+});
+
+describe('authenticate', function () {
+  it('throws HTTP401 when authorization headers were null or missing', async function () {
+    try {
+      await auth_utils.authenticate(undefined);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({});
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {}
+      });
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+  });
+
+  it('throws HTTP401 when authorization header contains an invalid bearer token', async function () {
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Not a bearer token'
+        }
+      });
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Bearer '
+        }
+      });
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          authorization: 'Bearer not-encoded'
+        }
+      });
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
+    }
+
+    try {
+      await auth_utils.authenticate({
+        headers: {
+          // sample encoded json web token from jwt.io (without kid header)
+          authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+        }
+      });
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError).instanceOf(HTTP401);
     }
   });
 });
