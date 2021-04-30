@@ -7,7 +7,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     project_type: '1',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
-    climate_change_initiatives: [1],
     project_activities: [1]
   },
   permit: {

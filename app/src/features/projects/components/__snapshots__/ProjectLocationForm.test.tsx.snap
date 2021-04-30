@@ -102,10 +102,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-43 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-41"
+                  class="PrivateNotchedOutline-legendLabelled-45"
                 >
                   <span>
                     Regions *
@@ -114,6 +114,15 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </fieldset>
             </div>
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-47"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
         </div>
       </div>
       <div
@@ -142,10 +151,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-43 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-41"
+                class="PrivateNotchedOutline-legendLabelled-45"
               >
                 <span>
                   Location Description
@@ -159,12 +168,12 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-37 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-41 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-43"
+          class="MuiBox-root MuiBox-root-48"
         >
           <label
             aria-disabled="false"
@@ -189,10 +198,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-44"
+          class="MuiBox-root MuiBox-root-49"
         />
         <div
-          class="MuiBox-root MuiBox-root-45"
+          class="MuiBox-root MuiBox-root-50"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -597,6 +606,15 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root MuiBox-root-7"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -646,7 +664,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-8"
         >
           <label
             aria-disabled="false"
@@ -671,10 +689,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-9"
         />
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-10"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1043,10 +1061,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23"
+                  class="PrivateNotchedOutline-legendLabelled-25"
                 >
                   <span>
                     Regions *
@@ -1055,6 +1073,15 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </fieldset>
             </div>
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-27"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
         </div>
       </div>
       <div
@@ -1086,10 +1113,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Location Description
@@ -1109,12 +1136,12 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-19 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-21 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-28"
         >
           <label
             aria-disabled="false"
@@ -1139,10 +1166,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-29"
         />
         <div
-          class="MuiBox-root MuiBox-root-27"
+          class="MuiBox-root MuiBox-root-30"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1526,10 +1553,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-14"
+                  class="PrivateNotchedOutline-legendLabelled-15"
                 >
                   <span>
                     Regions *
@@ -1538,6 +1565,15 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </fieldset>
             </div>
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-17"
+        >
+          <button
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+          >
+            Click here to view FLNRO map regions.
+          </button>
         </div>
       </div>
       <div
@@ -1568,10 +1604,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
               >
                 <span>
                   Location Description
@@ -1585,12 +1621,12 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-10 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-11 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-18"
         >
           <label
             aria-disabled="false"
@@ -1615,10 +1651,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-19"
         />
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-20"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"

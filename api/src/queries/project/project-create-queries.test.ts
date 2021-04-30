@@ -11,7 +11,6 @@ import {
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
   postProjectActivitySQL,
-  postProjectClimateChangeInitiativeSQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
@@ -283,7 +282,7 @@ describe('postProjectStakeholderPartnershipSQL', () => {
   });
 });
 
-describe('postProjectClimateChangeInitiativeSQL', () => {
+describe('postProjectIndigenousNationSQL', () => {
   it('Null activityId', () => {
     const response = postProjectIndigenousNationSQL((null as unknown) as number, 1);
     expect(response).to.be.null;
@@ -416,28 +415,6 @@ describe('postProjectActivitySQL', () => {
 
   it('Valid parameters', () => {
     const response = postProjectActivitySQL(1, 1);
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('postProjectClimateChangeInitiativeSQL', () => {
-  it('Null activityId', () => {
-    const response = postProjectClimateChangeInitiativeSQL((null as unknown) as number, 1);
-    expect(response).to.be.null;
-  });
-
-  it('Null projectId', () => {
-    const response = postProjectClimateChangeInitiativeSQL(1, (null as unknown) as number);
-    expect(response).to.be.null;
-  });
-
-  it('null activityId and null projectId', () => {
-    const response = postProjectClimateChangeInitiativeSQL((null as unknown) as number, (null as unknown) as number);
-    expect(response).to.be.null;
-  });
-
-  it('Valid parameters', () => {
-    const response = postProjectClimateChangeInitiativeSQL(1, 1);
     expect(response).to.not.be.null;
   });
 });

@@ -76,7 +76,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -131,7 +131,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -153,7 +153,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -186,7 +186,7 @@ describe('IUCNClassification', () => {
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('IUCN Classifications')).toBeVisible();
+      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));

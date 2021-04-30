@@ -13,19 +13,16 @@ export class GetProjectData {
   project_name: string;
   project_type: string;
   project_activities: number[];
-  climate_change_initiatives: number[];
   start_date: string;
   end_date: string;
   comments: string;
 
-  constructor(projectData?: any, activityData?: any[], climateInitiativeData?: any[]) {
-    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData, climateInitiativeData });
+  constructor(projectData?: any, activityData?: any[]) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.type || '';
     this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
-    this.climate_change_initiatives =
-      (climateInitiativeData?.length && climateInitiativeData.map((item) => item.cci_id)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';

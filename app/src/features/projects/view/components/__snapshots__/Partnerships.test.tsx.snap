@@ -71,12 +71,12 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          Stakeholder Partnerships
+          Other Partnerships
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1"
         >
-          No Stakeholder Partnerships
+          No Other Partnerships
         </dd>
       </div>
     </div>
@@ -160,7 +160,7 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          Stakeholder Partnerships
+          Other Partnerships
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1"
@@ -249,12 +249,12 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
         <dt
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
-          Stakeholder Partnerships
+          Other Partnerships
         </dt>
         <dd
           class="MuiTypography-root MuiTypography-body1"
         >
-          No Stakeholder Partnerships
+          No Other Partnerships
         </dd>
       </div>
     </div>

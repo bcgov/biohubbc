@@ -1,6 +1,5 @@
 import { IDBConnection } from '../database/db';
 import {
-  getClimateChangeInitiativeSQL,
   getFirstNationsSQL,
   getFundingSourceSQL,
   getInvestmentActionCategorySQL,
@@ -20,7 +19,6 @@ const defaultLog = getLogger('queries/code-queries');
 
 export interface IAllCodeSets {
   management_action_type: object;
-  climate_change_initiative: object;
   first_nations: object;
   funding_source: object;
   investment_action_category: object;
@@ -50,7 +48,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
 
   const [
     management_action_type,
-    climate_change_initiative,
     first_nations,
     funding_source,
     investment_action_category,
@@ -63,7 +60,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     administrative_activity_status_type
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
-    await connection.query(getClimateChangeInitiativeSQL().text),
     await connection.query(getFirstNationsSQL().text),
     await connection.query(getFundingSourceSQL().text),
     await connection.query(getInvestmentActionCategorySQL().text),
@@ -82,7 +78,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
 
   return {
     management_action_type: (management_action_type && management_action_type.rows) || [],
-    climate_change_initiative: (climate_change_initiative && climate_change_initiative.rows) || [],
     first_nations: (first_nations && first_nations.rows) || [],
     funding_source: (funding_source && funding_source.rows) || [],
     investment_action_category: (investment_action_category && investment_action_category.rows) || [],

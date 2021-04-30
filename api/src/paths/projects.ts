@@ -110,11 +110,11 @@ export function _extractProjects(rows: any[]): any[] {
       const project: any = {
         id: row.id,
         name: row.name,
-        focal_species_name_list: row.focal_species_name_list,
-        regions_name_list: row.regions_name_list,
         start_date: row.start_date,
         end_date: row.end_date,
-        location_description: row.location_description
+        coordinator_agency: row.coordinator_agency_name,
+        project_type: row.project_type,
+        permits_list: row.permits_list
       };
 
       projects.push(project);
