@@ -17,8 +17,8 @@ const ProjectSurveys = () => {
       id: 1,
       name: 'Moose Survey 1',
       species: 'Moose',
-      start_date: '2020/04/04',
-      end_date: '2021/05/05',
+      start_date: '2021-04-09 11:53:53',
+      end_date: '2021-05-09 11:53:53',
       status_name: 'Unpublished'
     }
   ];

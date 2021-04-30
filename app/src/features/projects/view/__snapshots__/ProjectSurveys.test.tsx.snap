@@ -5,23 +5,32 @@ exports[`ProjectSurveys renders correctly 1`] = `
   <div
     class="MuiBox-root MuiBox-root-1"
   >
-    <h2
-      class="MuiTypography-root MuiTypography-h2"
-    >
-      Project Surveys
-    </h2>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-2"
-  >
     <div
-      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+      class="MuiBox-root MuiBox-root-2"
     >
       <div
         class="MuiBox-root MuiBox-root-3"
       >
-        Project survey component 1 placeholder
+        <h2
+          class="MuiTypography-root MuiTypography-h2"
+        >
+          Surveys
+        </h2>
       </div>
+      <button
+        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+        tabindex="0"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          Add Survey
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
   </div>
   <div
@@ -31,9 +40,189 @@ exports[`ProjectSurveys renders correctly 1`] = `
       class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
     >
       <div
-        class="MuiBox-root MuiBox-root-5"
+        class="MuiTableContainer-root"
       >
-        Project survey component 2 placeholder
+        <table
+          aria-label="surveys-list-table"
+          class="MuiTable-root makeStyles-table-5"
+        >
+          <thead
+            class="MuiTableHead-root"
+          >
+            <tr
+              class="MuiTableRow-root MuiTableRow-head"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-6"
+                scope="col"
+              >
+                Name
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-6"
+                scope="col"
+              >
+                Species
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-6"
+                scope="col"
+              >
+                Timeline
+              </th>
+              <th
+                class="MuiTableCell-root MuiTableCell-head makeStyles-heading-6"
+                scope="col"
+              >
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            class="MuiTableBody-root"
+          >
+            <tr
+              class="MuiTableRow-root"
+            >
+              <th
+                class="MuiTableCell-root MuiTableCell-body"
+                role="cell"
+                scope="row"
+              >
+                <button
+                  class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                >
+                  Moose Survey 1
+                </button>
+              </th>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                Moose
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                April 09, 2021 - May 09, 2021
+              </td>
+              <td
+                class="MuiTableCell-root MuiTableCell-body"
+              >
+                <div
+                  class="MuiChip-root makeStyles-chip-8 makeStyles-chipUnpublished-9"
+                >
+                  <span
+                    class="MuiChip-label"
+                  >
+                    UNPUBLISHED
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="MuiTablePagination-root"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular MuiTablePagination-toolbar MuiToolbar-gutters"
+        >
+          <div
+            class="MuiTablePagination-spacer"
+          />
+          <p
+            class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+            id="mui-134"
+          >
+            Rows per page:
+          </p>
+          <div
+            class="MuiInputBase-root MuiTablePagination-input MuiTablePagination-selectRoot"
+          >
+            <div
+              aria-haspopup="listbox"
+              aria-labelledby="mui-134 mui-23865"
+              class="MuiSelect-root MuiSelect-select MuiTablePagination-select MuiSelect-selectMenu MuiInputBase-input"
+              id="mui-23865"
+              role="button"
+              tabindex="0"
+            >
+              5
+            </div>
+            <input
+              aria-hidden="true"
+              class="MuiSelect-nativeInput"
+              tabindex="-1"
+              value="5"
+            />
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSelect-icon MuiTablePagination-selectIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M7 10l5 5 5-5z"
+              />
+            </svg>
+          </div>
+          <p
+            class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+          >
+            1-1 of 1
+          </p>
+          <div
+            class="MuiTablePagination-actions"
+          >
+            <button
+              aria-label="Previous page"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit Mui-disabled Mui-disabled"
+              disabled=""
+              tabindex="-1"
+              title="Previous page"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
+                  />
+                </svg>
+              </span>
+            </button>
+            <button
+              aria-label="Next page"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit Mui-disabled Mui-disabled"
+              disabled=""
+              tabindex="-1"
+              title="Next page"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
