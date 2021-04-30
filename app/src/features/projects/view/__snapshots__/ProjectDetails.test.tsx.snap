@@ -626,7 +626,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_37"
+                            name="leaflet-base-layers_35"
                             type="radio"
                           />
                           <span>
@@ -638,7 +638,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_37"
+                            name="leaflet-base-layers_35"
                             type="radio"
                           />
                           <span>
