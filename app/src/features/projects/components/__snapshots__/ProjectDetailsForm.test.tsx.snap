@@ -229,13 +229,13 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
@@ -252,7 +252,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
                 aria-invalid="false"
@@ -282,10 +282,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
@@ -296,7 +296,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               End Date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
                 aria-invalid="false"
@@ -601,13 +601,13 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -624,7 +624,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               </span>
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
                 aria-invalid="false"
@@ -654,10 +654,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
         >
           <div
-            class="MuiFormControl-root MuiTextField-root"
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -668,7 +668,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               End Date
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
                 aria-invalid="false"

@@ -21,9 +21,10 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   } = props;
 
   return (
-    <Grid container item xs={12} spacing={3}>
-      <Grid item>
+    <Grid container item spacing={3}>
+      <Grid item xs={12} md={6}>
         <TextField
+          fullWidth
           id="start_date"
           name="start_date"
           label="Start Date"
@@ -40,8 +41,9 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           }}
         />
       </Grid>
-      <Grid item>
+      <Grid item xs={12} md={6}>
         <TextField
+          fullWidth
           id="end_date"
           name="end_date"
           label="End Date"
