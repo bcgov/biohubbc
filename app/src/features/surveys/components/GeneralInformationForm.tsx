@@ -55,7 +55,7 @@ export interface IGeneralInformationFormProps {
 }
 
 /**
- * Create survey - study area fields
+ * Create survey - general information fields
  *
  * @return {*}
  */
