@@ -4,11 +4,12 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, {useState,
+import React, {
+  useState,
   //useCallback,
-  useEffect} from 'react';
+  useEffect
+} from 'react';
 import { useHistory } from 'react-router';
-import CircularProgress from '@material-ui/core/CircularProgress';
 //import makeStyles from '@material-ui/core/styles/makeStyles';
 //import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 //import Icon from '@mdi/react';
@@ -24,42 +25,28 @@ export interface IProjectSurveysProps {
   refresh: () => void;
 }
 
-
-
-
-
 /**
  * Project surveys content for a project.
  *
  * @return {*}
  */
-const ProjectSurveys: React.FC<IProjectSurveysProps> = () => {
+const ProjectSurveys: React.FC<IProjectSurveysProps> = (props) => {
   const history = useHistory();
+  const { projectForViewData } = props;
 
   const urlParams = useParams();
-  //const location = useLocation();
 
   const biohubApi = useBiohubApi();
-
-  //const classes = useStyles();
-
-  const [projectWithDetails, setProjectWithDetails] = useState<IProjectSurveysProps | null>(null);
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
+  const projectId = projectForViewData.id;
+  console.log(projectId);
 
-  const projectId = projectWithDetails?.projectForViewData.id;
-
-
-  const navigateToCreateSurveyPage = (projectId?: number) => {
-
-      history.push(`/projects/${projectId}/survey/create`);
-
-
-
+  const navigateToCreateSurveyPage = (projectId: number) => {
+    history.push(`/projects/${projectId}/survey/create`);
   };
-
 
   useEffect(() => {
     const getCodes = async () => {
@@ -79,14 +66,9 @@ const ProjectSurveys: React.FC<IProjectSurveysProps> = () => {
     }
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
-
-  if (!codes || !projectWithDetails) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
-
-
-
+  // if (!codes || !projectWithDetails) {
+  //   return <CircularProgress className="pageProgress" size={40} />;
+  // }
 
   return (
     <>
@@ -94,7 +76,7 @@ const ProjectSurveys: React.FC<IProjectSurveysProps> = () => {
         <Container maxWidth="xl">
           <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
             <Typography variant="h1">Surveys</Typography>
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage()}>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectId)}>
               Create Survey
             </Button>
           </Box>

@@ -1,14 +1,18 @@
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { useHistory } from 'react-router';
-import ArrowBack from '@material-ui/icons/ArrowBack';
+//import ArrowBack from '@material-ui/icons/ArrowBack';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useParams } from 'react-router';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -43,14 +47,64 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const CreateSurveyPage: React.FC = () => {
+  const urlParams = useParams();
+  //const location = useLocation();
+
+  const biohubApi = useBiohubApi();
+
   const classes = useStyles();
 
-  const history = useHistory();
+  const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+
+  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+
+  const history = useHistory();
 
   const handleCancel = () => {
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
+
+  useEffect(() => {
+    const getCodes = async () => {
+      const codesResponse = await biohubApi.codes.getAllCodeSets();
+
+      if (!codesResponse) {
+        // TODO error handling/messaging
+        return;
+      }
+
+      setCodes(codesResponse);
+    };
+
+    if (!isLoadingCodes && !codes) {
+      getCodes();
+      setIsLoadingCodes(true);
+    }
+  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
+
+  const getProject = useCallback(async () => {
+    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+
+    if (!projectWithDetailsResponse) {
+      // TODO error handling/messaging
+      return;
+    }
+
+    setProjectWithDetails(projectWithDetailsResponse);
+  }, [biohubApi.project, urlParams]);
+
+  useEffect(() => {
+    if (!isLoadingProject && !projectWithDetails) {
+      getProject();
+      setIsLoadingProject(true);
+    }
+  }, [isLoadingProject, projectWithDetails, getProject]);
+
+  if (!codes || !projectWithDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <Box my={3}>
@@ -58,16 +112,20 @@ const CreateSurveyPage: React.FC = () => {
         <Box mb={3}>
           <Breadcrumbs>
             <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-              <ArrowBack color="primary" fontSize="small" className={classes.breadCrumbLinkIcon} />
-              <Typography variant="body2">Cancel and Exit</Typography>
+              <Typography variant="body2">{projectWithDetails.project.project_name} / Create Survey</Typography>
             </Link>
           </Breadcrumbs>
         </Box>
-        <Container maxWidth="xl">
-          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-            <Typography variant="h1">Create Survey Page</Typography>
-          </Box>
-        </Container>
+
+        <Box mb={3}>
+          <Typography variant="h1">Create Survey</Typography>
+        </Box>
+        <Box mb={5}>
+          <Typography variant="body1">
+            Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet,
+            consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );
