@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme: Theme) => ({
       marginTop: 0
     }
   },
-
   sectionDivider: {
     height: '1px'
   }
