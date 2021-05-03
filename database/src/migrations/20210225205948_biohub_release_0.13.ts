@@ -57,6 +57,12 @@ export async function up(knex: Knex): Promise<void> {
   const populate_administrative_activity_status_type = fs.readFileSync(
     path.join(__dirname, 'release.0.13', 'populate_administrative_activity_status_type.sql')
   );
+  const populate_proprietor_type = fs.readFileSync(
+    path.join(__dirname, 'release.0.13', 'populate_proprietor_type.sql')
+  );
+  const tr_fn_survey_proprietor = fs.readFileSync(
+    path.join(__dirname, 'release.0.13', 'tr_fn_survey_proprietor.sql')
+  );
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.13', 'project_dapi_views.sql'));
 
@@ -77,6 +83,7 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
+    ${tr_fn_survey_proprietor}
     ${api_delete_project}
 
     -- populate look up tables
@@ -93,6 +100,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_system_role}
     ${populate_administrative_activity_type}
     ${populate_administrative_activity_status_type}
+    ${populate_proprietor_type}
 
     -- setup biohub api schema
     create schema if not exists biohub_dapi_v1;
