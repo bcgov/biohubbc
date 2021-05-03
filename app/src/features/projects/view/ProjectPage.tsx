@@ -14,7 +14,7 @@ import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
-import ProjectSurveys from 'features/projects/view/ProjectSurveys';
+import ProjectSurveyListPage from 'features/projects/view/ProjectSurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -166,7 +166,9 @@ const ProjectPage: React.FC = () => {
             {location.pathname.includes('/details') && (
               <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
             )}
-            {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
+            {location.pathname.includes('/surveys') && (
+              <ProjectSurveyListPage projectForViewData={projectWithDetails} />
+            )}
             {location.pathname.includes('/attachments') && (
               <ProjectAttachments projectForViewData={projectWithDetails} />
             )}
