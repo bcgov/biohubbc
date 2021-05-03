@@ -1,45 +1,56 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, {
-  useState,
-  //useCallback,
-  useEffect
-} from 'react';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import React from 'react';
 import { useHistory } from 'react-router';
-//import makeStyles from '@material-ui/core/styles/makeStyles';
-//import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
-//import Icon from '@mdi/react';
-//import { DATE_FORMAT } from 'constants/dateFormats';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-//import { useLocation } from 'react-router';
-import { useParams } from 'react-router';
-//import { NavLink } from 'react-router-dom';
 
-export interface IProjectSurveysProps {
+export interface IProjectSurveyListPageProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
+
+const useStyles = makeStyles((theme: Theme) => ({
+  projectDetailsSection: {
+    marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(5),
+
+    '&:last-child': {
+      marginBottom: 0
+    },
+
+    '&:first-child': {
+      marginTop: 0
+    }
+  },
+
+  sectionDivider: {
+    height: '3px'
+  }
+}));
 
 /**
  * Project surveys content for a project.
  *
  * @return {*}
  */
-const ProjectSurveys: React.FC<IProjectSurveysProps> = (props) => {
+const ProjectSurveyListPage: React.FC<IProjectSurveyListPageProps> = (props) => {
   const history = useHistory();
   const { projectForViewData } = props;
+  const classes = useStyles();
 
-  const urlParams = useParams();
+  //const urlParams = useParams();
 
-  const biohubApi = useBiohubApi();
+  //const biohubApi = useBiohubApi();
 
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  //const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  //const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const projectId = projectForViewData.id;
   console.log(projectId);
@@ -47,28 +58,6 @@ const ProjectSurveys: React.FC<IProjectSurveysProps> = (props) => {
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/projects/${projectId}/survey/create`);
   };
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  // if (!codes || !projectWithDetails) {
-  //   return <CircularProgress className="pageProgress" size={40} />;
-  // }
 
   return (
     <>
@@ -80,10 +69,15 @@ const ProjectSurveys: React.FC<IProjectSurveysProps> = (props) => {
               Create Survey
             </Button>
           </Box>
+          <Box component={Paper} p={4}>
+            <Box component="section" className={classes.projectDetailsSection}>
+              <Box>Survey list goes here</Box>
+            </Box>
+          </Box>
         </Container>
       </Box>
     </>
   );
 };
 
-export default ProjectSurveys;
+export default ProjectSurveyListPage;
