@@ -1,19 +1,13 @@
 import { render } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import React from 'react';
-import { Router } from 'react-router';
 import ProjectSurveys from './ProjectSurveys';
-
-const history = createMemoryHistory();
 
 describe('ProjectSurveys', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(
-      <Router history={history}>
-        <ProjectSurveys projectData={{}} />
-      </Router>
-    );
+    const { getByText } = render(<ProjectSurveys />);
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Surveys')).toBeInTheDocument();
+    expect(getByText('Add Survey')).toBeInTheDocument();
+    expect(getByText('Moose Survey 1')).toBeInTheDocument();
   });
 });

@@ -166,7 +166,7 @@ const ProjectPage: React.FC = () => {
             {location.pathname.includes('/details') && (
               <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
             )}
-            {location.pathname.includes('/surveys') && <ProjectSurveys projectForViewData={projectWithDetails} />}
+            {location.pathname.includes('/surveys') && <ProjectSurveys />}
             {location.pathname.includes('/attachments') && (
               <ProjectAttachments projectForViewData={projectWithDetails} />
             )}
