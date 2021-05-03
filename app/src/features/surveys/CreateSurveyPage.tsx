@@ -42,7 +42,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:last-child': {
       marginBottom: 0
     },
-
     '&:first-child': {
       marginTop: 0
     }
