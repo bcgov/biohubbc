@@ -741,7 +741,7 @@ const CreateProjectPage: React.FC = () => {
       />
       <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
-        <Container maxWidth="lg">
+        <Container maxWidth="md">
           <Box mb={3}>
             <Breadcrumbs>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>

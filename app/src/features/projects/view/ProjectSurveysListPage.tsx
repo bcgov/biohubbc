@@ -12,7 +12,6 @@ export interface IProjectSurveysListPageProps {
   projectForViewData: IGetProjectForViewResponse;
 }
 
-
 /**
  * Project surveys content for a project.
  *
