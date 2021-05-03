@@ -1,10 +1,8 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 
 export interface ICreateSurveySectionProps {
-  codes: IGetAllCodeSetsResponse;
   title: string;
   summary: string;
   component: any;
@@ -25,7 +23,7 @@ const CreateSurveySection: React.FC<ICreateSurveySectionProps> = (props) => {
           <Box>
             <Typography variant="h2">{title}</Typography>
           </Box>
-          <Box>
+          <Box pt={3}>
             <Typography variant="body2">{summary}</Typography>
           </Box>
         </Box>
