@@ -9,12 +9,14 @@ const history = createMemoryHistory();
 
 describe('ProjectSurveysListPage', () => {
   it('renders correctly with no projectForViewData', () => {
-    const { asFragment } = render(
+    const { getByText } = render(
       <Router history={history}>
         <ProjectSurveysListPage projectForViewData={(null as unknown) as IGetProjectForViewResponse}/>
       </Router>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Surveys')).toBeInTheDocument();
+    expect(getByText('Add Survey')).toBeInTheDocument();
+    expect(getByText('Moose Survey 1')).toBeInTheDocument();
   });
 });

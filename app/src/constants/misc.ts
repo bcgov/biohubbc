@@ -7,3 +7,8 @@ export enum AdministrativeActivityStatusType {
   ACTIONED = 'Actioned',
   REJECTED = 'Rejected'
 }
+
+export enum SurveyStatusType {
+  UNPUBLISHED = 'Unpublished',
+  PUBLISHED = 'Published'
+}
