@@ -33,13 +33,7 @@ describe('CreateSurveyPage', () => {
     cleanup();
   });
 
-  it('renders correctly', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      species: [{ id: 1, name: 'species 1' }]
-    } as any);
-
+  it('shows circular spinner when codes and project data not yet loaded', async () => {
     const { asFragment } = render(
       <MemoryRouter initialEntries={['?id=1']}>
         <CreateSurveyPage />
@@ -47,6 +41,25 @@ describe('CreateSurveyPage', () => {
     );
 
     await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('shows circular spinner when codes and project data not yet loaded', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      species: [{ id: 1, name: 'species 1' }]
+    } as any);
+
+    const { asFragment, getAllByText } = render(
+      <MemoryRouter initialEntries={['?id=1']}>
+        <CreateSurveyPage />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(getAllByText('Create Survey').length).toEqual(2);
       expect(asFragment()).toMatchSnapshot();
     });
   });
