@@ -3,7 +3,7 @@ import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
 import ProjectSurveysListPage from './ProjectSurveysListPage';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 const history = createMemoryHistory();
 
@@ -11,7 +11,7 @@ describe('ProjectSurveysListPage', () => {
   it('renders correctly', () => {
     const { getByText } = render(
       <Router history={history}>
-        <ProjectSurveysListPage projectForViewData={{ id: 1 } as IGetProjectForViewResponse} />
+        <ProjectSurveysListPage projectForViewData={getProjectForViewResponse} />
       </Router>
     );
 

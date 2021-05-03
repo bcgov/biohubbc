@@ -54,11 +54,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Page to display user management data/functionality.
+ * Page to create a survey.
  *
  * @return {*}
  */
-const CreateSurveyPage: React.FC = () => {
+const CreateSurveyPage = () => {
   const urlParams = useParams();
   const classes = useStyles();
 
@@ -71,11 +71,9 @@ const CreateSurveyPage: React.FC = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const history = useHistory();
-
   const handleCancel = () => {
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
-
   useEffect(() => {
     const getCodes = async () => {
       const codesResponse = await biohubApi.codes.getAllCodeSets();
@@ -139,6 +137,7 @@ const CreateSurveyPage: React.FC = () => {
         </Box>
         <Box component={Paper} display="block">
           <CreateSurveySection
+            codes={codes}
             title="Title 1"
             summary="Summary 1"
             component={
@@ -150,6 +149,7 @@ const CreateSurveyPage: React.FC = () => {
           />
           <Divider className={classes.sectionDivider} />
           <CreateSurveySection
+            codes={codes}
             title="Title 2"
             summary="Summary 2"
             component={

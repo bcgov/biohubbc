@@ -1,48 +1,22 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import React from 'react';
 
-export interface IProjectSurveySectionProps {
+export interface ICreateSurveySectionProps {
+  codes: IGetAllCodeSetsResponse;
   title: string;
   summary: string;
   component: any;
 }
 
 /**
- * Page to display user management data/functionality.
+ * Shared component for various survey sections
  *
  * @return {*}
  */
-const CreateSurveySection: React.FC<IProjectSurveySectionProps> = (props) => {
+const CreateSurveySection: React.FC<ICreateSurveySectionProps> = (props) => {
   const { title, summary, component } = props;
-
-  const urlParams = useParams();
-
-  const biohubApi = useBiohubApi();
-
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(true);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   return (
     <>

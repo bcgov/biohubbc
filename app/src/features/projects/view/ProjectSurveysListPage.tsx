@@ -26,6 +26,7 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/projects/${projectId}/survey/create`);
   };
+
   // TODO: Replace this with the result of an API call giving us back the surveyList data
   const surveysList: IGetProjectSurvey[] = [
     {

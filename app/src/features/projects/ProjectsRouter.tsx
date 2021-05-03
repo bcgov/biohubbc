@@ -1,6 +1,5 @@
 import CreateProjectPage from 'features/projects/CreateProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
-import SurveysLayout from 'features/surveys/SurveysLayout';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectsListPage from 'features/projects/list/ProjectsListPage';
 import ProjectPage from 'features/projects/view/ProjectPage';
@@ -53,7 +52,7 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       />
       <PrivateRoute
         exact
-        layout={SurveysLayout}
+        layout={ProjectsLayout}
         path="/projects/:id?/survey/create"
         component={CreateSurveyPage}
         componentProps={props}
