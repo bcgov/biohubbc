@@ -9,11 +9,22 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
+import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
+import GeneralInformationForm, {
+  GeneralInformationInitialValues,
+  GeneralInformationYupSchema
+} from './components/GeneralInformationForm';
+import ProprietaryDataForm, {
+  ProprietaryDataInitialValues,
+  ProprietaryDataYupSchema
+} from './components/ProprietaryDataForm';
+import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
 import CreateSurveySection from './CreateSurveySection';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -137,26 +148,75 @@ const CreateSurveyPage = () => {
         </Box>
         <Box component={Paper} display="block">
           <CreateSurveySection
-            codes={codes}
-            title="Title 1"
-            summary="Summary 1"
+            title="General Information"
+            summary="General Information Summary (to be completed)"
             component={
-              <Box>
-                To be replaced with real section content; To be replaced with real section content; To be replaced with
-                real section content; To be replaced with real section content;{' '}
-              </Box>
+              <Formik
+                initialValues={GeneralInformationInitialValues}
+                validationSchema={GeneralInformationYupSchema}
+                validateOnBlur={true}
+                validateOnChange={false}
+                onSubmit={async (values) => {}}>
+                {() => (
+                  <GeneralInformationForm
+                    species={
+                      codes?.species?.map((item) => {
+                        return { value: item.name, label: item.name };
+                      }) || []
+                    }
+                  />
+                )}
+              </Formik>
             }
           />
           <Divider className={classes.sectionDivider} />
           <CreateSurveySection
-            codes={codes}
-            title="Title 2"
-            summary="Summary 2"
+            title="Study Area"
+            summary="Study Area Summary (to be completed)"
             component={
-              <Box>
-                To be replaced with real section content; To be replaced with real section content; To be replaced with
-                real section content; To be replaced with real section content;{' '}
-              </Box>
+              <Formik
+                initialValues={StudyAreaInitialValues}
+                validationSchema={StudyAreaYupSchema}
+                validateOnBlur={true}
+                validateOnChange={false}
+                onSubmit={async (values) => {}}>
+                {() => (
+                  <StudyAreaForm
+                    park={['Park name 1', 'Park name 2']}
+                    management_unit={['Management unit 1', 'Management unit 2']}
+                  />
+                )}
+              </Formik>
+            }
+          />
+          <Divider className={classes.sectionDivider} />
+          <CreateSurveySection
+            title="Proprietary Data"
+            summary="Proprietary Data Summary (to be completed)"
+            component={
+              <Formik
+                initialValues={ProprietaryDataInitialValues}
+                validationSchema={ProprietaryDataYupSchema}
+                validateOnBlur={true}
+                validateOnChange={false}
+                onSubmit={async (values) => {}}>
+                {() => <ProprietaryDataForm proprietary_data_category={['Data category 1', 'Data category 2']} />}
+              </Formik>
+            }
+          />
+          <Divider className={classes.sectionDivider} />
+          <CreateSurveySection
+            title="Agreements"
+            summary="Agreements Summary (to be completed)"
+            component={
+              <Formik
+                initialValues={AgreementsInitialValues}
+                validationSchema={AgreementsYupSchema}
+                validateOnBlur={true}
+                validateOnChange={false}
+                onSubmit={async (values) => {}}>
+                {() => <AgreementsForm />}
+              </Formik>
             }
           />
           <Divider className={classes.sectionDivider} />
