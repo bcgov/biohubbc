@@ -2,10 +2,9 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse, IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { useHistory } from 'react-router';
-import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
 import SurveysList from 'components/surveys/SurveysList';
 
 export interface IProjectSurveysListPageProps {
@@ -20,8 +19,6 @@ export interface IProjectSurveysListPageProps {
 const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) => {
   const history = useHistory();
   const { projectForViewData } = props;
-
-  const projectId = projectForViewData.id;
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/projects/${projectId}/survey/create`);
@@ -45,7 +42,7 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
         <Container maxWidth="xl">
           <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
             <Typography variant="h1">Surveys</Typography>
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectId)}>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
               Create Survey
             </Button>
           </Box>
