@@ -69,6 +69,7 @@ const CreateSurveyPage = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const history = useHistory();
+  
   const handleCancel = () => {
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
