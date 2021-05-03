@@ -118,7 +118,7 @@ const CreateSurveyPage: React.FC = () => {
 
   return (
     <Box my={3}>
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Box mb={3}>
           <Breadcrumbs>
             <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>

@@ -47,7 +47,7 @@ const CreateSurveySection: React.FC<IProjectSurveySectionProps> = (props) => {
   return (
     <>
       <Box width="100%" display="flex" flexWrap="nowrap">
-        <Box width="40%" p={3}>
+        <Box width="30%" p={3}>
           <Box>
             <Typography variant="h2">{title}</Typography>
           </Box>
@@ -55,7 +55,7 @@ const CreateSurveySection: React.FC<IProjectSurveySectionProps> = (props) => {
             <Typography variant="body2">{summary}</Typography>
           </Box>
         </Box>
-        <Box width="60%" p={3}>
+        <Box width="70%" p={3}>
           {component}
         </Box>
       </Box>
