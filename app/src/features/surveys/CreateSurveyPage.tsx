@@ -42,12 +42,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:last-child': {
       marginBottom: 0
     },
-
     '&:first-child': {
       marginTop: 0
     }
   },
-
   sectionDivider: {
     height: '1px'
   }
@@ -71,9 +69,11 @@ const CreateSurveyPage = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const history = useHistory();
+  
   const handleCancel = () => {
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
+  
   useEffect(() => {
     const getCodes = async () => {
       const codesResponse = await biohubApi.codes.getAllCodeSets();
