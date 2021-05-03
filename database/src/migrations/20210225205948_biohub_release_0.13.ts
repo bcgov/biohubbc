@@ -60,9 +60,7 @@ export async function up(knex: Knex): Promise<void> {
   const populate_proprietor_type = fs.readFileSync(
     path.join(__dirname, 'release.0.13', 'populate_proprietor_type.sql')
   );
-  const tr_fn_survey_proprietor = fs.readFileSync(
-    path.join(__dirname, 'release.0.13', 'tr_fn_survey_proprietor.sql')
-  );
+  const tr_fn_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.13', 'tr_fn_survey_proprietor.sql'));
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.13', 'project_dapi_views.sql'));
 
