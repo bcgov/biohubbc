@@ -69,11 +69,11 @@ const CreateSurveyPage = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   const history = useHistory();
-  
+
   const handleCancel = () => {
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
-  
+
   useEffect(() => {
     const getCodes = async () => {
       const codesResponse = await biohubApi.codes.getAllCodeSets();

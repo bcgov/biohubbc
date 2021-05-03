@@ -42,7 +42,10 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
         <Container maxWidth="xl">
           <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
             <Typography variant="h1">Surveys</Typography>
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
               Create Survey
             </Button>
           </Box>
