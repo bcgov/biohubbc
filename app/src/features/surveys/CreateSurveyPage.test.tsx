@@ -45,7 +45,7 @@ describe('CreateSurveyPage', () => {
     });
   });
 
-  it('shows circular spinner when codes and project data not yet loaded', async () => {
+  it('renders correctly when codes and project data are loaded', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
