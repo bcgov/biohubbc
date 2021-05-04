@@ -1,5 +1,5 @@
 import TextField from '@material-ui/core/TextField';
-import { cleanup, fireEvent, render, RenderResult, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import StepperWizard, { IStepperWizardStep } from 'components/stepper-wizard/StepperWizard';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -16,7 +16,7 @@ export const SampleFormikFormYupSchema = yup.object().shape({
 const SampleFormikForm = () => {
   const formikProps = useFormikContext<ISampleFormikFormProps>();
 
-  const { values, handleChange, handleSubmit } = formikProps;
+  const { values, handleChange } = formikProps;
 
   return (
     <form>

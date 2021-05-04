@@ -6,7 +6,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
     class="MuiBox-root MuiBox-root-50"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthLg"
+      class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
         class="MuiBox-root MuiBox-root-51"
@@ -483,6 +483,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                 >
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-55 MuiButton-outlinedPrimary"
+                    data-testid="stepper_previous"
                     tabindex="0"
                     type="button"
                   >
@@ -515,6 +516,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                 >
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-55 MuiButton-containedPrimary"
+                    data-testid="stepper_submit"
                     tabindex="0"
                     type="submit"
                   >
@@ -529,6 +531,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   </button>
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-55 MuiButton-outlinedPrimary"
+                    data-testid="stepper_cancel"
                     tabindex="0"
                     type="button"
                   >
@@ -559,7 +562,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
     class="MuiBox-root MuiBox-root-10"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthLg"
+      class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
         class="MuiBox-root MuiBox-root-11"
@@ -1532,6 +1535,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                 >
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
+                    data-testid="stepper_next"
                     tabindex="0"
                     type="submit"
                   >
@@ -1560,6 +1564,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   </button>
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
+                    data-testid="stepper_submit"
                     tabindex="0"
                     type="submit"
                   >
@@ -1574,6 +1579,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                   </button>
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-15 MuiButton-outlinedPrimary"
+                    data-testid="stepper_cancel"
                     tabindex="0"
                     type="button"
                   >
