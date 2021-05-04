@@ -102,7 +102,7 @@ describe('CreateSurveyPage', () => {
       });
     });
 
-    it('does nothing if the user clicks `No`', async () => {
+    it('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
@@ -127,6 +127,21 @@ describe('CreateSurveyPage', () => {
       });
 
       fireEvent.click(getAllByText('No')[2]);
+
+      await waitFor(() => {
+        expect(getAllByText('Create Survey').length).toEqual(2);
+      });
+
+      fireEvent.click(getByText('Cancel'));
+
+      await waitFor(() => {
+        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+      });
+
+      // Get the backdrop, then get the firstChild because this is where the event listener is attached
+      //@ts-ignore
+      fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
       await waitFor(() => {
         expect(getAllByText('Create Survey').length).toEqual(2);
