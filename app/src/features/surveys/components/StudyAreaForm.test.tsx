@@ -48,4 +48,31 @@ describe('Study Area Form', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('renders correctly when errors exist', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={studyAreaFilledValues}
+        validationSchema={StudyAreaYupSchema}
+        initialErrors={{
+          survey_area_name: 'error on survey area name field',
+          park: 'error on park field',
+          management_unit: 'error on management unit field'
+        }}
+        initialTouched={{
+          survey_area_name: true,
+          park: true,
+          management_unit: true
+        }}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });
