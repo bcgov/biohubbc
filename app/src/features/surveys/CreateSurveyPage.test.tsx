@@ -68,7 +68,7 @@ describe('CreateSurveyPage', () => {
   });
 
   describe('Are you sure? Dialog', () => {
-    it('it calls history.push() if the user clicks `Yes`', async () => {
+    it('calls history.push() if the user clicks `Yes`', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
@@ -102,7 +102,7 @@ describe('CreateSurveyPage', () => {
       });
     });
 
-    it('it does nothing if the user clicks `No`', async () => {
+    it('does nothing if the user clicks `No`', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({

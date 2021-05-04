@@ -238,7 +238,7 @@ describe('CreateProjectPage', () => {
       expect(AreYouSureYesButton).toBeVisible();
     });
 
-    it('it calls history.push() if the user clicks `Yes`', async () => {
+    it('calls history.push() if the user clicks `Yes`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
@@ -255,7 +255,7 @@ describe('CreateProjectPage', () => {
       expect(history.location.pathname).toEqual('/projects');
     });
 
-    it('it does nothing if the user clicks `No`', async () => {
+    it('does nothing if the user clicks `No`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
