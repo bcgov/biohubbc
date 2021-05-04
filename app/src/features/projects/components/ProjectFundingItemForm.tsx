@@ -55,7 +55,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .max(9999999999, 'Must be less than $9,999,999,999')
     .required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
-  end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
+  end_date: yup.string().isValidDateString().required('Required').isEndDateAfterStartDate('start_date')
 });
 
 export interface IProjectFundingItemFormProps {

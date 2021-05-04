@@ -130,7 +130,7 @@ export class PostObjectivesData {
     defaultLog.debug({ label: 'PostObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || null;
+    this.caveats = obj?.caveats || '';
   }
 }
 

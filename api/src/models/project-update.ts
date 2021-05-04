@@ -79,7 +79,7 @@ export class PutObjectivesData {
     defaultLog.debug({ label: 'PutObjectivesData', message: 'params', obj });
 
     this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || null;
+    this.caveats = obj?.caveats || '';
     this.revision_count = obj?.revision_count ?? null;
   }
 }
@@ -204,8 +204,8 @@ export class GetObjectivesData {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
 
-    this.objectives = obj?.objectives || null;
-    this.caveats = obj?.caveats || null;
+    this.objectives = obj?.objectives || '';
+    this.caveats = obj?.caveats || '';
     this.revision_count = obj?.revision_count ?? null;
   }
 }
