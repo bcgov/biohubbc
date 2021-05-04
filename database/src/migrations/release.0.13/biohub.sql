@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, April 20, 2021 10:59:26
+-- Date Created : Monday, May 03, 2021 14:49:10
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -318,9 +318,9 @@ COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change ini
 
 CREATE TABLE first_nations(
     id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(300),
-    record_end_date          date,
+    name                     varchar(300)      NOT NULL,
     record_effective_date    date              NOT NULL,
+    record_end_date          date,
     description              varchar(250),
     create_date              timestamptz(6)    DEFAULT now() NOT NULL,
     create_user              integer           NOT NULL,
@@ -337,9 +337,9 @@ COMMENT ON COLUMN first_nations.id IS 'System generated surrogate primary key id
 ;
 COMMENT ON COLUMN first_nations.name IS 'Name of the First Nation.'
 ;
-COMMENT ON COLUMN first_nations.record_end_date IS 'Record level end date.'
-;
 COMMENT ON COLUMN first_nations.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN first_nations.record_end_date IS 'Record level end date.'
 ;
 COMMENT ON COLUMN first_nations.description IS 'The description of the record.'
 ;
@@ -407,7 +407,7 @@ CREATE TABLE funding_source(
     record_end_date          date,
     record_effective_date    date              NOT NULL,
     description              varchar(250),
-    project_id_optional      boolean,
+    project_id_optional      boolean           NOT NULL,
     create_date              timestamptz(6)    DEFAULT now() NOT NULL,
     create_user              integer           NOT NULL,
     update_date              timestamptz(6),
@@ -768,15 +768,17 @@ COMMENT ON COLUMN project.id IS 'System generated surrogate primary key identifi
 ;
 COMMENT ON COLUMN project.pt_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project.name IS 'Name given to a project'
+COMMENT ON COLUMN project.name IS 'Name given to a project.'
 ;
-COMMENT ON COLUMN project.objectives IS 'The objectives for the project. What questions is this project trying to answer?'
+COMMENT ON COLUMN project.objectives IS 'The objectives for the project.'
 ;
 COMMENT ON COLUMN project.management_recovery_action IS 'Identifies if the project addresses a management or recovery action.'
 ;
 COMMENT ON COLUMN project.location_description IS 'The location description.'
 ;
-COMMENT ON COLUMN project.start_date IS 'The record start date.'
+COMMENT ON COLUMN project.start_date IS 'The start date of the project.'
+;
+COMMENT ON COLUMN project.end_date IS 'The end date of the project.'
 ;
 COMMENT ON COLUMN project.caveats IS 'Important stipulations, conditions, or limitations to the project results.'
 ;
@@ -806,7 +808,7 @@ COMMENT ON COLUMN project.update_user IS 'The id of the user who updated the rec
 ;
 COMMENT ON COLUMN project.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE project IS 'The top level organizational structure for data collection. '
+COMMENT ON TABLE project IS 'The top level organizational structure for project data collection. '
 ;
 
 -- 
@@ -1225,6 +1227,8 @@ COMMENT ON COLUMN project_region.update_user IS 'The id of the user who updated 
 ;
 COMMENT ON COLUMN project_region.revision_count IS 'Revision count used for concurrency control.'
 ;
+COMMENT ON TABLE project_region IS 'The region of a project.'
+;
 
 -- 
 -- TABLE: project_role 
@@ -1318,6 +1322,53 @@ COMMENT ON TABLE project_type IS 'Broad classification for the project.'
 ;
 
 -- 
+-- TABLE: proprietor_type 
+--
+
+CREATE TABLE proprietor_type(
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_effective_date    date              NOT NULL,
+    description              varchar(250),
+    is_first_nation          boolean           NOT NULL,
+    record_end_date          date,
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk49_1_3_1_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN proprietor_type.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN proprietor_type.name IS 'The name of the proprietary type.'
+;
+COMMENT ON COLUMN proprietor_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN proprietor_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN proprietor_type.is_first_nation IS 'Defines whether the type is first nations related and thus requires child records to be associated with a first nations name reference.'
+;
+COMMENT ON COLUMN proprietor_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN proprietor_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN proprietor_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN proprietor_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN proprietor_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN proprietor_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE proprietor_type IS 'Identifies the available reasons that subject data can be proprietary.'
+;
+
+-- 
 -- TABLE: stakeholder_partnership 
 --
 
@@ -1353,6 +1404,125 @@ COMMENT ON COLUMN stakeholder_partnership.update_user IS 'The id of the user who
 COMMENT ON COLUMN stakeholder_partnership.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated with the project.'
+;
+
+-- 
+-- TABLE: survey 
+--
+
+CREATE TABLE survey(
+    id                      integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id                    integer                     NOT NULL,
+    name                    varchar(50)                 NOT NULL,
+    objectives              varchar(3000)               NOT NULL,
+    location_description    varchar(3000),
+    species                 varchar(300)                NOT NULL,
+    start_date              date                        NOT NULL,
+    end_date                date,
+    lead_first_name         varchar(50)                 NOT NULL,
+    lead_last_name          varchar(50)                 NOT NULL,
+    is_foippa               boolean                     NOT NULL,
+    disa_required           boolean                     NOT NULL,
+    geometry                geometry(geometry, 3005),
+    geography               geography(geometry),
+    create_date             timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user             integer                     NOT NULL,
+    update_date             timestamptz(6),
+    update_user             integer,
+    revision_count          integer                     DEFAULT 0 NOT NULL,
+    CONSTRAINT pk45_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey.p_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey.name IS 'Name given to a survey.'
+;
+COMMENT ON COLUMN survey.objectives IS 'The objectives for the survey.'
+;
+COMMENT ON COLUMN survey.location_description IS 'The location description.'
+;
+COMMENT ON COLUMN survey.species IS 'The focal species of the survey.'
+;
+COMMENT ON COLUMN survey.start_date IS 'The start date of the survey.
+'
+;
+COMMENT ON COLUMN survey.end_date IS 'The end date of the survey.'
+;
+COMMENT ON COLUMN survey.lead_first_name IS 'The first name of the person who is the lead for the survey.'
+;
+COMMENT ON COLUMN survey.lead_last_name IS 'The last name of the person who is the lead for the survey.'
+;
+COMMENT ON COLUMN survey.is_foippa IS 'Defines when Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements are met. When set to TRUE then FOIPPA requirements are met.'
+;
+COMMENT ON COLUMN survey.disa_required IS 'Defines whether a data sharing agreement (DISA) is required. When set to TRUE then a DISA is required.'
+;
+COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
+;
+COMMENT ON COLUMN survey.geography IS 'The containing geography of the record.'
+;
+COMMENT ON COLUMN survey.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey IS 'The top level organizational structure for survey data collection. '
+;
+
+-- 
+-- TABLE: survey_proprietor 
+--
+
+CREATE TABLE survey_proprietor(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    prt_id             integer           NOT NULL,
+    s_id               integer           NOT NULL,
+    fn_id              integer,
+    rationale          varchar(3000)     NOT NULL,
+    proprietor_name    varchar(300),
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK154" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_proprietor.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_proprietor.prt_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_proprietor.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_proprietor.fn_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_proprietor.rationale IS 'Justification for identifying data as proprietary.'
+;
+COMMENT ON COLUMN survey_proprietor.proprietor_name IS 'Name of the proprietor of the data. This attribute is not required if a first nations relationship has been provided.'
+;
+COMMENT ON COLUMN survey_proprietor.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_proprietor.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_proprietor.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_proprietor.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_proprietor.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_proprietor IS 'Intersection table associating surveys to proprietary types and associated meta data.'
 ;
 
 -- 
@@ -1941,6 +2111,12 @@ CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is NULL)) whe
 CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: pt_nuk1_1 
+--
+
+CREATE UNIQUE INDEX pt_nuk1_1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
 -- INDEX: sp_uk1 
 --
 
@@ -1951,6 +2127,30 @@ CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
 --
 
 CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
+;
+-- 
+-- INDEX: "Ref4581" 
+--
+
+CREATE INDEX "Ref4581" ON survey(p_id)
+;
+-- 
+-- INDEX: "Ref15983" 
+--
+
+CREATE INDEX "Ref15983" ON survey_proprietor(prt_id)
+;
+-- 
+-- INDEX: "Ref15384" 
+--
+
+CREATE INDEX "Ref15384" ON survey_proprietor(s_id)
+;
+-- 
+-- INDEX: "Ref12785" 
+--
+
+CREATE INDEX "Ref12785" ON survey_proprietor(fn_id)
 ;
 -- 
 -- INDEX: sc_uk1 
@@ -2238,6 +2438,36 @@ ALTER TABLE project_region ADD CONSTRAINT "Refproject24"
 ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
+;
+
+
+-- 
+-- TABLE: survey 
+--
+
+ALTER TABLE survey ADD CONSTRAINT "Refproject81" 
+    FOREIGN KEY (p_id)
+    REFERENCES project(id)
+;
+
+
+-- 
+-- TABLE: survey_proprietor 
+--
+
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refproprietor_type83" 
+    FOREIGN KEY (prt_id)
+    REFERENCES proprietor_type(id)
+;
+
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey84" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85" 
+    FOREIGN KEY (fn_id)
+    REFERENCES first_nations(id)
 ;
 
 
