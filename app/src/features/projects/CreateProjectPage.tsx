@@ -749,7 +749,8 @@ const CreateProjectPage: React.FC = () => {
               variant="outlined"
               color="primary"
               onClick={() => setOpenDraftDialog(true)}
-              className={classes.actionButton}>
+              className={classes.actionButton}
+              id="save_as_draft_and_exit">
               Save as Draft and Exit
             </Button>
           </Box>

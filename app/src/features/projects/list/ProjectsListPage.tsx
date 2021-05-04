@@ -136,7 +136,7 @@ const ProjectsListPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h1">Projects</Typography>
-          <Button variant="outlined" color="primary" onClick={() => navigateToCreateProjectPage()}>
+          <Button variant="outlined" color="primary" onClick={() => navigateToCreateProjectPage()} id="create_project">
             Create Project
           </Button>
         </Box>

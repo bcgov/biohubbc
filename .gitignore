@@ -45,7 +45,7 @@ node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
-typings/
+# typings/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -108,3 +108,7 @@ dist
 
 # Apple macOS folder attributes file
 **/.DS_Store
+
+# Cypress Files to be ignored
+videos/
+screenshots/

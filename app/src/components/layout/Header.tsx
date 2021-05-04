@@ -80,7 +80,7 @@ const Header: React.FC = () => {
       <Box className={classes.govHeader}>
         <Container maxWidth="xl" className={classes.govHeaderContainer}>
           <Toolbar className={classes.govHeaderToolbar}>
-            <Link to="/projects" className={classes.brand} aria-label="Go to BioHub Home">
+            <Link to="/projects" className={classes.brand} aria-label="Go to BioHub Home" id="home">
               <picture>
                 <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                 <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -94,10 +94,10 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <Link to="/projects" color={'inherit'}>
+            <Link to="/projects" color={'inherit'} id="menu_projects">
               Projects
             </Link>
-            <Link to="/admin/users" color={'inherit'}>
+            <Link to="/admin/users" color={'inherit'} id="menu_manage_users">
               Manage Users
             </Link>
           </Toolbar>

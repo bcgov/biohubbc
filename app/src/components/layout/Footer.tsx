@@ -46,16 +46,16 @@ const Footer: React.FC = () => {
         <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer">
           <ul>
             <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
+              <a href="https://www.gov.bc.ca/gov/content/home/disclaimer" id="footer_disclaimer">Disclaimer</a>
             </li>
             <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
+              <a href="https://www.gov.bc.ca/gov/content/home/privacy" id="footer_privacy">Privacy</a>
             </li>
             <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
+              <a href="https://www.gov.bc.ca/gov/content/home/accessible-government" id="footer_accessibility">Accessibility</a>
             </li>
             <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
+              <a href="https://www.gov.bc.ca/gov/content/home/copyright" id="footer_copyright">Copyright</a>
             </li>
           </ul>
         </Toolbar>
