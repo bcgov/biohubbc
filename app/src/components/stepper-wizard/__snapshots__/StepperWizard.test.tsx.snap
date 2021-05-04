@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StepperWizard with 0 step forms renders correctly with no steps 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-3"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-4"
+    >
+      <div
+        class="MuiPaper-root MuiStepper-root MuiStepper-vertical MuiPaper-elevation0"
+      />
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    >
+      <hr
+        class="MuiDivider-root MuiDivider-vertical"
+      />
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-6"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-7"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-9"
+        >
+          <hr
+            class="MuiDivider-root"
+          />
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-10"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-11"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-12"
+          >
+            <button
+              class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
+              data-testid="stepper_submit"
+              tabindex="0"
+              type="submit"
+            >
+              <span
+                class="MuiButton-label"
+              >
+                test submit label
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+            <button
+              class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+              data-testid="stepper_cancel"
+              tabindex="0"
+              type="button"
+            >
+              <span
+                class="MuiButton-label"
+              >
+                Cancel
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

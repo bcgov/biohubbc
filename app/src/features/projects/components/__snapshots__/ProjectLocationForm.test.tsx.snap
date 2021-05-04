@@ -435,7 +435,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_141"
+                            name="leaflet-base-layers_135"
                             type="radio"
                           />
                           <span>
@@ -447,7 +447,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_141"
+                            name="leaflet-base-layers_135"
                             type="radio"
                           />
                           <span>
@@ -903,7 +903,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_45"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -915,7 +915,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_45"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -1395,7 +1395,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_97"
+                            name="leaflet-base-layers_93"
                             type="radio"
                           />
                           <span>
@@ -1407,7 +1407,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_97"
+                            name="leaflet-base-layers_93"
                             type="radio"
                           />
                           <span>
@@ -1880,7 +1880,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
@@ -1892,7 +1892,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
