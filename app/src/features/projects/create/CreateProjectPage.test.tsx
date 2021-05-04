@@ -1,29 +1,29 @@
 import {
   cleanup,
   findByText as rawFindByText,
-  getByText as rawGetByText,
   fireEvent,
+  getByText as rawGetByText,
   render,
-  waitFor,
-  screen
+  screen,
+  waitFor
 } from '@testing-library/react';
+import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
+import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
+import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
+import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
+import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
+import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
+import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
+import { ProjectSpeciesFormInitialValues } from 'features/projects/components/ProjectSpeciesForm';
+import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
-import { ProjectDetailsFormInitialValues } from './components/ProjectDetailsForm';
-import { ProjectFundingFormInitialValues } from './components/ProjectFundingForm';
-import { ProjectIUCNFormInitialValues } from './components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from './components/ProjectLocationForm';
-import { ProjectObjectivesFormInitialValues } from './components/ProjectObjectivesForm';
-import { ProjectPartnershipsFormInitialValues } from './components/ProjectPartnershipsForm';
-import { ProjectPermitFormInitialValues } from './components/ProjectPermitForm';
-import { ProjectSpeciesFormInitialValues } from './components/ProjectSpeciesForm';
-import CreateProjectPage from './CreateProjectPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../hooks/useBioHubApi');
+jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
@@ -65,10 +65,10 @@ describe('CreateProjectPage', () => {
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
 
-    const { getByText, asFragment } = renderContainer();
+    const { getByText, getAllByText, asFragment } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Coordinator')).toBeVisible();
+      expect(getAllByText('Project Coordinator').length).toEqual(2);
 
       expect(getByText('Permits')).toBeVisible();
 
@@ -94,11 +94,19 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    const { findByText, asFragment, queryByText, getByText, getByTestId, getByLabelText } = renderContainer();
+    const {
+      findByText,
+      asFragment,
+      queryByText,
+      getByText,
+      getAllByText,
+      getByTestId,
+      getByLabelText
+    } = renderContainer();
 
     // wait for initial page to load
     await waitFor(() => {
-      expect(getByText('Project Coordinator')).toBeVisible();
+      expect(getAllByText('Project Coordinator').length).toEqual(2);
 
       expect(getByText('Permits')).toBeVisible();
 
@@ -154,7 +162,7 @@ describe('CreateProjectPage', () => {
     await waitFor(() => {
       expect(getByText('Project Coordinator')).toBeVisible();
 
-      expect(getByText('Permits')).toBeVisible();
+      expect(getAllByText('Permits').length).toEqual(2);
 
       expect(queryByText('General Information')).toBeNull();
 
@@ -188,11 +196,11 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    const { getByText, queryByLabelText } = renderContainer();
+    const { getByText, getAllByText, queryByLabelText } = renderContainer();
 
     // wait for initial page to load
     await waitFor(() => {
-      expect(getByText('Project Coordinator')).toBeVisible();
+      expect(getAllByText('Project Coordinator').length).toEqual(2);
 
       expect(getByText('Permits')).toBeVisible();
 
@@ -204,7 +212,7 @@ describe('CreateProjectPage', () => {
     fireEvent.click(getByText('General Information'));
 
     await waitFor(() => {
-      expect(getByText('General Information')).toBeVisible();
+      expect(getAllByText('General Information').length).toEqual(2);
 
       expect(queryByLabelText('Project Type')).toBeVisible();
     });
@@ -389,11 +397,11 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
+      const { getByText, getAllByText, findByText, queryByText, getByLabelText } = renderContainer();
 
       // wait for initial page to load
       await waitFor(() => {
-        expect(getByText('Project Coordinator')).toBeVisible();
+        expect(getAllByText('Project Coordinator').length).toEqual(2);
       });
 
       // update first name field

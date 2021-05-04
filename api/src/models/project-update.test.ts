@@ -702,11 +702,11 @@ describe('GetObjectivesData', () => {
     });
 
     it('sets objectives', () => {
-      expect(data.objectives).to.equal(null);
+      expect(data.objectives).to.equal('');
     });
 
     it('sets caveats', () => {
-      expect(data.caveats).to.equal(null);
+      expect(data.caveats).to.equal('');
     });
 
     it('sets revision_count', () => {
@@ -754,7 +754,7 @@ describe('PutObjectivesData', () => {
     });
 
     it('sets caveats', () => {
-      expect(data.caveats).to.equal(null);
+      expect(data.caveats).to.equal('');
     });
 
     it('sets revision_count', () => {

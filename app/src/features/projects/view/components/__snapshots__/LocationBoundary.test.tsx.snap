@@ -213,7 +213,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_130"
+                        name="leaflet-base-layers_123"
                         type="radio"
                       />
                       <span>
@@ -225,7 +225,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_130"
+                        name="leaflet-base-layers_123"
                         type="radio"
                       />
                       <span>
@@ -492,7 +492,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_111"
+                        name="leaflet-base-layers_105"
                         type="radio"
                       />
                       <span>
@@ -504,7 +504,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_111"
+                        name="leaflet-base-layers_105"
                         type="radio"
                       />
                       <span>
@@ -759,7 +759,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_89"
+                        name="leaflet-base-layers_84"
                         type="radio"
                       />
                       <span>
@@ -771,7 +771,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_89"
+                        name="leaflet-base-layers_84"
                         type="radio"
                       />
                       <span>
@@ -1026,7 +1026,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_70"
+                        name="leaflet-base-layers_66"
                         type="radio"
                       />
                       <span>
@@ -1038,7 +1038,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_70"
+                        name="leaflet-base-layers_66"
                         type="radio"
                       />
                       <span>
@@ -1270,7 +1270,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_51"
+                        name="leaflet-base-layers_48"
                         type="radio"
                       />
                       <span>
@@ -1282,7 +1282,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_51"
+                        name="leaflet-base-layers_48"
                         type="radio"
                       />
                       <span>
@@ -1514,7 +1514,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_34"
+                        name="leaflet-base-layers_32"
                         type="radio"
                       />
                       <span>
@@ -1526,7 +1526,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_34"
+                        name="leaflet-base-layers_32"
                         type="radio"
                       />
                       <span>
