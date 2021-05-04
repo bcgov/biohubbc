@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Monday, May 03, 2021 14:49:10
+-- Date Created : Tuesday, May 04, 2021 14:14:28
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1329,9 +1329,9 @@ CREATE TABLE proprietor_type(
     id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
     record_effective_date    date              NOT NULL,
+    record_end_date          date,
     description              varchar(250),
     is_first_nation          boolean           NOT NULL,
-    record_end_date          date,
     create_date              timestamptz(6)    DEFAULT now() NOT NULL,
     create_user              integer           NOT NULL,
     update_date              timestamptz(6),
@@ -1349,11 +1349,11 @@ COMMENT ON COLUMN proprietor_type.name IS 'The name of the proprietary type.'
 ;
 COMMENT ON COLUMN proprietor_type.record_effective_date IS 'Record level effective date.'
 ;
+COMMENT ON COLUMN proprietor_type.record_end_date IS 'Record level end date.'
+;
 COMMENT ON COLUMN proprietor_type.description IS 'The description of the record.'
 ;
 COMMENT ON COLUMN proprietor_type.is_first_nation IS 'Defines whether the type is first nations related and thus requires child records to be associated with a first nations name reference.'
-;
-COMMENT ON COLUMN proprietor_type.record_end_date IS 'Record level end date.'
 ;
 COMMENT ON COLUMN proprietor_type.create_date IS 'The datetime the record was created.'
 ;
@@ -1413,16 +1413,16 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 CREATE TABLE survey(
     id                      integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     p_id                    integer                     NOT NULL,
-    name                    varchar(50)                 NOT NULL,
+    name                    varchar(300),
     objectives              varchar(3000)               NOT NULL,
-    location_description    varchar(3000),
     species                 varchar(300)                NOT NULL,
     start_date              date                        NOT NULL,
-    end_date                date,
     lead_first_name         varchar(50)                 NOT NULL,
     lead_last_name          varchar(50)                 NOT NULL,
     is_foippa               boolean                     NOT NULL,
-    disa_required           boolean                     NOT NULL,
+    end_date                date,
+    location_description    varchar(3000),
+    location_name           varchar(300)                NOT NULL,
     geometry                geometry(geometry, 3005),
     geography               geography(geometry),
     create_date             timestamptz(6)              DEFAULT now() NOT NULL,
@@ -1444,14 +1444,10 @@ COMMENT ON COLUMN survey.name IS 'Name given to a survey.'
 ;
 COMMENT ON COLUMN survey.objectives IS 'The objectives for the survey.'
 ;
-COMMENT ON COLUMN survey.location_description IS 'The location description.'
-;
 COMMENT ON COLUMN survey.species IS 'The focal species of the survey.'
 ;
 COMMENT ON COLUMN survey.start_date IS 'The start date of the survey.
 '
-;
-COMMENT ON COLUMN survey.end_date IS 'The end date of the survey.'
 ;
 COMMENT ON COLUMN survey.lead_first_name IS 'The first name of the person who is the lead for the survey.'
 ;
@@ -1459,7 +1455,11 @@ COMMENT ON COLUMN survey.lead_last_name IS 'The last name of the person who is t
 ;
 COMMENT ON COLUMN survey.is_foippa IS 'Defines when Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements are met. When set to TRUE then FOIPPA requirements are met.'
 ;
-COMMENT ON COLUMN survey.disa_required IS 'Defines whether a data sharing agreement (DISA) is required. When set to TRUE then a DISA is required.'
+COMMENT ON COLUMN survey.end_date IS 'The end date of the survey.'
+;
+COMMENT ON COLUMN survey.location_description IS 'The location description.'
+;
+COMMENT ON COLUMN survey.location_name IS 'The name of the survey location.'
 ;
 COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
 ;
@@ -1489,6 +1489,7 @@ CREATE TABLE survey_proprietor(
     fn_id              integer,
     rationale          varchar(3000)     NOT NULL,
     proprietor_name    varchar(300),
+    disa_required      boolean           NOT NULL,
     create_date        timestamptz(6)    DEFAULT now() NOT NULL,
     create_user        integer           NOT NULL,
     update_date        timestamptz(6),
@@ -1511,6 +1512,8 @@ COMMENT ON COLUMN survey_proprietor.fn_id IS 'System generated surrogate primary
 COMMENT ON COLUMN survey_proprietor.rationale IS 'Justification for identifying data as proprietary.'
 ;
 COMMENT ON COLUMN survey_proprietor.proprietor_name IS 'Name of the proprietor of the data. This attribute is not required if a first nations relationship has been provided.'
+;
+COMMENT ON COLUMN survey_proprietor.disa_required IS 'Defines whether a data sharing agreement (DISA) is required. When set to TRUE then a DISA is required.'
 ;
 COMMENT ON COLUMN survey_proprietor.create_date IS 'The datetime the record was created.'
 ;
@@ -2111,10 +2114,10 @@ CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is NULL)) whe
 CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: pt_nuk1_1 
+-- INDEX: prt_nuk1 
 --
 
-CREATE UNIQUE INDEX pt_nuk1_1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX prt_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: sp_uk1 
@@ -2133,6 +2136,12 @@ CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 --
 
 CREATE INDEX "Ref4581" ON survey(p_id)
+;
+-- 
+-- INDEX: sp_uk1 
+--
+
+CREATE UNIQUE INDEX sp_uk1 ON survey_proprietor(prt_id, s_id, fn_id)
 ;
 -- 
 -- INDEX: "Ref15983" 
