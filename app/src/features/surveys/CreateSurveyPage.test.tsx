@@ -109,7 +109,7 @@ describe('CreateSurveyPage', () => {
         species: [{ id: 1, name: 'species 1' }]
       } as any);
 
-      const { getAllByText, getByText } = render(
+      const { getAllByText, getByText, getAllByRole } = render(
         <MemoryRouter initialEntries={['?id=1']}>
           <CreateSurveyPage />
         </MemoryRouter>
