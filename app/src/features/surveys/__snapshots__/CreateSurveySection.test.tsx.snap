@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create Survey Section renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-3"
+      >
+        <h2
+          class="MuiTypography-root MuiTypography-h2"
+        >
+          Section title
+        </h2>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-4"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body2"
+        >
+          Section summary
+        </p>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-6"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Hey this is my content
+        </p>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
