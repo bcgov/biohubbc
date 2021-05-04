@@ -29,8 +29,8 @@ export interface IStepperWizardStep {
   stepTitle?: string;
   stepSubTitle?: string;
   stepContent: ReactElement;
-  stepValues: any;
-  stepValidation?: object;
+  stepInitialValues: any;
+  stepYupSchema?: object;
   isValid: boolean;
   isTouched: boolean;
 }
@@ -65,7 +65,8 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
               variant="outlined"
               color="primary"
               onClick={onPrevious}
-              className={classes.actionButton}>
+              className={classes.actionButton}
+              data-testid="stepper_previous">
               Previous
             </Button>
           )}
@@ -78,14 +79,26 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
               variant="contained"
               color="primary"
               onClick={onNext}
-              className={classes.actionButton}>
+              className={classes.actionButton}
+              data-testid="stepper_next">
               Next
             </Button>
           )}
-          <Button type="submit" variant="contained" color="primary" onClick={onSubmit} className={classes.actionButton}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            onClick={onSubmit}
+            className={classes.actionButton}
+            data-testid="stepper_submit">
             {onSubmitLabel}
           </Button>
-          <Button variant="outlined" color="primary" onClick={onCancel} className={classes.actionButton}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={onCancel}
+            className={classes.actionButton}
+            data-testid="stepper_cancel">
             Cancel
           </Button>
         </Box>
@@ -115,6 +128,10 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
   };
 
   const getStepperWizardContent = useCallback(() => {
+    if (!steps?.length) {
+      return;
+    }
+
     return (
       <>
         <Box mb={3}>
@@ -127,11 +144,13 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
           key={steps[activeStep].stepTitle}
           innerRef={innerRef}
           enableReinitialize={true}
-          initialValues={steps[activeStep].stepValues}
-          validationSchema={steps[activeStep].stepValidation}
+          initialValues={steps[activeStep].stepInitialValues}
+          validationSchema={steps[activeStep].stepYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
-          onSubmit={() => {}}>
+          onSubmit={() => {
+            // do nothing
+          }}>
           {steps[activeStep].stepContent}
         </Formik>
       </>

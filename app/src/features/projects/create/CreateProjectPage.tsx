@@ -129,7 +129,7 @@ const CreateProjectPage: React.FC = () => {
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  // Tracks the active  #
+  // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
   // The number of steps listed in the UI based on the current state of the component/forms
@@ -140,7 +140,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
+  const formikRef = useRef<FormikProps<any>>(null);
 
   const [showFormFieldValidationErrors, setShowFormFieldValidationErrors] = useState<null | number>(null);
 
@@ -244,8 +244,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
-        stepValues: initialProjectFieldData.coordinator,
-        stepValidation: ProjectCoordinatorYupSchema,
+        stepInitialValues: initialProjectFieldData.coordinator,
+        stepYupSchema: ProjectCoordinatorYupSchema,
         isValid: false,
         isTouched: false
       },
@@ -264,8 +264,8 @@ const CreateProjectPage: React.FC = () => {
             }}
           />
         ),
-        stepValues: initialProjectFieldData.permit,
-        stepValidation: ProjectPermitFormYupSchema,
+        stepInitialValues: initialProjectFieldData.permit,
+        stepYupSchema: ProjectPermitFormYupSchema,
         isValid: true,
         isTouched: false
       },
@@ -273,8 +273,8 @@ const CreateProjectPage: React.FC = () => {
         stepTitle: 'General Information',
         stepSubTitle: 'Enter general information and details about this project.',
         stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
-        stepValues: initialProjectFieldData.project,
-        stepValidation: ProjectDetailsFormYupSchema,
+        stepInitialValues: initialProjectFieldData.project,
+        stepYupSchema: ProjectDetailsFormYupSchema,
         isValid: false,
         isTouched: false
       },
@@ -283,8 +283,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Describe the objectives of the project and list any caveats, or cautionary detail to be considered when evaluating, or interpreting this project.',
         stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
-        stepValues: initialProjectFieldData.objectives,
-        stepValidation: ProjectObjectivesFormYupSchema,
+        stepInitialValues: initialProjectFieldData.objectives,
+        stepYupSchema: ProjectObjectivesFormYupSchema,
         isValid: false,
         isTouched: false
       },
@@ -293,8 +293,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Specify FLNRO region, location description and spatial boundary information for the overall project area.',
         stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
-        stepValues: initialProjectFieldData.location,
-        stepValidation: ProjectLocationFormYupSchema,
+        stepInitialValues: initialProjectFieldData.location,
+        stepYupSchema: ProjectLocationFormYupSchema,
         isValid: false,
         isTouched: false
       },
@@ -303,8 +303,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Specify which species were the primary target of the project and any ancillary species which were secondary to the targeted species.',
         stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
-        stepValues: initialProjectFieldData.species,
-        stepValidation: ProjectSpeciesFormYupSchema,
+        stepInitialValues: initialProjectFieldData.species,
+        stepYupSchema: ProjectSpeciesFormYupSchema,
         isValid: true,
         isTouched: false
       },
@@ -312,8 +312,8 @@ const CreateProjectPage: React.FC = () => {
         stepTitle: 'IUCN Conservation Actions Classification',
         stepSubTitle: `Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.`,
         stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
-        stepValues: initialProjectFieldData.iucn,
-        stepValidation: ProjectIUCNFormYupSchema,
+        stepInitialValues: initialProjectFieldData.iucn,
+        stepYupSchema: ProjectIUCNFormYupSchema,
         isValid: true,
         isTouched: false
       },
@@ -322,8 +322,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.',
         stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
-        stepValues: initialProjectFieldData.funding,
-        stepValidation: ProjectFundingFormYupSchema,
+        stepInitialValues: initialProjectFieldData.funding,
+        stepYupSchema: ProjectFundingFormYupSchema,
         isValid: true,
         isTouched: false
       },
@@ -332,8 +332,8 @@ const CreateProjectPage: React.FC = () => {
         stepSubTitle:
           'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
         stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
-        stepValues: initialProjectFieldData.partnerships,
-        stepValidation: ProjectPartnershipsFormYupSchema,
+        stepInitialValues: initialProjectFieldData.partnerships,
+        stepYupSchema: ProjectPartnershipsFormYupSchema,
         isValid: true,
         isTouched: false
       }
@@ -341,7 +341,7 @@ const CreateProjectPage: React.FC = () => {
   }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData]);
 
   /**
-   * Return true if the user has indicated that sampling has been conducted.
+   * Return true if the user has indicated that sampling has been conducted, false otherwise.
    *
    * @param {IProjectPermitForm} permitFormValues
    * @return {boolean} {boolean}
@@ -354,7 +354,12 @@ const CreateProjectPage: React.FC = () => {
     return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
   };
 
-  const isStepFormValid = useCallback(async () => {
+  /**
+   * Return true if the step form fields are valid, false otherwise.
+   *
+   * @return {*} {Promise<boolean>}
+   */
+  const isStepFormValid = useCallback(async (): Promise<boolean> => {
     if (!formikRef.current) {
       return false;
     }
@@ -371,7 +376,7 @@ const CreateProjectPage: React.FC = () => {
 
     setStepForms((currentStepForms) => {
       let updatedStepForms = [...currentStepForms];
-      updatedStepForms[activeStep].stepValues = formikRef.current?.values;
+      updatedStepForms[activeStep].stepInitialValues = formikRef.current?.values;
       updatedStepForms[activeStep].isValid = isValid;
       updatedStepForms[activeStep].isTouched = true;
       return updatedStepForms;
@@ -388,7 +393,7 @@ const CreateProjectPage: React.FC = () => {
 
     const invalidStepIndex = getFirstInvalidFormStep();
 
-    const isFullProject = isSamplingConducted(stepForms[1].stepValues);
+    const isFullProject = isSamplingConducted(stepForms[1].stepInitialValues);
 
     // If full project, check if any step is invalid
     const fullProjectInvalid = isFullProject && invalidStepIndex >= 0;
@@ -403,7 +408,7 @@ const CreateProjectPage: React.FC = () => {
       return;
     }
 
-    await handleCreateProject();
+    await createFullOrPartialProject();
   };
 
   useEffect(() => {
@@ -474,17 +479,17 @@ const CreateProjectPage: React.FC = () => {
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
-      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepValues
+      // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
       const draftFormData = {
-        coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepValues,
-        permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepValues,
-        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepValues,
-        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepValues,
-        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepValues,
-        species: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepValues,
-        iucn: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepValues,
-        funding: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepValues,
-        partnerships: (activeStep === 8 && formikRef?.current?.values) || stepForms[8].stepValues
+        coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepInitialValues,
+        permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepInitialValues,
+        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepInitialValues,
+        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepInitialValues,
+        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepInitialValues,
+        species: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
+        iucn: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepInitialValues,
+        funding: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepInitialValues,
+        partnerships: (activeStep === 8 && formikRef?.current?.values) || stepForms[8].stepInitialValues
       };
 
       const draftId = Number(queryParams.draftId) || draft?.id;
@@ -523,7 +528,7 @@ const CreateProjectPage: React.FC = () => {
   /**
    * Returns the step index for the first invalid form step, or `-1` if all steps are valid
    *
-   * @return {*} {number}F
+   * @return {*} {number}
    */
   const getFirstInvalidFormStep = (): number => {
     for (let i = 0; i < stepForms.length; i++) {
@@ -537,28 +542,28 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
-   * Handle creation of partial or full projects.
+   * Handle creation full or partial projects.
    */
-  const handleCreateProject = async () => {
-    const isFullProject = isSamplingConducted(stepForms[1].stepValues);
+  const createFullOrPartialProject = async () => {
+    const isFullProject = isSamplingConducted(stepForms[1].stepInitialValues);
 
     try {
       if (!isFullProject) {
         await createPermitNoSampling({
-          coordinator: stepForms[0].stepValues,
-          permit: stepForms[1].stepValues
+          coordinator: stepForms[0].stepInitialValues,
+          permit: stepForms[1].stepInitialValues
         });
       } else {
         await createProject({
-          coordinator: stepForms[0].stepValues,
-          permit: stepForms[1].stepValues,
-          project: stepForms[2].stepValues,
-          objectives: stepForms[3].stepValues,
-          location: stepForms[4].stepValues,
-          species: stepForms[5].stepValues,
-          iucn: stepForms[6].stepValues,
-          funding: stepForms[7].stepValues,
-          partnerships: stepForms[8].stepValues
+          coordinator: stepForms[0].stepInitialValues,
+          permit: stepForms[1].stepInitialValues,
+          project: stepForms[2].stepInitialValues,
+          objectives: stepForms[3].stepInitialValues,
+          location: stepForms[4].stepInitialValues,
+          species: stepForms[5].stepInitialValues,
+          iucn: stepForms[6].stepInitialValues,
+          funding: stepForms[7].stepInitialValues,
+          partnerships: stepForms[8].stepInitialValues
         });
       }
     } catch (error) {
@@ -645,7 +650,7 @@ const CreateProjectPage: React.FC = () => {
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({
       ...openErrorDialogProps,
-      dialogTitle: CreateProjectI18N.cancelTitle,
+      dialogTitle: CreateProjectI18N.createErrorTitle,
       dialogText: CreateProjectI18N.createErrorText,
       ...textDialogProps,
       open: true
@@ -680,7 +685,7 @@ const CreateProjectPage: React.FC = () => {
           initialValues: {
             draft_name:
               (activeStep === 2 && formikRef.current?.values.project_name) ||
-              stepForms[2].stepValues.project_name ||
+              stepForms[2].stepInitialValues.project_name ||
               ProjectDraftFormInitialValues.draft_name
           },
           validationSchema: ProjectDraftFormYupSchema
@@ -690,7 +695,7 @@ const CreateProjectPage: React.FC = () => {
       />
       <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Box mb={3}>
             <Breadcrumbs>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
