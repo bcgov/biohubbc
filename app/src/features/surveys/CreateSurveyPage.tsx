@@ -76,25 +76,22 @@ const useStyles = makeStyles((theme: Theme) => ({
 const CreateSurveyPage = () => {
   const urlParams = useParams();
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
+  const history = useHistory();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
-  const [surveyInitialValues] = useState({
-    ...GeneralInformationInitialValues,
-    ...StudyAreaInitialValues,
-    ...ProprietaryDataInitialValues,
-    ...AgreementsInitialValues
-  });
+  // Whether or not to show the 'Are you sure you want to cancel' dialog
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
 
-  // Whether or not to show the text dialog
+  // Ability to bypass showing the 'Are you sure you want to cancel' dialog
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
+  // Whether or not to show the error dialog
   const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: CreateSurveyI18N.createErrorTitle,
     dialogText: CreateSurveyI18N.createErrorText,
@@ -107,20 +104,18 @@ const CreateSurveyPage = () => {
     }
   });
 
-  // Whether or not to show the 'Are you sure you want to cancel' dialog
-  const [openCancelDialog, setOpenCancelDialog] = useState(false);
+  // Initial values for the survey form sections
+  const [surveyInitialValues] = useState({
+    ...GeneralInformationInitialValues,
+    ...StudyAreaInitialValues,
+    ...ProprietaryDataInitialValues,
+    ...AgreementsInitialValues
+  });
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-
+  // Yup schemas for the survey form sections
   const surveyYupSchemas = GeneralInformationYupSchema.concat(StudyAreaYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
-
-  const history = useHistory();
-
-  const handleCancel = () => {
-    history.push(`/projects/${projectWithDetails?.id}/surveys`);
-  };
 
   useEffect(() => {
     const getCodes = async () => {
@@ -157,6 +152,10 @@ const CreateSurveyPage = () => {
       setIsLoadingProject(true);
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
+
+  const handleCancel = () => {
+    history.push(`/projects/${projectWithDetails?.id}/surveys`);
+  };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setOpenErrorDialogProps({
@@ -230,6 +229,7 @@ const CreateSurveyPage = () => {
     }
   };
 
+  // Used for when the user tries to leave the create survey page (cancel click or browser back button click)
   const handleLocationChange = (location: History.Location, action: History.Action) => {
     if (!openCancelDialog) {
       // If the cancel dialog is not open: open it
