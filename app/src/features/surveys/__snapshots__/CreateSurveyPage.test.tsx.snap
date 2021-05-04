@@ -6,7 +6,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
     class="MuiBox-root MuiBox-root-13"
   >
     <div
-      class="MuiContainer-root MuiContainer-maxWidthLg"
+      class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
         class="MuiBox-root MuiBox-root-14"
