@@ -240,7 +240,7 @@ describe('PostObjectivesData', () => {
     });
 
     it('sets caveats', function () {
-      expect(projectObjectivesData.caveats).to.equal(null);
+      expect(projectObjectivesData.caveats).to.equal('');
     });
   });
 

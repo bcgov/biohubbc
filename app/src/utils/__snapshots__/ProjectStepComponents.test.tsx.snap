@@ -1670,7 +1670,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_45"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -1682,7 +1682,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_45"
+                            name="leaflet-base-layers_43"
                             type="radio"
                           />
                           <span>
@@ -2138,7 +2138,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_66"
                             type="radio"
                           />
                           <span>
@@ -2150,7 +2150,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_66"
                             type="radio"
                           />
                           <span>

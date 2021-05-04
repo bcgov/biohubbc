@@ -111,7 +111,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_95"
+                    name="leaflet-base-layers_91"
                     type="radio"
                   />
                   <span>
@@ -123,7 +123,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_95"
+                    name="leaflet-base-layers_91"
                     type="radio"
                   />
                   <span>
@@ -397,7 +397,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_49"
+                    name="leaflet-base-layers_47"
                     type="radio"
                   />
                   <span>
@@ -409,7 +409,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_49"
+                    name="leaflet-base-layers_47"
                     type="radio"
                   />
                   <span>
@@ -698,7 +698,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_80"
+                    name="leaflet-base-layers_77"
                     type="radio"
                   />
                   <span>
@@ -710,7 +710,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_80"
+                    name="leaflet-base-layers_77"
                     type="radio"
                   />
                   <span>
@@ -984,7 +984,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_162"
+                    name="leaflet-base-layers_156"
                     type="radio"
                   />
                   <span>
@@ -996,7 +996,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_162"
+                    name="leaflet-base-layers_156"
                     type="radio"
                   />
                   <span>
