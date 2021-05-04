@@ -203,7 +203,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     survey: ICreateProjectSurveyRequest
   ): Promise<ICreateProjectSurveyResponse> => {
-    console.log(survey);
     const { data } = await axios.post(`/api/project/${projectId}/survey/create`, survey);
 
     return data;

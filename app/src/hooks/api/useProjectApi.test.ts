@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectSurveyRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi from './useProjectApi';
 
@@ -123,5 +123,51 @@ describe('useProjectApi', () => {
     });
 
     expect(result).toEqual(true);
+  });
+
+  it('createSurvey works as expected', async () => {
+    mock.onPost(`api/project/${projectId}/survey/create`).reply(200, {
+      id: 1
+    });
+
+    const result = await useProjectApi(axios).createSurvey(projectId, {
+      survey_name: 'survey name'
+    } as ICreateProjectSurveyRequest);
+
+    expect(result).toEqual({ id: 1 });
+  });
+
+  it('addFundingSource works as expected', async () => {
+    mock.onPost(`/api/project/${projectId}/funding-sources/add`).reply(200, {
+      id: 1
+    });
+
+    const result = await useProjectApi(axios).addFundingSource(projectId, {
+      funding_source_name: 'funding source name'
+    });
+
+    expect(result).toEqual({ id: 1 });
+  });
+
+  it('deleteFundingSource works as expected', async () => {
+    const pfsId = 2;
+
+    mock.onDelete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`).reply(200, true);
+
+    const result = await useProjectApi(axios).deleteFundingSource(projectId, pfsId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('uploadProjectAttachments works as expected', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    });
+
+    mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, ['result 1', 'result 2']);
+
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, [file]);
+
+    expect(result).toEqual(['result 1', 'result 2']);
   });
 });
