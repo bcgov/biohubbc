@@ -48,7 +48,7 @@ describe('getUser', () => {
   };
 
   const sampleRes = {
-    status: (status: number) => {
+    status: () => {
       return {
         json: (result: any) => {
           actualResult = result;
