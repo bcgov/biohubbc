@@ -26,7 +26,10 @@
  create or replace view project_region as select * from biohub.project_region;
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
+ create or replace view proprietor_type as select * from biohub.proprietor_type;
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
+ create or replace view survey as select * from biohub.survey;
+ create or replace view survey_proprietor as select * from biohub.survey_proprietor;
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_role as select * from biohub.system_role;
  create or replace view system_user as select * from biohub.system_user;
