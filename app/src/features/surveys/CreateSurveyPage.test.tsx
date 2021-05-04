@@ -1,11 +1,14 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import CreateSurveyPage from './CreateSurveyPage';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Router } from 'react-router';
+import { createMemoryHistory } from 'history';
+
+const history = createMemoryHistory();
 
 jest.mock('../../hooks/useBioHubApi');
 
@@ -61,6 +64,73 @@ describe('CreateSurveyPage', () => {
     await waitFor(() => {
       expect(getAllByText('Create Survey').length).toEqual(2);
       expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  describe('Are you sure? Dialog', () => {
+    it('it calls history.push() if the user clicks `Yes`', async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        species: [{ id: 1, name: 'species 1' }]
+      } as any);
+
+      history.push('/home');
+      history.push('/projects/1/survey/create');
+
+      const { getByText, getAllByText } = render(
+        <Router history={history}>
+          <CreateSurveyPage />
+        </Router>
+      );
+
+      await waitFor(() => {
+        expect(getAllByText('Create Survey').length).toEqual(2);
+      });
+
+      fireEvent.click(getByText('Cancel'));
+
+      await waitFor(() => {
+        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+      });
+
+      fireEvent.click(getAllByText('Yes')[2]);
+
+      await waitFor(() => {
+        expect(history.location.pathname).toEqual('/projects/1/surveys');
+      });
+    });
+
+    it('it does nothing if the user clicks `No`', async () => {
+      mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        species: [{ id: 1, name: 'species 1' }]
+      } as any);
+
+      const { getAllByText, getByText } = render(
+        <MemoryRouter initialEntries={['?id=1']}>
+          <CreateSurveyPage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getAllByText('Create Survey').length).toEqual(2);
+      });
+
+      fireEvent.click(getByText('Cancel'));
+
+      await waitFor(() => {
+        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+      });
+
+      fireEvent.click(getAllByText('No')[2]);
+
+      await waitFor(() => {
+        expect(getAllByText('Create Survey').length).toEqual(2);
+      });
     });
   });
 });
