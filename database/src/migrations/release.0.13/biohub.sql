@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, May 04, 2021 14:14:28
+-- Date Created : Tuesday, May 04, 2021 14:44:42
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -2136,12 +2136,6 @@ CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 --
 
 CREATE INDEX "Ref4581" ON survey(p_id)
-;
--- 
--- INDEX: sp_uk1 
---
-
-CREATE UNIQUE INDEX sp_uk1 ON survey_proprietor(prt_id, s_id, fn_id)
 ;
 -- 
 -- INDEX: "Ref15983" 
