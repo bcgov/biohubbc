@@ -7,7 +7,7 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 
 const useStyles = makeStyles({
   bold: {
@@ -49,7 +49,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
 });
 
 export interface IGeneralInformationFormProps {
-  species: string[];
+  species: IAutocompleteFieldOption<string>[];
 }
 
 /**
@@ -82,14 +82,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
         <Grid item xs={12}>
-          <AutocompleteField
-            id="species"
-            name="Species"
-            label="Species"
-            value={values.species}
-            options={props.species}
-            required={true}
-          />
+          <AutocompleteField id="species" name="Species" label="Species" options={props.species} required={true} />
         </Grid>
         <Grid item xs={12}>
           <TextField
