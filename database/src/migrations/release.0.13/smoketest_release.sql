@@ -1,4 +1,4 @@
--- \i
+-- smoketest_release.sql
 -- run as db super user
 \c biohub
 
@@ -115,8 +115,8 @@ begin
   assert __count = 1, 'FAIL project_first_nation';
 
   -- surveys
-  insert into survey (p_id, name, objectives, location_name, location_description, species, start_date, lead_first_name, lead_last_name, is_foippa, geometry)
-    values (__p_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', 'survey species', now(), 'lead first', 'lead last', true, ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)) returning id into __s_id;
+  insert into survey (p_id, name, objectives, location_name, location_description, species, start_date, lead_first_name, lead_last_name, geometry)
+    values (__p_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', 'survey species', now(), 'lead first', 'lead last', ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)) returning id into __s_id;
   select count(1) into __count from survey;
   assert __count = 1, 'FAIL survey';
   insert into survey_proprietor (s_id, fn_id, prt_id, rationale,disa_required)

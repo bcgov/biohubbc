@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, May 04, 2021 14:44:42
+-- Date Created : Wednesday, May 05, 2021 09:38:08
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1419,7 +1419,6 @@ CREATE TABLE survey(
     start_date              date                        NOT NULL,
     lead_first_name         varchar(50)                 NOT NULL,
     lead_last_name          varchar(50)                 NOT NULL,
-    is_foippa               boolean                     NOT NULL,
     end_date                date,
     location_description    varchar(3000),
     location_name           varchar(300)                NOT NULL,
@@ -1452,8 +1451,6 @@ COMMENT ON COLUMN survey.start_date IS 'The start date of the survey.
 COMMENT ON COLUMN survey.lead_first_name IS 'The first name of the person who is the lead for the survey.'
 ;
 COMMENT ON COLUMN survey.lead_last_name IS 'The last name of the person who is the lead for the survey.'
-;
-COMMENT ON COLUMN survey.is_foippa IS 'Defines when Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements are met. When set to TRUE then FOIPPA requirements are met.'
 ;
 COMMENT ON COLUMN survey.end_date IS 'The end date of the survey.'
 ;
