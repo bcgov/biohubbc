@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Project details content for a survey.
+ * Details content for a survey.
  *
  * @return {*}
  */
