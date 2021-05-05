@@ -16,6 +16,7 @@ import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -42,10 +43,12 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ISurveysListProps {
   surveysList: IGetProjectSurvey[];
+  projectId: number;
 }
 
 const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const classes = useStyles();
+  const history = useHistory();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -95,7 +98,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       underline="always"
                       component="button"
                       variant="body2"
-                      onClick={() => console.log('survey clicked')}>
+                      onClick={() => history.push(`/projects/${props.projectId}/surveys/${row.id}/details`)}>
                       {row.name}
                     </Link>
                   </TableCell>

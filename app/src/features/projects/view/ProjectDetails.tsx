@@ -27,16 +27,13 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectDetailsSection: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5),
-
     '&:last-child': {
       marginBottom: 0
     },
-
     '&:first-child': {
       marginTop: 0
     }
   },
-
   sectionDivider: {
     height: '3px'
   }
