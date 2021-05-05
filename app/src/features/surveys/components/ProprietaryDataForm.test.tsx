@@ -1,14 +1,13 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import { Formik } from 'formik';
 import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
 import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
 
 const handleSaveAndNext = jest.fn();
-
-const proprietary_data_category = ['Category 1', 'Category 2'];
 
 const proprietaryDataFilledValues = {
   proprietary_data_category: 'Category 1',
@@ -29,7 +28,20 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return item.name;
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return item.name;
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
@@ -46,11 +58,68 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return item.name;
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return item.name;
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('shows the first nations dropdown when data category is selected as First Nations', async () => {
+    const { asFragment, getByText, getAllByRole, getByRole } = render(
+      <Formik
+        initialValues={proprietaryDataFilledValues}
+        validationSchema={ProprietaryDataYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return item.name;
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return item.name;
+              }) || []
+            }
+          />
+        )}
+      </Formik>
+    );
+
+    await waitFor(() => {
+      expect(getByText('Proprietary Information')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('textbox')[0]);
+    const dataCategoryListbox = within(getByRole('listbox'));
+    fireEvent.click(dataCategoryListbox.getByText(/First Nations Land/i));
+
+    fireEvent.mouseDown(getAllByRole('textbox')[1]);
+    const proprietorNameListbox = within(getByRole('listbox'));
+    fireEvent.click(proprietorNameListbox.getByText(/First nations code/i));
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('renders correctly when errors exist when survey data is proprietary', () => {
@@ -77,7 +146,20 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return item.name;
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return item.name;
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 

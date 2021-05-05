@@ -77,8 +77,6 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
 
   const { values, touched, errors, handleChange } = useFormikContext<IProprietaryDataForm>();
 
-  console.log(values);
-
   return (
     <form>
       <Grid container spacing={3}>
