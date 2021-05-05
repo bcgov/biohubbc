@@ -95,7 +95,7 @@ describe('CreateSurveyPage', () => {
         expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
       });
 
-      fireEvent.click(getAllByText('Yes')[1]);
+      fireEvent.click(getAllByText('Yes')[2]);
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/projects/1/surveys');
@@ -126,7 +126,7 @@ describe('CreateSurveyPage', () => {
         expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
       });
 
-      fireEvent.click(getAllByText('No')[1]);
+      fireEvent.click(getAllByText('No')[2]);
 
       await waitFor(() => {
         expect(getAllByText('Create Survey').length).toEqual(2);
