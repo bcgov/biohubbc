@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -89,7 +90,12 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     ]);
   }, [values.geometry]);
 
-  const handleSpatialUpload = async (e: any) => {
+  const handleShapefileUpload = async (e: any) => {
+    const file = e.target.files[0];
+    console.log('file type',file?.type);
+  }
+
+  const handleKMLUpload = async (e: any) => {
     setIsLoading(true);
 
     const file = e.target.files[0];
@@ -165,10 +171,39 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
                 data-testid="file-upload"
                 type="file"
                 hidden
-                onChange={(e) => handleSpatialUpload(e)}
+                onChange={(e) => handleKMLUpload(e)}
               />
               Upload KML
             </Button>
+            <Tooltip
+              arrow
+              color='secondary'
+              title='Will only accept zipped shapefiles of project BC Albers.'
+            >
+              <Button
+                variant="outlined"
+                component="label"
+                size="medium"
+                color="primary"
+                disabled={isLoading}
+                style={{
+                  marginLeft:'1rem',
+                  border: '2px solid',
+                  textTransform: 'capitalize',
+                  fontWeight: 'bold'
+                }}
+              >
+                <input
+                  key={uuidv4()}
+                  data-testid="shp-upload"
+                  type="file"
+                  hidden
+                  onChange={(e) => handleShapefileUpload(e)}
+                />
+                Upload Shapefile
+              </Button>
+
+            </Tooltip>
           </Box>
           <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
           <Box mt={5} height={500}>
