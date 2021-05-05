@@ -141,6 +141,20 @@ GET.apiDoc = {
                   }
                 }
               },
+              proprietor_type: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               iucn_conservation_action_level_1_classification: {
                 type: 'array',
                 items: {

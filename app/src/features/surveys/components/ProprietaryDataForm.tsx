@@ -64,6 +64,7 @@ export const ProprietaryDataYupSchema = yup.object().shape({
 
 export interface IProprietaryDataFormProps {
   proprietary_data_category: string[];
+  first_nations: string[];
 }
 
 /**
@@ -75,6 +76,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const classes = useStyles();
 
   const { values, touched, errors, handleChange } = useFormikContext<IProprietaryDataForm>();
+
+  console.log(values);
 
   return (
     <form>
@@ -116,18 +119,30 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                required={true}
-                id="proprietor_name"
-                name="proprietor_name"
-                label="Proprietor Name"
-                variant="outlined"
-                value={values.proprietor_name}
-                onChange={handleChange}
-                error={touched.proprietor_name && Boolean(errors.proprietor_name)}
-                helperText={touched.proprietor_name && errors.proprietor_name}
-              />
+              {values.proprietary_data_category === 'First Nations Land' && (
+                <AutocompleteField
+                  id="proprietor_name"
+                  label="Proprietor Name"
+                  name="Proprietary Name"
+                  value={values.proprietor_name}
+                  options={props.first_nations}
+                  required={true}
+                />
+              )}
+              {values.proprietary_data_category !== 'First Nations Land' && (
+                <TextField
+                  fullWidth
+                  required={true}
+                  id="proprietor_name"
+                  name="proprietor_name"
+                  label="Proprietor Name"
+                  variant="outlined"
+                  value={values.proprietor_name}
+                  onChange={handleChange}
+                  error={touched.proprietor_name && Boolean(errors.proprietor_name)}
+                  helperText={touched.proprietor_name && errors.proprietor_name}
+                />
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField
