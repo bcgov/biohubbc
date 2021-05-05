@@ -2,14 +2,12 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import AutocompleteField from 'components/fields/AutocompleteField';
 
 const useStyles = makeStyles({
   bold: {
@@ -21,7 +19,7 @@ export interface IGeneralInformationForm {
   survey_name: string;
   start_date: string;
   end_date: string;
-  species: string[];
+  species: string;
   survey_purpose: string;
   biologist_first_name: string;
   biologist_last_name: string;
@@ -31,7 +29,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   survey_name: '',
   start_date: '',
   end_date: '',
-  species: [],
+  species: '',
   survey_purpose: '',
   biologist_first_name: '',
   biologist_last_name: ''
@@ -43,7 +41,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
     .string()
     .max(3000, 'Cannot exceed 3000 characters')
     .required('You must provide a purpose for the survey'),
-  species: yup.array().of(yup.string()).min(1, 'Required').required('Required'),
+  species: yup.string().required('Required'),
   biologist_first_name: yup.string().required('Required'),
   biologist_last_name: yup.string().required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
@@ -51,7 +49,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
 });
 
 export interface IGeneralInformationFormProps {
-  species: IMultiAutocompleteFieldOption[];
+  species: string[];
 }
 
 /**
@@ -63,10 +61,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   const classes = useStyles();
 
   const formikProps = useFormikContext<IGeneralInformationForm>();
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange } = formikProps;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -84,9 +82,11 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
         <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'species'}
-            label={'Species'}
+          <AutocompleteField
+            id="species"
+            name="Species"
+            label="Species"
+            value={values.species}
             options={props.species}
             required={true}
           />

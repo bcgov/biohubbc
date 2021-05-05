@@ -39,10 +39,10 @@ export const AgreementsYupSchema = yup.object().shape({
 const AgreementsForm = () => {
   const classes = useStyles();
 
-  const { errors, touched, values, handleChange, handleSubmit } = useFormikContext<IAgreementsForm>();
+  const { errors, touched, values, handleChange } = useFormikContext<IAgreementsForm>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography className={classes.bold}>

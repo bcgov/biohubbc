@@ -65,10 +65,10 @@ export interface IProprietaryDataFormProps {
 const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const classes = useStyles();
 
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProprietaryDataForm>();
+  const { values, touched, errors, handleChange } = useFormikContext<IProprietaryDataForm>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <FormControl

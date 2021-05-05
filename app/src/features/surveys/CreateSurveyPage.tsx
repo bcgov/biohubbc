@@ -9,12 +9,16 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { Formik } from 'formik';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { CreateSurveyI18N } from 'constants/i18n';
+import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { IGetProjectForViewResponse, ICreateProjectSurveyRequest } from 'interfaces/useProjectApi.interface';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Prompt, useHistory, useParams } from 'react-router';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
@@ -26,6 +30,8 @@ import ProprietaryDataForm, {
 } from './components/ProprietaryDataForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
 import CreateSurveySection from './CreateSurveySection';
+import * as History from 'history';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -70,20 +76,46 @@ const useStyles = makeStyles((theme: Theme) => ({
 const CreateSurveyPage = () => {
   const urlParams = useParams();
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
+  const history = useHistory();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
-  const history = useHistory();
+  // Whether or not to show the 'Are you sure you want to cancel' dialog
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
 
-  const handleCancel = () => {
-    history.push(`/projects/${projectWithDetails?.id}/surveys`);
-  };
+  // Ability to bypass showing the 'Are you sure you want to cancel' dialog
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
+  // Whether or not to show the error dialog
+  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: CreateSurveyI18N.createErrorTitle,
+    dialogText: CreateSurveyI18N.createErrorText,
+    open: false,
+    onClose: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    },
+    onOk: () => {
+      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    }
+  });
+
+  // Initial values for the survey form sections
+  const [surveyInitialValues] = useState({
+    ...GeneralInformationInitialValues,
+    ...StudyAreaInitialValues,
+    ...ProprietaryDataInitialValues,
+    ...AgreementsInitialValues
+  });
+
+  // Yup schemas for the survey form sections
+  const surveyYupSchemas = GeneralInformationYupSchema.concat(StudyAreaYupSchema)
+    .concat(ProprietaryDataYupSchema)
+    .concat(AgreementsYupSchema);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -121,121 +153,196 @@ const CreateSurveyPage = () => {
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
 
+  const handleCancel = () => {
+    history.push(`/projects/${projectWithDetails?.id}/surveys`);
+  };
+
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setOpenErrorDialogProps({
+      ...openErrorDialogProps,
+      dialogTitle: CreateSurveyI18N.createErrorTitle,
+      dialogText: CreateSurveyI18N.createErrorText,
+      ...textDialogProps,
+      open: true
+    });
+  };
+
+  /**
+   * Creates a new project survey record
+   *
+   * @param {ICreateProjectSurveyRequest} surveyPostObject
+   * @return {*}
+   */
+  const createSurvey = async (surveyPostObject: ICreateProjectSurveyRequest) => {
+    const response = await biohubApi.project.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
+
+    if (!response?.id) {
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a survey ID.' });
+      return;
+    }
+
+    return response;
+  };
+
+  /**
+   * Handle creation of surveys.
+   */
+  const handleSubmit = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    await formikRef.current?.submitForm();
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    if (!isValid) {
+      showCreateErrorDialog({
+        dialogTitle: 'Create Survey Form Incomplete',
+        dialogText:
+          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
+    try {
+      const response = await createSurvey(formikRef.current?.values);
+
+      if (!response) {
+        return;
+      }
+
+      setEnableCancelCheck(false);
+
+      history.push(`/projects/${projectWithDetails?.id}/surveys`);
+    } catch (error) {
+      const apiError = error as APIError;
+      showCreateErrorDialog({
+        dialogTitle: 'Error Creating Survey',
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
+    }
+  };
+
+  // Used for when the user tries to leave the create survey page (cancel click or browser back button click)
+  const handleLocationChange = (location: History.Location, action: History.Action) => {
+    if (!openCancelDialog) {
+      // If the cancel dialog is not open: open it
+      setOpenCancelDialog(true);
+      return false;
+    }
+
+    // If the cancel dialog is already open and a location change action is triggered by `handleDialogYes`: allow it
+    return true;
+  };
+
   if (!codes || !projectWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
-    <Box my={3}>
-      <Container maxWidth="xl">
-        <Box mb={3}>
-          <Breadcrumbs>
-            <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-              <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
-            </Link>
-            <Typography variant="body2">Create Survey</Typography>
-          </Breadcrumbs>
-        </Box>
-
-        <Box mb={3}>
-          <Typography variant="h1">Create Survey</Typography>
-        </Box>
-        <Box mb={5}>
-          <Typography variant="body1">
-            Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet,
-            consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
-          </Typography>
-        </Box>
-        <Box component={Paper} display="block">
-          <CreateSurveySection
-            title="General Information"
-            summary="General Information Summary (to be completed)"
-            component={
-              <Formik
-                initialValues={GeneralInformationInitialValues}
-                validationSchema={GeneralInformationYupSchema}
-                validateOnBlur={true}
-                validateOnChange={false}
-                onSubmit={async (values) => {}}>
-                {() => (
-                  <GeneralInformationForm
-                    species={
-                      codes?.species?.map((item) => {
-                        return { value: item.name, label: item.name };
-                      }) || []
-                    }
-                  />
-                )}
-              </Formik>
-            }
-          />
-          <Divider className={classes.sectionDivider} />
-          <CreateSurveySection
-            title="Study Area"
-            summary="Study Area Summary (to be completed)"
-            component={
-              <Formik
-                initialValues={StudyAreaInitialValues}
-                validationSchema={StudyAreaYupSchema}
-                validateOnBlur={true}
-                validateOnChange={false}
-                onSubmit={async (values) => {}}>
-                {() => (
-                  <StudyAreaForm
-                    park={['Park name 1', 'Park name 2']}
-                    management_unit={['Management unit 1', 'Management unit 2']}
-                  />
-                )}
-              </Formik>
-            }
-          />
-          <Divider className={classes.sectionDivider} />
-          <CreateSurveySection
-            title="Proprietary Data"
-            summary="Proprietary Data Summary (to be completed)"
-            component={
-              <Formik
-                initialValues={ProprietaryDataInitialValues}
-                validationSchema={ProprietaryDataYupSchema}
-                validateOnBlur={true}
-                validateOnChange={false}
-                onSubmit={async (values) => {}}>
-                {() => <ProprietaryDataForm proprietary_data_category={['Data category 1', 'Data category 2']} />}
-              </Formik>
-            }
-          />
-          <Divider className={classes.sectionDivider} />
-          <CreateSurveySection
-            title="Agreements"
-            summary="Agreements Summary (to be completed)"
-            component={
-              <Formik
-                initialValues={AgreementsInitialValues}
-                validationSchema={AgreementsYupSchema}
-                validateOnBlur={true}
-                validateOnChange={false}
-                onSubmit={async (values) => {}}>
-                {() => <AgreementsForm />}
-              </Formik>
-            }
-          />
-          <Divider className={classes.sectionDivider} />
-          <Box p={3} display="flex" justifyContent="flex-end">
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              onClick={() => {}}
-              className={classes.actionButton}>
-              Save and Exit
-            </Button>
-            <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
-              Cancel
-            </Button>
+    <>
+      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <YesNoDialog
+        dialogTitle={CreateSurveyI18N.cancelTitle}
+        dialogText={CreateSurveyI18N.cancelText}
+        open={openCancelDialog}
+        onClose={() => setOpenCancelDialog(false)}
+        onNo={() => setOpenCancelDialog(false)}
+        onYes={() => history.push(`/projects/${projectWithDetails?.id}/surveys`)}
+      />
+      <ErrorDialog {...openErrorDialogProps} />
+      <Box my={3}>
+        <Container maxWidth="xl">
+          <Box mb={3}>
+            <Breadcrumbs>
+              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
+                <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+              </Link>
+              <Typography variant="body2">Create Survey</Typography>
+            </Breadcrumbs>
           </Box>
-        </Box>
-      </Container>
-    </Box>
+
+          <Box mb={3}>
+            <Typography variant="h1">Create Survey</Typography>
+          </Box>
+          <Box mb={5}>
+            <Typography variant="body1">
+              Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit
+              amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
+            </Typography>
+          </Box>
+          <Box component={Paper} display="block">
+            <Formik
+              innerRef={formikRef}
+              initialValues={surveyInitialValues}
+              validationSchema={surveyYupSchemas}
+              validateOnBlur={true}
+              validateOnChange={false}
+              onSubmit={() => {}}>
+              <>
+                <CreateSurveySection
+                  title="General Information"
+                  summary="General Information Summary (to be completed)"
+                  component={
+                    <GeneralInformationForm
+                      species={
+                        codes?.species?.map((item) => {
+                          return item.name;
+                        }) || []
+                      }
+                    />
+                  }></CreateSurveySection>
+                <Divider className={classes.sectionDivider} />
+
+                <CreateSurveySection
+                  title="Study Area"
+                  summary="Study Area Summary (to be completed)"
+                  component={
+                    <StudyAreaForm
+                      park={['Park name 1', 'Park name 2']}
+                      management_unit={['Management unit 1', 'Management unit 2']}
+                    />
+                  }></CreateSurveySection>
+                <Divider className={classes.sectionDivider} />
+
+                <CreateSurveySection
+                  title="Proprietary Data"
+                  summary="Proprietary Data Summary (to be completed)"
+                  component={
+                    <ProprietaryDataForm proprietary_data_category={['Data category 1', 'Data category 2']} />
+                  }></CreateSurveySection>
+                <Divider className={classes.sectionDivider} />
+
+                <CreateSurveySection
+                  title="Agreements"
+                  summary="Agreements Summary (to be completed)"
+                  component={<AgreementsForm />}></CreateSurveySection>
+                <Divider className={classes.sectionDivider} />
+              </>
+            </Formik>
+            <Box p={3} display="flex" justifyContent="flex-end">
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                className={classes.actionButton}>
+                Save and Exit
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
+    </>
   );
 };
 

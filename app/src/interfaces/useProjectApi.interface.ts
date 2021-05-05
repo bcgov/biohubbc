@@ -319,3 +319,39 @@ export interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
 }
+
+/**
+ * Create project survey post object.
+ *
+ * @export
+ * @interface ICreateProjectSurveyRequest
+ */
+export interface ICreateProjectSurveyRequest {
+  biologist_first_name: string;
+  biologist_last_name: string;
+  category_rational: string;
+  data_sharing_agreement_required: string;
+  end_date: string;
+  foippa_requirements_accepted: boolean;
+  management_unit: string;
+  park: string;
+  proprietary_data_category: string;
+  proprietor_name: string;
+  sedis_procedures_accepted: boolean;
+  species: string;
+  start_date: string;
+  survey_area_name: string;
+  survey_data_proprietary: string;
+  survey_name: string;
+  survey_purpose: string;
+}
+
+/**
+ * Create project survey response object.
+ *
+ * @export
+ * @interface ICreateProjectSurveyResponse
+ */
+export interface ICreateProjectSurveyResponse {
+  id: number;
+}
