@@ -14,12 +14,12 @@ const proprietaryDataFilledValues = {
   proprietary_data_category: 'Category 1',
   proprietor_name: 'name',
   category_rational: 'rational is cause it is true',
-  survey_data_proprietary: 'false',
+  survey_data_proprietary: 'true',
   data_sharing_agreement_required: 'true'
 };
 
 describe('Proprietary Data Form', () => {
-  it('renders correctly the empty component correctly', () => {
+  it('renders correctly the empty component correctly when survey data is not proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProprietaryDataInitialValues}
@@ -36,7 +36,7 @@ describe('Proprietary Data Form', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly the filled component correctly', () => {
+  it('renders correctly the filled component correctly when survey data is proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
@@ -53,7 +53,7 @@ describe('Proprietary Data Form', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when errors exist', () => {
+  it('renders correctly when errors exist when survey data is proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
