@@ -92,6 +92,9 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const handleShapefileUpload = async (e: any) => {
     const file = e.target.files[0];
+    if (file?.type !== 'application/zip') {
+      console.log('No thanks');
+    }
     console.log('file type',file?.type);
   }
 
@@ -178,7 +181,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             <Tooltip
               arrow
               color='secondary'
-              title='Will only accept zipped shapefiles of project BC Albers.'
+              title='Will only accept zipped shapefiles of projection BC Albers.'
             >
               <Button
                 variant="outlined"
