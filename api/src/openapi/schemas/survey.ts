@@ -4,7 +4,15 @@
 export const surveyCreatePostRequestObject = {
   title: 'SurveyProject post request object',
   type: 'object',
-  required: ['survey_name', 'start_date', 'end_date', 'species', 'survey_purpose', 'biologist_first_name', 'biologist_last_name'],
+  required: [
+    'survey_name',
+    'start_date',
+    'end_date',
+    'species',
+    'survey_purpose',
+    'biologist_first_name',
+    'biologist_last_name'
+  ],
   properties: {
     survey_name: {
       type: 'string'

@@ -1,11 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
-import {
-  PostSurveyData
-} from '../../models/survey-create';
+import { PostSurveyData } from '../../models/survey-create';
 
 const defaultLog = getLogger('queries/survey/user-queries');
-
 
 /**
  * SQL query to insert a project activity row.
@@ -13,7 +10,7 @@ const defaultLog = getLogger('queries/survey/user-queries');
  * @param projectId
  * @returns {SQLStatement} sql query object
  */
- export const postSurveySQL = ( projectId: number, survey: PostSurveyData): SQLStatement | null => {
+export const postSurveySQL = (projectId: number, survey: PostSurveyData): SQLStatement | null => {
   defaultLog.debug({
     label: 'postSurveyData',
     message: 'params',
@@ -41,17 +38,15 @@ const defaultLog = getLogger('queries/survey/user-queries');
     id;
 `;
 
-defaultLog.debug({
-label: 'postSurveyActivity',
-message: 'sql',
-'sqlStatement.text': sqlStatement.text,
-'sqlStatement.values': sqlStatement.values
-});
+  defaultLog.debug({
+    label: 'postSurveyActivity',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
 
-return sqlStatement;
+  return sqlStatement;
 };
-
-
 
 // /**
 //  * SQL query to insert a project funding source row.
