@@ -10,6 +10,7 @@ import {
   getActivitySQL,
   getProjectTypeSQL,
   getSystemRolesSQL,
+  getProprietorTypeSQL,
   getAdministrativeActivityStatusTypeSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
@@ -27,6 +28,7 @@ export interface IAllCodeSets {
   coordinator_agency: object;
   region: object;
   species: object;
+  proprietor_type: object;
   iucn_conservation_action_level_1_classification: object;
   iucn_conservation_action_level_2_subclassification: object;
   iucn_conservation_action_level_3_subclassification: object;
@@ -55,6 +57,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_1_classification,
     iucn_conservation_action_level_2_subclassification,
     iucn_conservation_action_level_3_subclassification,
+    proprietor_type,
     project_type,
     system_roles,
     administrative_activity_status_type
@@ -67,6 +70,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
     await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
+    await connection.query(getProprietorTypeSQL().text),
     await connection.query(getProjectTypeSQL().text),
     await connection.query(getSystemRolesSQL().text),
     await connection.query(getAdministrativeActivityStatusTypeSQL().text)
@@ -90,6 +94,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     iucn_conservation_action_level_3_subclassification:
       (iucn_conservation_action_level_3_subclassification && iucn_conservation_action_level_3_subclassification.rows) ||
       [],
+    proprietor_type: (proprietor_type && proprietor_type.rows) || [],
     project_type: (project_type && project_type.rows) || [],
     system_roles: (system_roles && system_roles.rows) || [],
     administrative_activity_status_type:

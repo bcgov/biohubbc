@@ -315,7 +315,18 @@ const CreateSurveyPage = () => {
                   title="Proprietary Data"
                   summary="Proprietary Data Summary (to be completed)"
                   component={
-                    <ProprietaryDataForm proprietary_data_category={['Data category 1', 'Data category 2']} />
+                    <ProprietaryDataForm
+                      proprietary_data_category={
+                        codes?.proprietor_type?.map((item) => {
+                          return item.name;
+                        }) || []
+                      }
+                      first_nations={
+                        codes?.first_nations?.map((item) => {
+                          return item.name;
+                        }) || []
+                      }
+                    />
                   }></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />
 
