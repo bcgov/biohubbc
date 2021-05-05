@@ -34,10 +34,10 @@ export interface IStudyAreaFormProps {
  * @return {*}
  */
 const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IStudyAreaForm>();
+  const { values, touched, errors, handleChange } = useFormikContext<IStudyAreaForm>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField

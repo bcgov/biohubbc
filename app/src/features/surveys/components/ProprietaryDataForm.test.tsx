@@ -52,4 +52,35 @@ describe('Proprietary Data Form', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('renders correctly when errors exist', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={proprietaryDataFilledValues}
+        validationSchema={ProprietaryDataYupSchema}
+        validateOnBlur={true}
+        initialErrors={{
+          survey_data_proprietary: 'error on survey data proprietary field',
+          proprietary_data_category: 'error on proprietary data category field',
+          proprietor_name: 'error on proprietor name field',
+          category_rational: 'error on category rational field',
+          data_sharing_agreement_required: 'error on data sharing agreement required field'
+        }}
+        initialTouched={{
+          survey_data_proprietary: true,
+          proprietary_data_category: true,
+          proprietor_name: true,
+          category_rational: true,
+          data_sharing_agreement_required: true
+        }}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

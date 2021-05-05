@@ -9,7 +9,9 @@ import {
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
   IUpdateProjectRequest,
-  IGetProjectAttachmentsResponse
+  IGetProjectAttachmentsResponse,
+  ICreateProjectSurveyRequest,
+  ICreateProjectSurveyResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -191,6 +193,21 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Create a new project survey
+   *
+   * @param {ICreateProjectSurveyRequest} survey
+   * @return {*}  {Promise<ICreateProjectSurveyResponse>}
+   */
+  const createSurvey = async (
+    projectId: number,
+    survey: ICreateProjectSurveyRequest
+  ): Promise<ICreateProjectSurveyResponse> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/create`, survey);
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -203,7 +220,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     getAttachmentSignedURL,
     deleteProjectAttachment,
     deleteFundingSource,
-    addFundingSource
+    addFundingSource,
+    createSurvey
   };
 };
 
