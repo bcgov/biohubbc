@@ -56,6 +56,7 @@ exports[`PublicLayout renders correctly 1`] = `
             <a
               color="inherit"
               href="/projects"
+              id="menu_projects"
             >
               Projects
             </a>
