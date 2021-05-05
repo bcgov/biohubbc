@@ -98,11 +98,11 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <Link to="/projects" color={'inherit'}>
+            <Link to="/projects" color={'inherit'} id="menu_projects">
               Projects
             </Link>
             {keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) && (
-              <Link to="/admin/users" color={'inherit'}>
+              <Link to="/admin/users" color={'inherit'} id="menu_admin_users">
                 Manage Users
               </Link>
             )}
