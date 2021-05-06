@@ -11,7 +11,11 @@ export const surveyCreatePostRequestObject = {
     'species',
     'survey_purpose',
     'biologist_first_name',
-    'biologist_last_name'
+    'biologist_last_name',
+    'survey_area_name',
+    'park',
+    'management_unit',
+    'survey_data_proprietary'
   ],
   properties: {
     survey_name: {
@@ -36,6 +40,33 @@ export const surveyCreatePostRequestObject = {
       type: 'string'
     },
     biologist_last_name: {
+      type: 'string'
+    },
+    survey_area_name: {
+      type: 'string'
+    },
+    park: {
+      type: 'string'
+    },
+    management_unit: {
+      type: 'string'
+    },
+    survey_data_proprietary: {
+      type: 'string'
+    },
+    proprietary_data_category: {
+      type: 'string'
+    },
+    proprietor_name: {
+      type: 'string'
+    },
+    category_rational: {
+      type: 'string'
+    },
+    first_nations: {
+      type: 'number'
+    },
+    data_sharing_agreement_required: {
       type: 'string'
     }
   }

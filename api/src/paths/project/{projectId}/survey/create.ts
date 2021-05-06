@@ -3,13 +3,13 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { PostSurveyData } from '../../../../models/survey-create';
+import { PostSurveyObject } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
-import { postSurveySQL } from '../../../../queries/survey/survey-create-queries';
+import { postSurveyProprietorSQL, postSurveySQL } from '../../../../queries/survey/survey-create-queries';
 import { getLogger } from '../../../../utils/logger';
 import { logRequest } from '../../../../utils/path-utils';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 
 export const POST: Operation = [logRequest('paths/project/{projectId}/survey/create', 'POST'), createSurvey()];
 
@@ -33,7 +33,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project response object.',
+      description: 'Survey response object.',
       content: {
         'application/json': {
           schema: {
@@ -78,16 +78,16 @@ function createSurvey(): RequestHandler {
       throw new HTTP400('Missing required path param `projectId`');
     }
     const connection = getDBConnection(req['keycloak_token']);
-    const sanitizedPostSurveyData = req.body && new PostSurveyData(req.body);
+    const sanitizedPostSurveyData = (req.body && new PostSurveyObject(req.body)) || null;
     if (!sanitizedPostSurveyData) {
-      throw new HTTP400('Missing funding source data');
+      throw new HTTP400('Missing survey data');
     }
 
     try {
       const postSurveySQLStatement = postSurveySQL(Number(req.params.projectId), sanitizedPostSurveyData);
 
       if (!postSurveySQLStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
+        throw new HTTP400('Failed to build survey SQL insert statement');
       }
 
       let surveyId: number;
@@ -102,23 +102,36 @@ function createSurvey(): RequestHandler {
           (createSurveyResponse && createSurveyResponse.rows && createSurveyResponse.rows[0]) || null;
 
         if (!surveyResult || !surveyResult.id) {
-          throw new HTTP400('Failed to insert a survey');
+          throw new HTTP400('Failed to create the survey record');
         }
 
         surveyId = surveyResult.id;
 
-        const promises: Promise<any>[] = [];
+        if (sanitizedPostSurveyData.surveyProprietor) {
+          const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
+            surveyId,
+            sanitizedPostSurveyData.surveyProprietor
+          );
 
-        // Handle  species
-        // promises.push(
-        //   Promise.all(
-        //     sanitizedSurveyPostData.species.focal_species.map((focalSpecies: string) =>
-        //       insertFocalSpecies(focalSpecies, projectId, connection)
-        //     )
-        //   )
-        // );
+          if (!postSurveyProprietorSQLStatement) {
+            throw new HTTP400('Failed to build survey_proprietor SQL insert statement');
+          }
 
-        await Promise.all(promises);
+          const createSurveyProprietorResponse = await connection.query(
+            postSurveyProprietorSQLStatement.text,
+            postSurveyProprietorSQLStatement.values
+          );
+
+          const surveyProprietorResult =
+            (createSurveyProprietorResponse &&
+              createSurveyProprietorResponse.rows &&
+              createSurveyProprietorResponse.rows[0]) ||
+            null;
+
+          if (!surveyProprietorResult || !surveyProprietorResult.id) {
+            throw new HTTP400('Failed to create the survey proprietor record');
+          }
+        }
 
         await connection.commit();
       } catch (error) {
@@ -135,25 +148,3 @@ function createSurvey(): RequestHandler {
     }
   };
 }
-
-// export const insertFocalSpecies = async (
-//   focal_species: string,
-//   project_id: number,
-//   connection: IDBConnection
-// ): Promise<number> => {
-//   const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL insert statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-//   const result = (response && response.rows && response.rows[0]) || null;
-
-//   if (!result || !result.id) {
-//     throw new HTTP400('Failed to insert project focal species data');
-//   }
-
-//   return result.id;
-// };

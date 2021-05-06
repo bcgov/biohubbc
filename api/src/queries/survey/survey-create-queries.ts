@@ -1,25 +1,32 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
-import { PostSurveyData } from '../../models/survey-create';
+import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
 
 const defaultLog = getLogger('queries/survey/user-queries');
 
 /**
- * SQL query to insert a project activity row.
+ * SQL query to insert a survey row.
  *
- * @param projectId
+ * @param {number} projectId
+ * @param {PostSurveyObject} survey
  * @returns {SQLStatement} sql query object
  */
-export const postSurveySQL = (projectId: number, survey: PostSurveyData): SQLStatement | null => {
+export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLStatement | null => {
   defaultLog.debug({
-    label: 'postSurveyData',
+    label: 'postSurveySQL',
     message: 'params',
-    projectId
+    projectId,
+    survey
   });
 
   if (!projectId) {
     return null;
   }
+
+  if (!survey) {
+    return null;
+  }
+
   const sqlStatement: SQLStatement = SQL`
   INSERT INTO survey (
     p_id, name, objectives, species, start_date, end_date, lead_first_name, lead_last_name, location_name
@@ -39,7 +46,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyData): SQLSta
 `;
 
   defaultLog.debug({
-    label: 'postSurveyActivity',
+    label: 'postSurveySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -48,48 +55,53 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyData): SQLSta
   return sqlStatement;
 };
 
-// /**
-//  * SQL query to insert a project funding source row.
-//  *
-//  * @param {PostFundingSource} fundingSource
-//  * @returns {SQLStatement} sql query object
-//  */
-//  export const postProjectFundingSourceSQL = (
-//   fundingSource: PostFundingSource,
-//   projectId: number
-// ): SQLStatement | null => {
-//   defaultLog.debug({ label: 'postProjectFundingSourceSQL', message: 'params', fundingSource, projectId });
+/**
+ * SQL query to insert a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @param {PostSurveyProprietorData} surveyProprietor
+ * @returns {SQLStatement} sql query object
+ */
+export const postSurveyProprietorSQL = (
+  surveyId: number,
+  surveyProprietor: PostSurveyProprietorData
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postSurveyProprietorSQL',
+    message: 'params',
+    surveyId,
+    surveyProprietor
+  });
 
-//   if (!fundingSource || !projectId) {
-//     return null;
-//   }
+  if (!surveyId) {
+    return null;
+  }
 
-//   const sqlStatement: SQLStatement = SQL`
-//       INSERT INTO project_funding_source (
-//         p_id,
-//         iac_id,
-//         funding_source_project_id,
-//         funding_amount,
-//         funding_start_date,
-//         funding_end_date
-//       ) VALUES (
-//         ${projectId},
-//         ${fundingSource.investment_action_category},
-//         ${fundingSource.agency_project_id},
-//         ${fundingSource.funding_amount},
-//         ${fundingSource.start_date},
-//         ${fundingSource.end_date}
-//       )
-//       RETURNING
-//         id;
-//     `;
+  if (!surveyProprietor) {
+    return null;
+  }
 
-//   defaultLog.debug({
-//     label: 'postProjectFundingSourceSQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
+  const sqlStatement: SQLStatement = SQL`
+  INSERT INTO survey_proprietor (
+    s_id, prt_id, fn_id, rationale, proprietor_name, disa_required
+  ) VALUES (
+    ${surveyId},
+    ${surveyProprietor.prt_id},
+    ${surveyProprietor.fn_id},
+    ${surveyProprietor.rationale},
+    ${surveyProprietor.proprietor_name},
+    ${surveyProprietor.disa_required}
+  )
+  RETURNING
+    id;
+`;
 
-//   return sqlStatement;
-// };
+  defaultLog.debug({
+    label: 'postSurveyProprietorSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
