@@ -4,9 +4,7 @@ import SurveyDetails from './SurveyDetails';
 
 describe('SurveyDetails', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(
-      <SurveyDetails />
-    );
+    const { asFragment } = render(<SurveyDetails />);
 
     expect(asFragment()).toMatchSnapshot();
   });
