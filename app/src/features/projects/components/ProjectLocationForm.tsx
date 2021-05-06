@@ -93,11 +93,33 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const handleShapefileUpload = async (e: any) => {
     const file = e.target.files[0];
-    console.log(shp);
+    console.log(file);
+
     if (file?.type !== 'application/zip') {
       console.log('No thanks');
+      return;
     }
-    console.log('file type',file?.type);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = (e) => {
+      // console.log(e?.target?.result);
+      const zipString: string = (e?.target?.result || "") as string;
+      
+      // console.log('zipString',zipString)
+      // console.log('zipString',typeof zipString)
+      const zip = new TextEncoder().encode(zipString);
+      console.log(typeof zip);
+      // console.log(typeof zip);
+      shp.parseZip(zip).then((geojson) => {
+        console.log('geojson',geojson);
+      }).catch((err) => {
+        console.error('fail',err);
+      });
+    }
+
+
   }
 
   const handleKMLUpload = async (e: any) => {
