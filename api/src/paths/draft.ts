@@ -81,7 +81,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createDraft(): RequestHandler {
+export function createDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
