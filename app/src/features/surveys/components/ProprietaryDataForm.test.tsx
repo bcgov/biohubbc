@@ -10,7 +10,7 @@ import { codes } from 'test-helpers/code-helpers';
 const handleSaveAndNext = jest.fn();
 
 const proprietaryDataFilledValues = {
-  proprietary_data_category: 'Category 1',
+  proprietary_data_category: 'Proprietor code 1',
   proprietor_name: 'name',
   category_rational: 'rational is cause it is true',
   survey_data_proprietary: 'true',
@@ -32,12 +32,12 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
             first_nations={
               codes?.first_nations?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
           />
@@ -62,12 +62,12 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
             first_nations={
               codes?.first_nations?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
           />
@@ -92,12 +92,12 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
             first_nations={
               codes?.first_nations?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
           />
@@ -150,12 +150,12 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
             first_nations={
               codes?.first_nations?.map((item) => {
-                return item.name;
+                return { value: item.id, label: item.name };
               }) || []
             }
           />
