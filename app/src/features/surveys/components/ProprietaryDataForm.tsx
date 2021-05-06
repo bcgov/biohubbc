@@ -38,7 +38,7 @@ export interface IProprietaryDataForm {
 export const ProprietaryDataInitialValues: IProprietaryDataForm = {
   proprietary_data_category: 0,
   proprietor_name: '',
-  first_nations_id: (null as unknown) as number,
+  first_nations_id: 0,
   category_rational: '',
   survey_data_proprietary: 'false',
   data_sharing_agreement_required: 'false'

@@ -79,7 +79,6 @@ function createSurvey(): RequestHandler {
     }
     const connection = getDBConnection(req['keycloak_token']);
 
-    console.log('looking for first_nations_id', req.body);
     const sanitizedPostSurveyData = (req.body && new PostSurveyObject(req.body)) || null;
     if (!sanitizedPostSurveyData) {
       throw new HTTP400('Missing survey data');
@@ -109,10 +108,10 @@ function createSurvey(): RequestHandler {
 
         surveyId = surveyResult.id;
 
-        if (sanitizedPostSurveyData.surveyProprietor) {
+        if (sanitizedPostSurveyData.survey_proprietor) {
           const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
             surveyId,
-            sanitizedPostSurveyData.surveyProprietor
+            sanitizedPostSurveyData.survey_proprietor
           );
 
           if (!postSurveyProprietorSQLStatement) {

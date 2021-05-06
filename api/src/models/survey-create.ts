@@ -19,7 +19,7 @@ export class PostSurveyObject {
   survey_area_name: string;
   survey_data_proprietary: boolean;
   survey_purpose: string;
-  surveyProprietor?: PostSurveyProprietorData;
+  survey_proprietor?: PostSurveyProprietorData;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostSurveyData', message: 'params', obj });
@@ -34,7 +34,7 @@ export class PostSurveyObject {
     this.survey_data_proprietary = obj?.survey_data_proprietary || null;
     this.survey_name = obj?.survey_name || null;
     this.survey_purpose = obj?.survey_purpose || null;
-    this.surveyProprietor =
+    this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;
   }
 }

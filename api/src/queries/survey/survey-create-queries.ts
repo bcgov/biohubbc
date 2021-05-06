@@ -2,7 +2,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
 
-const defaultLog = getLogger('queries/survey/user-queries');
+const defaultLog = getLogger('queries/survey/survey-create-queries');
 
 /**
  * SQL query to insert a survey row.
@@ -60,16 +60,16 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
  */
 export const postSurveyProprietorSQL = (
   surveyId: number,
-  surveyProprietor: PostSurveyProprietorData
+  survey_proprietor: PostSurveyProprietorData
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postSurveyProprietorSQL',
     message: 'params',
     surveyId,
-    surveyProprietor
+    survey_proprietor
   });
 
-  if (!surveyId || !surveyProprietor) {
+  if (!surveyId || !survey_proprietor) {
     return null;
   }
 
@@ -78,11 +78,11 @@ export const postSurveyProprietorSQL = (
     s_id, prt_id, fn_id, rationale, proprietor_name, disa_required
   ) VALUES (
     ${surveyId},
-    ${surveyProprietor.prt_id},
-    ${surveyProprietor.fn_id},
-    ${surveyProprietor.rationale},
-    ${surveyProprietor.proprietor_name},
-    ${surveyProprietor.disa_required}
+    ${survey_proprietor.prt_id},
+    ${survey_proprietor.fn_id},
+    ${survey_proprietor.rationale},
+    ${survey_proprietor.proprietor_name},
+    ${survey_proprietor.disa_required}
   )
   RETURNING
     id;
