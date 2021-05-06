@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 //@ts-ignore
 import { kml } from '@tmcw/togeojson';
+import shp from 'shpjs';
 import bbox from '@turf/bbox';
 import {
   default as MultiAutocompleteFieldVariableSize,
@@ -92,6 +93,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   const handleShapefileUpload = async (e: any) => {
     const file = e.target.files[0];
+    console.log(shp);
     if (file?.type !== 'application/zip') {
       console.log('No thanks');
     }
