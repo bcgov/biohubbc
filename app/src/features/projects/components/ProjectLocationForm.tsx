@@ -211,7 +211,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             <Tooltip
               arrow
               color='secondary'
-              title='Will only accept zipped shapefiles of projection BC Albers.'
+              title='Will only accept zipped shapefiles of a known projection.'
             >
               <Button
                 variant="outlined"
