@@ -113,6 +113,7 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!<rootDir>/src/themes/**",
       "!<rootDir>/src/constants/**",
+      "!<rootDir>/src/utils/tablePaginationUtils.ts",
       "!<rootDir>/src/App.tsx",
       "!<rootDir>/src/types/**",
       "!<rootDir>/src/interfaces/**",
