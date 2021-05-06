@@ -61,7 +61,7 @@ POST.apiDoc = {
 };
 
 /**
- * Creates a new project record.
+ * Creates a new survey record.
  *
  * @returns {RequestHandler}
  */

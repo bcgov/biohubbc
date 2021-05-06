@@ -6,7 +6,7 @@ const defaultLog = getLogger('models/survey-create');
  * Processes all POST /project/{projectId}/survey/create request data.
  *
  * @export
- * @class PostProjectObject
+ * @class PostSurveyObject
  */
 export class PostSurveyObject {
   survey_name: string;

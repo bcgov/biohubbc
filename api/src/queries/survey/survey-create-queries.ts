@@ -19,11 +19,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     survey
   });
 
-  if (!projectId) {
-    return null;
-  }
-
-  if (!survey) {
+  if (!projectId || !survey) {
     return null;
   }
 
@@ -73,11 +69,7 @@ export const postSurveyProprietorSQL = (
     surveyProprietor
   });
 
-  if (!surveyId) {
-    return null;
-  }
-
-  if (!surveyProprietor) {
+  if (!surveyId || !surveyProprietor) {
     return null;
   }
 
