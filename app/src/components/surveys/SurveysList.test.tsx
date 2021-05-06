@@ -30,7 +30,7 @@ describe('SurveysList', () => {
 
     const { getByText, queryByText } = render(
       <Router history={history}>
-        <SurveysList surveysList={surveysList} />
+        <SurveysList projectId={1} surveysList={surveysList} />
       </Router>
     );
 
@@ -42,7 +42,7 @@ describe('SurveysList', () => {
   it('renders correctly with no surveys', () => {
     const { getByText } = render(
       <Router history={history}>
-        <SurveysList surveysList={[]} />
+        <SurveysList projectId={1} surveysList={[]} />
       </Router>
     );
 

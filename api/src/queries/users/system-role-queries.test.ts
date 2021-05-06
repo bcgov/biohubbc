@@ -22,7 +22,7 @@ describe('postSystemRolesSQL', () => {
   });
 
   it('returns non null response when valid parameters provided', () => {
-    const response = postSystemRolesSQL(1, [1]);
+    const response = postSystemRolesSQL(1, [1, 2]);
 
     expect(response).to.not.be.null;
   });
@@ -48,7 +48,7 @@ describe('deleteSystemRolesSQL', () => {
   });
 
   it('returns non null response when valid parameters provided', () => {
-    const response = deleteSystemRolesSQL(1, [1]);
+    const response = deleteSystemRolesSQL(1, [1, 2]);
 
     expect(response).to.not.be.null;
   });

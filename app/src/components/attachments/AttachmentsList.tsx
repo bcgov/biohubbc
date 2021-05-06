@@ -18,6 +18,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles({
   table: {
@@ -50,15 +51,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     lastModified: (null as unknown) as string,
     size: (null as unknown) as number
   });
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const deleteAttachment = async () => {
     if (!attachmentToDelete || !attachmentToDelete.id) {
@@ -158,8 +150,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             count={props.attachmentsList.length}
             rowsPerPage={rowsPerPage}
             page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
+            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+            }
           />
         )}
       </Paper>
