@@ -30,11 +30,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={
+        {() => (
+          <GeneralInformationForm
+            species={
               codes?.species?.map((item) => {
                 return { value: item.name, label: item.name };
               }) || []
-            } />}
+            }
+          />
+        )}
       </Formik>
     );
 
@@ -51,11 +55,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={
+        {() => (
+          <GeneralInformationForm
+            species={
               codes?.species?.map((item) => {
                 return { value: item.name, label: item.name };
               }) || []
-            } />}
+            }
+          />
+        )}
       </Formik>
     );
 
@@ -90,11 +98,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={
+        {() => (
+          <GeneralInformationForm
+            species={
               codes?.species?.map((item) => {
                 return { value: item.name, label: item.name };
               }) || []
-            } />}
+            }
+          />
+        )}
       </Formik>
     );
 

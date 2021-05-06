@@ -82,13 +82,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
         <Grid item xs={12}>
-          <AutocompleteField
-            id="species"
-            name="species"
-            label="Species"
-            options={props.species}
-            required={true}
-          />
+          <AutocompleteField id="species" name="species" label="Species" options={props.species} required={true} />
         </Grid>
         <Grid item xs={12}>
           <TextField

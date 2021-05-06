@@ -22,14 +22,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={[
-                        { value: 'Park name 1', label: 'Park name 1' },
-                        { value: 'Park name 2', label: 'Park name 2' }
-                      ]}
-                      management_unit={[
-                        { value: 'Management unit 1', label: 'Management unit 1' },
-                        { value: 'Management unit 2', label: 'Management unit 2' }
-                      ]} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 
@@ -46,14 +50,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={[
-                        { value: 'Park name 1', label: 'Park name 1' },
-                        { value: 'Park name 2', label: 'Park name 2' }
-                      ]}
-                      management_unit={[
-                        { value: 'Management unit 1', label: 'Management unit 1' },
-                        { value: 'Management unit 2', label: 'Management unit 2' }
-                      ]} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 
@@ -80,14 +88,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={[
-                        { value: 'Park name 1', label: 'Park name 1' },
-                        { value: 'Park name 2', label: 'Park name 2' }
-                      ]}
-                      management_unit={[
-                        { value: 'Management unit 1', label: 'Management unit 1' },
-                        { value: 'Management unit 2', label: 'Management unit 2' }
-                      ]} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 
