@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SurveyDetails renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-3"
+  >
+    <h2
+      class="MuiTypography-root MuiTypography-h2"
+    >
+      Survey Details
+    </h2>
+  </div>
+  <div
+    class="MuiPaper-root MuiBox-root MuiBox-root-4 MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <section
+      class="MuiBox-root MuiBox-root-5 makeStyles-surveyDetailsSection-1"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-6"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-7"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            General Information
+          </h3>
+          <button
+            aria-label="Edit General Information"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            tabindex="0"
+            title="Edit General Information"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Edit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Survey Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Moose Survey 1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Management Unit
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Management Unit 1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Survey Timeline
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                MMM DD, YYYY - MMM DD, YYYY
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Species
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Moose
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Survey Lead
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                John Smith
+              </dd>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-8"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-9"
+                >
+                  <dt
+                    class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                  >
+                    Purpose
+                  </dt>
+                </div>
+                <p
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+              </div>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-10"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-11"
+                >
+                  <dt
+                    class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                  >
+                    Study Area Definition
+                  </dt>
+                </div>
+                <p
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+              </div>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+</DocumentFragment>
+`;
