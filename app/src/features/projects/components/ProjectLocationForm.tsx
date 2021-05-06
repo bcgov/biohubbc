@@ -104,18 +104,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     reader.readAsArrayBuffer(file);
 
     reader.onload = (e) => {
-      // console.log('e',e);
-      // console.log(e?.target?.result);
-      // const zipString: string = (e?.target?.result || "") as string;
       const zip: Buffer = e?.target?.result as Buffer;
-      console.log('zip',zip);
 
-      // console.log('zipString',zipString)
-      // console.log('zipString',typeof zipString)
-      // const zip = new TextEncoder().encode(zipString);
-      // console.log(typeof zip);
-      // console.log(typeof zip);
-      // shp('http://localhost:7100/test_big_shape.zip').then((geojson) => {
       shp(zip).then((geojson) => {
         console.log('geojson',geojson);
       }).catch((err) => {
