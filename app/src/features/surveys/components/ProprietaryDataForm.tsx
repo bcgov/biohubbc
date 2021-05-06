@@ -29,6 +29,7 @@ const useStyles = makeStyles(() => ({
 export interface IProprietaryDataForm {
   proprietary_data_category: number;
   proprietor_name: string;
+  first_nations_id: number;
   category_rational: string;
   survey_data_proprietary: string;
   data_sharing_agreement_required: string;
@@ -37,6 +38,7 @@ export interface IProprietaryDataForm {
 export const ProprietaryDataInitialValues: IProprietaryDataForm = {
   proprietary_data_category: ('' as unknown) as number,
   proprietor_name: '',
+  first_nations_id: (null as unknown) as number,
   category_rational: '',
   survey_data_proprietary: 'false',
   data_sharing_agreement_required: 'false'
@@ -131,6 +133,10 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   name="proprietor_name"
                   label="Proprietor Name"
                   options={props.first_nations}
+                  onChange={(event, option) => {
+                    // Set the first nations id field instead of the proprietor name field for sending to the API
+                    setFieldValue('first_nations_id', option?.value);
+                  }}
                   required={true}
                 />
               )}
