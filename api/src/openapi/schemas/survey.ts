@@ -55,7 +55,7 @@ export const surveyCreatePostRequestObject = {
       type: 'string'
     },
     proprietary_data_category: {
-      type: 'string'
+      type: 'number'
     },
     proprietor_name: {
       type: 'string'
@@ -63,7 +63,7 @@ export const surveyCreatePostRequestObject = {
     category_rational: {
       type: 'string'
     },
-    first_nations: {
+    first_nations_id: {
       type: 'number'
     },
     data_sharing_agreement_required: {

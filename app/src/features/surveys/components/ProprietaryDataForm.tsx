@@ -36,7 +36,7 @@ export interface IProprietaryDataForm {
 }
 
 export const ProprietaryDataInitialValues: IProprietaryDataForm = {
-  proprietary_data_category: ('' as unknown) as number,
+  proprietary_data_category: 0,
   proprietor_name: '',
   first_nations_id: (null as unknown) as number,
   category_rational: '',
@@ -134,8 +134,9 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   label="Proprietor Name"
                   options={props.first_nations}
                   onChange={(event, option) => {
-                    // Set the first nations id field instead of the proprietor name field for sending to the API
+                    // Set the first nations id field for sending to the API
                     setFieldValue('first_nations_id', option?.value);
+                    setFieldValue('proprietor_name', option?.label);
                   }}
                   required={true}
                 />

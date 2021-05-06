@@ -27,7 +27,7 @@ export class PostSurveyObject {
     this.biologist_first_name = obj?.biologist_first_name || null;
     this.biologist_last_name = obj?.biologist_last_name || null;
     this.end_date = obj?.end_date || null;
-    this.foippa_requirements_accepted = (obj?.foippa_requirements_accepted === 'true' && true) || false;
+    this.foippa_requirements_accepted = obj?.foippa_requirements_accepted === 'true' || false;
     this.species = obj?.species || null;
     this.start_date = obj?.start_date || null;
     this.survey_area_name = obj?.survey_area_name || null;
@@ -56,13 +56,10 @@ export class PostSurveyProprietorData {
     defaultLog.debug({ label: 'PostSurveyProprietorData', message: 'params', obj });
 
     this.prt_id = obj?.proprietary_data_category || null;
-    this.fn_id = obj?.first_nations || null;
-    this.rationale = obj?.category_rational || null;
-    this.proprietor_name = obj?.proprietor_name || null;
-    this.disa_required = (obj?.data_sharing_agreement_required === 'true' && true) || false;
+    this.fn_id = obj?.first_nations_id || null;
 
-    // TODO remove hard coded data
-    this.prt_id = 2;
-    this.fn_id = 1;
+    this.rationale = obj?.category_rational || null;
+    this.proprietor_name = (!obj?.first_nations_id && obj?.proprietor_name) || null;
+    this.disa_required = obj?.data_sharing_agreement_required === 'true' || false;
   }
 }

@@ -78,6 +78,8 @@ function createSurvey(): RequestHandler {
       throw new HTTP400('Missing required path param `projectId`');
     }
     const connection = getDBConnection(req['keycloak_token']);
+
+    console.log('looking for first_nations_id', req.body);
     const sanitizedPostSurveyData = (req.body && new PostSurveyObject(req.body)) || null;
     if (!sanitizedPostSurveyData) {
       throw new HTTP400('Missing survey data');
