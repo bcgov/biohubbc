@@ -7,7 +7,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import TextField from '@material-ui/core/TextField';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
@@ -27,7 +27,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface IProprietaryDataForm {
-  proprietary_data_category: string;
+  proprietary_data_category: number;
   proprietor_name: string;
   category_rational: string;
   survey_data_proprietary: string;
@@ -35,7 +35,7 @@ export interface IProprietaryDataForm {
 }
 
 export const ProprietaryDataInitialValues: IProprietaryDataForm = {
-  proprietary_data_category: '',
+  proprietary_data_category: ('' as unknown) as number,
   proprietor_name: '',
   category_rational: '',
   survey_data_proprietary: 'false',
@@ -44,8 +44,8 @@ export const ProprietaryDataInitialValues: IProprietaryDataForm = {
 
 export const ProprietaryDataYupSchema = yup.object().shape({
   proprietary_data_category: yup
-    .string()
-    .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
+    .number()
+    .when('survey_data_proprietary', { is: 'true', then: yup.number().required('Required') }),
   proprietor_name: yup
     .string()
     .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
@@ -63,8 +63,8 @@ export const ProprietaryDataYupSchema = yup.object().shape({
 });
 
 export interface IProprietaryDataFormProps {
-  proprietary_data_category: string[];
-  first_nations: string[];
+  proprietary_data_category: IAutocompleteFieldOption<number>[];
+  first_nations: IAutocompleteFieldOption<number>[];
 }
 
 /**
@@ -75,7 +75,7 @@ export interface IProprietaryDataFormProps {
 const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const classes = useStyles();
 
-  const { values, touched, errors, handleChange } = useFormikContext<IProprietaryDataForm>();
+  const { values, touched, errors, handleChange, setFieldValue } = useFormikContext<IProprietaryDataForm>();
 
   return (
     <form>
@@ -109,25 +109,32 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             <Grid item xs={12}>
               <AutocompleteField
                 id="proprietary_data_category"
-                name="Proprietary Data Category"
+                name="proprietary_data_category"
                 label="Proprietary Data Category"
-                value={values.proprietary_data_category}
                 options={props.proprietary_data_category}
+                onChange={(event, option) => {
+                  setFieldValue('proprietary_data_category', option?.value);
+
+                  // Need to reset proprietor name if user changes category from first nations to something else
+                  // because the name will now be freeform text
+                  if (values.proprietary_data_category === 2 && option?.value !== 2) {
+                    setFieldValue('proprietor_name', '');
+                  }
+                }}
                 required={true}
               />
             </Grid>
             <Grid item xs={12}>
-              {values.proprietary_data_category === 'First Nations Land' && (
+              {values.proprietary_data_category === 2 && (
                 <AutocompleteField
                   id="proprietor_name"
+                  name="proprietor_name"
                   label="Proprietor Name"
-                  name="Proprietary Name"
-                  value={values.proprietor_name}
                   options={props.first_nations}
                   required={true}
                 />
               )}
-              {values.proprietary_data_category !== 'First Nations Land' && (
+              {values.proprietary_data_category !== 2 && (
                 <TextField
                   fullWidth
                   required={true}
