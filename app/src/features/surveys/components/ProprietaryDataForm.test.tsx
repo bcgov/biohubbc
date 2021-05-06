@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, waitFor, within, screen } from '@testing-library/react';
 import { Formik } from 'formik';
 import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
@@ -78,8 +78,8 @@ describe('Proprietary Data Form', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('shows the first nations dropdown when data category is selected as First Nations', async () => {
-    const { asFragment, getByText, getAllByRole, getByRole } = render(
+  it('shows the first nations dropdown when data category is selected as First Nations and clears the proprietor name field when category goes from first nations to something else', async () => {
+    const { getByText, getAllByRole, getByRole } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
         validationSchema={ProprietaryDataYupSchema}
@@ -110,15 +110,23 @@ describe('Proprietary Data Form', () => {
     });
 
     fireEvent.mouseDown(getAllByRole('textbox')[0]);
-    const dataCategoryListbox = within(getByRole('listbox'));
-    fireEvent.click(dataCategoryListbox.getByText(/First Nations Land/i));
+    const dataCategoryListbox1 = within(getByRole('listbox'));
+    fireEvent.click(dataCategoryListbox1.getByText(/First Nations Land/i));
 
     fireEvent.mouseDown(getAllByRole('textbox')[1]);
     const proprietorNameListbox = within(getByRole('listbox'));
     fireEvent.click(proprietorNameListbox.getByText(/First nations code/i));
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(screen.getByDisplayValue('First nations code')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('textbox')[0]);
+    const dataCategoryListbox2 = within(getByRole('listbox'));
+    fireEvent.click(dataCategoryListbox2.getByText(/Proprietor code 1/i));
+
+    await waitFor(() => {
+      expect(screen.queryByDisplayValue('First nations code')).toBeNull();
     });
   });
 
