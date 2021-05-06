@@ -10,7 +10,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -111,11 +111,10 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField
+          <AutocompleteFreeSoloField
             id="coordinator_agency"
-            name="Coordinator Agency"
+            name="coordinator_agency"
             label="Coordinator Agency"
-            value={values.coordinator_agency}
             options={props.coordinator_agency}
             required={true}
           />

@@ -447,7 +447,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietary_data_category"
           role="combobox"
         >
@@ -455,8 +455,8 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="proprietary_data_category"
               id="proprietary_data_category-label"
             >
@@ -481,14 +481,14 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Category 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -511,13 +511,38 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
                 class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-24 PrivateNotchedOutline-legendNotched-25"
+                  class="PrivateNotchedOutline-legendLabelled-24"
                 >
                   <span>
                     Proprietary Data Category *
@@ -929,7 +954,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietary_data_category"
           role="combobox"
         >
@@ -937,8 +962,8 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+              data-shrink="false"
               for="proprietary_data_category"
               id="proprietary_data_category-label"
             >
@@ -964,14 +989,14 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Category 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -994,13 +1019,38 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
                 class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-54 PrivateNotchedOutline-legendNotched-55"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Proprietary Data Category *
@@ -1009,7 +1059,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
               id="proprietary_data_category-helper-text"
             >
               error on proprietary data category field
@@ -1432,7 +1482,7 @@ exports[`Proprietary Data Form shows the first nations dropdown when data catego
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietary_data_category"
           role="combobox"
         >
@@ -1496,6 +1546,31 @@ exports[`Proprietary Data Form shows the first nations dropdown when data catego
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
@@ -1518,7 +1593,7 @@ exports[`Proprietary Data Form shows the first nations dropdown when data catego
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietor_name"
           role="combobox"
         >
@@ -1575,6 +1650,31 @@ exports[`Proprietary Data Form shows the first nations dropdown when data catego
                     >
                       <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
                       />
                     </svg>
                   </span>
