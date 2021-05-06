@@ -91,25 +91,37 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     ]);
   }, [values.geometry]);
 
-  const handleShapefileUpload = async (e: any) => {
+  /**
+   * ## handleShapefileUpload
+   * Convert a zipped shapefile to geojson
+   * @param e The file upload event
+   */
+  const handleShapefileUpload = (e: any) => {
+    // Only accept one file
     const file = e.target.files[0];
-    console.log(file);
 
+    // Back out if not a zipped file
     if (file?.type !== 'application/zip') {
-      console.log('No thanks');
+      console.log('This does not look like a zip file.');
       return;
     }
 
+    // Create a file reader to extract the binary data
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
 
-    reader.onload = (e) => {
+    // When the file is loaded run the conversion
+    reader.onload = (e: any) => {
+      // The converter wants a buffer
       const zip: Buffer = e?.target?.result as Buffer;
 
+      // Run the conversion
       shp(zip).then((geojson) => {
+        // TODO Send geojson to the map
         console.log('geojson',geojson);
       }).catch((err) => {
-        console.error('fail',err);
+        const msg = 'Failed to convert shapefile to geojson'
+        console.error(msg,err);
       });
     }
 
