@@ -12,11 +12,10 @@ import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip }
 import Icon from '@mdi/react';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useCallback, useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
-import { useHistory, useParams } from 'react-router';
+import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
