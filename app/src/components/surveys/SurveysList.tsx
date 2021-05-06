@@ -16,6 +16,7 @@ import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -49,15 +50,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;
@@ -123,8 +115,10 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           count={props.surveysList.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+            handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+          }
         />
       )}
     </Paper>

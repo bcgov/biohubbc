@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useState } from 'react';
+import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
@@ -26,15 +27,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   return (
     <Paper>
@@ -82,8 +74,10 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           count={activeUsers.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+            handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+          }
         />
       )}
     </Paper>
