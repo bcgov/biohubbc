@@ -1,25 +1,24 @@
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import { Formik } from 'formik';
 import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
 import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
 
 const handleSaveAndNext = jest.fn();
 
-const proprietary_data_category = ['Category 1', 'Category 2'];
-
 const proprietaryDataFilledValues = {
-  proprietary_data_category: 'Category 1',
+  proprietary_data_category: 'Proprietor code 1',
   proprietor_name: 'name',
   category_rational: 'rational is cause it is true',
-  survey_data_proprietary: 'false',
+  survey_data_proprietary: 'true',
   data_sharing_agreement_required: 'true'
 };
 
 describe('Proprietary Data Form', () => {
-  it('renders correctly the empty component correctly', () => {
+  it('renders correctly the empty component correctly when survey data is not proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProprietaryDataInitialValues}
@@ -29,14 +28,27 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly the filled component correctly', () => {
+  it('renders correctly the filled component correctly when survey data is proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
@@ -46,14 +58,71 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when errors exist', () => {
+  it('shows the first nations dropdown when data category is selected as First Nations', async () => {
+    const { asFragment, getByText, getAllByRole, getByRole } = render(
+      <Formik
+        initialValues={proprietaryDataFilledValues}
+        validationSchema={ProprietaryDataYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        )}
+      </Formik>
+    );
+
+    await waitFor(() => {
+      expect(getByText('Proprietary Information')).toBeInTheDocument();
+    });
+
+    fireEvent.mouseDown(getAllByRole('textbox')[0]);
+    const dataCategoryListbox = within(getByRole('listbox'));
+    fireEvent.click(dataCategoryListbox.getByText(/First Nations Land/i));
+
+    fireEvent.mouseDown(getAllByRole('textbox')[1]);
+    const proprietorNameListbox = within(getByRole('listbox'));
+    fireEvent.click(proprietorNameListbox.getByText(/First nations code/i));
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('renders correctly when errors exist when survey data is proprietary', () => {
     const { asFragment } = render(
       <Formik
         initialValues={proprietaryDataFilledValues}
@@ -77,7 +146,20 @@ describe('Proprietary Data Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <ProprietaryDataForm proprietary_data_category={proprietary_data_category} />}
+        {() => (
+          <ProprietaryDataForm
+            proprietary_data_category={
+              codes?.proprietor_type?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+            first_nations={
+              codes?.first_nations?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
