@@ -1,17 +1,33 @@
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import React, { useContext } from 'react';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 import { mdiAlertCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { useHistory } from 'react-router';
 import { AuthStateContext } from 'contexts/authStateContext';
+import React, { useContext } from 'react';
+import { Redirect, useHistory } from 'react-router';
 
 const AccessDenied = () => {
   const history = useHistory();
 
   const { keycloakWrapper } = useContext(AuthStateContext);
+
+  if (!keycloakWrapper?.keycloak?.authenticated) {
+    // User is not logged in
+    return <Redirect to={{ pathname: '/login' }} />;
+  }
+
+  if (!keycloakWrapper.hasLoadedAllUserInfo) {
+    // User data has not been loaded, can not yet determine if they have a role
+    return <CircularProgress className="pageProgress" />;
+  }
+
+  if (keycloakWrapper.hasAccessRequest) {
+    // User already has a pending access request
+    return <Redirect to={{ pathname: '/request-submitted' }} />;
+  }
 
   const userHasARole = !!keycloakWrapper?.systemRoles?.length;
 

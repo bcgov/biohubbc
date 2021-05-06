@@ -47,7 +47,8 @@ const request = require('request');
         url: process.env.SSO_URL || 'https://dev.oidc.gov.bc.ca/auth',
         realm: process.env.SSO_REALM || '35r1iman',
         clientId: process.env.SSO_CLIENT_ID || 'biohubbc'
-      }
+      },
+      SITEMINDER_LOGOUT_URL: process.env.SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi' // prod: https://logon7.gov.bc.ca/clp-cgi/logoff.cgi
     };
     resp.status(200).json(config);
   });

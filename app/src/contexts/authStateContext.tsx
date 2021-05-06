@@ -2,12 +2,11 @@ import useKeycloakWrapper, { IKeycloakWrapper } from 'hooks/useKeycloakWrapper';
 import React from 'react';
 
 export interface IAuthState {
-  ready?: boolean;
   keycloakWrapper?: IKeycloakWrapper;
 }
 
 export const AuthStateContext = React.createContext<IAuthState>({
-  ready: false
+  keycloakWrapper: undefined
 });
 
 export const AuthStateContextProvider: React.FC = (props) => {
@@ -16,7 +15,6 @@ export const AuthStateContextProvider: React.FC = (props) => {
   return (
     <AuthStateContext.Provider
       value={{
-        ready: keycloakWrapper.keycloak?.authenticated && keycloakWrapper.hasLoadedUserRelevantInfo,
         keycloakWrapper
       }}>
       {props.children}

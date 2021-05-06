@@ -1,14 +1,35 @@
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import React, { useContext } from 'react';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 import { mdiCheck } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
+import React, { useContext } from 'react';
+import { Redirect } from 'react-router';
+import { logOut } from 'utils/Utils';
 
 const RequestSubmitted = () => {
   const config = useContext(ConfigContext);
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  if (!keycloakWrapper?.hasLoadedAllUserInfo) {
+    // User data has not been loaded, can not yet determine if they have a role
+    return <CircularProgress className="pageProgress" />;
+  }
+
+  if (keycloakWrapper?.systemRoles.length) {
+    // User already has a role
+    return <Redirect to={{ pathname: '/' }} />;
+  }
+
+  if (!keycloakWrapper.hasAccessRequest) {
+    // User has no pending access request
+    return <Redirect to={{ pathname: '/' }} />;
+  }
 
   return (
     <Container>
@@ -19,15 +40,11 @@ const RequestSubmitted = () => {
         <Box pt={4}>
           <Button
             onClick={() => {
-              if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
+              if (!config) {
                 return;
               }
 
-              window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
-                config.KEYCLOAK_CONFIG.realm
-              }/protocol/openid-connect/logout?redirect_uri=${encodeURI(window.location.origin)}/${encodeURI(
-                'access-request'
-              )}`;
+              logOut(config);
             }}
             type="submit"
             size="large"

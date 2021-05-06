@@ -1,5 +1,6 @@
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -14,7 +15,7 @@ interface IPrivateRouteProps extends RouteProps {
  * @param props - Properties to pass { component, role, claim }
  */
 const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  const { keycloakWrapper } = React.useContext(AuthStateContext);
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
   let { validRoles, component: Component, layout: Layout, ...rest } = props;
 
@@ -22,23 +23,31 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
     <Route
       {...rest}
       render={(props) => {
-        if (!!keycloakWrapper?.keycloak?.authenticated) {
-          if (!keycloakWrapper.hasSystemRole(validRoles)) {
-            if (keycloakWrapper.hasAccessRequest) {
-              return <Redirect to="/request-submitted" />;
-            } else {
-              return <Redirect to="/forbidden" />;
-            }
+        if (!keycloakWrapper?.keycloak?.authenticated) {
+          // User is not logged in
+          return <Redirect to="/login" />;
+        }
+
+        if (!keycloakWrapper?.hasLoadedAllUserInfo) {
+          // User data has not been loaded, can not yet determine if they have a role
+          return <CircularProgress className="pageProgress" />;
+        }
+
+        if (!keycloakWrapper.hasSystemRole(validRoles)) {
+          // User doesn't have the necessary role for this route
+          if (keycloakWrapper.hasAccessRequest) {
+            // User already has a pending access request
+            return <Redirect to="/request-submitted" />;
           }
 
-          return (
-            <Layout>
-              <Component {...props} {...rest.componentProps} />
-            </Layout>
-          );
-        } else {
           return <Redirect to="/forbidden" />;
         }
+
+        return (
+          <Layout>
+            <Component {...props} {...rest.componentProps} />
+          </Layout>
+        );
       }}
     />
   );

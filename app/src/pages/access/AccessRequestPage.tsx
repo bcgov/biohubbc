@@ -151,8 +151,19 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
+  if (!keycloakWrapper?.keycloak?.authenticated) {
+    // User is not logged in
+    return <Redirect to={{ pathname: '/login' }} />;
+  }
+
+  if (!keycloakWrapper.hasLoadedAllUserInfo) {
+    // User data has not been loaded, can not yet determine if they have a role
+    return <CircularProgress className="pageProgress" />;
+  }
+
   if (keycloakWrapper?.hasAccessRequest) {
-    return <Redirect to="/request-submitted" />;
+    // User already has a pending access request
+    return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
   let initialValues: any;
