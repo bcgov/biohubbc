@@ -11,6 +11,7 @@ import {
   getIUCNConservationActionLevel3SubclassificationSQL,
   getManagementActionTypeSQL,
   getProjectTypeSQL,
+  getProprietorTypeSQL,
   getSystemRolesSQL
 } from './code-queries';
 
@@ -31,6 +32,13 @@ describe('getFirstNationsSQL', () => {
 describe('getFundingSourceSQL', () => {
   it('returns valid sql statement', () => {
     const response = getFundingSourceSQL();
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getProprietorTypeSQL', () => {
+  it('returns valid sql statement', () => {
+    const response = getProprietorTypeSQL();
     expect(response).to.not.be.null;
   });
 });

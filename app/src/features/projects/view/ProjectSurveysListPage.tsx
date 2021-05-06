@@ -50,7 +50,7 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
             </Button>
           </Box>
           <Box mb={3}>
-            <SurveysList surveysList={surveysList} />
+            <SurveysList projectId={projectForViewData.id} surveysList={surveysList} />
           </Box>
         </Container>
       </Box>

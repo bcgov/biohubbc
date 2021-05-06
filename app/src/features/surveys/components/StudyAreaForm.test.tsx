@@ -5,13 +5,10 @@ import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const park = ['Park 1', 'Park 2'];
-const management_unit = ['Management Unit 1', 'Management Unit 2'];
-
 const studyAreaFilledValues = {
   survey_area_name: 'Study area name',
-  park: 'Park 1',
-  management_unit: 'Management Unit 2'
+  park: 'Park name 1',
+  management_unit: 'Management unit 2'
 };
 
 describe('Study Area Form', () => {
@@ -25,7 +22,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 
@@ -42,7 +50,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 
@@ -69,7 +88,18 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => (
+          <StudyAreaForm
+            park={[
+              { value: 'Park name 1', label: 'Park name 1' },
+              { value: 'Park name 2', label: 'Park name 2' }
+            ]}
+            management_unit={[
+              { value: 'Management unit 1', label: 'Management unit 1' },
+              { value: 'Management unit 2', label: 'Management unit 2' }
+            ]}
+          />
+        )}
       </Formik>
     );
 

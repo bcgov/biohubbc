@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Proprietary Data Form renders correctly the empty component correctly 1`] = `
+exports[`Proprietary Data Form renders correctly the empty component correctly when survey data is not proprietary 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -146,194 +146,6 @@ exports[`Proprietary Data Form renders correctly the empty component correctly 1
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-2 MuiTypography-body1"
-        >
-          Proprietary Information
-        </p>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
-          data-testid="proprietary_data_category"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="proprietary_data_category"
-              id="proprietary_data_category-label"
-            >
-              Proprietary Data Category
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="proprietary_data_category"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-13"
-                >
-                  <span>
-                    Proprietary Data Category *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            for="proprietor_name"
-            id="proprietor_name-label"
-          >
-            Proprietor Name
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-          >
-            <input
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="proprietor_name"
-              name="proprietor_name"
-              required=""
-              type="text"
-              value=""
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-13"
-              >
-                <span>
-                  Proprietor Name *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            for="category_rational"
-            id="category_rational-label"
-          >
-            Category Rational
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="category_rational"
-              name="category_rational"
-              required=""
-              rows="4"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-13"
-              >
-                <span>
-                  Category Rational *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
         <fieldset
           class="MuiFormControl-root"
         >
@@ -354,7 +166,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly 1
             Do you require a data sharing agreement?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-15"
+            class="MuiBox-root MuiBox-root-11"
           >
             <div
               aria-label="Data Sharing Agreement"
@@ -478,7 +290,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly 1
 </DocumentFragment>
 `;
 
-exports[`Proprietary Data Form renders correctly the filled component correctly 1`] = `
+exports[`Proprietary Data Form renders correctly the filled component correctly when survey data is proprietary 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -491,7 +303,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-16 Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
           >
             Is the data captured in this survey proprietary?
             <span
@@ -502,7 +314,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             </span>
           </legend>
           <div
-            class="MuiBox-root MuiBox-root-18"
+            class="MuiBox-root MuiBox-root-14"
           >
             <div
               aria-label="Survey Data Proprietary"
@@ -514,21 +326,20 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-20 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      checked=""
-                      class="PrivateSwitchBase-input-22"
+                      class="PrivateSwitchBase-input-18"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-23 PrivateRadioButtonIcon-checked-25"
+                      class="PrivateRadioButtonIcon-root-19"
                     >
                       <svg
                         aria-hidden="true"
@@ -542,7 +353,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -567,20 +378,21 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-16 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-22"
+                      checked=""
+                      class="PrivateSwitchBase-input-18"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-23"
+                      class="PrivateRadioButtonIcon-root-19 PrivateRadioButtonIcon-checked-21"
                     >
                       <svg
                         aria-hidden="true"
@@ -594,7 +406,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -625,7 +437,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-17 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -635,7 +447,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietary_data_category"
           role="combobox"
         >
@@ -643,8 +455,8 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              data-shrink="false"
               for="proprietary_data_category"
               id="proprietary_data_category-label"
             >
@@ -669,14 +481,14 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Category 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -699,13 +511,38 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                  class="PrivateNotchedOutline-legendLabelled-24"
                 >
                   <span>
                     Proprietary Data Category *
@@ -750,10 +587,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="PrivateNotchedOutline-legendLabelled-24 PrivateNotchedOutline-legendNotched-25"
               >
                 <span>
                   Proprietor Name *
@@ -798,10 +635,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="PrivateNotchedOutline-legendLabelled-24 PrivateNotchedOutline-legendNotched-25"
               >
                 <span>
                   Category Rational *
@@ -818,7 +655,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-16 Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
           >
             Data Sharing Agreement (DISA)
             <span
@@ -834,7 +671,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             Do you require a data sharing agreement?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-30"
+            class="MuiBox-root MuiBox-root-26"
           >
             <div
               aria-label="Data Sharing Agreement"
@@ -846,20 +683,20 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-22"
+                      class="PrivateSwitchBase-input-18"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-23"
+                      class="PrivateRadioButtonIcon-root-19"
                     >
                       <svg
                         aria-hidden="true"
@@ -873,7 +710,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -898,21 +735,21 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-20 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-15 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-16 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-22"
+                      class="PrivateSwitchBase-input-18"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-23 PrivateRadioButtonIcon-checked-25"
+                      class="PrivateRadioButtonIcon-root-19 PrivateRadioButtonIcon-checked-21"
                     >
                       <svg
                         aria-hidden="true"
@@ -926,7 +763,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-20"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -958,7 +795,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
 </DocumentFragment>
 `;
 
-exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
+exports[`Proprietary Data Form renders correctly when errors exist when survey data is proprietary 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -971,7 +808,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-31 Mui-error Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-42 Mui-error Mui-required"
           >
             Is the data captured in this survey proprietary?
             <span
@@ -982,7 +819,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
             </span>
           </legend>
           <div
-            class="MuiBox-root MuiBox-root-33"
+            class="MuiBox-root MuiBox-root-44"
           >
             <div
               aria-label="Survey Data Proprietary"
@@ -994,21 +831,20 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-34 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-35 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-45 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      checked=""
-                      class="PrivateSwitchBase-input-37"
+                      class="PrivateSwitchBase-input-48"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-38 PrivateRadioButtonIcon-checked-40"
+                      class="PrivateRadioButtonIcon-root-49"
                     >
                       <svg
                         aria-hidden="true"
@@ -1022,7 +858,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-39"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-50"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -1047,20 +883,21 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-34 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-45 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-46 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-37"
+                      checked=""
+                      class="PrivateSwitchBase-input-48"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-38"
+                      class="PrivateRadioButtonIcon-root-49 PrivateRadioButtonIcon-checked-51"
                     >
                       <svg
                         aria-hidden="true"
@@ -1074,7 +911,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-39"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-50"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -1107,7 +944,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-32 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-43 MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -1117,7 +954,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="proprietary_data_category"
           role="combobox"
         >
@@ -1125,8 +962,8 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+              data-shrink="false"
               for="proprietary_data_category"
               id="proprietary_data_category-label"
             >
@@ -1152,14 +989,14 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Category 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -1182,13 +1019,38 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                  class="PrivateNotchedOutline-legendLabelled-54"
                 >
                   <span>
                     Proprietary Data Category *
@@ -1197,7 +1059,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
               id="proprietary_data_category-helper-text"
             >
               error on proprietary data category field
@@ -1240,10 +1102,10 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                class="PrivateNotchedOutline-legendLabelled-54 PrivateNotchedOutline-legendNotched-55"
               >
                 <span>
                   Proprietor Name *
@@ -1295,10 +1157,10 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-52 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                class="PrivateNotchedOutline-legendLabelled-54 PrivateNotchedOutline-legendNotched-55"
               >
                 <span>
                   Category Rational *
@@ -1321,7 +1183,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-31 Mui-error Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-42 Mui-error Mui-required"
           >
             Data Sharing Agreement (DISA)
             <span
@@ -1337,7 +1199,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
             Do you require a data sharing agreement?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-45"
+            class="MuiBox-root MuiBox-root-56"
           >
             <div
               aria-label="Data Sharing Agreement"
@@ -1349,20 +1211,20 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-34 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-45 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-37"
+                      class="PrivateSwitchBase-input-48"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-38"
+                      class="PrivateRadioButtonIcon-root-49"
                     >
                       <svg
                         aria-hidden="true"
@@ -1376,7 +1238,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-39"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-50"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -1401,21 +1263,21 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-34 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-35 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-45 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-46 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-37"
+                      class="PrivateSwitchBase-input-48"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-38 PrivateRadioButtonIcon-checked-40"
+                      class="PrivateRadioButtonIcon-root-49 PrivateRadioButtonIcon-checked-51"
                     >
                       <svg
                         aria-hidden="true"
@@ -1429,7 +1291,7 @@ exports[`Proprietary Data Form renders correctly when errors exist 1`] = `
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-39"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-50"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >

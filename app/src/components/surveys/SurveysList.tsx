@@ -16,6 +16,8 @@ import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
+import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -42,22 +44,15 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ISurveysListProps {
   surveysList: IGetProjectSurvey[];
+  projectId: number;
 }
 
 const SurveysList: React.FC<ISurveysListProps> = (props) => {
   const classes = useStyles();
+  const history = useHistory();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;
@@ -95,7 +90,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       underline="always"
                       component="button"
                       variant="body2"
-                      onClick={() => console.log('survey clicked')}>
+                      onClick={() => history.push(`/projects/${props.projectId}/surveys/${row.id}/details`)}>
                       {row.name}
                     </Link>
                   </TableCell>
@@ -123,8 +118,10 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           count={props.surveysList.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+            handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+          }
         />
       )}
     </Paper>
