@@ -17,7 +17,7 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -56,26 +56,44 @@ const SurveyPage: React.FC = () => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
+  const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetProjectSurveyForViewResponse | null>(null);
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
     if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
       return;
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, urlParams]);
 
+  const getSurvey = useCallback(async () => {
+    const surveyWithDetailsResponse = await biohubApi.project.getSurveyForView(urlParams['id'], urlParams['survey_id']);
+
+    if (!surveyWithDetailsResponse) {
+      return;
+    }
+
+    setSurveyWithDetails(surveyWithDetailsResponse);
+  }, [biohubApi.project, urlParams]);
+
   useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
+    if (isLoadingProject && !projectWithDetails) {
       getProject();
-      setIsLoadingProject(true);
+      setIsLoadingProject(false);
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
+
+  useEffect(() => {
+    if (isLoadingSurvey && !surveyWithDetails) {
+      getSurvey();
+      setIsLoadingSurvey(false);
+    }
+  }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
 
   if (!projectWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;

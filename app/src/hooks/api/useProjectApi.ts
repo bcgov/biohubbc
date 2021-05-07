@@ -11,7 +11,8 @@ import {
   IUpdateProjectRequest,
   IGetProjectAttachmentsResponse,
   ICreateProjectSurveyRequest,
-  ICreateProjectSurveyResponse
+  ICreateProjectSurveyResponse,
+  IGetProjectSurveyForViewResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -37,8 +38,8 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Delete project attachment based on project and attachment ID
    *
-   * @param {projectId} projectId
-   * @param {attachmentId} attachmentId
+   * @param {number} projectId
+   * @param {number} attachmentId
    * @returns {*} {Promise<number>}
    */
   const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
@@ -73,7 +74,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get project details based on its ID for viewing purposes.
    *
-   * @param {projectId} projectId
+   * @param {number} projectId
    * @return {*} {Promise<IGetProjectForViewResponse>}
    */
   const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
@@ -85,7 +86,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get project details based on its ID for updating purposes.
    *
-   * @param {projectId} projectId
+   * @param {number} projectId
    * @returns
    */
   const getProjectForUpdate = async (
@@ -171,8 +172,8 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Delete funding source based on project and funding source ID
    *
-   * @param {projectId} projectId
-   * @param {pfsId} pfsId
+   * @param {number} projectId
+   * @param {number} pfsId
    * @returns {*} {Promise<any>}
    */
   const deleteFundingSource = async (projectId: number, pfsId: number): Promise<any> => {
@@ -184,7 +185,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Add new funding source based on projectId
    *
-   * @param {projectId} projectId
+   * @param {number} projectId
    * @returns {*} {Promise<any>}
    */
   const addFundingSource = async (projectId: number, fundingSource: any): Promise<any> => {
@@ -208,6 +209,19 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project survey details based on its ID for viewing purposes.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*} {Promise<IGetProjectSurveyForViewResponse>}
+   */
+  const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetProjectSurveyForViewResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -221,7 +235,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProjectAttachment,
     deleteFundingSource,
     addFundingSource,
-    createSurvey
+    createSurvey,
+    getSurveyForView
   };
 };
 

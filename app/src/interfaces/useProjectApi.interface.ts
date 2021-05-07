@@ -355,3 +355,13 @@ export interface ICreateProjectSurveyRequest {
 export interface ICreateProjectSurveyResponse {
   id: number;
 }
+
+/**
+ * An interface for a single instance of project survey metadata, for view-only use cases.
+ *
+ * @export
+ * @interface IGetProjectSurveyForViewResponse
+ */
+export interface IGetProjectSurveyForViewResponse {
+  id: number;
+}
