@@ -136,7 +136,7 @@ describe('ProjectPage', () => {
           status_name: 'Published'
         }
       ];
-  
+
       mockBiohubApi().project.getSurveysList.mockResolvedValue(surveysList);
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
