@@ -1,10 +1,11 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import SurveyDetails from './SurveyDetails';
+import { getProjectSurveyForViewResponse } from 'test-helpers/survey-helpers';
 
 describe('SurveyDetails', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(<SurveyDetails />);
+    const { asFragment } = render(<SurveyDetails surveyForViewData={getProjectSurveyForViewResponse} />);
 
     expect(asFragment()).toMatchSnapshot();
   });

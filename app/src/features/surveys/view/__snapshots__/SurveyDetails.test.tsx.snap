@@ -3,7 +3,7 @@
 exports[`SurveyDetails renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-2"
   >
     <h2
       class="MuiTypography-root MuiTypography-h2"
@@ -12,16 +12,16 @@ exports[`SurveyDetails renders correctly 1`] = `
     </h2>
   </div>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-4 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-3 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <section
-      class="MuiBox-root MuiBox-root-5 makeStyles-surveyDetailsSection-1"
+      class="MuiBox-root MuiBox-root-4 makeStyles-surveyDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiBox-root MuiBox-root-5"
       >
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-6"
         >
           <h3
             class="MuiTypography-root MuiTypography-h3"
@@ -74,21 +74,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                Moose Survey 1
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Management Unit
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Management Unit 1
+                survey name
               </dd>
             </div>
             <div
@@ -102,21 +88,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                MMM DD, YYYY - MMM DD, YYYY
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Species
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Moose
+                October 10, 1998 - February 26, 2021
               </dd>
             </div>
             <div
@@ -130,7 +102,21 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                John Smith
+                first last
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Species
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                species
               </dd>
             </div>
           </div>
@@ -141,10 +127,10 @@ exports[`SurveyDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item"
             >
               <div
-                class="MuiBox-root MuiBox-root-8"
+                class="MuiBox-root MuiBox-root-7"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-9"
+                  class="MuiBox-root MuiBox-root-8"
                 >
                   <dt
                     class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -155,29 +141,129 @@ exports[`SurveyDetails renders correctly 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body1"
                 >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  survey purpose
                 </p>
               </div>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+  <div
+    class="MuiPaper-root MuiBox-root MuiBox-root-9 MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <section
+      class="MuiBox-root MuiBox-root-10 makeStyles-surveyDetailsSection-1"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
+            Proprietary Data
+          </h3>
+          <button
+            aria-label="Edit Proprietary Data"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            tabindex="0"
+            title="Edit Proprietary Data"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Edit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Data Sharing Agreement Required
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Yes
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Proprietary Data Category
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                proprietor type
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Proprietor Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                prop name
+              </dd>
             </div>
             <div
               class="MuiGrid-root MuiGrid-item"
             >
               <div
-                class="MuiBox-root MuiBox-root-10"
+                class="MuiBox-root MuiBox-root-13"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-11"
+                  class="MuiBox-root MuiBox-root-14"
                 >
                   <dt
                     class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
                   >
-                    Study Area Definition
+                    Category Rational
                   </dt>
                 </div>
                 <p
                   class="MuiTypography-root MuiTypography-body1"
+                  style="word-break: break-all;"
                 >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                  rationale
                 </p>
               </div>
             </div>
