@@ -65,7 +65,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createSurvey(): RequestHandler {
+export function createSurvey(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'Add a survey to a project',
