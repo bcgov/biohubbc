@@ -93,3 +93,32 @@ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null =>
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get all surveys.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyListSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyListSQL', message: 'getSurveyListSQL' });
+
+  const sqlStatement = SQL`
+    SELECT
+      id,
+      name,
+      species,
+      start_date,
+      end_date
+    from
+      survey;
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

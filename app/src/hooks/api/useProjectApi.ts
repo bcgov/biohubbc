@@ -12,7 +12,8 @@ import {
   IGetProjectAttachmentsResponse,
   ICreateProjectSurveyRequest,
   ICreateProjectSurveyResponse,
-  IGetProjectSurveyForViewResponse
+  IGetProjectSurveyForViewResponse,
+  IGetProjectSurveysListResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -222,6 +223,18 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get surveys list.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetProjectSurveysListResponse[]>}
+   */
+  const getSurveysList = async (projectId: number): Promise<IGetProjectSurveysListResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/surveys`);
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -236,7 +249,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteFundingSource,
     addFundingSource,
     createSurvey,
-    getSurveyForView
+    getSurveyForView,
+    getSurveysList
   };
 };
 
