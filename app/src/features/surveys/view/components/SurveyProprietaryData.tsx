@@ -4,10 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-// import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-// import { getFormattedDateRangeString } from 'utils/Utils';
 
 export interface ISurveyProprietaryDataProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
