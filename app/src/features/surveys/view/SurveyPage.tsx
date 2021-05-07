@@ -17,8 +17,10 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { getFormattedDateRangeString } from 'utils/Utils';
+import { DATE_FORMAT } from 'constants/dateFormats';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -56,28 +58,46 @@ const SurveyPage: React.FC = () => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
+  const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetProjectSurveyForViewResponse | null>(null);
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
     if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
       return;
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, urlParams]);
 
+  const getSurvey = useCallback(async () => {
+    const surveyWithDetailsResponse = await biohubApi.project.getSurveyForView(urlParams['id'], urlParams['survey_id']);
+
+    if (!surveyWithDetailsResponse) {
+      return;
+    }
+
+    setSurveyWithDetails(surveyWithDetailsResponse);
+  }, [biohubApi.project, urlParams]);
+
   useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
+    if (isLoadingProject && !projectWithDetails) {
       getProject();
-      setIsLoadingProject(true);
+      setIsLoadingProject(false);
     }
   }, [isLoadingProject, projectWithDetails, getProject]);
 
-  if (!projectWithDetails) {
+  useEffect(() => {
+    if (isLoadingSurvey && !surveyWithDetails) {
+      getSurvey();
+      setIsLoadingSurvey(false);
+    }
+  }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
+
+  if (!projectWithDetails || !surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -101,17 +121,21 @@ const SurveyPage: React.FC = () => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>
-              <Typography variant="body2">Moose Survey 1</Typography>
+              <Typography variant="body2">{surveyWithDetails.survey.survey_name}</Typography>
             </Breadcrumbs>
           </Box>
 
           <Box pb={4}>
             <Box mb={1}>
-              <Typography variant="h1">Moose Survey 1</Typography>
+              <Typography variant="h1">{surveyWithDetails.survey.survey_name}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle1" color="textSecondary">
-                MMM DD, YYYY - MMM DD, YYYY
+                {getFormattedDateRangeString(
+                  DATE_FORMAT.ShortMediumDateFormat2,
+                  surveyWithDetails.survey.start_date,
+                  surveyWithDetails.survey.end_date
+                )}
               </Typography>
             </Box>
           </Box>
@@ -145,7 +169,7 @@ const SurveyPage: React.FC = () => {
             </Paper>
           </Box>
           <Box component="article" flex="1 1 auto">
-            {location.pathname.includes('/details') && <SurveyDetails />}
+            {location.pathname.includes('/details') && <SurveyDetails surveyForViewData={surveyWithDetails} />}
           </Box>
         </Box>
       </Container>

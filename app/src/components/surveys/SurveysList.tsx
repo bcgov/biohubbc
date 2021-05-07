@@ -12,7 +12,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { SurveyStatusType } from 'constants/misc';
 import clsx from 'clsx';
-import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
+import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveysListProps {
-  surveysList: IGetProjectSurvey[];
+  surveysList: IGetProjectSurveysListResponse[];
   projectId: number;
 }
 

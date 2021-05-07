@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
+import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import SurveysList from './SurveysList';
 import { createMemoryHistory } from 'history';
@@ -9,7 +9,7 @@ const history = createMemoryHistory();
 
 describe('SurveysList', () => {
   it('renders correctly with surveys', () => {
-    const surveysList: IGetProjectSurvey[] = [
+    const surveysList: IGetProjectSurveysListResponse[] = [
       {
         id: 1,
         name: 'Moose Survey 1',

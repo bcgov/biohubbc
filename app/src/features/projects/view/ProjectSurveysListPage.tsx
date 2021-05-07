@@ -2,10 +2,11 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { IGetProjectForViewResponse, IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import { IGetProjectForViewResponse, IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import SurveysList from 'components/surveys/SurveysList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export interface IProjectSurveysListPageProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -18,23 +19,31 @@ export interface IProjectSurveysListPageProps {
  */
 const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) => {
   const history = useHistory();
+  const biohubApi = useBiohubApi();
+
   const { projectForViewData } = props;
+
+  const [surveys, setSurveys] = useState<IGetProjectSurveysListResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getSurveys = async () => {
+      const surveysResponse = await biohubApi.project.getSurveysList(projectForViewData.id);
+
+      setSurveys(() => {
+        setIsLoading(false);
+        return surveysResponse;
+      });
+    };
+
+    if (isLoading) {
+      getSurveys();
+    }
+  }, [biohubApi, isLoading]);
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/projects/${projectId}/survey/create`);
   };
-
-  // TODO: Replace this with the result of an API call giving us back the surveyList data
-  const surveysList: IGetProjectSurvey[] = [
-    {
-      id: 1,
-      name: 'Moose Survey 1',
-      species: 'Moose',
-      start_date: '2021-04-09 11:53:53',
-      end_date: '2021-05-09 11:53:53',
-      status_name: 'Unpublished'
-    }
-  ];
 
   return (
     <>
@@ -50,7 +59,7 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
             </Button>
           </Box>
           <Box mb={3}>
-            <SurveysList projectId={projectForViewData.id} surveysList={surveysList} />
+            <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
           </Box>
         </Container>
       </Box>

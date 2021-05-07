@@ -31,9 +31,9 @@ import {
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 
-const defaultLog = getLogger('paths/project/{projectId}');
+const defaultLog = getLogger('paths/project/{projectId}/view');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}', 'GET'), getProjectForView()];
+export const GET: Operation = [logRequest('paths/project/{projectId}/view', 'GET'), getProjectForView()];
 
 GET.apiDoc = {
   description: 'Get a project, for view-only purposes.',
@@ -152,11 +152,11 @@ function getProjectForView(): RequestHandler {
           getProjectAncillarySpeciesSQLStatement.text,
           getProjectAncillarySpeciesSQLStatement.values
         ),
-        connection.query(
+        await connection.query(
           getProjectIndigenousPartnershipsSQLStatement.text,
           getProjectIndigenousPartnershipsSQLStatement.values
         ),
-        connection.query(
+        await connection.query(
           getProjectStakeholderPartnershipsSQLStatement.text,
           getProjectStakeholderPartnershipsSQLStatement.values
         )
@@ -218,7 +218,7 @@ function getProjectForView(): RequestHandler {
         partnerships: getPartnershipsData
       };
 
-      defaultLog.debug('result:', result);
+      defaultLog.debug('Get project for view result:', result);
 
       return res.status(200).json(result);
     } catch (error) {

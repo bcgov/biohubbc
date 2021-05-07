@@ -4,14 +4,23 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { DATE_FORMAT } from 'constants/dateFormats';
+import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+import { getFormattedDateRangeString } from 'utils/Utils';
+
+export interface ISurveyGeneralInformationProps {
+  surveyForViewData: IGetProjectSurveyForViewResponse;
+}
 
 /**
  * General information content for a survey.
  *
  * @return {*}
  */
-const SurveyGeneralInformation = () => {
+const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (props) => {
+  const { survey } = props.surveyForViewData;
+
   return (
     <Box>
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
@@ -34,15 +43,7 @@ const SurveyGeneralInformation = () => {
               Survey Name
             </Typography>
             <Typography component="dd" variant="body1">
-              Moose Survey 1
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Management Unit
-            </Typography>
-            <Typography component="dd" variant="body1">
-              Management Unit 1
+              {survey.survey_name}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -50,15 +51,16 @@ const SurveyGeneralInformation = () => {
               Survey Timeline
             </Typography>
             <Typography component="dd" variant="body1">
-              MMM DD, YYYY - MMM DD, YYYY
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Species
-            </Typography>
-            <Typography component="dd" variant="body1">
-              Moose
+              {survey.end_date ? (
+                <>
+                  {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey.start_date, survey.end_date)}
+                </>
+              ) : (
+                <>
+                  <span>Start Date:</span>{' '}
+                  {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey.start_date)}
+                </>
+              )}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -66,7 +68,15 @@ const SurveyGeneralInformation = () => {
               Survey Lead
             </Typography>
             <Typography component="dd" variant="body1">
-              John Smith
+              {survey.biologist_first_name} {survey.biologist_last_name}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
+              Species
+            </Typography>
+            <Typography component="dd" variant="body1">
+              {survey.species}
             </Typography>
           </Grid>
         </Grid>
@@ -78,27 +88,7 @@ const SurveyGeneralInformation = () => {
                   Purpose
                 </Typography>
               </Box>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum.
-              </Typography>
-            </Box>
-          </Grid>
-          <Grid item>
-            <Box mt={1}>
-              <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Study Area Definition
-                </Typography>
-              </Box>
-              <Typography>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat.
-              </Typography>
+              <Typography>{survey.survey_purpose}</Typography>
             </Box>
           </Grid>
         </Grid>

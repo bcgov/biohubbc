@@ -4,7 +4,13 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
+import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import React from 'react';
+import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+
+export interface ISurveyDetailsProps {
+  surveyForViewData: IGetProjectSurveyForViewResponse;
+}
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyDetailsSection: {
@@ -16,9 +22,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '&:first-child': {
       marginTop: 0
     }
-  },
-  sectionDivider: {
-    height: '3px'
   }
 }));
 
@@ -27,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  *
  * @return {*}
  */
-const SurveyDetails = () => {
+const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const classes = useStyles();
 
   return (
@@ -38,7 +41,13 @@ const SurveyDetails = () => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyGeneralInformation />
+          <SurveyGeneralInformation surveyForViewData={props.surveyForViewData} />
+        </Box>
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
+        <Box component="section" className={classes.surveyDetailsSection}>
+          <SurveyProprietaryData surveyForViewData={props.surveyForViewData} />
         </Box>
       </Box>
     </>

@@ -85,3 +85,12 @@ export const surveyIdResponseObject = {
     }
   }
 };
+
+/**
+ * Response object for survey view GET request
+ */
+export const surveyViewGetResponseObject = {
+  title: 'Survey get response object, for view purposes',
+  type: 'object',
+  properties: {}
+};

@@ -9,15 +9,6 @@ import { IProjectPermitForm } from 'features/projects/components/ProjectPermitFo
 import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { Feature } from 'geojson';
 
-export interface IGetProjectSurvey {
-  id: number;
-  name: string;
-  species: string;
-  start_date: string;
-  end_date: string;
-  status_name: string;
-}
-
 export interface IGetProjectAttachment {
   id: number;
   fileName: string;
@@ -354,4 +345,46 @@ export interface ICreateProjectSurveyRequest {
  */
 export interface ICreateProjectSurveyResponse {
   id: number;
+}
+
+/**
+ * An interface for a single instance of project survey metadata, for view-only use cases.
+ *
+ * @export
+ * @interface IGetProjectSurveyForViewResponse
+ */
+export interface IGetProjectSurveyForViewResponse {
+  id: number;
+  survey: {
+    survey_name: string;
+    survey_purpose: string;
+    species: string;
+    start_date: string;
+    end_date: string;
+    biologist_first_name: string;
+    biologist_last_name: string;
+    survey_area_name: string;
+  };
+  surveyProprietor: {
+    proprietor_type_name: string;
+    first_nations_name: string;
+    category_rational: string;
+    proprietor_name: string;
+    data_sharing_agreement_required: string;
+  };
+}
+
+/**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetProjectSurveysListResponse
+ */
+export interface IGetProjectSurveysListResponse {
+  id: number;
+  name: string;
+  species: string;
+  start_date: string;
+  end_date: string;
+  status_name: string;
 }
