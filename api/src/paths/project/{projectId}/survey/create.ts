@@ -77,9 +77,10 @@ export function createSurvey(): RequestHandler {
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
-    const connection = getDBConnection(req['keycloak_token']);
 
+    const connection = getDBConnection(req['keycloak_token']);
     const sanitizedPostSurveyData = (req.body && new PostSurveyObject(req.body)) || null;
+
     if (!sanitizedPostSurveyData) {
       throw new HTTP400('Missing survey data');
     }

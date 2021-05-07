@@ -4,65 +4,55 @@ import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-
 import { postSurveyProprietorSQL, postSurveySQL } from './survey-create-queries';
 
 describe('postSurveySQL', () => {
-  describe('Null project param provided', () => {
-    it('returns null', () => {
-      const survey = new PostSurveyObject();
-      // force the function to accept a null value
-      const response = postSurveySQL((null as unknown) as number, survey);
+  it('returns null when null project param provided', () => {
+    const survey = new PostSurveyObject();
+    const response = postSurveySQL((null as unknown) as number, survey);
 
-      expect(response).to.be.null;
-    });
+    expect(response).to.be.null;
   });
 
-  describe('Valid project param provided without proprietary data', () => {
-    it('returns a survey id', () => {
-      const surveyData = {
-        survey_name: 'survey_name',
-        start_date: '2020/04/03',
-        end_date: '2020/05/05',
-        species: 'some species',
-        survey_purpose: 'purpose',
-        biologist_first_name: 'John',
-        biologist_last_name: 'Smith',
-        survey_area_name: 'some place',
-        park: 'a park',
-        management_unit: 'a unit',
-        survey_data_proprietary: false
-      };
+  it('returns a survey id when valid project param provided without proprietary data', () => {
+    const surveyData = {
+      survey_name: 'survey_name',
+      start_date: '2020/04/03',
+      end_date: '2020/05/05',
+      species: 'some species',
+      survey_purpose: 'purpose',
+      biologist_first_name: 'John',
+      biologist_last_name: 'Smith',
+      survey_area_name: 'some place',
+      park: 'a park',
+      management_unit: 'a unit',
+      survey_data_proprietary: false
+    };
 
-      const postSurveyObject = new PostSurveyObject(surveyData);
-      const response = postSurveySQL(1, postSurveyObject);
+    const postSurveyObject = new PostSurveyObject(surveyData);
+    const response = postSurveySQL(1, postSurveyObject);
 
-      expect(response).to.not.be.null;
-    });
+    expect(response).to.not.be.null;
   });
 });
 
 describe('postSurveyProprietarySQL', () => {
-  describe('Null surveyId provided', () => {
-    it('returns null', () => {
-      const survey_proprietor = new PostSurveyProprietorData();
-      // force the function to accept a null value
-      const response = postSurveyProprietorSQL((null as unknown) as number, survey_proprietor);
+  it('returns null when null surveyId provided', () => {
+    const survey_proprietor = new PostSurveyProprietorData();
+    const response = postSurveyProprietorSQL((null as unknown) as number, survey_proprietor);
 
-      expect(response).to.be.null;
-    });
+    expect(response).to.be.null;
   });
 
-  describe('Valid survey param provided with proprietary data', () => {
-    it('returns a survey_proprietor id', () => {
-      const surveyProprietorData = {
-        proprietary_data_category: 2,
-        first_nations_id: 8,
-        category_rational: 'rationale',
-        proprietor_name: 'a name',
-        data_sharing_agreement_required: false
-      };
+  it('returns a survey_proprietor id when valid survey param provided with proprietary data', () => {
+    const surveyProprietorData = {
+      proprietary_data_category: 2,
+      first_nations_id: 8,
+      category_rational: 'rationale',
+      proprietor_name: 'a name',
+      data_sharing_agreement_required: false
+    };
 
-      const postSurveyProprietorData = new PostSurveyProprietorData(surveyProprietorData);
-      const response = postSurveyProprietorSQL(1, postSurveyProprietorData);
+    const postSurveyProprietorData = new PostSurveyProprietorData(surveyProprietorData);
+    const response = postSurveyProprietorSQL(1, postSurveyProprietorData);
 
-      expect(response).to.not.be.null;
-    });
+    expect(response).to.not.be.null;
   });
 });

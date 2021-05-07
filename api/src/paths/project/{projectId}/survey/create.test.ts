@@ -4,9 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as create from './create';
 import * as db from '../../../../database/db';
-// import * as user_queries from '../../../../queries/users/user-queries';
-// import { QueryResult } from 'pg';
-// import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -57,34 +54,11 @@ describe('createSurvey', () => {
       survey_data_proprietary: 'false',
       survey_name: 'Odysseus Noel',
       survey_purpose: 'Sint temporibus aut'
+    },
+    params: {
+      projectId: null
     }
   } as any;
-
-  // let actualResult = {
-  //   id: null,
-  //   date: null
-  // };
-
-  // const sampleReq = {
-  //   keycloak_token: {},
-  //   body:{
-
-  //   }
-  // } as any;
-
-  // let actualResult = {
-  //   id: null
-  // };
-
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -95,9 +69,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      console.log(actualError);
-      //expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal("Cannot read property 'projectId' of undefined");
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path param `projectId`');
     }
   });
 });
