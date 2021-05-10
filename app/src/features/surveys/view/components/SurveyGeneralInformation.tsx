@@ -141,8 +141,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             color="primary"
             className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
-            title="Edit General Information"
-            aria-label="Edit General Information"
+            title="Edit Survey General Information"
+            aria-label="Edit Survey General Information"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
             Edit
           </Button>
