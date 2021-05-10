@@ -21,6 +21,7 @@ import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'in
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -60,8 +61,28 @@ const SurveyPage: React.FC = () => {
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
+  const [isLoadingCodes, setIsLoadingCodes] = useState(true);
+
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetProjectSurveyForViewResponse | null>(null);
+  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+
+  useEffect(() => {
+    const getCodes = async () => {
+      const codesResponse = await biohubApi.codes.getAllCodeSets();
+
+      if (!codesResponse) {
+        return;
+      }
+
+      setCodes(codesResponse);
+    };
+
+    if (isLoadingCodes && !codes) {
+      getCodes();
+      setIsLoadingCodes(false);
+    }
+  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
@@ -97,7 +118,7 @@ const SurveyPage: React.FC = () => {
     }
   }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
 
-  if (!projectWithDetails || !surveyWithDetails) {
+  if (!projectWithDetails || !surveyWithDetails || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -169,7 +190,7 @@ const SurveyPage: React.FC = () => {
             </Paper>
           </Box>
           <Box component="article" flex="1 1 auto">
-            {location.pathname.includes('/details') && <SurveyDetails surveyForViewData={surveyWithDetails} />}
+            {location.pathname.includes('/details') && <SurveyDetails surveyForViewData={surveyWithDetails} codes={codes} />}
           </Box>
         </Box>
       </Container>

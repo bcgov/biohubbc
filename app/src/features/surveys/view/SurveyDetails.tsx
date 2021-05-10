@@ -7,9 +7,11 @@ import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGen
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import React from 'react';
 import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
+  codes: IGetAllCodeSetsResponse;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -33,6 +35,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const classes = useStyles();
 
+  const { surveyForViewData, codes } = props;
+
   return (
     <>
       <Box mb={6}>
@@ -41,13 +45,13 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyGeneralInformation surveyForViewData={props.surveyForViewData} />
+          <SurveyGeneralInformation surveyForViewData={surveyForViewData} codes={codes} />
         </Box>
       </Box>
 
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyProprietaryData surveyForViewData={props.surveyForViewData} />
+          <SurveyProprietaryData surveyForViewData={surveyForViewData} />
         </Box>
       </Box>
     </>
