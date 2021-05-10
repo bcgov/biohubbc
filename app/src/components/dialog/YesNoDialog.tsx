@@ -73,10 +73,10 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onYes} color="primary" variant="contained" autoFocus>
+          <Button data-testid="yes-button" onClick={props.onYes} color="primary" variant="contained" autoFocus>
             Yes
           </Button>
-          <Button onClick={props.onNo} color="primary" variant="outlined">
+          <Button data-testid="no-button" onClick={props.onNo} color="primary" variant="outlined">
             No
           </Button>
         </DialogActions>
