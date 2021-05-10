@@ -3,7 +3,8 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
-import { PutSurveyData, GetSurveyData } from '../../../../../models/survey-update';
+import { PutSurveyData } from '../../../../../models/survey-update';
+import { GetSurveyData } from '../../../../../models/survey-view-update';
 import {
   surveyIdResponseObject,
   surveyUpdateGetResponseObject,

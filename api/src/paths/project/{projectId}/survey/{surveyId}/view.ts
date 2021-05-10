@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { GetSurveyProprietorData } from '../../../../../models/survey-view';
-import { GetSurveyData } from '../../../../../models/survey-view';
+import { GetSurveyData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
 import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-queries';
 import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
