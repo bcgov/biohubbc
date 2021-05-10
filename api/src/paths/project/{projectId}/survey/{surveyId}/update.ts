@@ -176,9 +176,6 @@ function updateSurvey(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
       const surveyData = req.body;
 
-      console.log('$$$$$$$$$$$$$$$$$$$$$$$$');
-      console.log(surveyData);
-
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');
       }

@@ -103,6 +103,7 @@ export const surveyUpdateGetResponseObject = {
   type: 'object',
   properties: {}
 };
+
 /**
  * Request object for survey update PUT request
  */

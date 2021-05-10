@@ -2,6 +2,12 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-update');
 
+/**
+ * Pre-processes PUT /project/{projectId}/survey/{surveyId} survey data for update
+ *
+ * @export
+ * @class PutSurveyData
+ */
 export class PutSurveyData {
   name: string;
   objectives: string;
