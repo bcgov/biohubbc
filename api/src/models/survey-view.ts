@@ -32,7 +32,7 @@ export class GetSurveyProprietorData {
  * @export
  * @class GetSurveyData
  */
- export class GetSurveyData {
+export class GetSurveyData {
   survey_name: string;
   survey_purpose: string;
   species: string;

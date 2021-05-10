@@ -89,13 +89,17 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     setGeneralInformationFormData({
       ...generalInformationResponseData,
       start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.end_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.end_date)
     });
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
-    const surveyData = { ...values, revision_count: surveyDataForUpdate.revision_count, survey_area_name: surveyDataForUpdate.survey_area_name };
+    const surveyData = {
+      ...values,
+      revision_count: surveyDataForUpdate.revision_count,
+      survey_area_name: surveyDataForUpdate.survey_area_name
+    };
 
     try {
       await biohubApi.project.updateSurvey(projectId, id, surveyData);

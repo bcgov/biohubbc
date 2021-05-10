@@ -4,7 +4,11 @@ import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
 import { PutSurveyData, GetSurveyData } from '../../../../../models/survey-update';
-import { surveyIdResponseObject, surveyUpdateGetResponseObject, surveyUpdatePutRequestObject } from '../../../../../openapi/schemas/survey';
+import {
+  surveyIdResponseObject,
+  surveyUpdateGetResponseObject,
+  surveyUpdatePutRequestObject
+} from '../../../../../openapi/schemas/survey';
 import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
 import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
@@ -172,8 +176,8 @@ function updateSurvey(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
       const surveyData = req.body;
 
-      console.log('$$$$$$$$$$$$$$$$$$$$$$$$')
-      console.log(surveyData)
+      console.log('$$$$$$$$$$$$$$$$$$$$$$$$');
+      console.log(surveyData);
 
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');
@@ -198,12 +202,7 @@ function updateSurvey(): RequestHandler {
         throw new HTTP400('Failed to parse request body');
       }
 
-      const sqlUpdateSurvey = putSurveySQL(
-        projectId,
-        surveyId,
-        putSurveyData,
-        revision_count
-      );
+      const sqlUpdateSurvey = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
 
       if (!sqlUpdateSurvey) {
         throw new HTTP400('Failed to build SQL update statement');

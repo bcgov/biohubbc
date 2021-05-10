@@ -48,7 +48,12 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyGeneralInformation projectId={projectId} surveyForViewData={surveyForViewData} codes={codes} refresh={refresh} />
+          <SurveyGeneralInformation
+            projectId={projectId}
+            surveyForViewData={surveyForViewData}
+            codes={codes}
+            refresh={refresh}
+          />
         </Box>
       </Box>
 

@@ -12,7 +12,7 @@ const defaultLog = getLogger('queries/survey/survey-update-queries');
  * @param {PutSurveyData} survey
  * @returns {SQLStatement} sql query object
  */
- export const putSurveySQL = (
+export const putSurveySQL = (
   projectId: number,
   surveyId: number,
   survey: PutSurveyData | null,

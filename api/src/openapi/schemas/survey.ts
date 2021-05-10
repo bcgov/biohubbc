@@ -98,7 +98,7 @@ export const surveyViewGetResponseObject = {
 /**
  * Response object for survey update GET request
  */
- export const surveyUpdateGetResponseObject = {
+export const surveyUpdateGetResponseObject = {
   title: 'Survey get response object, for update purposes',
   type: 'object',
   properties: {}
@@ -106,7 +106,7 @@ export const surveyViewGetResponseObject = {
 /**
  * Request object for survey update PUT request
  */
- export const surveyUpdatePutRequestObject = {
+export const surveyUpdatePutRequestObject = {
   title: 'Survey Put Object',
   type: 'object',
   properties: {
