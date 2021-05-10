@@ -13,6 +13,8 @@ import SurveyStudyArea from './components/SurveyStudyArea';
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  projectId: number;
+  refresh: () => void;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -36,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const classes = useStyles();
 
-  const { surveyForViewData, codes } = props;
+  const { surveyForViewData, codes, projectId, refresh } = props;
 
   return (
     <>
@@ -46,7 +48,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyGeneralInformation surveyForViewData={surveyForViewData} codes={codes} />
+          <SurveyGeneralInformation projectId={projectId} surveyForViewData={surveyForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
 

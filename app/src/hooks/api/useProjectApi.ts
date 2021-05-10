@@ -13,7 +13,9 @@ import {
   ICreateProjectSurveyRequest,
   ICreateProjectSurveyResponse,
   IGetProjectSurveyForViewResponse,
-  IGetProjectSurveysListResponse
+  IGetProjectSurveysListResponse,
+  ISurveyUpdateRequest,
+  IGetSurveyForUpdateResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -235,6 +237,33 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey data for update purposes.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyForUpdateResponse>}
+   */
+  const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update`);
+
+    return data;
+  };
+
+  /**
+   * Update an existing survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ISurveyUpdateRequest} surveyData
+   * @return {*}  {Promise<any>}
+   */
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: ISurveyUpdateRequest): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -250,7 +279,9 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     createSurvey,
     getSurveyForView,
-    getSurveysList
+    getSurveysList,
+    getSurveyForUpdate,
+    updateSurvey
   };
 };
 

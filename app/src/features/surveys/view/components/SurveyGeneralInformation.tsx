@@ -10,10 +10,10 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
-import { getFormattedDateRangeString } from 'utils/Utils';
-// import { useBiohubApi } from 'hooks/useBioHubApi';
+import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
@@ -23,6 +23,8 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
+  projectId: number;
+  refresh: () => void;
 }
 
 /**
@@ -31,14 +33,17 @@ export interface ISurveyGeneralInformationProps {
  * @return {*}
  */
 const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (props) => {
-  // const biohubApi = useBiohubApi();
+  const biohubApi = useBiohubApi();
 
   const {
-    surveyForViewData: { survey },
-    codes
+    projectId,
+    surveyForViewData: { id, survey },
+    codes,
+    refresh
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<ISurveyUpdateRequest>(null as any);
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
@@ -63,33 +68,46 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      // const response = await biohubApi.project.getSurveyForUpdate(id);
-      const response = {
-        survey: {
-          survey_name: 'heheh',
-          start_date: '2020-04-20',
-          end_date: '2020-05-20',
-          species: 'Acuteleaf Small Limestone Moss [Seligeria acutifolia]',
-          survey_purpose: 'purpose',
-          biologist_first_name: 'first',
-          biologist_last_name: 'last'
-        }
-      };
+      const response = await biohubApi.project.getSurveyForUpdate(projectId, id);
 
-      if (!response?.survey) {
+      if (!response) {
         showErrorDialog({ open: true });
         return;
       }
 
-      generalInformationResponseData = response.survey;
+      console.log(response);
+
+      generalInformationResponseData = response;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setGeneralInformationFormData(generalInformationResponseData);
+    setSurveyDataForUpdate(generalInformationResponseData);
+
+    setGeneralInformationFormData({
+      ...generalInformationResponseData,
+      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.start_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.end_date),
+    });
     setOpenEditDialog(true);
+  };
+
+  const handleDialogEditSave = async (values: IGeneralInformationForm) => {
+    const surveyData = { ...values, revision_count: surveyDataForUpdate.revision_count, survey_area_name: surveyDataForUpdate.survey_area_name };
+
+    try {
+      await biohubApi.project.updateSurvey(projectId, id, surveyData);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      return;
+    } finally {
+      setOpenEditDialog(false);
+    }
+
+    refresh();
   };
 
   return (
@@ -111,7 +129,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           validationSchema: GeneralInformationYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}
-        onSave={() => console.log('save')}
+        onSave={handleDialogEditSave}
       />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">

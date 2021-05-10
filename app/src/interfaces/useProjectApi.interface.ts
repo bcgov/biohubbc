@@ -347,6 +347,23 @@ export interface ICreateProjectSurveyResponse {
   id: number;
 }
 
+export interface IGetSurveyForViewResponse {
+  survey_name: string;
+  survey_purpose: string;
+  species: string;
+  start_date: string;
+  end_date: string;
+  biologist_first_name: string;
+  biologist_last_name: string;
+  survey_area_name: string;
+}
+
+export interface ISurveyUpdateRequest extends IGetSurveyForViewResponse {
+  revision_count: number;
+}
+
+export interface IGetSurveyForUpdateResponse extends ISurveyUpdateRequest {}
+
 /**
  * An interface for a single instance of project survey metadata, for view-only use cases.
  *
@@ -355,16 +372,7 @@ export interface ICreateProjectSurveyResponse {
  */
 export interface IGetProjectSurveyForViewResponse {
   id: number;
-  survey: {
-    survey_name: string;
-    survey_purpose: string;
-    species: string;
-    start_date: string;
-    end_date: string;
-    biologist_first_name: string;
-    biologist_last_name: string;
-    survey_area_name: string;
-  };
+  survey: IGetSurveyForViewResponse;
   surveyProprietor: {
     proprietor_type_name: string;
     first_nations_name: string;
