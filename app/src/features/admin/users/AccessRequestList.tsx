@@ -209,14 +209,14 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
               )}
               {accessRequests?.map((row, index) => {
                 const regional_offices = row.data?.regional_offices
-                  .map((regionId) => codes.regional_offices.find((code) => code.id === regionId)?.name)
+                  ?.map((regionId) => codes.regional_offices.find((code) => code.id === regionId)?.name)
                   .join(', ');
 
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
                     <TableCell>{row.data?.name || ''}</TableCell>
-                    <TableCell>{row.data?.username || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.data?.company || ''}</TableCell>
+                    <TableCell>{row.data?.username || ''}</TableCell>
+                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
                     <TableCell>{regional_offices || 'Not Applicable'}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
                     <TableCell>{getChipIcon(row.status_name)}</TableCell>

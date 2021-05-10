@@ -39,7 +39,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
 
   const regional_offices = props.request.data.regional_offices
-    .map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
+    ?.map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
     .join(', ');
 
   return (
