@@ -29,10 +29,10 @@ exports[`SurveyDetails renders correctly 1`] = `
             General Information
           </h3>
           <button
-            aria-label="Edit General Information"
+            aria-label="Edit Survey General Information"
             class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
-            title="Edit General Information"
+            title="Edit Survey General Information"
             type="button"
           >
             <span
