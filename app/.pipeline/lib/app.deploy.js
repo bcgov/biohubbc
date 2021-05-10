@@ -24,6 +24,7 @@ module.exports = (settings) => {
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
         REACT_APP_API_HOST: phases[phase].apiHost,
+        REACT_APP_SITEMINDER_LOGOUT_URL: phases[phase].siteminderLogoutURL,
         NODE_ENV: phases[phase].env || 'dev',
         SSO_URL: phases[phase].sso.url,
         SSO_CLIENT_ID: phases[phase].sso.clientId,

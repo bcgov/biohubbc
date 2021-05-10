@@ -17,6 +17,9 @@ parameters:
   - name: REACT_APP_API_HOST
     description: API host for application backend
     value: ''
+  - name: REACT_APP_SITEMINDER_LOGOUT_URL
+    description: Siteminder URL to log out and clear the session for the logged in user
+    value: ''
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
@@ -109,6 +112,8 @@ objects:
                   value: ${CHANGE_ID}
                 - name: REACT_APP_API_HOST
                   value: ${REACT_APP_API_HOST}
+                - name: REACT_APP_SITEMINDER_LOGOUT_URL
+                  value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: VERSION

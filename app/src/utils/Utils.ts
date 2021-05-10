@@ -91,11 +91,11 @@ export const logOut = (config: IConfig) => {
     return;
   }
 
-  const localRedirectUrl = `${window.location.origin}/login`;
+  const localRedirectURL = `${window.location.origin}/login`;
 
-  const keycloakLogoutRedirectUrl = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectUrl}`;
+  const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
 
-  const siteminderLogoutUrl = `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectUrl}&retnow=1`;
+  const siteminderLogoutURL = `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
 
-  window.location.replace(siteminderLogoutUrl);
+  window.location.replace(siteminderLogoutURL);
 };
