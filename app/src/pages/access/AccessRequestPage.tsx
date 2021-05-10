@@ -189,12 +189,6 @@ export const AccessRequestPage: React.FC = () => {
                   You will need to provide some additional details before accessing this application. Complete the form
                   below to request access.
                 </Typography>
-                {/* <Paper elevation={2} square={true} className={classes.finishContainer}>
-                  <Box>
-                    <pre>{JSON.stringify(keycloakWrapper, null, 2)}</pre>
-                  </Box>
-                </Paper>
-                <br></br> */}
                 <Paper elevation={2} square={true} className={classes.finishContainer}>
                   <h2>Request Details</h2>
                   <Box mb={3}>
