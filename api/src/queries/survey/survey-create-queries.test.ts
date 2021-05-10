@@ -45,7 +45,7 @@ describe('postSurveyProprietarySQL', () => {
     const surveyProprietorData = {
       proprietary_data_category: 2,
       first_nations_id: 8,
-      category_rational: 'rationale',
+      category_rationale: 'rationale',
       proprietor_name: 'a name',
       data_sharing_agreement_required: false
     };

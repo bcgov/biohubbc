@@ -3,9 +3,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
-import { GetSurveyData, GetSurveyProprietorData } from '../../../../../models/survey-view';
+import { GetSurveyProprietorData } from '../../../../../models/survey-view';
+import { GetSurveyData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyProprietorSQL, getSurveySQL } from '../../../../../queries/survey/survey-view-queries';
+import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-queries';
+import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
@@ -112,8 +114,6 @@ function getSurveyForView(): RequestHandler {
         survey: getSurveyData,
         surveyProprietor: getSurveyProprietorData
       };
-
-      defaultLog.debug('Get survey for view result:', result);
 
       return res.status(200).json(result);
     } catch (error) {

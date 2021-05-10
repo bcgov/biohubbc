@@ -218,8 +218,6 @@ function getProjectForView(): RequestHandler {
         partnerships: getPartnershipsData
       };
 
-      defaultLog.debug('Get project for view result:', result);
-
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'getProjectForView', message: 'error', error });

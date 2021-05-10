@@ -15,7 +15,7 @@ export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse =
   surveyProprietor: {
     proprietor_type_name: 'proprietor type',
     first_nations_name: 'first nations name',
-    category_rational: 'rationale',
+    category_rationale: 'rationale',
     proprietor_name: 'prop name',
     data_sharing_agreement_required: 'true'
   }

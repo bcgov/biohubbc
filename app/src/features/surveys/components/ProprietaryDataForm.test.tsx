@@ -12,7 +12,7 @@ const handleSaveAndNext = jest.fn();
 const proprietaryDataFilledValues = {
   proprietary_data_category: 'Proprietor code 1',
   proprietor_name: 'name',
-  category_rational: 'rational is cause it is true',
+  category_rationale: 'rationale is cause it is true',
   survey_data_proprietary: 'true',
   data_sharing_agreement_required: 'true'
 };
@@ -140,14 +140,14 @@ describe('Proprietary Data Form', () => {
           survey_data_proprietary: 'error on survey data proprietary field',
           proprietary_data_category: 'error on proprietary data category field',
           proprietor_name: 'error on proprietor name field',
-          category_rational: 'error on category rational field',
+          category_rationale: 'error on category rationale field',
           data_sharing_agreement_required: 'error on data sharing agreement required field'
         }}
         initialTouched={{
           survey_data_proprietary: true,
           proprietary_data_category: true,
           proprietor_name: true,
-          category_rational: true,
+          category_rationale: true,
           data_sharing_agreement_required: true
         }}
         validateOnChange={false}

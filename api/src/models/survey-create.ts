@@ -58,7 +58,7 @@ export class PostSurveyProprietorData {
     this.prt_id = obj?.proprietary_data_category || null;
     this.fn_id = obj?.first_nations_id || null;
 
-    this.rationale = obj?.category_rational || null;
+    this.rationale = obj?.category_rationale || null;
     this.proprietor_name = (!obj?.first_nations_id && obj?.proprietor_name) || null;
     this.disa_required = obj?.data_sharing_agreement_required === 'true' || false;
   }
