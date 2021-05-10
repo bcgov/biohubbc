@@ -8,7 +8,7 @@ const defaultLog = getLogger('models/survey-view-update');
  * @export
  * @class GetSurveyData
  */
- export class GetSurveyData {
+export class GetSurveyData {
   survey_name: string;
   survey_purpose: string;
   species: string;
