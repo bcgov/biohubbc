@@ -156,20 +156,17 @@ export const AccessRequestPage: React.FC = () => {
   }
 
   let initialValues: any;
-  let validateionSchema: any;
+  let validationSchema: any;
   let requestForm: any;
 
-  switch (keycloakWrapper?.getIdentitySource()?.toLowerCase()) {
-    case 'bceid':
-      initialValues = BCeIDRequestFormInitialValues;
-      validateionSchema = BCeIDRequestFormYupSchema;
-      requestForm = <BCeIDRequestForm codes={codes} />;
-      break;
-    default:
-      // TODO need to review what additional behaviour should be; WIP - use idir form as default for now
-      initialValues = IDIRRequestFormInitialValues;
-      validateionSchema = IDIRRequestFormYupSchema;
-      requestForm = <IDIRRequestForm codes={codes} />;
+  if (keycloakWrapper?.getIdentitySource()?.toLowerCase() === 'bceid') {
+    initialValues = BCeIDRequestFormInitialValues;
+    validationSchema = BCeIDRequestFormYupSchema;
+    requestForm = <BCeIDRequestForm codes={codes} />;
+  } else {
+    initialValues = IDIRRequestFormInitialValues;
+    validationSchema = IDIRRequestFormYupSchema;
+    requestForm = <IDIRRequestForm codes={codes} />;
   }
 
   return (
@@ -177,12 +174,11 @@ export const AccessRequestPage: React.FC = () => {
       <Container maxWidth="md">
         <Formik
           initialValues={initialValues}
-          validationSchema={validateionSchema}
+          validationSchema={validationSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={(values) => {
             setIsSubmittingRequest(true);
-
             handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
