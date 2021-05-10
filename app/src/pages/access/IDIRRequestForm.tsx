@@ -46,33 +46,6 @@ export interface IIDIRRequestFormProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
-  },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
-  },
-  stepper: {
-    backgroundColor: 'transparent'
-  },
-  stepTitle: {
-    marginBottom: '0.45rem'
-  },
-  spacingBottom: {
-    marginBottom: '0.9rem'
-  },
   legend: {
     marginTop: '1rem',
     float: 'left',
