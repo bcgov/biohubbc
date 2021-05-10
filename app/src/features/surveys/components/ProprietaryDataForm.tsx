@@ -30,7 +30,7 @@ export interface IProprietaryDataForm {
   proprietary_data_category: number;
   proprietor_name: string;
   first_nations_id: number;
-  category_rational: string;
+  category_rationale: string;
   survey_data_proprietary: string;
   data_sharing_agreement_required: string;
 }
@@ -39,7 +39,7 @@ export const ProprietaryDataInitialValues: IProprietaryDataForm = {
   proprietary_data_category: 0,
   proprietor_name: '',
   first_nations_id: 0,
-  category_rational: '',
+  category_rationale: '',
   survey_data_proprietary: 'false',
   data_sharing_agreement_required: 'false'
 };
@@ -51,12 +51,12 @@ export const ProprietaryDataYupSchema = yup.object().shape({
   proprietor_name: yup
     .string()
     .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
-  category_rational: yup
+  category_rationale: yup
     .string()
     .max(3000, 'Cannot exceed 3000 characters')
     .when('survey_data_proprietary', {
       is: 'true',
-      then: yup.string().required('You must provide a category rational for the survey')
+      then: yup.string().required('You must provide a category rationale for the survey')
     }),
   survey_data_proprietary: yup.string().required('Required'),
   data_sharing_agreement_required: yup
@@ -158,18 +158,18 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                id="category_rational"
-                name="category_rational"
-                label="Category Rational"
+                id="category_rationale"
+                name="category_rationale"
+                label="Category Rationale"
                 multiline
                 required={true}
                 rows={4}
                 fullWidth
                 variant="outlined"
-                value={values.category_rational}
+                value={values.category_rationale}
                 onChange={handleChange}
-                error={touched.category_rational && Boolean(errors.category_rational)}
-                helperText={touched.category_rational && errors.category_rational}
+                error={touched.category_rationale && Boolean(errors.category_rationale)}
+                helperText={touched.category_rationale && errors.category_rationale}
               />
             </Grid>
             <Grid item xs={12}>

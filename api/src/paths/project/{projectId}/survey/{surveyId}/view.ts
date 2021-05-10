@@ -115,8 +115,6 @@ function getSurveyForView(): RequestHandler {
         surveyProprietor: getSurveyProprietorData
       };
 
-      defaultLog.debug('Get survey for view result:', result);
-
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'getSurveyForView', message: 'error', error });

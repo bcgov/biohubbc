@@ -151,8 +151,6 @@ function getSurveyForUpdate(): RequestHandler {
       const getSurveyData =
         (surveyData && surveyData.rows && surveyData.rows[0] && new GetSurveyData(surveyData.rows[0])) || null;
 
-      defaultLog.debug('Get survey for update result:', getSurveyData);
-
       return res.status(200).json(getSurveyData);
     } catch (error) {
       defaultLog.debug({ label: 'getSurveyForUpdate', message: 'error', error });

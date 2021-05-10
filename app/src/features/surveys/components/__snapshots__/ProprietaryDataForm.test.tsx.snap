@@ -467,10 +467,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
             data-shrink="true"
-            for="category_rational"
-            id="category_rational-label"
+            for="category_rationale"
+            id="category_rationale-label"
           >
-            Category Rational
+            Category Rationale
             <span
               aria-hidden="true"
               class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -484,12 +484,12 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             <textarea
               aria-invalid="false"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="category_rational"
-              name="category_rational"
+              id="category_rationale"
+              name="category_rationale"
               required=""
               rows="4"
             >
-              rational is cause it is true
+              rationale is cause it is true
             </textarea>
             <fieldset
               aria-hidden="true"
@@ -499,7 +499,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                 class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
               >
                 <span>
-                  Category Rational *
+                  Category Rationale *
                 </span>
               </legend>
             </fieldset>
@@ -988,10 +988,10 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
             data-shrink="true"
-            for="category_rational"
-            id="category_rational-label"
+            for="category_rationale"
+            id="category_rationale-label"
           >
-            Category Rational
+            Category Rationale
             <span
               aria-hidden="true"
               class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
@@ -1003,15 +1003,15 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
           >
             <textarea
-              aria-describedby="category_rational-helper-text"
+              aria-describedby="category_rationale-helper-text"
               aria-invalid="true"
               class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="category_rational"
-              name="category_rational"
+              id="category_rationale"
+              name="category_rationale"
               required=""
               rows="4"
             >
-              rational is cause it is true
+              rationale is cause it is true
             </textarea>
             <fieldset
               aria-hidden="true"
@@ -1021,16 +1021,16 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                 class="PrivateNotchedOutline-legendLabelled-53 PrivateNotchedOutline-legendNotched-54"
               >
                 <span>
-                  Category Rational *
+                  Category Rationale *
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
             class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
-            id="category_rational-helper-text"
+            id="category_rationale-helper-text"
           >
-            error on category rational field
+            error on category rationale field
           </p>
         </div>
       </div>

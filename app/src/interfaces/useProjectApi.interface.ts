@@ -320,7 +320,7 @@ export interface IGetProjectMediaListResponse {
 export interface ICreateProjectSurveyRequest {
   biologist_first_name: string;
   biologist_last_name: string;
-  category_rational: string;
+  category_rationale: string;
   data_sharing_agreement_required: string;
   end_date: string;
   foippa_requirements_accepted: boolean;
@@ -376,7 +376,7 @@ export interface IGetProjectSurveyForViewResponse {
   surveyProprietor: {
     proprietor_type_name: string;
     first_nations_name: string;
-    category_rational: string;
+    category_rationale: string;
     proprietor_name: string;
     data_sharing_agreement_required: string;
   };

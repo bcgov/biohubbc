@@ -72,10 +72,10 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
               <Box mt={1}>
                 <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
                   <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Category Rational
+                    Category Rationale
                   </Typography>
                 </Box>
-                <Typography style={{ wordBreak: 'break-all' }}>{surveyProprietor.category_rational}</Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{surveyProprietor.category_rationale}</Typography>
               </Box>
             </Grid>
           </Grid>

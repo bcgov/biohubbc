@@ -327,7 +327,7 @@ exports[`SurveyDetails renders correctly 1`] = `
                   <dt
                     class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
                   >
-                    Category Rational
+                    Category Rationale
                   </dt>
                 </div>
                 <p

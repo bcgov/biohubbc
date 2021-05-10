@@ -60,7 +60,7 @@ export const surveyCreatePostRequestObject = {
     proprietor_name: {
       type: 'string'
     },
-    category_rational: {
+    category_rationale: {
       type: 'string'
     },
     first_nations_id: {
