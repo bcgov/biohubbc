@@ -17,7 +17,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
-import { EditGeneralInformationI18N } from 'constants/i18n';
+import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface ISurveyGeneralInformationProps {
@@ -49,8 +49,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   );
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditGeneralInformationI18N.editErrorTitle,
-    dialogText: EditGeneralInformationI18N.editErrorText,
+    dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
+    dialogText: EditSurveyGeneralInformationI18N.editErrorText,
     open: false,
     onClose: () => {
       setErrorDialogProps({ ...errorDialogProps, open: false });
@@ -74,8 +74,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         showErrorDialog({ open: true });
         return;
       }
-
-      console.log(response);
 
       generalInformationResponseData = response;
     } catch (error) {
@@ -117,7 +115,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   return (
     <>
       <EditDialog
-        dialogTitle={EditGeneralInformationI18N.editTitle}
+        dialogTitle={EditSurveyGeneralInformationI18N.editTitle}
         open={openEditDialog}
         component={{
           element: (
