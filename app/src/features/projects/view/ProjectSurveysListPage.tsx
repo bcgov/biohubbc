@@ -46,24 +46,19 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
   };
 
   return (
-    <>
-      <Box my={4}>
-        <Container maxWidth="xl">
-          <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-            <Typography variant="h1">Surveys</Typography>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
-              Create Survey
-            </Button>
-          </Box>
-          <Box mb={3}>
-            <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
-          </Box>
-        </Container>
-      </Box>
-    </>
+    <Box mb={6}>
+      <Container maxWidth="xl">
+        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h2">Surveys</Typography>
+          <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
+            Create Survey
+          </Button>
+        </Box>
+        <Box mb={3}>
+          <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+        </Box>
+      </Container>
+    </Box>
   );
 };
 

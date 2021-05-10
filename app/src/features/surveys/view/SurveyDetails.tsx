@@ -8,6 +8,7 @@ import SurveyProprietaryData from 'features/surveys/view/components/SurveyPropri
 import React from 'react';
 import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import SurveyStudyArea from './components/SurveyStudyArea';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
@@ -46,6 +47,12 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
           <SurveyGeneralInformation surveyForViewData={surveyForViewData} codes={codes} />
+        </Box>
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
+        <Box component="section" className={classes.surveyDetailsSection}>
+          <SurveyStudyArea surveyForViewData={surveyForViewData} />
         </Box>
       </Box>
 

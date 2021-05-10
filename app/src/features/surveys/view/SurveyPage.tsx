@@ -190,7 +190,9 @@ const SurveyPage: React.FC = () => {
             </Paper>
           </Box>
           <Box component="article" flex="1 1 auto">
-            {location.pathname.includes('/details') && <SurveyDetails surveyForViewData={surveyWithDetails} codes={codes} />}
+            {location.pathname.includes('/details') && (
+              <SurveyDetails surveyForViewData={surveyWithDetails} codes={codes} />
+            )}
           </Box>
         </Box>
       </Container>

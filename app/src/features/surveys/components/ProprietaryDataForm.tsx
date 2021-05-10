@@ -172,30 +172,30 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 helperText={touched.category_rational && errors.category_rational}
               />
             </Grid>
+            <Grid item xs={12}>
+              <FormControl
+                required={true}
+                component="fieldset"
+                error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
+                <FormLabel component="legend" className={classes.legend}>
+                  Data Sharing Agreement (DISA)
+                </FormLabel>
+                <Typography>Do you require a data sharing agreement?</Typography>
+                <Box mt={2}>
+                  <RadioGroup
+                    name="data_sharing_agreement_required"
+                    aria-label="Data Sharing Agreement"
+                    value={values.data_sharing_agreement_required}
+                    onChange={handleChange}>
+                    <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
+                    <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+                    <FormHelperText>{errors.data_sharing_agreement_required}</FormHelperText>
+                  </RadioGroup>
+                </Box>
+              </FormControl>
+            </Grid>
           </>
         )}
-        <Grid item xs={12}>
-          <FormControl
-            required={true}
-            component="fieldset"
-            error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
-            <FormLabel component="legend" className={classes.legend}>
-              Data Sharing Agreement (DISA)
-            </FormLabel>
-            <Typography>Do you require a data sharing agreement?</Typography>
-            <Box mt={2}>
-              <RadioGroup
-                name="data_sharing_agreement_required"
-                aria-label="Data Sharing Agreement"
-                value={values.data_sharing_agreement_required}
-                onChange={handleChange}>
-                <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
-                <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
-                <FormHelperText>{errors.data_sharing_agreement_required}</FormHelperText>
-              </RadioGroup>
-            </Box>
-          </FormControl>
-        </Grid>
       </Grid>
     </form>
   );

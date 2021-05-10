@@ -97,10 +97,19 @@ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null =>
 /**
  * SQL query to get all surveys.
  *
+ * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyListSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyListSQL', message: 'getSurveyListSQL' });
+export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyListSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
 
   const sqlStatement = SQL`
     SELECT
@@ -110,7 +119,9 @@ export const getSurveyListSQL = (): SQLStatement | null => {
       start_date,
       end_date
     from
-      survey;
+      survey
+    where
+      p_id = ${projectId};
   `;
 
   defaultLog.debug({

@@ -5,7 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateFormats';
-import GeneralInformationForm, { GeneralInformationInitialValues, GeneralInformationYupSchema, IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
+import GeneralInformationForm, {
+  GeneralInformationInitialValues,
+  GeneralInformationYupSchema,
+  IGeneralInformationForm
+} from 'features/surveys/components/GeneralInformationForm';
 import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -29,10 +33,15 @@ export interface ISurveyGeneralInformationProps {
 const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (props) => {
   // const biohubApi = useBiohubApi();
 
-  const { surveyForViewData: { survey }, codes } = props;
+  const {
+    surveyForViewData: { survey },
+    codes
+  } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(GeneralInformationInitialValues);
+  const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
+    GeneralInformationInitialValues
+  );
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditGeneralInformationI18N.editErrorTitle,
@@ -135,7 +144,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dd" variant="body1">
                 {survey.end_date ? (
                   <>
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey.start_date, survey.end_date)}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat2,
+                      survey.start_date,
+                      survey.end_date
+                    )}
                   </>
                 ) : (
                   <>

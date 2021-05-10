@@ -35,56 +35,47 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         </Button>
       </Box>
       <dl>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Data Sharing Agreement Required
-            </Typography>
-            <Typography component="dd" variant="body1">
-              {surveyProprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
-            </Typography>
-          </Grid>
-          {surveyProprietor.proprietor_type_name && (
-            <>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietary Data Category
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {surveyProprietor.proprietor_type_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietor Name
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {surveyProprietor.proprietor_name}
-                </Typography>
-              </Grid>
-              <Grid item>
-                <Box mt={1}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
-                    <Typography component="dt" variant="subtitle2" color="textSecondary">
-                      Category Rational
-                    </Typography>
-                  </Box>
-                  <Typography style={{ wordBreak: 'break-all' }}>{surveyProprietor.category_rational}</Typography>
-                </Box>
-              </Grid>
-            </>
-          )}
-        </Grid>
-        {!surveyProprietor.proprietor_type_name && (
+        {!surveyProprietor && (
           <Grid container spacing={2}>
+            <Grid item>
+              <Typography>The data captured in this survey is not proprietary.</Typography>
+            </Grid>
+          </Grid>
+        )}
+        {surveyProprietor && (
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Data Sharing Agreement Required
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {surveyProprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Proprietary Data Category
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {surveyProprietor.proprietor_type_name}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Proprietor Name
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {surveyProprietor.proprietor_name}
+              </Typography>
+            </Grid>
             <Grid item>
               <Box mt={1}>
                 <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
                   <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Proprietary Information
+                    Category Rational
                   </Typography>
                 </Box>
-                <Typography>The data captured in this survey is not proprietary.</Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{surveyProprietor.category_rational}</Typography>
               </Box>
             </Grid>
           </Grid>
