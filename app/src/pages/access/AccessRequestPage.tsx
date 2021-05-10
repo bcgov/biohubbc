@@ -3,23 +3,11 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
@@ -29,7 +17,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import yup from 'utils/YupSchema';
+import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
+import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -73,22 +62,6 @@ interface IAccessRequestForm {
   regional_offices: number[];
   comments: string;
 }
-
-const AccessRequestFormInitialValues: IAccessRequestForm = {
-  role: ('' as unknown) as number,
-  work_from_regional_office: '',
-  regional_offices: [],
-  comments: ''
-};
-
-const AccessRequestFormYupSchema = yup.object().shape({
-  role: yup.string().required('Required'),
-  work_from_regional_office: yup.string().required('Required'),
-  regional_offices: yup
-    .array()
-    .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }),
-  comments: yup.string().max(300, 'Maximum 300 characters')
-});
 
 /**
  * Access Request form
@@ -182,12 +155,29 @@ export const AccessRequestPage: React.FC = () => {
     return <Redirect to="/request-submitted" />;
   }
 
+  let initialValues: any;
+  let validateionSchema: any;
+  let requestForm: any;
+
+  switch (keycloakWrapper?.getIdentitySource()?.toLowerCase()) {
+    case 'bceid':
+      initialValues = BCeIDRequestFormInitialValues;
+      validateionSchema = BCeIDRequestFormYupSchema;
+      requestForm = <BCeIDRequestForm codes={codes} />;
+      break;
+    default:
+      // TODO need to review what additional behaviour should be; WIP - use idir form as default for now
+      initialValues = IDIRRequestFormInitialValues;
+      validateionSchema = IDIRRequestFormYupSchema;
+      requestForm = <IDIRRequestForm codes={codes} />;
+  }
+
   return (
     <Box mb={4}>
       <Container maxWidth="md">
         <Formik
-          initialValues={AccessRequestFormInitialValues}
-          validationSchema={AccessRequestFormYupSchema}
+          initialValues={initialValues}
+          validationSchema={validateionSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={(values) => {
@@ -195,7 +185,7 @@ export const AccessRequestPage: React.FC = () => {
 
             handleSubmitAccessRequest(values);
           }}>
-          {({ values, touched, errors, handleChange, handleSubmit, setFieldValue }) => (
+          {({ handleSubmit }) => (
             <>
               <Box>
                 <h1>Request Access to BioHub</h1>
@@ -203,151 +193,61 @@ export const AccessRequestPage: React.FC = () => {
                   You will need to provide some additional details before accessing this application. Complete the form
                   below to request access.
                 </Typography>
+                {/* <Paper elevation={2} square={true} className={classes.finishContainer}>
+                  <Box>
+                    <pre>{JSON.stringify(keycloakWrapper, null, 2)}</pre>
+                  </Box>
+                </Paper>
+                <br></br> */}
                 <Paper elevation={2} square={true} className={classes.finishContainer}>
                   <h2>Request Details</h2>
                   <Box mb={3}>
                     <form onSubmit={handleSubmit}>
-                      <Box>
-                        <Grid container spacing={3}>
-                          <Grid item xs={12}>
-                            <h3> Select which role you want to be assigned to</h3>
-                            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                              <InputLabel id="role-label">Role</InputLabel>
-                              <Select
-                                id="role"
-                                name="role"
-                                labelId="role-label"
-                                label="Role"
-                                value={values.role}
-                                labelWidth={300}
-                                onChange={handleChange}
-                                error={touched.role && Boolean(errors.role)}
-                                displayEmpty
-                                inputProps={{ 'aria-label': 'Role' }}>
-                                {codes?.system_roles.map((item) => (
-                                  <MenuItem key={item.id} value={item.id}>
-                                    {item.name}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                              <FormHelperText>{errors.role}</FormHelperText>
-                            </FormControl>
-                          </Grid>
-
-                          <Grid item xs={12}>
-                            <FormControl
-                              required={true}
-                              component="fieldset"
-                              onChange={(event: any) => {
-                                if (event.target.value === 'false') {
-                                  setFieldValue('regional_offices', []);
-                                }
-                              }}
-                              error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
-                              <FormLabel component="legend" className={classes.legend}>
-                                Do you work for a Regional Office?
-                              </FormLabel>
-                              <Box mt={2}>
-                                <RadioGroup
-                                  name="work_from_regional_office"
-                                  aria-label="work_from_regional_office"
-                                  value={values.work_from_regional_office}
-                                  onChange={handleChange}>
-                                  <FormControlLabel
-                                    value="true"
-                                    data-testid="yes-regional-office"
-                                    control={<Radio required={true} color="primary" />}
-                                    label="Yes"
-                                  />
-                                  <FormControlLabel
-                                    value="false"
-                                    data-testid="no-regional-office"
-                                    control={<Radio required={true} color="primary" />}
-                                    label="No"
-                                  />
-                                  <FormHelperText>{errors.work_from_regional_office}</FormHelperText>
-                                </RadioGroup>
-                              </Box>
-                            </FormControl>
-                          </Grid>
-
-                          {values.work_from_regional_office === 'true' && (
-                            <Grid item xs={12}>
-                              <h3>Which Regional Offices do you work for?</h3>
-                              <MultiAutocompleteFieldVariableSize
-                                id={'regional_offices'}
-                                label={'Regional Offices'}
-                                options={
-                                  codes?.regional_offices?.map((item) => {
-                                    return { value: item.id, label: item.name };
-                                  }) || []
-                                }
-                              />
-                            </Grid>
-                          )}
-
-                          <Grid item xs={12}>
-                            <h3>Additional comments</h3>
-                            <TextField
-                              fullWidth
-                              id="comments"
-                              name="comments"
-                              label="Comments "
-                              variant="outlined"
-                              multiline
-                              rows={4}
-                              value={values.comments}
-                              onChange={handleChange}
-                              error={touched.comments && Boolean(errors.comments)}
-                              helperText={errors.comments}
-                            />
-                          </Grid>
-                        </Grid>
-                        <Box my={4}>
-                          <Divider />
-                        </Box>
-                        <Box display="flex" justifyContent="flex-end">
-                          <Box className="buttonWrapper" mr={1}>
-                            <Button
-                              type="submit"
-                              variant="contained"
+                      {requestForm}
+                      <Box my={4}>
+                        <Divider />
+                      </Box>
+                      <Box display="flex" justifyContent="flex-end">
+                        <Box className="buttonWrapper" mr={1}>
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.actionButton}
+                            disabled={isSubmittingRequest}>
+                            Submit Request
+                          </Button>
+                          {isSubmittingRequest && (
+                            <CircularProgress
+                              className="buttonProgress"
+                              variant="indeterminate"
+                              size={20}
                               color="primary"
-                              className={classes.actionButton}
-                              disabled={isSubmittingRequest}>
-                              Submit Request
-                            </Button>
-                            {isSubmittingRequest && (
-                              <CircularProgress
-                                className="buttonProgress"
-                                variant="indeterminate"
-                                size={20}
-                                color="primary"
-                              />
-                            )}
-                          </Box>
-                          {/*
+                            />
+                          )}
+                        </Box>
+                        {/*
                               CircularProgress styling examples:
                               https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
                               https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
                             */}
-                          <Button
-                            variant="outlined"
-                            color="primary"
-                            onClick={() => {
-                              if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
-                                return;
-                              }
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() => {
+                            if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
+                              return;
+                            }
 
-                              window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
-                                config.KEYCLOAK_CONFIG.realm
-                              }/protocol/openid-connect/logout?redirect_uri=${encodeURI(
-                                window.location.origin
-                              )}/${encodeURI('access-request')}`;
-                            }}
-                            className={classes.actionButton}>
-                            Log out
-                          </Button>
-                        </Box>
+                            window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
+                              config.KEYCLOAK_CONFIG.realm
+                            }/protocol/openid-connect/logout?redirect_uri=${encodeURI(
+                              window.location.origin
+                            )}/${encodeURI('access-request')}`;
+                          }}
+                          className={classes.actionButton}>
+                          Log out
+                        </Button>
                       </Box>
                     </form>
                   </Box>
