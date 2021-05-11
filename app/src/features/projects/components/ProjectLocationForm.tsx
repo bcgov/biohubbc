@@ -102,7 +102,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
     // Back out if not a zipped file
     if (file?.type !== 'application/zip') {
-      console.log('This does not look like a zip file.');
       return;
     }
 
@@ -120,10 +119,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
         .then((geojson) => {
           const features = (geojson as any).features;
           setFieldValue('geometry', [...features, ...values.geometry]);
-        })
-        .catch((err) => {
-          const msg = 'Failed to convert shapefile to geojson';
-          console.error(msg, err);
         });
     };
   };
