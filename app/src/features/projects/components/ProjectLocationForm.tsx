@@ -111,9 +111,9 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     reader.readAsArrayBuffer(file);
 
     // When the file is loaded run the conversion
-    reader.onload = (e: any) => {
+    reader.onload = (event: any) => {
       // The converter wants a buffer
-      const zip: Buffer = e?.target?.result as Buffer;
+      const zip: Buffer = event?.target?.result as Buffer;
 
       // Run the conversion
       shp(zip).then((geojson) => {
