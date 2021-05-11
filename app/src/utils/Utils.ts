@@ -1,4 +1,5 @@
 import { DATE_FORMAT } from 'constants/dateFormats';
+import { IConfig } from 'contexts/configContext';
 import moment from 'moment';
 
 /**
@@ -78,4 +79,23 @@ export const getFormattedAmount = (amount: number): string => {
       .toString()
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   );
+};
+
+/**
+ * Log the user out, redirecting them to the logout page.
+ *
+ * @param {IConfig} config
+ */
+export const logOut = (config: IConfig) => {
+  if (!config || !config.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
+    return;
+  }
+
+  const localRedirectURL = `${window.location.origin}/login`;
+
+  const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
+
+  const siteminderLogoutURL = `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
+
+  window.location.replace(siteminderLogoutURL);
 };

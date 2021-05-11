@@ -24,57 +24,57 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // Cypress.Commands.add("guiLogin", (user: string) => {
-Cypress.Commands.add('svcClientLogin', () => {
-  Cypress.log({ name: 'KeyCloak Login' });
-  const authBaseUrl = Cypress.env('authUrl');
-  const realm = Cypress.env('authRealm');
-  const client_id = Cypress.env('authClientId');
-  const username = Cypress.env('username');
-  const password = Cypress.env('password');
+import createUUID from './createUUID';
 
-  return cy
-    .request({
-      method: 'POST',
-      url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/token`,
-      followRedirect: false,
-      form: true,
-      body: {
-        grant_type: 'password',
-        client_id,
-        scope: 'openid',
-        username,
-        password,
-      },
-    })
-    .its('body');
-});
+Cypress.Commands.add(
+  'login',
+  ({
+    root,
+    realm,
+    username,
+    password,
+    client_id,
+    redirect_uri,
+    path_prefix = 'auth',
+  }) =>
+    cy
+      .request({
+        url: `${root}${path_prefix ? `/${path_prefix}` : ''
+          }/realms/${realm}/protocol/openid-connect/auth`,
+        qs: {
+          client_id,
+          redirect_uri,
+          scope: 'openid',
+          state: createUUID(),
+          nonce: createUUID(),
+          response_type: 'code',
+          response_mode: 'fragment',
+        },
+      })
+      .then((response) => {
+        const html = document.createElement('html');
+        html.innerHTML = response.body;
 
-Cypress.Commands.add('svcClientLogout', () => {
-  Cypress.log({ name: 'KeyCloak Logout' });
-  const authBaseUrl = Cypress.env('authUrl');
-  const realm = Cypress.env('authRealm');
+        const form = html.getElementsByTagName('form');
+        const isAuthorized = !form.length;
 
-  return cy.request({
-    url: `${authBaseUrl}/realms/${realm}/protocol/openid-connect/logout`,
-  });
-});
+        if (!isAuthorized)
+          return cy.request({
+            form: true,
+            method: 'POST',
+            url: form[0].action,
+            followRedirect: false,
+            body: {
+              username,
+              password,
+            },
+          });
+      })
+);
 
-Cypress.Commands.add('svcClientSetCookie', (tokens: any) => {
-  Cypress.log({ name: 'Set Application Cookie' });
-  const baseUrl = new URL(Cypress.config('baseUrl'));
-  const cookieDomain = baseUrl.hostname;
-  const cookieOptions = { log: true, domain: cookieDomain };
-
-  function getExpiryUTC(expires_in) {
-    let tokenExpiryPOSIX = Date.now() + expires_in * 1000;
-    let expiryDate = new Date(tokenExpiryPOSIX);
-    return expiryDate.toUTCString();
-  }
-
-  const accessTokenExpiry = getExpiryUTC(tokens.expires_in);
-  const refreshTokenExpiry = getExpiryUTC(tokens.refresh_expires_in);
-  cy.setCookie('accessToken', tokens.access_token, cookieOptions);
-  cy.setCookie('refreshToken', tokens.refresh_token, cookieOptions);
-  cy.setCookie('accessTokenExpiery', accessTokenExpiry, cookieOptions);
-  cy.setCookie('refreshTokenExpiery', refreshTokenExpiry, cookieOptions);
-});
+Cypress.Commands.add('logout', ({ root, realm, redirect_uri }) =>
+  cy.request({
+    qs: { redirect_uri },
+    url: `${root}/auth/realms/${realm}/protocol/openid-connect/logout`,
+  })
+);

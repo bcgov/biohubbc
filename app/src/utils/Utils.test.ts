@@ -1,5 +1,5 @@
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { ensureProtocol, getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from './Utils';
+import { ensureProtocol, getFormattedAmount, getFormattedDate, getFormattedDateRangeString, logOut } from './Utils';
 
 describe('ensureProtocol', () => {
   it('does nothing if string already has `http://`', async () => {
@@ -40,7 +40,7 @@ describe('getFormattedAmount', () => {
   });
 
   it('returns empty string when amount is invalid', () => {
-    expect(getFormattedAmount(null)).toEqual('');
+    expect(getFormattedAmount((null as unknown) as number)).toEqual('');
   });
 });
 
@@ -100,5 +100,107 @@ describe('getFormattedDateRangeString', () => {
     const endDate = '2021-05-25T22:44:55.478682';
     const formattedDateString = getFormattedDateRangeString(DATE_FORMAT.MediumDateFormat, startDate, endDate, '//');
     expect(formattedDateString).toEqual('March 4, 2021 // May 25, 2021');
+  });
+});
+
+describe('logOut', () => {
+  const { location } = window;
+
+  let replace = jest.fn();
+
+  beforeEach(() => {
+    // @ts-ignore
+    delete window.location;
+
+    // @ts-ignore
+    window.location = {
+      href: '',
+      origin: 'https://biohub.com',
+      replace: replace
+    };
+  });
+
+  afterEach(() => {
+    window.location = location;
+
+    jest.clearAllMocks();
+  });
+
+  it('should not logout when config is missing `KEYCLOAK_CONFIG.url`', () => {
+    const config = {
+      API_HOST: '',
+      CHANGE_VERSION: '',
+      NODE_ENV: '',
+      VERSION: '',
+      KEYCLOAK_CONFIG: {
+        url: '',
+        realm: 'myrealm',
+        clientId: ''
+      },
+      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
+    };
+
+    logOut(config);
+
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it('should not logout when config is missing `KEYCLOAK_CONFIG.realm`', () => {
+    const config = {
+      API_HOST: '',
+      CHANGE_VERSION: '',
+      NODE_ENV: '',
+      VERSION: '',
+      KEYCLOAK_CONFIG: {
+        url: 'https://www.keycloaklogout.com/auth',
+        realm: '',
+        clientId: ''
+      },
+      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
+    };
+
+    logOut(config);
+
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it('should not logout when config is missing `SITEMINDER_LOGOUT_URL`', () => {
+    const config = {
+      API_HOST: '',
+      CHANGE_VERSION: '',
+      NODE_ENV: '',
+      VERSION: '',
+      KEYCLOAK_CONFIG: {
+        url: 'https://www.keycloaklogout.com/auth',
+        realm: 'myrealm',
+        clientId: ''
+      },
+      SITEMINDER_LOGOUT_URL: ''
+    };
+
+    logOut(config);
+
+    expect(replace).not.toHaveBeenCalled();
+  });
+
+  it('should change the location.href appropriately on logout success', () => {
+    const config = {
+      API_HOST: '',
+      CHANGE_VERSION: '',
+      NODE_ENV: '',
+      VERSION: '',
+      KEYCLOAK_CONFIG: {
+        url: 'https://www.keycloaklogout.com/auth',
+        realm: 'myrealm',
+        clientId: ''
+      },
+      SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
+    };
+
+    logOut(config);
+
+    expect(replace).toHaveBeenCalledWith(
+      'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/login&retnow=1'
+    );
   });
 });

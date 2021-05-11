@@ -4,7 +4,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import type {} from '@material-ui/lab/themeAugmentation'; // this allows `@material-ui/lab` components to be themed
 import { KeycloakProvider } from '@react-keycloak/web';
 import AppRouter from 'AppRouter';
-import { AuthStateContext, AuthStateContextProvider, IAuthState } from 'contexts/authStateContext';
+import { AuthStateContextProvider } from 'contexts/authStateContext';
 import { ConfigContext, ConfigContextProvider } from 'contexts/configContext';
 import Keycloak, { KeycloakInstance } from 'keycloak-js';
 import React from 'react';
@@ -27,18 +27,10 @@ const App: React.FC = () => {
             return (
               <KeycloakProvider
                 keycloak={keycloak}
-                initConfig={{ onLoad: 'login-required', checkLoginIframe: false }}
                 LoadingComponent={<CircularProgress className="pageProgress" size={40} />}>
                 <AuthStateContextProvider>
                   <BrowserRouter>
-                    <AuthStateContext.Consumer>
-                      {(context: IAuthState) => {
-                        if (!context.ready) {
-                          return <CircularProgress className="pageProgress" size={40} />;
-                        }
-                        return <AppRouter />;
-                      }}
-                    </AuthStateContext.Consumer>
+                    <AppRouter />
                   </BrowserRouter>
                 </AuthStateContextProvider>
               </KeycloakProvider>

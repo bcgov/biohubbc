@@ -19,6 +19,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
+import { logOut } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -138,6 +139,8 @@ export const AccessRequestPage: React.FC = () => {
       }
       setIsSubmittingRequest(false);
 
+      keycloakWrapper?.refresh();
+
       history.push('/request-submitted');
     } catch (error) {
       const apiError = error as APIError;
@@ -151,8 +154,19 @@ export const AccessRequestPage: React.FC = () => {
     }
   };
 
+  if (!keycloakWrapper?.keycloak?.authenticated) {
+    // User is not logged in
+    return <Redirect to={{ pathname: '/login' }} />;
+  }
+
+  if (!keycloakWrapper.hasLoadedAllUserInfo) {
+    // User data has not been loaded, can not yet determine if they have a role
+    return <CircularProgress className="pageProgress" />;
+  }
+
   if (keycloakWrapper?.hasAccessRequest) {
-    return <Redirect to="/request-submitted" />;
+    // User already has a pending access request
+    return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
   let initialValues: any;
@@ -217,23 +231,19 @@ export const AccessRequestPage: React.FC = () => {
                           )}
                         </Box>
                         {/*
-                              CircularProgress styling examples:
-                              https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
-                              https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
-                            */}
+                          CircularProgress styling examples:
+                          https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
+                          https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
+                        */}
                         <Button
                           variant="outlined"
                           color="primary"
                           onClick={() => {
-                            if (!config || !config.KEYCLOAK_CONFIG || !config.KEYCLOAK_CONFIG.url) {
+                            if (!config) {
                               return;
                             }
 
-                            window.location.href = `${config.KEYCLOAK_CONFIG.url}/realms/${
-                              config.KEYCLOAK_CONFIG.realm
-                            }/protocol/openid-connect/logout?redirect_uri=${encodeURI(
-                              window.location.origin
-                            )}/${encodeURI('access-request')}`;
+                            logOut(config);
                           }}
                           className={classes.actionButton}>
                           Log out

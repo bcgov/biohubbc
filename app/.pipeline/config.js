@@ -73,10 +73,12 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     host:
-      (isStaticDeployment && (staticUrls.dev || defaultHost)) || `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+      (isStaticDeployment && (staticUrls.dev || defaultHost)) ||
+      `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     apiHost:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
       `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    siteminderLogoutURL: config.siteminderLogoutURL.dev,
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
@@ -93,6 +95,7 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrls.test,
     apiHost: staticUrlsAPI.test || defaultHostAPI,
+    siteminderLogoutURL: config.siteminderLogoutURL.test,
     env: 'test',
     sso: sso.test,
     replicas: 3,
@@ -109,6 +112,7 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod || defaultHostAPI,
+    siteminderLogoutURL: config.siteminderLogoutURL.prod,
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
