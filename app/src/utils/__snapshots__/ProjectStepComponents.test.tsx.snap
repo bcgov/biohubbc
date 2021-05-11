@@ -1454,6 +1454,28 @@ exports[`ProjectStepComponents renders the project location with the codes value
               class="MuiTouchRipple-root"
             />
           </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-84"
@@ -1917,6 +1939,28 @@ exports[`ProjectStepComponents renders the project location without the codes va
                 type="file"
               />
               Upload KML
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
             </span>
             <span
               class="MuiTouchRipple-root"

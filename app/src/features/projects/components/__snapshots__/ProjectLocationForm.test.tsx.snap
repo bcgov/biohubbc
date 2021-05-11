@@ -196,6 +196,28 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               class="MuiTouchRipple-root"
             />
           </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-49"
@@ -687,6 +709,28 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               class="MuiTouchRipple-root"
             />
           </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-9"
@@ -1159,6 +1203,28 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                 type="file"
               />
               Upload KML
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -1644,6 +1710,28 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 type="file"
               />
               Upload KML
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem; border: 2px solid; text-transform: capitalize; font-weight: bold;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
             </span>
             <span
               class="MuiTouchRipple-root"
