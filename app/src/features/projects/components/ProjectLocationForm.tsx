@@ -116,17 +116,17 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       const zip: Buffer = event?.target?.result as Buffer;
 
       // Run the conversion
-      shp(zip).then((geojson) => {
-        const features = (geojson as any).features;
-        setFieldValue('geometry', [...features, ...values.geometry]);
-      }).catch((err) => {
-        const msg = 'Failed to convert shapefile to geojson'
-        console.error(msg,err);
-      });
-    }
-
-
-  }
+      shp(zip)
+        .then((geojson) => {
+          const features = (geojson as any).features;
+          setFieldValue('geometry', [...features, ...values.geometry]);
+        })
+        .catch((err) => {
+          const msg = 'Failed to convert shapefile to geojson';
+          console.error(msg, err);
+        });
+    };
+  };
 
   const handleKMLUpload = async (e: any) => {
     setIsLoading(true);
@@ -199,20 +199,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               disabled={isLoading}
               onClick={() => setUploadError('')}
               style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
-              <input
-                key={uuidv4()}
-                data-testid="file-upload"
-                type="file"
-                hidden
-                onChange={(e) => handleKMLUpload(e)}
-              />
+              <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleKMLUpload(e)} />
               Upload KML
             </Button>
-            <Tooltip
-              arrow
-              color='secondary'
-              title='Will only accept zipped shapefiles of a known projection.'
-            >
+            <Tooltip arrow color="secondary" title="Will only accept zipped shapefiles of a known projection.">
               <Button
                 variant="outlined"
                 component="label"
@@ -220,12 +210,11 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
                 color="primary"
                 disabled={isLoading}
                 style={{
-                  marginLeft:'1rem',
+                  marginLeft: '1rem',
                   border: '2px solid',
                   textTransform: 'capitalize',
                   fontWeight: 'bold'
-                }}
-              >
+                }}>
                 <input
                   key={uuidv4()}
                   data-testid="shp-upload"
@@ -235,7 +224,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
                 />
                 Upload Shapefile
               </Button>
-
             </Tooltip>
           </Box>
           <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
