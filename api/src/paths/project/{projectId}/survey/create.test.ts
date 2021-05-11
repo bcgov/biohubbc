@@ -62,17 +62,17 @@ describe('createSurvey', () => {
     }
   } as any;
 
-  // let actualResult: any = null;
+  let actualResult: any = null;
 
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -208,6 +208,125 @@ describe('createSurvey', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build survey_proprietor SQL insert statement');
+    }
+  });
+
+  it('should return the survey id on success (no proprietary data)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ id: 23 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+
+    const result = create.createSurvey();
+
+    await result(
+      { ...sampleReq, body: { ...sampleReq.body, survey_data_proprietary: 'false' } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.eql({
+      id: 23
+    });
+  });
+
+  it('should return the survey id on success (with proprietary data)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery
+      .onFirstCall()
+      .resolves({ rows: [{ id: 23 }] })
+      .onSecondCall()
+      .resolves({ rows: [{ id: 23 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+
+    const result = create.createSurvey();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql({
+      id: 23
+    });
+  });
+
+  it('should throw a 400 error when the create survey fails because survey proprietor result has no id', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery
+      .onFirstCall()
+      .resolves({ rows: [{ id: 23 }] })
+      .onSecondCall()
+      .resolves({ rows: [{ id: null }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+
+    try {
+      const result = create.createSurvey();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to create the survey proprietor record');
+    }
+  });
+
+  it('should throw a 400 error when the create survey fails because survey proprietor result has no rows', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery
+      .onFirstCall()
+      .resolves({ rows: [{ id: 23 }] })
+      .onSecondCall()
+      .resolves({ rows: null });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+
+    try {
+      const result = create.createSurvey();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to create the survey proprietor record');
     }
   });
 });
