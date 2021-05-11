@@ -131,7 +131,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getSurveyForUpdate(): RequestHandler {
+export function getSurveyForUpdate(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
