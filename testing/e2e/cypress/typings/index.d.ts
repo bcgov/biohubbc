@@ -4,18 +4,12 @@ declare namespace Cypress {
          * Custom command to perform login action
          * @example cy.svcClientLogin()
          */
-        svcClientLogin(): Chainable<Response>;
+        login(): Chainable<Response>;
 
         /**
          * Custom command to perform logout action
          * @example cy.svcClientLogout()
          */
-        svcClientLogout(): Chainable<Response>;
-
-        /**
-         * Custom command to set cookies
-         * @example cy.svcClientSetCookie(tokens)
-         */
-        svcClientSetCookie(tokens: any): void;
+        logout(): Chainable<Response>;
     }
   }
