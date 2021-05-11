@@ -5,16 +5,15 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from 'features/surveys/components/GeneralInformationForm';
 import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
 
 const handleSaveAndNext = jest.fn();
-
-const species: string[] = ['species 1', 'species 2'];
 
 const generalInformationFilledValues = {
   survey_name: 'survey name',
   start_date: '2021-04-09 11:53:53',
   end_date: '2021-05-10 11:53:53',
-  species: 'species 1',
+  species: 'Species code',
   survey_purpose: 'purpose',
   biologist_first_name: 'first',
   biologist_last_name: 'last'
@@ -31,7 +30,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={species} />}
+        {() => (
+          <GeneralInformationForm
+            species={
+              codes?.species?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
@@ -48,7 +55,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={species} />}
+        {() => (
+          <GeneralInformationForm
+            species={
+              codes?.species?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 
@@ -83,7 +98,15 @@ describe('General Information Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <GeneralInformationForm species={species} />}
+        {() => (
+          <GeneralInformationForm
+            species={
+              codes?.species?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
+          />
+        )}
       </Formik>
     );
 

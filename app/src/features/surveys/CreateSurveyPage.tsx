@@ -218,7 +218,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -293,7 +293,7 @@ const CreateSurveyPage = () => {
                     <GeneralInformationForm
                       species={
                         codes?.species?.map((item) => {
-                          return item.name;
+                          return { value: item.name, label: item.name };
                         }) || []
                       }
                     />
@@ -305,8 +305,14 @@ const CreateSurveyPage = () => {
                   summary="Study Area Summary (to be completed)"
                   component={
                     <StudyAreaForm
-                      park={['Park name 1', 'Park name 2']}
-                      management_unit={['Management unit 1', 'Management unit 2']}
+                      park={[
+                        { value: 'Park name 1', label: 'Park name 1' },
+                        { value: 'Park name 2', label: 'Park name 2' }
+                      ]}
+                      management_unit={[
+                        { value: 'Management unit 1', label: 'Management unit 1' },
+                        { value: 'Management unit 2', label: 'Management unit 2' }
+                      ]}
                     />
                   }></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />
@@ -315,7 +321,18 @@ const CreateSurveyPage = () => {
                   title="Proprietary Data"
                   summary="Proprietary Data Summary (to be completed)"
                   component={
-                    <ProprietaryDataForm proprietary_data_category={['Data category 1', 'Data category 2']} />
+                    <ProprietaryDataForm
+                      proprietary_data_category={
+                        codes?.proprietor_type?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      first_nations={
+                        codes?.first_nations?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                    />
                   }></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />
 

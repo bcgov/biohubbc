@@ -251,7 +251,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
                     data-testid="species"
                     role="combobox"
                   >
@@ -292,7 +292,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <button
                             aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                             tabindex="-1"
                             title="Clear"
                             type="button"
@@ -308,6 +308,31 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               >
                                 <path
                                   d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                />
+                              </svg>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                          <button
+                            aria-label="Open"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                            tabindex="-1"
+                            title="Open"
+                            type="button"
+                          >
+                            <span
+                              class="MuiIconButton-label"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                class="MuiSvgIcon-root"
+                                focusable="false"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  d="M7 10l5 5 5-5z"
                                 />
                               </svg>
                             </span>
@@ -580,7 +605,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
                     data-testid="park"
                     role="combobox"
                   >
@@ -621,7 +646,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <button
                             aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                             tabindex="-1"
                             title="Clear"
                             type="button"
@@ -637,6 +662,31 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               >
                                 <path
                                   d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                />
+                              </svg>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                          <button
+                            aria-label="Open"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                            tabindex="-1"
+                            title="Open"
+                            type="button"
+                          >
+                            <span
+                              class="MuiIconButton-label"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                class="MuiSvgIcon-root"
+                                focusable="false"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  d="M7 10l5 5 5-5z"
                                 />
                               </svg>
                             </span>
@@ -666,7 +716,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
                     data-testid="management_unit"
                     role="combobox"
                   >
@@ -707,7 +757,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <button
                             aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                             tabindex="-1"
                             title="Clear"
                             type="button"
@@ -723,6 +773,31 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               >
                                 <path
                                   d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                />
+                              </svg>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </button>
+                          <button
+                            aria-label="Open"
+                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                            tabindex="-1"
+                            title="Open"
+                            type="button"
+                          >
+                            <span
+                              class="MuiIconButton-label"
+                            >
+                              <svg
+                                aria-hidden="true"
+                                class="MuiSvgIcon-root"
+                                focusable="false"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  d="M7 10l5 5 5-5z"
                                 />
                               </svg>
                             </span>
@@ -923,336 +998,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </div>
                   </fieldset>
                 </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <p
-                    class="MuiTypography-root makeStyles-bold-40 MuiTypography-body1"
-                  >
-                    Proprietary Information
-                  </p>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <div
-                    aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
-                    data-testid="proprietary_data_category"
-                    role="combobox"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                        data-shrink="false"
-                        for="proprietary_data_category"
-                        id="proprietary_data_category-label"
-                      >
-                        Proprietary Data Category
-                        <span
-                          aria-hidden="true"
-                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                        >
-                           *
-                        </span>
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-                      >
-                        <input
-                          aria-autocomplete="list"
-                          aria-invalid="false"
-                          autocapitalize="none"
-                          autocomplete="off"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="proprietary_data_category"
-                          required=""
-                          spellcheck="false"
-                          type="text"
-                          value=""
-                        />
-                        <div
-                          class="MuiAutocomplete-endAdornment"
-                        >
-                          <button
-                            aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                            tabindex="-1"
-                            title="Clear"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                        </div>
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-26"
-                          >
-                            <span>
-                              Proprietary Data Category *
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                  >
-                    <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                      data-shrink="false"
-                      for="proprietor_name"
-                      id="proprietor_name-label"
-                    >
-                      Proprietor Name
-                      <span
-                        aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                      >
-                         *
-                      </span>
-                    </label>
-                    <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                    >
-                      <input
-                        aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input"
-                        id="proprietor_name"
-                        name="proprietor_name"
-                        required=""
-                        type="text"
-                        value=""
-                      />
-                      <fieldset
-                        aria-hidden="true"
-                        class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
-                      >
-                        <legend
-                          class="PrivateNotchedOutline-legendLabelled-26"
-                        >
-                          <span>
-                            Proprietor Name *
-                          </span>
-                        </legend>
-                      </fieldset>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <div
-                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                  >
-                    <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                      data-shrink="false"
-                      for="category_rational"
-                      id="category_rational-label"
-                    >
-                      Category Rational
-                      <span
-                        aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                      >
-                         *
-                      </span>
-                    </label>
-                    <div
-                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-                    >
-                      <textarea
-                        aria-invalid="false"
-                        class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                        id="category_rational"
-                        name="category_rational"
-                        required=""
-                        rows="4"
-                      />
-                      <fieldset
-                        aria-hidden="true"
-                        class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
-                      >
-                        <legend
-                          class="PrivateNotchedOutline-legendLabelled-26"
-                        >
-                          <span>
-                            Category Rational *
-                          </span>
-                        </legend>
-                      </fieldset>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <fieldset
-                    class="MuiFormControl-root"
-                  >
-                    <legend
-                      class="MuiFormLabel-root makeStyles-legend-39 Mui-required"
-                    >
-                      Data Sharing Agreement (DISA)
-                      <span
-                        aria-hidden="true"
-                        class="MuiFormLabel-asterisk"
-                      >
-                         *
-                      </span>
-                    </legend>
-                    <p
-                      class="MuiTypography-root MuiTypography-body1"
-                    >
-                      Do you require a data sharing agreement?
-                    </p>
-                    <div
-                      class="MuiBox-root MuiBox-root-49"
-                    >
-                      <div
-                        aria-label="Data Sharing Agreement"
-                        class="MuiFormGroup-root"
-                        role="radiogroup"
-                      >
-                        <label
-                          class="MuiFormControlLabel-root"
-                        >
-                          <span
-                            aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-43 Mui-checked MuiIconButton-colorPrimary"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <input
-                                checked=""
-                                class="PrivateSwitchBase-input-45"
-                                name="data_sharing_agreement_required"
-                                required=""
-                                type="radio"
-                                value="false"
-                              />
-                              <div
-                                class="PrivateRadioButtonIcon-root-46 PrivateRadioButtonIcon-checked-48"
-                              >
-                                <svg
-                                  aria-hidden="true"
-                                  class="MuiSvgIcon-root"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                  />
-                                </svg>
-                                <svg
-                                  aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-47"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                  />
-                                </svg>
-                              </div>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </span>
-                          <span
-                            class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                          >
-                            No
-                          </span>
-                        </label>
-                        <label
-                          class="MuiFormControlLabel-root"
-                        >
-                          <span
-                            aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <input
-                                class="PrivateSwitchBase-input-45"
-                                name="data_sharing_agreement_required"
-                                required=""
-                                type="radio"
-                                value="true"
-                              />
-                              <div
-                                class="PrivateRadioButtonIcon-root-46"
-                              >
-                                <svg
-                                  aria-hidden="true"
-                                  class="MuiSvgIcon-root"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                  />
-                                </svg>
-                                <svg
-                                  aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-47"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                  />
-                                </svg>
-                              </div>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </span>
-                          <span
-                            class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                          >
-                            Yes
-                          </span>
-                        </label>
-                        <p
-                          class="MuiFormHelperText-root Mui-required"
-                        />
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
               </div>
             </form>
           </div>
@@ -1261,13 +1006,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-50"
+          class="MuiBox-root MuiBox-root-49"
         >
           <div
-            class="MuiBox-root MuiBox-root-51"
+            class="MuiBox-root MuiBox-root-50"
           >
             <div
-              class="MuiBox-root MuiBox-root-52"
+              class="MuiBox-root MuiBox-root-51"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -1276,7 +1021,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-53"
+              class="MuiBox-root MuiBox-root-52"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1286,7 +1031,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-54"
+            class="MuiBox-root MuiBox-root-53"
           >
             <form>
               <div
@@ -1296,7 +1041,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-bold-55 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-bold-54 MuiTypography-body1"
                   >
                     Species and Ecosystems Data and Information Security (SEDIS) Procedures
                   </p>
@@ -1354,10 +1099,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-56"
+                    class="MuiBox-root MuiBox-root-55"
                   >
                     <p
-                      class="MuiTypography-root makeStyles-bold-55 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-bold-54 MuiTypography-body1"
                     >
                       Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
                     </p>
@@ -1420,7 +1165,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-57"
+          class="MuiBox-root MuiBox-root-56"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-7 MuiButton-containedPrimary"

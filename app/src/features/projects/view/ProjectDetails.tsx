@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
@@ -27,18 +26,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   projectDetailsSection: {
     marginTop: theme.spacing(4),
     marginBottom: theme.spacing(5),
-
     '&:last-child': {
       marginBottom: 0
     },
-
     '&:first-child': {
       marginTop: 0
     }
-  },
-
-  sectionDivider: {
-    height: '3px'
   }
 }));
 
@@ -48,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
-  const { projectForViewData, codes } = props;
+  const { projectForViewData, codes, refresh } = props;
   const classes = useStyles();
 
   return (
@@ -59,39 +52,55 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <Species projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <Species projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
-        <Divider className={classes.sectionDivider} />
+      </Box>
+
+      <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={props.refresh} />
+          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
     </>

@@ -56,6 +56,13 @@ export const EditGeneralInformationI18N = {
     'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditSurveyGeneralInformationI18N = {
+  editTitle: 'Edit Survey General Information',
+  editErrorTitle: 'Error Editing Survey General Information',
+  editErrorText:
+    'An error has occurred while attempting to edit your survey general information, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditLocationBoundaryI18N = {
   editTitle: 'Edit Location / Project Boundary',
   editErrorTitle: 'Error Editing Location / Project Boundary',

@@ -1,37 +1,71 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
-export interface IAutocompleteField {
+export interface IAutocompleteFieldOption<T extends string | number> {
+  value: T;
+  label: string;
+}
+
+export interface IAutocompleteField<T extends string | number> {
   id: string;
   label: string;
   name: string;
-  value: string;
-  options: string[];
+  options: IAutocompleteFieldOption<T>[];
   required?: boolean;
   filterLimit?: number;
+  onChange?: (event: ChangeEvent<{}>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
-const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
-  const { touched, errors, setFieldValue } = useFormikContext<string>();
+// To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
+
+const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T extends string | number>(
+  props: IAutocompleteField<T>
+) => {
+  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
+
+  const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
+    const result = props.options.find((option) => existingValue === option.value);
+
+    if (!result) {
+      return (null as unknown) as IAutocompleteFieldOption<T>;
+    }
+
+    return result;
+  };
+
+  const handleGetOptionSelected = (
+    option: IAutocompleteFieldOption<T>,
+    value: IAutocompleteFieldOption<T>
+  ): boolean => {
+    if (!option?.value || !value?.value) {
+      return false;
+    }
+
+    return option.value === value.value;
+  };
 
   return (
     <Autocomplete
-      freeSolo
       autoSelect
-      includeInputInList
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
       id={props.id}
       data-testid={props.id}
-      value={props.value}
+      value={getExistingValue(values[props.name])}
       options={props.options}
-      getOptionLabel={(option) => option}
+      getOptionLabel={(option) => option.label}
+      getOptionSelected={handleGetOptionSelected}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       onChange={(event, option) => {
-        setFieldValue(props.id, option);
+        if (props.onChange) {
+          props.onChange(event, option);
+          return;
+        }
+
+        setFieldValue(props.name, option?.value);
       }}
       renderInput={(params) => (
         <TextField
@@ -40,8 +74,8 @@ const AutocompleteField: React.FC<IAutocompleteField> = (props) => {
           label={props.label}
           variant="outlined"
           fullWidth
-          error={touched[props.id] && Boolean(errors[props.id])}
-          helperText={touched[props.id] && errors[props.id]}
+          error={touched[props.name] && Boolean(errors[props.name])}
+          helperText={touched[props.name] && errors[props.name]}
         />
       )}
     />

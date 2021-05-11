@@ -10,6 +10,7 @@ import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/draft');
 
+export const PUT: Operation = [logRequest('paths/draft', 'PUT'), updateDraft()];
 export const POST: Operation = [logRequest('paths/draft', 'POST'), createDraft()];
 
 const postPutResponses = {
@@ -76,53 +77,6 @@ POST.apiDoc = {
   }
 };
 
-/**
- * Creates a new draft record.
- *
- * @returns {RequestHandler}
- */
-function createDraft(): RequestHandler {
-  return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      await connection.open();
-
-      const systemUserId = connection.systemUserId();
-
-      if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
-
-      const postDraftSQLStatement = postDraftSQL(systemUserId, req?.body?.name, req?.body?.data);
-
-      if (!postDraftSQLStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
-      }
-
-      const createDraftResponse = await connection.query(postDraftSQLStatement.text, postDraftSQLStatement.values);
-
-      await connection.commit();
-
-      const draftResult = (createDraftResponse && createDraftResponse.rows && createDraftResponse.rows[0]) || null;
-
-      if (!draftResult || !draftResult.id) {
-        throw new HTTP400('Failed to save draft');
-      }
-
-      return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
-    } catch (error) {
-      defaultLog.debug({ label: 'createProject', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export const PUT: Operation = [logRequest('paths/draft', 'PUT'), updateDraft()];
-
 PUT.apiDoc = {
   description: 'Update a Draft.',
   tags: ['draft'],
@@ -164,19 +118,84 @@ PUT.apiDoc = {
 };
 
 /**
- * Updates an existing draft record.
+ * Creates a new draft record.
  *
  * @returns {RequestHandler}
  */
-function updateDraft(): RequestHandler {
+export function createDraft(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const putDraftSQLStatement = putDraftSQL(req?.body?.id, req?.body?.name, req?.body?.data);
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
+
+      if (!req.body.name) {
+        throw new HTTP400('Missing required param name');
+      }
+
+      if (!req.body.data) {
+        throw new HTTP400('Missing required param data');
+      }
+
+      const postDraftSQLStatement = postDraftSQL(systemUserId, req.body.name, req.body.data);
+
+      if (!postDraftSQLStatement) {
+        throw new HTTP400('Failed to build SQL insert statement');
+      }
+
+      const createDraftResponse = await connection.query(postDraftSQLStatement.text, postDraftSQLStatement.values);
+
+      await connection.commit();
+
+      const draftResult = (createDraftResponse && createDraftResponse.rows && createDraftResponse.rows[0]) || null;
+
+      if (!draftResult || !draftResult.id) {
+        throw new HTTP400('Failed to save draft');
+      }
+
+      return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
+    } catch (error) {
+      defaultLog.debug({ label: 'createProject', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+/**
+ * Updates an existing draft record.
+ *
+ * @returns {RequestHandler}
+ */
+export function updateDraft(): RequestHandler {
+  return async (req, res) => {
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      if (!req.body.id) {
+        throw new HTTP400('Missing required param id');
+      }
+
+      if (!req.body.name) {
+        throw new HTTP400('Missing required param name');
+      }
+
+      if (!req.body.data) {
+        throw new HTTP400('Missing required param data');
+      }
+
+      const putDraftSQLStatement = putDraftSQL(req.body.id, req.body.name, req.body.data);
 
       if (!putDraftSQLStatement) {
-        throw new HTTP400('Failed to build SQL insert statement');
+        throw new HTTP400('Failed to build SQL update statement');
       }
 
       await connection.open();

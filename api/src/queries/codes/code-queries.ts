@@ -22,6 +22,13 @@ export const getFirstNationsSQL = (): SQLStatement => SQL`SELECT id, name from f
 export const getFundingSourceSQL = (): SQLStatement => SQL`SELECT id, name from funding_source;`;
 
 /**
+ * SQL query to fetch proprietor type codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getProprietorTypeSQL = (): SQLStatement => SQL`SELECT id, name from proprietor_type;`;
+
+/**
  * SQL query to fetch activity codes.
  *
  * @returns {SQLStatement} sql query object
