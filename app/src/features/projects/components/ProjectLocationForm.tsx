@@ -97,7 +97,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   }, [values.geometry]);
 
   /**
-   * ## handleShapefileUpload
    * Convert a zipped shapefile to geojson
    * @param e The file upload event
    */
@@ -107,7 +106,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
     // Back out if not a zipped file
     if (file?.type !== 'application/zip') {
-      console.log('This does not look like a zip file.');
       return;
     }
 
@@ -126,10 +124,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           const features = (geojson as any).features;
           setFieldValue('geometry', [...features, ...values.geometry]);
         })
-        .catch((err: any) => {
-          const msg = 'Failed to convert shapefile to geojson';
-          console.error(msg, err);
-        });
     };
   };
 
@@ -196,17 +190,19 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
         <Grid item xs={12}>
           <Typography className={classes.bold}>Project Boundary</Typography>
           <Box display="flex" mt={3}>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              disabled={isLoading}
-              onClick={() => setUploadError('')}
-              className={classes.uploadButton}>
-              <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleKMLUpload(e)} />
-              Upload KML
-            </Button>
+            <Tooltip arrow color="secondary" title="Will only accept kml files, kmz files not accepted.">
+              <Button
+                variant="outlined"
+                component="label"
+                size="medium"
+                color="primary"
+                disabled={isLoading}
+                onClick={() => setUploadError('')}
+                className={classes.uploadButton}>
+                <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleKMLUpload(e)} />
+                Upload KML
+              </Button>
+            </Tooltip>
             <Tooltip arrow color="secondary" title="Will only accept zipped shapefiles of a known projection.">
               <Button
                 variant="outlined"
