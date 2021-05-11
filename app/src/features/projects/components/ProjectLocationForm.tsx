@@ -92,7 +92,6 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   }, [values.geometry]);
 
   /**
-   * ## handleShapefileUpload
    * Convert a zipped shapefile to geojson
    * @param e The file upload event
    */
