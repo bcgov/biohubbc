@@ -5,6 +5,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
+import * as utils from 'utils/Utils';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -23,6 +24,36 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const renderContainer = () => {
+  const authState = {
+    keycloakWrapper: {
+      keycloak: {
+        authenticated: true
+      },
+      hasLoadedAllUserInfo: true,
+      hasAccessRequest: false,
+
+      systemRoles: [],
+      getUserIdentifier: jest.fn(),
+      hasSystemRole: jest.fn(),
+      getIdentitySource: jest.fn(),
+      username: 'testusername',
+      displayName: 'testdisplayname',
+      email: 'test@email.com',
+      firstName: 'testfirst',
+      lastName: 'testlast'
+    }
+  };
+
+  return render(
+    <AuthStateContext.Provider value={authState}>
+      <Router history={history}>
+        <AccessRequestPage />
+      </Router>
+    </AuthStateContext.Provider>
+  );
+};
+
 describe('AccessRequestPage', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -40,33 +71,26 @@ describe('AccessRequestPage', () => {
       regional_offices: [{ id: 1, name: 'Office 1' }]
     });
 
-    const { asFragment } = render(
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
-    );
+    const { asFragment } = renderContainer();
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
     });
   });
 
-  describe('Logout', () => {
-    const { location } = window;
+  describe('Log Out', () => {
+    const history = createMemoryHistory();
+
+    let logOutSpy: jest.SpyInstance;
 
     beforeAll(() => {
-      // @ts-ignore
-      delete window.location;
-
-      // @ts-ignore
-      window.location = {
-        href: '',
-        origin: ''
-      };
+      logOutSpy = jest.spyOn(utils, 'logOut').mockReturnValue();
     });
 
     afterAll(() => {
-      window.location = location;
+      logOutSpy.mockClear();
+
+      cleanup();
     });
 
     it('should not logout when no config provided', async () => {
@@ -75,34 +99,47 @@ describe('AccessRequestPage', () => {
         regional_offices: [{ id: 1, name: 'Office 1' }]
       });
 
-      const target = 'https://example.com/';
+      const authState = {
+        keycloakWrapper: {
+          keycloak: {
+            authenticated: true
+          },
+          hasLoadedAllUserInfo: true,
+          hasAccessRequest: false,
 
-      window.location.href = target;
-
-      expect(window.location.href).toBe(target);
+          systemRoles: [],
+          getUserIdentifier: jest.fn(),
+          hasSystemRole: jest.fn(),
+          getIdentitySource: jest.fn(),
+          username: 'testusername',
+          displayName: 'testdisplayname',
+          email: 'test@email.com',
+          firstName: 'testfirst',
+          lastName: 'testlast'
+        }
+      };
 
       const { getByText } = render(
         <ConfigContext.Provider value={(null as unknown) as IConfig}>
-          <Router history={history}>
-            <AccessRequestPage />
-          </Router>
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <AccessRequestPage />
+            </Router>
+          </AuthStateContext.Provider>
         </ConfigContext.Provider>
       );
 
       fireEvent.click(getByText('Log out'));
 
-      await waitFor(() => {
-        expect(window.location.href).toBe(target);
-      });
+      expect(logOutSpy).not.toBeCalled();
     });
 
-    it('should change the location.href appropriately on logout success', async () => {
+    it('should logout when config provided', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         system_roles: [{ id: 1, name: 'Role 1' }],
         regional_offices: [{ id: 1, name: 'Office 1' }]
       });
 
-      const target = 'https://example.com/';
       const config = {
         API_HOST: '',
         CHANGE_VERSION: '',
@@ -112,30 +149,43 @@ describe('AccessRequestPage', () => {
           url: 'https://www.mylogoutworks.com/auth',
           realm: 'myrealm',
           clientId: ''
+        },
+        SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
+      };
+
+      const authState = {
+        keycloakWrapper: {
+          keycloak: {
+            authenticated: true
+          },
+          hasLoadedAllUserInfo: true,
+          hasAccessRequest: false,
+
+          systemRoles: [],
+          getUserIdentifier: jest.fn(),
+          hasSystemRole: jest.fn(),
+          getIdentitySource: jest.fn(),
+          username: 'testusername',
+          displayName: 'testdisplayname',
+          email: 'test@email.com',
+          firstName: 'testfirst',
+          lastName: 'testlast'
         }
       };
 
-      window.location.href = target;
-
-      expect(window.location.href).toBe(target);
-
       const { getByText } = render(
         <ConfigContext.Provider value={config}>
-          <Router history={history}>
-            <AccessRequestPage />
-          </Router>
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <AccessRequestPage />
+            </Router>
+          </AuthStateContext.Provider>
         </ConfigContext.Provider>
       );
 
       fireEvent.click(getByText('Log out'));
 
-      await waitFor(() => {
-        expect(window.location.href).toEqual(
-          'https://www.mylogoutworks.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=' +
-            encodeURI(window.location.origin) +
-            '/access-request'
-        );
-      });
+      expect(logOutSpy).toBeCalledTimes(1);
     });
   });
 
@@ -145,11 +195,7 @@ describe('AccessRequestPage', () => {
       regional_offices: [{ id: 1, name: 'Office 1' }]
     });
 
-    const { queryByText, getByText, getByTestId } = render(
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
-    );
+    const { queryByText, getByText, getByTestId } = renderContainer();
 
     expect(queryByText('Which Regional Offices do you work for?')).toBeNull();
 
@@ -174,11 +220,7 @@ describe('AccessRequestPage', () => {
       id: 1
     });
 
-    const { getByText, getAllByRole, getByRole, getByTestId } = render(
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
-    );
+    const { getByText, getAllByRole, getByRole, getByTestId } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 
@@ -204,13 +246,15 @@ describe('AccessRequestPage', () => {
     });
 
     const authState = {
-      ready: true,
       keycloakWrapper: {
-        keycloak: {},
-        hasLoadedUserRelevantInfo: true,
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
+        hasAccessRequest: false,
+
         systemRoles: [],
         getUserIdentifier: jest.fn(),
-        hasAccessRequest: true,
         hasSystemRole: jest.fn(),
         getIdentitySource: jest.fn(),
         username: '',
@@ -242,11 +286,7 @@ describe('AccessRequestPage', () => {
 
     mockBiohubApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = render(
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
-    );
+    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 
@@ -281,11 +321,7 @@ describe('AccessRequestPage', () => {
       id: null
     });
 
-    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = render(
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
-    );
+    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 

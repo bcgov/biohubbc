@@ -133,12 +133,8 @@ const Header: React.FC = () => {
     );
   };
 
-  const SecureLink: React.FC<{ to: string; label: string; id: string }> = (props: {
-    to: string;
-    label: string;
-    id: string;
-  }) => {
-    if (!keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN])) {
+  const SecureLink: React.FC<{ to: string; label: string; validRoles: string[]; id: string }> = (props) => {
+    if (!keycloakWrapper?.hasSystemRole(props.validRoles)) {
       return <></>;
     }
 
@@ -171,8 +167,18 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <SecureLink to="/projects" label="Projects" id="menu_projects" />
-            <SecureLink to="/admin/users" label="Mange Users" id="menu_admin_users" />
+            <SecureLink
+              to="/projects"
+              label="Projects"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+              id="menu_projects"
+            />
+            <SecureLink
+              to="/admin/users"
+              label="Manage Users"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+              id="menu_admin_users"
+            />
           </Toolbar>
         </Container>
       </Box>

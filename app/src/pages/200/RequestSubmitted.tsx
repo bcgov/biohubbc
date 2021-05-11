@@ -50,7 +50,7 @@ const RequestSubmitted = () => {
             size="large"
             variant="contained"
             color="primary">
-            Logout
+            Log Out
           </Button>
         </Box>
       </Box>

@@ -87,7 +87,7 @@ export const getFormattedAmount = (amount: number): string => {
  * @param {IConfig} config
  */
 export const logOut = (config: IConfig) => {
-  if (!config.KEYCLOAK_CONFIG.url || !config.SITEMINDER_LOGOUT_URL) {
+  if (!config || !config.KEYCLOAK_CONFIG?.url || !config.KEYCLOAK_CONFIG?.realm || !config.SITEMINDER_LOGOUT_URL) {
     return;
   }
 
