@@ -119,11 +119,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       const zip: Buffer = event?.target?.result as Buffer;
 
       // Run the conversion
-      shp(zip)
-        .then((geojson: any) => {
-          const features = (geojson as any).features;
-          setFieldValue('geometry', [...features, ...values.geometry]);
-        })
+      shp(zip).then((geojson: any) => {
+        const features = (geojson as any).features;
+        setFieldValue('geometry', [...features, ...values.geometry]);
+      });
     };
   };
 
@@ -199,7 +198,13 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
                 disabled={isLoading}
                 onClick={() => setUploadError('')}
                 className={classes.uploadButton}>
-                <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleKMLUpload(e)} />
+                <input
+                  key={uuidv4()}
+                  data-testid="file-upload"
+                  type="file"
+                  hidden
+                  onChange={(e) => handleKMLUpload(e)}
+                />
                 Upload KML
               </Button>
             </Tooltip>
