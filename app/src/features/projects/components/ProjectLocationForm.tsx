@@ -124,7 +124,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       }
 
       // Run the conversion
-      const geojson = await shp(zip)
+      const geojson = await shp(zip);
       const features = (geojson as any).features;
       setFieldValue('geometry', [...features, ...values.geometry]);
     };
