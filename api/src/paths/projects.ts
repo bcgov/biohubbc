@@ -103,23 +103,25 @@ function getProjectList(): RequestHandler {
  * @return {any[]} An array of project data
  */
 export function _extractProjects(rows: any[]): any[] {
+  if (!rows || !rows.length) {
+    return [];
+  }
+
   const projects: any[] = [];
 
-  if (rows != null) {
-    rows.forEach((row) => {
-      const project: any = {
-        id: row.id,
-        name: row.name,
-        start_date: row.start_date,
-        end_date: row.end_date,
-        coordinator_agency: row.coordinator_agency_name,
-        project_type: row.project_type,
-        permits_list: row.permits_list
-      };
+  rows.forEach((row) => {
+    const project: any = {
+      id: row.id,
+      name: row.name,
+      start_date: row.start_date,
+      end_date: row.end_date,
+      coordinator_agency: row.coordinator_agency_name,
+      project_type: row.project_type,
+      permits_list: row.permits_list
+    };
 
-      projects.push(project);
-    });
-  }
+    projects.push(project);
+  });
 
   return projects;
 }
