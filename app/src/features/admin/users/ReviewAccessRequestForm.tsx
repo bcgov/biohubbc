@@ -38,9 +38,10 @@ export interface IReviewAccessRequestFormProps {
 const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props) => {
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
 
-  const regional_offices = props.request.data.regional_offices
-    ?.map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
-    .join(', ') || 'Not Applicable';
+  const regional_offices =
+    props.request.data.regional_offices
+      ?.map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
+      .join(', ') || 'Not Applicable';
 
   const company = props.request.data.company || 'Not Applicable';
   const request_reason = props.request.data.request_reason || 'Not Applicable';
@@ -66,7 +67,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Username
               </Typography>
               <Typography component="dd" variant="body1">
-              {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
+                {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -107,7 +108,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Additional Comments
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.comments  || 'Not Applicable'}
+                {props.request.data.comments || 'Not Applicable'}
               </Typography>
             </Grid>
 
