@@ -119,7 +119,7 @@ export function getSurveyList(): RequestHandler {
 export function _extractSurveys(rows: any[]): any[] {
   const surveys: any[] = [];
 
-  if (rows != null) {
+  if (rows != null && rows.length) {
     rows.forEach((row) => {
       const survey: any = {
         id: row.id,
