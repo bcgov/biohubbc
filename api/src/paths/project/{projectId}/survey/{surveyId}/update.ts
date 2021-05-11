@@ -166,7 +166,7 @@ export function getSurveyForUpdate(): RequestHandler {
  *
  * @returns {RequestHandler}
  */
-function updateSurvey(): RequestHandler {
+export function updateSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -189,10 +189,10 @@ function updateSurvey(): RequestHandler {
 
       await connection.open();
 
-      const putSurveyData = (surveyData && new PutSurveyData(surveyData)) || null;
+      const putSurveyData = new PutSurveyData(surveyData);
 
       // Update survey table
-      const revision_count = putSurveyData?.revision_count ?? null;
+      const revision_count = putSurveyData.revision_count ?? null;
 
       if (!revision_count && revision_count !== 0) {
         throw new HTTP400('Failed to parse request body');
