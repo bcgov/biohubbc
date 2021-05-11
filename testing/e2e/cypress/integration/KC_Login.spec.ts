@@ -9,12 +9,11 @@ it('Login', function () {
   /* ==== Open Application and Login ==== */
   cy.visit(host);
 
-  cy.get('#zocial-idir > span').click();
-  cy.get('#user').clear();
-  cy.get('#user').type(username);
+  cy.get('#username').clear();
+  cy.get('#username').type(username);
   cy.get('#password').clear();
   cy.get('#password').type(password);
-  cy.get('.btn').click();
+  cy.get('#kc-login').click();
 
   var i = 0;
   while (i < 1) {

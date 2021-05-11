@@ -16,7 +16,15 @@ const systemUsers = [
   { identifier: 'robmunro', type: 'IDIR', roleId: 1 },
   { identifier: 'rstens', type: 'IDIR', roleId: 1 },
   { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
-  { identifier: 'sdevalap', type: 'IDIR', roleId: 1 }
+  { identifier: 'sdevalap', type: 'IDIR', roleId: 1 },
+  { identifier: 'test1', type: 'BCEID', roleId: 1 },
+  { identifier: 'test2', type: 'BCEID', roleId: 1 },
+  { identifier: 'test3', type: 'IDIR', roleId: 1 },
+  { identifier: 'test4', type: 'IDIR', roleId: 1 },
+  { identifier: 'test5', type: 'IDIR', roleId: 1 },
+  { identifier: 'test6', type: 'IDIR', roleId: 1 },
+  { identifier: 'test7', type: 'IDIR', roleId: 1 },
+  { identifier: 'cypress', type: 'IDIR', roleId: 1 }
 ];
 
 /**
