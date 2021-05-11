@@ -22,8 +22,8 @@ module.exports = (on, config) => {
   config.defaultCommandTimeout = 10000;
 
   // TODO: add logic to use the urls based on the current environment
-  // https://dev-invasivesbc.apps.silver.devops.gov.bc.ca
-  config.baseUrl = process.env.host || "http://localhost:7100";
+  // https://dev-biohubbc.apps.silver.devops.gov.bc.ca
+  config.baseUrl = process.env.host || "https://dev-biohubbc.apps.silver.devops.gov.bc.ca";
   config.env.ENVIRONMENT = 'dev';
 
   // return config
