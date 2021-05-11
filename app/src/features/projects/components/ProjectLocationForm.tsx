@@ -1,11 +1,13 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 //@ts-ignore
 import { kml } from '@tmcw/togeojson';
+import shp from 'shpjs';
 import bbox from '@turf/bbox';
 import {
   default as MultiAutocompleteFieldVariableSize,
@@ -21,6 +23,11 @@ import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles({
   bold: {
+    fontWeight: 'bold'
+  },
+  uploadButton: {
+    border: '2px solid',
+    textTransform: 'capitalize',
     fontWeight: 'bold'
   }
 });
@@ -89,7 +96,41 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     ]);
   }, [values.geometry]);
 
-  const handleSpatialUpload = async (e: any) => {
+  /**
+   * Convert a zipped shapefile to geojson
+   * @param e The file upload event
+   */
+  const handleShapefileUpload = (e: any) => {
+    // Only accept one file
+    const file = e.target.files[0];
+
+    // Back out if not a zipped file
+    if (!file?.type.match(/zip/)) {
+      return;
+    }
+
+    // Create a file reader to extract the binary data
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+
+    // When the file is loaded run the conversion
+    reader.onload = async (event: any) => {
+      // The converter wants a buffer
+      const zip: Buffer = event?.target?.result as Buffer;
+
+      // Exit out if no zip
+      if (!zip) {
+        return;
+      }
+
+      // Run the conversion
+      const geojson = await shp(zip);
+      const features = (geojson as any).features;
+      setFieldValue('geometry', [...features, ...values.geometry]);
+    };
+  };
+
+  const handleKMLUpload = async (e: any) => {
     setIsLoading(true);
 
     const file = e.target.files[0];
@@ -152,23 +193,44 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
         <Grid item xs={12}>
           <Typography className={classes.bold}>Project Boundary</Typography>
           <Box display="flex" mt={3}>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              disabled={isLoading}
-              onClick={() => setUploadError('')}
-              style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
-              <input
-                key={uuidv4()}
-                data-testid="file-upload"
-                type="file"
-                hidden
-                onChange={(e) => handleSpatialUpload(e)}
-              />
-              Upload KML
-            </Button>
+            <Tooltip arrow color="secondary" title="Will only accept kml files, kmz files not accepted.">
+              <Button
+                variant="outlined"
+                component="label"
+                size="medium"
+                color="primary"
+                disabled={isLoading}
+                onClick={() => setUploadError('')}
+                className={classes.uploadButton}>
+                <input
+                  key={uuidv4()}
+                  data-testid="file-upload"
+                  type="file"
+                  hidden
+                  onChange={(e) => handleKMLUpload(e)}
+                />
+                Upload KML
+              </Button>
+            </Tooltip>
+            <Tooltip arrow color="secondary" title="Will only accept zipped shapefiles of a known projection.">
+              <Button
+                variant="outlined"
+                component="label"
+                size="medium"
+                color="primary"
+                disabled={isLoading}
+                className={classes.uploadButton}
+                style={{ marginLeft: '1rem' }}>
+                <input
+                  key={uuidv4()}
+                  data-testid="shp-upload"
+                  type="file"
+                  hidden
+                  onChange={(e) => handleShapefileUpload(e)}
+                />
+                Upload Shapefile
+              </Button>
+            </Tooltip>
           </Box>
           <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
           <Box mt={5} height={500}>
