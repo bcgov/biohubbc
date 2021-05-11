@@ -13,10 +13,11 @@ describe('NotFoundPage', () => {
     const mockHasSystemRole = () => true;
 
     const authState = {
-      ready: true,
       keycloakWrapper: {
-        keycloak: {},
-        hasLoadedUserRelevantInfo: true,
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
         getUserIdentifier: jest.fn(),
         hasAccessRequest: false,
@@ -26,7 +27,8 @@ describe('NotFoundPage', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -46,10 +48,11 @@ describe('NotFoundPage', () => {
     const mockHasSystemRole = () => false;
 
     const authState = {
-      ready: true,
       keycloakWrapper: {
-        keycloak: {},
-        hasLoadedUserRelevantInfo: true,
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
         systemRoles: [],
         getUserIdentifier: jest.fn(),
         hasAccessRequest: false,
@@ -59,7 +62,8 @@ describe('NotFoundPage', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 

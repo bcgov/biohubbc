@@ -33,6 +33,11 @@
     "test": "https://test.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
     "prod": "https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs"
   },
+  "siteminderLogoutURL": {
+    "dev": "https://logontest.gov.bc.ca/clp-cgi/logoff.cgi",
+    "test": "https://logontest.gov.bc.ca/clp-cgi/logoff.cgi",
+    "prod": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
+  },
   "sso": {
     "dev": {
       "url": "https://dev.oidc.gov.bc.ca/auth",

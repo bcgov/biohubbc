@@ -1,82 +1,247 @@
-import { fireEvent, render } from '@testing-library/react';
+import { cleanup, fireEvent, render } from '@testing-library/react';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
+import { createMemoryHistory } from 'history';
 import React from 'react';
+import { Router } from 'react-router';
+import * as utils from 'utils/Utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
-  it('renders correctly', () => {
-    const { asFragment } = render(<RequestSubmitted />);
+  it('renders a spinner when `hasLoadedAllUserInfo` is false', () => {
+    const authState = {
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: false,
+        systemRoles: [],
+        hasAccessRequest: false,
 
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/access-request');
+
+    const { asFragment } = render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <RequestSubmitted />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    // does not change location
+    expect(history.location.pathname).toEqual('/access-request');
+
+    // renders a spinner
     expect(asFragment()).toMatchSnapshot();
   });
 
-  describe('Logout', () => {
-    const { location } = window;
+  it('redirects to `/` when user has at least 1 system role', () => {
+    const authState = {
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: true,
+        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+        hasAccessRequest: false,
+
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/access-request');
+
+    render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <RequestSubmitted />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    expect(history.location.pathname).toEqual('/');
+  });
+
+  it('redirects to `/` when user has no pending access request', () => {
+    const authState = {
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: true,
+        systemRoles: [],
+        hasAccessRequest: false,
+
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/access-request');
+
+    render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <RequestSubmitted />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    expect(history.location.pathname).toEqual('/');
+  });
+
+  it('renders correctly when user has no role but has a pending access requests', () => {
+    const authState = {
+      keycloakWrapper: {
+        hasLoadedAllUserInfo: true,
+        systemRoles: [],
+        hasAccessRequest: true,
+
+        keycloak: {},
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/access-request');
+
+    const { getByText, asFragment } = render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <RequestSubmitted />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    // does not change location
+    expect(history.location.pathname).toEqual('/access-request');
+
+    expect(getByText('Log Out')).toBeVisible();
+
+    // renders the component in full
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  describe('Log Out', () => {
+    const history = createMemoryHistory();
+
+    let logOutSpy: jest.SpyInstance;
 
     beforeAll(() => {
-      // @ts-ignore
-      delete window.location;
-
-      // @ts-ignore
-      window.location = {
-        href: '',
-        origin: ''
-      };
+      logOutSpy = jest.spyOn(utils, 'logOut').mockReturnValue();
     });
 
     afterAll(() => {
-      window.location = location;
+      logOutSpy.mockClear();
+
+      cleanup();
     });
 
     it('should not logout when no config provided', () => {
-      const target = 'https://example.com/';
+      const authState = {
+        keycloakWrapper: {
+          hasLoadedAllUserInfo: true,
+          systemRoles: [],
+          hasAccessRequest: true,
 
-      window.location.href = target;
-
-      expect(window.location.href).toBe(target);
-
-      const { getByText } = render(
-        <ConfigContext.Provider value={(null as unknown) as IConfig}>
-          <RequestSubmitted />
-        </ConfigContext.Provider>
-      );
-
-      fireEvent.click(getByText('Logout'));
-
-      expect(window.location.href).toBe(target);
-    });
-
-    it('should change the location.href appropriately on logout success', () => {
-      const target = 'https://example.com/';
-      const config = {
-        API_HOST: '',
-        CHANGE_VERSION: '',
-        NODE_ENV: '',
-        VERSION: '',
-        KEYCLOAK_CONFIG: {
-          url: 'https://www.mylogoutworks.com/auth',
-          realm: 'myrealm',
-          clientId: ''
+          keycloak: {},
+          getUserIdentifier: jest.fn(),
+          hasSystemRole: jest.fn(),
+          getIdentitySource: jest.fn(),
+          username: 'testusername',
+          displayName: 'testdisplayname',
+          email: 'test@email.com',
+          firstName: 'testfirst',
+          lastName: 'testlast',
+          refresh: () => {}
         }
       };
 
-      window.location.href = target;
-
-      expect(window.location.href).toBe(target);
-
       const { getByText } = render(
-        <ConfigContext.Provider value={config}>
-          <RequestSubmitted />
+        <ConfigContext.Provider value={(null as unknown) as IConfig}>
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <RequestSubmitted />
+            </Router>
+          </AuthStateContext.Provider>
         </ConfigContext.Provider>
       );
 
-      fireEvent.click(getByText('Logout'));
+      fireEvent.click(getByText('Log Out'));
 
-      expect(window.location.href).toEqual(
-        'https://www.mylogoutworks.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=' +
-          encodeURI(window.location.origin) +
-          '/access-request'
+      expect(logOutSpy).not.toBeCalled();
+    });
+
+    it('should logout when config provided', () => {
+      const authState = {
+        keycloakWrapper: {
+          hasLoadedAllUserInfo: true,
+          systemRoles: [],
+          hasAccessRequest: true,
+
+          keycloak: {},
+          getUserIdentifier: jest.fn(),
+          hasSystemRole: jest.fn(),
+          getIdentitySource: jest.fn(),
+          username: 'testusername',
+          displayName: 'testdisplayname',
+          email: 'test@email.com',
+          firstName: 'testfirst',
+          lastName: 'testlast',
+          refresh: () => {}
+        }
+      };
+
+      const { getByText } = render(
+        <ConfigContext.Provider value={({} as unknown) as IConfig}>
+          <AuthStateContext.Provider value={authState}>
+            <Router history={history}>
+              <RequestSubmitted />
+            </Router>
+          </AuthStateContext.Provider>
+        </ConfigContext.Provider>
       );
+
+      fireEvent.click(getByText('Log Out'));
+
+      expect(logOutSpy).toBeCalledTimes(1);
     });
   });
 });

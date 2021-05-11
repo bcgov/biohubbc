@@ -10,7 +10,7 @@ exports[`PublicLayout renders correctly 1`] = `
       style="box-shadow: none;"
     >
       <div
-        class="MuiBox-root MuiBox-root-9 makeStyles-govHeader-2"
+        class="MuiBox-root MuiBox-root-10 makeStyles-govHeader-2"
       >
         <div
           class="MuiContainer-root makeStyles-govHeaderContainer-3 MuiContainer-maxWidthXl"
@@ -18,54 +18,50 @@ exports[`PublicLayout renders correctly 1`] = `
           <div
             class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-4 MuiToolbar-gutters"
           >
-            <a
-              aria-label="Go to BioHub Home"
-              class="makeStyles-brand-5"
-              href="/projects"
+            <div
+              class="MuiBox-root MuiBox-root-11"
             >
-              <picture>
-                <source
-                  media="(min-width: 1200px)"
-                  srcset="gov-bc-logo-horiz.png"
-                />
-                <source
-                  media="(min-width: 600px)"
-                  srcset="gov-bc-logo-vert.png"
-                />
-                <img
-                  alt="Government of British Columbia"
-                  src="gov-bc-logo-vert.png"
-                />
-              </picture>
-              BioHub
-            </a>
+              <a
+                aria-label="Go to BioHub Home"
+                class="makeStyles-brand-5"
+                href="/projects"
+              >
+                <picture>
+                  <source
+                    media="(min-width: 1200px)"
+                    srcset="gov-bc-logo-horiz.png"
+                  />
+                  <source
+                    media="(min-width: 600px)"
+                    srcset="gov-bc-logo-vert.png"
+                  />
+                  <img
+                    alt="Government of British Columbia"
+                    src="gov-bc-logo-vert.png"
+                  />
+                </picture>
+                BioHub
+              </a>
+            </div>
           </div>
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-10 makeStyles-mainNav-6"
+        class="MuiBox-root MuiBox-root-12 makeStyles-mainNav-7"
       >
         <div
-          class="MuiContainer-root makeStyles-mainNavContainer-7 MuiContainer-maxWidthXl"
+          class="MuiContainer-root makeStyles-mainNavContainer-8 MuiContainer-maxWidthXl"
         >
           <div
             aria-label="Main Navigation"
-            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-8 MuiToolbar-gutters"
+            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-9 MuiToolbar-gutters"
             role="navigation"
-          >
-            <a
-              color="inherit"
-              href="/projects"
-              id="menu_projects"
-            >
-              Projects
-            </a>
-          </div>
+          />
         </div>
       </div>
     </header>
     <main
-      class="MuiBox-root MuiBox-root-11"
+      class="MuiBox-root MuiBox-root-13"
     >
       <div>
         <p>
@@ -74,14 +70,14 @@ exports[`PublicLayout renders correctly 1`] = `
       </div>
     </main>
     <footer
-      class="makeStyles-appFooter-12"
+      class="makeStyles-appFooter-14"
     >
       <div
-        class="MuiContainer-root makeStyles-appFooterContainer-13 MuiContainer-maxWidthXl"
+        class="MuiContainer-root makeStyles-appFooterContainer-15 MuiContainer-maxWidthXl"
       >
         <div
           aria-label="Footer"
-          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-14 MuiToolbar-gutters"
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-16 MuiToolbar-gutters"
           role="navigation"
         >
           <ul>
