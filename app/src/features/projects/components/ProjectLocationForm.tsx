@@ -118,6 +118,11 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
       // The converter wants a buffer
       const zip: Buffer = event?.target?.result as Buffer;
 
+      // Exit out if no zip
+      if (!zip) {
+        return;
+      }
+
       // Run the conversion
       shp(zip).then((geojson: any) => {
         const features = (geojson as any).features;
