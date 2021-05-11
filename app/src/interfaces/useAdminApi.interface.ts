@@ -7,6 +7,7 @@ export interface IAccessRequestDataObject {
   company: string;
   regional_offices: number[];
   comments: string;
+  request_reason: string;
 }
 
 export interface IGetAccessRequestsListResponse {
