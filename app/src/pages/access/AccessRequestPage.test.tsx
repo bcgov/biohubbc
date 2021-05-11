@@ -41,7 +41,8 @@ const renderContainer = () => {
       displayName: 'testdisplayname',
       email: 'test@email.com',
       firstName: 'testfirst',
-      lastName: 'testlast'
+      lastName: 'testlast',
+      refresh: () => {}
     }
   };
 
@@ -115,7 +116,8 @@ describe('AccessRequestPage', () => {
           displayName: 'testdisplayname',
           email: 'test@email.com',
           firstName: 'testfirst',
-          lastName: 'testlast'
+          lastName: 'testlast',
+          refresh: () => {}
         }
       };
 
@@ -131,7 +133,9 @@ describe('AccessRequestPage', () => {
 
       fireEvent.click(getByText('Log out'));
 
-      expect(logOutSpy).not.toBeCalled();
+      waitFor(() => {
+        expect(logOutSpy).not.toBeCalled();
+      });
     });
 
     it('should logout when config provided', async () => {
@@ -169,7 +173,8 @@ describe('AccessRequestPage', () => {
           displayName: 'testdisplayname',
           email: 'test@email.com',
           firstName: 'testfirst',
-          lastName: 'testlast'
+          lastName: 'testlast',
+          refresh: () => {}
         }
       };
 
@@ -185,7 +190,9 @@ describe('AccessRequestPage', () => {
 
       fireEvent.click(getByText('Log out'));
 
-      expect(logOutSpy).toBeCalledTimes(1);
+      waitFor(() => {
+        expect(logOutSpy).toBeCalledTimes(1);
+      });
     });
   });
 
@@ -261,7 +268,8 @@ describe('AccessRequestPage', () => {
         displayName: '',
         email: '',
         firstName: '',
-        lastName: ''
+        lastName: '',
+        refresh: () => {}
       }
     };
 

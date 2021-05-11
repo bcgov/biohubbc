@@ -139,6 +139,8 @@ export const AccessRequestPage: React.FC = () => {
       }
       setIsSubmittingRequest(false);
 
+      keycloakWrapper?.refresh();
+
       history.push('/request-submitted');
     } catch (error) {
       const apiError = error as APIError;

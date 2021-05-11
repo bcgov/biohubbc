@@ -74,6 +74,14 @@ export interface IKeycloakWrapper {
   email: string | undefined;
   firstName: string | undefined;
   lastName: string | undefined;
+  /**
+   * Force this keycloak wrapper to refresh its data.
+   *
+   * Note: currently this only refreshes the `hasAccessRequest` property.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  refresh: () => void;
 }
 
 /**
@@ -241,6 +249,14 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     return keycloakUser?.lastName;
   };
 
+  const refresh = () => {
+    // Set to false to ensure child pages wait for keycloak wrapper to fully re-load
+    setHasLoadedAllUserInfo(false);
+
+    // refresh access requests
+    setShouldLoadAccessRequest(true);
+  };
+
   return {
     keycloak: keycloak,
     hasLoadedAllUserInfo,
@@ -253,7 +269,8 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     email: email(),
     displayName: displayName(),
     firstName: firstName(),
-    lastName: lastName()
+    lastName: lastName(),
+    refresh
   };
 }
 

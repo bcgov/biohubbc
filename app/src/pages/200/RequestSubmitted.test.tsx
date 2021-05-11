@@ -24,7 +24,8 @@ describe('RequestSubmitted', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -62,7 +63,8 @@ describe('RequestSubmitted', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -96,7 +98,8 @@ describe('RequestSubmitted', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -130,7 +133,8 @@ describe('RequestSubmitted', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -185,7 +189,8 @@ describe('RequestSubmitted', () => {
           displayName: 'testdisplayname',
           email: 'test@email.com',
           firstName: 'testfirst',
-          lastName: 'testlast'
+          lastName: 'testlast',
+          refresh: () => {}
         }
       };
 
@@ -219,7 +224,8 @@ describe('RequestSubmitted', () => {
           displayName: 'testdisplayname',
           email: 'test@email.com',
           firstName: 'testfirst',
-          lastName: 'testlast'
+          lastName: 'testlast',
+          refresh: () => {}
         }
       };
 

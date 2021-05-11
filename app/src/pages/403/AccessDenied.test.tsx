@@ -27,7 +27,8 @@ describe('NotFoundPage', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
@@ -61,7 +62,8 @@ describe('NotFoundPage', () => {
         displayName: 'testdisplayname',
         email: 'test@email.com',
         firstName: 'testfirst',
-        lastName: 'testlast'
+        lastName: 'testlast',
+        refresh: () => {}
       }
     };
 
