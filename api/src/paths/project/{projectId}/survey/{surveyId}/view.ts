@@ -78,7 +78,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getSurveyForView(): RequestHandler {
+export function getSurveyForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
