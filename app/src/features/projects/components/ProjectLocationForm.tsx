@@ -117,8 +117,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
       // Run the conversion
       shp(zip).then((geojson) => {
-        // TODO Send geojson to the map
-        console.log('geojson',geojson);
+        const features = (geojson as any).features;
+        setFieldValue('geometry', [...features, ...values.geometry]);
       }).catch((err) => {
         const msg = 'Failed to convert shapefile to geojson'
         console.error(msg,err);
