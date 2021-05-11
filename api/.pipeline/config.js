@@ -76,7 +76,6 @@ const phases = {
       `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
     certificateURL: config.certificateURL.dev,
-    siteminderLogoutURL: config.siteminderLogoutURL.dev,
     replicas: 1,
     maxReplicas: 2,
     logLevel: 'debug'
@@ -94,7 +93,6 @@ const phases = {
     host: staticUrlsAPI.test,
     env: 'test',
     certificateURL: config.certificateURL.test,
-    siteminderLogoutURL: config.siteminderLogoutURL.test,
     replicas: 3,
     maxReplicas: 5,
     logLevel: 'debug'
@@ -112,7 +110,6 @@ const phases = {
     host: staticUrlsAPI.prod,
     env: 'prod',
     certificateURL: config.certificateURL.prod,
-    siteminderLogoutURL: config.siteminderLogoutURL.prod,
     replicas: 3,
     maxReplicas: 6,
     logLevel: 'info'
