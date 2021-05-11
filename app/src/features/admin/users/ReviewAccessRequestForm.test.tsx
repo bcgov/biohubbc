@@ -48,13 +48,14 @@ describe('ReviewAccessRequestForm', () => {
         role: 2,
         company: 'test data company',
         regional_offices: [1],
-        comments: 'test data comment'
+        comments: 'test data comment',
+        request_reason: 'reason for request'
       }
     });
 
     await waitFor(() => {
       expect(getByText('test data name')).toBeVisible();
-      expect(getByText('test data username')).toBeVisible();
+      expect(getByText('IDIR/test data username')).toBeVisible();
       expect(getByText('test data email')).toBeVisible();
       expect(getByText('Office 1')).toBeVisible();
       expect(getByText('04/18/2021')).toBeVisible();
