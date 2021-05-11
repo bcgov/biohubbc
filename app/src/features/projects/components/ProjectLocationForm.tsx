@@ -24,6 +24,11 @@ import Link from '@material-ui/core/Link';
 const useStyles = makeStyles({
   bold: {
     fontWeight: 'bold'
+  },
+  uploadButton: {
+    border: '2px solid',
+    textTransform: 'capitalize',
+    fontWeight: 'bold'
   }
 });
 
@@ -117,11 +122,11 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
       // Run the conversion
       shp(zip)
-        .then((geojson) => {
+        .then((geojson: any) => {
           const features = (geojson as any).features;
           setFieldValue('geometry', [...features, ...values.geometry]);
         })
-        .catch((err) => {
+        .catch((err: any) => {
           const msg = 'Failed to convert shapefile to geojson';
           console.error(msg, err);
         });
@@ -198,7 +203,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
               color="primary"
               disabled={isLoading}
               onClick={() => setUploadError('')}
-              style={{ border: '2px solid', textTransform: 'capitalize', fontWeight: 'bold' }}>
+              className={classes.uploadButton}>
               <input key={uuidv4()} data-testid="file-upload" type="file" hidden onChange={(e) => handleKMLUpload(e)} />
               Upload KML
             </Button>
@@ -209,12 +214,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
                 size="medium"
                 color="primary"
                 disabled={isLoading}
-                style={{
-                  marginLeft: '1rem',
-                  border: '2px solid',
-                  textTransform: 'capitalize',
-                  fontWeight: 'bold'
-                }}>
+                className={classes.uploadButton}
+                style={{ marginLeft: '1rem' }}>
                 <input
                   key={uuidv4()}
                   data-testid="shp-upload"
