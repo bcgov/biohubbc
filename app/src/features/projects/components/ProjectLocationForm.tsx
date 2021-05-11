@@ -105,7 +105,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
     const file = e.target.files[0];
 
     // Back out if not a zipped file
-    if (file?.type !== 'application/zip') {
+    if (!file?.type.match(/zip/)) {
       return;
     }
 
