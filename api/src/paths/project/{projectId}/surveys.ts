@@ -67,7 +67,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getSurveyList(): RequestHandler {
+export function getSurveyList(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -117,22 +117,24 @@ function getSurveyList(): RequestHandler {
  * @return {any[]} An array of survey data
  */
 export function _extractSurveys(rows: any[]): any[] {
+  if (!rows || !rows.length) {
+    return [];
+  }
+
   const surveys: any[] = [];
 
-  if (rows != null) {
-    rows.forEach((row) => {
-      const survey: any = {
-        id: row.id,
-        name: row.name,
-        species: row.species,
-        start_date: row.start_date,
-        end_date: row.end_date,
-        status_name: 'Unpublished'
-      };
+  rows.forEach((row) => {
+    const survey: any = {
+      id: row.id,
+      name: row.name,
+      species: row.species,
+      start_date: row.start_date,
+      end_date: row.end_date,
+      status_name: 'Unpublished'
+    };
 
-      surveys.push(survey);
-    });
-  }
+    surveys.push(survey);
+  });
 
   return surveys;
 }
