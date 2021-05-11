@@ -33,11 +33,6 @@ const LogInPage: React.FC = () => {
       return <Redirect to={{ pathname: '/request-submitted' }} />;
     }
 
-    if (!keycloakWrapper.systemRoles.length) {
-      // User has no roles
-      return <Redirect to={{ pathname: '/access-request' }} />;
-    }
-
     // User has a role
     return <Redirect to={{ pathname: '/projects' }} />;
   }
