@@ -47,4 +47,29 @@ describe('Agreements Form', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('renders correctly when errors exist', () => {
+    const { asFragment } = render(
+      <Formik
+        initialValues={agreementsFilledValues}
+        validationSchema={AgreementsYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        initialErrors={{
+          sedis_procedures_accepted: 'error on sedis field',
+          foippa_requirements_accepted: 'error on foippa field'
+        }}
+        initialTouched={{
+          sedis_procedures_accepted: true,
+          foippa_requirements_accepted: true
+        }}
+        onSubmit={async (values) => {
+          handleSaveAndNext(values);
+        }}>
+        {() => <AgreementsForm />}
+      </Formik>
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

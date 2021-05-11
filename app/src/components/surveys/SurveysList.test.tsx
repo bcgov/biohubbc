@@ -1,11 +1,15 @@
 import { render } from '@testing-library/react';
-import { IGetProjectSurvey } from 'interfaces/useProjectApi.interface';
+import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import SurveysList from './SurveysList';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
+
+const history = createMemoryHistory();
 
 describe('SurveysList', () => {
   it('renders correctly with surveys', () => {
-    const surveysList: IGetProjectSurvey[] = [
+    const surveysList: IGetProjectSurveysListResponse[] = [
       {
         id: 1,
         name: 'Moose Survey 1',
@@ -24,7 +28,11 @@ describe('SurveysList', () => {
       }
     ];
 
-    const { getByText, queryByText } = render(<SurveysList surveysList={surveysList} />);
+    const { getByText, queryByText } = render(
+      <Router history={history}>
+        <SurveysList projectId={1} surveysList={surveysList} />
+      </Router>
+    );
 
     expect(queryByText('No Surveys')).toBeNull();
     expect(getByText('Moose Survey 1')).toBeInTheDocument();
@@ -32,7 +40,11 @@ describe('SurveysList', () => {
   });
 
   it('renders correctly with no surveys', () => {
-    const { getByText } = render(<SurveysList surveysList={[]} />);
+    const { getByText } = render(
+      <Router history={history}>
+        <SurveysList projectId={1} surveysList={[]} />
+      </Router>
+    );
 
     expect(getByText('No Surveys')).toBeInTheDocument();
   });

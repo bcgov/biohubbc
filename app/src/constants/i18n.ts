@@ -6,6 +6,14 @@ export const CreateProjectI18N = {
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateSurveyI18N = {
+  cancelTitle: 'Cancel Create Survey',
+  cancelText: 'Are you sure you want to cancel?',
+  createErrorTitle: 'Error Creating Survey',
+  createErrorText:
+    'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const UploadProjectAttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
@@ -46,6 +54,13 @@ export const EditGeneralInformationI18N = {
   editErrorTitle: 'Error Editing General Information',
   editErrorText:
     'An error has occurred while attempting to edit your general information, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditSurveyGeneralInformationI18N = {
+  editTitle: 'Edit Survey General Information',
+  editErrorTitle: 'Error Editing Survey General Information',
+  editErrorText:
+    'An error has occurred while attempting to edit your survey general information, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditLocationBoundaryI18N = {

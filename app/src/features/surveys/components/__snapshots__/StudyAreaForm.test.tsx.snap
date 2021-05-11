@@ -58,7 +58,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="park"
           role="combobox"
         >
@@ -99,7 +99,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -115,6 +115,31 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     >
                       <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
                       />
                     </svg>
                   </span>
@@ -144,7 +169,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="management_unit"
           role="combobox"
         >
@@ -185,7 +210,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -201,6 +226,31 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     >
                       <path
                         d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
                       />
                     </svg>
                   </span>
@@ -288,7 +338,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="park"
           role="combobox"
         >
@@ -322,7 +372,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Park 1"
+                value="Park name 1"
               />
               <div
                 class="MuiAutocomplete-endAdornment"
@@ -352,6 +402,31 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
@@ -374,7 +449,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       >
         <div
           aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="management_unit"
           role="combobox"
         >
@@ -408,7 +483,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 required=""
                 spellcheck="false"
                 type="text"
-                value="Management Unit 2"
+                value="Management unit 2"
               />
               <div
                 class="MuiAutocomplete-endAdornment"
@@ -438,6 +513,31 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     class="MuiTouchRipple-root"
                   />
                 </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
               </div>
               <fieldset
                 aria-hidden="true"
@@ -452,6 +552,307 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 </legend>
               </fieldset>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`Study Area Form renders correctly when errors exist 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+            data-shrink="true"
+            for="survey_area_name"
+            id="survey_area_name-label"
+          >
+            Survey Area Name
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+          >
+            <input
+              aria-describedby="survey_area_name-helper-text"
+              aria-invalid="true"
+              class="MuiInputBase-input MuiOutlinedInput-input"
+              id="survey_area_name"
+              name="survey_area_name"
+              required=""
+              type="text"
+              value="Study area name"
+            />
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+              >
+                <span>
+                  Survey Area Name *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+          <p
+            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+            id="survey_area_name-helper-text"
+          >
+            error on survey area name field
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          aria-expanded="false"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
+          role="combobox"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
+              for="park"
+              id="park-label"
+            >
+              Park
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-describedby="park-helper-text"
+                aria-invalid="true"
+                autocapitalize="none"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                id="park"
+                required=""
+                spellcheck="false"
+                type="text"
+                value="Park name 1"
+              />
+              <div
+                class="MuiAutocomplete-endAdornment"
+              >
+                <button
+                  aria-label="Clear"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  tabindex="-1"
+                  title="Clear"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                >
+                  <span>
+                    Park *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              id="park-helper-text"
+            >
+              error on park field
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          aria-expanded="false"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
+          role="combobox"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
+              for="management_unit"
+              id="management_unit-label"
+            >
+              Management Unit
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-describedby="management_unit-helper-text"
+                aria-invalid="true"
+                autocapitalize="none"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                id="management_unit"
+                required=""
+                spellcheck="false"
+                type="text"
+                value="Management unit 2"
+              />
+              <div
+                class="MuiAutocomplete-endAdornment"
+              >
+                <button
+                  aria-label="Clear"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  tabindex="-1"
+                  title="Clear"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                >
+                  <span>
+                    Management Unit *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              id="management_unit-helper-text"
+            >
+              error on management unit field
+            </p>
           </div>
         </div>
       </div>

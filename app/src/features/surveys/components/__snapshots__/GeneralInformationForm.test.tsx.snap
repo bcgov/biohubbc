@@ -156,6 +156,7 @@ exports[`General Information Form renders correctly the empty component correctl
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="species"
           role="combobox"
         >
           <div
@@ -310,7 +311,7 @@ exports[`General Information Form renders correctly the empty component correctl
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-6"
         >
           <p
             class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
@@ -462,10 +463,10 @@ exports[`General Information Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
               >
                 <span>
                   Survey Name *
@@ -515,10 +516,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     Start Date *
@@ -558,10 +559,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     End Date
@@ -578,14 +579,15 @@ exports[`General Information Form renders correctly the filled component correct
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="species"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
               for="species"
               id="species-label"
             >
@@ -610,14 +612,14 @@ exports[`General Information Form renders correctly the filled component correct
                 required=""
                 spellcheck="false"
                 type="text"
-                value=""
+                value="Species code"
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -668,10 +670,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     Species *
@@ -717,10 +719,10 @@ exports[`General Information Form renders correctly the filled component correct
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
               >
                 <span>
                   Purpose of Survey *
@@ -734,10 +736,10 @@ exports[`General Information Form renders correctly the filled component correct
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-14"
+          class="MuiBox-root MuiBox-root-12"
         >
           <p
-            class="MuiTypography-root makeStyles-bold-8 MuiTypography-body1"
+            class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
           >
             Lead biologist for this survey
           </p>
@@ -780,10 +782,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     First Name *
@@ -827,10 +829,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     Last Name *
@@ -838,6 +840,480 @@ exports[`General Information Form renders correctly the filled component correct
                 </legend>
               </fieldset>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`General Information Form renders correctly when errors exist 1`] = `
+<DocumentFragment>
+  <form>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+            data-shrink="true"
+            for="survey_name"
+            id="survey_name-label"
+          >
+            Survey Name
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+          >
+            <input
+              aria-describedby="survey_name-helper-text"
+              aria-invalid="true"
+              class="MuiInputBase-input MuiOutlinedInput-input"
+              id="survey_name"
+              name="survey_name"
+              required=""
+              type="text"
+              value="survey name"
+            />
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+              >
+                <span>
+                  Survey Name *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+          <p
+            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+            id="survey_name-helper-text"
+          >
+            error on survey name field
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+              data-shrink="true"
+              for="start_date"
+              id="start_date-label"
+            >
+              Start Date
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            >
+              <input
+                aria-describedby="start_date-helper-text"
+                aria-invalid="true"
+                class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="start-date"
+                id="start_date"
+                max="2100-12-31"
+                min="1900-01-01"
+                name="start_date"
+                required=""
+                type="date"
+                value="2021-04-09 11:53:53"
+              />
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                >
+                  <span>
+                    Start Date *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
+              id="start_date-helper-text"
+            >
+              error on start date field
+            </p>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
+              data-shrink="true"
+              for="end_date"
+              id="end_date-label"
+            >
+              End Date
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            >
+              <input
+                aria-describedby="end_date-helper-text"
+                aria-invalid="true"
+                class="MuiInputBase-input MuiOutlinedInput-input"
+                data-testid="end-date"
+                id="end_date"
+                max="2100-12-31"
+                min="1900-01-01"
+                name="end_date"
+                type="date"
+                value="2021-05-10 11:53:53"
+              />
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                >
+                  <span>
+                    End Date
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
+              id="end_date-helper-text"
+            >
+              error on end date field
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          aria-expanded="false"
+          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="species"
+          role="combobox"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
+              for="species"
+              id="species-label"
+            >
+              Species
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+            >
+              <input
+                aria-autocomplete="list"
+                aria-describedby="species-helper-text"
+                aria-invalid="true"
+                autocapitalize="none"
+                autocomplete="off"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                id="species"
+                required=""
+                spellcheck="false"
+                type="text"
+                value="Species code"
+              />
+              <div
+                class="MuiAutocomplete-endAdornment"
+              >
+                <button
+                  aria-label="Clear"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  tabindex="-1"
+                  title="Clear"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  aria-label="Open"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                  tabindex="-1"
+                  title="Open"
+                  type="button"
+                >
+                  <span
+                    class="MuiIconButton-label"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M7 10l5 5 5-5z"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                >
+                  <span>
+                    Species *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              id="species-helper-text"
+            >
+              error on species field
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+            data-shrink="true"
+            for="survey_purpose"
+            id="survey_purpose-label"
+          >
+            Purpose of Survey
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+          >
+            <textarea
+              aria-describedby="survey_purpose-helper-text"
+              aria-invalid="true"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+              id="survey_purpose"
+              name="survey_purpose"
+              required=""
+              rows="4"
+            >
+              purpose
+            </textarea>
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+              >
+                <span>
+                  Purpose of Survey *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+          <p
+            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+            id="survey_purpose-helper-text"
+          >
+            error on survey purpose field
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-18"
+        >
+          <p
+            class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
+          >
+            Lead biologist for this survey
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
+              for="biologist_first_name"
+              id="biologist_first_name-label"
+            >
+              First Name
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            >
+              <input
+                aria-describedby="biologist_first_name-helper-text"
+                aria-invalid="true"
+                class="MuiInputBase-input MuiOutlinedInput-input"
+                id="biologist_first_name"
+                name="biologist_first_name"
+                required=""
+                type="text"
+                value="first"
+              />
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                >
+                  <span>
+                    First Name *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              id="biologist_first_name-helper-text"
+            >
+              error on biologist first name field
+            </p>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+        >
+          <div
+            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          >
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+              data-shrink="true"
+              for="biologist_last_name"
+              id="biologist_last_name-label"
+            >
+              Last Name
+              <span
+                aria-hidden="true"
+                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
+              >
+                 *
+              </span>
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+            >
+              <input
+                aria-describedby="biologist_last_name-helper-text"
+                aria-invalid="true"
+                class="MuiInputBase-input MuiOutlinedInput-input"
+                id="biologist_last_name"
+                name="biologist_last_name"
+                required=""
+                type="text"
+                value="last"
+              />
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                >
+                  <span>
+                    Last Name *
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              id="biologist_last_name-helper-text"
+            >
+              error on biologist last name field
+            </p>
           </div>
         </div>
       </div>

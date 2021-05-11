@@ -83,8 +83,6 @@ function getSingleDraft(): RequestHandler {
 
       const draftResult = (draftResponse && draftResponse.rows && draftResponse.rows[0]) || null;
 
-      defaultLog.debug('draftResult:', draftResult);
-
       return res.status(200).json(draftResult);
     } catch (error) {
       defaultLog.debug({ label: 'getSingleDraft', message: 'error', error });

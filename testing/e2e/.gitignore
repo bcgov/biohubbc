@@ -1,0 +1,10 @@
+cypress.env.json
+node_modules
+examples/
+videos/
+screenshots/
+.vscode
+.eslintrc.json
+.prettierrc
+cypress/fixtures/users/user.json
+**/results/**

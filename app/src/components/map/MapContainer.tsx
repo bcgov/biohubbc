@@ -60,7 +60,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       id={mapId}
       center={[55, -128]}
       zoom={5}
-      scrollWheelZoom={true}>
+      scrollWheelZoom={false}>
       <MapBounds bounds={bounds} />
 
       <FeatureGroup>

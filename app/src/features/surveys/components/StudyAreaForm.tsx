@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -24,8 +24,8 @@ export const StudyAreaYupSchema = yup.object().shape({
 });
 
 export interface IStudyAreaFormProps {
-  park: string[];
-  management_unit: string[];
+  park: IAutocompleteFieldOption<string>[];
+  management_unit: IAutocompleteFieldOption<string>[];
 }
 
 /**
@@ -34,10 +34,10 @@ export interface IStudyAreaFormProps {
  * @return {*}
  */
 const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IStudyAreaForm>();
+  const { values, touched, errors, handleChange } = useFormikContext<IStudyAreaForm>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -54,21 +54,13 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField
-            id="park"
-            name="Park"
-            label="Park"
-            value={values.park}
-            options={props.park}
-            required={true}
-          />
+          <AutocompleteField id="park" name="park" label="Park" options={props.park} required={true} />
         </Grid>
         <Grid item xs={12}>
           <AutocompleteField
             id="management_unit"
-            name="Management Unit"
+            name="management_unit"
             label="Management Unit"
-            value={values.management_unit}
             options={props.management_unit}
             required={true}
           />
