@@ -40,7 +40,10 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
 
   const regional_offices = props.request.data.regional_offices
     ?.map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
-    .join(', ');
+    .join(', ') || 'Not Applicable';
+
+  const company = props.request.data.company || 'Not Applicable';
+  const request_reason = props.request.data.request_reason || 'Not Applicable';
 
   return (
     <Box>
@@ -63,7 +66,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Username
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.username}
+              {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -84,6 +87,15 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Company
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {company}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Request Date
               </Typography>
               <Typography component="dd" variant="body1">
@@ -95,7 +107,16 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Additional Comments
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.comments}
+                {props.request.data.comments  || 'Not Applicable'}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Reason
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {request_reason}
               </Typography>
             </Grid>
           </Grid>
