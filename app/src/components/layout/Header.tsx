@@ -126,7 +126,7 @@ const Header: React.FC = () => {
 
             logOut(config);
           }}
-          id="menu_log_out">
+          data-testid="menu_log_out">
           Log Out
         </Link>
       </Box>

@@ -48,7 +48,7 @@ describe('RequestSubmitted', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('redirects to `/` when user has at least 1 system role', () => {
+  it('redirects to `/projects` when user has at least 1 system role', () => {
     const authState = {
       keycloakWrapper: {
         hasLoadedAllUserInfo: true,
@@ -80,7 +80,7 @@ describe('RequestSubmitted', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(history.location.pathname).toEqual('/');
+    expect(history.location.pathname).toEqual('/projects');
   });
 
   it('redirects to `/` when user has no pending access request', () => {

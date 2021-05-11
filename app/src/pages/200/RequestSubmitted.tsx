@@ -23,7 +23,7 @@ const RequestSubmitted = () => {
 
   if (keycloakWrapper?.systemRoles.length) {
     // User already has a role
-    return <Redirect to={{ pathname: '/' }} />;
+    return <Redirect to={{ pathname: '/projects' }} />;
   }
 
   if (!keycloakWrapper.hasAccessRequest) {

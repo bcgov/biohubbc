@@ -49,7 +49,8 @@ const LogInPage: React.FC = () => {
             type="submit"
             size="large"
             variant="contained"
-            color="primary">
+            color="primary"
+            data-testid="login">
             Log In
           </Button>
         </Box>
