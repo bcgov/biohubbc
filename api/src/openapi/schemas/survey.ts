@@ -60,7 +60,7 @@ export const surveyCreatePostRequestObject = {
     proprietor_name: {
       type: 'string'
     },
-    category_rational: {
+    category_rationale: {
       type: 'string'
     },
     first_nations_id: {
@@ -93,4 +93,32 @@ export const surveyViewGetResponseObject = {
   title: 'Survey get response object, for view purposes',
   type: 'object',
   properties: {}
+};
+
+/**
+ * Response object for survey update GET request
+ */
+export const surveyUpdateGetResponseObject = {
+  title: 'Survey get response object, for update purposes',
+  type: 'object',
+  properties: {}
+};
+
+/**
+ * Request object for survey update PUT request
+ */
+export const surveyUpdatePutRequestObject = {
+  title: 'Survey Put Object',
+  type: 'object',
+  properties: {
+    survey_name: { type: 'string' },
+    survey_purpose: { type: 'string' },
+    species: { type: 'string' },
+    start_date: { type: 'string' },
+    end_date: { type: 'string' },
+    biologist_first_name: { type: 'string' },
+    biologist_last_name: { type: 'string' },
+    survey_area_name: { type: 'string' },
+    revision_count: { type: 'number' }
+  }
 };

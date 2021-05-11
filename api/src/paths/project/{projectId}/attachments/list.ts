@@ -93,8 +93,6 @@ function getAttachments(): RequestHandler {
       const getAttachmentsData =
         (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
 
-      defaultLog.debug('Attachments Data:', getAttachmentsData);
-
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
       defaultLog.debug({ label: 'getProjectAttachments', message: 'error', error });

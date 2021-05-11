@@ -218,7 +218,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

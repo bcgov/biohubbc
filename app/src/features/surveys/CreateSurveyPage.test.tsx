@@ -78,7 +78,7 @@ describe('CreateSurveyPage', () => {
       history.push('/home');
       history.push('/projects/1/survey/create');
 
-      const { getByText, getAllByText } = render(
+      const { getByText, getAllByText, getByTestId } = render(
         <Router history={history}>
           <CreateSurveyPage />
         </Router>
@@ -95,7 +95,7 @@ describe('CreateSurveyPage', () => {
         expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
       });
 
-      fireEvent.click(getAllByText('Yes')[2]);
+      fireEvent.click(getByTestId('yes-button'));
 
       await waitFor(() => {
         expect(history.location.pathname).toEqual('/projects/1/surveys');
@@ -109,7 +109,7 @@ describe('CreateSurveyPage', () => {
         species: [{ id: 1, name: 'species 1' }]
       } as any);
 
-      const { getAllByText, getByText, getAllByRole } = render(
+      const { getAllByText, getByText, getAllByRole, getByTestId } = render(
         <MemoryRouter initialEntries={['?id=1']}>
           <CreateSurveyPage />
         </MemoryRouter>
@@ -126,7 +126,7 @@ describe('CreateSurveyPage', () => {
         expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
       });
 
-      fireEvent.click(getAllByText('No')[2]);
+      fireEvent.click(getByTestId('no-button'));
 
       await waitFor(() => {
         expect(getAllByText('Create Survey').length).toEqual(2);

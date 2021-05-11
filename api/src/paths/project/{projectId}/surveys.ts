@@ -20,6 +20,16 @@ GET.apiDoc = {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    }
+  ],
   responses: {
     200: {
       description: 'Survey response object.',
@@ -59,10 +69,14 @@ GET.apiDoc = {
  */
 function getSurveyList(): RequestHandler {
   return async (req, res) => {
+    if (!req.params.projectId) {
+      throw new HTTP400('Missing required path param `projectId`');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyListSQLStatement = getSurveyListSQL();
+      const getSurveyListSQLStatement = getSurveyListSQL(Number(req.params.projectId));
 
       if (!getSurveyListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

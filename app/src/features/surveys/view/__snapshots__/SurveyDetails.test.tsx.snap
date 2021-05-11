@@ -29,10 +29,10 @@ exports[`SurveyDetails renders correctly 1`] = `
             General Information
           </h3>
           <button
-            aria-label="Edit General Information"
+            aria-label="Edit Survey General Information"
             class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
             tabindex="0"
-            title="Edit General Information"
+            title="Edit Survey General Information"
             type="button"
           >
             <span
@@ -165,6 +165,77 @@ exports[`SurveyDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3"
           >
+            Study Area
+          </h3>
+          <button
+            aria-label="Edit Study Area"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            tabindex="0"
+            title="Edit Study Area"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Edit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Survey Area Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                study area
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+  </div>
+  <div
+    class="MuiPaper-root MuiBox-root MuiBox-root-13 MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <section
+      class="MuiBox-root MuiBox-root-14 makeStyles-surveyDetailsSection-1"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-15"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-16"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
+          >
             Proprietary Data
           </h3>
           <button
@@ -248,15 +319,15 @@ exports[`SurveyDetails renders correctly 1`] = `
               class="MuiGrid-root MuiGrid-item"
             >
               <div
-                class="MuiBox-root MuiBox-root-13"
+                class="MuiBox-root MuiBox-root-17"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-14"
+                  class="MuiBox-root MuiBox-root-18"
                 >
                   <dt
                     class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
                   >
-                    Category Rational
+                    Category Rationale
                   </dt>
                 </div>
                 <p
