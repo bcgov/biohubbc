@@ -31,7 +31,7 @@ export class PostSurveyObject {
     this.species = obj?.species || null;
     this.start_date = obj?.start_date || null;
     this.survey_area_name = obj?.survey_area_name || null;
-    this.survey_data_proprietary = obj?.survey_data_proprietary || null;
+    this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
     this.survey_name = obj?.survey_name || null;
     this.survey_purpose = obj?.survey_purpose || null;
     this.survey_proprietor =
@@ -57,7 +57,6 @@ export class PostSurveyProprietorData {
 
     this.prt_id = obj?.proprietary_data_category || null;
     this.fn_id = obj?.first_nations_id || null;
-
     this.rationale = obj?.category_rationale || null;
     this.proprietor_name = (!obj?.first_nations_id && obj?.proprietor_name) || null;
     this.disa_required = obj?.data_sharing_agreement_required === 'true' || false;
