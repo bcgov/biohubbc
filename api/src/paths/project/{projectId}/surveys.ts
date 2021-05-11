@@ -67,7 +67,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getSurveyList(): RequestHandler {
+export function getSurveyList(): RequestHandler {
   return async (req, res) => {
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
