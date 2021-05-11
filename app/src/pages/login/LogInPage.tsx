@@ -46,7 +46,7 @@ const LogInPage: React.FC = () => {
     <Container>
       <Box pt={6} textAlign="center">
         <Icon path={mdiDoorClosedLock} size={2} className={classes.icon} />
-        <h1>Logged Out</h1>
+        <h1>Welcome to BioHub</h1>
         <Typography>{`You must log in to access this application.`}</Typography>
         <Box pt={4}>
           <Button
