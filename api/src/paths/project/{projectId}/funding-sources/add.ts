@@ -15,7 +15,7 @@ export const POST: Operation = [addFundingSource()];
 
 POST.apiDoc = addFundingSourceApiDocObject('Add a funding source of a project.', 'new project funding source id');
 
-function addFundingSource(): RequestHandler {
+export function addFundingSource(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'Add project funding source',
@@ -45,7 +45,7 @@ function addFundingSource(): RequestHandler {
       );
 
       if (!addFundingSourceSQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
+        throw new HTTP400('Failed to build addFundingSourceSQLStatement');
       }
 
       const response = await connection.query(addFundingSourceSQLStatement.text, addFundingSourceSQLStatement.values);
@@ -58,7 +58,7 @@ function addFundingSource(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(result.id);
+      return res.status(200).json({ id: result.id });
     } catch (error) {
       defaultLog.error({ label: 'addFundingSource', message: 'error', error });
       await connection.rollback();
