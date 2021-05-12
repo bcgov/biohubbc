@@ -822,6 +822,327 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </div>
                   </div>
                 </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                >
+                  <p
+                    class="MuiTypography-root makeStyles-bold-34 MuiTypography-body1"
+                  >
+                    Study Area Boundary
+                  </p>
+                  <div
+                    class="MuiBox-root MuiBox-root-36"
+                  >
+                    <label
+                      aria-disabled="false"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-35 MuiButton-outlinedPrimary"
+                      role="button"
+                      tabindex="0"
+                      title="Will only accept kml files, kmz files not accepted."
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <input
+                          data-testid="file-upload"
+                          hidden=""
+                          type="file"
+                        />
+                        Upload KML
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </label>
+                    <label
+                      aria-disabled="false"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-35 MuiButton-outlinedPrimary"
+                      role="button"
+                      style="margin-left: 1rem;"
+                      tabindex="0"
+                      title="Will only accept zipped shapefiles of a known projection."
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <input
+                          data-testid="shp-upload"
+                          hidden=""
+                          type="file"
+                        />
+                        Upload Shapefile
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </label>
+                  </div>
+                  <div
+                    class="MuiBox-root MuiBox-root-37"
+                  />
+                  <div
+                    class="MuiBox-root MuiBox-root-38"
+                  >
+                    <div
+                      class="leaflet-container leaflet-grab leaflet-touch-drag"
+                      id="study_area_form_map"
+                      style="height: 100%; position: relative;"
+                      tabindex="0"
+                    >
+                      <div
+                        class="leaflet-pane leaflet-map-pane"
+                        style="left: 0px; top: 0px;"
+                      >
+                        <div
+                          class="leaflet-pane leaflet-tile-pane"
+                        >
+                          <div
+                            class="leaflet-layer "
+                            style="z-index: 1;"
+                          >
+                            <div
+                              class="leaflet-tile-container leaflet-zoom-animated"
+                              style="z-index: 18; left: 0px; top: 0px;"
+                            >
+                              <img
+                                alt=""
+                                class="leaflet-tile"
+                                role="presentation"
+                                src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                                style="width: 256px; height: 256px; left: -159px; top: -31px;"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="leaflet-pane leaflet-shadow-pane"
+                        />
+                        <div
+                          class="leaflet-pane leaflet-overlay-pane"
+                        />
+                        <div
+                          class="leaflet-pane leaflet-marker-pane"
+                        />
+                        <div
+                          class="leaflet-pane leaflet-tooltip-pane"
+                        />
+                        <div
+                          class="leaflet-pane leaflet-popup-pane"
+                        />
+                      </div>
+                      <div
+                        class="leaflet-control-container"
+                      >
+                        <div
+                          class="leaflet-top leaflet-left"
+                        >
+                          <div
+                            class="leaflet-control-zoom leaflet-bar leaflet-control"
+                          >
+                            <a
+                              aria-label="Zoom in"
+                              class="leaflet-control-zoom-in"
+                              href="#"
+                              role="button"
+                              title="Zoom in"
+                            >
+                              +
+                            </a>
+                            <a
+                              aria-label="Zoom out"
+                              class="leaflet-control-zoom-out"
+                              href="#"
+                              role="button"
+                              title="Zoom out"
+                            >
+                              −
+                            </a>
+                          </div>
+                        </div>
+                        <div
+                          class="leaflet-top leaflet-right"
+                        >
+                          <div
+                            class="leaflet-draw leaflet-control"
+                          >
+                            <div
+                              class="leaflet-draw-section"
+                            >
+                              <div
+                                class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
+                              >
+                                <a
+                                  class="leaflet-draw-draw-polyline"
+                                  href="#"
+                                  title="Draw a polyline"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a polyline
+                                  </span>
+                                </a>
+                                <a
+                                  class="leaflet-draw-draw-polygon"
+                                  href="#"
+                                  title="Draw a polygon"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a polygon
+                                  </span>
+                                </a>
+                                <a
+                                  class="leaflet-draw-draw-rectangle"
+                                  href="#"
+                                  title="Draw a rectangle"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a rectangle
+                                  </span>
+                                </a>
+                                <a
+                                  class="leaflet-draw-draw-marker"
+                                  href="#"
+                                  title="Draw a marker"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a marker
+                                  </span>
+                                </a>
+                                <a
+                                  class="leaflet-draw-draw-circlemarker"
+                                  href="#"
+                                  title="Draw a circlemarker"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Draw a circlemarker
+                                  </span>
+                                </a>
+                              </div>
+                              <ul
+                                class="leaflet-draw-actions"
+                              />
+                            </div>
+                            <div
+                              class="leaflet-draw-section"
+                            >
+                              <div
+                                class="leaflet-draw-toolbar leaflet-bar"
+                              >
+                                <a
+                                  class="leaflet-draw-edit-edit leaflet-disabled"
+                                  href="#"
+                                  title="No layers to edit"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Edit layers
+                                  </span>
+                                </a>
+                                <a
+                                  class="leaflet-draw-edit-remove leaflet-disabled"
+                                  href="#"
+                                  title="No layers to delete"
+                                >
+                                  <span
+                                    class="sr-only"
+                                  >
+                                    Delete layers
+                                  </span>
+                                </a>
+                              </div>
+                              <ul
+                                class="leaflet-draw-actions"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="leaflet-bottom leaflet-left"
+                        />
+                        <div
+                          class="leaflet-bottom leaflet-right"
+                        >
+                          <div
+                            aria-haspopup="true"
+                            class="leaflet-control-layers leaflet-control"
+                          >
+                            <a
+                              class="leaflet-control-layers-toggle"
+                              href="#"
+                              title="Layers"
+                            />
+                            <section
+                              class="leaflet-control-layers-list"
+                            >
+                              <div
+                                class="leaflet-control-layers-base"
+                              >
+                                <label>
+                                  <div>
+                                    <input
+                                      checked="checked"
+                                      class="leaflet-control-layers-selector"
+                                      name="leaflet-base-layers_43"
+                                      type="radio"
+                                    />
+                                    <span>
+                                       Esri Imagery
+                                    </span>
+                                  </div>
+                                </label>
+                                <label>
+                                  <div>
+                                    <input
+                                      class="leaflet-control-layers-selector"
+                                      name="leaflet-base-layers_43"
+                                      type="radio"
+                                    />
+                                    <span>
+                                       BC Government
+                                    </span>
+                                  </div>
+                                </label>
+                              </div>
+                              <div
+                                class="leaflet-control-layers-separator"
+                                style="display: none;"
+                              />
+                              <div
+                                class="leaflet-control-layers-overlays"
+                              />
+                            </section>
+                          </div>
+                          <div
+                            class="leaflet-control-attribution leaflet-control"
+                          >
+                            <a
+                              href="https://leafletjs.com"
+                              title="A JS library for interactive maps"
+                            >
+                              Leaflet
+                            </a>
+                             | © 
+                            <a
+                              href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+                            >
+                              ESRI Basemap
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
@@ -830,13 +1151,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-34"
+          class="MuiBox-root MuiBox-root-39"
         >
           <div
-            class="MuiBox-root MuiBox-root-35"
+            class="MuiBox-root MuiBox-root-40"
           >
             <div
-              class="MuiBox-root MuiBox-root-36"
+              class="MuiBox-root MuiBox-root-41"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -845,7 +1166,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-37"
+              class="MuiBox-root MuiBox-root-42"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -855,7 +1176,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-38"
+            class="MuiBox-root MuiBox-root-43"
           >
             <form>
               <div
@@ -868,7 +1189,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     class="MuiFormControl-root"
                   >
                     <legend
-                      class="MuiFormLabel-root makeStyles-legend-39 Mui-required"
+                      class="MuiFormLabel-root makeStyles-legend-44 Mui-required"
                     >
                       Is the data captured in this survey proprietary?
                       <span
@@ -879,7 +1200,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </span>
                     </legend>
                     <div
-                      class="MuiBox-root MuiBox-root-41"
+                      class="MuiBox-root MuiBox-root-46"
                     >
                       <div
                         aria-label="Survey Data Proprietary"
@@ -891,21 +1212,21 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-43 Mui-checked MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-47 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-48 Mui-checked MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
                                 checked=""
-                                class="PrivateSwitchBase-input-45"
+                                class="PrivateSwitchBase-input-50"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="false"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-46 PrivateRadioButtonIcon-checked-48"
+                                class="PrivateRadioButtonIcon-root-51 PrivateRadioButtonIcon-checked-53"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -919,7 +1240,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-47"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-52"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -944,20 +1265,20 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-47 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
-                                class="PrivateSwitchBase-input-45"
+                                class="PrivateSwitchBase-input-50"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="true"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-46"
+                                class="PrivateRadioButtonIcon-root-51"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -971,7 +1292,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-47"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-52"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -1006,13 +1327,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-49"
+          class="MuiBox-root MuiBox-root-54"
         >
           <div
-            class="MuiBox-root MuiBox-root-50"
+            class="MuiBox-root MuiBox-root-55"
           >
             <div
-              class="MuiBox-root MuiBox-root-51"
+              class="MuiBox-root MuiBox-root-56"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -1021,7 +1342,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-52"
+              class="MuiBox-root MuiBox-root-57"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1031,7 +1352,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-53"
+            class="MuiBox-root MuiBox-root-58"
           >
             <form>
               <div
@@ -1041,7 +1362,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-bold-54 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-bold-59 MuiTypography-body1"
                   >
                     Species and Ecosystems Data and Information Security (SEDIS) Procedures
                   </p>
@@ -1057,13 +1378,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-47 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-45"
+                            class="PrivateSwitchBase-input-50"
                             data-indeterminate="false"
                             name="sedis_procedures_accepted"
                             type="checkbox"
@@ -1099,10 +1420,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-55"
+                    class="MuiBox-root MuiBox-root-60"
                   >
                     <p
-                      class="MuiTypography-root makeStyles-bold-54 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-bold-59 MuiTypography-body1"
                     >
                       Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
                     </p>
@@ -1119,13 +1440,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-42 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-47 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-45"
+                            class="PrivateSwitchBase-input-50"
                             data-indeterminate="false"
                             name="foippa_requirements_accepted"
                             type="checkbox"
@@ -1165,7 +1486,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-56"
+          class="MuiBox-root MuiBox-root-61"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-7 MuiButton-containedPrimary"

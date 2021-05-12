@@ -102,10 +102,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-48 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-46 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-50"
+                  class="PrivateNotchedOutline-legendLabelled-48"
                 >
                   <span>
                     Regions *
@@ -116,7 +116,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-52"
+          class="MuiBox-root MuiBox-root-50"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -151,10 +151,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-48 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-46 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-50"
+                class="PrivateNotchedOutline-legendLabelled-48"
               >
                 <span>
                   Location Description
@@ -168,7 +168,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-45 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-51 MuiTypography-body1"
         >
           Project Boundary
         </p>
@@ -177,7 +177,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-46 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-52 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -198,7 +198,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-46 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-52 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -615,10 +615,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-4 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-6"
+                  class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
                     Regions *
@@ -629,7 +629,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-6"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -664,10 +664,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-4 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-6"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Location Description
@@ -681,7 +681,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
         >
           Project Boundary
         </p>
@@ -690,7 +690,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-2 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -711,7 +711,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-2 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1105,10 +1105,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28"
+                  class="PrivateNotchedOutline-legendLabelled-26"
                 >
                   <span>
                     Regions *
@@ -1119,7 +1119,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-28"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1157,10 +1157,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
               >
                 <span>
                   Location Description
@@ -1180,7 +1180,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-23 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-29 MuiTypography-body1"
         >
           Project Boundary
         </p>
@@ -1189,7 +1189,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-24 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-30 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1210,7 +1210,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-24 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-30 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1619,10 +1619,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-17"
+                  class="PrivateNotchedOutline-legendLabelled-15"
                 >
                   <span>
                     Regions *
@@ -1633,7 +1633,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-17"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1670,10 +1670,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
               >
                 <span>
                   Location Description
@@ -1687,7 +1687,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-12 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
         >
           Project Boundary
         </p>
@@ -1696,7 +1696,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-13 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1717,7 +1717,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-13 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
