@@ -14,7 +14,7 @@ import { IGetProjectSurveyForViewResponse, ISurveyUpdateRequest } from 'interfac
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
@@ -133,6 +133,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
+      <ErrorDialog {...errorDialogProps} />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">General Information</Typography>
