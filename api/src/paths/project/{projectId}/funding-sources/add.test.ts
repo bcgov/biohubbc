@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as add from './add';
+import * as addFunding from './add';
 import * as db from '../../../../database/db';
 import * as addFundingSource_queries from '../../../../queries/project/project-create-queries';
 import SQL from 'sql-template-strings';
@@ -67,7 +67,7 @@ describe('add a funding source', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = add.addFundingSource();
+      const result = addFunding.addFundingSource();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
         (null as unknown) as any,
@@ -89,7 +89,7 @@ describe('add a funding source', () => {
     });
 
     try {
-      const result = add.addFundingSource();
+      const result = addFunding.addFundingSource();
 
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -116,7 +116,7 @@ describe('add a funding source', () => {
     sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
-      const result = add.addFundingSource();
+      const result = addFunding.addFundingSource();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -137,7 +137,7 @@ describe('add a funding source', () => {
     sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(null);
 
     try {
-      const result = add.addFundingSource();
+      const result = addFunding.addFundingSource();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -163,7 +163,7 @@ describe('add a funding source', () => {
     sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
-      const result = add.addFundingSource();
+      const result = addFunding.addFundingSource();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -188,7 +188,7 @@ describe('add a funding source', () => {
 
     sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`something`);
 
-    const result = add.addFundingSource();
+    const result = addFunding.addFundingSource();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
     console.log(actualResult);
