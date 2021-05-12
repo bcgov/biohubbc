@@ -970,13 +970,28 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-shadow leaflet-zoom-hide"
+                  src="marker-shadow.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-overlay-pane"
               />
               <div
                 class="leaflet-pane leaflet-marker-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  src="marker-icon.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
+                  tabindex="0"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -1092,9 +1107,9 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                       class="leaflet-draw-toolbar leaflet-bar"
                     >
                       <a
-                        class="leaflet-draw-edit-edit leaflet-disabled"
+                        class="leaflet-draw-edit-edit"
                         href="#"
-                        title="No layers to edit"
+                        title="Edit layers"
                       >
                         <span
                           class="sr-only"
@@ -1103,9 +1118,9 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         </span>
                       </a>
                       <a
-                        class="leaflet-draw-edit-remove leaflet-disabled"
+                        class="leaflet-draw-edit-remove"
                         href="#"
-                        title="No layers to delete"
+                        title="Delete layers"
                       >
                         <span
                           class="sr-only"
@@ -1146,7 +1161,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
@@ -1158,7 +1173,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
@@ -1592,13 +1607,28 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <div
                 class="leaflet-pane leaflet-shadow-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-shadow leaflet-zoom-hide"
+                  src="marker-shadow.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-overlay-pane"
               />
               <div
                 class="leaflet-pane leaflet-marker-pane"
-              />
+              >
+                <img
+                  alt=""
+                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                  src="marker-icon.png"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
+                  tabindex="0"
+                />
+              </div>
               <div
                 class="leaflet-pane leaflet-tooltip-pane"
               />
@@ -1714,9 +1744,9 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                       class="leaflet-draw-toolbar leaflet-bar"
                     >
                       <a
-                        class="leaflet-draw-edit-edit leaflet-disabled"
+                        class="leaflet-draw-edit-edit"
                         href="#"
-                        title="No layers to edit"
+                        title="Edit layers"
                       >
                         <span
                           class="sr-only"
@@ -1725,9 +1755,9 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         </span>
                       </a>
                       <a
-                        class="leaflet-draw-edit-remove leaflet-disabled"
+                        class="leaflet-draw-edit-remove"
                         href="#"
-                        title="No layers to delete"
+                        title="Delete layers"
                       >
                         <span
                           class="sr-only"
@@ -1768,7 +1798,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_87"
+                            name="leaflet-base-layers_93"
                             type="radio"
                           />
                           <span>
@@ -1780,7 +1810,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_87"
+                            name="leaflet-base-layers_93"
                             type="radio"
                           />
                           <span>
