@@ -46,7 +46,8 @@ const AccessDenied = () => {
               type="submit"
               size="large"
               variant="contained"
-              color="primary">
+              color="primary"
+              data-testid="request_access">
               Request Access
             </Button>
           )}
