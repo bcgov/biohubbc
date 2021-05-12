@@ -6,7 +6,6 @@ import * as system_roles from './system-roles';
 import * as db from '../../../database/db';
 import * as user_queries from '../../../queries/users/user-queries';
 import SQL from 'sql-template-strings';
-// import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
