@@ -8,20 +8,19 @@ import AccessDenied from './AccessDenied';
 
 const history = createMemoryHistory();
 
-describe('NotFoundPage', () => {
-  it('renders correctly when the user has no role', () => {
-    const mockHasSystemRole = () => true;
-
+describe('AccessDenied', () => {
+  it('redirects to `/login` when user is not authenticated', () => {
     const authState = {
       keycloakWrapper: {
         keycloak: {
-          authenticated: true
+          authenticated: false
         },
-        hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
-        getUserIdentifier: jest.fn(),
+        hasLoadedAllUserInfo: false,
         hasAccessRequest: false,
-        hasSystemRole: mockHasSystemRole,
+
+        systemRoles: [],
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
         getIdentitySource: jest.fn(),
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -32,7 +31,122 @@ describe('NotFoundPage', () => {
       }
     };
 
-    const { getByText, queryByText } = render(
+    const history = createMemoryHistory();
+
+    history.push('/forbidden');
+
+    render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <AccessDenied />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    expect(history.location.pathname).toEqual('/login');
+  });
+
+  it('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
+    const authState = {
+      keycloakWrapper: {
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: false,
+        hasAccessRequest: false,
+
+        systemRoles: [],
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/forbidden');
+
+    const { asFragment } = render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <AccessDenied />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    // does not change location
+    expect(history.location.pathname).toEqual('/forbidden');
+
+    // renders a spinner
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('redirects to `/request-submitted` when user is authenticated and has a pending access request', () => {
+    const authState = {
+      keycloakWrapper: {
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
+        hasAccessRequest: true,
+
+        systemRoles: [],
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const history = createMemoryHistory();
+
+    history.push('/forbidden');
+
+    render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <AccessDenied />
+        </Router>
+      </AuthStateContext.Provider>
+    );
+
+    expect(history.location.pathname).toEqual('/request-submitted');
+  });
+
+  it('renders correctly when the user is authenticated and has no pending access requests', () => {
+    const authState = {
+      keycloakWrapper: {
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
+        hasAccessRequest: false,
+
+        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+        getUserIdentifier: jest.fn(),
+        hasSystemRole: jest.fn(),
+        getIdentitySource: jest.fn(),
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const { getByText, queryByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
           <AccessDenied />
@@ -41,22 +155,21 @@ describe('NotFoundPage', () => {
     );
 
     expect(getByText('You do not have permission to access this page.')).toBeVisible();
-    expect(queryByText('Request Access')).not.toBeInTheDocument();
+    expect(queryByTestId('request_access')).not.toBeInTheDocument();
   });
 
-  it('redirects to the access-request page appropriately', () => {
-    const mockHasSystemRole = () => false;
-
+  it('redirects to `/access-request` when the `Request Access` button clicked', () => {
     const authState = {
       keycloakWrapper: {
         keycloak: {
           authenticated: true
         },
         hasLoadedAllUserInfo: true,
+        hasAccessRequest: false,
+
         systemRoles: [],
         getUserIdentifier: jest.fn(),
-        hasAccessRequest: false,
-        hasSystemRole: mockHasSystemRole,
+        hasSystemRole: jest.fn(),
         getIdentitySource: jest.fn(),
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -67,7 +180,7 @@ describe('NotFoundPage', () => {
       }
     };
 
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
           <AccessDenied />
@@ -76,7 +189,7 @@ describe('NotFoundPage', () => {
     );
 
     expect(getByText('You do not have permission to access this application.')).toBeVisible();
-    expect(getByText('Request Access')).toBeVisible();
+    expect(getByTestId('request_access')).toBeVisible();
 
     fireEvent.click(getByText('Request Access'));
 
