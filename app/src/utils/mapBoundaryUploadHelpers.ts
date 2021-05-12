@@ -8,13 +8,22 @@ import { v4 as uuidv4 } from 'uuid';
 /**
  * Convert a zipped shapefile to geojson
  * @param e The file upload event
+ * @param values current form values
+ * @param setFieldValue change form values
+ * @param setUploadError change state of upload error
  */
-export const handleShapefileUpload = (e: any, values: any, setFieldValue: (key: string, value: any) => void) => {
+export const handleShapefileUpload = (
+  e: any,
+  values: any,
+  setFieldValue: (key: string, value: any) => void,
+  setUploadError: (uploadError: string) => void
+) => {
   // Only accept one file
   const file = e.target.files[0];
 
   // Back out if not a zipped file
   if (!file?.type.match(/zip/)) {
+    setUploadError('You must upload a valid shapefile (.zip format). Please try again.');
     return;
   }
 

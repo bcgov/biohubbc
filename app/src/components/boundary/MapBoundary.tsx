@@ -72,6 +72,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             size="medium"
             color="primary"
             disabled={isLoading}
+            onClick={() => setUploadError('')}
             className={classes.uploadButton}
             style={{ marginLeft: '1rem' }}>
             <input
@@ -79,7 +80,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               data-testid="shp-upload"
               type="file"
               hidden
-              onChange={(e) => handleShapefileUpload(e, values, setFieldValue)}
+              onChange={(e) => handleShapefileUpload(e, values, setFieldValue, setUploadError)}
             />
             Upload Shapefile
           </Button>
