@@ -75,21 +75,20 @@ POST.apiDoc = {
   }
 };
 
-function getAddSystemRolesHandler(): RequestHandler {
+export function getAddSystemRolesHandler(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'addSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
 
-    const userId = Number(req.params?.userId) || null;
-    const roles: number[] = req.body?.roles || [];
-
-    if (!userId) {
+    if (!req.params || !req.params.userId) {
       throw new HTTP400('Missing required path param: userId');
     }
 
-    if (!roles?.length) {
+    if (!req.body || !req.body.roles || !req.body.roles.length) {
       throw new HTTP400('Missing required body param: roles');
     }
 
+    const userId = Number(req.params.userId);
+    const roles: number[] = req.body.roles;
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -115,7 +114,7 @@ function getAddSystemRolesHandler(): RequestHandler {
       // Filter out any system roles that have already been added to the user
       const rolesToAdd = roles.filter((role) => !userObject.role_ids.includes(role));
 
-      if (!rolesToAdd?.length) {
+      if (!rolesToAdd.length) {
         // No new system roles to add, do nothing
         return res.status(200).send();
       }
