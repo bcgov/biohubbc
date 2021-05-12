@@ -3,6 +3,7 @@ import { kml } from '@tmcw/togeojson';
 import shp from 'shpjs';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Convert a zipped shapefile to geojson
@@ -111,4 +112,63 @@ export const updateMapBounds = (values: any, setBounds: (bounds: any[]) => void)
     [bboxCoords[1], bboxCoords[0]],
     [bboxCoords[3], bboxCoords[2]]
   ]);
+};
+
+/*
+  Leaflet does not know how to draw Multipolygons or GeometryCollections
+  that are not in proper GeoJSON format so we manually convert to a Feature[]
+  of GeoJSON objects which it can draw using the <GeoJSON /> tag for
+  non-editable geometries
+
+  We also set the bounds based on those geometries so the extent is set
+*/
+export const generateValidGeometryCollection = (geometry: any) => {
+  let geometryCollection: Feature[] = [];
+  let bounds: any[] = [];
+
+  if (!geometry || !geometry.length) {
+    return { geometryCollection, bounds };
+  }
+
+  if (geometry[0]?.type === 'MultiPolygon') {
+    geometry[0].coordinates.forEach((geoCoords: any) => {
+      geometryCollection.push({
+        id: uuidv4(),
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: geoCoords
+        },
+        properties: {}
+      });
+    });
+  } else if (geometry[0]?.type === 'GeometryCollection') {
+    geometry[0].geometries.forEach((geometry: any) => {
+      geometryCollection.push({
+        id: uuidv4(),
+        type: 'Feature',
+        geometry,
+        properties: {}
+      });
+    });
+  } else if (geometry[0]?.type !== 'Feature') {
+    geometryCollection.push({
+      id: uuidv4(),
+      type: 'Feature',
+      geometry: geometry[0],
+      properties: {}
+    });
+  } else {
+    geometryCollection.push(geometry[0]);
+  }
+
+  const allGeosFeatureCollection = {
+    type: 'FeatureCollection',
+    features: geometryCollection
+  };
+  const bboxCoords = bbox(allGeosFeatureCollection);
+
+  bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
+
+  return { geometryCollection, bounds };
 };

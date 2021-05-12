@@ -69,6 +69,23 @@ describe('PostSurveyObject', () => {
       survey_data_proprietary: 'false',
       survey_name: 'survey name',
       survey_purpose: 'purpose',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ],
       proprietary_data_category: null,
       first_nations_id: null,
       category_rationale: null,
@@ -122,6 +139,10 @@ describe('PostSurveyObject', () => {
 
     it('sets survey_proprietor', () => {
       expect(data.survey_proprietor).to.equal(undefined);
+    });
+
+    it('sets the geometry', () => {
+      expect(data.geometry).to.eql(surveyObj.geometry);
     });
   });
 

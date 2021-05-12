@@ -4,8 +4,10 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import MapContainer from 'components/map/MapContainer';
 import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
@@ -18,6 +20,8 @@ export interface ISurveyStudyAreaProps {
  */
 const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const { survey } = props.surveyForViewData;
+
+  const { geometryCollection, bounds } = generateValidGeometryCollection(survey.geometry);
 
   return (
     <Box>
@@ -46,6 +50,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           </Grid>
         </Grid>
       </dl>
+      <Box mt={4} height={500}>
+        <MapContainer
+          mapId="survey_study_area_map"
+          hideDrawControls={true}
+          nonEditableGeometries={geometryCollection}
+          bounds={bounds}
+        />
+      </Box>
     </Box>
   );
 };

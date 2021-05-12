@@ -57,7 +57,9 @@ describe('GetSurveyData', () => {
       species: 'species',
       lead_first_name: 'lead',
       lead_last_name: 'last',
-      location_name: 'area'
+      location_name: 'area',
+      geometry:
+        '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}'
     };
 
     let data: GetSurveyData;
@@ -100,6 +102,10 @@ describe('GetSurveyData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(surveyData.revision_count);
+    });
+
+    it('sets the geometry', () => {
+      expect(data.geometry).to.eql([JSON.parse(surveyData.geometry)]);
     });
   });
 });

@@ -96,7 +96,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     const surveyData = {
       ...values,
       revision_count: surveyDataForUpdate.revision_count,
-      survey_area_name: surveyDataForUpdate.survey_area_name
+      survey_area_name: surveyDataForUpdate.survey_area_name,
+      geometry: surveyDataForUpdate.geometry
     };
 
     try {
