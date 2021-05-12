@@ -46,7 +46,7 @@ describe('SurveyGeneralInformation', () => {
       <SurveyGeneralInformation
         surveyForViewData={{
           ...getProjectSurveyForViewResponse,
-          survey: { ...getProjectSurveyForViewResponse.survey, end_date: (null as unknown) as string }
+          survey: { ...getProjectSurveyForViewResponse.survey, end_date: (null as unknown) as string, species: 'spec' }
         }}
         codes={codes}
         refresh={mockRefresh}

@@ -240,7 +240,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            species
+            spec
           </dd>
         </div>
       </div>
