@@ -94,7 +94,6 @@ describe('add a funding source', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      console.log(actualError);
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing funding source data');
     }
