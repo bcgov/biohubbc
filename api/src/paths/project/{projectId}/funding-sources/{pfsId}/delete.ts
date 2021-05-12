@@ -17,7 +17,7 @@ DELETE.apiDoc = deleteFundingSourceApiDocObject(
   'Row count of successfully deleted funding sources'
 );
 
-function deleteFundingSource(): RequestHandler {
+export function deleteFundingSource(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete project funding source', message: 'params', req_params: req.params });
 
