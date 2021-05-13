@@ -59,25 +59,18 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
               for="park"
               id="park-label"
             >
               Park
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -89,7 +82,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="park"
-                required=""
                 spellcheck="false"
                 type="text"
                 value=""
@@ -156,7 +148,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                   class="PrivateNotchedOutline-legendLabelled-3"
                 >
                   <span>
-                    Park *
+                    Park
                   </span>
                 </legend>
               </fieldset>
@@ -170,25 +162,18 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
               data-shrink="false"
               for="management_unit"
               id="management_unit-label"
             >
               Management Unit
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -200,7 +185,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="management_unit"
-                required=""
                 spellcheck="false"
                 type="text"
                 value=""
@@ -267,7 +251,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                   class="PrivateNotchedOutline-legendLabelled-3"
                 >
                   <span>
-                    Management Unit *
+                    Management Unit
                   </span>
                 </legend>
               </fieldset>
@@ -279,16 +263,16 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-6 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-8"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -309,7 +293,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -331,10 +315,10 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-9"
         />
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-10"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -641,10 +625,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-10 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-12 PrivateNotchedOutline-legendNotched-13"
+                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
               >
                 <span>
                   Survey Area Name *
@@ -660,25 +644,18 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="park"
               id="park-label"
             >
               Park
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -690,17 +667,16 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="park"
-                required=""
                 spellcheck="false"
                 type="text"
-                value="Park name 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -751,13 +727,13 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-10 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-12 PrivateNotchedOutline-legendNotched-13"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
-                    Park *
+                    Park
                   </span>
                 </legend>
               </fieldset>
@@ -771,25 +747,18 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
               for="management_unit"
               id="management_unit-label"
             >
               Management Unit
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -801,17 +770,16 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="management_unit"
-                required=""
                 spellcheck="false"
                 type="text"
-                value="Management unit 2"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -862,13 +830,13 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-10 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-12 PrivateNotchedOutline-legendNotched-13"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
-                    Management Unit *
+                    Management Unit
                   </span>
                 </legend>
               </fieldset>
@@ -880,16 +848,16 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-14 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-18"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-15 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -910,7 +878,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-15 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -932,10 +900,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-19"
         />
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-20"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1258,10 +1226,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
               >
                 <span>
                   Survey Area Name *
@@ -1283,25 +1251,18 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error"
+              data-shrink="false"
               for="park"
               id="park-label"
             >
               Park
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -1314,17 +1275,16 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="park"
-                required=""
                 spellcheck="false"
                 type="text"
-                value="Park name 1"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -1375,19 +1335,19 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  class="PrivateNotchedOutline-legendLabelled-23"
                 >
                   <span>
-                    Park *
+                    Park
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
               id="park-helper-text"
             >
               error on park field
@@ -1401,25 +1361,18 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
           role="combobox"
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-              data-shrink="true"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error"
+              data-shrink="false"
               for="management_unit"
               id="management_unit-label"
             >
               Management Unit
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
-              >
-                 *
-              </span>
             </label>
             <div
               class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
@@ -1432,17 +1385,16 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="management_unit"
-                required=""
                 spellcheck="false"
                 type="text"
-                value="Management unit 2"
+                value=""
               />
               <div
                 class="MuiAutocomplete-endAdornment"
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -1493,19 +1445,19 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  class="PrivateNotchedOutline-legendLabelled-23"
                 >
                   <span>
-                    Management Unit *
+                    Management Unit
                   </span>
                 </legend>
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
               id="management_unit-helper-text"
             >
               error on management unit field
@@ -1517,16 +1469,16 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-23 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-26 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-28"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-24 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-27 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1547,7 +1499,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-24 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-27 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1569,10 +1521,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-29"
         />
         <div
-          class="MuiBox-root MuiBox-root-27"
+          class="MuiBox-root MuiBox-root-30"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
