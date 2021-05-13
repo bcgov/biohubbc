@@ -30,6 +30,18 @@ describe('AttachmentsList', () => {
       fileName: 'filename.test',
       lastModified: '2021-04-09 11:53:53',
       size: 3028
+    },
+    {
+      id: 20,
+      fileName: 'filename20.test',
+      lastModified: '2021-04-09 11:53:53',
+      size: 30280000
+    },
+    {
+      id: 30,
+      fileName: 'filename30.test',
+      lastModified: '2021-04-09 11:53:53',
+      size: 30280000000
     }
   ];
 
@@ -39,12 +51,14 @@ describe('AttachmentsList', () => {
     expect(getByText('No Attachments')).toBeInTheDocument();
   });
 
-  it('renders correctly with attachments', async () => {
+  it('renders correctly with attachments (of various sizes)', async () => {
     const { getByText } = render(
       <AttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
+    expect(getByText('filename20.test')).toBeInTheDocument();
+    expect(getByText('filename30.test')).toBeInTheDocument();
   });
 
   it('viewing file contents in new tab works as expected', async () => {
