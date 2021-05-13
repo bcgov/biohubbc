@@ -111,10 +111,32 @@ describe('delete a funding source', () => {
     }
   });
 
-  it('should throw a 400 error when the delete fundingSource fails, because the response has no rows', async () => {
+  it('should return the row count of the removed funding source on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.onFirstCall().resolves({ rows: [{ id: 1 }] });
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(deleteFundingSource_queries, 'deleteFundingSourceSQL').returns(SQL`something`);
+
+    const result = deleteFundingSource.deleteFundingSource();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql(1);
+  });
+
+  it('throws a 400 error when delete fundingSource fails, because the response has no rows', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [], rowCount: 0 });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -135,27 +157,5 @@ describe('delete a funding source', () => {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to delete project funding source');
     }
-  });
-
-  it('should return the row count of the removed funding source on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.onFirstCall().resolves({ rowCount: 1 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(deleteFundingSource_queries, 'deleteFundingSourceSQL').returns(SQL`something`);
-
-    const result = deleteFundingSource.deleteFundingSource();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.eql(1);
   });
 });
