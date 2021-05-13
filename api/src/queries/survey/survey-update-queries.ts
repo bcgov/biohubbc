@@ -1,6 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PutSurveyData } from '../../models/survey-update';
 import { getLogger } from '../../utils/logger';
+import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 
 const defaultLog = getLogger('queries/survey/survey-update-queries');
 
@@ -31,6 +32,28 @@ export const putSurveySQL = (
     return null;
   }
 
+  const geometrySqlStatement = SQL``;
+
+  if (survey.geometry && survey.geometry.length) {
+    const geometryCollectionSQL = generateGeometryCollectionSQL(survey.geometry);
+
+    geometrySqlStatement.append(SQL`
+      public.geography(
+        public.ST_Force2D(
+          public.ST_SetSRID(
+    `);
+
+    geometrySqlStatement.append(geometryCollectionSQL);
+
+    geometrySqlStatement.append(SQL`
+      , 4326)))
+    `);
+  } else {
+    geometrySqlStatement.append(SQL`
+      null
+    `);
+  }
+
   const sqlStatement = SQL`
     UPDATE survey SET
       name = ${survey.name},
@@ -40,14 +63,20 @@ export const putSurveySQL = (
       end_date = ${survey.end_date},
       lead_first_name = ${survey.lead_first_name},
       lead_last_name = ${survey.lead_last_name},
-      location_name = ${survey.location_name}
+      location_name = ${survey.location_name},
+      geography = 
+  `;
+
+  sqlStatement.append(geometrySqlStatement);
+
+  sqlStatement.append(SQL`
     where
       p_id = ${projectId}
     and
       id = ${surveyId}
     and
       revision_count = ${revision_count};
-  `;
+  `);
 
   defaultLog.debug({
     label: 'putSurveySQL',
