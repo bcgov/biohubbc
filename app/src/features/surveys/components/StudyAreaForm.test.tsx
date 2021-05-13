@@ -26,22 +26,22 @@ const studyAreaFilledValues = {
 
 const park: IMultiAutocompleteFieldOption[] = [
   {
-    value: 1,
+    value: 'Park name 1',
     label: 'Park name 1'
   },
   {
-    value: 2,
+    value: 'Park name 2',
     label: 'Park name 2'
   }
 ];
 
 const management_unit: IMultiAutocompleteFieldOption[] = [
   {
-    value: 1,
+    value: 'Management unit 1',
     label: 'Management unit 1'
   },
   {
-    value: 2,
+    value: 'Management unit 2',
     label: 'Management unit 2'
   }
 ];
