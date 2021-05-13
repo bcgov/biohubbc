@@ -146,7 +146,7 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
   const postSystemRolesSqlStatement = postSystemRolesSQL(userId, roleIds);
 
   if (!postSystemRolesSqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const postSystemRolesResponse = await connection.query(
@@ -154,9 +154,7 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
     postSystemRolesSqlStatement.values
   );
 
-  const systemRolesResult = (postSystemRolesResponse && postSystemRolesResponse.rowCount) || null;
-
-  if (!systemRolesResult) {
+  if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
     throw new HTTP400('Failed to add system roles');
   }
 };
@@ -214,19 +212,20 @@ DELETE.apiDoc = {
   }
 };
 
-function removeSystemRoles(): RequestHandler {
+export function removeSystemRoles(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'removeSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
 
-    const userId = Number(req.params?.userId) || null;
-    const roleIds: number[] = (req.query?.roleId as string[]).map((item: any) => Number(item)) || [];
+    const userId = (req.params && Number(req.params.userId)) || null;
 
     if (!userId) {
       throw new HTTP400('Missing required path param: userId');
     }
 
-    if (!roleIds?.length) {
-      throw new HTTP400('Missing required body param: roles');
+    const roleIds: number[] = (req.query && (req.query.roleId as string[]).map((item: any) => Number(item))) || [];
+
+    if (!roleIds.length) {
+      throw new HTTP400('Missing required query param: roles');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -235,7 +234,7 @@ function removeSystemRoles(): RequestHandler {
       const sqlStatement = deleteSystemRolesSQL(userId, roleIds);
 
       if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+        throw new HTTP400('Failed to build SQL delete statement');
       }
 
       await connection.open();
