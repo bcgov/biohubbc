@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-create');
@@ -19,6 +20,7 @@ export class PostSurveyObject {
   survey_area_name: string;
   survey_data_proprietary: boolean;
   survey_purpose: string;
+  geometry: Feature[];
   survey_proprietor?: PostSurveyProprietorData;
 
   constructor(obj?: any) {
@@ -34,6 +36,7 @@ export class PostSurveyObject {
     this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
     this.survey_name = obj?.survey_name || null;
     this.survey_purpose = obj?.survey_purpose || null;
+    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;
   }

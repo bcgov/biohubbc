@@ -118,7 +118,8 @@ describe('getSurveyForView', () => {
       lead_first_name: 'first',
       lead_last_name: 'last',
       location_name: 'location',
-      revision_count: 1
+      revision_count: 1,
+      geometry: []
     };
 
     const mockQuery = sinon.stub();
@@ -158,7 +159,8 @@ describe('getSurveyForView', () => {
       biologist_first_name: survey.lead_first_name,
       biologist_last_name: survey.lead_last_name,
       survey_area_name: survey.location_name,
-      revision_count: survey.revision_count
+      revision_count: survey.revision_count,
+      geometry: survey.geometry
     });
     expect(actualResult.surveyProprietor).to.eql({
       proprietor_type_name: surveyProprietor.proprietor_type_name,

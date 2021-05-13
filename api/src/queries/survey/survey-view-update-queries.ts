@@ -32,6 +32,7 @@ export const getSurveySQL = (projectId: number, surveyId: number): SQLStatement 
       lead_first_name,
       lead_last_name,
       location_name,
+      public.ST_asGeoJSON(geography) as geometry,
       revision_count
     from
       survey

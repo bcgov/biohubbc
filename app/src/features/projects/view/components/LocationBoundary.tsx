@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import bbox from '@turf/bbox';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -14,7 +13,6 @@ import {
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
-import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -24,8 +22,8 @@ import {
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
+import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -111,65 +109,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     }
 
     props.refresh();
-  };
-
-  /*
-    Leaflet does not know how to draw Multipolygons or GeometryCollections
-    that are not in proper GeoJSON format so we manually convert to a Feature[]
-    of GeoJSON objects which it can draw using the <GeoJSON /> tag for
-    non-editable geometries
-
-    We also set the bounds based on those geometries so the extent is set
-  */
-  const generateValidGeometryCollection = (geometry: any) => {
-    let geometryCollection: Feature[] = [];
-    let bounds: any[] = [];
-
-    if (!geometry || !geometry.length) {
-      return { geometryCollection, bounds };
-    }
-
-    if (geometry[0]?.type === 'MultiPolygon') {
-      geometry[0].coordinates.forEach((geoCoords: any) => {
-        geometryCollection.push({
-          id: uuidv4(),
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: geoCoords
-          },
-          properties: {}
-        });
-      });
-    } else if (geometry[0]?.type === 'GeometryCollection') {
-      geometry[0].geometries.forEach((geometry: any) => {
-        geometryCollection.push({
-          id: uuidv4(),
-          type: 'Feature',
-          geometry,
-          properties: {}
-        });
-      });
-    } else if (geometry[0]?.type !== 'Feature') {
-      geometryCollection.push({
-        id: uuidv4(),
-        type: 'Feature',
-        geometry: geometry[0],
-        properties: {}
-      });
-    } else {
-      geometryCollection.push(geometry[0]);
-    }
-
-    const allGeosFeatureCollection = {
-      type: 'FeatureCollection',
-      features: geometryCollection
-    };
-    const bboxCoords = bbox(allGeosFeatureCollection);
-
-    bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
-
-    return { geometryCollection, bounds };
   };
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);

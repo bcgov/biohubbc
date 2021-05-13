@@ -8,7 +8,19 @@ const handleSaveAndNext = jest.fn();
 const studyAreaFilledValues = {
   survey_area_name: 'Study area name',
   park: 'Park name 1',
-  management_unit: 'Management unit 2'
+  management_unit: 'Management unit 2',
+  geometry: [
+    {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [125.6, 10.1]
+      },
+      properties: {
+        name: 'Dinagat Islands'
+      }
+    }
+  ]
 };
 
 describe('Study Area Form', () => {

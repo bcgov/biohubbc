@@ -11,7 +11,7 @@ describe('postSurveySQL', () => {
     expect(response).to.be.null;
   });
 
-  it('returns a survey id when valid project param provided without proprietary data', () => {
+  it('returns a survey id when valid project param provided without proprietary data and geometry', () => {
     const surveyData = {
       survey_name: 'survey_name',
       start_date: '2020/04/03',
@@ -30,6 +30,51 @@ describe('postSurveySQL', () => {
     const response = postSurveySQL(1, postSurveyObject);
 
     expect(response).to.not.be.null;
+  });
+
+  it('returns a survey id when valid project param provided without proprietary data but with geometry', () => {
+    const surveyData = {
+      survey_name: 'survey_name',
+      start_date: '2020/04/03',
+      end_date: '2020/05/05',
+      species: 'some species',
+      survey_purpose: 'purpose',
+      biologist_first_name: 'John',
+      biologist_last_name: 'Smith',
+      survey_area_name: 'some place',
+      park: 'a park',
+      management_unit: 'a unit',
+      survey_data_proprietary: false,
+      geometry: [
+        {
+          type: 'Feature',
+          id: 'myGeo',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-128, 55],
+                [-128, 55.5],
+                [-128, 56],
+                [-126, 58],
+                [-128, 55]
+              ]
+            ]
+          },
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ]
+    };
+
+    const postSurveyObject = new PostSurveyObject(surveyData);
+    const response = postSurveySQL(1, postSurveyObject);
+
+    expect(response).to.not.be.null;
+    expect(response?.values).to.deep.include(
+      '{"type":"Polygon","coordinates":[[[-128,55],[-128,55.5],[-128,56],[-126,58],[-128,55]]]}'
+    );
   });
 });
 
