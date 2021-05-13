@@ -24,23 +24,35 @@ export const defaultYesNoDialogProps: IYesNoDialogProps = {
   dialogTitle: '',
   dialogText: '',
   open: false,
-  onClose: () => {},
-  onNo: () => {},
-  onYes: () => {}
+  onClose: () => {
+    // default do nothing
+  },
+  onNo: () => {
+    // default do nothing
+  },
+  onYes: () => {
+    // default do nothing
+  }
 };
 
 export const defaultErrorDialogProps: IErrorDialogProps = {
   dialogTitle: '',
   dialogText: '',
   open: false,
-  onClose: () => {},
-  onOk: () => {}
+  onClose: () => {
+    // default do nothing
+  },
+  onOk: () => {
+    // default do nothing
+  }
 };
 
 export const defaultSnackbarProps: ISnackbarProps = {
   snackbarText: '',
   open: false,
-  onClose: () => {},
+  onClose: () => {
+    // default do nothing
+  },
   severity: 'info'
 };
 
@@ -60,16 +72,16 @@ export const DialogContextProvider: React.FC = (props) => {
 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
-  const setYesNoDialog = function (props: Partial<IYesNoDialogProps>) {
-    setYesNoDialogProps({ ...yesNoDialogProps, ...props });
+  const setYesNoDialog = function (partialProps: Partial<IYesNoDialogProps>) {
+    setYesNoDialogProps({ ...yesNoDialogProps, ...partialProps });
   };
 
-  const setSnackbar = function (props: Partial<ISnackbarProps>) {
-    setSnackbarProps({ ...snackbarProps, ...props });
+  const setSnackbar = function (partialProps: Partial<ISnackbarProps>) {
+    setSnackbarProps({ ...snackbarProps, ...partialProps });
   };
 
-  const setErrorDialog = function (props: Partial<IErrorDialogProps>) {
-    setErrorDialogProps({ ...errorDialogProps, ...props });
+  const setErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
+    setErrorDialogProps({ ...errorDialogProps, ...partialProps });
   };
 
   return (
