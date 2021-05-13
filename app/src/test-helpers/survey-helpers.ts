@@ -10,7 +10,8 @@ export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse =
     end_date: '2021-02-26',
     biologist_first_name: 'first',
     biologist_last_name: 'last',
-    survey_area_name: 'study area'
+    survey_area_name: 'study area',
+    geometry: []
   },
   surveyProprietor: {
     proprietor_type_name: 'proprietor type',

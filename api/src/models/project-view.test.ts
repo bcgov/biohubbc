@@ -9,7 +9,6 @@ import {
   GetPermitData,
   GetProjectData
 } from './project-view';
-
 import { GetSpeciesData } from './project-view-update';
 
 describe('GetSpeciesData', () => {

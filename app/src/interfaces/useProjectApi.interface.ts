@@ -335,6 +335,7 @@ export interface ICreateProjectSurveyRequest {
   survey_data_proprietary: string;
   survey_name: string;
   survey_purpose: string;
+  geometry: Feature[];
 }
 
 /**
@@ -356,6 +357,7 @@ export interface IGetSurveyForViewResponse {
   biologist_first_name: string;
   biologist_last_name: string;
   survey_area_name: string;
+  geometry: Feature[];
 }
 
 export interface ISurveyUpdateRequest extends IGetSurveyForViewResponse {
