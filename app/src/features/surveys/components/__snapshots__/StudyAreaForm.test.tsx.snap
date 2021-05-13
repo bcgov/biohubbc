@@ -650,22 +650,44 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+              data-shrink="true"
               for="park"
               id="park-label"
             >
               Park
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
             >
+              <div
+                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+                data-tag-index="0"
+                role="button"
+                tabindex="-1"
+              >
+                <span
+                  class="MuiChip-label"
+                >
+                  Park name 1
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiChip-deleteIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+                  />
+                </svg>
+              </div>
               <input
                 aria-autocomplete="list"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="park"
                 spellcheck="false"
                 type="text"
@@ -676,7 +698,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -730,7 +752,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-13"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Park
@@ -753,22 +775,44 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+              data-shrink="true"
               for="management_unit"
               id="management_unit-label"
             >
               Management Unit
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
             >
+              <div
+                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+                data-tag-index="0"
+                role="button"
+                tabindex="-1"
+              >
+                <span
+                  class="MuiChip-label"
+                >
+                  Management unit 2
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiChip-deleteIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+                  />
+                </svg>
+              </div>
               <input
                 aria-autocomplete="list"
                 aria-invalid="false"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="management_unit"
                 spellcheck="false"
                 type="text"
@@ -779,7 +823,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -833,7 +877,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-13"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Management Unit
@@ -1257,23 +1301,45 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error"
-              data-shrink="false"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
+              data-shrink="true"
               for="park"
               id="park-label"
             >
               Park
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
             >
+              <div
+                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+                data-tag-index="0"
+                role="button"
+                tabindex="-1"
+              >
+                <span
+                  class="MuiChip-label"
+                >
+                  Park name 1
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiChip-deleteIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+                  />
+                </svg>
+              </div>
               <input
                 aria-autocomplete="list"
                 aria-describedby="park-helper-text"
                 aria-invalid="true"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="park"
                 spellcheck="false"
                 type="text"
@@ -1284,7 +1350,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -1338,7 +1404,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     Park
@@ -1367,23 +1433,45 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-error Mui-error"
-              data-shrink="false"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
+              data-shrink="true"
               for="management_unit"
               id="management_unit-label"
             >
               Management Unit
             </label>
             <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
             >
+              <div
+                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+                data-tag-index="0"
+                role="button"
+                tabindex="-1"
+              >
+                <span
+                  class="MuiChip-label"
+                >
+                  Management unit 2
+                </span>
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiChip-deleteIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+                  />
+                </svg>
+              </div>
               <input
                 aria-autocomplete="list"
                 aria-describedby="management_unit-helper-text"
                 aria-invalid="true"
                 autocapitalize="none"
                 autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="management_unit"
                 spellcheck="false"
                 type="text"
@@ -1394,7 +1482,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               >
                 <button
                   aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
                   tabindex="-1"
                   title="Clear"
                   type="button"
@@ -1448,7 +1536,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     Management Unit
