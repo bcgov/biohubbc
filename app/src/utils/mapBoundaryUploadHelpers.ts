@@ -106,7 +106,7 @@ export const updateMapBounds = (values: any, setBounds: (bounds: any[]) => void)
     !values ||
     !values.geometry ||
     !values.geometry.length ||
-    (values.geometry.length === 1 && values.geometry[0].geometry.type === 'Point')
+    (values.geometry.length === 1 && values.geometry[0]?.geometry?.type === 'Point')
   ) {
     return;
   }

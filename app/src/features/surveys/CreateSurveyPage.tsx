@@ -32,6 +32,7 @@ import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './com
 import CreateSurveySection from './CreateSurveySection';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -78,6 +79,28 @@ const CreateSurveyPage = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
+
+  const park: IMultiAutocompleteFieldOption[] = [
+    {
+      value: 1,
+      label: 'Park name 1'
+    },
+    {
+      value: 2,
+      label: 'Park name 2'
+    }
+  ];
+
+  const management_unit: IMultiAutocompleteFieldOption[] = [
+    {
+      value: 1,
+      label: 'Management unit 1'
+    },
+    {
+      value: 2,
+      label: 'Management unit 2'
+    }
+  ];
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -303,18 +326,7 @@ const CreateSurveyPage = () => {
                 <CreateSurveySection
                   title="Study Area"
                   summary="Study Area Summary (to be completed)"
-                  component={
-                    <StudyAreaForm
-                      park={[
-                        { value: 'Park name 1', label: 'Park name 1' },
-                        { value: 'Park name 2', label: 'Park name 2' }
-                      ]}
-                      management_unit={[
-                        { value: 'Management unit 1', label: 'Management unit 1' },
-                        { value: 'Management unit 2', label: 'Management unit 2' }
-                      ]}
-                    />
-                  }></CreateSurveySection>
+                  component={<StudyAreaForm park={park} management_unit={management_unit} />}></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />
 
                 <CreateSurveySection

@@ -1,36 +1,38 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
 
 export interface IStudyAreaForm {
   survey_area_name: string;
-  park: string;
-  management_unit: string;
+  park: string[];
+  management_unit: string[];
   geometry: Feature[];
 }
 
 export const StudyAreaInitialValues: IStudyAreaForm = {
   survey_area_name: '',
-  park: '',
-  management_unit: '',
+  park: [],
+  management_unit: [],
   geometry: []
 };
 
 export const StudyAreaYupSchema = yup.object().shape({
   survey_area_name: yup.string().required('Required'),
-  park: yup.string().required('Required'),
-  management_unit: yup.string().required('Required')
+  park: yup.array().of(yup.string()),
+  management_unit: yup.array().of(yup.string())
 });
 
 export interface IStudyAreaFormProps {
-  park: IAutocompleteFieldOption<string>[];
-  management_unit: IAutocompleteFieldOption<string>[];
+  park: IMultiAutocompleteFieldOption[];
+  management_unit: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -68,15 +70,14 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField id="park" name="park" label="Park" options={props.park} required={true} />
+          <MultiAutocompleteFieldVariableSize id="park" label="Park" options={props.park} required={false} />
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField
+          <MultiAutocompleteFieldVariableSize
             id="management_unit"
-            name="management_unit"
             label="Management Unit"
             options={props.management_unit}
-            required={true}
+            required={false}
           />
         </Grid>
         <MapBoundary

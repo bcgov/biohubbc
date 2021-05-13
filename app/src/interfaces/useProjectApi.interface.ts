@@ -324,8 +324,8 @@ export interface ICreateProjectSurveyRequest {
   data_sharing_agreement_required: string;
   end_date: string;
   foippa_requirements_accepted: boolean;
-  management_unit: string;
-  park: string;
+  management_unit: string[];
+  park: string[];
   proprietary_data_category: string;
   proprietor_name: string;
   sedis_procedures_accepted: boolean;

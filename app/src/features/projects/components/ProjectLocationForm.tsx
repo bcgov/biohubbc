@@ -50,6 +50,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
+    console.log(values);
     updateMapBounds(values, setBounds);
   }, [values.geometry]);
 
