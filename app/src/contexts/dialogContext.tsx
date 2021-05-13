@@ -57,11 +57,17 @@ export const defaultSnackbarProps: ISnackbarProps = {
 };
 
 export const DialogContext = createContext<IDialogContext>({
-  setYesNoDialog: () => {},
+  setYesNoDialog: () => {
+    // default do nothing
+  },
   yesNoDialogProps: defaultYesNoDialogProps,
-  setErrorDialog: () => {},
+  setErrorDialog: () => {
+    // default do nothing
+  },
   errorDialogProps: defaultErrorDialogProps,
-  setSnackbar: () => {},
+  setSnackbar: () => {
+    // default do nothing
+  },
   snackbarProps: defaultSnackbarProps
 });
 
