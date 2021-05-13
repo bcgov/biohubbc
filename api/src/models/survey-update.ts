@@ -1,3 +1,4 @@
+import { Feature } from 'geojson';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-update');
@@ -17,6 +18,7 @@ export class PutSurveyData {
   lead_first_name: string;
   lead_last_name: string;
   location_name: string;
+  geometry: Feature[];
   revision_count: number;
 
   constructor(obj?: any) {
@@ -30,6 +32,7 @@ export class PutSurveyData {
     this.lead_first_name = obj?.biologist_first_name || null;
     this.lead_last_name = obj?.biologist_last_name || null;
     this.location_name = obj?.survey_area_name || null;
+    this.geometry = obj?.geometry || null;
     this.revision_count = obj?.revision_count ?? null;
   }
 }

@@ -46,10 +46,16 @@ export const surveyCreatePostRequestObject = {
       type: 'string'
     },
     park: {
-      type: 'string'
+      type: 'array',
+      items: {
+        type: 'string'
+      }
     },
     management_unit: {
-      type: 'string'
+      type: 'array',
+      items: {
+        type: 'string'
+      }
     },
     survey_data_proprietary: {
       type: 'string'
