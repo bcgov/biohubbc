@@ -1,11 +1,9 @@
-import { cleanup, fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
-import * as utils from 'utils/Utils';
 import RequestSubmitted from './RequestSubmitted';
 
 describe('RequestSubmitted', () => {
@@ -162,19 +160,7 @@ describe('RequestSubmitted', () => {
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
-    let logOutSpy: jest.SpyInstance;
-
-    beforeAll(() => {
-      logOutSpy = jest.spyOn(utils, 'logOut').mockReturnValue();
-    });
-
-    afterAll(() => {
-      logOutSpy.mockClear();
-
-      cleanup();
-    });
-
-    it('should not logout when no config provided', () => {
+    it('should redirect to `/logout`', async () => {
       const authState = {
         keycloakWrapper: {
           hasLoadedAllUserInfo: true,
@@ -194,54 +180,19 @@ describe('RequestSubmitted', () => {
         }
       };
 
-      const { getByText } = render(
-        <ConfigContext.Provider value={(null as unknown) as IConfig}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <RequestSubmitted />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
+      const { getByTestId } = render(
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <RequestSubmitted />
+          </Router>
+        </AuthStateContext.Provider>
       );
 
-      fireEvent.click(getByText('Log Out'));
+      fireEvent.click(getByTestId('logout-button'));
 
-      expect(logOutSpy).not.toBeCalled();
-    });
-
-    it('should logout when config provided', () => {
-      const authState = {
-        keycloakWrapper: {
-          hasLoadedAllUserInfo: true,
-          systemRoles: [],
-          hasAccessRequest: true,
-
-          keycloak: {},
-          getUserIdentifier: jest.fn(),
-          hasSystemRole: jest.fn(),
-          getIdentitySource: jest.fn(),
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          firstName: 'testfirst',
-          lastName: 'testlast',
-          refresh: () => {}
-        }
-      };
-
-      const { getByText } = render(
-        <ConfigContext.Provider value={({} as unknown) as IConfig}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <RequestSubmitted />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
-      );
-
-      fireEvent.click(getByText('Log Out'));
-
-      expect(logOutSpy).toBeCalledTimes(1);
+      waitFor(() => {
+        expect(history.location.pathname).toEqual('/logout');
+      });
     });
   });
 });

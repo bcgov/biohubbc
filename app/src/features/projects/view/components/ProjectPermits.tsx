@@ -12,8 +12,8 @@ import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import React, { useContext, useState } from 'react';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitEditFormYupSchema,
@@ -24,6 +24,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
 import { EditPermitI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 
 const useStyles = makeStyles({
   table: {
@@ -56,20 +57,22 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: EditPermitI18N.editErrorTitle,
     dialogText: EditPermitI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -133,7 +136,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">Permits</Typography>

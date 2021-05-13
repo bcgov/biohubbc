@@ -7,6 +7,7 @@ import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LogInPage from 'pages/login/LogInPage';
+import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
@@ -58,6 +59,7 @@ const AppRouter: React.FC = (props: any) => {
         title={getTitle('Admin')}
         validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
       />
+      <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );

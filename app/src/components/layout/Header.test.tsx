@@ -1,11 +1,9 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext, IConfig } from 'contexts/configContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import * as utils from 'utils/Utils';
 import Header from './Header';
 
 const history = createMemoryHistory();
@@ -124,21 +122,7 @@ describe('NotFoundPage', () => {
   });
 
   describe('Log Out', () => {
-    const history = createMemoryHistory();
-
-    let logOutSpy: jest.SpyInstance;
-
-    beforeAll(() => {
-      logOutSpy = jest.spyOn(utils, 'logOut').mockReturnValue();
-    });
-
-    afterAll(() => {
-      logOutSpy.mockClear();
-
-      cleanup();
-    });
-
-    it('should not logout when no config provided', async () => {
+    it('redirects to the `/logout` page', async () => {
       const authState = {
         keycloakWrapper: {
           keycloak: {
@@ -160,70 +144,17 @@ describe('NotFoundPage', () => {
       };
 
       const { getByTestId } = render(
-        <ConfigContext.Provider value={(null as unknown) as IConfig}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <Header />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <Header />
+          </Router>
+        </AuthStateContext.Provider>
       );
 
       fireEvent.click(getByTestId('menu_log_out'));
 
       waitFor(() => {
-        expect(logOutSpy).not.toBeCalled();
-      });
-    });
-
-    it('should logout when config provided', async () => {
-      const config = {
-        API_HOST: '',
-        CHANGE_VERSION: '',
-        NODE_ENV: '',
-        VERSION: '',
-        KEYCLOAK_CONFIG: {
-          url: 'https://www.mylogoutworks.com/auth',
-          realm: 'myrealm',
-          clientId: ''
-        },
-        SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-      };
-
-      const authState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          },
-          hasLoadedAllUserInfo: true,
-          hasAccessRequest: false,
-          systemRoles: [],
-          getUserIdentifier: jest.fn(),
-          hasSystemRole: jest.fn(),
-          getIdentitySource: jest.fn(),
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          firstName: 'testfirst',
-          lastName: 'testlast',
-          refresh: () => {}
-        }
-      };
-
-      const { getByTestId } = render(
-        <ConfigContext.Provider value={config}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <Header />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
-      );
-
-      fireEvent.click(getByTestId('menu_log_out'));
-
-      waitFor(() => {
-        expect(logOutSpy).toBeCalledTimes(1);
+        expect(history.location.pathname).toEqual('/logout');
       });
     });
   });

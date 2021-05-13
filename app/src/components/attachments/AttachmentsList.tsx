@@ -1,6 +1,7 @@
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,17 +9,16 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
-import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
+import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate } from 'utils/Utils';
-import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles({
   table: {
@@ -44,21 +44,36 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [attachmentToDelete, setAttachmentToDelete] = useState<IGetProjectAttachment>({
-    id: (null as unknown) as number,
-    fileName: (null as unknown) as string,
-    lastModified: (null as unknown) as string,
-    size: (null as unknown) as number
-  });
 
-  const deleteAttachment = async () => {
-    if (!attachmentToDelete || !attachmentToDelete.id) {
+  const dialogContext = useContext(DialogContext);
+
+  const defaultYesNoDialogProps = {
+    dialogTitle: 'Delete Attachment',
+    dialogText: 'Are you sure you want to delete the selected attachment?',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        deleteAttachment(attachment);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const deleteAttachment = async (attachment: IGetProjectAttachment) => {
+    if (!attachment?.id) {
       return;
     }
 
     try {
-      const response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachmentToDelete.id);
+      const response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
 
       if (!response) {
         return;
@@ -101,17 +116,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   return (
     <>
-      <YesNoDialog
-        dialogTitle="Delete Attachment"
-        dialogText="Are you sure you want to delete the selected attachment?"
-        open={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onNo={() => setShowDeleteModal(false)}
-        onYes={() => {
-          setShowDeleteModal(false);
-          deleteAttachment();
-        }}
-      />
       <Paper>
         <TableContainer>
           <Table className={classes.table} aria-label="attachments-list-table">
@@ -139,10 +143,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         color="primary"
                         aria-label="delete-attachment"
                         data-testid="delete-attachment"
-                        onClick={() => {
-                          setAttachmentToDelete(row);
-                          setShowDeleteModal(true);
-                        }}>
+                        onClick={() => showDeleteAttachmentDialog(row)}>
                         <Icon path={mdiTrashCanOutline} size={1} />
                       </IconButton>
                     </TableCell>

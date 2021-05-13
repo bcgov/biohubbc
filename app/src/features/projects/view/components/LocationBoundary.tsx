@@ -5,9 +5,10 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   IProjectLocationForm,
   ProjectLocationFormInitialValues,
@@ -21,7 +22,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
@@ -44,20 +45,22 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: EditLocationBoundaryI18N.editErrorTitle,
     dialogText: EditLocationBoundaryI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -126,7 +129,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h3">Location / Project Boundary</Typography>

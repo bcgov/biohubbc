@@ -11,10 +11,8 @@ import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { logOut } from 'utils/Utils';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
@@ -97,10 +95,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 const Header: React.FC = () => {
   const classes = useStyles();
 
-  const config = useContext(ConfigContext);
-
-  const location = useLocation();
-
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   const LoggedInUser: React.FC = () => {
@@ -117,16 +111,7 @@ const Header: React.FC = () => {
         <Box px={2}>
           <Divider orientation="vertical" />
         </Box>
-        <Link
-          to={location.pathname}
-          onClick={() => {
-            if (!config) {
-              return;
-            }
-
-            logOut(config);
-          }}
-          data-testid="menu_log_out">
+        <Link to="/logout" data-testid="menu_log_out">
           Log Out
         </Link>
       </Box>
