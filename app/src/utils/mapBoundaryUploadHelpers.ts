@@ -90,10 +90,10 @@ export const handleKMLUpload = async (
 };
 
 /**
- * @param values current form values
+ * @param geometry geometry values on map
  * @param setBounds change bounds on map
  */
-export const updateMapBounds = (values: any, setBounds: (bounds: any[]) => void) => {
+export const updateMapBounds = (geometry: Feature[], setBounds: (bounds: any[]) => void) => {
   /*
     If no geometries, we do not need to set bounds
 
@@ -102,18 +102,13 @@ export const updateMapBounds = (values: any, setBounds: (bounds: any[]) => void)
 
     If there are multiple points or a polygon and a point, this is not an issue
   */
-  if (
-    !values ||
-    !values.geometry ||
-    !values.geometry.length ||
-    (values.geometry.length === 1 && values.geometry[0]?.geometry?.type === 'Point')
-  ) {
+  if (!geometry || !geometry.length || (geometry.length === 1 && geometry[0]?.geometry?.type === 'Point')) {
     return;
   }
 
   const allGeosFeatureCollection = {
     type: 'FeatureCollection',
-    features: [...values.geometry]
+    features: [...geometry]
   };
   const bboxCoords = bbox(allGeosFeatureCollection);
 

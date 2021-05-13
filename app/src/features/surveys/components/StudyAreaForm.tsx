@@ -49,7 +49,7 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
-    updateMapBounds(values, setBounds);
+    updateMapBounds(values.geometry, setBounds);
   }, [values.geometry]);
 
   return (
