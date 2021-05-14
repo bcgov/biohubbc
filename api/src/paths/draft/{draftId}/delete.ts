@@ -50,7 +50,7 @@ DELETE.apiDoc = {
   }
 };
 
-function deleteDraft(): RequestHandler {
+export function deleteDraft(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete draft', message: 'params', req_params: req.params });
 
