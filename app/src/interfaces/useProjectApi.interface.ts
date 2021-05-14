@@ -360,7 +360,16 @@ export interface IGetSurveyForViewResponse {
   geometry: Feature[];
 }
 
-export interface ISurveyUpdateRequest extends IGetSurveyForViewResponse {
+export interface ISurveyUpdateRequest {
+  survey_name: string;
+  survey_purpose: string;
+  species: number;
+  start_date: string;
+  end_date: string;
+  biologist_first_name: string;
+  biologist_last_name: string;
+  survey_area_name: string;
+  geometry: Feature[];
   revision_count: number;
 }
 
