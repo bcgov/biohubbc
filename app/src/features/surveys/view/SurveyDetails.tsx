@@ -6,14 +6,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import React from 'react';
-import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyStudyArea from './components/SurveyStudyArea';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
-  projectId: number;
+  projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
 }
 
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const classes = useStyles();
 
-  const { surveyForViewData, codes, projectId, refresh } = props;
+  const { surveyForViewData, codes, refresh, projectForViewData } = props;
 
   return (
     <>
@@ -49,7 +49,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
           <SurveyGeneralInformation
-            projectId={projectId}
+            projectForViewData={projectForViewData}
             surveyForViewData={surveyForViewData}
             codes={codes}
             refresh={refresh}
@@ -59,7 +59,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
 
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyStudyArea surveyForViewData={surveyForViewData} projectId={projectId} refresh={refresh} />
+          <SurveyStudyArea surveyForViewData={surveyForViewData} projectId={projectForViewData.id} refresh={refresh} />
         </Box>
       </Box>
 

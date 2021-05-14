@@ -33,6 +33,9 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import yup from 'utils/YupSchema';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import moment from 'moment';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -138,7 +141,37 @@ const CreateSurveyPage = () => {
   });
 
   // Yup schemas for the survey form sections
-  const surveyYupSchemas = GeneralInformationYupSchema.concat(StudyAreaYupSchema)
+  const surveyYupSchemas = GeneralInformationYupSchema({
+    start_date: yup
+      .string()
+      .isValidDateString()
+      .isAfterDate(
+        projectWithDetails?.project.start_date,
+        DATE_FORMAT.ShortDateFormat,
+        'Survey start date cannot be before project start date'
+      )
+      .isAfterDate(
+        moment(DATE_LIMIT.min).toISOString(),
+        DATE_FORMAT.ShortDateFormat,
+        `Survey start date cannot be before ${DATE_LIMIT.min}`
+      )
+      .required('Required'),
+    end_date: yup
+      .string()
+      .isValidDateString()
+      .isEndDateAfterStartDate('start_date')
+      .isBeforeDate(
+        projectWithDetails?.project.end_date,
+        DATE_FORMAT.ShortDateFormat,
+        'Survey end date cannot be after project end date'
+      )
+      .isBeforeDate(
+        moment(DATE_LIMIT.max).toISOString(),
+        DATE_FORMAT.ShortDateFormat,
+        `Survey end date cannot be after ${DATE_LIMIT.max}`
+      )
+  })
+    .concat(StudyAreaYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
 
@@ -332,6 +365,8 @@ const CreateSurveyPage = () => {
                           return { value: item.name, label: item.name };
                         }) || []
                       }
+                      projectStartDate={projectWithDetails.project.start_date}
+                      projectEndDate={projectWithDetails.project.end_date}
                     />
                   }></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />
