@@ -9,7 +9,7 @@ import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('delete a draft project', () => {
+describe('gets a draft project', () => {
   const dbConnectionObj = {
     systemUserId: () => {
       return null;

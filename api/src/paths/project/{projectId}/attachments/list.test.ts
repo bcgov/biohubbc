@@ -55,7 +55,7 @@ describe('lists the project attachments', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no sql statement returned for getDraftSQL', async () => {
+  it('should throw a 400 error when no sql statement returned for getProjectAttachmentsSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
