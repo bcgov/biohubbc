@@ -5,8 +5,9 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditPartnershipsI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   IProjectPartnershipsForm,
   ProjectPartnershipsFormInitialValues,
@@ -16,7 +17,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IPartnershipsProps {
@@ -43,6 +44,24 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [partnershipsForUpdate, setPartnershipsForUpdate] = useState(ProjectPartnershipsFormInitialValues);
+
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
+    dialogTitle: EditPartnershipsI18N.editErrorTitle,
+    dialogText: EditPartnershipsI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
 
   const handleDialogEditOpen = async () => {
     let partnershipsResponseData;
@@ -83,22 +102,6 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     props.refresh();
   };
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditPartnershipsI18N.editErrorTitle,
-    dialogText: EditPartnershipsI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
-  };
-
   const hasIndigenousPartnerships = indigenous_partnerships && indigenous_partnerships.length > 0;
   const hasStakeholderPartnerships = stakeholder_partnerships && stakeholder_partnerships.length > 0;
 
@@ -115,7 +118,6 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
 
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">

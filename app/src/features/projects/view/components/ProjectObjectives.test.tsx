@@ -5,6 +5,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import ProjectObjectives from './ProjectObjectives';
 import { codes } from 'test-helpers/code-helpers';
+import { DialogContextProvider } from 'contexts/dialogContext';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -22,7 +23,9 @@ const mockRefresh = jest.fn();
 
 const renderContainer = () => {
   return render(
-    <ProjectObjectives projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    <DialogContextProvider>
+      <ProjectObjectives projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    </DialogContextProvider>
   );
 };
 

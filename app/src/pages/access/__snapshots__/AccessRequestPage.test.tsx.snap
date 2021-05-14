@@ -322,6 +322,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 </div>
                 <button
                   class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+                  data-testid="logout-button"
                   tabindex="0"
                   type="button"
                 >

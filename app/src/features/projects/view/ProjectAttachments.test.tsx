@@ -1,10 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectAttachments from './ProjectAttachments';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 
 const history = createMemoryHistory();
 
@@ -100,10 +101,12 @@ describe('ProjectAttachments', () => {
       ]
     });
 
-    const { queryByText, getByTestId, getByText } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
+    const { queryByText, getByTestId } = render(
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        </Router>
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -120,10 +123,11 @@ describe('ProjectAttachments', () => {
       expect(queryByText('Delete Attachment')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Yes'));
+    fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(queryByText('filename.test')).toBeNull();
+      expect(queryByText('Delete Attachment')).not.toBeInTheDocument();
+      expect(queryByText('filename.test')).not.toBeInTheDocument();
     });
   });
 
@@ -141,9 +145,11 @@ describe('ProjectAttachments', () => {
     });
 
     const { queryByText, getByTestId, getByText } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        </Router>
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -181,9 +187,11 @@ describe('ProjectAttachments', () => {
     });
 
     const { queryByText, getByTestId, getAllByRole } = render(
-      <Router history={history}>
-        <ProjectAttachments projectForViewData={getProjectForViewResponse} />
-      </Router>
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectAttachments projectForViewData={getProjectForViewResponse} />
+        </Router>
+      </DialogContextProvider>
     );
 
     await waitFor(() => {

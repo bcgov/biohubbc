@@ -7,6 +7,7 @@ import {
   screen,
   waitFor
 } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { ProjectDetailsFormInitialValues } from 'features/projects/components/ProjectDetailsForm';
 import { ProjectFundingFormInitialValues } from 'features/projects/components/ProjectFundingForm';
 import { ProjectIUCNFormInitialValues } from 'features/projects/components/ProjectIUCNForm';
@@ -41,9 +42,11 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 
 const renderContainer = () => {
   return render(
-    <Router history={history}>
-      <CreateProjectPage />,
-    </Router>
+    <DialogContextProvider>
+      <Router history={history}>
+        <CreateProjectPage />,
+      </Router>
+    </DialogContextProvider>
   );
 };
 

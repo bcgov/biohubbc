@@ -6,6 +6,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { DialogContextProvider } from 'contexts/dialogContext';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -270,7 +271,9 @@ describe('LocationBoundary', () => {
     });
 
     const { getByText, queryByText } = render(
-      <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -294,7 +297,9 @@ describe('LocationBoundary', () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = render(
-      <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -326,7 +331,9 @@ describe('LocationBoundary', () => {
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = render(
-      <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <LocationBoundary projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {

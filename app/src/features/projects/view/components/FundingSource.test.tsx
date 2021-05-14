@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor, cleanup, within } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
@@ -90,7 +91,9 @@ describe('FundingSource', () => {
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = render(
-      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -120,7 +123,9 @@ describe('FundingSource', () => {
 
   it('deletes a funding source as expected', async () => {
     const { getByText, getByTestId } = render(
-      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -143,7 +148,9 @@ describe('FundingSource', () => {
 
   it('closes the delete dialog when user decides not to delete their funding source', async () => {
     const { getByText, queryByText, getByTestId, getAllByRole } = render(
-      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {
@@ -181,7 +188,9 @@ describe('FundingSource', () => {
     mockBiohubApi().project.deleteFundingSource = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getByTestId } = render(
-      <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      <DialogContextProvider>
+        <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+      </DialogContextProvider>
     );
 
     await waitFor(() => {

@@ -5,8 +5,9 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditCoordinatorI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   IProjectCoordinatorForm,
   ProjectCoordinatorInitialValues,
@@ -20,7 +21,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface IProjectCoordinatorProps {
@@ -42,20 +43,22 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: EditCoordinatorI18N.editErrorTitle,
     dialogText: EditCoordinatorI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -128,7 +131,6 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h3">Project Coordinator</Typography>

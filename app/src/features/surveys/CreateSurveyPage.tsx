@@ -9,14 +9,13 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import YesNoDialog from 'components/dialog/YesNoDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSurveyI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, ICreateProjectSurveyRequest } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -32,6 +31,7 @@ import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './com
 import CreateSurveySection from './CreateSurveySection';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
+import { DialogContext } from 'contexts/dialogContext';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import yup from 'utils/YupSchema';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
@@ -111,24 +111,26 @@ const CreateSurveyPage = () => {
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
-  // Whether or not to show the 'Are you sure you want to cancel' dialog
-  const [openCancelDialog, setOpenCancelDialog] = useState(false);
-
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  // Whether or not to show the error dialog
-  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: CreateSurveyI18N.createErrorTitle,
-    dialogText: CreateSurveyI18N.createErrorText,
+  const dialogContext = useContext(DialogContext);
+
+  const defaultCancelDialogProps = {
+    dialogTitle: CreateSurveyI18N.cancelTitle,
+    dialogText: CreateSurveyI18N.cancelText,
     open: false,
     onClose: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setYesNoDialog({ open: false });
     },
-    onOk: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+    onNo: () => {
+      dialogContext.setYesNoDialog({ open: false });
+    },
+    onYes: () => {
+      dialogContext.setYesNoDialog({ open: false });
+      history.push(`/projects/${projectWithDetails?.id}/surveys`);
     }
-  });
+  };
 
   // Initial values for the survey form sections
   const [surveyInitialValues] = useState({
@@ -210,14 +212,20 @@ const CreateSurveyPage = () => {
   }, [isLoadingProject, projectWithDetails, getProject]);
 
   const handleCancel = () => {
+    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push(`/projects/${projectWithDetails?.id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({
-      ...openErrorDialogProps,
+    dialogContext.setErrorDialog({
       dialogTitle: CreateSurveyI18N.createErrorTitle,
       dialogText: CreateSurveyI18N.createErrorText,
+      onClose: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      },
       ...textDialogProps,
       open: true
     });
@@ -285,15 +293,29 @@ const CreateSurveyPage = () => {
     }
   };
 
-  // Used for when the user tries to leave the create survey page (cancel click or browser back button click)
+  /**
+   * Intercepts all navigation attempts (when used with a `Prompt`).
+   *
+   * Returning true allows the navigation, returning false prevents it.
+   *
+   * @param {History.Location} location
+   * @return {*}
+   */
   const handleLocationChange = (location: History.Location, action: History.Action) => {
-    if (!openCancelDialog) {
+    if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
-      setOpenCancelDialog(true);
+      dialogContext.setYesNoDialog({
+        ...defaultCancelDialogProps,
+        onYes: () => {
+          dialogContext.setYesNoDialog({ open: false });
+          history.push(location.pathname);
+        },
+        open: true
+      });
       return false;
     }
 
-    // If the cancel dialog is already open and a location change action is triggered by `handleDialogYes`: allow it
+    // If the cancel dialog is already open and another location change action is triggered: allow it
     return true;
   };
 
@@ -304,15 +326,6 @@ const CreateSurveyPage = () => {
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <YesNoDialog
-        dialogTitle={CreateSurveyI18N.cancelTitle}
-        dialogText={CreateSurveyI18N.cancelText}
-        open={openCancelDialog}
-        onClose={() => setOpenCancelDialog(false)}
-        onNo={() => setOpenCancelDialog(false)}
-        onYes={() => history.push(`/projects/${projectWithDetails?.id}/surveys`)}
-      />
-      <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
         <Container maxWidth="xl">
           <Box mb={3}>

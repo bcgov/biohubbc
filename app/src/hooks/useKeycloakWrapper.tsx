@@ -1,5 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
@@ -26,10 +27,10 @@ export interface IKeycloakWrapper {
   /**
    * Original raw keycloak object.
    *
-   * @type {*}
+   * @type {(KeycloakInstance | undefined)}
    * @memberof IKeycloakWrapper
    */
-  keycloak: any;
+  keycloak: KeycloakInstance | undefined;
   /**
    * Returns `true` if the user's information has been loaded, false otherwise.
    *
