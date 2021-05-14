@@ -45,7 +45,7 @@ const LogInPage: React.FC = () => {
         <Typography>{`You must log in to access this application.`}</Typography>
         <Box pt={4}>
           <Button
-            onClick={() => keycloakWrapper?.keycloak.login()}
+            onClick={() => keycloakWrapper?.keycloak?.login()}
             type="submit"
             size="large"
             variant="contained"

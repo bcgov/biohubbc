@@ -283,7 +283,6 @@ const CreateSurveyPage = () => {
     }
 
     // If the cancel dialog is already open and another location change action is triggered: allow it
-    // This should only happen
     return true;
   };
 
