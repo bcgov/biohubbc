@@ -95,4 +95,14 @@ export const getAdministrativeActivityStatusTypeSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getTaxonsSQL = (): SQLStatement =>
-  SQL`SELECT id, english_name as name FROM wldtaxonomic_units WHERE tty_name = 'SPECIES';`;
+  SQL`
+    SELECT
+      id,
+      CASE
+        WHEN english_name IS NULL THEN unit_name2
+        ELSE CONCAT(english_name, ' - ', unit_name2)
+      END as name
+    FROM
+      wldtaxonomic_units
+    WHERE
+      tty_name = 'SPECIES';`;
