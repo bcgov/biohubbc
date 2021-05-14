@@ -76,10 +76,12 @@ describe('lists the project attachments', () => {
     }
   });
 
-  it('should return a list of project attachments on success', async () => {
+  it('should return a list of project attachments where the lastModified is the create_date', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [{ id: 13, fileName: 'name1', lastModified: 'now', size: 50 }] });
+    mockQuery.resolves({
+      rows: [{ id: 13, file_name: 'name1', create_date: '2020-01-01', update_date: '', file_size: 50 }]
+    });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -95,7 +97,35 @@ describe('lists the project attachments', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.not.be.null;
+    expect(actualResult).to.be.eql({
+      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-01', size: 50 }]
+    });
+  });
+
+  it('should return a list of project attachments where the lastModified is the update_date', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [{ id: 13, file_name: 'name1', create_date: '2020-01-01', update_date: '2020-01-02', file_size: 50 }]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+
+    const result = listAttachments.getAttachments();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.be.eql({
+      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-02', size: 50 }]
+    });
   });
 
   it('should return null if the project has no attachments, on success', async () => {
