@@ -29,6 +29,7 @@ declare
   __s_id survey.id%type;
   __count integer = 0;
   __system_user_id system_user.id%type;
+  __ss_id study_species.id%type;
 begin
   set role biohub_api;
   set search_path to biohub_dapi_v1, biohub, public, topology;
@@ -39,8 +40,7 @@ begin
 
   -- test project data
   -- delete all project data
-  delete from focal_species;
-  delete from ancillary_species;
+  delete from study_species;
   delete from stakeholder_partnership;
   delete from project_activity;
   delete from project_climate_initiative;
@@ -75,8 +75,8 @@ begin
     , ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)
     ) returning id into __p_id;
 
-  insert into focal_species (p_id, name) values (__p_id, 'test');
-  insert into ancillary_species (p_id, name) values (__p_id, 'test');
+  insert into study_species (p_id, wu_id, is_focal) values (__p_id, (select id from wldtaxonomic_units where CODE = 'OPUNXCO'), true) returning id into __ss_id;
+  insert into study_species (p_id, wu_id, is_focal) values (__p_id, (select id from wldtaxonomic_units where CODE = 'AMARALB'), false);
   insert into stakeholder_partnership (p_id, name) values (__p_id, 'test');
   insert into project_activity (p_id, a_id) values (__p_id, (select id from activity where name = 'Monitoring'));
   insert into project_climate_initiative (p_id, cci_id) values (__p_id, (select id from climate_change_initiative where name = 'Monitoring'));
@@ -89,10 +89,8 @@ begin
   insert into project_attachment (p_id, file_name, title, key, file_size) values (__p_id, 'test_filename.txt', 'test filename', 'projects/'||__p_id::text, 10000);
   insert into project_first_nation (p_id, fn_id) values (__p_id, (select id from first_nations where name = 'Kitselas Nation'));
 
-  select count(1) into __count from focal_species;
-  assert __count = 1, 'FAIL focal_species';
-  select count(1) into __count from ancillary_species;
-  assert __count = 1, 'FAIL ancillary_species';
+  select count(1) into __count from study_species;
+  assert __count = 2, 'FAIL study_species';
   select count(1) into __count from stakeholder_partnership;
   assert __count = 1, 'FAIL stakeholder_partnership';
   select count(1) into __count from project_activity;
@@ -115,14 +113,20 @@ begin
   assert __count = 1, 'FAIL project_first_nation';
 
   -- surveys
-  insert into survey (p_id, name, objectives, location_name, location_description, species, start_date, lead_first_name, lead_last_name, geometry)
-    values (__p_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', 'survey species', now(), 'lead first', 'lead last', ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)) returning id into __s_id;
+  insert into survey (p_id, name, objectives, location_name, location_description, start_date, lead_first_name, lead_last_name, geometry)
+    values (__p_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', now(), 'lead first', 'lead last', ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)) returning id into __s_id;
   select count(1) into __count from survey;
   assert __count = 1, 'FAIL survey';
   insert into survey_proprietor (s_id, fn_id, prt_id, rationale,disa_required)
     values (__s_id, (select id from first_nations where name = 'Squamish Nation'), (select id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);
   select count(1) into __count from survey_proprietor;
   assert __count = 1, 'FAIL survey_proprietor';
+  update study_species set s_id = __s_id where id = __ss_id;
+  select count(1) into __count from study_species where s_id = __s_id;
+  assert __count = 1, 'FAIL study_species(2)';
+  insert into survey_attachment (s_id, file_name, title, key, file_size) values (__s_id, 'test_filename.txt', 'test filename', 'projects/'||__p_id::text||'/surveys/'||__s_id::text, 10000);
+  select count(1) into __count from survey_attachment where s_id = __s_id;
+  assert __count = 1, 'FAIL survey_attachment';
 
   -- test ancillary data
   delete from webform_draft;

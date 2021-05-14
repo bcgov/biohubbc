@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Thursday, May 06, 2021 12:14:55
+-- Date Created : Thursday, May 13, 2021 18:25:06
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -193,47 +193,6 @@ COMMENT ON TABLE administrative_activity_type IS 'Administrative activity type d
 ;
 
 -- 
--- TABLE: ancillary_species 
---
-
-CREATE TABLE ancillary_species(
-    id                          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                        varchar(300)      NOT NULL,
-    p_id                        integer           NOT NULL,
-    uniform_resource_locator    varchar(2000),
-    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                 integer           NOT NULL,
-    update_date                 timestamptz(6),
-    update_user                 integer,
-    revision_count              integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk122_1 PRIMARY KEY (id)
-)
-;
-
-
-
-COMMENT ON COLUMN ancillary_species.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN ancillary_species.name IS 'The name of the anciliary species.'
-;
-COMMENT ON COLUMN ancillary_species.p_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN ancillary_species.uniform_resource_locator IS 'The associated Uniform Resource Locator.'
-;
-COMMENT ON COLUMN ancillary_species.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN ancillary_species.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN ancillary_species.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN ancillary_species.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN ancillary_species.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE ancillary_species IS 'The ancillary species the project is inventoring or monitoring.'
-;
-
--- 
 -- TABLE: audit_log 
 --
 
@@ -354,47 +313,6 @@ COMMENT ON COLUMN first_nations.update_user IS 'The id of the user who updated t
 COMMENT ON COLUMN first_nations.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE first_nations IS 'A list of first nations.'
-;
-
--- 
--- TABLE: focal_species 
---
-
-CREATE TABLE focal_species(
-    id                          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                        varchar(300)      NOT NULL,
-    p_id                        integer           NOT NULL,
-    uniform_resource_locator    varchar(2000),
-    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                 integer           NOT NULL,
-    update_date                 timestamptz(6),
-    update_user                 integer,
-    revision_count              integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK122" PRIMARY KEY (id)
-)
-;
-
-
-
-COMMENT ON COLUMN focal_species.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN focal_species.name IS 'The name of the focal species.'
-;
-COMMENT ON COLUMN focal_species.p_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN focal_species.uniform_resource_locator IS 'The associated Uniform Resource Locator.'
-;
-COMMENT ON COLUMN focal_species.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN focal_species.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN focal_species.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN focal_species.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN focal_species.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE focal_species IS 'The focal species the project is inventoring or monitoring.'
 ;
 
 -- 
@@ -1407,6 +1325,50 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 ;
 
 -- 
+-- TABLE: study_species 
+--
+
+CREATE TABLE study_species(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id              integer           NOT NULL,
+    s_id              integer,
+    wu_id             integer           NOT NULL,
+    is_focal          boolean           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk122_2 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN study_species.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN study_species.p_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN study_species.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN study_species.wu_id IS 'System generated UID for a taxon.'
+;
+COMMENT ON COLUMN study_species.is_focal IS 'Define whether the species association is focal or not. A true value defines the association as focal.'
+;
+COMMENT ON COLUMN study_species.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN study_species.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN study_species.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN study_species.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE study_species IS 'The study species for the project and survey.'
+;
+
+-- 
 -- TABLE: survey 
 --
 
@@ -1415,7 +1377,6 @@ CREATE TABLE survey(
     p_id                    integer                     NOT NULL,
     name                    varchar(300),
     objectives              varchar(3000)               NOT NULL,
-    species                 varchar(300)                NOT NULL,
     start_date              date                        NOT NULL,
     lead_first_name         varchar(50)                 NOT NULL,
     lead_last_name          varchar(50)                 NOT NULL,
@@ -1442,8 +1403,6 @@ COMMENT ON COLUMN survey.p_id IS 'System generated surrogate primary key identif
 COMMENT ON COLUMN survey.name IS 'Name given to a survey.'
 ;
 COMMENT ON COLUMN survey.objectives IS 'The objectives for the survey.'
-;
-COMMENT ON COLUMN survey.species IS 'The focal species of the survey.'
 ;
 COMMENT ON COLUMN survey.start_date IS 'The start date of the survey.
 '
@@ -1473,6 +1432,94 @@ COMMENT ON COLUMN survey.update_user IS 'The id of the user who updated the reco
 COMMENT ON COLUMN survey.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE survey IS 'The top level organizational structure for survey data collection. '
+;
+
+-- 
+-- TABLE: survey_attachment 
+--
+
+CREATE TABLE survey_attachment(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    s_id              integer           NOT NULL,
+    file_name         varchar(300),
+    title             varchar(300),
+    description       varchar(250),
+    key               varchar(300)      NOT NULL,
+    file_size         integer,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk141_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_attachment.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_attachment.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_attachment.file_name IS 'The name of the file attachment.'
+;
+COMMENT ON COLUMN survey_attachment.title IS 'The title of the file.'
+;
+COMMENT ON COLUMN survey_attachment.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN survey_attachment.key IS 'The identifying key to the file in the storage system.'
+;
+COMMENT ON COLUMN survey_attachment.file_size IS 'The size of the file in bytes.'
+;
+COMMENT ON COLUMN survey_attachment.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_attachment.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_attachment.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_attachment.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_attachment.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_attachment IS 'A list of survey attachments.'
+;
+
+-- 
+-- TABLE: survey_funding_source 
+--
+
+CREATE TABLE survey_funding_source(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    pfs_id            integer           NOT NULL,
+    s_id              integer           NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK162" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_funding_source.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_funding_source.pfs_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_funding_source.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_funding_source.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_funding_source.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_funding_source.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_funding_source.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_funding_source.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surveys and funding source details.'
 ;
 
 -- 
@@ -1915,18 +1962,6 @@ CREATE UNIQUE INDEX aast_nuk1 ON administrative_activity_status_type(name, (reco
 CREATE UNIQUE INDEX aat_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: as_uk1 
---
-
-CREATE UNIQUE INDEX as_uk1 ON ancillary_species(name, p_id)
-;
--- 
--- INDEX: "Ref4544" 
---
-
-CREATE INDEX "Ref4544" ON ancillary_species(p_id)
-;
--- 
 -- INDEX: cci_nuk1 
 --
 
@@ -1937,18 +1972,6 @@ CREATE UNIQUE INDEX cci_nuk1 ON climate_change_initiative(name, (record_end_date
 --
 
 CREATE UNIQUE INDEX cci_nuk1_1 ON first_nations(name, (record_end_date is NULL)) where record_end_date is null
-;
--- 
--- INDEX: fs_uk1 
---
-
-CREATE UNIQUE INDEX fs_uk1 ON focal_species(name, p_id)
-;
--- 
--- INDEX: "Ref4543" 
---
-
-CREATE INDEX "Ref4543" ON focal_species(p_id)
 ;
 -- 
 -- INDEX: fs_nuk2 
@@ -2215,10 +2238,64 @@ CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
 CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 ;
 -- 
+-- INDEX: ss_uk1 
+--
+
+CREATE UNIQUE INDEX ss_uk1 ON study_species(p_id, wu_id)
+;
+-- 
+-- INDEX: ss_uk2 
+--
+
+CREATE UNIQUE INDEX ss_uk2 ON study_species(s_id, wu_id)
+;
+-- 
+-- INDEX: "Ref4589" 
+--
+
+CREATE INDEX "Ref4589" ON study_species(p_id)
+;
+-- 
+-- INDEX: "Ref15390" 
+--
+
+CREATE INDEX "Ref15390" ON study_species(s_id)
+;
+-- 
+-- INDEX: "Ref16091" 
+--
+
+CREATE INDEX "Ref16091" ON study_species(wu_id)
+;
+-- 
 -- INDEX: "Ref4581" 
 --
 
 CREATE INDEX "Ref4581" ON survey(p_id)
+;
+-- 
+-- INDEX: "Ref15386" 
+--
+
+CREATE INDEX "Ref15386" ON survey_attachment(s_id)
+;
+-- 
+-- INDEX: sfs_nuk1 
+--
+
+CREATE UNIQUE INDEX sfs_nuk1 ON survey_funding_source(pfs_id, s_id)
+;
+-- 
+-- INDEX: "Ref7487" 
+--
+
+CREATE INDEX "Ref7487" ON survey_funding_source(pfs_id)
+;
+-- 
+-- INDEX: "Ref15388" 
+--
+
+CREATE INDEX "Ref15388" ON survey_funding_source(s_id)
 ;
 -- 
 -- INDEX: "Ref15983" 
@@ -2314,26 +2391,6 @@ ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user79"
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type80" 
     FOREIGN KEY (aast_id)
     REFERENCES administrative_activity_status_type(id)
-;
-
-
--- 
--- TABLE: ancillary_species 
---
-
-ALTER TABLE ancillary_species ADD CONSTRAINT "Refproject44" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
-;
-
-
--- 
--- TABLE: focal_species 
---
-
-ALTER TABLE focal_species ADD CONSTRAINT "Refproject43" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
 ;
 
 
@@ -2528,12 +2585,57 @@ ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39"
 
 
 -- 
+-- TABLE: study_species 
+--
+
+ALTER TABLE study_species ADD CONSTRAINT "Refproject89" 
+    FOREIGN KEY (p_id)
+    REFERENCES project(id)
+;
+
+ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91" 
+    FOREIGN KEY (wu_id)
+    REFERENCES wldtaxonomic_units(id)
+;
+
+
+-- 
 -- TABLE: survey 
 --
 
 ALTER TABLE survey ADD CONSTRAINT "Refproject81" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
+;
+
+
+-- 
+-- TABLE: survey_attachment 
+--
+
+ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey86" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+
+-- 
+-- TABLE: survey_funding_source 
+--
+
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refproject_funding_source87" 
+    FOREIGN KEY (pfs_id)
+    REFERENCES project_funding_source(id)
+;
+
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
 ;
 
 

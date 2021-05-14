@@ -14,58 +14,61 @@ const DB_USER_API = process.env.DB_USER_API;
  */
 export async function up(knex: Knex): Promise<void> {
   const create_spatial_extensions = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'create_spatial_extensions.psql')
+    path.join(__dirname, 'release.0.15', 'create_spatial_extensions.psql')
   );
-  const biohub_ddl = fs.readFileSync(path.join(__dirname, 'release.0.14', 'biohub.sql'));
+  const biohub_ddl = fs.readFileSync(path.join(__dirname, 'release.0.15', 'biohub.sql'));
   const populate_user_identity_source = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_user_identity_source.sql')
+    path.join(__dirname, 'release.0.15', 'populate_user_identity_source.sql')
   );
-  const api_set_context = fs.readFileSync(path.join(__dirname, 'release.0.14', 'api_set_context.sql'));
-  const tr_audit_trigger = fs.readFileSync(path.join(__dirname, 'release.0.14', 'tr_audit_trigger.sql'));
-  const project_audit_triggers = fs.readFileSync(path.join(__dirname, 'release.0.14', 'project_audit_triggers.sql'));
-  const api_get_context_user_id = fs.readFileSync(path.join(__dirname, 'release.0.14', 'api_get_context_user_id.sql'));
-  const tr_journal_trigger = fs.readFileSync(path.join(__dirname, 'release.0.14', 'tr_journal_trigger.sql'));
+  const api_set_context = fs.readFileSync(path.join(__dirname, 'release.0.15', 'api_set_context.sql'));
+  const tr_audit_trigger = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_audit_trigger.sql'));
+  const project_audit_triggers = fs.readFileSync(path.join(__dirname, 'release.0.15', 'project_audit_triggers.sql'));
+  const api_get_context_user_id = fs.readFileSync(path.join(__dirname, 'release.0.15', 'api_get_context_user_id.sql'));
+  const tr_journal_trigger = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_journal_trigger.sql'));
   const project_journal_triggers = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'project_journal_triggers.sql')
+    path.join(__dirname, 'release.0.15', 'project_journal_triggers.sql')
   );
   const tr_project_funding_source = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'tr_project_funding_source.sql')
+    path.join(__dirname, 'release.0.15', 'tr_project_funding_source.sql')
   );
-  const api_delete_project = fs.readFileSync(path.join(__dirname, 'release.0.14', 'api_delete_project.sql'));
+  const api_delete_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'api_delete_project.sql'));
 
-  const populate_first_nations = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_first_nations.sql'));
+  const populate_first_nations = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_first_nations.sql'));
   const populate_climate_change_initiatives = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_climate_change_initiatives.sql')
+    path.join(__dirname, 'release.0.15', 'populate_climate_change_initiatives.sql')
   );
   const populate_management_action_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_management_action_type.sql')
+    path.join(__dirname, 'release.0.15', 'populate_management_action_type.sql')
   );
-  const populate_funding_source = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_funding_source.sql'));
+  const populate_funding_source = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_funding_source.sql'));
   const populate_investment_action_category = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_investment_action_category.sql')
+    path.join(__dirname, 'release.0.15', 'populate_investment_action_category.sql')
   );
-  const populate_project_type = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_project_type.sql'));
-  const populate_activity = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_activity.sql'));
+  const populate_project_type = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_project_type.sql'));
+  const populate_activity = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_activity.sql'));
   const populate_icun_classifications = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_icun_classifications.sql')
+    path.join(__dirname, 'release.0.15', 'populate_icun_classifications.sql')
   );
-  const populate_project_role = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_project_role.sql'));
-  const populate_system_role = fs.readFileSync(path.join(__dirname, 'release.0.14', 'populate_system_role.sql'));
+  const populate_project_role = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_project_role.sql'));
+  const populate_system_role = fs.readFileSync(path.join(__dirname, 'release.0.15', 'populate_system_role.sql'));
   const populate_administrative_activity_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_administrative_activity_type.sql')
+    path.join(__dirname, 'release.0.15', 'populate_administrative_activity_type.sql')
   );
   const populate_administrative_activity_status_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_administrative_activity_status_type.sql')
+    path.join(__dirname, 'release.0.15', 'populate_administrative_activity_status_type.sql')
   );
   const populate_proprietor_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_proprietor_type.sql')
+    path.join(__dirname, 'release.0.15', 'populate_proprietor_type.sql')
   );
   const populate_wldtaxonomic_units = fs.readFileSync(
-    path.join(__dirname, 'release.0.14', 'populate_wldtaxonomic_units.sql')
+    path.join(__dirname, 'release.0.15', 'populate_wldtaxonomic_units.sql')
   );
-  const tr_fn_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.14', 'tr_fn_survey_proprietor.sql'));
+  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_study_species.sql'));
+  const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_project.sql'));
+  const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey.sql'));
 
-  const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.14', 'project_dapi_views.sql'));
+  const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.15', 'project_dapi_views.sql'));
 
   await knex.raw(`
     -- set up spatial extensions
@@ -84,7 +87,11 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
-    ${tr_fn_survey_proprietor}
+    ${tr_survey_proprietor}
+    ${tr_study_species}
+    ${tr_project}
+    ${tr_survey}
+
     ${api_delete_project}
 
     -- populate look up tables
