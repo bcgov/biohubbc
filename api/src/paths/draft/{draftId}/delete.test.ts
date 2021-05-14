@@ -72,15 +72,6 @@ describe('delete a draft project', () => {
     }
   });
 
-
-
-
-
-
-
-
-
-
   it('should throw a 400 error when no sql statement returned for deleteDraftSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -123,5 +114,4 @@ describe('delete a draft project', () => {
 
     expect(actualResult).to.eql(1);
   });
-
 });

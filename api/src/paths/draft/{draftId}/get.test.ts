@@ -55,8 +55,6 @@ describe('delete a draft project', () => {
     sinon.restore();
   });
 
-
-
   it('should throw a 400 error when no sql statement returned for getDraftSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -79,7 +77,6 @@ describe('delete a draft project', () => {
   });
 
   it('should return the draft project on success', async () => {
-
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [{ id: 1 }] });
@@ -98,14 +95,13 @@ describe('delete a draft project', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql({id: 1});
+    expect(actualResult).to.eql({ id: 1 });
   });
 
   it('should return null if the draft project does not exist', async () => {
-
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: undefined});
+    mockQuery.resolves({ rows: undefined });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -123,5 +119,4 @@ describe('delete a draft project', () => {
 
     expect(actualResult).to.eql(null);
   });
-
 });
