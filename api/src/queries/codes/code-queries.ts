@@ -88,3 +88,11 @@ export const getSystemRolesSQL = (): SQLStatement => SQL`SELECT id, name from sy
  */
 export const getAdministrativeActivityStatusTypeSQL = (): SQLStatement =>
   SQL`SELECT id, name FROM administrative_activity_status_type;`;
+
+/**
+ * SQL query to fetch taxon codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getTaxonsSQL = (): SQLStatement =>
+  SQL`SELECT id, english_name as name FROM administrative_activity_status_type WHERE tty_name = 'SPECIES';`;
