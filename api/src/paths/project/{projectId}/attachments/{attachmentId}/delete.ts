@@ -18,7 +18,7 @@ DELETE.apiDoc = attachmentApiDocObject(
   'Row count of successfully deleted attachment record'
 );
 
-function deleteAttachment(): RequestHandler {
+export function deleteAttachment(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete attachment', message: 'params', req_params: req.params });
 
@@ -48,7 +48,7 @@ function deleteAttachment(): RequestHandler {
         deleteProjectAttachmentSQLStatement.text,
         deleteProjectAttachmentSQLStatement.values
       );
-      const s3Key = result && result.rows.length && result.rows[0]?.key;
+      const s3Key = result && result.rows.length && result.rows[0].key;
 
       await connection.commit();
 

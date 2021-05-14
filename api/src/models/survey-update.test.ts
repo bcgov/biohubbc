@@ -22,6 +22,10 @@ describe('PutSurveyData', () => {
       expect(data.species).to.equal(null);
     });
 
+    it('sets geometry', () => {
+      expect(data.geometry).to.equal(null);
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
@@ -59,6 +63,23 @@ describe('PutSurveyData', () => {
       biologist_first_name: 'first',
       biologist_last_name: 'last',
       survey_area_name: 'survey area name',
+      geometry: [
+        {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ],
+          properties: {
+            name: 'Biohub Islands'
+          }
+        }
+      ],
       revision_count: 1
     };
 
@@ -92,6 +113,10 @@ describe('PutSurveyData', () => {
 
     it('sets lead_last_name', () => {
       expect(data.lead_last_name).to.equal(surveyData.biologist_last_name);
+    });
+
+    it('sets geometry', () => {
+      expect(data.geometry).to.eql(surveyData.geometry);
     });
 
     it('sets location_name', () => {

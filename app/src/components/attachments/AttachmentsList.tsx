@@ -84,6 +84,21 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  const getFormattedFileSize = (fileSize: number) => {
+    // kilobyte size
+    if (fileSize < 1000000) {
+      return `${(fileSize / 1000).toFixed(1)} KB`;
+    }
+
+    // megabyte size
+    if (fileSize < 1000000000) {
+      return `${(fileSize / 1000000).toFixed(1)} MB`;
+    }
+
+    // gigabyte size
+    return `${(fileSize / 1000000000).toFixed(1)} GB`;
+  };
+
   return (
     <>
       <YesNoDialog
@@ -118,7 +133,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                       </Link>
                     </TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
-                    <TableCell>{row.size / 1000000} MB</TableCell>
+                    <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                       <IconButton
                         color="primary"
