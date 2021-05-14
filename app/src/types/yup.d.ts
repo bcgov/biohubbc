@@ -37,6 +37,19 @@ declare module 'yup' {
       dateFormat?: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
       message?: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    isAfterDate(
+      minDate: string | undefined,
+      dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+      message?: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    // max date is a datestring in ISO format
+    isBeforeDate(
+      maxDate: string | undefined,
+      dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+      message?: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 
   export class ArraySchema extends yup.ArraySchema {

@@ -192,7 +192,7 @@ const SurveyPage: React.FC = () => {
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <SurveyDetails
-                projectId={projectWithDetails.id}
+                projectForViewData={projectWithDetails}
                 surveyForViewData={surveyWithDetails}
                 codes={codes}
                 refresh={getSurvey}
