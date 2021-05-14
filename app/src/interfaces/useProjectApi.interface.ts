@@ -163,8 +163,8 @@ export interface IGetProjectForUpdateResponseCoordinator {
 }
 
 export interface IGetProjectForUpdateResponseSpecies {
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  ancillary_species: number[];
 }
 
 interface IGetProjectForUpdateResponseIUCNArrayItem {
@@ -291,8 +291,8 @@ export interface IGetProjectForViewResponseFundingData {
 }
 
 export interface IGetProjectForViewResponseSpecies {
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  ancillary_species: number[];
 }
 
 export interface IGetProjectForViewResponsePartnerships {

@@ -35,8 +35,8 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     share_contact_details: 'true'
   },
   species: {
-    focal_species: ['species 1', 'species 2'],
-    ancillary_species: ['species 3', 'species 4']
+    focal_species: [1, 2],
+    ancillary_species: [3, 4]
   },
   iucn: {
     classificationDetails: [

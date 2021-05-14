@@ -138,7 +138,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Focal Species
               </Typography>
-              {focal_species?.map((focalSpecies: string, index: number) => {
+              {focal_species?.map((focalSpecies: number, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {focalSpecies}
@@ -155,7 +155,7 @@ const Species: React.FC<ISpeciesProps> = (props) => {
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Anciliary Species
               </Typography>
-              {ancillary_species?.map((ancillarySpecies: string, index: number) => {
+              {ancillary_species?.map((ancillarySpecies: number, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {ancillarySpecies}
