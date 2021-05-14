@@ -316,7 +316,7 @@ const CreateSurveyPage = () => {
                     <GeneralInformationForm
                       species={
                         codes?.species?.map((item) => {
-                          return { value: item.name, label: item.name };
+                          return { value: item.id, label: item.name };
                         }) || []
                       }
                     />

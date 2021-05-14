@@ -122,8 +122,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           element: (
             <GeneralInformationForm
               species={
-                codes?.species?.map((item: any) => {
-                  return { value: item.name, label: item.name };
+                codes?.species?.map((item) => {
+                  return { value: item.id, label: item.name };
                 }) || []
               }
             />

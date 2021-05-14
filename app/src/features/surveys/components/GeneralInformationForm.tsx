@@ -19,7 +19,7 @@ export interface IGeneralInformationForm {
   survey_name: string;
   start_date: string;
   end_date: string;
-  species: string;
+  species: number;
   survey_purpose: string;
   biologist_first_name: string;
   biologist_last_name: string;
@@ -29,7 +29,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   survey_name: '',
   start_date: '',
   end_date: '',
-  species: '',
+  species: ('' as unknown) as number,
   survey_purpose: '',
   biologist_first_name: '',
   biologist_last_name: ''
@@ -41,7 +41,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
     .string()
     .max(3000, 'Cannot exceed 3000 characters')
     .required('You must provide a purpose for the survey'),
-  species: yup.string().required('Required'),
+  species: yup.number().required('Required'),
   biologist_first_name: yup.string().required('Required'),
   biologist_last_name: yup.string().required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
@@ -49,7 +49,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
 });
 
 export interface IGeneralInformationFormProps {
-  species: IAutocompleteFieldOption<string>[];
+  species: IAutocompleteFieldOption<number>[];
 }
 
 /**
