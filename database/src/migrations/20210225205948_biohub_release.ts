@@ -64,9 +64,18 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, 'release.0.15', 'populate_wldtaxonomic_units.sql')
   );
   const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+<<<<<<< HEAD
   const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_study_species.sql'));
   const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_project.sql'));
   const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey.sql'));
+=======
+  const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+  const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
+>>>>>>> 5e928545a9ef0f930ae605e9d4dcb74ed64b561e
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.15', 'project_dapi_views.sql'));
 
