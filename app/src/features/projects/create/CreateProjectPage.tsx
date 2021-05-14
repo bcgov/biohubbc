@@ -10,11 +10,11 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import StepperWizard, { IStepperWizardStep } from 'components/stepper-wizard/StepperWizard';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   ProjectCoordinatorInitialValues,
   ProjectCoordinatorYupSchema
@@ -61,7 +61,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -127,8 +127,6 @@ const CreateProjectPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
@@ -144,32 +142,35 @@ const CreateProjectPage: React.FC = () => {
 
   const [showFormFieldValidationErrors, setShowFormFieldValidationErrors] = useState<null | number>(null);
 
-  // Whether or not to show the text dialog
-  const [openCancelDialogProps, setOpenCancelDialogProps] = useState<IYesNoDialogProps>({
+  // Ability to bypass showing the 'Are you sure you want to cancel' dialog
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
+  const dialogContext = useContext(DialogContext);
+
+  const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
     dialogText: CreateProjectI18N.cancelText,
     open: false,
     onClose: () => {
-      setOpenCancelDialogProps({ ...openCancelDialogProps, open: false });
+      dialogContext.setYesNoDialog({ open: false });
     },
     onNo: () => {
-      setOpenCancelDialogProps({ ...openCancelDialogProps, open: false });
+      dialogContext.setYesNoDialog({ open: false });
     },
-    onYes: () => handleDialogYes()
-  });
+    onYes: () => {
+      dialogContext.setYesNoDialog({ open: false });
+      history.push('/projects');
+    }
+  };
 
-  // Whether or not to show the text dialog
-  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: CreateProjectI18N.createErrorTitle,
-    dialogText: CreateProjectI18N.createErrorText,
-    open: false,
+  const defaultErrorDialogProps = {
     onClose: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   // Whether or not to show the 'Save as draft' dialog
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
@@ -465,12 +466,8 @@ const CreateProjectPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setOpenCancelDialogProps({ ...openCancelDialogProps, onYes: () => history.push('/projects') });
+    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push('/projects');
-  };
-
-  const handleDialogYes = () => {
-    openCancelDialogProps.onYes();
   };
 
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
@@ -638,20 +635,20 @@ const CreateProjectPage: React.FC = () => {
   };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({
-      ...openErrorDialogProps,
+    dialogContext.setErrorDialog({
       dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
       dialogText: CreateProjectDraftI18N.draftErrorText,
+      ...defaultErrorDialogProps,
       ...textDialogProps,
       open: true
     });
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({
-      ...openErrorDialogProps,
+    dialogContext.setErrorDialog({
       dialogTitle: CreateProjectI18N.createErrorTitle,
       dialogText: CreateProjectI18N.createErrorText,
+      ...defaultErrorDialogProps,
       ...textDialogProps,
       open: true
     });
@@ -661,21 +658,35 @@ const CreateProjectPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  /**
+   * Intercepts all navigation attempts (when used with a `Prompt`).
+   *
+   * Returning true allows the navigation, returning false prevents it.
+   *
+   * @param {History.Location} location
+   * @return {*}
+   */
   const handleLocationChange = (location: History.Location, action: History.Action) => {
-    if (!openCancelDialogProps.open) {
+    if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
-      setOpenCancelDialogProps({ ...openCancelDialogProps, onYes: () => history.push(location.pathname), open: true });
+      dialogContext.setYesNoDialog({
+        ...defaultCancelDialogProps,
+        onYes: () => {
+          dialogContext.setYesNoDialog({ open: false });
+          history.push(location.pathname);
+        },
+        open: true
+      });
       return false;
     }
 
-    // If the cancel dialog is already open and a location change action is triggered by `handleDialogYes`: allow it
+    // If the cancel dialog is already open and another location change action is triggered: allow it
     return true;
   };
 
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
-      <YesNoDialog {...openCancelDialogProps} />
       <EditDialog
         dialogTitle="Save Incomplete Project as a Draft"
         dialogSaveButtonLabel="Save"
@@ -693,7 +704,6 @@ const CreateProjectPage: React.FC = () => {
         onCancel={() => setOpenDraftDialog(false)}
         onSave={(values) => handleSubmitDraft(values)}
       />
-      <ErrorDialog {...openErrorDialogProps} />
       <Box my={3}>
         <Container maxWidth="xl">
           <Box mb={3}>

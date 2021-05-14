@@ -55,6 +55,7 @@ exports[`RequestSubmitted renders correctly when user has no role but has a pend
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
+          data-testid="logout-button"
           tabindex="0"
           type="submit"
         >

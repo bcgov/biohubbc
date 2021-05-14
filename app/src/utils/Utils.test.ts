@@ -1,5 +1,12 @@
 import { DATE_FORMAT } from 'constants/dateFormats';
-import { ensureProtocol, getFormattedAmount, getFormattedDate, getFormattedDateRangeString, logOut } from './Utils';
+import { IConfig } from 'contexts/configContext';
+import {
+  ensureProtocol,
+  getFormattedAmount,
+  getFormattedDate,
+  getFormattedDateRangeString,
+  getLogOutUrl
+} from './Utils';
 
 describe('ensureProtocol', () => {
   it('does nothing if string already has `http://`', async () => {
@@ -103,30 +110,12 @@ describe('getFormattedDateRangeString', () => {
   });
 });
 
-describe('logOut', () => {
-  const { location } = window;
-
-  let replace = jest.fn();
-
-  beforeEach(() => {
-    // @ts-ignore
-    delete window.location;
-
-    // @ts-ignore
-    window.location = {
-      href: '',
-      origin: 'https://biohub.com',
-      replace: replace
-    };
+describe('getLogOutUrl', () => {
+  it('returns null when config is null', () => {
+    expect(getLogOutUrl((null as unknown) as IConfig)).toBeUndefined();
   });
 
-  afterEach(() => {
-    window.location = location;
-
-    jest.clearAllMocks();
-  });
-
-  it('should not logout when config is missing `KEYCLOAK_CONFIG.url`', () => {
+  it('returns null when config is missing `KEYCLOAK_CONFIG.url`', () => {
     const config = {
       API_HOST: '',
       CHANGE_VERSION: '',
@@ -140,12 +129,10 @@ describe('logOut', () => {
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
     };
 
-    logOut(config);
-
-    expect(replace).not.toHaveBeenCalled();
+    expect(getLogOutUrl(config)).toBeUndefined();
   });
 
-  it('should not logout when config is missing `KEYCLOAK_CONFIG.realm`', () => {
+  it('returns null when config is missing `KEYCLOAK_CONFIG.realm`', () => {
     const config = {
       API_HOST: '',
       CHANGE_VERSION: '',
@@ -159,12 +146,10 @@ describe('logOut', () => {
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
     };
 
-    logOut(config);
-
-    expect(replace).not.toHaveBeenCalled();
+    expect(getLogOutUrl(config)).toBeUndefined();
   });
 
-  it('should not logout when config is missing `SITEMINDER_LOGOUT_URL`', () => {
+  it('returns null when config is missing `SITEMINDER_LOGOUT_URL`', () => {
     const config = {
       API_HOST: '',
       CHANGE_VERSION: '',
@@ -178,12 +163,18 @@ describe('logOut', () => {
       SITEMINDER_LOGOUT_URL: ''
     };
 
-    logOut(config);
-
-    expect(replace).not.toHaveBeenCalled();
+    expect(getLogOutUrl(config)).toBeUndefined();
   });
 
-  it('should change the location.href appropriately on logout success', () => {
+  it('returns a log out url', () => {
+    // @ts-ignore
+    delete window.location;
+
+    // @ts-ignore
+    window.location = {
+      origin: 'https://biohub.com'
+    };
+
     const config = {
       API_HOST: '',
       CHANGE_VERSION: '',
@@ -197,9 +188,7 @@ describe('logOut', () => {
       SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
     };
 
-    logOut(config);
-
-    expect(replace).toHaveBeenCalledWith(
+    expect(getLogOutUrl(config)).toEqual(
       'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/login&retnow=1'
     );
   });

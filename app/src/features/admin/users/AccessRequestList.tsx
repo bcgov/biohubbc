@@ -12,15 +12,15 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { ReviewAccessRequestI18N } from 'constants/i18n';
 import { AdministrativeActivityStatusType } from 'constants/misc';
+import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
@@ -85,17 +85,19 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     request: null
   });
 
-  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: ReviewAccessRequestI18N.reviewErrorTitle,
     dialogText: ReviewAccessRequestI18N.reviewErrorText,
     open: false,
     onClose: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
     const updatedRequest = activeReviewDialog.request as IGetAccessRequestsListResponse;
@@ -113,7 +115,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
 
       refresh();
     } catch (error) {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
     }
   };
 
@@ -132,7 +134,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
 
       refresh();
     } catch (error) {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
     }
   };
 
@@ -156,7 +158,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
 
   return (
     <>
-      <ErrorDialog {...openErrorDialogProps} />
       <RequestDialog
         dialogTitle={'Review Access Request'}
         open={activeReviewDialog.open}

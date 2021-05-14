@@ -6,13 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import { mdiCheck } from '@mdi/js';
 import Icon from '@mdi/react';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
-import { Redirect } from 'react-router';
-import { logOut } from 'utils/Utils';
+import { Redirect, useHistory } from 'react-router';
 
 const RequestSubmitted = () => {
-  const config = useContext(ConfigContext);
+  const history = useHistory();
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
@@ -40,16 +38,13 @@ const RequestSubmitted = () => {
         <Box pt={4}>
           <Button
             onClick={() => {
-              if (!config) {
-                return;
-              }
-
-              logOut(config);
+              history.push('/logout');
             }}
             type="submit"
             size="large"
             variant="contained"
-            color="primary">
+            color="primary"
+            data-testid="logout-button">
             Log Out
           </Button>
         </Box>

@@ -1,11 +1,10 @@
 import { cleanup, fireEvent, render, waitFor, within } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext, IConfig } from 'contexts/configContext';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
-import * as utils from 'utils/Utils';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -48,9 +47,11 @@ const renderContainer = () => {
 
   return render(
     <AuthStateContext.Provider value={authState}>
-      <Router history={history}>
-        <AccessRequestPage />
-      </Router>
+      <DialogContextProvider>
+        <Router history={history}>
+          <AccessRequestPage />
+        </Router>
+      </DialogContextProvider>
     </AuthStateContext.Provider>
   );
 };
@@ -82,19 +83,7 @@ describe('AccessRequestPage', () => {
   describe('Log Out', () => {
     const history = createMemoryHistory();
 
-    let logOutSpy: jest.SpyInstance;
-
-    beforeAll(() => {
-      logOutSpy = jest.spyOn(utils, 'logOut').mockReturnValue();
-    });
-
-    afterAll(() => {
-      logOutSpy.mockClear();
-
-      cleanup();
-    });
-
-    it('should not logout when no config provided', async () => {
+    it('should redirect to `/logout`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         system_roles: [{ id: 1, name: 'Role 1' }],
         regional_offices: [{ id: 1, name: 'Office 1' }]
@@ -122,76 +111,17 @@ describe('AccessRequestPage', () => {
       };
 
       const { getByText } = render(
-        <ConfigContext.Provider value={(null as unknown) as IConfig}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <AccessRequestPage />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <AccessRequestPage />
+          </Router>
+        </AuthStateContext.Provider>
       );
 
       fireEvent.click(getByText('Log out'));
 
       waitFor(() => {
-        expect(logOutSpy).not.toBeCalled();
-      });
-    });
-
-    it('should logout when config provided', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        system_roles: [{ id: 1, name: 'Role 1' }],
-        regional_offices: [{ id: 1, name: 'Office 1' }]
-      });
-
-      const config = {
-        API_HOST: '',
-        CHANGE_VERSION: '',
-        NODE_ENV: '',
-        VERSION: '',
-        KEYCLOAK_CONFIG: {
-          url: 'https://www.mylogoutworks.com/auth',
-          realm: 'myrealm',
-          clientId: ''
-        },
-        SITEMINDER_LOGOUT_URL: 'https://www.siteminderlogout.com'
-      };
-
-      const authState = {
-        keycloakWrapper: {
-          keycloak: {
-            authenticated: true
-          },
-          hasLoadedAllUserInfo: true,
-          hasAccessRequest: false,
-
-          systemRoles: [],
-          getUserIdentifier: jest.fn(),
-          hasSystemRole: jest.fn(),
-          getIdentitySource: jest.fn(),
-          username: 'testusername',
-          displayName: 'testdisplayname',
-          email: 'test@email.com',
-          firstName: 'testfirst',
-          lastName: 'testlast',
-          refresh: () => {}
-        }
-      };
-
-      const { getByText } = render(
-        <ConfigContext.Provider value={config}>
-          <AuthStateContext.Provider value={authState}>
-            <Router history={history}>
-              <AccessRequestPage />
-            </Router>
-          </AuthStateContext.Provider>
-        </ConfigContext.Provider>
-      );
-
-      fireEvent.click(getByText('Log out'));
-
-      waitFor(() => {
-        expect(logOutSpy).toBeCalledTimes(1);
+        expect(history.location.pathname).toEqual('/logout');
       });
     });
   });
