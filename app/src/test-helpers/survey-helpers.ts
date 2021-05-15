@@ -5,7 +5,7 @@ export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse =
   survey: {
     survey_name: 'survey name',
     survey_purpose: 'survey purpose',
-    species: 'species',
+    species: ['species 1'],
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     biologist_first_name: 'first',

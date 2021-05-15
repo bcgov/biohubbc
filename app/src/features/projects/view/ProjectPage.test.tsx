@@ -122,7 +122,7 @@ describe('ProjectPage', () => {
         {
           id: 1,
           name: 'Moose Survey 1',
-          species: 'Moose',
+          species: ['Moose'],
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-05-09 11:53:53',
           status_name: 'Unpublished'
@@ -130,7 +130,7 @@ describe('ProjectPage', () => {
         {
           id: 2,
           name: 'Moose Survey 2',
-          species: 'Moose',
+          species: ['Moose'],
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-06-10 11:53:53',
           status_name: 'Published'

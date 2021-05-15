@@ -329,7 +329,7 @@ export interface ICreateProjectSurveyRequest {
   proprietary_data_category: string;
   proprietor_name: string;
   sedis_procedures_accepted: boolean;
-  species: string;
+  species: number;
   start_date: string;
   survey_area_name: string;
   survey_data_proprietary: string;
@@ -351,7 +351,7 @@ export interface ICreateProjectSurveyResponse {
 export interface IGetSurveyForViewResponse {
   survey_name: string;
   survey_purpose: string;
-  species: string;
+  species: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -363,7 +363,7 @@ export interface IGetSurveyForViewResponse {
 export interface ISurveyUpdateRequest {
   survey_name: string;
   survey_purpose: string;
-  species: number;
+  species: number[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -402,7 +402,7 @@ export interface IGetProjectSurveyForViewResponse {
 export interface IGetProjectSurveysListResponse {
   id: number;
   name: string;
-  species: string;
+  species: string[];
   start_date: string;
   end_date: string;
   status_name: string;

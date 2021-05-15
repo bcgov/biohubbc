@@ -12,6 +12,7 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="focal_species"
           role="combobox"
         >
           <div
@@ -115,6 +116,7 @@ exports[`ProjectSpeciesForm renders correctly with default empty values 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="ancillary_species"
           role="combobox"
         >
           <div
@@ -229,6 +231,7 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="focal_species"
           role="combobox"
         >
           <div
@@ -354,6 +357,7 @@ exports[`ProjectSpeciesForm renders correctly with existing species values 1`] =
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="ancillary_species"
           role="combobox"
         >
           <div

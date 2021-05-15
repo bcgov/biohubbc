@@ -577,6 +577,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="project_activities"
           role="combobox"
         >
           <div
@@ -907,6 +908,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="project_activities"
           role="combobox"
         >
           <div
@@ -1270,6 +1272,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -1760,6 +1763,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -2346,6 +2350,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -2449,6 +2454,7 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="stakeholder_partnerships"
           role="combobox"
         >
           <div
@@ -2563,6 +2569,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -2666,6 +2673,7 @@ exports[`ProjectStepComponents renders the project partnerships without the code
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="stakeholder_partnerships"
           role="combobox"
         >
           <div
@@ -2780,6 +2788,7 @@ exports[`ProjectStepComponents renders the project species with the codes values
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="focal_species"
           role="combobox"
         >
           <div
@@ -2883,6 +2892,7 @@ exports[`ProjectStepComponents renders the project species with the codes values
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="ancillary_species"
           role="combobox"
         >
           <div
@@ -2997,6 +3007,7 @@ exports[`ProjectStepComponents renders the project species without the codes val
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="focal_species"
           role="combobox"
         >
           <div
@@ -3100,6 +3111,7 @@ exports[`ProjectStepComponents renders the project species without the codes val
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="ancillary_species"
           role="combobox"
         >
           <div
