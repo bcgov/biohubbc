@@ -96,29 +96,43 @@ export const postProjectSQL = (
 };
 
 /**
- * SQL query to insert a focal species row.
+ * SQL query to insert a focal species row into the study_species table.
  *
- * @param {string} species
+ * @param {number} species id
+ * @param {number} project id
+ * @param {number} survey id
  * @returns {SQLStatement} sql query object
  */
-export const postFocalSpeciesSQL = (species: string, projectId: number): SQLStatement | null => {
+export const postFocalSpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', postFocalSpeciesSQL, projectId });
 
-  if (!species || !projectId) {
+  if (!speciesId || !projectId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO focal_species (
-        p_id,
-        name
-      ) VALUES (
-        ${projectId},
-        ${species}
-      )
-      RETURNING
-        id;
-    `;
+    INSERT INTO study_species (
+      p_id,
+      wu_id,
+      is_focal,
+      s_id
+    ) VALUES (
+      ${projectId},
+      ${speciesId},
+      TRUE
+  `;
+
+  if (surveyId) {
+    sqlStatement.append(SQL`,${surveyId}`);
+  } else {
+    sqlStatement.append(SQL`,null`);
+  }
+
+  sqlStatement.append(SQL`
+    )
+    RETURNING
+      id;
+  `);
 
   defaultLog.debug({
     label: 'postFocalSpeciesSQL',
@@ -131,25 +145,27 @@ export const postFocalSpeciesSQL = (species: string, projectId: number): SQLStat
 };
 
 /**
- * SQL query to insert a ancillary species row.
+ * SQL query to insert a ancillary species row into the study_species table.
  *
- * @param {string} species
+ * @param {number} species id
  * @returns {SQLStatement} sql query object
  */
-export const postAncillarySpeciesSQL = (species: string, projectId: number): SQLStatement | null => {
+export const postAncillarySpeciesSQL = (species_id: number, projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', postAncillarySpeciesSQL, projectId });
 
-  if (!species || !projectId) {
+  if (!species_id || !projectId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-        INSERT INTO ancillary_species (
+        INSERT INTO study_species (
           p_id,
-          name
+          wu_id,
+          is_focal
         ) VALUES (
           ${projectId},
-          ${species}
+          ${species_id},
+          FALSE
         )
         RETURNING
           id;

@@ -21,9 +21,10 @@ import {
   PutFundingSource,
   GetPermitData,
   IPutPermit,
-  PutPermitData
+  PutPermitData,
+  GetSpeciesData
 } from '../../../models/project-update';
-import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
+import { GetFundingData } from '../../../models/project-view-update';
 import {
   projectIdResponseObject,
   projectUpdateGetResponseObject,
@@ -673,13 +674,13 @@ export const updateProjectSpeciesData = async (
   }
 
   const insertFocalSpeciesPromises =
-    putSpeciesData?.focal_species?.map((focalSpecies: string) =>
-      insertFocalSpecies(focalSpecies, projectId, connection)
+    putSpeciesData?.focal_species?.map((focalSpeciesId: number) =>
+      insertFocalSpecies(focalSpeciesId, projectId, (null as unknown) as number, connection)
     ) || [];
 
   const insertAncillarySpeciesPromises =
-    putSpeciesData?.ancillary_species?.map((ancillarySpecies: string) =>
-      insertAncillarySpecies(ancillarySpecies, projectId, connection)
+    putSpeciesData?.ancillary_species?.map((ancillarySpeciesId: number) =>
+      insertAncillarySpecies(ancillarySpeciesId, projectId, connection)
     ) || [];
 
   await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);

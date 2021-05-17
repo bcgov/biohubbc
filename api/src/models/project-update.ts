@@ -23,14 +23,32 @@ export class PutIUCNData {
 }
 
 export class PutSpeciesData {
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  ancillary_species: number[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutSpeciesData', message: 'params', obj });
 
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
     this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
+  }
+}
+
+/**
+ * Processes GET /project/{projectId} species data for updating purposes
+ *
+ * @export
+ * @class GetSpeciesData
+ */
+ export class GetSpeciesData {
+  focal_species: number[];
+  ancillary_species: number[];
+
+  constructor(focal_species?: any[], ancillary_species?: any[]) {
+    defaultLog.debug({ label: 'GetSpeciesData', message: 'params', focal_species, ancillary_species });
+
+    this.focal_species = (focal_species?.length && focal_species.map((item: any) => item.id)) || [];
+    this.ancillary_species = (ancillary_species?.length && ancillary_species.map((item: any) => item.id)) || [];
   }
 }
 

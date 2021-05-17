@@ -94,10 +94,23 @@ export const getFocalSpeciesByProjectSQL = (projectId: number): SQLStatement | n
 
   const sqlStatement = SQL`
     SELECT
-      name
+      wtu.id as id,
+      CASE
+        WHEN wtu.english_name IS NULL THEN wtu.unit_name2
+        ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
+      END as name
     FROM
-      focal_species
-    where p_id = ${projectId};
+      wldtaxonomic_units as wtu
+    left outer join
+      study_species ss
+    on
+      ss.wu_id = wtu.id
+    WHERE
+      wtu.tty_name = 'SPECIES'
+    AND
+      ss.is_focal
+    AND
+      ss.p_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -125,10 +138,23 @@ export const getAncillarySpeciesByProjectSQL = (projectId: number): SQLStatement
 
   const sqlStatement = SQL`
     SELECT
-      name
+      wtu.id as id,
+      CASE
+        WHEN wtu.english_name IS NULL THEN wtu.unit_name2
+        ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
+      END as name
     FROM
-      ancillary_species
-    where p_id = ${projectId};
+      wldtaxonomic_units as wtu
+    left outer join
+      study_species ss
+    on
+      ss.wu_id = wtu.id
+    WHERE
+      wtu.tty_name = 'SPECIES'
+    AND
+      ss.is_focal is false
+    AND
+      ss.p_id = ${projectId};
   `;
 
   defaultLog.debug({

@@ -124,8 +124,8 @@ function createProject(): RequestHandler {
         // Handle focal species
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.species.focal_species.map((focalSpecies: string) =>
-              insertFocalSpecies(focalSpecies, projectId, connection)
+            sanitizedProjectPostData.species.focal_species.map((focalSpeciesId: number) =>
+              insertFocalSpecies(focalSpeciesId, projectId, (null as unknown) as number, connection)
             )
           )
         );
@@ -133,8 +133,8 @@ function createProject(): RequestHandler {
         // Handle ancillary species
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpecies: string) =>
-              insertAncillarySpecies(ancillarySpecies, projectId, connection)
+            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpeciesId: number) =>
+              insertAncillarySpecies(ancillarySpeciesId, projectId, connection)
             )
           )
         );
@@ -227,11 +227,14 @@ function createProject(): RequestHandler {
 }
 
 export const insertFocalSpecies = async (
-  focal_species: string,
+  focal_species_id: number,
   project_id: number,
+  survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
+  console.log('#################################')
+  console.log(focal_species_id, project_id, survey_id);
+  const sqlStatement = postFocalSpeciesSQL(focal_species_id, project_id, survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -249,11 +252,11 @@ export const insertFocalSpecies = async (
 };
 
 export const insertAncillarySpecies = async (
-  ancillary_species: string,
+  ancillary_species_id: number,
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postAncillarySpeciesSQL(ancillary_species, project_id);
+  const sqlStatement = postAncillarySpeciesSQL(ancillary_species_id, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

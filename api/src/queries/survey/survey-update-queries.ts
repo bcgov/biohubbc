@@ -58,7 +58,6 @@ export const putSurveySQL = (
     UPDATE survey SET
       name = ${survey.name},
       objectives = ${survey.objectives},
-      species = ${survey.species},
       start_date = ${survey.start_date},
       end_date = ${survey.end_date},
       lead_first_name = ${survey.lead_first_name},
@@ -80,6 +79,35 @@ export const putSurveySQL = (
 
   defaultLog.debug({
     label: 'putSurveySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update a species row in the study_species table.
+ *
+ * @param {number} species id
+ * @param {number} project id
+ * @param {number} survey id
+ * @returns {SQLStatement} sql query object
+ */
+ export const updateSpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'updateSpeciesSQL', message: 'params', updateSpeciesSQL, projectId });
+
+  if (!speciesId || !projectId || !surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE study_species SET s_id = ${surveyId} where p_id = ${projectId} and wu_id = ${speciesId};
+  `;
+
+  defaultLog.debug({
+    label: 'updateSpeciesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

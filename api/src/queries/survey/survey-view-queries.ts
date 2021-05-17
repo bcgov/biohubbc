@@ -66,19 +66,91 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      id,
-      name,
-      species,
-      start_date,
-      end_date
-    from
-      survey
-    where
-      p_id = ${projectId};
+      s.id,
+      s.name,
+      s.start_date,
+      s.end_date,
+      CASE
+        WHEN wtu.english_name IS NULL THEN wtu.unit_name2
+        ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
+      END as species
+    FROM
+      wldtaxonomic_units as wtu
+    left outer join study_species as ss
+    on ss.wu_id = wtu.id
+    left outer join survey as s
+    on s.id = ss.s_id
+    where s.p_id = ${projectId};
   `;
 
   defaultLog.debug({
     label: 'getSurveyListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get a study species row for a project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getProjectStudySpeciesSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getProjectStudySpeciesSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT wu_id
+    from study_species
+    where p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectStudySpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get a study species row for a survey.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getSurveyStudySpeciesSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyStudySpeciesSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT wu_id
+    from study_species
+    where s_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyStudySpeciesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

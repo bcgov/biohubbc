@@ -69,6 +69,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
     return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
+  console.log(props.surveysList)
+
   return (
     <Paper>
       <TableContainer>

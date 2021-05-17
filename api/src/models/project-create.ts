@@ -192,8 +192,8 @@ export class PostIUCNData {
  * @class PostSpeciesData
  */
 export class PostSpeciesData {
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  ancillary_species: number[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostSpeciesData', message: 'params', obj });

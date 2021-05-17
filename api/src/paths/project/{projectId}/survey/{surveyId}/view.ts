@@ -100,7 +100,10 @@ export function getSurveyForView(): RequestHandler {
       await connection.commit();
 
       const getSurveyData =
-        (surveyData && surveyData.rows && surveyData.rows[0] && new GetSurveyData(surveyData.rows[0])) || null;
+        (surveyData && surveyData.rows && new GetSurveyData(surveyData.rows)) || null;
+
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+      console.log(getSurveyData)
 
       const getSurveyProprietorData =
         (surveyProprietorData &&
