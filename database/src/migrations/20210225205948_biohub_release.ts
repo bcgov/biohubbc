@@ -64,7 +64,6 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, 'release.0.16', 'populate_wldtaxonomic_units.sql')
   );
   const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_survey_proprietor.sql'));
-  const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_study_species.sql'));
   const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_project.sql'));
   const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_survey.sql'));
   const tr_permit = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_permit.sql'));
@@ -88,7 +87,6 @@ export async function up(knex: Knex): Promise<void> {
     ${project_journal_triggers}
     ${tr_project_funding_source}
     ${tr_survey_proprietor}
-    ${tr_study_species}
     ${tr_project}
     ${tr_survey}
     ${tr_permit}

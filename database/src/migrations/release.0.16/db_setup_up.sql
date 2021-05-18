@@ -27,7 +27,6 @@ set search_path = biohub, public;
 \i project_journal_triggers.sql
 \i tr_project_funding_source.sql
 \i tr_survey_proprietor.sql
-\i tr_study_species.sql
 \i tr_project.sql
 \i tr_survey.sql
 \i tr_permit.sql

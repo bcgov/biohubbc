@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Friday, May 14, 2021 14:42:32
+-- Date Created : Tuesday, May 18, 2021 10:47:16
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1286,7 +1286,6 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 
 CREATE TABLE study_species(
     id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
     s_id              integer,
     wu_id             integer           NOT NULL,
     is_focal          boolean           NOT NULL,
@@ -1302,8 +1301,6 @@ CREATE TABLE study_species(
 
 
 COMMENT ON COLUMN study_species.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN study_species.p_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN study_species.s_id IS 'System generated surrogate primary key identifier.'
 ;
@@ -2194,22 +2191,10 @@ CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
 CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 ;
 -- 
--- INDEX: ss_uk1 
---
-
-CREATE UNIQUE INDEX ss_uk1 ON study_species(p_id, wu_id)
-;
--- 
 -- INDEX: ss_uk2 
 --
 
 CREATE UNIQUE INDEX ss_uk2 ON study_species(s_id, wu_id)
-;
--- 
--- INDEX: "Ref4589" 
---
-
-CREATE INDEX "Ref4589" ON study_species(p_id)
 ;
 -- 
 -- INDEX: "Ref15390" 
@@ -2548,11 +2533,6 @@ ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39"
 -- 
 -- TABLE: study_species 
 --
-
-ALTER TABLE study_species ADD CONSTRAINT "Refproject89" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
-;
 
 ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90" 
     FOREIGN KEY (s_id)
