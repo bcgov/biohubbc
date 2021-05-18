@@ -28,14 +28,18 @@ export class GetSurveyData {
     const surveyDataItem = surveyData && surveyData.length && surveyData[0];
 
     const focalSpeciesList =
-      surveyData.map((item: any) => {
-        return item.focal_species;
-      }) || [];
+      (surveyData &&
+        surveyData.map((item: any) => {
+          return item.focal_species;
+        })) ||
+      [];
 
     const ancillarySpeciesList =
-      surveyData.map((item: any) => {
-        return item.ancillary_species;
-      }) || [];
+      (surveyData &&
+        surveyData.map((item: any) => {
+          return item.ancillary_species;
+        })) ||
+      [];
 
     this.survey_name = surveyDataItem?.name || '';
     this.survey_purpose = surveyDataItem?.objectives || '';
