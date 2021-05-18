@@ -2,13 +2,14 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { IGetProjectForViewResponse, IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router';
 import SurveysList from 'components/surveys/SurveysList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 
-export interface IProjectSurveysListPageProps {
+export interface ISurveysListPageProps {
   projectForViewData: IGetProjectForViewResponse;
 }
 
@@ -17,13 +18,13 @@ export interface IProjectSurveysListPageProps {
  *
  * @return {*}
  */
-const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) => {
+const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
   const { projectForViewData } = props;
 
-  const [surveys, setSurveys] = useState<IGetProjectSurveysListResponse[]>([]);
+  const [surveys, setSurveys] = useState<IGetSurveysListResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -62,4 +63,4 @@ const ProjectSurveysListPage: React.FC<IProjectSurveysListPageProps> = (props) =
   );
 };
 
-export default ProjectSurveysListPage;
+export default SurveysListPage;

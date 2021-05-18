@@ -14,7 +14,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse, ICreateProjectSurveyRequest } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse, ICreateSurveyRequest } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -240,11 +240,11 @@ const CreateSurveyPage = () => {
   /**
    * Creates a new project survey record
    *
-   * @param {ICreateProjectSurveyRequest} surveyPostObject
+   * @param {ICreateSurveyRequest} surveyPostObject
    * @return {*}
    */
-  const createSurvey = async (surveyPostObject: ICreateProjectSurveyRequest) => {
-    const response = await biohubApi.project.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
+  const createSurvey = async (surveyPostObject: ICreateSurveyRequest) => {
+    const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
 
     if (!response?.id) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a survey ID.' });

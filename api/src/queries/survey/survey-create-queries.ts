@@ -26,7 +26,15 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
-      p_id, name, objectives, start_date, end_date, lead_first_name, lead_last_name, location_name, geography
+      p_id,
+      name,
+      objectives,
+      start_date,
+      end_date,
+      lead_first_name,
+      lead_last_name,
+      location_name,
+      geography
     ) VALUES (
       ${projectId},
       ${survey.survey_name},
@@ -98,7 +106,12 @@ export const postSurveyProprietorSQL = (
 
   const sqlStatement: SQLStatement = SQL`
   INSERT INTO survey_proprietor (
-    s_id, prt_id, fn_id, rationale, proprietor_name, disa_required
+    s_id,
+    prt_id,
+    fn_id,
+    rationale,
+    proprietor_name,
+    disa_required
   ) VALUES (
     ${surveyId},
     ${survey_proprietor.prt_id},
@@ -144,7 +157,7 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
       ${speciesId},
       TRUE,
       ${surveyId}
-    ) returning id;
+    ) RETURNING id;
   `;
 
   defaultLog.debug({
@@ -180,7 +193,7 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
       ${speciesId},
       FALSE,
       ${surveyId}
-    ) returning id;
+    ) RETURNING id;
   `;
 
   defaultLog.debug({

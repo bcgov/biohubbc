@@ -55,7 +55,8 @@ export const putSurveySQL = (
   }
 
   const sqlStatement = SQL`
-    UPDATE survey SET
+    UPDATE survey
+    SET
       name = ${survey.name},
       objectives = ${survey.objectives},
       start_date = ${survey.start_date},
@@ -69,11 +70,11 @@ export const putSurveySQL = (
   sqlStatement.append(geometrySqlStatement);
 
   sqlStatement.append(SQL`
-    where
+    WHERE
       p_id = ${projectId}
-    and
+    AND
       id = ${surveyId}
-    and
+    AND
       revision_count = ${revision_count};
   `);
 
@@ -103,11 +104,76 @@ export const updateSpeciesSQL = (speciesId: number, projectId: number, surveyId:
   }
 
   const sqlStatement: SQLStatement = SQL`
-    UPDATE study_species SET s_id = ${surveyId} where p_id = ${projectId} and wu_id = ${speciesId};
+    UPDATE
+      study_species
+    SET
+      s_id = ${surveyId}
+    WHERE
+      p_id = ${projectId}
+    AND
+      wu_id = ${speciesId};
   `;
 
   defaultLog.debug({
     label: 'updateSpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to retrieve a survey row for update purposes.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyForUpdateSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyForUpdateSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      s.name,
+      s.objectives,
+      s.start_date,
+      s.end_date,
+      s.lead_first_name,
+      s.lead_last_name,
+      s.location_name,
+      public.ST_asGeoJSON(s.geography) as geometry,
+      s.revision_count,
+      CASE
+        WHEN ss.is_focal = TRUE THEN wtu.id
+      END as focal_species,
+      CASE
+        WHEN ss.is_focal = FALSE THEN wtu.id
+      END as ancillary_species
+    FROM
+      wldtaxonomic_units as wtu
+    LEFT OUTER JOIN
+      study_species as ss
+    ON
+      ss.wu_id = wtu.id
+    LEFT OUTER JOIN
+      survey as s
+    ON
+      s.id = ss.s_id
+    WHERE
+      s.id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyForUpdateSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

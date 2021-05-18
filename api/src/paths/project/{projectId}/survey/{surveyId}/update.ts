@@ -10,9 +10,8 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
+import { putSurveySQL, getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-update-queries';
 import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
-import { getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 import { insertAncillarySpecies, insertFocalSpecies } from '../create';
@@ -138,7 +137,7 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySQLStatement = getSurveyForUpdateSQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForUpdateSQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

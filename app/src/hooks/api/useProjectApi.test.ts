@@ -8,7 +8,7 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { ICreateProjectSurveyRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { ICreateSurveyRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi from './useProjectApi';
 
@@ -140,7 +140,7 @@ describe('useProjectApi', () => {
 
     const result = await useProjectApi(axios).createSurvey(projectId, {
       survey_name: 'survey name'
-    } as ICreateProjectSurveyRequest);
+    } as ICreateSurveyRequest);
 
     expect(result).toEqual({ id: 1 });
   });

@@ -6,8 +6,7 @@ import { HTTP400 } from '../../../../../errors/CustomError';
 import { GetSurveyProprietorData } from '../../../../../models/survey-view';
 import { GetSurveyData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-queries';
-import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { getSurveyProprietorSQL, getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
@@ -83,7 +82,7 @@ export function getSurveyForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.surveyId));
       const getSurveyProprietorSQLStatement = getSurveyProprietorSQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement || !getSurveyProprietorSQLStatement) {

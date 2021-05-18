@@ -300,9 +300,9 @@ export interface IGetProjectMediaListResponse {
  * Create project survey post object.
  *
  * @export
- * @interface ICreateProjectSurveyRequest
+ * @interface ICreateSurveyRequest
  */
-export interface ICreateProjectSurveyRequest {
+export interface ICreateSurveyRequest {
   biologist_first_name: string;
   biologist_last_name: string;
   category_rationale: string;
@@ -328,13 +328,13 @@ export interface ICreateProjectSurveyRequest {
  * Create project survey response object.
  *
  * @export
- * @interface ICreateProjectSurveyResponse
+ * @interface ICreateSurveyResponse
  */
-export interface ICreateProjectSurveyResponse {
+export interface ICreateSurveyResponse {
   id: number;
 }
 
-export interface IGetSurveyForViewResponse {
+export interface IGetSurvey {
   survey_name: string;
   survey_purpose: string;
   focal_species: string[];
@@ -367,11 +367,11 @@ export interface IGetSurveyForUpdateResponse extends ISurveyUpdateRequest {}
  * An interface for a single instance of project survey metadata, for view-only use cases.
  *
  * @export
- * @interface IGetProjectSurveyForViewResponse
+ * @interface IGetSurveyForViewResponse
  */
-export interface IGetProjectSurveyForViewResponse {
+export interface IGetSurveyForViewResponse {
   id: number;
-  survey: IGetSurveyForViewResponse;
+  survey: IGetSurvey;
   surveyProprietor: {
     proprietor_type_name: string;
     first_nations_name: string;
@@ -385,9 +385,9 @@ export interface IGetProjectSurveyForViewResponse {
  * Get surveys list response object.
  *
  * @export
- * @interface IGetProjectSurveysListResponse
+ * @interface IGetSurveysListResponse
  */
-export interface IGetProjectSurveysListResponse {
+export interface IGetSurveysListResponse {
   id: number;
   name: string;
   species: string[];

@@ -12,7 +12,7 @@ import GeneralInformationForm, {
 } from 'features/surveys/components/GeneralInformationForm';
 import {
   IGetProjectForViewResponse,
-  IGetProjectSurveyForViewResponse,
+  IGetSurveyForViewResponse,
   ISurveyUpdateRequest
 } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
@@ -27,7 +27,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyGeneralInformationProps {
-  surveyForViewData: IGetProjectSurveyForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
@@ -74,7 +74,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectForViewData.id, id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, id);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -107,7 +107,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     };
 
     try {
-      await biohubApi.project.updateSurvey(projectForViewData.id, id, surveyData);
+      await biohubApi.survey.updateSurvey(projectForViewData.id, id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

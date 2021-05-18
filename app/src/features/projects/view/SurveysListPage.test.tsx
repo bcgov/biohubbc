@@ -2,16 +2,16 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
-import ProjectSurveysListPage from './ProjectSurveysListPage';
+import SurveysListPage from './SurveysListPage';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 
 const history = createMemoryHistory();
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
-  project: {
+  survey: {
     getSurveysList: jest.fn()
   }
 };
@@ -20,9 +20,9 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('ProjectSurveysListPage', () => {
+describe('SurveysListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().project.getSurveysList.mockClear();
+    mockBiohubApi().survey.getSurveysList.mockClear();
   });
 
   afterEach(() => {
@@ -30,11 +30,11 @@ describe('ProjectSurveysListPage', () => {
   });
 
   it('renders correctly with an empty list of surveys', async () => {
-    mockBiohubApi().project.getSurveysList.mockResolvedValue([]);
+    mockBiohubApi().survey.getSurveysList.mockResolvedValue([]);
 
     const { getByText } = render(
       <Router history={history}>
-        <ProjectSurveysListPage projectForViewData={getProjectForViewResponse} />
+        <SurveysListPage projectForViewData={getProjectForViewResponse} />
       </Router>
     );
 
@@ -46,7 +46,7 @@ describe('ProjectSurveysListPage', () => {
   });
 
   it('renders correctly with a populated list of surveys', async () => {
-    const surveysList: IGetProjectSurveysListResponse[] = [
+    const surveysList: IGetSurveysListResponse[] = [
       {
         id: 1,
         name: 'Moose Survey 1',
@@ -65,11 +65,11 @@ describe('ProjectSurveysListPage', () => {
       }
     ];
 
-    mockBiohubApi().project.getSurveysList.mockResolvedValue(surveysList);
+    mockBiohubApi().survey.getSurveysList.mockResolvedValue(surveysList);
 
     const { getByText } = render(
       <Router history={history}>
-        <ProjectSurveysListPage projectForViewData={getProjectForViewResponse} />
+        <SurveysListPage projectForViewData={getProjectForViewResponse} />
       </Router>
     );
 
