@@ -227,10 +227,18 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Species
+                Focal Species
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey.species}
+                {survey.focal_species.join(', ')}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Ancillary Species
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {survey.ancillary_species.join(', ')}
               </Typography>
             </Grid>
           </Grid>

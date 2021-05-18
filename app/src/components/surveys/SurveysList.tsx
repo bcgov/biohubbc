@@ -76,7 +76,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           <TableHead>
             <TableRow>
               <TableCell className={classes.heading}>Name</TableCell>
-              <TableCell className={classes.heading}>Species</TableCell>
+              <TableCell className={classes.heading}>Focal Species</TableCell>
+              <TableCell className={classes.heading}>Ancillary Species</TableCell>
               <TableCell className={classes.heading}>Timeline</TableCell>
               <TableCell className={classes.heading}>Status</TableCell>
             </TableRow>
@@ -94,7 +95,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       {row.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.species?.join(', ')}</TableCell>
+                  <TableCell>{row.focal_species?.join(', ')}</TableCell>
+                  <TableCell>{row.ancillary_species?.join(', ')}</TableCell>
                   <TableCell>
                     {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, row.start_date, row.end_date)}
                   </TableCell>

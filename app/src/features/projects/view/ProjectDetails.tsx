@@ -13,7 +13,6 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import Species from './components/Species';
 import ProjectPermits from './components/ProjectPermits';
 
 export interface IProjectDetailsProps {
@@ -77,12 +76,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
           <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <Species projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
 

@@ -34,10 +34,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     coordinator_agency: 'Amanda and associates',
     share_contact_details: 'true'
   },
-  species: {
-    focal_species: [1, 2],
-    ancillary_species: [3, 4]
-  },
   iucn: {
     classificationDetails: [
       {

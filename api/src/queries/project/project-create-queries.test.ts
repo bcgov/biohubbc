@@ -8,8 +8,6 @@ import {
   PostProjectData
 } from '../../models/project-create';
 import {
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL,
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
@@ -170,31 +168,6 @@ describe('postProjectSQL', () => {
   });
 });
 
-describe('postFocalSpeciesSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when species is null', () => {
-      const response = postFocalSpeciesSQL((null as unknown) as string, 1);
-
-      expect(response).to.be.null;
-    });
-
-    it('returns null when project id is null', () => {
-      const response = postFocalSpeciesSQL('species 1', (null as unknown) as number);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when all fields are passed in as expected', () => {
-      const response = postFocalSpeciesSQL('species 1', 1);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include('species 1');
-    });
-  });
-});
-
 describe('postProjectFundingSourceSQL', () => {
   describe('with invalid parameters', () => {
     it('returns null when funding source is null', () => {
@@ -231,31 +204,6 @@ describe('postProjectFundingSourceSQL', () => {
       expect(response?.values).to.deep.include(10000);
       expect(response?.values).to.deep.include('2020-02-02');
       expect(response?.values).to.deep.include('2020-03-02');
-    });
-  });
-});
-
-describe('postAncillarySpeciesSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when species is null', () => {
-      const response = postAncillarySpeciesSQL((null as unknown) as string, 1);
-
-      expect(response).to.be.null;
-    });
-
-    it('returns null when project id is null', () => {
-      const response = postAncillarySpeciesSQL('species 1', (null as unknown) as number);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when all fields are passed in as expected', () => {
-      const response = postAncillarySpeciesSQL('species 1', 1);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include('species 1');
     });
   });
 });

@@ -50,10 +50,6 @@ import ProjectPermitForm, {
   ProjectPermitFormInitialValues,
   ProjectPermitFormYupSchema
 } from 'features/projects/components/ProjectPermitForm';
-import {
-  ProjectSpeciesFormInitialValues,
-  ProjectSpeciesFormYupSchema
-} from 'features/projects/components/ProjectSpeciesForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -181,7 +177,6 @@ const CreateProjectPage: React.FC = () => {
     permit: ProjectPermitFormInitialValues,
     project: ProjectDetailsFormInitialValues,
     objectives: ProjectObjectivesFormInitialValues,
-    species: ProjectSpeciesFormInitialValues,
     location: ProjectLocationFormInitialValues,
     iucn: ProjectIUCNFormInitialValues,
     funding: ProjectFundingFormInitialValues,
@@ -297,16 +292,6 @@ const CreateProjectPage: React.FC = () => {
         stepInitialValues: initialProjectFieldData.location,
         stepYupSchema: ProjectLocationFormYupSchema,
         isValid: false,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Species',
-        stepSubTitle:
-          'Specify which species were the primary target of the project and any ancillary species which were secondary to the targeted species.',
-        stepContent: <ProjectStepComponents component="ProjectSpecies" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.species,
-        stepYupSchema: ProjectSpeciesFormYupSchema,
-        isValid: true,
         isTouched: false
       },
       {
@@ -483,10 +468,9 @@ const CreateProjectPage: React.FC = () => {
         project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepInitialValues,
         objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepInitialValues,
         location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepInitialValues,
-        species: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
-        iucn: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepInitialValues,
-        funding: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepInitialValues,
-        partnerships: (activeStep === 8 && formikRef?.current?.values) || stepForms[8].stepInitialValues
+        iucn: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
+        funding: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepInitialValues,
+        partnerships: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepInitialValues
       };
 
       const draftId = Number(queryParams.draftId) || draft?.id;
@@ -557,10 +541,9 @@ const CreateProjectPage: React.FC = () => {
           project: stepForms[2].stepInitialValues,
           objectives: stepForms[3].stepInitialValues,
           location: stepForms[4].stepInitialValues,
-          species: stepForms[5].stepInitialValues,
-          iucn: stepForms[6].stepInitialValues,
-          funding: stepForms[7].stepInitialValues,
-          partnerships: stepForms[8].stepInitialValues
+          iucn: stepForms[5].stepInitialValues,
+          funding: stepForms[6].stepInitialValues,
+          partnerships: stepForms[7].stepInitialValues
         });
       }
     } catch (error) {

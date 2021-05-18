@@ -120,3 +120,75 @@ export const postSurveyProprietorSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to insert a focal species row into the study_species table.
+ *
+ * @param {number} species id
+ * @param {number} survey id
+ * @returns {SQLStatement} sql query object
+ */
+ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', speciesId, surveyId });
+
+  if (!speciesId || !surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO study_species (
+      wu_id,
+      is_focal,
+      s_id
+    ) VALUES (
+      ${speciesId},
+      TRUE,
+      ${surveyId}
+    ) returning id;
+  `;
+
+  defaultLog.debug({
+    label: 'postFocalSpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a ancillary species row into the study_species table.
+ *
+ * @param {number} species id
+ * @param {number} survey id
+ * @returns {SQLStatement} sql query object
+ */
+export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', speciesId, surveyId });
+
+  if (!speciesId || !surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO study_species (
+      wu_id,
+      is_focal,
+      s_id
+    ) VALUES (
+      ${speciesId},
+      FALSE,
+      ${surveyId}
+    ) returning id;
+  `;
+
+  defaultLog.debug({
+    label: 'postAncillarySpeciesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

@@ -6,7 +6,6 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
@@ -53,7 +52,6 @@ export interface ICreateProjectRequest {
   permit: IProjectPermitForm;
   project: IProjectDetailsForm;
   objectives: IProjectObjectivesForm;
-  species: IProjectSpeciesForm;
   location: IProjectLocationForm;
   iucn: IProjectIUCNForm;
   funding: IProjectFundingForm;
@@ -97,7 +95,6 @@ export enum UPDATE_GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
   location = 'location',
-  species = 'species',
   iucn = 'iucn',
   funding = 'funding',
   partnerships = 'partnerships'
@@ -115,7 +112,6 @@ export interface IGetProjectForUpdateResponse {
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
-  species?: IGetProjectForUpdateResponseSpecies;
   iucn?: IGetProjectForUpdateResponseIUCN;
   funding?: IGetProjectForUpdateResponseFundingData;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
@@ -160,11 +156,6 @@ export interface IGetProjectForUpdateResponseCoordinator {
   coordinator_agency: string;
   share_contact_details: string;
   revision_count: number;
-}
-
-export interface IGetProjectForUpdateResponseSpecies {
-  focal_species: number[];
-  ancillary_species: number[];
 }
 
 interface IGetProjectForUpdateResponseIUCNArrayItem {
@@ -220,7 +211,6 @@ export interface IGetProjectForViewResponse {
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
-  species: IGetProjectForViewResponseSpecies;
   iucn: IGetProjectForViewResponseIUCN;
   funding: IGetProjectForViewResponseFundingData;
   partnerships: IGetProjectForViewResponsePartnerships;
@@ -290,11 +280,6 @@ export interface IGetProjectForViewResponseFundingData {
   fundingSources: IGetProjectForViewResponseFundingSource[];
 }
 
-export interface IGetProjectForViewResponseSpecies {
-  focal_species: number[];
-  ancillary_species: number[];
-}
-
 export interface IGetProjectForViewResponsePartnerships {
   indigenous_partnerships: string[];
   stakeholder_partnerships: string[];
@@ -329,7 +314,8 @@ export interface ICreateProjectSurveyRequest {
   proprietary_data_category: string;
   proprietor_name: string;
   sedis_procedures_accepted: boolean;
-  species: number;
+  focal_species: number[];
+  ancillary_species: number[];
   start_date: string;
   survey_area_name: string;
   survey_data_proprietary: string;
@@ -351,7 +337,8 @@ export interface ICreateProjectSurveyResponse {
 export interface IGetSurveyForViewResponse {
   survey_name: string;
   survey_purpose: string;
-  species: string[];
+  focal_species: string[];
+  ancillary_species: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -363,7 +350,8 @@ export interface IGetSurveyForViewResponse {
 export interface ISurveyUpdateRequest {
   survey_name: string;
   survey_purpose: string;
-  species: number[];
+  focal_species: number[];
+  ancillary_species: number[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -402,7 +390,8 @@ export interface IGetProjectSurveyForViewResponse {
 export interface IGetProjectSurveysListResponse {
   id: number;
   name: string;
-  species: string[];
+  focal_species: string[];
+  ancillary_species: string[];
   start_date: string;
   end_date: string;
   status_name: string;

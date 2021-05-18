@@ -8,7 +8,6 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { ICreateProjectSurveyRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi from './useProjectApi';
@@ -215,7 +214,6 @@ describe('useProjectApi', () => {
       permit: (null as unknown) as IProjectPermitForm,
       project: (null as unknown) as IProjectDetailsForm,
       objectives: (null as unknown) as IProjectObjectivesForm,
-      species: (null as unknown) as IProjectSpeciesForm,
       location: (null as unknown) as IProjectLocationForm,
       iucn: (null as unknown) as IProjectIUCNForm,
       funding: (null as unknown) as IProjectFundingForm,

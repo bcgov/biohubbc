@@ -15,7 +15,6 @@ import { ProjectLocationFormInitialValues } from 'features/projects/components/P
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
-import { ProjectSpeciesFormInitialValues } from 'features/projects/components/ProjectSpeciesForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -298,7 +297,6 @@ describe('CreateProjectPage', () => {
           permit: ProjectPermitFormInitialValues,
           project: ProjectDetailsFormInitialValues,
           objectives: ProjectObjectivesFormInitialValues,
-          species: ProjectSpeciesFormInitialValues,
           location: ProjectLocationFormInitialValues,
           iucn: ProjectIUCNFormInitialValues,
           funding: ProjectFundingFormInitialValues,

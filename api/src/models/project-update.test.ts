@@ -6,7 +6,6 @@ import {
   GetObjectivesData,
   PutCoordinatorData,
   PutPartnershipsData,
-  PutSpeciesData,
   PutObjectivesData,
   GetLocationData,
   GetProjectData,
@@ -608,87 +607,6 @@ describe('PutPermitData', () => {
           sampling_conducted: false
         }
       ]);
-    });
-  });
-});
-
-describe('PutSpeciesData', () => {
-  describe('No values provided', () => {
-    let data: PutSpeciesData;
-
-    before(() => {
-      data = new PutSpeciesData(null);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('Values provided but not valid arrays', () => {
-    let data: PutSpeciesData;
-
-    const obj = {
-      focal_species: null,
-      ancillary_species: null
-    };
-
-    before(() => {
-      data = new PutSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('Values provided but with no length', () => {
-    let data: PutSpeciesData;
-
-    const obj = {
-      focal_species: [],
-      ancillary_species: []
-    };
-
-    before(() => {
-      data = new PutSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('all values provided', () => {
-    const obj = {
-      focal_species: ['species 1', 'species 2'],
-      ancillary_species: ['species 3', 'species 4']
-    };
-
-    let data: PutSpeciesData;
-
-    before(() => {
-      data = new PutSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql(obj.focal_species);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql(obj.ancillary_species);
     });
   });
 });

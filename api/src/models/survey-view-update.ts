@@ -12,7 +12,8 @@ const defaultLog = getLogger('models/survey-view-update');
 export class GetSurveyData {
   survey_name: string;
   survey_purpose: string;
-  species: number[];
+  focal_species: number[];
+  ancillary_species: number[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -25,14 +26,19 @@ export class GetSurveyData {
     defaultLog.debug({ label: 'GetSurveyData', message: 'params', surveyData });
 
     const surveyDataItem = surveyData && surveyData.length && surveyData[0];
-    const speciesList =
+    const focalSpeciesList =
       surveyData.map((item: any) => {
-        return item.species;
+        return item.focal_species;
+      }) || [];
+    const ancillarySpeciesList =
+      surveyData.map((item: any) => {
+        return item.ancillary_species;
       }) || [];
 
     this.survey_name = surveyDataItem?.name || '';
     this.survey_purpose = surveyDataItem?.objectives || '';
-    this.species = (speciesList.length && speciesList) || [];
+    this.focal_species = (focalSpeciesList.length && focalSpeciesList) || [];
+    this.ancillary_species = (ancillarySpeciesList.length && ancillarySpeciesList) || [];
     this.start_date = surveyDataItem?.start_date || '';
     this.end_date = surveyDataItem?.end_date || '';
     this.biologist_first_name = surveyDataItem?.lead_first_name || '';

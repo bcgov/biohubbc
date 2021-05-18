@@ -15,14 +15,12 @@ import {
   PutObjectivesData,
   PutProjectData,
   PutIUCNData,
-  PutSpeciesData,
   IGetPutIUCN,
   GetLocationData,
   PutFundingSource,
   GetPermitData,
   IPutPermit,
-  PutPermitData,
-  GetSpeciesData
+  PutPermitData
 } from '../../../models/project-update';
 import { GetFundingData } from '../../../models/project-view-update';
 import {
@@ -43,8 +41,6 @@ import {
 import {
   deleteActivitiesSQL,
   deleteIUCNSQL,
-  deleteFocalSpeciesSQL,
-  deleteAncillarySpeciesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteRegionsSQL,
@@ -53,17 +49,13 @@ import {
 } from '../../../queries/project/project-delete-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
-  getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
   getActivitiesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 import {
-  insertAncillarySpecies,
   insertClassificationDetail,
-  insertFocalSpecies,
   insertIndigenousNation,
   insertRegion,
   insertProjectActivity,
@@ -81,7 +73,6 @@ export enum GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
   location = 'location',
-  species = 'species',
   iucn = 'iucn',
   funding = 'funding',
   partnerships = 'partnerships'
@@ -154,7 +145,6 @@ export interface IGetProjectForUpdate {
   project: any;
   objectives: GetObjectivesData | null;
   location: any;
-  species: any;
   iucn: GetIUCNClassificationData | null;
   funding: GetFundingData | null;
   partnerships: GetPartnershipsData | null;
@@ -186,7 +176,6 @@ function getProjectForUpdate(): RequestHandler {
         project: null,
         objectives: null,
         location: null,
-        species: null,
         iucn: null,
         funding: null,
         partnerships: null
@@ -222,14 +211,6 @@ function getProjectForUpdate(): RequestHandler {
         promises.push(
           getLocationData(projectId, connection).then((value) => {
             results.location = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.species)) {
-        promises.push(
-          getSpeciesData(projectId, connection).then((value) => {
-            results.species = value;
           })
         );
       }
@@ -379,34 +360,6 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
   return new GetPartnershipsData(resultIndigenous, resultStakeholder);
 };
 
-export const getSpeciesData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatementFocalSpecies = getFocalSpeciesByProjectSQL(projectId);
-  const sqlStatementAncillarySpecies = getAncillarySpeciesByProjectSQL(projectId);
-
-  if (!sqlStatementFocalSpecies || !sqlStatementAncillarySpecies) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const responseFocalSpecies = await connection.query(sqlStatementFocalSpecies.text, sqlStatementFocalSpecies.values);
-  const responseAncillarySpecies = await connection.query(
-    sqlStatementAncillarySpecies.text,
-    sqlStatementAncillarySpecies.values
-  );
-
-  const resultFocalSpecies = (responseFocalSpecies && responseFocalSpecies.rows) || null;
-  const resultAncillarySpecies = (responseAncillarySpecies && responseAncillarySpecies.rows) || null;
-
-  if (!resultFocalSpecies) {
-    throw new HTTP400('Failed to get focal species data');
-  }
-
-  if (!resultAncillarySpecies) {
-    throw new HTTP400('Failed to get ancillary species data');
-  }
-
-  return new GetSpeciesData(resultFocalSpecies, resultAncillarySpecies);
-};
-
 export const getObjectivesData = async (projectId: number, connection: IDBConnection): Promise<GetObjectivesData> => {
   const sqlStatement = getObjectivesByProjectSQL(projectId);
 
@@ -509,7 +462,6 @@ export interface IUpdateProject {
   project: object | null;
   objectives: object | null;
   location: object | null;
-  species: object | null;
   iucn: object | null;
   funding: object | null;
   partnerships: object | null;
@@ -559,10 +511,6 @@ function updateProject(): RequestHandler {
 
       if (entities?.iucn) {
         promises.push(updateProjectIUCNData(projectId, entities, connection));
-      }
-
-      if (entities?.species) {
-        promises.push(updateProjectSpeciesData(projectId, entities, connection));
       }
 
       if (entities?.funding) {
@@ -634,56 +582,6 @@ export const updateProjectRegionsData = async (
     putLocationData?.regions?.map((region: string) => insertRegion(region, projectId, connection)) || [];
 
   await Promise.all(insertRegionsPromises);
-};
-
-export const updateProjectSpeciesData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putSpeciesData = (entities?.species && new PutSpeciesData(entities.species)) || null;
-
-  const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(projectId);
-  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(projectId);
-
-  if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteFocalSpeciesPromises = connection.query(
-    sqlDeleteFocalSpeciesStatement.text,
-    sqlDeleteFocalSpeciesStatement.values
-  );
-
-  const deleteAncillarySpeciesPromises = connection.query(
-    sqlDeleteAncillarySpeciesStatement.text,
-    sqlDeleteAncillarySpeciesStatement.values
-  );
-
-  const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
-    deleteFocalSpeciesPromises,
-    deleteAncillarySpeciesPromises
-  ]);
-
-  if (!deleteFocalSpeciesResult) {
-    throw new HTTP409('Failed to delete project focal species data');
-  }
-
-  if (!deleteAncillarySpeciesResult) {
-    throw new HTTP409('Failed to delete project ancillary species data');
-  }
-
-  const insertFocalSpeciesPromises =
-    putSpeciesData?.focal_species?.map((focalSpeciesId: number) =>
-      insertFocalSpecies(focalSpeciesId, projectId, (null as unknown) as number, connection)
-    ) || [];
-
-  const insertAncillarySpeciesPromises =
-    putSpeciesData?.ancillary_species?.map((ancillarySpeciesId: number) =>
-      insertAncillarySpecies(ancillarySpeciesId, projectId, connection)
-    ) || [];
-
-  await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 };
 
 export const updateProjectIUCNData = async (

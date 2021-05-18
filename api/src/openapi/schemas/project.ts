@@ -4,7 +4,7 @@
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'permit', 'project', 'location', 'species', 'iucn', 'funding'],
+  required: ['coordinator', 'permit', 'project', 'location', 'iucn', 'funding'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -89,28 +89,6 @@ export const projectCreatePostRequestObject = {
           items: {
             type: 'string',
             description: 'Region name'
-          }
-        }
-      }
-    },
-    species: {
-      title: 'Primary and Secondary Species of Interest',
-      type: 'object',
-      properties: {
-        focal_species: {
-          type: 'array',
-          description: 'Array of focal species',
-          items: {
-            type: 'number',
-            description: 'Species ID'
-          }
-        },
-        ancillary_species: {
-          type: 'array',
-          description: 'Array of ancillary species',
-          items: {
-            type: 'number',
-            description: 'Species ID'
           }
         }
       }
@@ -220,7 +198,6 @@ const projectUpdateProperties = {
   project: { type: 'object', properties: {} },
   objectives: { type: 'object', properties: {} },
   location: { type: 'object', properties: {} },
-  species: { type: 'object', properties: {} },
   iucn: {
     type: 'object',
     properties: {

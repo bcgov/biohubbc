@@ -11,8 +11,6 @@ import {
   putProjectAttachmentSQL
 } from '../queries/project/project-attachments-queries';
 import {
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL,
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
@@ -121,24 +119,6 @@ function createProject(): RequestHandler {
 
         const promises: Promise<any>[] = [];
 
-        // Handle focal species
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.species.focal_species.map((focalSpeciesId: number) =>
-              insertFocalSpecies(focalSpeciesId, projectId, (null as unknown) as number, connection)
-            )
-          )
-        );
-
-        // Handle ancillary species
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpeciesId: number) =>
-              insertAncillarySpecies(ancillarySpeciesId, projectId, connection)
-            )
-          )
-        );
-
         // Handle regions
         promises.push(
           Promise.all(
@@ -225,51 +205,6 @@ function createProject(): RequestHandler {
     }
   };
 }
-
-export const insertFocalSpecies = async (
-  focal_species_id: number,
-  project_id: number,
-  survey_id: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = postFocalSpeciesSQL(focal_species_id, project_id, survey_id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project focal species data');
-  }
-
-  return result.id;
-};
-
-export const insertAncillarySpecies = async (
-  ancillary_species_id: number,
-  project_id: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = postAncillarySpeciesSQL(ancillary_species_id, project_id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project ancillary species data');
-  }
-
-  return result.id;
-};
 
 export const insertRegion = async (region: string, project_id: number, connection: IDBConnection): Promise<number> => {
   const sqlStatement = postProjectRegionSQL(region, project_id);

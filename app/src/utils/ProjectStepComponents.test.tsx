@@ -24,10 +24,6 @@ import {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
-import {
-  ProjectSpeciesFormInitialValues,
-  ProjectSpeciesFormYupSchema
-} from 'features/projects/components/ProjectSpeciesForm';
 import { Formik } from 'formik';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
@@ -101,38 +97,6 @@ describe('ProjectStepComponents', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => <ProjectStepComponents component="ProjectObjectives" codes={codes} />}
-      </Formik>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders the project species without the codes values', () => {
-    const { asFragment } = render(
-      <Formik
-        initialValues={ProjectSpeciesFormInitialValues}
-        validationSchema={ProjectSpeciesFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={async () => {}}>
-        {() => (
-          <ProjectStepComponents component="ProjectSpecies" codes={{ ...codes, species: (null as unknown) as any }} />
-        )}
-      </Formik>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders the project species with the codes values', () => {
-    const { asFragment } = render(
-      <Formik
-        initialValues={ProjectSpeciesFormInitialValues}
-        validationSchema={ProjectSpeciesFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={async () => {}}>
-        {() => <ProjectStepComponents component="ProjectSpecies" codes={codes} />}
       </Formik>
     );
 

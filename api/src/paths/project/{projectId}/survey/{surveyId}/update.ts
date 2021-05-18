@@ -4,7 +4,6 @@ import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
 import { PutSurveyData } from '../../../../../models/survey-update';
-import { GetStudySpeciesData } from '../../../../../models/survey-view';
 import { GetSurveyData } from '../../../../../models/survey-view-update';
 import {
   surveyIdResponseObject,
@@ -13,12 +12,9 @@ import {
 } from '../../../../../openapi/schemas/survey';
 import { deleteSurveyStudySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
-import { getProjectStudySpeciesSQL, getSurveyStudySpeciesSQL } from '../../../../../queries/survey/survey-view-queries';
 import { getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
-import { insertFocalSpecies } from '../../../../project';
-import { updateSpecies } from '../create';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
@@ -214,75 +210,11 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP409('Failed to update stale survey data');
       }
 
-      const getProjectStudySpeciesSQLStatement = getProjectStudySpeciesSQL(projectId);
-      const getSurveyStudySpeciesSQLStatement = getSurveyStudySpeciesSQL(surveyId);
-
-      if (!getProjectStudySpeciesSQLStatement) {
-        throw new HTTP400('Failed to build project study species get statement');
-      }
-
-      if (!getSurveyStudySpeciesSQLStatement) {
-        throw new HTTP400('Failed to build survey study species get statement');
-      }
-
-      const getProjectStudySpeciesResponse = await connection.query(
-        getProjectStudySpeciesSQLStatement.text,
-        getProjectStudySpeciesSQLStatement.values
-      );
-      const projectStudySpeciesResult =
-        (getProjectStudySpeciesResponse &&
-          getProjectStudySpeciesResponse.rows &&
-          new GetStudySpeciesData(getProjectStudySpeciesResponse.rows)) ||
-        null;
-
-      const getSurveyStudySpeciesResponse = await connection.query(
-        getSurveyStudySpeciesSQLStatement.text,
-        getSurveyStudySpeciesSQLStatement.values
-      );
-      const surveyStudySpeciesResult =
-        (getSurveyStudySpeciesResponse &&
-          getSurveyStudySpeciesResponse.rows &&
-          new GetStudySpeciesData(getSurveyStudySpeciesResponse.rows)) ||
-        null;
-
-      let speciesToDelete: number[] = [];
-      let speciesToInsert: number[] = [];
-      let speciesToUpdate: number[] = [];
-
-      putSurveyData.species.forEach((species: number) => {
-        if (
-          projectStudySpeciesResult?.species_ids.includes(species) &&
-          !surveyStudySpeciesResult?.species_ids.includes(species)
-        ) {
-          speciesToUpdate.push(species);
-        } else {
-          speciesToInsert.push(species);
-        }
-      });
-
-      surveyStudySpeciesResult?.species_ids.forEach((species: number) => {
-        if (!putSurveyData.species.includes(species)) {
-          speciesToDelete.push(species);
-        }
-      });
-
       const promises: Promise<any>[] = [];
 
       promises.push(
         Promise.all(
-          speciesToDelete.map((speciesId: number) => deleteSpecies(speciesId, projectId, surveyId, connection))
-        )
-      );
-
-      promises.push(
-        Promise.all(
-          speciesToInsert.map((speciesId: number) => insertFocalSpecies(speciesId, projectId, surveyId, connection))
-        )
-      );
-
-      promises.push(
-        Promise.all(
-          speciesToUpdate.map((speciesId: number) => updateSpecies(speciesId, projectId, surveyId, connection))
+          putSurveyData.focal_species.map((speciesId: number) => updateSpecies(speciesId, projectId, surveyId, connection))
         )
       );
 
