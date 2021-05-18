@@ -128,7 +128,7 @@ export const postSurveyProprietorSQL = (
  * @param {number} survey id
  * @returns {SQLStatement} sql query object
  */
- export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
+export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', speciesId, surveyId });
 
   if (!speciesId || !surveyId) {

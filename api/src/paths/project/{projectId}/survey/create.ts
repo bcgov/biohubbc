@@ -5,7 +5,12 @@ import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
-import { postAncillarySpeciesSQL, postFocalSpeciesSQL, postSurveyProprietorSQL, postSurveySQL } from '../../../../queries/survey/survey-create-queries';
+import {
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL,
+  postSurveyProprietorSQL,
+  postSurveySQL
+} from '../../../../queries/survey/survey-create-queries';
 import { getLogger } from '../../../../utils/logger';
 import { logRequest } from '../../../../utils/path-utils';
 

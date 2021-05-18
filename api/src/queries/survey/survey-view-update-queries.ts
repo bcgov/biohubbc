@@ -123,7 +123,7 @@ export const getSurveyForUpdateSQL = (projectId: number, surveyId: number): SQLS
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getFocalSpeciesByProjectSQL = (projectId: number): SQLStatement | null => {
+export const getFocalSpeciesByProjectSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getFocalSpeciesByProjectSQL', message: 'params', projectId });
 
   if (!projectId) {
