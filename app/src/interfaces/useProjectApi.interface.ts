@@ -390,8 +390,7 @@ export interface IGetProjectSurveyForViewResponse {
 export interface IGetProjectSurveysListResponse {
   id: number;
   name: string;
-  focal_species: string[];
-  ancillary_species: string[];
+  species: string[];
   start_date: string;
   end_date: string;
   status_name: string;

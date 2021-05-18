@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
 import { PutSurveyData } from '../../../../../models/survey-update';
 import { GetSurveyData } from '../../../../../models/survey-view-update';
@@ -10,11 +10,12 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { deleteSurveyStudySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
+import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
+import { insertAncillarySpecies, insertFocalSpecies } from '../create';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
@@ -210,15 +211,47 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP409('Failed to update stale survey data');
       }
 
-      const promises: Promise<any>[] = [];
+      const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
+      const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
 
-      promises.push(
-        Promise.all(
-          putSurveyData.focal_species.map((speciesId: number) => updateSpecies(speciesId, projectId, surveyId, connection))
-        )
+      if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
+        throw new HTTP400('Failed to build SQL delete statement');
+      }
+
+      const deleteFocalSpeciesPromises = connection.query(
+        sqlDeleteFocalSpeciesStatement.text,
+        sqlDeleteFocalSpeciesStatement.values
       );
 
-      await Promise.all(promises);
+      const deleteAncillarySpeciesPromises = connection.query(
+        sqlDeleteAncillarySpeciesStatement.text,
+        sqlDeleteAncillarySpeciesStatement.values
+      );
+
+      const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+        deleteFocalSpeciesPromises,
+        deleteAncillarySpeciesPromises
+      ]);
+
+      if (!deleteFocalSpeciesResult) {
+        throw new HTTP409('Failed to delete survey focal species data');
+      }
+
+      if (!deleteAncillarySpeciesResult) {
+        throw new HTTP409('Failed to delete survey ancillary species data');
+      }
+
+      const insertFocalSpeciesPromises =
+        putSurveyData.focal_species.map((focalSpeciesId: number) =>
+          insertFocalSpecies(focalSpeciesId, surveyId, connection)
+        ) || [];
+
+      const insertAncillarySpeciesPromises =
+        putSurveyData.ancillary_species.map((ancillarySpeciesId: number) =>
+          insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
+        ) || [];
+
+      await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 
       await connection.commit();
 
@@ -232,25 +265,3 @@ export function updateSurvey(): RequestHandler {
     }
   };
 }
-
-export const deleteSpecies = async (
-  speciesId: number,
-  projectId: number,
-  surveyId: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = deleteSurveyStudySpeciesSQL(speciesId, projectId, surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-  const result = (response && response.rowCount) || null;
-
-  if (!result) {
-    throw new HTTP409('Failed to delete species data');
-  }
-
-  return result;
-};

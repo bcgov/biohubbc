@@ -173,7 +173,7 @@ export function createSurvey(): RequestHandler {
   };
 }
 
-const insertFocalSpecies = async (
+export const insertFocalSpecies = async (
   focal_species_id: number,
   survey_id: number,
   connection: IDBConnection
@@ -194,7 +194,7 @@ const insertFocalSpecies = async (
   return result.id;
 };
 
-const insertAncillarySpecies = async (
+export const insertAncillarySpecies = async (
   ancillary_species_id: number,
   survey_id: number,
   connection: IDBConnection

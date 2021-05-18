@@ -27,22 +27,6 @@ export class GetSurveyProprietorData {
 }
 
 /**
- * Pre-processes GET study species id data
- *
- * @export
- * @class GetStudySpeciesData
- */
-export class GetStudySpeciesData {
-  species_ids: number[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetStudySpeciesData', message: 'params', obj });
-
-    this.species_ids = (obj?.length && obj.map((item: any) => item.wu_id)) || [];
-  }
-}
-
-/**
  * Pre-processes GET surveys list data
  *
  * @export
