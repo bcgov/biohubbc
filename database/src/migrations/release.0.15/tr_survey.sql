@@ -17,8 +17,8 @@ $$
 begin
   -- ensure end date is not before start date
   if new.end_date is not null then
-    if new.end_date < new.start_date then    
-      raise exception 'The survey start date cannot be greater than the end date.';
+    if new.end_date > new.start_date then    
+      raise exception 'The survey end date cannot be greater than the start date.';
     end if;
   end if;
 
