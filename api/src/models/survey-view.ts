@@ -38,7 +38,7 @@ export class GetSurveyListData {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetSurveyListData', message: 'params', obj });
 
-    let surveysList: any[] = [];
+    const surveysList: any[] = [];
     let currentSurveyId: number = (null as unknown) as number;
 
     obj &&
