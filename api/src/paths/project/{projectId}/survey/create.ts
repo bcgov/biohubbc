@@ -1,13 +1,17 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
 import { postSurveyProprietorSQL, postSurveySQL } from '../../../../queries/survey/survey-create-queries';
+import { getProjectStudySpeciesSQL } from '../../../../queries/survey/survey-view-queries';
+import { updateSpeciesSQL } from '../../../../queries/survey/survey-update-queries';
 import { getLogger } from '../../../../utils/logger';
 import { logRequest } from '../../../../utils/path-utils';
+import { insertFocalSpecies } from '../../../project';
+import { GetStudySpeciesData } from '../../../../models/survey-view';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 
@@ -87,6 +91,11 @@ export function createSurvey(): RequestHandler {
 
     try {
       const postSurveySQLStatement = postSurveySQL(Number(req.params.projectId), sanitizedPostSurveyData);
+      const getStudySpeciesSQLStatement = getProjectStudySpeciesSQL(Number(req.params.projectId));
+
+      if (!getStudySpeciesSQLStatement) {
+        throw new HTTP400('Failed to build study species get statement');
+      }
 
       if (!postSurveySQLStatement) {
         throw new HTTP400('Failed to build survey SQL insert statement');
@@ -107,7 +116,50 @@ export function createSurvey(): RequestHandler {
           throw new HTTP400('Failed to create the survey record');
         }
 
+        const getStudySpeciesResponse = await connection.query(
+          getStudySpeciesSQLStatement.text,
+          getStudySpeciesSQLStatement.values
+        );
+        const studySpeciesResult =
+          (getStudySpeciesResponse &&
+            getStudySpeciesResponse.rows &&
+            new GetStudySpeciesData(getStudySpeciesResponse.rows)) ||
+          null;
+
+        let speciesPartOfProject: number[] = [];
+        let speciesNotPartOfProject: number[] = [];
+
+        sanitizedPostSurveyData.species.forEach((species: number) => {
+          if (studySpeciesResult?.species_ids.includes(species)) {
+            speciesPartOfProject.push(species);
+          } else {
+            speciesNotPartOfProject.push(species);
+          }
+        });
+
+        const promises: Promise<any>[] = [];
+
         surveyId = surveyResult.id;
+
+        // Handle species that exist already as part of the project associated to this survey
+        promises.push(
+          Promise.all(
+            speciesPartOfProject.map((speciesId: number) =>
+              updateSpecies(speciesId, Number(req.params.projectId), surveyId, connection)
+            )
+          )
+        );
+
+        // Handle species that don't exist already as part of the project associated to this survey
+        promises.push(
+          Promise.all(
+            speciesNotPartOfProject.map((speciesId: number) =>
+              insertFocalSpecies(speciesId, Number(req.params.projectId), surveyId, connection)
+            )
+          )
+        );
+
+        await Promise.all(promises);
 
         if (sanitizedPostSurveyData.survey_proprietor) {
           const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
@@ -150,3 +202,26 @@ export function createSurvey(): RequestHandler {
     }
   };
 }
+
+export const updateSpecies = async (
+  species_id: number,
+  project_id: number,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = updateSpeciesSQL(species_id, project_id, survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rowCount) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to update species data');
+  }
+
+  return result;
+};

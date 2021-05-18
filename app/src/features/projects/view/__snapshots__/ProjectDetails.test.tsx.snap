@@ -748,12 +748,12 @@ exports[`ProjectDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                species 1
+                1
               </dd>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                species 2
+                2
               </dd>
             </div>
             <div
@@ -767,12 +767,12 @@ exports[`ProjectDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                species 3
+                3
               </dd>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                species 4
+                4
               </dd>
             </div>
           </div>

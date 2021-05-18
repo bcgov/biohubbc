@@ -94,7 +94,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       {row.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.species}</TableCell>
+                  <TableCell>{row.species?.join(', ')}</TableCell>
                   <TableCell>
                     {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, row.start_date, row.end_date)}
                   </TableCell>

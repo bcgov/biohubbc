@@ -12,7 +12,8 @@ import {
   getManagementActionTypeSQL,
   getProjectTypeSQL,
   getProprietorTypeSQL,
-  getSystemRolesSQL
+  getSystemRolesSQL,
+  getTaxonsSQL
 } from './code-queries';
 
 describe('getManagementActionTypeSQL', () => {
@@ -95,6 +96,13 @@ describe('getSystemRolesSQL', () => {
 describe('getAdministrativeActivityStatusTypeSQL', () => {
   it('returns valid sql statement', () => {
     const response = getAdministrativeActivityStatusTypeSQL();
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getTaxonsSQL', () => {
+  it('returns valid sql statement', () => {
+    const response = getTaxonsSQL();
     expect(response).to.not.be.null;
   });
 });

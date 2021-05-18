@@ -37,8 +37,8 @@ describe('ProjectSpeciesForm', () => {
 
   it('renders correctly with existing species values', () => {
     const existingFormValues: IProjectSpeciesForm = {
-      focal_species: ['species 1'],
-      ancillary_species: ['species 2']
+      focal_species: [1],
+      ancillary_species: [2]
     };
 
     const { asFragment } = render(

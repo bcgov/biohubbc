@@ -51,7 +51,7 @@ describe('Species', () => {
       <Species
         projectForViewData={{
           ...getProjectForViewResponse,
-          species: { focal_species: (null as unknown) as string[], ancillary_species: (null as unknown) as string[] }
+          species: { focal_species: (null as unknown) as number[], ancillary_species: (null as unknown) as number[] }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -72,8 +72,8 @@ describe('Species', () => {
   it('editing the species works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       species: {
-        focal_species: ['species 1', 'species 2'],
-        ancillary_species: ['species 3', 'species 4']
+        focal_species: [1, 2],
+        ancillary_species: [3, 4]
       }
     });
 
@@ -115,8 +115,8 @@ describe('Species', () => {
       expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         species: {
-          focal_species: ['species 1', 'species 2'],
-          ancillary_species: ['species 3', 'species 4']
+          focal_species: [1, 2],
+          ancillary_species: [3, 4]
         }
       });
 
@@ -177,8 +177,8 @@ describe('Species', () => {
   it('shows error dialog with API error message when updating species data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       species: {
-        focal_species: ['species 1', 'species 2'],
-        ancillary_species: ['species 3', 'species 4']
+        focal_species: [1, 2],
+        ancillary_species: [3, 4]
       }
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));

@@ -7,7 +7,8 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 
 const useStyles = makeStyles({
   bold: {
@@ -19,7 +20,7 @@ export interface IGeneralInformationForm {
   survey_name: string;
   start_date: string;
   end_date: string;
-  species: string;
+  species: number[];
   survey_purpose: string;
   biologist_first_name: string;
   biologist_last_name: string;
@@ -29,7 +30,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   survey_name: '',
   start_date: '',
   end_date: '',
-  species: '',
+  species: [],
   survey_purpose: '',
   biologist_first_name: '',
   biologist_last_name: ''
@@ -41,7 +42,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
     .string()
     .max(3000, 'Cannot exceed 3000 characters')
     .required('You must provide a purpose for the survey'),
-  species: yup.string().required('Required'),
+  species: yup.array().required('Required'),
   biologist_first_name: yup.string().required('Required'),
   biologist_last_name: yup.string().required('Required'),
   start_date: yup.string().isValidDateString().required('Required'),
@@ -49,7 +50,7 @@ export const GeneralInformationYupSchema = yup.object().shape({
 });
 
 export interface IGeneralInformationFormProps {
-  species: IAutocompleteFieldOption<string>[];
+  species: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -82,7 +83,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
         <Grid item xs={12}>
-          <AutocompleteField id="species" name="species" label="Species" options={props.species} required={true} />
+          <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={true} />
         </Grid>
         <Grid item xs={12}>
           <TextField

@@ -10,9 +10,10 @@ import {
   GetPartnershipsData,
   GetProjectData,
   GetLocationData,
-  GetPermitData
+  GetPermitData,
+  GetSpeciesData
 } from '../../../models/project-view';
-import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
+import { GetFundingData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getIndigenousPartnershipsByProjectSQL,

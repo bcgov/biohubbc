@@ -7,8 +7,8 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectSpeciesForm {
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  ancillary_species: number[];
 }
 
 export const ProjectSpeciesFormInitialValues: IProjectSpeciesForm = {

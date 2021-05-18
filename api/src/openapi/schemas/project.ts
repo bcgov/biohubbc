@@ -101,7 +101,7 @@ export const projectCreatePostRequestObject = {
           type: 'array',
           description: 'Array of focal species',
           items: {
-            type: 'string',
+            type: 'number',
             description: 'Species ID'
           }
         },
@@ -109,7 +109,7 @@ export const projectCreatePostRequestObject = {
           type: 'array',
           description: 'Array of ancillary species',
           items: {
-            type: 'string',
+            type: 'number',
             description: 'Species ID'
           }
         }

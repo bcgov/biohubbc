@@ -407,7 +407,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-28"
+                    class="MuiBox-root MuiBox-root-29"
                   >
                     <p
                       class="MuiTypography-root makeStyles-bold-23 MuiTypography-body1"
@@ -522,13 +522,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-29"
+          class="MuiBox-root MuiBox-root-30"
         >
           <div
-            class="MuiBox-root MuiBox-root-30"
+            class="MuiBox-root MuiBox-root-31"
           >
             <div
-              class="MuiBox-root MuiBox-root-31"
+              class="MuiBox-root MuiBox-root-32"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -537,7 +537,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-32"
+              class="MuiBox-root MuiBox-root-33"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -547,7 +547,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-33"
+            class="MuiBox-root MuiBox-root-34"
           >
             <form>
               <div
@@ -606,6 +606,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     aria-expanded="false"
                     class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                    data-testid="park"
                     role="combobox"
                   >
                     <div
@@ -709,6 +710,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     aria-expanded="false"
                     class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                    data-testid="management_unit"
                     role="combobox"
                   >
                     <div

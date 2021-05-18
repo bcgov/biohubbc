@@ -30,8 +30,11 @@ export const surveyCreatePostRequestObject = {
       description: 'ISO 8601 date string'
     },
     species: {
-      type: 'string',
-      description: 'Selected species'
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected species ids'
     },
     survey_purpose: {
       type: 'string'
@@ -119,7 +122,13 @@ export const surveyUpdatePutRequestObject = {
   properties: {
     survey_name: { type: 'string' },
     survey_purpose: { type: 'string' },
-    species: { type: 'string' },
+    species: {
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected species ids'
+    },
     start_date: { type: 'string' },
     end_date: { type: 'string' },
     biologist_first_name: { type: 'string' },

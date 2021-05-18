@@ -26,12 +26,11 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
-      p_id, name, objectives, species, start_date, end_date, lead_first_name, lead_last_name, location_name, geography
+      p_id, name, objectives, start_date, end_date, lead_first_name, lead_last_name, location_name, geography
     ) VALUES (
       ${projectId},
       ${survey.survey_name},
       ${survey.survey_purpose},
-      ${survey.species},
       ${survey.start_date},
       ${survey.end_date},
       ${survey.biologist_first_name},

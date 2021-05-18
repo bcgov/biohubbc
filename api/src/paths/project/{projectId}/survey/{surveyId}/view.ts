@@ -7,7 +7,7 @@ import { GetSurveyProprietorData } from '../../../../../models/survey-view';
 import { GetSurveyData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
 import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-queries';
-import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
@@ -83,7 +83,7 @@ export function getSurveyForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySQLStatement = getSurveySQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.projectId), Number(req.params.surveyId));
       const getSurveyProprietorSQLStatement = getSurveyProprietorSQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement || !getSurveyProprietorSQLStatement) {
@@ -99,8 +99,7 @@ export function getSurveyForView(): RequestHandler {
 
       await connection.commit();
 
-      const getSurveyData =
-        (surveyData && surveyData.rows && surveyData.rows[0] && new GetSurveyData(surveyData.rows[0])) || null;
+      const getSurveyData = (surveyData && surveyData.rows && new GetSurveyData(surveyData.rows)) || null;
 
       const getSurveyProprietorData =
         (surveyProprietorData &&

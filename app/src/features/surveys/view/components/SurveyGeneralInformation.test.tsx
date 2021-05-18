@@ -46,7 +46,11 @@ describe('SurveyGeneralInformation', () => {
       <SurveyGeneralInformation
         surveyForViewData={{
           ...getProjectSurveyForViewResponse,
-          survey: { ...getProjectSurveyForViewResponse.survey, end_date: (null as unknown) as string, species: 'spec' }
+          survey: {
+            ...getProjectSurveyForViewResponse.survey,
+            end_date: (null as unknown) as string,
+            species: ['species 1']
+          }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -67,7 +71,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().project.getSurveyForUpdate.mockResolvedValue({
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
-      species: 'species',
+      species: ['species 1'],
       start_date: '1998-11-11',
       end_date: '2021-03-27',
       biologist_first_name: 'firstttt',
@@ -111,7 +115,7 @@ describe('SurveyGeneralInformation', () => {
       expect(mockBiohubApi().project.updateSurvey).toBeCalledWith(1, getProjectSurveyForViewResponse.id, {
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
-        species: 'species',
+        species: ['species 1'],
         start_date: '1998-11-11',
         end_date: '2021-03-27',
         biologist_first_name: 'firstttt',
@@ -174,7 +178,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().project.getSurveyForUpdate.mockResolvedValue({
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
-      species: 'species',
+      species: ['species 1'],
       start_date: '1998-11-11',
       end_date: '2021-03-27',
       biologist_first_name: 'firstttt',

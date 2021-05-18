@@ -192,9 +192,11 @@ export const deleteFocalSpeciesSQL = (projectId: number): SQLStatement | null =>
 
   const sqlStatement: SQLStatement = SQL`
     DELETE
-      from focal_species
+      from study_species
     WHERE
-      p_id = ${projectId};
+      p_id = ${projectId}
+    AND
+      is_focal;
   `;
 
   defaultLog.debug({
@@ -226,9 +228,11 @@ export const deleteAncillarySpeciesSQL = (projectId: number): SQLStatement | nul
 
   const sqlStatement: SQLStatement = SQL`
     DELETE
-      from ancillary_species
+      from study_species
     WHERE
-      p_id = ${projectId};
+      p_id = ${projectId}
+    AND
+      is_focal is FALSE;
   `;
 
   defaultLog.debug({
