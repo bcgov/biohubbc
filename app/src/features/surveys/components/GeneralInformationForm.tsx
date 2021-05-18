@@ -9,6 +9,8 @@ import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
+import { DATE_FORMAT } from 'constants/dateFormats';
+import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles({
   bold: {
@@ -89,11 +91,20 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <StartEndDateFields
-          minDate={props.projectStartDate}
-          maxDate={props.projectEndDate}
           formikProps={formikProps}
           startRequired={true}
           endRequired={false}
+          startDateHelperText={`Start date must be after project start date ${getFormattedDate(
+            DATE_FORMAT.ShortMediumDateFormat,
+            props.projectStartDate
+          )}`}
+          endDateHelperText={
+            props.projectEndDate &&
+            `End date must be before project end date ${getFormattedDate(
+              DATE_FORMAT.ShortMediumDateFormat,
+              props.projectEndDate
+            )}`
+          }
         />
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize

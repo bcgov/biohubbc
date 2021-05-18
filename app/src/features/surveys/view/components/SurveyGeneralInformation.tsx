@@ -144,12 +144,18 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               .isAfterDate(
                 projectForViewData.project.start_date,
                 DATE_FORMAT.ShortDateFormat,
-                'Survey start date cannot be before project start date'
+                `Survey start date cannot be before project start date ${getFormattedDate(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  projectForViewData.project.start_date
+                )}`
               )
               .isAfterDate(
                 moment(DATE_LIMIT.min).toISOString(),
                 DATE_FORMAT.ShortDateFormat,
-                `Survey start date cannot be before ${DATE_LIMIT.min}`
+                `Survey start date cannot be before ${getFormattedDate(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  DATE_LIMIT.min
+                )}`
               )
               .required('Required'),
             end_date: yup
@@ -159,12 +165,15 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               .isBeforeDate(
                 projectForViewData.project.end_date,
                 DATE_FORMAT.ShortDateFormat,
-                'Survey end date cannot be after project end date'
+                `Survey end date cannot be after project end date ${getFormattedDate(
+                  DATE_FORMAT.ShortMediumDateFormat,
+                  projectForViewData.project.end_date
+                )}`
               )
               .isBeforeDate(
                 moment(DATE_LIMIT.max).toISOString(),
                 DATE_FORMAT.ShortDateFormat,
-                `Survey end date cannot be after ${DATE_LIMIT.max}`
+                `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
               )
           })
         }}
