@@ -36,21 +36,25 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   biologist_last_name: ''
 };
 
-export const GeneralInformationYupSchema = yup.object().shape({
-  survey_name: yup.string().required('Required'),
-  survey_purpose: yup
-    .string()
-    .max(3000, 'Cannot exceed 3000 characters')
-    .required('You must provide a purpose for the survey'),
-  species: yup.array().required('Required'),
-  biologist_first_name: yup.string().required('Required'),
-  biologist_last_name: yup.string().required('Required'),
-  start_date: yup.string().isValidDateString().required('Required'),
-  end_date: yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
-});
+export const GeneralInformationYupSchema = (customYupRules?: any) => {
+  return yup.object().shape({
+    survey_name: yup.string().required('Required'),
+    survey_purpose: yup
+      .string()
+      .max(3000, 'Cannot exceed 3000 characters')
+      .required('You must provide a purpose for the survey'),
+    species: yup.array().required('Required'),
+    biologist_first_name: yup.string().required('Required'),
+    biologist_last_name: yup.string().required('Required'),
+    start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
+    end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateAfterStartDate('start_date')
+  });
+};
 
 export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
+  projectStartDate: string;
+  projectEndDate: string;
 }
 
 /**
@@ -81,7 +85,13 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             helperText={touched.survey_name && errors.survey_name}
           />
         </Grid>
-        <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
+        <StartEndDateFields
+          minDate={props.projectStartDate}
+          maxDate={props.projectEndDate}
+          formikProps={formikProps}
+          startRequired={true}
+          endRequired={false}
+        />
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={true} />
         </Grid>

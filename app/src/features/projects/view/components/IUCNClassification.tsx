@@ -7,7 +7,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditIUCNI18N } from 'constants/i18n';
 import {
   IProjectIUCNForm,
@@ -19,8 +19,9 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { DialogContext } from 'contexts/dialogContext';
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -54,20 +55,22 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: EditIUCNI18N.editErrorTitle,
     dialogText: EditIUCNI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -132,7 +135,6 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
 
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
         <Typography variant="h3">IUCN Conservation Actions Classification</Typography>

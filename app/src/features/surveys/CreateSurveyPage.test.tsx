@@ -7,6 +7,7 @@ import React from 'react';
 import CreateSurveyPage from './CreateSurveyPage';
 import { MemoryRouter, Router } from 'react-router';
 import { createMemoryHistory } from 'history';
+import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory();
 
@@ -79,9 +80,11 @@ describe('CreateSurveyPage', () => {
       history.push('/projects/1/survey/create');
 
       const { getByText, getAllByText, getByTestId } = render(
-        <Router history={history}>
-          <CreateSurveyPage />
-        </Router>
+        <DialogContextProvider>
+          <Router history={history}>
+            <CreateSurveyPage />
+          </Router>
+        </DialogContextProvider>
       );
 
       await waitFor(() => {
@@ -110,9 +113,11 @@ describe('CreateSurveyPage', () => {
       } as any);
 
       const { getAllByText, getByText, getAllByRole, getByTestId } = render(
-        <MemoryRouter initialEntries={['?id=1']}>
-          <CreateSurveyPage />
-        </MemoryRouter>
+        <DialogContextProvider>
+          <MemoryRouter initialEntries={['?id=1']}>
+            <CreateSurveyPage />
+          </MemoryRouter>
+        </DialogContextProvider>
       );
 
       await waitFor(() => {

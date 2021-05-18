@@ -6,10 +6,11 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import YesNoDialog from 'components/dialog/YesNoDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { AddFundingI18N, DeleteFundingI18N, EditFundingI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
   ProjectFundingFormArrayItemInitialValues,
@@ -19,7 +20,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IProjectFundingProps {
@@ -41,30 +42,43 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
   const biohubApi = useBiohubApi();
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: EditFundingI18N.editErrorTitle,
     dialogText: EditFundingI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const defaultYesNoDialogProps = {
+    dialogTitle: DeleteFundingI18N.deleteTitle,
+    dialogText: DeleteFundingI18N.deleteText,
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => handleDeleteDialogYes()
+  };
+
+  const showYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+    dialogContext.setYesNoDialog({ ...defaultYesNoDialogProps, ...yesNoDialogProps });
+  };
 
   const [fundingFormData, setFundingFormData] = useState({
     index: 0,
     values: ProjectFundingFormArrayItemInitialValues
   });
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
-  };
-
   const [openEditDialog, setOpenEditDialog] = useState(false);
-
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const handleDialogEditOpen = async (itemIndex: number) => {
     let fundingSourceValues: IProjectFundingFormArrayItem;
@@ -126,11 +140,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       index: itemIndex,
       values: funding.fundingSources[fundingFormData.index]
     });
-    setOpenDeleteDialog(true);
-  };
-
-  const handleDeleteDialogClose = async () => {
-    setOpenDeleteDialog(false);
+    showYesNoDialog({ open: true });
   };
 
   const handleDeleteDialogYes = async () => {
@@ -138,7 +148,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
     try {
       await biohubApi.project.deleteFundingSource(id, fundingSource.id);
-      setOpenDeleteDialog(false);
+      showYesNoDialog({ open: false });
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogTitle: DeleteFundingI18N.deleteErrorTitle, dialogText: apiError.message, open: true });
@@ -178,15 +188,6 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <YesNoDialog
-        dialogTitle={DeleteFundingI18N.deleteTitle}
-        dialogText={DeleteFundingI18N.deleteText}
-        open={openDeleteDialog}
-        onClose={handleDeleteDialogClose}
-        onNo={handleDeleteDialogClose}
-        onYes={handleDeleteDialogYes}
-      />
-      <ErrorDialog {...errorDialogProps} />
 
       <Box component="header" display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         <Typography variant="h3">Funding Sources</Typography>

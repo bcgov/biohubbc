@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React from 'react';
@@ -21,7 +22,11 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 const mockRefresh = jest.fn();
 
 const renderContainer = () => {
-  return render(<ProjectPermits projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />);
+  return render(
+    <DialogContextProvider>
+      <ProjectPermits projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    </DialogContextProvider>
+  );
 };
 
 describe('ProjectPermits', () => {

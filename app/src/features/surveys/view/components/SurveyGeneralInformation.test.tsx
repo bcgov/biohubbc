@@ -4,6 +4,7 @@ import { getProjectSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import SurveyGeneralInformation from './SurveyGeneralInformation';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -22,7 +23,7 @@ const mockRefresh = jest.fn();
 const renderContainer = () => {
   return render(
     <SurveyGeneralInformation
-      projectId={1}
+      projectForViewData={getProjectForViewResponse}
       surveyForViewData={getProjectSurveyForViewResponse}
       codes={codes}
       refresh={mockRefresh}
@@ -54,7 +55,7 @@ describe('SurveyGeneralInformation', () => {
         }}
         codes={codes}
         refresh={mockRefresh}
-        projectId={1}
+        projectForViewData={getProjectForViewResponse}
       />
     );
 
@@ -72,8 +73,8 @@ describe('SurveyGeneralInformation', () => {
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
       species: ['species 1'],
-      start_date: '1998-11-11',
-      end_date: '2021-03-27',
+      start_date: '1999-09-09',
+      end_date: '2021-01-25',
       biologist_first_name: 'firstttt',
       biologist_last_name: 'lastttt',
       survey_area_name: 'study area is this',
@@ -116,8 +117,8 @@ describe('SurveyGeneralInformation', () => {
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
         species: ['species 1'],
-        start_date: '1998-11-11',
-        end_date: '2021-03-27',
+        start_date: '1999-09-09',
+        end_date: '2021-01-25',
         biologist_first_name: 'firstttt',
         biologist_last_name: 'lastttt',
         survey_area_name: 'study area is this',
@@ -179,8 +180,8 @@ describe('SurveyGeneralInformation', () => {
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
       species: ['species 1'],
-      start_date: '1998-11-11',
-      end_date: '2021-03-27',
+      start_date: '1999-09-09',
+      end_date: '2021-01-25',
       biologist_first_name: 'firstttt',
       biologist_last_name: 'lastttt',
       survey_area_name: 'study area is this',

@@ -6,13 +6,14 @@ import GeneralInformationForm, {
 } from 'features/surveys/components/GeneralInformationForm';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 const handleSaveAndNext = jest.fn();
 
 const generalInformationFilledValues = {
   survey_name: 'survey name',
-  start_date: '2021-04-09 11:53:53',
-  end_date: '2021-05-10 11:53:53',
+  start_date: '2000-04-09 11:53:53',
+  end_date: '2020-05-10 11:53:53',
   species: [1],
   survey_purpose: 'purpose',
   biologist_first_name: 'first',
@@ -24,7 +25,7 @@ describe('General Information Form', () => {
     const { asFragment } = render(
       <Formik
         initialValues={GeneralInformationInitialValues}
-        validationSchema={GeneralInformationYupSchema}
+        validationSchema={GeneralInformationYupSchema()}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async (values) => {
@@ -37,6 +38,8 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            projectStartDate={getProjectForViewResponse.project.start_date}
+            projectEndDate={getProjectForViewResponse.project.end_date}
           />
         )}
       </Formik>
@@ -49,7 +52,7 @@ describe('General Information Form', () => {
     const { asFragment } = render(
       <Formik
         initialValues={generalInformationFilledValues}
-        validationSchema={GeneralInformationYupSchema}
+        validationSchema={GeneralInformationYupSchema()}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async (values) => {
@@ -62,6 +65,8 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            projectStartDate={getProjectForViewResponse.project.start_date}
+            projectEndDate={getProjectForViewResponse.project.end_date}
           />
         )}
       </Formik>
@@ -74,7 +79,7 @@ describe('General Information Form', () => {
     const { asFragment } = render(
       <Formik
         initialValues={generalInformationFilledValues}
-        validationSchema={GeneralInformationYupSchema}
+        validationSchema={GeneralInformationYupSchema()}
         validateOnBlur={true}
         initialErrors={{
           survey_name: 'error on survey name field',
@@ -105,6 +110,8 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            projectStartDate={getProjectForViewResponse.project.start_date}
+            projectEndDate={getProjectForViewResponse.project.end_date}
           />
         )}
       </Formik>

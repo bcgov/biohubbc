@@ -7,19 +7,18 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { ConfigContext } from 'contexts/configContext';
+import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
-import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
-import { logOut } from 'utils/Utils';
+import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -75,21 +74,22 @@ export const AccessRequestPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const config = useContext(ConfigContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const [openErrorDialogProps, setOpenErrorDialogProps] = useState<IErrorDialogProps>({
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
     dialogTitle: AccessRequestI18N.requestTitle,
     dialogText: AccessRequestI18N.requestText,
     open: false,
     onClose: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setOpenErrorDialogProps({ ...openErrorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
@@ -112,8 +112,8 @@ export const AccessRequestPage: React.FC = () => {
   }, [biohubApi, isLoadingCodes, codes]);
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setOpenErrorDialogProps({
-      ...openErrorDialogProps,
+    dialogContext.setErrorDialog({
+      ...defaultErrorDialogProps,
       dialogTitle: AccessRequestI18N.requestTitle,
       dialogText: AccessRequestI18N.requestText,
       ...textDialogProps,
@@ -239,13 +239,10 @@ export const AccessRequestPage: React.FC = () => {
                           variant="outlined"
                           color="primary"
                           onClick={() => {
-                            if (!config) {
-                              return;
-                            }
-
-                            logOut(config);
+                            history.push('/logout');
                           }}
-                          className={classes.actionButton}>
+                          className={classes.actionButton}
+                          data-testid="logout-button">
                           Log out
                         </Button>
                       </Box>
@@ -253,7 +250,6 @@ export const AccessRequestPage: React.FC = () => {
                   </Box>
                 </Paper>
               </Box>
-              <ErrorDialog {...openErrorDialogProps} />
             </>
           )}
         </Formik>

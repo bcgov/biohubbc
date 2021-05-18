@@ -5,8 +5,9 @@ import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { EditDialog } from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSpeciesI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   IProjectSpeciesForm,
   ProjectSpeciesFormInitialValues,
@@ -16,7 +17,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ISpeciesProps {
@@ -43,6 +44,20 @@ const Species: React.FC<ISpeciesProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [speciesForUpdate, setSpeciesForUpdate] = useState(ProjectSpeciesFormInitialValues);
+
+  const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
+    dialogTitle: EditSpeciesI18N.editErrorTitle,
+    dialogText: EditSpeciesI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
 
   const handleDialogEditOpen = async () => {
     let speciesResponseData;
@@ -83,20 +98,8 @@ const Species: React.FC<ISpeciesProps> = (props) => {
     props.refresh();
   };
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
-    dialogTitle: EditSpeciesI18N.editErrorTitle,
-    dialogText: EditSpeciesI18N.editErrorText,
-    open: false,
-    onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    },
-    onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
-    }
-  });
-
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const hasFocalSpecies = focal_species && focal_species.length > 0;
@@ -115,7 +118,6 @@ const Species: React.FC<ISpeciesProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ErrorDialog {...errorDialogProps} />
 
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">

@@ -4,13 +4,17 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import { IGetProjectSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectForViewResponse,
+  IGetProjectSurveyForViewResponse,
+  ISurveyUpdateRequest
+} from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -19,11 +23,13 @@ import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import moment from 'moment';
+import yup from 'utils/YupSchema';
 
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetProjectSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
-  projectId: number;
+  projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
 }
 
@@ -36,7 +42,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const biohubApi = useBiohubApi();
 
   const {
-    projectId,
+    projectForViewData,
     surveyForViewData: { id, survey },
     codes,
     refresh
@@ -68,7 +74,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectId, id);
+      const response = await biohubApi.project.getSurveyForUpdate(projectForViewData.id, id);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -101,7 +107,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     };
 
     try {
-      await biohubApi.project.updateSurvey(projectId, id, surveyData);
+      await biohubApi.project.updateSurvey(projectForViewData.id, id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -126,10 +132,41 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              projectStartDate={projectForViewData.project.start_date}
+              projectEndDate={projectForViewData.project.end_date}
             />
           ),
           initialValues: generalInformationFormData,
-          validationSchema: GeneralInformationYupSchema
+          validationSchema: GeneralInformationYupSchema({
+            start_date: yup
+              .string()
+              .isValidDateString()
+              .isAfterDate(
+                projectForViewData.project.start_date,
+                DATE_FORMAT.ShortDateFormat,
+                'Survey start date cannot be before project start date'
+              )
+              .isAfterDate(
+                moment(DATE_LIMIT.min).toISOString(),
+                DATE_FORMAT.ShortDateFormat,
+                `Survey start date cannot be before ${DATE_LIMIT.min}`
+              )
+              .required('Required'),
+            end_date: yup
+              .string()
+              .isValidDateString()
+              .isEndDateAfterStartDate('start_date')
+              .isBeforeDate(
+                projectForViewData.project.end_date,
+                DATE_FORMAT.ShortDateFormat,
+                'Survey end date cannot be after project end date'
+              )
+              .isBeforeDate(
+                moment(DATE_LIMIT.max).toISOString(),
+                DATE_FORMAT.ShortDateFormat,
+                `Survey end date cannot be after ${DATE_LIMIT.max}`
+              )
+          })
         }}
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}

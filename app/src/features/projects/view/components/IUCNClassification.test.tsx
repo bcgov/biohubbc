@@ -5,6 +5,7 @@ import IUCNClassification from './IUCNClassification';
 import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { DialogContextProvider } from 'contexts/dialogContext';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -22,7 +23,9 @@ const mockRefresh = jest.fn();
 
 const renderContainer = () => {
   return render(
-    <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    <DialogContextProvider>
+      <IUCNClassification projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
+    </DialogContextProvider>
   );
 };
 
