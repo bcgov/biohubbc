@@ -99,7 +99,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getProjectStudySpeciesSQL = (projectId: number): SQLStatement | null => {
+export const getProjectStudySpeciesSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'getProjectStudySpeciesSQL',
     message: 'params',
@@ -132,7 +132,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
- export const getSurveyStudySpeciesSQL = (surveyId: number): SQLStatement | null => {
+export const getSurveyStudySpeciesSQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'getSurveyStudySpeciesSQL',
     message: 'params',

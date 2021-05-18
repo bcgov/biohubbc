@@ -94,9 +94,6 @@ export function getSurveyList(): RequestHandler {
 
       let rows: any[] = [];
 
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-      console.log(getSurveyListResponse && getSurveyListResponse.rows && new GetSurveyListData(getSurveyListResponse.rows));
-
       if (getSurveyListResponse && getSurveyListResponse.rows && new GetSurveyListData(getSurveyListResponse.rows)) {
         rows = new GetSurveyListData(getSurveyListResponse.rows).surveys;
       }

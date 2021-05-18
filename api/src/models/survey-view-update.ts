@@ -26,10 +26,9 @@ export class GetSurveyData {
 
     const surveyDataItem = surveyData && surveyData.length && surveyData[0];
     const speciesList =
-      (surveyData.map((item: any) => {
-          return item.species;
-        })) ||
-      [];
+      surveyData.map((item: any) => {
+        return item.species;
+      }) || [];
 
     this.survey_name = surveyDataItem?.name || '';
     this.survey_purpose = surveyDataItem?.objectives || '';

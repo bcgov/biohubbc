@@ -57,22 +57,23 @@ export class GetSurveyListData {
     let surveysList: any[] = [];
     let currentSurveyId: number = (null as unknown) as number;
 
-    obj && obj.map((survey: any) => {
-      if (survey.id !== currentSurveyId) {
-        surveysList.push({
-          id: survey.id,
-          name: survey.name,
-          start_date: survey.start_date,
-          end_date: survey.end_date,
-          species: [survey.species]
-        });
-      } else {
-        const index = surveysList.findIndex((item) => item.id === survey.id);
-        surveysList[index].species = [...surveysList[index].species, survey.species];
-      }
+    obj &&
+      obj.map((survey: any) => {
+        if (survey.id !== currentSurveyId) {
+          surveysList.push({
+            id: survey.id,
+            name: survey.name,
+            start_date: survey.start_date,
+            end_date: survey.end_date,
+            species: [survey.species]
+          });
+        } else {
+          const index = surveysList.findIndex((item) => item.id === survey.id);
+          surveysList[index].species = [...surveysList[index].species, survey.species];
+        }
 
-      currentSurveyId = survey.id;
-    });
+        currentSurveyId = survey.id;
+      });
 
     this.surveys = (surveysList.length && surveysList) || [];
   }

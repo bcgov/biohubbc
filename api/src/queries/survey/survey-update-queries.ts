@@ -95,7 +95,7 @@ export const putSurveySQL = (
  * @param {number} survey id
  * @returns {SQLStatement} sql query object
  */
- export const updateSpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
+export const updateSpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'updateSpeciesSQL', message: 'params', updateSpeciesSQL, projectId });
 
   if (!speciesId || !projectId || !surveyId) {

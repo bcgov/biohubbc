@@ -11,7 +11,11 @@ const defaultLog = getLogger('queries/survey/survey-delete-queries');
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyStudySpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
+export const deleteSurveyStudySpeciesSQL = (
+  speciesId: number,
+  projectId: number,
+  surveyId: number
+): SQLStatement | null => {
   defaultLog.debug({
     label: 'deleteSurveyStudySpeciesSQL',
     message: 'params',

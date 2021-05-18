@@ -14,7 +14,7 @@ import {
 import { deleteSurveyStudySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
 import { getProjectStudySpeciesSQL, getSurveyStudySpeciesSQL } from '../../../../../queries/survey/survey-view-queries';
-import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 import { insertFocalSpecies } from '../../../../project';
@@ -141,7 +141,7 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySQLStatement = getSurveySQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForUpdateSQL(Number(req.params.projectId), Number(req.params.surveyId));
 
       if (!getSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -153,8 +153,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       await connection.commit();
 
-      const getSurveyData =
-        (surveyData && surveyData.rows && new GetSurveyData(surveyData.rows)) || null;
+      const getSurveyData = (surveyData && surveyData.rows && new GetSurveyData(surveyData.rows)) || null;
 
       return res.status(200).json(getSurveyData);
     } catch (error) {
@@ -226,27 +225,35 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP400('Failed to build survey study species get statement');
       }
 
-      console.log('ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLTHEEEEEEEEEEEEEPRINTTTTTTTTTTTTTTTTT')
-      console.log(putSurveyData.species)
+      const getProjectStudySpeciesResponse = await connection.query(
+        getProjectStudySpeciesSQLStatement.text,
+        getProjectStudySpeciesSQLStatement.values
+      );
+      const projectStudySpeciesResult =
+        (getProjectStudySpeciesResponse &&
+          getProjectStudySpeciesResponse.rows &&
+          new GetStudySpeciesData(getProjectStudySpeciesResponse.rows)) ||
+        null;
 
-      const getProjectStudySpeciesResponse = await connection.query(getProjectStudySpeciesSQLStatement.text, getProjectStudySpeciesSQLStatement.values);
-      const projectStudySpeciesResult = (getProjectStudySpeciesResponse && getProjectStudySpeciesResponse.rows && new GetStudySpeciesData(getProjectStudySpeciesResponse.rows)) || null;
-
-      console.log('ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLTHEEEEEEEEEEEEEPRINTTTTTTTTTTTTTTTTT')
-      console.log(projectStudySpeciesResult)
-
-      const getSurveyStudySpeciesResponse = await connection.query(getSurveyStudySpeciesSQLStatement.text, getSurveyStudySpeciesSQLStatement.values);
-      const surveyStudySpeciesResult = (getSurveyStudySpeciesResponse && getSurveyStudySpeciesResponse.rows && new GetStudySpeciesData(getSurveyStudySpeciesResponse.rows)) || null;
-
-      console.log('ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLTHEEEEEEEEEEEEEPRINTTTTTTTTTTTTTTTTT')
-      console.log(surveyStudySpeciesResult)
+      const getSurveyStudySpeciesResponse = await connection.query(
+        getSurveyStudySpeciesSQLStatement.text,
+        getSurveyStudySpeciesSQLStatement.values
+      );
+      const surveyStudySpeciesResult =
+        (getSurveyStudySpeciesResponse &&
+          getSurveyStudySpeciesResponse.rows &&
+          new GetStudySpeciesData(getSurveyStudySpeciesResponse.rows)) ||
+        null;
 
       let speciesToDelete: number[] = [];
       let speciesToInsert: number[] = [];
       let speciesToUpdate: number[] = [];
 
       putSurveyData.species.forEach((species: number) => {
-        if (projectStudySpeciesResult?.species_ids.includes(species) && !surveyStudySpeciesResult?.species_ids.includes(species)) {
+        if (
+          projectStudySpeciesResult?.species_ids.includes(species) &&
+          !surveyStudySpeciesResult?.species_ids.includes(species)
+        ) {
           speciesToUpdate.push(species);
         } else {
           speciesToInsert.push(species);
@@ -259,34 +266,23 @@ export function updateSurvey(): RequestHandler {
         }
       });
 
-      console.log('ALLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLTHEEEEEEEEEEEEEPRINTTTTTTTTTTTTTTTTT')
-      console.log(speciesToDelete)
-      console.log(speciesToInsert)
-      console.log(speciesToUpdate)
-
       const promises: Promise<any>[] = [];
 
       promises.push(
         Promise.all(
-          speciesToDelete.map((speciesId: number) =>
-            deleteSpecies(speciesId, projectId, surveyId, connection)
-          )
+          speciesToDelete.map((speciesId: number) => deleteSpecies(speciesId, projectId, surveyId, connection))
         )
       );
 
       promises.push(
         Promise.all(
-          speciesToInsert.map((speciesId: number) =>
-            insertFocalSpecies(speciesId, projectId, surveyId, connection)
-          )
+          speciesToInsert.map((speciesId: number) => insertFocalSpecies(speciesId, projectId, surveyId, connection))
         )
       );
 
       promises.push(
         Promise.all(
-          speciesToUpdate.map((speciesId: number) =>
-            updateSpecies(speciesId, projectId, surveyId, connection)
-          )
+          speciesToUpdate.map((speciesId: number) => updateSpecies(speciesId, projectId, surveyId, connection))
         )
       );
 

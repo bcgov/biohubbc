@@ -40,7 +40,7 @@ export class PutSpeciesData {
  * @export
  * @class GetSpeciesData
  */
- export class GetSpeciesData {
+export class GetSpeciesData {
   focal_species: number[];
   ancillary_species: number[];
 

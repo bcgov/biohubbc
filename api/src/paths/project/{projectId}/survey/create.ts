@@ -116,8 +116,15 @@ export function createSurvey(): RequestHandler {
           throw new HTTP400('Failed to create the survey record');
         }
 
-        const getStudySpeciesResponse = await connection.query(getStudySpeciesSQLStatement.text, getStudySpeciesSQLStatement.values);
-        const studySpeciesResult = (getStudySpeciesResponse && getStudySpeciesResponse.rows && new GetStudySpeciesData(getStudySpeciesResponse.rows)) || null;
+        const getStudySpeciesResponse = await connection.query(
+          getStudySpeciesSQLStatement.text,
+          getStudySpeciesSQLStatement.values
+        );
+        const studySpeciesResult =
+          (getStudySpeciesResponse &&
+            getStudySpeciesResponse.rows &&
+            new GetStudySpeciesData(getStudySpeciesResponse.rows)) ||
+          null;
 
         let speciesPartOfProject: number[] = [];
         let speciesNotPartOfProject: number[] = [];

@@ -232,8 +232,6 @@ export const insertFocalSpecies = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  console.log('#################################')
-  console.log(focal_species_id, project_id, survey_id);
   const sqlStatement = postFocalSpeciesSQL(focal_species_id, project_id, survey_id);
 
   if (!sqlStatement) {

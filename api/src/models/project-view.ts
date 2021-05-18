@@ -70,7 +70,7 @@ export class GetPermitData {
  * @export
  * @class GetSpeciesData
  */
- export class GetSpeciesData {
+export class GetSpeciesData {
   focal_species: string[];
   ancillary_species: string[];
 
