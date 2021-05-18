@@ -80,8 +80,6 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Locations')).toBeVisible();
 
-      expect(getByText('Species')).toBeVisible();
-
       expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
 
       expect(getByText('Funding')).toBeVisible();
@@ -117,8 +115,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('Objectives')).toBeVisible();
 
       expect(getByText('Locations')).toBeVisible();
-
-      expect(getByText('Species')).toBeVisible();
 
       expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
 
@@ -171,8 +167,6 @@ describe('CreateProjectPage', () => {
       expect(queryByText('Objectives')).toBeNull();
 
       expect(queryByText('Locations')).toBeNull();
-
-      expect(queryByText('Species')).toBeNull();
 
       expect(queryByText('IUCN Conservation Actions Classification')).toBeNull();
 
@@ -433,7 +427,6 @@ describe('CreateProjectPage', () => {
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
-          species: expect.any(Object),
           iucn: expect.any(Object),
           funding: expect.any(Object),
           partnerships: expect.any(Object)
@@ -468,7 +461,6 @@ describe('CreateProjectPage', () => {
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
-          species: expect.any(Object),
           iucn: expect.any(Object),
           funding: expect.any(Object),
           partnerships: expect.any(Object)

@@ -50,7 +50,8 @@ describe('SurveyGeneralInformation', () => {
           survey: {
             ...getSurveyForViewResponse.survey,
             end_date: (null as unknown) as string,
-            species: ['species 1']
+            focal_species: ['species 1'],
+            ancillary_species: ['ancillary species']
           }
         }}
         codes={codes}
@@ -72,7 +73,8 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
-      species: ['species 1'],
+      focal_species: ['species 1'],
+      ancillary_species: ['ancillary species'],
       start_date: '1999-09-09',
       end_date: '2021-01-25',
       biologist_first_name: 'firstttt',
@@ -116,7 +118,8 @@ describe('SurveyGeneralInformation', () => {
       expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.id, {
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
-        species: ['species 1'],
+        focal_species: ['species 1'],
+        ancillary_species: ['ancillary species'],
         start_date: '1999-09-09',
         end_date: '2021-01-25',
         biologist_first_name: 'firstttt',
@@ -179,7 +182,8 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
       survey_name: 'survey name is this',
       survey_purpose: 'survey purpose is this',
-      species: ['species 1'],
+      focal_species: ['species 1'],
+      ancillary_species: ['ancillary species'],
       start_date: '1999-09-09',
       end_date: '2021-01-25',
       biologist_first_name: 'firstttt',

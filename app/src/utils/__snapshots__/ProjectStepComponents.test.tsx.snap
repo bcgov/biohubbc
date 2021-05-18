@@ -4,13 +4,13 @@ exports[`ProjectStepComponents renders the project IUCN with the codes values 1`
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-40"
+      class="MuiBox-root MuiBox-root-30"
     >
       <div
         class="MuiGrid-root MuiGrid-container"
       />
       <div
-        class="MuiBox-root MuiBox-root-41"
+        class="MuiBox-root MuiBox-root-31"
       >
         <button
           aria-label="Add Another"
@@ -37,13 +37,13 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-44"
+      class="MuiBox-root MuiBox-root-34"
     >
       <div
         class="MuiGrid-root MuiGrid-container"
       />
       <div
-        class="MuiBox-root MuiBox-root-45"
+        class="MuiBox-root MuiBox-root-35"
       >
         <button
           aria-label="Add Another"
@@ -1112,6 +1112,82 @@ exports[`ProjectStepComponents renders the project funding with the codes values
 <DocumentFragment>
   <form>
     <div
+      class="MuiBox-root MuiBox-root-41"
+    >
+      <header
+        class="MuiBox-root MuiBox-root-42"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3"
+        >
+          Funding Sources (0)
+        </h3>
+        <button
+          aria-label="Add Funding Source"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="add-button"
+          tabindex="0"
+          title="Add Funding Source"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Add Funding Source
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </header>
+      <div
+        class="MuiBox-root MuiBox-root-43"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-44"
+        >
+          <ul
+            class="MuiList-root MuiList-dense"
+          >
+            <div
+              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-45"
+              >
+                <h6
+                  class="MuiTypography-root MuiTypography-subtitle2"
+                >
+                  No Funding Sources
+                </h6>
+              </div>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`ProjectStepComponents renders the project funding without the codes values 1`] = `
+<DocumentFragment>
+  <form>
+    <div
       class="MuiBox-root MuiBox-root-51"
     >
       <header
@@ -1168,82 +1244,6 @@ exports[`ProjectStepComponents renders the project funding with the codes values
             >
               <div
                 class="MuiBox-root MuiBox-root-55"
-              >
-                <h6
-                  class="MuiTypography-root MuiTypography-subtitle2"
-                >
-                  No Funding Sources
-                </h6>
-              </div>
-            </div>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`ProjectStepComponents renders the project funding without the codes values 1`] = `
-<DocumentFragment>
-  <form>
-    <div
-      class="MuiBox-root MuiBox-root-61"
-    >
-      <header
-        class="MuiBox-root MuiBox-root-62"
-      >
-        <h3
-          class="MuiTypography-root MuiTypography-h3"
-        >
-          Funding Sources (0)
-        </h3>
-        <button
-          aria-label="Add Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-          data-testid="add-button"
-          tabindex="0"
-          title="Add Funding Source"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Add Funding Source
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </header>
-      <div
-        class="MuiBox-root MuiBox-root-63"
-      >
-        <div
-          class="MuiBox-root MuiBox-root-64"
-        >
-          <ul
-            class="MuiList-root MuiList-dense"
-          >
-            <div
-              class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
-            >
-              <div
-                class="MuiBox-root MuiBox-root-65"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle2"
@@ -1363,10 +1363,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-77 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-79"
+                  class="PrivateNotchedOutline-legendLabelled-69"
                 >
                   <span>
                     Regions *
@@ -1377,7 +1377,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-81"
+          class="MuiBox-root MuiBox-root-71"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1412,10 +1412,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-77 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-79"
+                class="PrivateNotchedOutline-legendLabelled-69"
               >
                 <span>
                   Location Description
@@ -1429,16 +1429,16 @@ exports[`ProjectStepComponents renders the project location with the codes value
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-82 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-72 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-84"
+          class="MuiBox-root MuiBox-root-74"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-83 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1459,7 +1459,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-83 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1481,10 +1481,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-85"
+          class="MuiBox-root MuiBox-root-75"
         />
         <div
-          class="MuiBox-root MuiBox-root-86"
+          class="MuiBox-root MuiBox-root-76"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1854,10 +1854,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-78 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-90"
+                  class="PrivateNotchedOutline-legendLabelled-80"
                 >
                   <span>
                     Regions *
@@ -1868,7 +1868,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-92"
+          class="MuiBox-root MuiBox-root-82"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1903,10 +1903,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-88 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-78 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-90"
+                class="PrivateNotchedOutline-legendLabelled-80"
               >
                 <span>
                   Location Description
@@ -1920,16 +1920,16 @@ exports[`ProjectStepComponents renders the project location without the codes va
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-93 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-83 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-95"
+          class="MuiBox-root MuiBox-root-85"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-94 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-84 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1950,7 +1950,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-94 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-84 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1972,10 +1972,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-96"
+          class="MuiBox-root MuiBox-root-86"
         />
         <div
-          class="MuiBox-root MuiBox-root-97"
+          class="MuiBox-root MuiBox-root-87"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2434,10 +2434,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-57 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-69"
+                  class="PrivateNotchedOutline-legendLabelled-59"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2538,10 +2538,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-57 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-69"
+                  class="PrivateNotchedOutline-legendLabelled-59"
                 >
                   <span>
                     Other Partnerships
@@ -2653,10 +2653,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-72 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-74"
+                  class="PrivateNotchedOutline-legendLabelled-64"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2757,451 +2757,13 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-72 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-74"
+                  class="PrivateNotchedOutline-legendLabelled-64"
                 >
                   <span>
                     Other Partnerships
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`ProjectStepComponents renders the project species with the codes values 1`] = `
-<DocumentFragment>
-  <form>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="focal_species"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="focal_species"
-              id="focal_species-label"
-            >
-              Focal Species
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="focal_species"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-36"
-                >
-                  <span>
-                    Focal Species
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="ancillary_species"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="ancillary_species"
-              id="ancillary_species-label"
-            >
-              Ancillary Species
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="ancillary_species"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-36"
-                >
-                  <span>
-                    Ancillary Species
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`ProjectStepComponents renders the project species without the codes values 1`] = `
-<DocumentFragment>
-  <form>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="focal_species"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="focal_species"
-              id="focal_species-label"
-            >
-              Focal Species
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="focal_species"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-31"
-                >
-                  <span>
-                    Focal Species
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="ancillary_species"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="ancillary_species"
-              id="ancillary_species-label"
-            >
-              Ancillary Species
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="ancillary_species"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-31"
-                >
-                  <span>
-                    Ancillary Species
                   </span>
                 </legend>
               </fieldset>
