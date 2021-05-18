@@ -80,12 +80,13 @@ exports[`General Information Form renders correctly the empty component correctl
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
+                aria-describedby="start_date-helper-text"
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="start_date"
                 required=""
                 type="date"
@@ -104,6 +105,12 @@ exports[`General Information Form renders correctly the empty component correctl
                 </legend>
               </fieldset>
             </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+              id="start_date-helper-text"
+            >
+              Start date must be after project start date Oct 10, 1998
+            </p>
           </div>
         </div>
         <div
@@ -124,12 +131,13 @@ exports[`General Information Form renders correctly the empty component correctl
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
+                aria-describedby="end_date-helper-text"
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="end_date"
                 type="date"
                 value=""
@@ -147,6 +155,12 @@ exports[`General Information Form renders correctly the empty component correctl
                 </legend>
               </fieldset>
             </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained"
+              id="end_date-helper-text"
+            >
+              End date must be before project end date Feb 26, 2021
+            </p>
           </div>
         </div>
       </div>
@@ -503,12 +517,13 @@ exports[`General Information Form renders correctly the filled component correct
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
+                aria-describedby="start_date-helper-text"
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="start_date"
                 required=""
                 type="date"
@@ -527,6 +542,12 @@ exports[`General Information Form renders correctly the filled component correct
                 </legend>
               </fieldset>
             </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+              id="start_date-helper-text"
+            >
+              Start date must be after project start date Oct 10, 1998
+            </p>
           </div>
         </div>
         <div
@@ -547,12 +568,13 @@ exports[`General Information Form renders correctly the filled component correct
               class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
             >
               <input
+                aria-describedby="end_date-helper-text"
                 aria-invalid="false"
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="end_date"
                 type="date"
                 value="2020-05-10 11:53:53"
@@ -570,6 +592,12 @@ exports[`General Information Form renders correctly the filled component correct
                 </legend>
               </fieldset>
             </div>
+            <p
+              class="MuiFormHelperText-root MuiFormHelperText-contained"
+              id="end_date-helper-text"
+            >
+              End date must be before project end date Feb 26, 2021
+            </p>
           </div>
         </div>
       </div>
@@ -940,8 +968,8 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="start-date"
                 id="start_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="start_date"
                 required=""
                 type="date"
@@ -991,8 +1019,8 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 class="MuiInputBase-input MuiOutlinedInput-input"
                 data-testid="end-date"
                 id="end_date"
-                max="2021-02-26"
-                min="1998-10-10"
+                max="2100-12-31"
+                min="1900-01-01"
                 name="end_date"
                 type="date"
                 value="2020-05-10 11:53:53"

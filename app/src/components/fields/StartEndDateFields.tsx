@@ -1,15 +1,14 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import { DATE_LIMIT } from 'constants/dateFormats';
 import React from 'react';
-import { getFormattedDate } from 'utils/Utils';
 
 interface IStartEndDateFieldsProps {
   formikProps: any;
   startRequired: boolean;
   endRequired: boolean;
-  minDate?: string;
-  maxDate?: string;
+  startDateHelperText?: string;
+  endDateHelperText?: string;
 }
 
 /**
@@ -21,12 +20,9 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
     formikProps: { values, handleChange, errors, touched },
     startRequired,
     endRequired,
-    minDate,
-    maxDate
+    startDateHelperText,
+    endDateHelperText
   } = props;
-
-  const formattedMinDate = (minDate && getFormattedDate(DATE_FORMAT.ShortDateFormat, minDate)) || DATE_LIMIT.min;
-  const formattedMaxDate = (maxDate && getFormattedDate(DATE_FORMAT.ShortDateFormat, maxDate)) || DATE_LIMIT.max;
 
   return (
     <Grid container item spacing={3}>
@@ -42,17 +38,17 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           type="date"
           InputProps={{
             // Chrome min/max dates
-            inputProps: { min: formattedMinDate, max: formattedMaxDate, 'data-testid': 'start-date' }
+            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }
           }}
           inputProps={{
             // Firefox min/max dates
-            min: formattedMinDate,
-            max: formattedMaxDate,
+            min: DATE_LIMIT.min,
+            max: DATE_LIMIT.max,
             'data-testid': 'start-date'
           }}
           onChange={handleChange}
           error={touched.start_date && Boolean(errors.start_date)}
-          helperText={touched.start_date && errors.start_date}
+          helperText={(touched.start_date && errors.start_date) || startDateHelperText}
           InputLabelProps={{
             shrink: true
           }}
@@ -70,17 +66,17 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           type="date"
           InputProps={{
             // Chrome min/max dates
-            inputProps: { min: formattedMinDate, max: formattedMaxDate, 'data-testid': 'end-date' }
+            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'end-date' }
           }}
           inputProps={{
             // Firefox min/max dates
-            min: formattedMinDate,
-            max: formattedMaxDate,
+            min: DATE_LIMIT.min,
+            max: DATE_LIMIT.max,
             'data-testid': 'end-date'
           }}
           onChange={handleChange}
           error={touched.end_date && Boolean(errors.end_date)}
-          helperText={touched.end_date && errors.end_date}
+          helperText={(touched.end_date && errors.end_date) || endDateHelperText}
           InputLabelProps={{
             shrink: true
           }}
