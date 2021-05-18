@@ -39,11 +39,11 @@ export class GetSurveyListData {
     defaultLog.debug({ label: 'GetSurveyListData', message: 'params', obj });
 
     const surveysList: any[] = [];
-    let currentSurveyId: number = (null as unknown) as number;
+    const seenSurveyIds: number[] = [];
 
     obj &&
       obj.map((survey: any) => {
-        if (survey.id !== currentSurveyId) {
+        if (!seenSurveyIds.includes(survey.id)) {
           surveysList.push({
             id: survey.id,
             name: survey.name,
@@ -56,7 +56,7 @@ export class GetSurveyListData {
           surveysList[index].species = [...surveysList[index].species, survey.species];
         }
 
-        currentSurveyId = survey.id;
+        seenSurveyIds.push(survey.id);
       });
 
     this.surveys = (surveysList.length && surveysList) || [];

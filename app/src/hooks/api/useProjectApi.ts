@@ -9,13 +9,7 @@ import {
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
   IUpdateProjectRequest,
-  IGetProjectAttachmentsResponse,
-  ICreateSurveyRequest,
-  ICreateSurveyResponse,
-  IGetSurveyForViewResponse,
-  IGetSurveysListResponse,
-  ISurveyUpdateRequest,
-  IGetSurveyForUpdateResponse
+  IGetProjectAttachmentsResponse
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -197,70 +191,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Create a new project survey
-   *
-   * @param {ICreateSurveyRequest} survey
-   * @return {*}  {Promise<ICreateSurveyResponse>}
-   */
-  const createSurvey = async (projectId: number, survey: ICreateSurveyRequest): Promise<ICreateSurveyResponse> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/create`, survey);
-
-    return data;
-  };
-
-  /**
-   * Get project survey details based on its ID for viewing purposes.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*} {Promise<IGetSurveyForViewResponse>}
-   */
-  const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetSurveyForViewResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
-
-    return data;
-  };
-
-  /**
-   * Get surveys list.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<IGetSurveysListResponse[]>}
-   */
-  const getSurveysList = async (projectId: number): Promise<IGetSurveysListResponse[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/surveys`);
-
-    return data;
-  };
-
-  /**
-   * Get survey data for update purposes.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<IGetSurveyForUpdateResponse>}
-   */
-  const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update`);
-
-    return data;
-  };
-
-  /**
-   * Update an existing survey.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ISurveyUpdateRequest} surveyData
-   * @return {*}  {Promise<any>}
-   */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: ISurveyUpdateRequest): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
-
-    return data;
-  };
-
   return {
     getProjectsList,
     createProject,
@@ -273,12 +203,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     getAttachmentSignedURL,
     deleteProjectAttachment,
     deleteFundingSource,
-    addFundingSource,
-    createSurvey,
-    getSurveyForView,
-    getSurveysList,
-    getSurveyForUpdate,
-    updateSurvey
+    addFundingSource
   };
 };
 

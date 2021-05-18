@@ -29,7 +29,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   useEffect(() => {
     const getSurveys = async () => {
-      const surveysResponse = await biohubApi.project.getSurveysList(projectForViewData.id);
+      const surveysResponse = await biohubApi.survey.getSurveysList(projectForViewData.id);
 
       setSurveys(() => {
         setIsLoading(false);

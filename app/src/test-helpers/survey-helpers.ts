@@ -1,4 +1,4 @@
-import { IGetSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   id: 1,

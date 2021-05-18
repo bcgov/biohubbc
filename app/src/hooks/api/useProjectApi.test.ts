@@ -8,7 +8,7 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { ICreateSurveyRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi from './useProjectApi';
 
@@ -131,18 +131,6 @@ describe('useProjectApi', () => {
     });
 
     expect(result).toEqual(true);
-  });
-
-  it('createSurvey works as expected', async () => {
-    mock.onPost(`api/project/${projectId}/survey/create`).reply(200, {
-      id: 1
-    });
-
-    const result = await useProjectApi(axios).createSurvey(projectId, {
-      survey_name: 'survey name'
-    } as ICreateSurveyRequest);
-
-    expect(result).toEqual({ id: 1 });
   });
 
   it('addFundingSource works as expected', async () => {

@@ -10,11 +10,8 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import {
-  IGetProjectForViewResponse,
-  IGetSurveyForViewResponse,
-  ISurveyUpdateRequest
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -238,17 +235,30 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Focal Species
               </Typography>
-              <Typography component="dd" variant="body1">
-                {survey.focal_species.join(', ')}
-              </Typography>
+              {survey.focal_species.map((focalSpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {focalSpecies}
+                  </Typography>
+                );
+              })}
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Ancillary Species
+                Anciliary Species
               </Typography>
-              <Typography component="dd" variant="body1">
-                {survey.ancillary_species.join(', ')}
-              </Typography>
+              {survey.ancillary_species?.map((ancillarySpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {ancillarySpecies}
+                  </Typography>
+                );
+              })}
+              {survey.ancillary_species.length <= 0 && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>
