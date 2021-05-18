@@ -21,7 +21,7 @@ declare
 begin
   delete from survey_proprietor where s_id in (select id from survey where p_id = __project_id);
   delete from survey_attachment where s_id in (select id from survey where p_id = __project_id);
-  delete from study_species where p_id = __project_id;
+  delete from study_species where s_id in (select s_id from survey where p_id = __project_id);
   delete from survey where p_id = __project_id;
   delete from stakeholder_partnership where p_id = __project_id;
   delete from project_activity where p_id = __project_id;

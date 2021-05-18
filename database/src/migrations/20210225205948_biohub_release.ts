@@ -88,7 +88,6 @@ export async function up(knex: Knex): Promise<void> {
     ${project_journal_triggers}
     ${tr_project_funding_source}
     ${tr_survey_proprietor}
-    ${tr_study_species}
     ${tr_project}
     ${tr_survey}
 
