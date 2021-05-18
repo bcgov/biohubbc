@@ -64,7 +64,6 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, 'release.0.15', 'populate_wldtaxonomic_units.sql')
   );
   const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey_proprietor.sql'));
-  const tr_study_species = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_study_species.sql'));
   const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_project.sql'));
   const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.15', 'tr_survey.sql'));
 
