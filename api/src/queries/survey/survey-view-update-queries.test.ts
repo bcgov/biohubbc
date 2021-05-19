@@ -3,8 +3,6 @@ import { describe } from 'mocha';
 import { getSurveyForViewSQL } from './survey-view-queries';
 
 describe('getSurveySQL', () => {
-
-
   it('returns null when null survey id param provided', () => {
     const response = getSurveyForViewSQL((null as unknown) as number);
 

@@ -15,7 +15,7 @@ import { putSurveySQL, getSurveyForUpdateSQL } from '../../../../../queries/surv
 import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
-
+import { insertAncillarySpecies, insertFocalSpecies } from '../create';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
@@ -25,7 +25,6 @@ export const GET: Operation = [
 ];
 
 export const PUT: Operation = [logRequest('paths/project/{projectId}/survey/{surveyId}/update', 'PUT'), updateSurvey()];
-
 
 export enum GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
@@ -147,12 +146,10 @@ PUT.apiDoc = {
   }
 };
 
-
 export interface IGetSurveyForUpdate {
   survey_details: GetSurveyDetailsData | null;
   survey_proprietor: GetSurveyProprietorData | null;
 }
-
 
 /**
  * Get a survey by projectId and surveyId.
@@ -164,11 +161,9 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-
       const surveyId = Number(req.params?.surveyId);
 
       const survey_entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
-
 
       await connection.open();
 
@@ -198,7 +193,6 @@ export function getSurveyForUpdate(): RequestHandler {
 
       console.log('promises', promises);
 
-
       await Promise.all(promises);
 
       await connection.commit();
@@ -213,11 +207,8 @@ export function getSurveyForUpdate(): RequestHandler {
   };
 }
 
-
-
-
 export const getSurveyDetailsData = async (
-  surveyId:number,
+  surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyDetailsData> => {
   const sqlStatement = getSurveyForUpdateSQL(surveyId);
@@ -228,7 +219,7 @@ export const getSurveyDetailsData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && new GetSurveyDetailsData(response.rows))  || null;
+  const result = (response && response.rows && new GetSurveyDetailsData(response.rows)) || null;
 
   console.log('result', result);
 
@@ -239,11 +230,8 @@ export const getSurveyDetailsData = async (
   return result;
 };
 
-
-
-
 export const getSurveyProprietorData = async (
-  surveyId:number,
+  surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyProprietorData> => {
   const sqlStatement = getSurveyProprietorSQL(surveyId);
@@ -254,7 +242,8 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0]))  || null;
+  const result =
+    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
 
   console.log('result', result);
 

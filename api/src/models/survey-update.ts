@@ -28,7 +28,8 @@ export class PutSurveyData {
     this.name = obj?.survey_details?.survey_name || null;
     this.objectives = obj?.survey_details?.survey_purpose || null;
     this.focal_species = (obj?.survey_details?.focal_species?.length && obj.survey_details?.focal_species) || [];
-    this.ancillary_species = (obj?.survey_details?.ancillary_species?.length && obj.survey_details?.ancillary_species) || [];
+    this.ancillary_species =
+      (obj?.survey_details?.ancillary_species?.length && obj.survey_details?.ancillary_species) || [];
     this.start_date = obj?.survey_details?.start_date || null;
     this.end_date = obj?.survey_details?.end_date || null;
     this.lead_first_name = obj?.survey_details?.biologist_first_name || null;

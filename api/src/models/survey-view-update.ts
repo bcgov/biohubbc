@@ -23,7 +23,6 @@ export class GetSurveyDetailsData {
   geometry: Feature[];
   revision_count: number;
 
-
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({ label: 'GetSurveyDetailsData', message: 'params', surveyDetailsData });
 
@@ -57,7 +56,6 @@ export class GetSurveyDetailsData {
     this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
     this.revision_count = surveyDataItem?.revision_count ?? null;
   }
-
 }
 
 /**
@@ -66,7 +64,7 @@ export class GetSurveyDetailsData {
  * @export
  * @class GetSurveyDetailsData
  */
- export class GetSurveyProprietorData {
+export class GetSurveyProprietorData {
   id: number;
   proprietor_type_name: string;
   first_nations_name: string;
@@ -78,7 +76,11 @@ export class GetSurveyDetailsData {
   revision_count: number;
 
   constructor(surveyProprietorData?: any) {
-    defaultLog.debug({ label: 'GetSurveyProprietorData', message: 'params', surveyProprietorData: surveyProprietorData });
+    defaultLog.debug({
+      label: 'GetSurveyProprietorData',
+      message: 'params',
+      surveyProprietorData: surveyProprietorData
+    });
 
     console.log('.... inside GetSurveyProprietorData');
 
@@ -91,5 +93,5 @@ export class GetSurveyDetailsData {
     this.proprietor_name = surveyProprietorData?.proprietor_name || '';
     this.data_sharing_agreement_required = surveyProprietorData?.data_sharing_agreement_required || '';
     this.revision_count = surveyProprietorData?.revision_count ?? null;
-
+  }
 }

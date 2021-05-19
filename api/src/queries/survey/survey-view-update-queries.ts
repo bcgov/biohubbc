@@ -3,8 +3,6 @@ import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
-
-
 /**
  * SQL query to retrieve a survey_proprietor row.
  *
