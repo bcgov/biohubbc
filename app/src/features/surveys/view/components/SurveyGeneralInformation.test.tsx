@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { getProjectSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import SurveyGeneralInformation from './SurveyGeneralInformation';
@@ -24,7 +24,7 @@ const renderContainer = () => {
   return render(
     <SurveyGeneralInformation
       projectForViewData={getProjectForViewResponse}
-      surveyForViewData={getProjectSurveyForViewResponse}
+      surveyForViewData={getSurveyForViewResponse}
       codes={codes}
       refresh={mockRefresh}
     />
@@ -46,8 +46,8 @@ describe('SurveyGeneralInformation', () => {
     const { asFragment } = render(
       <SurveyGeneralInformation
         surveyForViewData={{
-          ...getProjectSurveyForViewResponse,
-          survey: { ...getProjectSurveyForViewResponse.survey, end_date: (null as unknown) as string, species: 'spec' }
+          ...getSurveyForViewResponse,
+          survey: { ...getSurveyForViewResponse.survey, end_date: (null as unknown) as string, species: 'spec' }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -86,7 +86,7 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getSurveyForUpdate).toBeCalledWith(1, getProjectSurveyForViewResponse.id);
+      expect(mockBiohubApi().project.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.id);
     });
 
     await waitFor(() => {
@@ -109,7 +109,7 @@ describe('SurveyGeneralInformation', () => {
 
     await waitFor(() => {
       expect(mockBiohubApi().project.updateSurvey).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateSurvey).toBeCalledWith(1, getProjectSurveyForViewResponse.id, {
+      expect(mockBiohubApi().project.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.id, {
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
         species: 'species',
@@ -194,7 +194,7 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getSurveyForUpdate).toBeCalledWith(1, getProjectSurveyForViewResponse.id);
+      expect(mockBiohubApi().project.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.id);
     });
 
     await waitFor(() => {

@@ -4,11 +4,11 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface ISurveyProprietaryDataProps {
-  surveyForViewData: IGetProjectSurveyForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
 }
 
 /**
@@ -17,7 +17,7 @@ export interface ISurveyProprietaryDataProps {
  * @return {*}
  */
 const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => {
-  const { surveyProprietor } = props.surveyForViewData;
+  const { survey_proprietor } = props.surveyForViewData;
 
   return (
     <Box>
@@ -35,21 +35,21 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         </Button>
       </Box>
       <dl>
-        {!surveyProprietor && (
+        {!survey_proprietor && (
           <Grid container spacing={2}>
             <Grid item>
               <Typography>The data captured in this survey is not proprietary.</Typography>
             </Grid>
           </Grid>
         )}
-        {surveyProprietor && (
+        {survey_proprietor && (
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Data Sharing Agreement Required
               </Typography>
               <Typography component="dd" variant="body1">
-                {surveyProprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
+                {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -57,7 +57,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                 Proprietary Data Category
               </Typography>
               <Typography component="dd" variant="body1">
-                {surveyProprietor.proprietor_type_name}
+                {survey_proprietor.proprietor_type_name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -65,7 +65,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                 Proprietor Name
               </Typography>
               <Typography component="dd" variant="body1">
-                {surveyProprietor.proprietor_name}
+                {survey_proprietor.proprietor_name}
               </Typography>
             </Grid>
             <Grid item>
@@ -75,7 +75,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                     Category Rationale
                   </Typography>
                 </Box>
-                <Typography style={{ wordBreak: 'break-all' }}>{surveyProprietor.category_rationale}</Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
               </Box>
             </Grid>
           </Grid>

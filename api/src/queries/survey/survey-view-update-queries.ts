@@ -10,9 +10,9 @@ const defaultLog = getLogger('queries/survey/survey-view-queries');
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveySQL = (projectId: number, surveyId: number): SQLStatement | null => {
+export const getSurveyDetailsSQL = (projectId: number, surveyId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getSurveySQL',
+    label: 'getSurveyDetailsSQL',
     message: 'params',
     projectId,
     surveyId
@@ -24,6 +24,7 @@ export const getSurveySQL = (projectId: number, surveyId: number): SQLStatement 
 
   const sqlStatement = SQL`
     SELECT
+      id,
       name,
       objectives,
       species,
@@ -43,7 +44,55 @@ export const getSurveySQL = (projectId: number, surveyId: number): SQLStatement 
   `;
 
   defaultLog.debug({
-    label: 'getSurveySQL',
+    label: 'getSurveyDetailsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyProprietorSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      prt.name as proprietor_type_name,
+      prt.id as proprietor_type_id,
+      fn.name as first_nations_name,
+      fn.id as first_nations_id,
+      sp.rationale,
+      sp.proprietor_name,
+      sp.disa_required,
+      sp.revision_count
+    from
+      survey_proprietor as sp
+    left outer join proprietor_type as prt
+      on sp.prt_id = prt.id
+    left outer join first_nations as fn
+      on sp.fn_id is not null
+      and sp.fn_id = fn.id
+    where
+      s_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyProprietorSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

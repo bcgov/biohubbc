@@ -1,8 +1,8 @@
-import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
 
-export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse = {
-  id: 1,
-  survey: {
+export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
+  survey_details: {
+    id: 1,
     survey_name: 'survey name',
     survey_purpose: 'survey purpose',
     species: 'species',
@@ -13,7 +13,8 @@ export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse =
     survey_area_name: 'study area',
     geometry: []
   },
-  surveyProprietor: {
+  survey_proprietor: {
+    id: 23,
     proprietor_type_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',

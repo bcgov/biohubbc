@@ -12,10 +12,11 @@ import {
   IGetProjectAttachmentsResponse,
   ICreateProjectSurveyRequest,
   ICreateProjectSurveyResponse,
-  IGetProjectSurveyForViewResponse,
+  IGetSurveyForViewResponse,
   IGetProjectSurveysListResponse,
-  ISurveyUpdateRequest,
-  IGetSurveyForUpdateResponse
+  IUpdateSurveyRequest,
+  IGetSurveyForUpdateResponse,
+
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -219,7 +220,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*} {Promise<IGetProjectSurveyForViewResponse>}
    */
-  const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetProjectSurveyForViewResponse> => {
+  const getSurveyForView = async (projectId: number, surveyId: number): Promise<IGetSurveyForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/view`);
 
     return data;
@@ -247,6 +248,8 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update`);
 
+    console.log('data in getSurveyForUpdate - axios call', data);
+
     return data;
   };
 
@@ -258,7 +261,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {ISurveyUpdateRequest} surveyData
    * @return {*}  {Promise<any>}
    */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: ISurveyUpdateRequest): Promise<any> => {
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: IUpdateSurveyRequest): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;
