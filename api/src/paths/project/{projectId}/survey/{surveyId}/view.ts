@@ -5,7 +5,8 @@ import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { GetSurveyDetailsData, GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyProprietorSQL, getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
+import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
+import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-update-queries'';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
