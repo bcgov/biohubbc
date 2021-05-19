@@ -1,7 +1,6 @@
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
-
   survey_details: {
     id: 1,
     survey_name: 'survey name',

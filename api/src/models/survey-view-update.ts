@@ -82,8 +82,6 @@ export class GetSurveyProprietorData {
       surveyProprietorData: surveyProprietorData
     });
 
-    console.log('.... inside GetSurveyProprietorData');
-
     this.id = surveyProprietorData?.id ?? null;
     this.proprietor_type_name = surveyProprietorData?.proprietor_type_name || '';
     this.first_nations_name = surveyProprietorData?.first_nations_name || '';

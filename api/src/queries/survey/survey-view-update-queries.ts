@@ -22,11 +22,12 @@ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null =>
 
   const sqlStatement = SQL`
     SELECT
+      sp.id,
       prt.name as proprietor_type_name,
       prt.id as proprietor_type_id,
       fn.name as first_nations_name,
       fn.id as first_nations_id,
-      sp.rationale,
+      sp.rationale as category_rationale,
       sp.proprietor_name,
       sp.disa_required,
       sp.revision_count

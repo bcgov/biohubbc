@@ -38,7 +38,6 @@ export interface ICreateSurveyResponse {
   id: number;
 }
 
-
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
@@ -52,6 +51,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_area_name: string;
   geometry: Feature[];
 }
+
 export interface IGetSurveyForViewResponseProprietor {
   id: number;
   proprietor_type_name: string;
@@ -60,7 +60,6 @@ export interface IGetSurveyForViewResponseProprietor {
   proprietor_name: string;
   data_sharing_agreement_required: string;
 }
-
 
 export interface IGetSurveyForUpdateResponseDetails {
   id: number;
@@ -77,7 +76,6 @@ export interface IGetSurveyForUpdateResponseDetails {
   revision_count: number;
 }
 
-
 export interface IGetSurveyForUpdateResponseProprietor {
   id: number;
   proprietor_type_name: string;
@@ -90,15 +88,13 @@ export interface IGetSurveyForUpdateResponseProprietor {
   revision_count: number;
 }
 
-
-
 /**
  * An interface for a single instance of survey metadata, for update-only use cases.
  *
  * @export
  * @interface IGetSurveyForUpdateResponse
  */
- export interface IGetSurveyForUpdateResponse {
+export interface IGetSurveyForUpdateResponse {
   survey_details?: IGetSurveyForUpdateResponseDetails;
   survey_proprietor?: IGetSurveyForUpdateResponseProprietor;
 }
@@ -114,8 +110,6 @@ export interface IGetSurveyForViewResponse {
   survey_proprietor: IGetSurveyForViewResponseProprietor;
 }
 
-
-
 /**
  * An interface for a single instance of survey metadata, for update-only use cases.
  *
@@ -123,19 +117,19 @@ export interface IGetSurveyForViewResponse {
  * @interface IUpdateSurveyRequest
  * @extends {IGetSurveyForUpdateResponse}
  */
- export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {}
+export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {}
 
- /**
-  * Get surveys list response object.
-  *
-  * @export
-  * @interface IGetSurveysListResponse
-  */
- export interface IGetSurveysListResponse {
-   id: number;
-   name: string;
-   species: string[];
-   start_date: string;
-   end_date: string;
-   status_name: string;
- }
+/**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetSurveysListResponse
+ */
+export interface IGetSurveysListResponse {
+  id: number;
+  name: string;
+  species: string[];
+  start_date: string;
+  end_date: string;
+  status_name: string;
+}

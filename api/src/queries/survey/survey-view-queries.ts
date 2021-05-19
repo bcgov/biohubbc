@@ -73,6 +73,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
+      s.id,
       s.name,
       s.objectives,
       s.start_date,

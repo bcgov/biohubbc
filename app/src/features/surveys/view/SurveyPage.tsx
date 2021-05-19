@@ -102,6 +102,8 @@ const SurveyPage: React.FC = () => {
       return;
     }
 
+    console.log(surveyWithDetailsResponse);
+
     setSurveyWithDetails(surveyWithDetailsResponse);
   }, [biohubApi.project, urlParams]);
 

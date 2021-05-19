@@ -105,7 +105,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     setSurveyDetailsDataForUpdate(studyAreaResponseData);
     setStudyAreaFormData({
       ...StudyAreaInitialValues,
-      survey_area_name: ( studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name ) || '',
+      survey_area_name:
+        (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
       geometry: generateValidGeometryCollection(studyAreaResponseData.survey_details?.geometry).geometryCollection
     });
 
@@ -117,9 +118,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       if (surveyDetailsDataForUpdate.survey_details) {
         const surveyData = {
           survey_details: {
-              ...surveyDetailsDataForUpdate.survey_details,
-              survey_area_name: values.survey_area_name,
-              geometry: values.geometry
+            ...surveyDetailsDataForUpdate.survey_details,
+            survey_area_name: values.survey_area_name,
+            geometry: values.geometry
           }
         };
 

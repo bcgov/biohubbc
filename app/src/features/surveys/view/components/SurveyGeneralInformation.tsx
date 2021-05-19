@@ -87,15 +87,20 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
     setSurveyDataForUpdate(generalInformationResponseData);
 
+    console.log(generalInformationResponseData.survey_details);
+
     if (generalInformationResponseData.survey_details) {
       setGeneralInformationFormData({
         ...generalInformationResponseData.survey_details,
-        start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.survey_details.start_date),
+        start_date: getFormattedDate(
+          DATE_FORMAT.ShortDateFormat,
+          generalInformationResponseData.survey_details.start_date
+        ),
         end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.survey_details.end_date)
       });
       setOpenEditDialog(true);
     } else {
-      showErrorDialog({ dialogText: 'Unable to retrieve survey details', open: true })
+      showErrorDialog({ dialogText: 'Unable to retrieve survey details', open: true });
     }
   };
 
@@ -114,7 +119,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           }
         };
 
-        await biohubApi.survey.updateSurvey(projectForViewData.id, surveyDataForUpdate.survey_details.id, surveyDetailsData);
+        await biohubApi.survey.updateSurvey(
+          projectForViewData.id,
+          surveyDataForUpdate.survey_details.id,
+          surveyDetailsData
+        );
       }
     } catch (error) {
       const apiError = error as APIError;
