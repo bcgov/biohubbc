@@ -16,7 +16,7 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
@@ -65,7 +65,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<ISurveyUpdateRequest>(null as any);
+  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({

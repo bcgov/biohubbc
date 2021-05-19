@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 
 /**
- * Create project survey post object.
+ * Create survey post object.
  *
  * @export
  * @interface ICreateSurveyRequest
@@ -29,7 +29,7 @@ export interface ICreateSurveyRequest {
 }
 
 /**
- * Create project survey response object.
+ * Create survey response object.
  *
  * @export
  * @interface ICreateSurveyResponse
@@ -93,7 +93,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
 
 
 /**
- * An interface for a single instance of project metadata, for update-only use cases.
+ * An interface for a single instance of survey metadata, for update-only use cases.
  *
  * @export
  * @interface IGetSurveyForUpdateResponse
@@ -104,7 +104,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
 }
 
 /**
- * An interface for a single instance of project survey metadata, for view-only use cases.
+ * An interface for a single instance of survey metadata, for view-only use cases.
  *
  * @export
  * @interface IGetSurveyForViewResponse
@@ -117,7 +117,7 @@ export interface IGetSurveyForViewResponse {
 
 
 /**
- * An interface for a single instance of project metadata, for update-only use cases.
+ * An interface for a single instance of survey metadata, for update-only use cases.
  *
  * @export
  * @interface IUpdateSurveyRequest
@@ -129,12 +129,12 @@ export interface IGetSurveyForViewResponse {
   * Get surveys list response object.
   *
   * @export
-  * @interface IGetProjectSurveysListResponse
+  * @interface IGetSurveysListResponse
   */
- export interface IGetProjectSurveysListResponse {
+ export interface IGetSurveysListResponse {
    id: number;
    name: string;
-   species: string;
+   species: string[];
    start_date: string;
    end_date: string;
    status_name: string;

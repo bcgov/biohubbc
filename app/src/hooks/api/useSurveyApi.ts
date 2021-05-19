@@ -4,7 +4,7 @@ import {
   ICreateSurveyResponse,
   IGetSurveyForViewResponse,
   IGetSurveysListResponse,
-  ISurveyUpdateRequest,
+  IUpdateSurveyRequest,
   IGetSurveyForUpdateResponse
 } from 'interfaces/useSurveyApi.interface';
 
@@ -73,7 +73,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {ISurveyUpdateRequest} surveyData
    * @return {*}  {Promise<any>}
    */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: ISurveyUpdateRequest): Promise<any> => {
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: IUpdateSurveyRequest): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;
