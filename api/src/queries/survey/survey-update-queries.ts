@@ -89,42 +89,6 @@ export const putSurveySQL = (
 };
 
 /**
- * SQL query to update a species row in the study_species table.
- *
- * @param {number} species id
- * @param {number} project id
- * @param {number} survey id
- * @returns {SQLStatement} sql query object
- */
-export const updateSpeciesSQL = (speciesId: number, projectId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'updateSpeciesSQL', message: 'params', updateSpeciesSQL, projectId });
-
-  if (!speciesId || !projectId || !surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    UPDATE
-      study_species
-    SET
-      s_id = ${surveyId}
-    WHERE
-      p_id = ${projectId}
-    AND
-      wu_id = ${speciesId};
-  `;
-
-  defaultLog.debug({
-    label: 'updateSpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to retrieve a survey row for update purposes.
  *
  * @param {number} surveyId

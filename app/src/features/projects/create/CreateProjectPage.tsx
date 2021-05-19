@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 const NUM_PARTIAL_PROJECT_STEPS = 2;
-const NUM_ALL_PROJECT_STEPS = 9;
+const NUM_ALL_PROJECT_STEPS = 8;
 
 /**
  * Page for creating a new project.
