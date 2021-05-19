@@ -18,8 +18,12 @@ describe('PutSurveyData', () => {
       expect(data.objectives).to.equal(null);
     });
 
-    it('sets species', () => {
-      expect(data.species).to.equal(null);
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
     });
 
     it('sets geometry', () => {
@@ -57,7 +61,8 @@ describe('PutSurveyData', () => {
     const surveyData = {
       survey_name: 'survey name',
       survey_purpose: 'survey purpose',
-      species: 'species',
+      focal_species: [1, 2],
+      ancillary_species: [3, 4],
       start_date: '2020/04/04',
       end_date: '2020/05/05',
       biologist_first_name: 'first',
@@ -95,8 +100,12 @@ describe('PutSurveyData', () => {
       expect(data.objectives).to.equal(surveyData.survey_purpose);
     });
 
-    it('sets species', () => {
-      expect(data.species).to.equal(surveyData.species);
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql(surveyData.focal_species);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql(surveyData.ancillary_species);
     });
 
     it('sets start_date', () => {

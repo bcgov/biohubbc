@@ -70,18 +70,7 @@ it('Login', function () {
     cy.get('#location_description').click({ force: true });
     cy.get('#location_description').type(faker.lorem.paragraph());
     cy.get('[data-testid="stepper_next"]').click();
-    cy.get('#focal_species').click({ force: true });
-    cy.get('#focal_species-option-1').click();
-    cy.get('#focal_species-option-2').click();
-    cy.get('#focal_species-option-3').click();
 
-    cy.get('#focal_species').click({ force: true });
-
-    cy.get('#ancillary_species').click({ force: true });
-    cy.get('#ancillary_species-option-5').click();
-    cy.get('#ancillary_species').click({ force: true });
-
-    cy.get('[data-testid="stepper_next"]').click();
     cy.get('[data-testid="stepper_submit"]').click();
     cy.get('#menu_projects').click();
     /* ==== End Cypress Studio ==== */

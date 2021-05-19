@@ -10,11 +10,8 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import {
-  IGetProjectForViewResponse,
-  IGetProjectSurveyForViewResponse,
-  ISurveyUpdateRequest
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -27,7 +24,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyGeneralInformationProps {
-  surveyForViewData: IGetProjectSurveyForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
@@ -74,7 +71,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectForViewData.id, id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, id);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -107,7 +104,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     };
 
     try {
-      await biohubApi.project.updateSurvey(projectForViewData.id, id, surveyData);
+      await biohubApi.survey.updateSurvey(projectForViewData.id, id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -128,8 +125,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           element: (
             <GeneralInformationForm
               species={
-                codes?.species?.map((item: any) => {
-                  return { value: item.name, label: item.name };
+                codes?.species?.map((item) => {
+                  return { value: item.id, label: item.name };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -236,11 +233,32 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Species
+                Focal Species
               </Typography>
-              <Typography component="dd" variant="body1">
-                {survey.species}
+              {survey.focal_species.map((focalSpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {focalSpecies}
+                  </Typography>
+                );
+              })}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Anciliary Species
               </Typography>
+              {survey.ancillary_species?.map((ancillarySpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {ancillarySpecies}
+                  </Typography>
+                );
+              })}
+              {survey.ancillary_species.length <= 0 && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>

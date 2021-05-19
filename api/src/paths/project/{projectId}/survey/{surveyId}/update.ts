@@ -10,10 +10,11 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
-import { getSurveySQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { putSurveySQL, getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-update-queries';
+import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
+import { insertAncillarySpecies, insertFocalSpecies } from '../create';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
@@ -136,7 +137,7 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySQLStatement = getSurveySQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForUpdateSQL(Number(req.params.surveyId));
 
       if (!getSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -148,8 +149,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       await connection.commit();
 
-      const getSurveyData =
-        (surveyData && surveyData.rows && surveyData.rows[0] && new GetSurveyData(surveyData.rows[0])) || null;
+      const getSurveyData = (surveyData && surveyData.rows && new GetSurveyData(surveyData.rows)) || null;
 
       return res.status(200).json(getSurveyData);
     } catch (error) {
@@ -198,17 +198,59 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP400('Failed to parse request body');
       }
 
-      const sqlUpdateSurvey = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
+      const updateSurveySQLStatement = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
 
-      if (!sqlUpdateSurvey) {
+      if (!updateSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL update statement');
       }
 
-      const result = await connection.query(sqlUpdateSurvey.text, sqlUpdateSurvey.values);
+      const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
 
       if (!result || !result.rowCount) {
         throw new HTTP409('Failed to update stale survey data');
       }
+
+      const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
+      const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
+
+      if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
+        throw new HTTP400('Failed to build SQL delete statement');
+      }
+
+      const deleteFocalSpeciesPromises = connection.query(
+        sqlDeleteFocalSpeciesStatement.text,
+        sqlDeleteFocalSpeciesStatement.values
+      );
+
+      const deleteAncillarySpeciesPromises = connection.query(
+        sqlDeleteAncillarySpeciesStatement.text,
+        sqlDeleteAncillarySpeciesStatement.values
+      );
+
+      const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+        deleteFocalSpeciesPromises,
+        deleteAncillarySpeciesPromises
+      ]);
+
+      if (!deleteFocalSpeciesResult) {
+        throw new HTTP409('Failed to delete survey focal species data');
+      }
+
+      if (!deleteAncillarySpeciesResult) {
+        throw new HTTP409('Failed to delete survey ancillary species data');
+      }
+
+      const insertFocalSpeciesPromises =
+        putSurveyData.focal_species.map((focalSpeciesId: number) =>
+          insertFocalSpecies(focalSpeciesId, surveyId, connection)
+        ) || [];
+
+      const insertAncillarySpeciesPromises =
+        putSurveyData.ancillary_species.map((ancillarySpeciesId: number) =>
+          insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
+        ) || [];
+
+      await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 
       await connection.commit();
 

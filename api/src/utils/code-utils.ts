@@ -11,10 +11,11 @@ import {
   getProjectTypeSQL,
   getSystemRolesSQL,
   getProprietorTypeSQL,
-  getAdministrativeActivityStatusTypeSQL
+  getAdministrativeActivityStatusTypeSQL,
+  getTaxonsSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
-import { coordinator_agency, region, species, regional_offices } from '../constants/codes';
+import { coordinator_agency, region, regional_offices } from '../constants/codes';
 
 const defaultLog = getLogger('queries/code-queries');
 
@@ -60,7 +61,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     proprietor_type,
     project_type,
     system_roles,
-    administrative_activity_status_type
+    administrative_activity_status_type,
+    species
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getFirstNationsSQL().text),
@@ -73,7 +75,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getProprietorTypeSQL().text),
     await connection.query(getProjectTypeSQL().text),
     await connection.query(getSystemRolesSQL().text),
-    await connection.query(getAdministrativeActivityStatusTypeSQL().text)
+    await connection.query(getAdministrativeActivityStatusTypeSQL().text),
+    await connection.query(getTaxonsSQL().text)
   ]);
 
   await connection.commit();
@@ -99,10 +102,10 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     system_roles: (system_roles && system_roles.rows) || [],
     administrative_activity_status_type:
       (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
+    species: (species && species.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
-    species,
     regional_offices
   };
 }

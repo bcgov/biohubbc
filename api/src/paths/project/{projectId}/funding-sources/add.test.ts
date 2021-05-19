@@ -190,7 +190,6 @@ describe('add a funding source', () => {
     const result = addFunding.addFundingSource();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
-    console.log(actualResult);
 
     expect(actualResult).to.eql({ id: 23 });
   });

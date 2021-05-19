@@ -8,7 +8,6 @@ import {
   PostPartnershipsData,
   PostPermitData,
   PostProjectData,
-  PostSpeciesData,
   PostFundingData,
   PostProjectObject,
   PostFundingSource
@@ -40,10 +39,6 @@ describe('PostProjectObject', () => {
 
     it('sets location', function () {
       expect(projectPostObject.location).to.equal(null);
-    });
-
-    it('sets species', function () {
-      expect(projectPostObject.species).to.equal(null);
     });
 
     it('sets iucn', function () {
@@ -85,10 +80,6 @@ describe('PostProjectObject', () => {
         start_date: 'start_date_test_data',
         end_date: 'end_date_test_data',
         comments: 'comments_test_data'
-      },
-      species: {
-        focal_species: ['species 1', 'species 2'],
-        ancillary_species: ['species 3']
       },
       objectives: {
         objectives: 'these are the project objectives',
@@ -465,87 +456,6 @@ describe('PostPartnershipsData', () => {
 
     it('sets stakeholder_partnerships', function () {
       expect(projectPartnershipsData.stakeholder_partnerships).to.eql(obj.stakeholder_partnerships);
-    });
-  });
-});
-
-describe('PostSpeciesData', () => {
-  describe('No values provided', () => {
-    let data: PostSpeciesData;
-
-    before(() => {
-      data = new PostSpeciesData(null);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('Values provided but not valid arrays', () => {
-    let data: PostSpeciesData;
-
-    const obj = {
-      focal_species: null,
-      ancillary_species: null
-    };
-
-    before(() => {
-      data = new PostSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('Values provided but with no length', () => {
-    let data: PostSpeciesData;
-
-    const obj = {
-      focal_species: [],
-      ancillary_species: []
-    };
-
-    before(() => {
-      data = new PostSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('all values provided', () => {
-    const obj = {
-      focal_species: ['species 1', 'species 2'],
-      ancillary_species: ['species 3', 'species 4']
-    };
-
-    let data: PostSpeciesData;
-
-    before(() => {
-      data = new PostSpeciesData(obj);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql(obj.focal_species);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql(obj.ancillary_species);
     });
   });
 });

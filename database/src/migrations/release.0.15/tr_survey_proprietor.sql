@@ -1,11 +1,11 @@
--- tr_fn_survey_proprietor.sql
-create or replace function tr_fn_survey_proprietor() returns trigger
+-- tr_survey_proprietor.sql
+create or replace function tr_survey_proprietor() returns trigger
 language plpgsql
 security invoker
 as
 $$
 -- *******************************************************************
--- Procedure: tr_fn_survey_proprietor
+-- Procedure: tr_survey_proprietor
 -- Purpose: performs specific data validation on survey proprietor
 --
 -- MODIFICATION HISTORY
@@ -45,5 +45,5 @@ begin
 end;
 $$;
 
-drop trigger if exists fn_survey_proprietor_val on biohub.survey_proprietor;
-create trigger fn_survey_proprietor_val before insert or update on biohub.survey_proprietor for each row execute procedure tr_fn_survey_proprietor();
+drop trigger if exists survey_proprietor_val on biohub.survey_proprietor;
+create trigger survey_proprietor_val before insert or update on biohub.survey_proprietor for each row execute procedure tr_survey_proprietor();
