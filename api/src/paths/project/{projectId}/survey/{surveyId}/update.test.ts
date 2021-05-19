@@ -63,7 +63,7 @@ describe('getSurveyForUpdate', () => {
         return 20;
       }
     });
-    sinon.stub(survey_view_update_queries, 'getSurveySQL').returns(null);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(null);
 
     try {
       const result = update.getSurveyForUpdate();
@@ -102,7 +102,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
@@ -135,7 +135,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 

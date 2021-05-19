@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveyProprietorSQL, getSurveyListSQL } from './survey-view-queries';
+import { getSurveyListSQL } from './survey-view-queries';
+import { getSurveyProprietorSQL } from './survey-view-update-queries';
 
 describe('getSurveyProprietorSQL', () => {
   it('returns null when null survey id param provided', () => {
