@@ -947,7 +947,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       <p
                         class="MuiTypography-root MuiTypography-body2"
                       >
-                        Species
+                        IUCN Conservation Actions Classification
                       </p>
                     </span>
                   </span>
@@ -999,58 +999,6 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       <p
                         class="MuiTypography-root MuiTypography-body2"
                       >
-                        IUCN Conservation Actions Classification
-                      </p>
-                    </span>
-                  </span>
-                </span>
-              </div>
-              <div
-                class="MuiStepConnector-root MuiStepConnector-vertical"
-              >
-                <span
-                  class="MuiStepConnector-line MuiStepConnector-lineVertical"
-                />
-              </div>
-              <div
-                class="MuiStep-root MuiStep-vertical"
-              >
-                <span
-                  class="MuiStepLabel-root MuiStepLabel-vertical"
-                >
-                  <span
-                    class="MuiStepLabel-iconContainer"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiStepIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="12"
-                      />
-                      <text
-                        class="MuiStepIcon-text"
-                        text-anchor="middle"
-                        x="12"
-                        y="16"
-                      >
-                        8
-                      </text>
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiStepLabel-labelContainer"
-                  >
-                    <span
-                      class="MuiTypography-root MuiStepLabel-label MuiTypography-body2 MuiTypography-displayBlock"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body2"
-                      >
                         Funding
                       </p>
                     </span>
@@ -1090,7 +1038,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                         x="12"
                         y="16"
                       >
-                        9
+                        8
                       </text>
                     </svg>
                   </span>

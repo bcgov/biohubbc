@@ -128,6 +128,7 @@ describe('getSurveyList', () => {
     expect(actualResult).to.eql([
       {
         ...survey,
+        species: [survey.species],
         status_name: 'Unpublished'
       }
     ]);

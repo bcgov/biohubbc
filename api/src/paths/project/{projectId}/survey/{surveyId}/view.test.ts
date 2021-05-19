@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as view from './view';
 import * as db from '../../../../../database/db';
-//import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
+import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import SQL from 'sql-template-strings';
 
@@ -67,7 +67,7 @@ describe('getSurveyForView', () => {
         return 20;
       }
     });
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(null);
+    sinon.stub(survey_view_queries, 'getSurveyForViewSQL').returns(null);
 
     try {
       const result = view.getSurveyForView();
@@ -112,7 +112,8 @@ describe('getSurveyForView', () => {
     const survey = {
       name: 'name',
       objectives: 'objective',
-      species: 'species',
+      focal_species: 'species',
+      ancillary_species: 'ancillary',
       start_date: '2020/04/04',
       end_date: '2020/05/05',
       lead_first_name: 'first',
@@ -143,7 +144,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorSQL').returns(SQL`some query`);
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_queries, 'getSurveyForViewSQL').returns(SQL`some query`);
 
     const result = view.getSurveyForView();
 
@@ -153,7 +154,8 @@ describe('getSurveyForView', () => {
     expect(actualResult.survey).to.eql({
       survey_name: survey.name,
       survey_purpose: survey.objectives,
-      species: survey.species,
+      focal_species: [survey.focal_species],
+      ancillary_species: [survey.ancillary_species],
       start_date: survey.start_date,
       end_date: survey.end_date,
       biologist_first_name: survey.lead_first_name,
@@ -193,7 +195,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorSQL').returns(SQL`some query`);
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_queries, 'getSurveyForViewSQL').returns(SQL`some query`);
 
     const result = view.getSurveyForView();
 

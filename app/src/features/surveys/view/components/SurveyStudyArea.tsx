@@ -16,7 +16,7 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyForViewResponse, IUpdateSurveyRequest } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
@@ -65,7 +65,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
+  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<ISurveyUpdateRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -88,7 +88,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     let studyAreaResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectId, survey_details?.id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectId, survey_details?.id);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -123,7 +123,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           }
         };
 
-        await biohubApi.project.updateSurvey(projectId, survey_details.id, surveyData);
+        await biohubApi.survey.updateSurvey(projectId, survey_details.id, surveyData);
       }
     } catch (error) {
       const apiError = error as APIError;

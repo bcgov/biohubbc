@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as update from './update';
 import * as db from '../../../../../database/db';
-import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import SQL from 'sql-template-strings';
 
@@ -63,7 +62,8 @@ describe('getSurveyForUpdate', () => {
         return 20;
       }
     });
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(null);
+
+    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(null);
 
     try {
       const result = update.getSurveyForUpdate();
@@ -80,7 +80,8 @@ describe('getSurveyForUpdate', () => {
     const survey = {
       name: 'name',
       objectives: 'objective',
-      species: 'species',
+      focal_species: 1,
+      ancillary_species: 3,
       start_date: '2020/04/04',
       end_date: '2020/05/05',
       lead_first_name: 'first',
@@ -102,7 +103,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
@@ -111,7 +112,8 @@ describe('getSurveyForUpdate', () => {
     expect(actualResult).to.eql({
       survey_name: survey.name,
       survey_purpose: survey.objectives,
-      species: survey.species,
+      focal_species: [survey.focal_species],
+      ancillary_species: [survey.ancillary_species],
       start_date: survey.start_date,
       end_date: survey.end_date,
       biologist_first_name: survey.lead_first_name,
@@ -135,7 +137,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 

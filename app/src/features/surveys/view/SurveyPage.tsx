@@ -17,7 +17,8 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IGetSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
@@ -95,7 +96,7 @@ const SurveyPage: React.FC = () => {
   }, [biohubApi.project, urlParams]);
 
   const getSurvey = useCallback(async () => {
-    const surveyWithDetailsResponse = await biohubApi.project.getSurveyForView(urlParams['id'], urlParams['survey_id']);
+    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id']);
 
     if (!surveyWithDetailsResponse) {
       return;

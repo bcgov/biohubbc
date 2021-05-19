@@ -10,11 +10,8 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import {
-  IGetProjectForViewResponse,
-  IGetSurveyForViewResponse,
-  IGetSurveyForUpdateResponse
-} from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -74,9 +71,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectForViewData.id, survey_details.id);
-
-      console.log('response inside the handleDialogEdit', response);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -119,7 +114,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           }
         };
 
-        await biohubApi.project.updateSurvey(projectForViewData.id, surveyDataForUpdate.survey_details.id, surveyDetailsData);
+        await biohubApi.survey.updateSurvey(projectForViewData.id, surveyDataForUpdate.survey_details.id, surveyDetailsData);
       }
     } catch (error) {
       const apiError = error as APIError;
@@ -141,8 +136,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           element: (
             <GeneralInformationForm
               species={
-                codes?.species?.map((item: any) => {
-                  return { value: item.name, label: item.name };
+                codes?.species?.map((item) => {
+                  return { value: item.id, label: item.name };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -249,11 +244,32 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Species
+                Focal Species
               </Typography>
-              <Typography component="dd" variant="body1">
-                {survey_details.species}
+              {survey_details.focal_species.map((focalSpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {focalSpecies}
+                  </Typography>
+                );
+              })}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Anciliary Species
               </Typography>
+              {survey_details.ancillary_species?.map((ancillarySpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {ancillarySpecies}
+                  </Typography>
+                );
+              })}
+              {survey_details.ancillary_species.length <= 0 && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>

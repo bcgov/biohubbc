@@ -1,11 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { PostSurveyObject } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
-import { postSurveyProprietorSQL, postSurveySQL } from '../../../../queries/survey/survey-create-queries';
+import {
+  postAncillarySpeciesSQL,
+  postFocalSpeciesSQL,
+  postSurveyProprietorSQL,
+  postSurveySQL
+} from '../../../../queries/survey/survey-create-queries';
 import { getLogger } from '../../../../utils/logger';
 import { logRequest } from '../../../../utils/path-utils';
 
@@ -109,6 +114,28 @@ export function createSurvey(): RequestHandler {
 
         surveyId = surveyResult.id;
 
+        const promises: Promise<any>[] = [];
+
+        // Handle focal species associated to this survey
+        promises.push(
+          Promise.all(
+            sanitizedPostSurveyData.focal_species.map((speciesId: number) =>
+              insertFocalSpecies(speciesId, surveyId, connection)
+            )
+          )
+        );
+
+        // Handle ancillary species associated to this survey
+        promises.push(
+          Promise.all(
+            sanitizedPostSurveyData.ancillary_species.map((speciesId: number) =>
+              insertAncillarySpecies(speciesId, surveyId, connection)
+            )
+          )
+        );
+
+        await Promise.all(promises);
+
         if (sanitizedPostSurveyData.survey_proprietor) {
           const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
             surveyId,
@@ -150,3 +177,45 @@ export function createSurvey(): RequestHandler {
     }
   };
 }
+
+export const insertFocalSpecies = async (
+  focal_species_id: number,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postFocalSpeciesSQL(focal_species_id, survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert focal species data');
+  }
+
+  return result.id;
+};
+
+export const insertAncillarySpecies = async (
+  ancillary_species_id: number,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postAncillarySpeciesSQL(ancillary_species_id, survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert ancillary species data');
+  }
+
+  return result.id;
+};

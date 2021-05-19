@@ -6,7 +6,8 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import React from 'react';
-import { IGetProjectForViewResponse, IGetSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyStudyArea from './components/SurveyStudyArea';
 

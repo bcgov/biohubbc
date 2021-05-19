@@ -2,10 +2,8 @@
  create or replace view administrative_activity as select * from biohub.administrative_activity;
  create or replace view administrative_activity_status_type as select * from biohub.administrative_activity_status_type;
  create or replace view administrative_activity_type as select * from biohub.administrative_activity_type;
- create or replace view ancillary_species as select * from biohub.ancillary_species;
  create or replace view climate_change_initiative as select * from biohub.climate_change_initiative;
  create or replace view first_nations as select * from biohub.first_nations;
- create or replace view focal_species as select * from biohub.focal_species;
  create or replace view funding_source as select * from biohub.funding_source;
  create or replace view investment_action_category as select * from biohub.investment_action_category;
  create or replace view iucn_conservation_action_level_1_classification as select * from biohub.iucn_conservation_action_level_1_classification;
@@ -28,7 +26,10 @@
  create or replace view project_type as select * from biohub.project_type;
  create or replace view proprietor_type as select * from biohub.proprietor_type;
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
+ create or replace view study_species as select * from biohub.study_species;
  create or replace view survey as select * from biohub.survey;
+ create or replace view survey_attachment as select * from biohub.survey_attachment;
+ create or replace view survey_funding_source as select * from biohub.survey_funding_source;
  create or replace view survey_proprietor as select * from biohub.survey_proprietor;
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_role as select * from biohub.system_role;

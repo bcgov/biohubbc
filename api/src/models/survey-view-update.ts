@@ -13,7 +13,8 @@ export class GetSurveyDetailsData {
   id: number;
   survey_name: string;
   survey_purpose: string;
-  species: string;
+  focal_species: (string | number)[];
+  ancillary_species: (string | number)[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -22,23 +23,41 @@ export class GetSurveyDetailsData {
   geometry: Feature[];
   revision_count: number;
 
+
   constructor(surveyDetailsData?: any) {
-    defaultLog.debug({ label: 'GetSurveyDetailsData', message: 'params', surveyDetailsData: surveyDetailsData });
+    defaultLog.debug({ label: 'GetSurveyDetailsData', message: 'params', surveyDetailsData });
 
-    console.log('.... inside GetSurveyDetailsData');
+    const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
 
-    this.id = surveyDetailsData?.id ?? null;
-    this.survey_name = surveyDetailsData?.name || '';
-    this.survey_purpose = surveyDetailsData?.objectives || '';
-    this.species = surveyDetailsData?.species || '';
-    this.start_date = surveyDetailsData?.start_date || '';
-    this.end_date = surveyDetailsData?.end_date || '';
-    this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
-    this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
-    this.survey_area_name = surveyDetailsData?.location_name || '';
-    this.geometry = (surveyDetailsData?.geometry?.length && [JSON.parse(surveyDetailsData.geometry)]) || [];
-    this.revision_count = surveyDetailsData?.revision_count ?? null;
+    const focalSpeciesList =
+      (surveyDetailsData &&
+        surveyDetailsData.map((item: any) => {
+          return item.focal_species;
+        })) ||
+      [];
+
+    const ancillarySpeciesList =
+      (surveyDetailsData &&
+        surveyDetailsData.map((item: any) => {
+          return item.ancillary_species;
+        })) ||
+      [];
+
+    this.id = surveyDataItem?.id ?? null;
+    this.survey_name = surveyDataItem?.name || '';
+    this.survey_purpose = surveyDataItem?.objectives || '';
+    this.focal_species = (focalSpeciesList.length && focalSpeciesList.filter((item: string | number) => !!item)) || [];
+    this.ancillary_species =
+      (ancillarySpeciesList.length && ancillarySpeciesList.filter((item: string | number) => !!item)) || [];
+    this.start_date = surveyDataItem?.start_date || '';
+    this.end_date = surveyDataItem?.end_date || '';
+    this.biologist_first_name = surveyDataItem?.lead_first_name || '';
+    this.biologist_last_name = surveyDataItem?.lead_last_name || '';
+    this.survey_area_name = surveyDataItem?.location_name || '';
+    this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
+    this.revision_count = surveyDataItem?.revision_count ?? null;
   }
+
 }
 
 /**
@@ -72,5 +91,5 @@ export class GetSurveyDetailsData {
     this.proprietor_name = surveyProprietorData?.proprietor_name || '';
     this.data_sharing_agreement_required = surveyProprietorData?.data_sharing_agreement_required || '';
     this.revision_count = surveyProprietorData?.revision_count ?? null;
-  }
+
 }

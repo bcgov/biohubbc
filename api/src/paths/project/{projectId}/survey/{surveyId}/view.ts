@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { GetSurveyDetailsData, GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyDetailsSQL, getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { getSurveyProprietorSQL, getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
@@ -81,24 +81,23 @@ export function getSurveyForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyDetailsSQLStatement = getSurveyDetailsSQL(Number(req.params.projectId), Number(req.params.surveyId));
+      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.surveyId));
       const getSurveyProprietorSQLStatement = getSurveyProprietorSQL(Number(req.params.surveyId));
 
-      if (!getSurveyDetailsSQLStatement || !getSurveyProprietorSQLStatement) {
+      if (!getSurveySQLStatement || !getSurveyProprietorSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
-      const [surveyDetailsData, surveyProprietorData] = await Promise.all([
-        await connection.query(getSurveyDetailsSQLStatement.text, getSurveyDetailsSQLStatement.values),
+      const [surveyData, surveyProprietorData] = await Promise.all([
+        await connection.query(getSurveySQLStatement.text, getSurveySQLStatement.values),
         await connection.query(getSurveyProprietorSQLStatement.text, getSurveyProprietorSQLStatement.values)
       ]);
 
       await connection.commit();
 
-      const getSurveyDetailsData =
-        (surveyDetailsData && surveyDetailsData.rows && surveyDetailsData.rows[0] && new GetSurveyDetailsData(surveyDetailsData.rows[0])) || null;
+      const getSurveyData = (surveyData && surveyData.rows && new GetSurveyDetailsData(surveyData.rows)) || null;
 
       const getSurveyProprietorData =
         (surveyProprietorData &&
@@ -109,7 +108,7 @@ export function getSurveyForView(): RequestHandler {
 
       const result = {
         id: req.params.surveyId,
-        survey_details: getSurveyDetailsData,
+        survey_details: getSurveyData,
         survey_proprietor: getSurveyProprietorData
       };
 

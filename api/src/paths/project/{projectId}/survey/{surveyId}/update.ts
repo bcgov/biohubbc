@@ -10,8 +10,9 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { putSurveySQL } from '../../../../../queries/survey/survey-update-queries';
-import { getSurveyDetailsSQL, getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { putSurveySQL, getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-update-queries';
+import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 
@@ -164,8 +165,6 @@ export function getSurveyForUpdate(): RequestHandler {
 
     try {
 
-
-      const projectId = Number(req.params?.projectId);
       const surveyId = Number(req.params?.surveyId);
 
       const survey_entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
@@ -183,7 +182,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_details)) {
         promises.push(
-          getSurveyDetailsData(projectId, surveyId, connection).then((value) => {
+          getSurveyDetailsData(surveyId, connection).then((value) => {
             results.survey_details = value;
           })
         );
@@ -218,11 +217,10 @@ export function getSurveyForUpdate(): RequestHandler {
 
 
 export const getSurveyDetailsData = async (
-  projectId: number,
   surveyId:number,
   connection: IDBConnection
 ): Promise<GetSurveyDetailsData> => {
-  const sqlStatement = getSurveyDetailsSQL(projectId, surveyId);
+  const sqlStatement = getSurveyForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey details SQL get statement');
@@ -230,7 +228,7 @@ export const getSurveyDetailsData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && response.rows[0] && new GetSurveyDetailsData(response.rows[0]))  || null;
+  const result = (response && response.rows && new GetSurveyDetailsData(response.rows))  || null;
 
   console.log('result', result);
 
@@ -304,17 +302,59 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP400('Failed to parse request body');
       }
 
-      const sqlUpdateSurvey = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
+      const updateSurveySQLStatement = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
 
-      if (!sqlUpdateSurvey) {
+      if (!updateSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL update statement');
       }
 
-      const result = await connection.query(sqlUpdateSurvey.text, sqlUpdateSurvey.values);
+      const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
 
       if (!result || !result.rowCount) {
         throw new HTTP409('Failed to update stale survey data');
       }
+
+      const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
+      const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
+
+      if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
+        throw new HTTP400('Failed to build SQL delete statement');
+      }
+
+      const deleteFocalSpeciesPromises = connection.query(
+        sqlDeleteFocalSpeciesStatement.text,
+        sqlDeleteFocalSpeciesStatement.values
+      );
+
+      const deleteAncillarySpeciesPromises = connection.query(
+        sqlDeleteAncillarySpeciesStatement.text,
+        sqlDeleteAncillarySpeciesStatement.values
+      );
+
+      const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+        deleteFocalSpeciesPromises,
+        deleteAncillarySpeciesPromises
+      ]);
+
+      if (!deleteFocalSpeciesResult) {
+        throw new HTTP409('Failed to delete survey focal species data');
+      }
+
+      if (!deleteAncillarySpeciesResult) {
+        throw new HTTP409('Failed to delete survey ancillary species data');
+      }
+
+      const insertFocalSpeciesPromises =
+        putSurveyData.focal_species.map((focalSpeciesId: number) =>
+          insertFocalSpecies(focalSpeciesId, surveyId, connection)
+        ) || [];
+
+      const insertAncillarySpeciesPromises =
+        putSurveyData.ancillary_species.map((ancillarySpeciesId: number) =>
+          insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
+        ) || [];
+
+      await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 
       await connection.commit();
 

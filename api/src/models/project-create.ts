@@ -15,7 +15,6 @@ export class PostProjectObject {
   project: PostProjectData;
   objectives: PostObjectivesData;
   location: PostLocationData;
-  species: PostSpeciesData;
   iucn: PostIUCNData;
   funding: PostFundingData;
   partnerships: PostPartnershipsData;
@@ -26,7 +25,6 @@ export class PostProjectObject {
     this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
     this.project = (obj?.project && new PostProjectData(obj.project)) || null;
-    this.species = (obj?.project && new PostSpeciesData(obj.species)) || null;
     this.objectives = (obj?.project && new PostObjectivesData(obj.objectives)) || null;
     this.location = (obj?.location && new PostLocationData(obj.location)) || null;
     this.funding = (obj?.funding && new PostFundingData(obj.funding)) || null;
@@ -182,24 +180,6 @@ export class PostIUCNData {
           };
         })) ||
       [];
-  }
-}
-
-/**
- * Processes POST /project species data
- *
- * @export
- * @class PostSpeciesData
- */
-export class PostSpeciesData {
-  focal_species: string[];
-  ancillary_species: string[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostSpeciesData', message: 'params', obj });
-
-    this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
-    this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
   }
 }
 

@@ -4,6 +4,7 @@ import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useUserApi from './api/useUserApi';
 import useAdminApi from './api/useAdminApi';
+import useSurveyApi from './api/useSurveyApi';
 
 /**
  * Returns a set of supported api methods.
@@ -15,6 +16,8 @@ export const useBiohubApi = () => {
 
   const project = useProjectApi(axios);
 
+  const survey = useSurveyApi(axios);
+
   const codes = useCodesApi(axios);
 
   const draft = useDraftApi(axios);
@@ -25,6 +28,7 @@ export const useBiohubApi = () => {
 
   return {
     project,
+    survey,
     codes,
     draft,
     user,
