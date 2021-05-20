@@ -74,49 +74,45 @@ const BlockListPage: React.FC = () => {
           <Typography variant="h2">Animals Observed</Typography>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation1Page()}>
-            Create Observation v1
-          </Button>
+              <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation1Page()}>
+                Create Observation v1
+              </Button>
+            </Box>
 
-              </Box>
-
-
-          <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation2Page()}>
-            Create Observation v2
-          </Button>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation2Page()}>
+              Create Observation v2
+            </Button>
           </Box>
         </Box>
         <Box mb={3}>
-
           <TableContainer component={Paper}>
-              <Table className={classes.table} aria-label="observation-list-table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell className={classes.heading}>Group</TableCell>
-                    <TableCell className={classes.heading}>Waypoint</TableCell>
-                    <TableCell className={classes.heading}>Species</TableCell>
-                    <TableCell className={classes.heading}>Demographic</TableCell>
-                    <TableCell className={classes.heading}>Count</TableCell>
-                    <TableCell className={classes.heading}>Activity</TableCell>
-                    <TableCell className={classes.heading}>Time</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-            <TableRow>
-              <TableCell component="th" scope="row">
-                {'1'}
-              </TableCell>
-              <TableCell>{'103'}</TableCell>
-              <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
-              <TableCell>{'Dense'}</TableCell>
-              <TableCell>{'30'}</TableCell>
-              <TableCell>{'Bedding'}</TableCell>
-              <TableCell>{'3 pm'}</TableCell>
-            </TableRow>
-          </TableBody>
-              </Table>
-            </TableContainer>
-
+            <Table className={classes.table} aria-label="observation-list-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell className={classes.heading}>Group</TableCell>
+                  <TableCell className={classes.heading}>Waypoint</TableCell>
+                  <TableCell className={classes.heading}>Species</TableCell>
+                  <TableCell className={classes.heading}>Demographic</TableCell>
+                  <TableCell className={classes.heading}>Count</TableCell>
+                  <TableCell className={classes.heading}>Activity</TableCell>
+                  <TableCell className={classes.heading}>Time</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    {'1'}
+                  </TableCell>
+                  <TableCell>{'103'}</TableCell>
+                  <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
+                  <TableCell>{'Dense'}</TableCell>
+                  <TableCell>{'30'}</TableCell>
+                  <TableCell>{'Bedding'}</TableCell>
+                  <TableCell>{'3 pm'}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Container>
     </Box>
