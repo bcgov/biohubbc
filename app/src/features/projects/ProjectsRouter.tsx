@@ -6,6 +6,7 @@ import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import NewBlock from 'prototypes/PrototypeOne/NewBlock';
 import { FormikTestWrapper } from 'prototypes/PrototypeOne/Observation';
+import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
@@ -71,7 +72,7 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         exact
         layout={ProjectsLayout}
         path="/projects/:id?/surveys/:survey_id?/prototype/1/list"
-        component={NewBlock}
+        component={BlockListPage}
         componentProps={props}
       />
       <PrivateRoute
