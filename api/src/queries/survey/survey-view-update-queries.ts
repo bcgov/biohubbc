@@ -28,7 +28,10 @@ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null =>
       fn.name as first_nations_name,
       fn.id as first_nations_id,
       sp.rationale as category_rationale,
-      sp.proprietor_name,
+      CASE
+        WHEN sp.proprietor_name is not null THEN sp.proprietor_name
+        WHEN fn.id is not null THEN fn.name
+      END as proprietor_name,
       sp.disa_required,
       sp.revision_count
     from
