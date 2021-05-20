@@ -1,11 +1,12 @@
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import ProjectsListPage from 'features/projects/list/ProjectsListPage';
-import ProjectsLayout from 'features/projects/ProjectsLayout';
+import { default as ProjectsLayout } from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import NewBlock from 'prototypes/PrototypeOne/NewBlock';
 import NewBlockCondensed from 'prototypes/PrototypeTwo/NewBlockCondensed';
+import { FormikTestWrapper } from 'prototypes/PrototypeOne/Observation';
 import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -80,6 +81,13 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         layout={ProjectsLayout}
         path="/projects/:id?/surveys/:survey_id?/prototype/1/list"
         component={BlockListPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/prototype/1/observation"
+        component={FormikTestWrapper}
         componentProps={props}
       />
       <PrivateRoute
