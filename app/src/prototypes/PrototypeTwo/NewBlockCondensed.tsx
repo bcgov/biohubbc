@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import { DATE_LIMIT } from 'constants/dateFormats';
 import { Formik, FormikProps } from 'formik';
 import moment from 'moment';
+import ObservationTable from 'prototypes/ObservationTable';
 import React, { useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 
@@ -519,9 +520,7 @@ const NewBlockCondensed: React.FC = () => {
                         variant="outlined"
                         value={values.aircraft_registration_number}
                         onChange={handleChange}
-                        error={
-                          touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)
-                        }
+                        error={touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)}
                         helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
                       />
                     </Grid>
@@ -576,6 +575,9 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.aircraft_gps_readout && errors.aircraft_gps_readout}
                       />
                     </Grid>
+                  </Grid>
+                  <Grid container spacing={3}>
+                    <ObservationTable />
                   </Grid>
                 </form>
               )}
