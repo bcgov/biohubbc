@@ -79,6 +79,43 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey attachments based on survey ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<IGetSurveyAttachmentsResponse>}
+   */
+  const getSurveyAttachments = async (surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/list`);
+
+    return data;
+  };
+
+  /**
+   * Delete project attachment based on project and attachment ID
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/attachments/${attachmentId}/delete`);
+
+    return data;
+  };
+
+  /**
+   * Get project attachment S3 url based on project and attachment ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,

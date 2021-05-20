@@ -66,7 +66,8 @@ export interface IUploadFile {
 }
 
 export interface IFileUploadItemProps {
-  projectId: number;
+  id: number;
+  type: string;
   file: File;
   error?: string;
   onCancel: () => void;
@@ -132,13 +133,20 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       setIsSafeToCancel(true);
     };
 
-    biohubApi.project
-      .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-      .catch();
+    if (props.type === 'project') {
+      biohubApi.project
+        .uploadProjectAttachments(props.id, [file], cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+        .catch();
+    } else if (props.type === 'survey') {
+      biohubApi.survey
+        .uploadSurveyAttachments(props.id, [file], cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+        .catch();
+    }
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [file, biohubApi, status, cancelToken, props.projectId, isMounted, initiateCancel, error, handleFileUploadError]);
+  }, [file, biohubApi, status, cancelToken, props.id, props.type, isMounted, initiateCancel, error, handleFileUploadError]);
 
   useEffect(() => {
     if (!isMounted()) {

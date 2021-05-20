@@ -46,14 +46,14 @@ describe('AttachmentsList', () => {
   ];
 
   it('renders correctly with no attachments', () => {
-    const { getByText } = render(<AttachmentsList projectId={1} attachmentsList={[]} getAttachments={jest.fn()} />);
+    const { getByText } = render(<AttachmentsList id={1} type="project" attachmentsList={[]} getAttachments={jest.fn()} />);
 
     expect(getByText('No Attachments')).toBeInTheDocument();
   });
 
   it('renders correctly with attachments (of various sizes)', async () => {
     const { getByText } = render(
-      <AttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+      <AttachmentsList id={1} type="project" attachmentsList={attachmentsList} getAttachments={jest.fn()} />
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe('AttachmentsList', () => {
     expect(getByText('filename30.test')).toBeInTheDocument();
   });
 
-  it('viewing file contents in new tab works as expected', async () => {
+  it('viewing file contents in new tab works as expected for project attachments', async () => {
     window.open = jest.fn();
 
     const signedUrl = 'www.signedurl.com';
@@ -69,7 +69,7 @@ describe('AttachmentsList', () => {
     mockBiohubApi().project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
 
     const { getByText } = render(
-      <AttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+      <AttachmentsList id={1} type="project" attachmentsList={attachmentsList} getAttachments={jest.fn()} />
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
@@ -137,7 +137,7 @@ describe('AttachmentsList', () => {
     ];
 
     const { getByText, queryByText, getByLabelText } = render(
-      <AttachmentsList projectId={1} attachmentsList={largeAttachmentsList} getAttachments={jest.fn()} />
+      <AttachmentsList id={1} type="project" attachmentsList={largeAttachmentsList} getAttachments={jest.fn()} />
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();

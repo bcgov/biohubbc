@@ -7,46 +7,57 @@ import AttachmentsList from 'components/attachments/AttachmentsList';
 import FileUpload from 'components/attachments/FileUpload';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-export interface IProjectAttachmentsProps {
+export interface ISurveyAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
 }
 
 /**
- * Project attachments content for a project.
+ * Survey attachments content.
  *
  * @return {*}
  */
-const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
+const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const urlParams = useParams();
-  const projectId = urlParams['id'];
+  const surveyId = urlParams['survey_id'];
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+  const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
-      if (attachmentsList.length && !forceFetch) {
-        return;
-      }
+      // if (attachmentsList.length && !forceFetch) {
+      //   return;
+      // }
 
       try {
-        const response = await biohubApi.project.getProjectAttachments(projectId);
+        // const response = await biohubApi.survey.getSurveyAttachments(surveyId);
 
-        if (!response?.attachmentsList) {
-          return;
-        }
+        // if (!response?.attachmentsList) {
+        //   return;
+        // }
 
-        setAttachmentsList([...response.attachmentsList]);
+        const listData = [{
+          id: 2,
+          fileName: 'string',
+          lastModified: '2020/04/04',
+          size: 2345
+        }];
+
+        setAttachmentsList(listData);
+
+        // setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [biohubApi.survey, surveyId, attachmentsList.length]
   );
 
   useEffect(() => {
@@ -63,12 +74,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload id={projectId} type="project" />
+        <FileUpload id={surveyId} type="survey" />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">
           <Box>
-            <Typography variant="h2">Project Attachments</Typography>
+            <Typography variant="h2">Survey Attachments</Typography>
           </Box>
           <Box>
             <Button variant="outlined" onClick={() => setOpenUploadAttachments(true)}>
@@ -79,10 +90,10 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <AttachmentsList id={projectId} type="project" attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList id={surveyId} type="survey" attachmentsList={attachmentsList} getAttachments={getAttachments} />
       </Box>
     </>
   );
 };
 
-export default ProjectAttachments;
+export default SurveyAttachments;

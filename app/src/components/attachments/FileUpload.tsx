@@ -24,7 +24,8 @@ export interface IUploadFileListProps {
 }
 
 export interface IFileUploadProps {
-  projectId: number;
+  id: number;
+  type: string;
 }
 
 export const FileUpload: React.FC<IFileUploadProps> = (props) => {
@@ -87,7 +88,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     return (
       <MemoizedFileUploadItem
         key={file.name}
-        projectId={props.projectId}
+        id={props.id}
+        type={props.type}
         file={file}
         error={error}
         onCancel={() => setFileToRemove(file.name)}
@@ -137,7 +139,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
   return (
     <Box>
       <Box mb={2} className={classes.dropZone}>
-        <DropZone projectId={props.projectId} onFiles={onFiles} />
+        <DropZone onFiles={onFiles} />
       </Box>
       <Box>
         <List>{fileUploadItems}</List>

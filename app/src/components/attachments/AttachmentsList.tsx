@@ -33,7 +33,8 @@ const useStyles = makeStyles({
 });
 
 export interface IAttachmentsListProps {
-  projectId: number;
+  id: number;
+  type: string;
   attachmentsList: IGetProjectAttachment[];
   getAttachments: (forceFetch: boolean) => void;
 }
@@ -73,7 +74,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
+      let response;
+
+      if (props.type === 'project') {
+        response = await biohubApi.project.deleteProjectAttachment(props.id, attachment.id);
+      } else if (props.type === 'survey') {
+        response = await biohubApi.survey.deleteSurveyAttachment(props.id, attachment.id);
+      }
 
       if (!response) {
         return;
@@ -87,7 +94,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const viewFileContents = async (attachment: any) => {
     try {
-      const response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      let response;
+
+      if (props.type === 'project') {
+        response = await biohubApi.project.getAttachmentSignedURL(props.id, attachment.id);
+      } else if (props.type === 'survey') {
+        response = await biohubApi.survey.getAttachmentSignedURL(props.id, attachment.id);
+      }
 
       if (!response) {
         return;
