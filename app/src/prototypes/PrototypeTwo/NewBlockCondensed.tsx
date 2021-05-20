@@ -519,9 +519,7 @@ const NewBlockCondensed: React.FC = () => {
                         variant="outlined"
                         value={values.aircraft_registration_number}
                         onChange={handleChange}
-                        error={
-                          touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)
-                        }
+                        error={touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)}
                         helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
                       />
                     </Grid>
