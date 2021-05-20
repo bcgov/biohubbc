@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "~1.0.1",
+    "@handsontable/react": "~8.4.0",
     "@material-ui/core": "~4.11.0",
     "@material-ui/icons": "~4.2.1",
     "@material-ui/lab": "latest",
