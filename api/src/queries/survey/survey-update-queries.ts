@@ -64,7 +64,7 @@ export const putSurveySQL = (
       lead_first_name = ${survey.lead_first_name},
       lead_last_name = ${survey.lead_last_name},
       location_name = ${survey.location_name},
-      geography = 
+      geography =
   `;
 
   sqlStatement.append(geometrySqlStatement);
@@ -107,6 +107,7 @@ export const getSurveyForUpdateSQL = (surveyId: number): SQLStatement | null => 
 
   const sqlStatement = SQL`
     SELECT
+      s.id,
       s.name,
       s.objectives,
       s.start_date,

@@ -108,7 +108,6 @@ export function getSurveyForView(): RequestHandler {
         null;
 
       const result = {
-        id: req.params.surveyId,
         survey_details: getSurveyData,
         survey_proprietor: getSurveyProprietorData
       };

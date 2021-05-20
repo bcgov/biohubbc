@@ -183,13 +183,13 @@ export function getSurveyForUpdate(): RequestHandler {
         );
       }
 
-      // if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_proprietor)) {
-      //   promises.push(
-      //     getSurveyProprietorData(surveyId, connection).then((value) => {
-      //       results.survey_proprietor = value;
-      //     })
-      //   );
-      // }
+      if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_proprietor)) {
+        promises.push(
+          getSurveyProprietorData(surveyId, connection).then((value) => {
+            results.survey_proprietor = value;
+          })
+        );
+      }
 
       console.log('promises', promises);
 

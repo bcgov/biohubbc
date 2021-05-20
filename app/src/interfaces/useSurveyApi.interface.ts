@@ -77,15 +77,15 @@ export interface IGetSurveyForUpdateResponseDetails {
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
-  id: number;
-  proprietor_type_name: string;
-  first_nations_name: string;
+  id?: number;
+  proprietor_type_name?: string;
+  first_nations_name?: string;
   proprietor_type_id: number;
   first_nations_id: number;
   category_rationale: string;
   proprietor_name: string;
   data_sharing_agreement_required: string;
-  revision_count: number;
+  revision_count?: number;
 }
 
 /**
@@ -117,7 +117,9 @@ export interface IGetSurveyForViewResponse {
  * @interface IUpdateSurveyRequest
  * @extends {IGetSurveyForUpdateResponse}
  */
-export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {}
+export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {
+  survey_data_proprietary?: string
+}
 
 /**
  * Get surveys list response object.

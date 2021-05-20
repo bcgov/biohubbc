@@ -89,7 +89,7 @@ export class GetSurveyProprietorData {
     this.first_nations_id = surveyProprietorData?.first_nations_id ?? null;
     this.category_rationale = surveyProprietorData?.category_rationale || '';
     this.proprietor_name = surveyProprietorData?.proprietor_name || '';
-    this.data_sharing_agreement_required = surveyProprietorData?.data_sharing_agreement_required || '';
+    this.data_sharing_agreement_required = surveyProprietorData?.disa_required ? 'true' : 'false';
     this.revision_count = surveyProprietorData?.revision_count ?? null;
   }
 }
