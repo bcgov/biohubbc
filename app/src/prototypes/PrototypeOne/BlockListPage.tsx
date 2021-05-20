@@ -72,17 +72,24 @@ const BlockListPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h2">Animals Observed</Typography>
-          <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation1Page()}>
-            Create Observation 1
+          <Box display="flex" justifyContent="space-between">
+            <Box mr={1}>
+            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation1Page()}>
+            Create Observation v1
           </Button>
+
+              </Box>
+
+
           <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservation2Page()}>
-            Create Observation 2
+            Create Observation v2
           </Button>
+          </Box>
         </Box>
         <Box mb={3}>
-          <Paper>
-            <TableContainer>
-              <Table className={classes.table} aria-label="surveys-list-table">
+
+          <TableContainer component={Paper}>
+              <Table className={classes.table} aria-label="observation-list-table">
                 <TableHead>
                   <TableRow>
                     <TableCell className={classes.heading}>Group</TableCell>
@@ -100,7 +107,7 @@ const BlockListPage: React.FC = () => {
                 {'1'}
               </TableCell>
               <TableCell>{'103'}</TableCell>
-              <TableCell>{'Tumbleweed - albus, Low Sandwort - longipedunculata'}</TableCell>
+              <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
               <TableCell>{'Dense'}</TableCell>
               <TableCell>{'30'}</TableCell>
               <TableCell>{'Bedding'}</TableCell>
@@ -109,7 +116,7 @@ const BlockListPage: React.FC = () => {
           </TableBody>
               </Table>
             </TableContainer>
-          </Paper>
+
         </Box>
       </Container>
     </Box>
