@@ -127,7 +127,7 @@ const NewBlockCondensed: React.FC = () => {
               {({ values, touched, errors, handleChange }) => (
                 <form>
                   <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -141,7 +141,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.block_name && errors.block_name}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -155,7 +155,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.block_size && errors.block_size}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         id="date"
@@ -183,7 +183,7 @@ const NewBlockCondensed: React.FC = () => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         id="start_time"
@@ -204,7 +204,7 @@ const NewBlockCondensed: React.FC = () => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         id="end_time"
@@ -225,9 +225,7 @@ const NewBlockCondensed: React.FC = () => {
                         }}
                       />
                     </Grid>
-                  </Grid>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -241,7 +239,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.pilot_name && errors.pilot_name}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -255,7 +253,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.navigator && errors.navigator}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -269,7 +267,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.rear_left_observer && errors.rear_left_observer}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -283,196 +281,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.rear_right_observer && errors.rear_right_observer}
                       />
                     </Grid>
-                  </Grid>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
-                        <InputLabel id="visibility-label">Visibility</InputLabel>
-                        <Select
-                          id="visibility"
-                          name="visibility"
-                          labelId="visibility-label"
-                          label="Visibility"
-                          value={values.visibility}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.visibility && Boolean(errors.visibility)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'visibility' }}>
-                          {['Clear', 'Cloudy', 'Foggy'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.visibility && errors.visibility}</FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
-                        <InputLabel id="light-label">Light</InputLabel>
-                        <Select
-                          id="light"
-                          name="light"
-                          labelId="light-label"
-                          label="Light"
-                          value={values.light}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.light && Boolean(errors.light)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'light' }}>
-                          {['Bright', 'Very Bright', 'Dark', 'Very Dark'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.light && errors.light}</FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="cloud_cover"
-                        name="cloud_cover"
-                        label="Cloud Cover (%)"
-                        variant="outlined"
-                        value={values.cloud_cover}
-                        onChange={handleChange}
-                        error={touched.cloud_cover && Boolean(errors.cloud_cover)}
-                        helperText={touched.cloud_cover && errors.cloud_cover}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="temperature"
-                        name="temperature"
-                        label={`Temperature (\u00B0C)`}
-                        variant="outlined"
-                        value={values.temperature}
-                        onChange={handleChange}
-                        error={touched.temperature && Boolean(errors.temperature)}
-                        helperText={touched.temperature && errors.temperature}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
-                        <InputLabel id="precipitation-label">Precipitation</InputLabel>
-                        <Select
-                          id="precipitation"
-                          name="precipitation"
-                          labelId="precipitation-label"
-                          label="Precipitation"
-                          value={values.precipitation}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.precipitation && Boolean(errors.precipitation)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'precipitation' }}>
-                          {['Pouring Rain', 'Light Drizzle', 'Snowing', 'Hailing'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="wind_speed"
-                        name="wind_speed"
-                        label="Wind Speed (km/h)"
-                        variant="outlined"
-                        value={values.wind_speed}
-                        onChange={handleChange}
-                        error={touched.wind_speed && Boolean(errors.wind_speed)}
-                        helperText={touched.wind_speed && errors.wind_speed}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="snow_cover"
-                        name="snow_cover"
-                        label="Snow Cover (%)"
-                        variant="outlined"
-                        value={values.snow_cover}
-                        onChange={handleChange}
-                        error={touched.snow_cover && Boolean(errors.snow_cover)}
-                        helperText={touched.snow_cover && errors.snow_cover}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="snow_depth"
-                        name="snow_depth"
-                        label="Snow Depth (cm)"
-                        variant="outlined"
-                        value={values.snow_depth}
-                        onChange={handleChange}
-                        error={touched.snow_depth && Boolean(errors.snow_depth)}
-                        helperText={touched.snow_depth && errors.snow_depth}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="days_since_snowfall"
-                        name="days_since_snowfall"
-                        label="Days Since Snowfall"
-                        variant="outlined"
-                        value={values.days_since_snowfall}
-                        onChange={handleChange}
-                        error={touched.days_since_snowfall && Boolean(errors.days_since_snowfall)}
-                        helperText={touched.days_since_snowfall && errors.days_since_snowfall}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="weather_description"
-                        name="weather_description"
-                        label="Weather Description"
-                        multiline
-                        required={false}
-                        rows={4}
-                        fullWidth
-                        variant="outlined"
-                        value={values.weather_description}
-                        onChange={handleChange}
-                        error={touched.weather_description && Boolean(errors.weather_description)}
-                        helperText={touched.weather_description && errors.weather_description}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="description_of_habitat"
-                        name="description_of_habitat"
-                        label="Description of Habitat"
-                        multiline
-                        required={false}
-                        rows={4}
-                        fullWidth
-                        variant="outlined"
-                        value={values.description_of_habitat}
-                        onChange={handleChange}
-                        error={touched.description_of_habitat && Boolean(errors.description_of_habitat)}
-                        helperText={touched.description_of_habitat && errors.description_of_habitat}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -486,7 +295,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.aircraft_company && errors.aircraft_company}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
                         <InputLabel id="aircraft_type-label">Aircraft Type</InputLabel>
                         <Select
@@ -509,7 +318,7 @@ const NewBlockCondensed: React.FC = () => {
                         <FormHelperText>{touched.aircraft_type && errors.aircraft_type}</FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -525,7 +334,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -539,7 +348,7 @@ const NewBlockCondensed: React.FC = () => {
                         helperText={touched.aircraft_gps_model && errors.aircraft_gps_model}
                       />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
                         <InputLabel id="aircraft_gps_datum-label">GPS Datum</InputLabel>
                         <Select
@@ -562,7 +371,7 @@ const NewBlockCondensed: React.FC = () => {
                         <FormHelperText>{touched.aircraft_gps_datum && errors.aircraft_gps_datum}</FormHelperText>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
                         required={false}
@@ -574,6 +383,191 @@ const NewBlockCondensed: React.FC = () => {
                         onChange={handleChange}
                         error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
                         helperText={touched.aircraft_gps_readout && errors.aircraft_gps_readout}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
+                        <InputLabel id="visibility-label">Visibility</InputLabel>
+                        <Select
+                          id="visibility"
+                          name="visibility"
+                          labelId="visibility-label"
+                          label="Visibility"
+                          value={values.visibility}
+                          labelWidth={300}
+                          onChange={handleChange}
+                          error={touched.visibility && Boolean(errors.visibility)}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'visibility' }}>
+                          {['Clear', 'Cloudy', 'Foggy'].map((item) => (
+                            <MenuItem key={item} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{touched.visibility && errors.visibility}</FormHelperText>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
+                        <InputLabel id="light-label">Light</InputLabel>
+                        <Select
+                          id="light"
+                          name="light"
+                          labelId="light-label"
+                          label="Light"
+                          value={values.light}
+                          labelWidth={300}
+                          onChange={handleChange}
+                          error={touched.light && Boolean(errors.light)}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'light' }}>
+                          {['Bright', 'Very Bright', 'Dark', 'Very Dark'].map((item) => (
+                            <MenuItem key={item} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{touched.light && errors.light}</FormHelperText>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="cloud_cover"
+                        name="cloud_cover"
+                        label="Cloud Cover (%)"
+                        variant="outlined"
+                        value={values.cloud_cover}
+                        onChange={handleChange}
+                        error={touched.cloud_cover && Boolean(errors.cloud_cover)}
+                        helperText={touched.cloud_cover && errors.cloud_cover}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="temperature"
+                        name="temperature"
+                        label={`Temperature (\u00B0C)`}
+                        variant="outlined"
+                        value={values.temperature}
+                        onChange={handleChange}
+                        error={touched.temperature && Boolean(errors.temperature)}
+                        helperText={touched.temperature && errors.temperature}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
+                        <InputLabel id="precipitation-label">Precipitation</InputLabel>
+                        <Select
+                          id="precipitation"
+                          name="precipitation"
+                          labelId="precipitation-label"
+                          label="Precipitation"
+                          value={values.precipitation}
+                          labelWidth={300}
+                          onChange={handleChange}
+                          error={touched.precipitation && Boolean(errors.precipitation)}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'precipitation' }}>
+                          {['Pouring Rain', 'Light Drizzle', 'Snowing', 'Hailing'].map((item) => (
+                            <MenuItem key={item} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="wind_speed"
+                        name="wind_speed"
+                        label="Wind Speed (km/h)"
+                        variant="outlined"
+                        value={values.wind_speed}
+                        onChange={handleChange}
+                        error={touched.wind_speed && Boolean(errors.wind_speed)}
+                        helperText={touched.wind_speed && errors.wind_speed}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="snow_cover"
+                        name="snow_cover"
+                        label="Snow Cover (%)"
+                        variant="outlined"
+                        value={values.snow_cover}
+                        onChange={handleChange}
+                        error={touched.snow_cover && Boolean(errors.snow_cover)}
+                        helperText={touched.snow_cover && errors.snow_cover}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="snow_depth"
+                        name="snow_depth"
+                        label="Snow Depth (cm)"
+                        variant="outlined"
+                        value={values.snow_depth}
+                        onChange={handleChange}
+                        error={touched.snow_depth && Boolean(errors.snow_depth)}
+                        helperText={touched.snow_depth && errors.snow_depth}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="days_since_snowfall"
+                        name="days_since_snowfall"
+                        label="Days Since Snowfall"
+                        variant="outlined"
+                        value={values.days_since_snowfall}
+                        onChange={handleChange}
+                        error={touched.days_since_snowfall && Boolean(errors.days_since_snowfall)}
+                        helperText={touched.days_since_snowfall && errors.days_since_snowfall}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        id="weather_description"
+                        name="weather_description"
+                        label="Weather Description"
+                        multiline
+                        required={false}
+                        rows={4}
+                        fullWidth
+                        variant="outlined"
+                        value={values.weather_description}
+                        onChange={handleChange}
+                        error={touched.weather_description && Boolean(errors.weather_description)}
+                        helperText={touched.weather_description && errors.weather_description}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField
+                        id="description_of_habitat"
+                        name="description_of_habitat"
+                        label="Description of Habitat"
+                        multiline
+                        required={false}
+                        rows={4}
+                        fullWidth
+                        variant="outlined"
+                        value={values.description_of_habitat}
+                        onChange={handleChange}
+                        error={touched.description_of_habitat && Boolean(errors.description_of_habitat)}
+                        helperText={touched.description_of_habitat && errors.description_of_habitat}
                       />
                     </Grid>
                   </Grid>
