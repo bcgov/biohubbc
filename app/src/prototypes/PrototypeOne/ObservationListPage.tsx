@@ -42,12 +42,10 @@ const ObservationListPage: React.FC = () => {
   const history = useHistory();
 
   const navigateToCreateObservationPage_v1 = () => {
-    let path1 = `newPath`;
-    history.push(path1);
+    history.push('/projects/1/surveys/1/prototype/1');
   };
   const navigateToCreateObservationPage_v2 = () => {
-    let path2 = `newPath`;
-    history.push(path2);
+    history.push('/projects/1/surveys/1/prototype/2');
   };
 
   return (
