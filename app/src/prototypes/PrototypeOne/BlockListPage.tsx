@@ -68,7 +68,7 @@ const BlockListPage: React.FC = () => {
   };
 
   return (
-    <Box mb={6}>
+    <Box mb={6} my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h2">Animals Observed</Typography>
