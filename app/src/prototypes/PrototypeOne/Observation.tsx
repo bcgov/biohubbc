@@ -221,10 +221,10 @@ const Observation: React.FC = () => {
                                 Species 1
                               </MenuItem>
                               <MenuItem key={2} value="2">
-                                Species 1
+                                Species 2
                               </MenuItem>
                               <MenuItem key={3} value="3">
-                                Species 1
+                                Species 3
                               </MenuItem>
                             </Select>
                             <FormHelperText>{speciesMeta.touched && speciesMeta.error}</FormHelperText>
@@ -238,7 +238,7 @@ const Observation: React.FC = () => {
                               name={`sightings.[${index}].demographics`}
                               labelId="demographics"
                               label="Demographic"
-                              value={sighting.species}
+                              value={sighting.demographic}
                               onChange={handleChange}
                               error={demographicMeta.touched && Boolean(demographicMeta.error)}
                               displayEmpty
@@ -284,8 +284,8 @@ const Observation: React.FC = () => {
                         </Box>
                         <Box flexBasis="20%" pl={1}>
                           <TextField
-                            id="count"
-                            name="count"
+                            id={`sightings.[${index}].count`}
+                            name={`sightings.[${index}].count`}
                             label="Count"
                             required={true}
                             fullWidth
