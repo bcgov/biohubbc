@@ -200,6 +200,12 @@ const SurveyPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText>Prototype One</ListItemText>
                   </ListItem>
+                  <ListItem component={NavLink} to="prototype/2">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Prototype Two</ListItemText>
+                  </ListItem>
                 </List>
               </Paper>
             </Box>
