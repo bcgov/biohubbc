@@ -10,7 +10,7 @@
  create or replace view iucn_conservation_action_level_2_subclassification as select * from biohub.iucn_conservation_action_level_2_subclassification;
  create or replace view iucn_conservation_action_level_3_subclassification as select * from biohub.iucn_conservation_action_level_3_subclassification;
  create or replace view management_action_type as select * from biohub.management_action_type;
- create or replace view no_sample_permit as select * from biohub.no_sample_permit;
+ create or replace view permit as select * from biohub.permit;
  create or replace view project as select * from biohub.project;
  create or replace view project_activity as select * from biohub.project_activity;
  create or replace view project_attachment as select * from biohub.project_attachment;
@@ -20,7 +20,6 @@
  create or replace view project_iucn_action_classification as select * from biohub.project_iucn_action_classification;
  create or replace view project_management_actions as select * from biohub.project_management_actions;
  create or replace view project_participation as select * from biohub.project_participation;
- create or replace view project_permit as select * from biohub.project_permit;
  create or replace view project_region as select * from biohub.project_region;
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
