@@ -344,7 +344,7 @@ export class GetPermitData {
           return {
             permit_number: item.number,
             permit_type: item.type,
-            sampling_conducted: item.sampling_conducted ? 'true' : 'false'
+            sampling_conducted: 'true' // any permit associated with project has sampling conducted true
           };
         })) ||
       [];

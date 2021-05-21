@@ -62,6 +62,7 @@ import {
   insertStakeholderPartnership,
   insertPermitNumber
 } from '../../project';
+import { insertNoSamplePermit } from '../../permit-no-sampling';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -501,7 +502,7 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectData(projectId, entities, connection));
       }
 
-      if (entities?.permit) {
+      if (entities?.permit && entities?.coordinator) {
         promises.push(updateProjectPermitData(projectId, entities, connection));
       }
 
@@ -537,7 +538,16 @@ export const updateProjectPermitData = async (
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putPermitData = (entities?.permit && new PutPermitData(entities.permit)) || null;
+  const putPermitData = new PutPermitData(entities.permit);
+  const putCoordinatorData = new PutCoordinatorData(entities.coordinator);
+
+  if (!putPermitData.permits || !putPermitData.permits.length) {
+    throw new HTTP400('Missing request body entity `permit`');
+  }
+
+  if (!putCoordinatorData) {
+    throw new HTTP400('Missing request body entity `coordinator`');
+  }
 
   const sqlDeleteStatement = deletePermitSQL(projectId);
 
@@ -552,9 +562,13 @@ export const updateProjectPermitData = async (
   }
 
   const insertPermitPromises =
-    putPermitData?.permits?.map((permit: IPutPermit) =>
-      insertPermitNumber(permit.permit_number, permit.permit_type, projectId, permit.sampling_conducted, connection)
-    ) || [];
+    putPermitData?.permits?.map((permit: IPutPermit) => {
+      if (permit.sampling_conducted) {
+        return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
+      }
+
+      insertNoSamplePermit(permit, putCoordinatorData, connection);
+    }) || [];
 
   await Promise.all(insertPermitPromises);
 };

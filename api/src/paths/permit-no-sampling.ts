@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../models/permit-no-sampling';
 import { PostCoordinatorData } from '../models/project-create';
+import { PutCoordinatorData } from '../models/project-update';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../openapi/schemas/permit-no-sampling';
 import { postPermitNoSamplingSQL } from '../queries/permit-no-sampling/permit-no-sampling-queries';
 import { getLogger } from '../utils/logger';
@@ -104,7 +105,7 @@ export function createNoSamplePermits(): RequestHandler {
 
 export const insertNoSamplePermit = async (
   permit: IPostPermitNoSampling,
-  coordinator: PostCoordinatorData,
+  coordinator: PostCoordinatorData | PutCoordinatorData,
   connection: IDBConnection
 ): Promise<number> => {
   const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator });

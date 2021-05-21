@@ -78,7 +78,7 @@ export const getProjectListSQL = (): SQLStatement | null => {
       project as p
     left outer join project_type as pt
       on p.pt_id = pt.id
-    left outer join project_permit as pp
+    left outer join permit as pp
       on p.id = pp.p_id
     group by
       p.id,
@@ -187,7 +187,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 };
 
 /**
- * SQL query to get permits.
+ * SQL query to get permits associated to a project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -202,10 +202,9 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
   const sqlStatement = SQL`
     SELECT
       number,
-      type,
-      sampling_conducted
+      type
     FROM
-      project_permit
+      permit
     WHERE
       p_id = ${projectId}
   `;
