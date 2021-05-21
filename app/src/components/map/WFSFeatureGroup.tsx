@@ -112,12 +112,12 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const [bounds, setBounds] = useState<any>(null);
 
   const throttledSetBounds = useCallback(
-    throttle((bounds) => {
+    throttle((newBounds) => {
       if (!isMounted) {
         return;
       }
 
-      setBounds(bounds);
+      setBounds(newBounds);
     }, 300),
     []
   );
@@ -207,13 +207,13 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
       return;
     }
 
-    const features = await throttledGetFeatures(
+    const newFeatures = await throttledGetFeatures(
       props.typeName,
       bounds.toBBoxString(),
       props.wfsParams
     )?.catch(/* catch and ignore errors */);
 
-    setFeatures(features);
+    setFeatures(newFeatures);
   }, [map, throttledGetFeatures, bounds, isMounted, props, isEnabled]);
 
   useEffect(() => {
