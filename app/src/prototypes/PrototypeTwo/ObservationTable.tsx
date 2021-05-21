@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { HotTable } from '@handsontable/react';
 import { makeStyles } from '@material-ui/core';
 import React, { useRef } from 'react';
@@ -7,7 +6,10 @@ import 'handsontable/dist/handsontable.min.css';
 import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
-  hotTable: {}
+  hotTable: {},
+  readOnly: {
+    backgroundColor: 'grey'
+  }
 }));
 
 const ObservationTable: React.FC = () => {
@@ -16,17 +18,31 @@ const ObservationTable: React.FC = () => {
   const hotRef = useRef<HotTable>(null);
 
   const headers = [
-    ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 3 }],
-    ['', 'Yrlings', 'Mature', 'Lone', 'W/1 Calf', 'W/2 Calf', 'Lone Calf', 'Unk Ages/Sex', 'TOTAL']
+    ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 7 }],
+    [
+      '',
+      'Yrlings',
+      'Mature',
+      'Lone',
+      'W/1 Calf',
+      'W/2 Calf',
+      'Lone Calf',
+      'Unk Ages/Sex',
+      'TOTAL',
+      'Wpt No.',
+      'Act.',
+      '% Veg Cover',
+      'Habitat notes/Other species/old trks/observer notes, etc.'
+    ]
   ];
 
   const data = [
-    [, , , , , , , , ,],
-    [, , , , , , , , ,],
-    [, , , , , , , , ,],
-    [, , , , , , , , ,],
-    [, , , , , , , , ,],
-    [, , , , , , , , ,]
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,]
   ];
 
   return (
@@ -97,7 +113,20 @@ const ObservationTable: React.FC = () => {
           type: 'numeric'
         },
         {
+          type: 'numeric',
+          readOnly: true
+        },
+        {
           type: 'numeric'
+        },
+        {
+          type: 'numeric'
+        },
+        {
+          type: 'numeric'
+        },
+        {
+          type: 'text'
         }
       ]}
       formulas={true}
