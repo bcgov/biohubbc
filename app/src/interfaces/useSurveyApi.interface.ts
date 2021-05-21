@@ -135,3 +135,10 @@ export interface IGetSurveysListResponse {
   end_date: string;
   status_name: string;
 }
+
+
+export enum UPDATE_GET_SURVEY_ENTITIES {
+  survey_details = 'survey_details',
+  survey_proprietor = 'survey_proprietor'
+}
+

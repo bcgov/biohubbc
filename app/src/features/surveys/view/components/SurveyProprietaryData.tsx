@@ -19,6 +19,8 @@ import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+
 export interface ISurveyProprietaryDataProps {
   surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
@@ -67,39 +69,42 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   const handleDialogEditOpen = async () => {
     let surveyProprietorResponseData;
 
-    try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_proprietor?.id);
+    if (survey_proprietor) {
+      try {
+        const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id,  [UPDATE_GET_SURVEY_ENTITIES.survey_proprietor]);
 
-      if (!response) {
-        showErrorDialog({ open: true });
+        if (!response) {
+          showErrorDialog({ open: true });
+          return;
+        }
+
+        surveyProprietorResponseData = response;
+      } catch (error) {
+        const apiError = error as APIError;
+        showErrorDialog({ dialogText: apiError.message, open: true });
         return;
       }
 
-      surveyProprietorResponseData = response;
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
-      return;
-    }
+      if (surveyProprietorResponseData.survey_proprietor) {
+        setSurveyProprietorFormData({
+          proprietary_data_category: surveyProprietorResponseData.survey_proprietor.proprietor_type_id,
+          proprietor_name: surveyProprietorResponseData.survey_proprietor.proprietor_name,
+          first_nations_id: surveyProprietorResponseData.survey_proprietor.first_nations_id,
+          category_rationale: surveyProprietorResponseData.survey_proprietor.category_rationale,
+          survey_data_proprietary: 'true',
+          data_sharing_agreement_required: surveyProprietorResponseData.survey_proprietor.data_sharing_agreement_required
+        });
+        //console.log('surveyProprietorFormData', surveyProprietorFormData);
 
-    setSurveyDataForUpdate(surveyProprietorResponseData);
-
-
-
-    if (surveyProprietorResponseData.survey_proprietor) {
-      setSurveyProprietorFormData({
-        proprietary_data_category: surveyProprietorResponseData.survey_proprietor.proprietor_type_id,
-        proprietor_name: surveyProprietorResponseData.survey_proprietor.proprietor_name,
-        first_nations_id: surveyProprietorResponseData.survey_proprietor.first_nations_id,
-        category_rationale: surveyProprietorResponseData.survey_proprietor.category_rationale,
-        survey_data_proprietary: 'true',
-        data_sharing_agreement_required: surveyProprietorResponseData.survey_proprietor.data_sharing_agreement_required
-      });
-      //console.log('surveyProprietorFormData', surveyProprietorFormData);
+        setSurveyDataForUpdate(surveyProprietorResponseData);
+      } else {
+        setSurveyProprietorFormData(ProprietaryDataInitialValues);
+      }
     } else {
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
     }
-    console.log('surveyProprietorFormData', surveyProprietorFormData);
+
+    // console.log('surveyProprietorFormData', surveyProprietorFormData);
     setOpenEditDialog(true);
   };
 
@@ -114,8 +119,8 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
           first_nations_id: values.first_nations_id,
           category_rationale: values.category_rationale,
           data_sharing_agreement_required: values.data_sharing_agreement_required,
-          id: (surveyDataForUpdate.survey_proprietor && surveyDataForUpdate.survey_proprietor.id) || undefined,
-          revision_count: (surveyDataForUpdate.survey_proprietor && surveyDataForUpdate.survey_proprietor.revision_count) || undefined
+          id: (surveyDataForUpdate?.survey_proprietor && surveyDataForUpdate?.survey_proprietor.id) || undefined,
+          revision_count: (surveyDataForUpdate?.survey_proprietor && surveyDataForUpdate?.survey_proprietor?.revision_count) || undefined
         },
         survey_data_proprietary: values.survey_data_proprietary
       };

@@ -16,13 +16,15 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyForViewResponse, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse, IUpdateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
+
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
-  projectId: number;
+  projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
 }
 
@@ -57,10 +59,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   ];
 
   const {
-    projectId,
-    surveyForViewData: { survey_details },
+    projectForViewData,
+    surveyForViewData: { survey_details},
     refresh
   } = props;
+
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
 
@@ -88,7 +91,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     let studyAreaResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectId, survey_details?.id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      ]);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -124,7 +129,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           }
         };
 
-        await biohubApi.survey.updateSurvey(projectId, survey_details.id, surveyData);
+        await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
       }
     } catch (error) {
       const apiError = error as APIError;

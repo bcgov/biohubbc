@@ -5,8 +5,10 @@ import {
   IGetSurveyForViewResponse,
   IGetSurveysListResponse,
   IUpdateSurveyRequest,
-  IGetSurveyForUpdateResponse
+  IGetSurveyForUpdateResponse,
+  UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
+import qs from 'qs';
 
 /**
  * Returns a set of supported api methods for working with surveys.
@@ -53,14 +55,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get survey data for update purposes.
+   * Get survey data for updating purposes.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<IGetSurveyForUpdateResponse>}
    */
-  const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update`);
+  const getSurveyForUpdate = async (
+    projectId: number,
+    surveyId: number,
+    entities: UPDATE_GET_SURVEY_ENTITIES[]
+  ): Promise<IGetSurveyForUpdateResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update`, {
+      params: { entity: entities },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
 
     return data;
   };

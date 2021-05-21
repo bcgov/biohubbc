@@ -22,6 +22,7 @@ import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
+import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -71,7 +72,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let generalInformationResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      ]);
 
       if (!response) {
         showErrorDialog({ open: true });
