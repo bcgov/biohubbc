@@ -33,6 +33,9 @@ const useStyles = makeStyles(() => ({
   },
   sectionDivider: {
     height: '1px'
+  },
+  hotTableParent: {
+    overflowX: 'scroll'
   }
 }));
 
@@ -101,6 +104,8 @@ const NewBlockCondensed: React.FC = () => {
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
+  const hotTableParentRef = useRef(null);
+
   return (
     <>
       <Box my={3}>
@@ -127,7 +132,7 @@ const NewBlockCondensed: React.FC = () => {
               onSubmit={() => {}}>
               {({ values, touched, errors, handleChange }) => (
                 <form>
-                  <Grid container spacing={3}>
+                  <Grid container spacing={1}>
                     <Grid item xs={12} md={3}>
                       <TextField
                         fullWidth
@@ -570,14 +575,13 @@ const NewBlockCondensed: React.FC = () => {
                       />
                     </Grid>
                   </Grid>
-                  {/* <Grid container spacing={3}>
+                  <Grid container spacing={1}>
                     <Grid item xs={12}>
-                      <ObservationTable />
+                      <div ref={hotTableParentRef}>
+                        <ObservationTable hotTableParentRef={hotTableParentRef} />
+                      </div>
                     </Grid>
-                  </Grid> */}
-                  <Box mt={3}>
-                    <ObservationTable />
-                  </Box>
+                  </Grid>
                 </form>
               )}
             </Formik>

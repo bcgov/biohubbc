@@ -1,8 +1,8 @@
 import { HotTable } from '@handsontable/react';
 import { makeStyles } from '@material-ui/core';
-import React, { useRef } from 'react';
-
 import 'handsontable/dist/handsontable.min.css';
+import useWindowDimensions from 'prototypes/useWindowDimensions';
+import React, { useEffect, useRef, useState } from 'react';
 import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
@@ -12,10 +12,34 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const ObservationTable: React.FC = () => {
+export interface IObservationTableProps {
+  hotTableParentRef: any;
+}
+
+const ObservationTable: React.FC<IObservationTableProps> = (props) => {
   const classes = useStyles();
 
   const hotRef = useRef<HotTable>(null);
+
+  // Used to trigger re-renders on window size changes
+  useWindowDimensions();
+
+  useEffect(() => {
+    if (!props.hotTableParentRef?.current?.offsetWidth) {
+      return;
+    }
+
+    setParentWidth(props.hotTableParentRef.current.offsetWidth);
+
+    setColWidthsPixels(getColumnWidthsPixels(colWidthsPercent, props.hotTableParentRef.current.offsetWidth - 105));
+  }, [props.hotTableParentRef, props.hotTableParentRef?.current, props.hotTableParentRef?.current?.offsetWidth]);
+
+  const [colWidthsPixels, setColWidthsPixels] = useState<number[]>([]);
+  const [parentWidth, setParentWidth] = useState<number>();
+
+  const getColumnWidthsPixels = (colWidthsPercent: number[], parentWidth: number) => {
+    return colWidthsPercent.map((item) => parentWidth * item);
+  };
 
   const headers = [
     ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 7 }],
@@ -32,18 +56,20 @@ const ObservationTable: React.FC = () => {
       'Wpt No.',
       'Act.',
       '% Veg Cover',
-      'Habitat notes/Other species/old trks/observer notes, etc.'
+      'Notes'
     ]
   ];
 
-  const data = [
+  const colWidthsPercent = [0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.28];
+
+  const [data] = useState<any[][]>([
     [, , , , , , , , , , , , ,],
     [, , , , , , , , , , , , ,],
     [, , , , , , , , , , , , ,],
     [, , , , , , , , , , , , ,],
     [, , , , , , , , , , , , ,],
     [, , , , , , , , , , , , ,]
-  ];
+  ]);
 
   return (
     <HotTable
@@ -52,8 +78,13 @@ const ObservationTable: React.FC = () => {
       data={data}
       nestedHeaders={headers}
       viewportRowRenderingOffset={'auto'}
+      width={parentWidth}
+      minRows={60}
       contextMenu={true}
+      collapsibleColumns={true}
       rowHeaders={true}
+      search={true}
+      columnSorting={true}
       rowHeights={'50px'}
       colWidths={'75px'}
       afterChange={(changes, source) => {
@@ -89,44 +120,58 @@ const ObservationTable: React.FC = () => {
             }
 
             callback(true);
-          }
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
-        },
-        {
-          type: 'numeric'
+          },
+          width: colWidthsPixels[0]
         },
         {
           type: 'numeric',
-          readOnly: true
+          width: colWidthsPixels[1]
         },
         {
-          type: 'numeric'
+          type: 'numeric',
+          width: colWidthsPixels[2]
         },
         {
-          type: 'numeric'
+          type: 'numeric',
+          width: colWidthsPixels[3]
         },
         {
-          type: 'numeric'
+          type: 'numeric',
+          width: colWidthsPixels[4]
         },
         {
-          type: 'text'
+          type: 'numeric',
+          width: colWidthsPixels[5]
+        },
+        {
+          type: 'numeric',
+          width: colWidthsPixels[6]
+        },
+        {
+          type: 'numeric',
+          width: colWidthsPixels[7]
+        },
+        {
+          type: 'numeric',
+          readOnly: true,
+          width: colWidthsPixels[8]
+        },
+        {
+          type: 'numeric',
+          width: colWidthsPixels[9]
+        },
+        {
+          type: 'numeric',
+          width: colWidthsPixels[10]
+        },
+        {
+          type: 'dropdown',
+          source: ['yellow', 'red', 'orange', 'green', 'blue', 'gray', 'black', 'white'],
+          width: colWidthsPixels[11]
+        },
+        {
+          type: 'text',
+          width: colWidthsPixels[12]
         }
       ]}
       formulas={true}
