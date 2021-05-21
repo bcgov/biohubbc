@@ -99,7 +99,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 };
 
 /**
- * SQL query to get project permits.
+ * SQL query to get permits associated to a project.
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
@@ -113,10 +113,9 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
   const sqlStatement = SQL`
     SELECT
       number,
-      type,
-      sampling_conducted
+      type
     FROM
-      project_permit
+      permit
     WHERE
       p_id = ${projectId};
   `;

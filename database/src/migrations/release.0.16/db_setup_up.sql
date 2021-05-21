@@ -29,6 +29,7 @@ set search_path = biohub, public;
 \i tr_survey_proprietor.sql
 \i tr_project.sql
 \i tr_survey.sql
+\i tr_permit.sql
 
 \i api_delete_project.sql
 
@@ -43,7 +44,7 @@ set client_min_messages=warning;
 \i populate_investment_action_category.sql
 \i populate_project_type.sql
 \i populate_activity.sql
-\i populate_icun_classifications.sql
+\i populate_iucn_classifications.sql
 \i populate_project_role.sql
 \i populate_system_role.sql
 \i populate_administrative_activity_type.sql

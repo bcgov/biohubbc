@@ -460,14 +460,13 @@ describe('GetPermitData', () => {
     });
   });
 
-  describe('All values provided with sampling conducted as true', () => {
+  describe('All values provided', () => {
     let projectPermitData: GetPermitData;
 
     const permits = [
       {
         number: '1',
-        type: 'permit type',
-        sampling_conducted: true
+        type: 'permit type'
       }
     ];
 
@@ -481,32 +480,6 @@ describe('GetPermitData', () => {
           permit_number: '1',
           permit_type: 'permit type',
           sampling_conducted: 'true'
-        }
-      ]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as false', () => {
-    let projectPermitData: GetPermitData;
-
-    const permits = [
-      {
-        number: '1',
-        type: 'permit type',
-        sampling_conducted: false
-      }
-    ];
-
-    before(() => {
-      projectPermitData = new GetPermitData(permits);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type',
-          sampling_conducted: 'false'
         }
       ]);
     });

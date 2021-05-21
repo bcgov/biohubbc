@@ -11,7 +11,11 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectForUpdateResponseCoordinator,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ProjectPermitForm, {
@@ -77,19 +81,27 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [permitFormData, setPermitFormData] = useState(ProjectPermitFormInitialValues);
+  const [coordinatorData, setCoordinatorData] = useState<IGetProjectForUpdateResponseCoordinator>(
+    (null as unknown) as IGetProjectForUpdateResponseCoordinator
+  );
 
   const handleDialogEditOpen = async () => {
     let permitResponseData;
+    let coordinatorResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.permit]);
+      const response = await biohubApi.project.getProjectForUpdate(id, [
+        UPDATE_GET_ENTITIES.permit,
+        UPDATE_GET_ENTITIES.coordinator
+      ]);
 
-      if (!response?.permit) {
+      if (!response?.permit || !response?.coordinator) {
         showErrorDialog({ open: true });
         return;
       }
 
       permitResponseData = response.permit;
+      coordinatorResponseData = response.coordinator;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
@@ -99,12 +111,13 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
     setPermitFormData({
       permits: permitResponseData.permits
     });
+    setCoordinatorData(coordinatorResponseData);
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectPermitForm) => {
-    const projectData = { permit: values };
+    const projectData = { permit: values, coordinator: coordinatorData };
 
     try {
       await biohubApi.project.updateProject(id, projectData);
