@@ -34,12 +34,22 @@ export interface IMapContainerProps {
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: Feature[];
   bounds?: any[];
+  zoom?: number;
   hideDrawControls?: boolean;
   hideOverlayLayers?: boolean;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const { classes, mapId, geometryState, nonEditableGeometries, bounds, hideDrawControls, hideOverlayLayers } = props;
+  const {
+    classes,
+    mapId,
+    geometryState,
+    nonEditableGeometries,
+    bounds,
+    zoom,
+    hideDrawControls,
+    hideOverlayLayers
+  } = props;
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
@@ -75,7 +85,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       style={{ height: '100%' }}
       id={mapId}
       center={[55, -128]}
-      zoom={5}
+      zoom={zoom || 5}
       scrollWheelZoom={false}>
       <MapBounds bounds={bounds} />
 
@@ -118,6 +128,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 name={'Parks - Section'}
                 typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP'}
                 minZoom={7}
+                onSelectGeometry={setPreDefinedGeometry}
               />
             </LayersControl.Overlay>
             <LayersControl.Overlay name="Parks - Regional">
@@ -125,6 +136,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
                 name={'Parks - Regional'}
                 typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP'}
                 minZoom={7}
+                onSelectGeometry={setPreDefinedGeometry}
               />
             </LayersControl.Overlay>
           </>
