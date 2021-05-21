@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, May 18, 2021 13:16:16
+-- Date Created : Tuesday, May 18, 2021 10:47:16
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -593,17 +593,19 @@ COMMENT ON TABLE management_action_type IS 'List of Management Actions.'
 ;
 
 -- 
--- TABLE: no_sample_permit 
+-- TABLE: permit 
 --
 
-CREATE TABLE no_sample_permit(
+CREATE TABLE permit(
     id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    p_id                         integer,
+    s_id                         integer,
     number                       varchar(100)      NOT NULL,
     type                         varchar(300)      NOT NULL,
-    coordinator_first_name       varchar(50)       NOT NULL,
-    coordinator_last_name        varchar(50)       NOT NULL,
-    coordinator_email_address    varchar(500)      NOT NULL,
-    coordinator_agency_name      varchar(300)      NOT NULL,
+    coordinator_first_name       varchar(50),
+    coordinator_last_name        varchar(50),
+    coordinator_email_address    varchar(500),
+    coordinator_agency_name      varchar(300),
     issue_date                   date,
     end_date                     date,
     create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
@@ -617,36 +619,40 @@ CREATE TABLE no_sample_permit(
 
 
 
-COMMENT ON COLUMN no_sample_permit.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN permit.id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN no_sample_permit.number IS 'Permit number provided by FrontCounter BC.'
+COMMENT ON COLUMN permit.p_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN no_sample_permit.type IS 'The tye of the permit.'
+COMMENT ON COLUMN permit.s_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN no_sample_permit.coordinator_first_name IS 'The first name of the permit coordinator.'
+COMMENT ON COLUMN permit.number IS 'Permit number provided by FrontCounter BC.'
 ;
-COMMENT ON COLUMN no_sample_permit.coordinator_last_name IS 'The last name of the permit coordinator.
+COMMENT ON COLUMN permit.type IS 'The tye of the permit.'
+;
+COMMENT ON COLUMN permit.coordinator_first_name IS 'The first name of the permit coordinator.'
+;
+COMMENT ON COLUMN permit.coordinator_last_name IS 'The last name of the permit coordinator.
 '
 ;
-COMMENT ON COLUMN no_sample_permit.coordinator_email_address IS 'The email address.'
+COMMENT ON COLUMN permit.coordinator_email_address IS 'The email address.'
 ;
-COMMENT ON COLUMN no_sample_permit.coordinator_agency_name IS 'The permit coordinator agency name.'
+COMMENT ON COLUMN permit.coordinator_agency_name IS 'The permit coordinator agency name.'
 ;
-COMMENT ON COLUMN no_sample_permit.issue_date IS 'The date the permit was issued.'
+COMMENT ON COLUMN permit.issue_date IS 'The date the permit was issued.'
 ;
-COMMENT ON COLUMN no_sample_permit.end_date IS 'The date the permit is no longer valid.'
+COMMENT ON COLUMN permit.end_date IS 'The date the permit is no longer valid.'
 ;
-COMMENT ON COLUMN no_sample_permit.create_date IS 'The datetime the record was created.'
+COMMENT ON COLUMN permit.create_date IS 'The datetime the record was created.'
 ;
-COMMENT ON COLUMN no_sample_permit.create_user IS 'The id of the user who created the record as identified in the system user table.'
+COMMENT ON COLUMN permit.create_user IS 'The id of the user who created the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN no_sample_permit.update_date IS 'The datetime the record was updated.'
+COMMENT ON COLUMN permit.update_date IS 'The datetime the record was updated.'
 ;
-COMMENT ON COLUMN no_sample_permit.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+COMMENT ON COLUMN permit.update_user IS 'The id of the user who updated the record as identified in the system user table.'
 ;
-COMMENT ON COLUMN no_sample_permit.revision_count IS 'Revision count used for concurrency control.'
+COMMENT ON COLUMN permit.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE no_sample_permit IS 'Provides a record of scientific permits for which no sampling was conducted.'
+COMMENT ON TABLE permit IS 'Provides a record of scientific permits.'
 ;
 
 -- 
@@ -1061,56 +1067,6 @@ COMMENT ON TABLE project_participation IS 'A associative entity that joins proje
 ;
 
 -- 
--- TABLE: project_permit 
---
-
-CREATE TABLE project_permit(
-    id                    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                  integer           NOT NULL,
-    number                varchar(100)      NOT NULL,
-    sampling_conducted    boolean           NOT NULL,
-    type                  varchar(300)      NOT NULL,
-    issue_date            date,
-    end_date              date,
-    create_date           timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user           integer           NOT NULL,
-    update_date           timestamptz(6),
-    update_user           integer,
-    revision_count        integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_2_1 PRIMARY KEY (id)
-)
-;
-
-
-
-COMMENT ON COLUMN project_permit.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN project_permit.p_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN project_permit.number IS 'Permit number provided by FrontCounter BC.'
-;
-COMMENT ON COLUMN project_permit.sampling_conducted IS 'Yes/No value defining whether sampling was conducted associated with the permit.'
-;
-COMMENT ON COLUMN project_permit.type IS 'The type of he permit.'
-;
-COMMENT ON COLUMN project_permit.issue_date IS 'The date the permit was issued.'
-;
-COMMENT ON COLUMN project_permit.end_date IS 'The date the permit is no longer valid.'
-;
-COMMENT ON COLUMN project_permit.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN project_permit.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN project_permit.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN project_permit.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN project_permit.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE project_permit IS 'The scientific permits associated with a project.'
-;
-
--- 
 -- TABLE: project_region 
 --
 
@@ -1362,7 +1318,7 @@ COMMENT ON COLUMN study_species.update_user IS 'The id of the user who updated t
 ;
 COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE study_species IS 'The study species for the survey.'
+COMMENT ON TABLE study_species IS 'The study species for the project and survey.'
 ;
 
 -- 
@@ -2025,10 +1981,22 @@ CREATE INDEX "Ref13974" ON iucn_conservation_action_level_3_subclassification(iu
 CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: nsp_uk1 
+-- INDEX: prm_uk1 
 --
 
-CREATE UNIQUE INDEX nsp_uk1 ON no_sample_permit(number)
+CREATE UNIQUE INDEX prm_uk1 ON permit(number)
+;
+-- 
+-- INDEX: "Ref4593" 
+--
+
+CREATE INDEX "Ref4593" ON permit(p_id)
+;
+-- 
+-- INDEX: "Ref15394" 
+--
+
+CREATE INDEX "Ref15394" ON permit(s_id)
 ;
 -- 
 -- INDEX: "Ref12852" 
@@ -2157,6 +2125,12 @@ CREATE INDEX "Ref9732" ON project_management_actions(mat_id)
 CREATE INDEX "Ref4533" ON project_management_actions(p_id)
 ;
 -- 
+-- INDEX: pp_uk1 
+--
+
+CREATE UNIQUE INDEX pp_uk1 ON project_participation(p_id, su_id, pr_id)
+;
+-- 
 -- INDEX: "Ref4528" 
 --
 
@@ -2173,24 +2147,6 @@ CREATE INDEX "Ref7829" ON project_participation(su_id)
 --
 
 CREATE INDEX "Ref10034" ON project_participation(pr_id)
-;
--- 
--- INDEX: pp_uk1 
---
-
-CREATE UNIQUE INDEX pp_uk1 ON project_participation(p_id, su_id, pr_id)
-;
--- 
--- INDEX: prp_uk1 
---
-
-CREATE UNIQUE INDEX prp_uk1 ON project_permit(number)
-;
--- 
--- INDEX: "Ref4553" 
---
-
-CREATE INDEX "Ref4553" ON project_permit(p_id)
 ;
 -- 
 -- INDEX: prr_uk1 
@@ -2410,6 +2366,21 @@ ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "R
 
 
 -- 
+-- TABLE: permit 
+--
+
+ALTER TABLE permit ADD CONSTRAINT "Refproject93" 
+    FOREIGN KEY (p_id)
+    REFERENCES project(id)
+;
+
+ALTER TABLE permit ADD CONSTRAINT "Refsurvey94" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+
+-- 
 -- TABLE: project 
 --
 
@@ -2478,14 +2449,14 @@ ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50"
 -- TABLE: project_funding_source 
 --
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51" 
-    FOREIGN KEY (iac_id)
-    REFERENCES investment_action_category(id)
-;
-
 ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
+;
+
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51" 
+    FOREIGN KEY (iac_id)
+    REFERENCES investment_action_category(id)
 ;
 
 
@@ -2536,16 +2507,6 @@ ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user29"
 ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34" 
     FOREIGN KEY (pr_id)
     REFERENCES project_role(id)
-;
-
-
--- 
--- TABLE: project_permit 
---
-
-ALTER TABLE project_permit ADD CONSTRAINT "Refproject53" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
 ;
 
 

@@ -25,7 +25,7 @@ export const postPermitNoSamplingSQL = (
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO no_sample_permit (
+      INSERT INTO permit (
         number,
         type,
         coordinator_first_name,
