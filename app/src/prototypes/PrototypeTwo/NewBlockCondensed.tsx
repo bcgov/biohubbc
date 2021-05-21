@@ -15,7 +15,8 @@ import Typography from '@material-ui/core/Typography';
 import { DATE_LIMIT } from 'constants/dateFormats';
 import { Formik, FormikProps } from 'formik';
 import moment from 'moment';
-import ObservationTable from 'prototypes/PrototypeTwo/ObservationTable';
+import HotTableFancyWidth from 'prototypes/PrototypeTwo/HotTableFancyWidth';
+import HotTableSimple from 'prototypes/PrototypeTwo/HotTableSimple';
 import React, { useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 
@@ -577,8 +578,13 @@ const NewBlockCondensed: React.FC = () => {
                   </Grid>
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
+                      <HotTableSimple />
+                    </Grid>
+                  </Grid>
+                  <Grid container spacing={1}>
+                    <Grid item xs={12}>
                       <div ref={hotTableParentRef}>
-                        <ObservationTable hotTableParentRef={hotTableParentRef} />
+                        <HotTableFancyWidth hotTableParentRef={hotTableParentRef} />
                       </div>
                     </Grid>
                   </Grid>
