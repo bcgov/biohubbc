@@ -587,7 +587,7 @@ const NewBlockCondensed: React.FC = () => {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  history.push(`/projects/1/surveys/1/prototype/1/blocklist`);
+                  history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
                 }}
                 className={classes.actionButton}>
                 Save and Continue
