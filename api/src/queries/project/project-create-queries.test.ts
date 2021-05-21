@@ -255,19 +255,19 @@ describe('postProjectIndigenousNationSQL', () => {
 describe('postProjectPermitSQL', () => {
   describe('with invalid parameters', () => {
     it('returns null when no permit number', () => {
-      const response = postProjectPermitSQL((null as unknown) as string, 'type', 1, true);
+      const response = postProjectPermitSQL((null as unknown) as string, 'type', 1);
 
       expect(response).to.be.null;
     });
 
     it('returns null when no permit type', () => {
-      const response = postProjectPermitSQL('123', (null as unknown) as string, 1, true);
+      const response = postProjectPermitSQL('123', (null as unknown) as string, 1);
 
       expect(response).to.be.null;
     });
 
     it('returns null when no project id', () => {
-      const response = postProjectPermitSQL('123', 'type', (null as unknown) as number, true);
+      const response = postProjectPermitSQL('123', 'type', (null as unknown) as number);
 
       expect(response).to.be.null;
     });
@@ -275,7 +275,7 @@ describe('postProjectPermitSQL', () => {
 
   describe('with valid parameters', () => {
     it('returns a SQLStatement when all fields are passed in as expected', () => {
-      const response = postProjectPermitSQL('123', 'type', 123, true);
+      const response = postProjectPermitSQL('123', 'type', 123);
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include('123');

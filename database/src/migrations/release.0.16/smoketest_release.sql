@@ -45,7 +45,7 @@ begin
   delete from project_activity;
   delete from project_climate_initiative;
   delete from project_region;
-  delete from project_permit;
+  delete from permit;
   delete from project_management_actions;
   delete from project_funding_source;
   delete from project_iucn_action_classification;
@@ -57,6 +57,7 @@ begin
     , name
     , objectives
     , start_date
+    , end_date
     , coordinator_first_name
     , coordinator_last_name
     , coordinator_email_address
@@ -67,6 +68,7 @@ begin
     , 'project 10'
     , 'my objectives'
     , now()
+    , now()+interval '1 day'
     , 'coordinator_first_name'
     , 'coordinator_last_name'
     , 'coordinator_email_address'
@@ -79,13 +81,13 @@ begin
   insert into project_activity (p_id, a_id) values (__p_id, (select id from activity where name = 'Monitoring'));
   insert into project_climate_initiative (p_id, cci_id) values (__p_id, (select id from climate_change_initiative where name = 'Monitoring'));
   insert into project_region (p_id, name) values (__p_id, 'test');
-  insert into project_permit (p_id, type, number, sampling_conducted) values (__p_id, 'permit type', round(random()*100000), 'Y');
   insert into project_management_actions (p_id, mat_id) values (__p_id, (select id from management_action_type where name = 'Recovery Action'));
   insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (__p_id, (select id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test');
   --insert into project_funding_source (p_id, iac_id, funding_amount, funding_start_date, funding_end_date) values (__p_id, 43, '$1,000.00', now(), now());
   insert into project_iucn_action_classification (p_id, iucn3_id) values (__p_id, (select id from iucn_conservation_action_level_2_subclassification where name = 'Species Stewardship'));
   insert into project_attachment (p_id, file_name, title, key, file_size) values (__p_id, 'test_filename.txt', 'test filename', 'projects/'||__p_id::text, 10000);
   insert into project_first_nation (p_id, fn_id) values (__p_id, (select id from first_nations where name = 'Kitselas Nation'));
+  insert into permit (p_id, number, type, issue_date, end_date) values (__p_id, '8377262', 'permit type', now(), now()+interval '1 day');
 
   select count(1) into __count from stakeholder_partnership;
   assert __count = 1, 'FAIL stakeholder_partnership';
@@ -95,8 +97,6 @@ begin
   assert __count = 1, 'FAIL project_climate_initiative';
   select count(1) into __count from project_region;
   assert __count = 1, 'FAIL project_region';
-  select count(1) into __count from project_permit;
-  assert __count = 1, 'FAIL project_permit';
   select count(1) into __count from project_management_actions;
   assert __count = 1, 'FAIL project_management_actions';
   select count(1) into __count from project_funding_source;
@@ -107,6 +107,8 @@ begin
   assert __count = 1, 'FAIL project_attachment';
   select count(1) into __count from project_first_nation;
   assert __count = 1, 'FAIL project_first_nation';
+  select count(1) into __count from permit;
+  assert __count = 1, 'FAIL permit';
 
   -- surveys
   insert into survey (p_id, name, objectives, location_name, location_description, start_date, lead_first_name, lead_last_name, geometry)
@@ -145,6 +147,8 @@ begin
   ;
   select count(1) into __count from administrative_activity;
   assert __count = 1, 'FAIL administrative_activity';
+
+  insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
   -- delete project
   call api_delete_project(__p_id);
