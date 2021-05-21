@@ -69,7 +69,7 @@ yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: str
 
     let hasDuplicates = false;
 
-    this.parent.focal_species.forEach((species: string) => {
+    this.parent.focal_species.forEach((species: number) => {
       if (values.includes(species)) {
         hasDuplicates = true;
       }
@@ -115,6 +115,44 @@ yup.addMethod(
 
       // compare valid start and end dates
       return moment(this.parent.start_date, dateFormat, true).isBefore(moment(value, dateFormat, true));
+    });
+  }
+);
+
+yup.addMethod(
+  yup.string,
+  'isBeforeDate',
+  function (maxDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
+    return this.test('is-before-date', message, function (value) {
+      if (!value || !maxDate) {
+        // don't validate date if it is null
+        return true;
+      }
+
+      if (moment(value, dateFormat).isAfter(moment(maxDate))) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+);
+
+yup.addMethod(
+  yup.string,
+  'isAfterDate',
+  function (minDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
+    return this.test('is-after-date', message, function (value) {
+      if (!value || !minDate) {
+        // don't validate date if it is null
+        return true;
+      }
+
+      if (moment(value, dateFormat).isBefore(moment(minDate))) {
+        return false;
+      }
+
+      return true;
     });
   }
 );

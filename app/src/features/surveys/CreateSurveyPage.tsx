@@ -14,7 +14,8 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse, ICreateProjectSurveyRequest } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -33,6 +34,10 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import yup from 'utils/YupSchema';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import moment from 'moment';
+import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -138,7 +143,42 @@ const CreateSurveyPage = () => {
   });
 
   // Yup schemas for the survey form sections
-  const surveyYupSchemas = GeneralInformationYupSchema.concat(StudyAreaYupSchema)
+  const surveyYupSchemas = GeneralInformationYupSchema({
+    start_date: yup
+      .string()
+      .isValidDateString()
+      .isAfterDate(
+        projectWithDetails?.project.start_date,
+        DATE_FORMAT.ShortDateFormat,
+        `Survey start date cannot be before project start date ${
+          projectWithDetails &&
+          getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectWithDetails.project.start_date)
+        }`
+      )
+      .isAfterDate(
+        moment(DATE_LIMIT.min).toISOString(),
+        DATE_FORMAT.ShortDateFormat,
+        `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
+      )
+      .required('Required'),
+    end_date: yup
+      .string()
+      .isValidDateString()
+      .isEndDateAfterStartDate('start_date')
+      .isBeforeDate(
+        projectWithDetails?.project.end_date,
+        DATE_FORMAT.ShortDateFormat,
+        `Survey end date cannot be after project end date ${
+          projectWithDetails && getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, projectWithDetails.project.end_date)
+        }`
+      )
+      .isBeforeDate(
+        moment(DATE_LIMIT.max).toISOString(),
+        DATE_FORMAT.ShortDateFormat,
+        `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
+      )
+  })
+    .concat(StudyAreaYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
 
@@ -201,11 +241,11 @@ const CreateSurveyPage = () => {
   /**
    * Creates a new project survey record
    *
-   * @param {ICreateProjectSurveyRequest} surveyPostObject
+   * @param {ICreateSurveyRequest} surveyPostObject
    * @return {*}
    */
-  const createSurvey = async (surveyPostObject: ICreateProjectSurveyRequest) => {
-    const response = await biohubApi.project.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
+  const createSurvey = async (surveyPostObject: ICreateSurveyRequest) => {
+    const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
 
     if (!response?.id) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a survey ID.' });
@@ -329,9 +369,11 @@ const CreateSurveyPage = () => {
                     <GeneralInformationForm
                       species={
                         codes?.species?.map((item) => {
-                          return { value: item.name, label: item.name };
+                          return { value: item.id, label: item.name };
                         }) || []
                       }
+                      projectStartDate={projectWithDetails.project.start_date}
+                      projectEndDate={projectWithDetails.project.end_date}
                     />
                   }></CreateSurveySection>
                 <Divider className={classes.sectionDivider} />

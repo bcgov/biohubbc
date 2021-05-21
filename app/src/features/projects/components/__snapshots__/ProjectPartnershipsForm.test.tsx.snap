@@ -12,6 +12,7 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -115,6 +116,7 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="stakeholder_partnerships"
           role="combobox"
         >
           <div
@@ -229,6 +231,7 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="indigenous_partnerships"
           role="combobox"
         >
           <div
@@ -376,6 +379,7 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="stakeholder_partnerships"
           role="combobox"
         >
           <div

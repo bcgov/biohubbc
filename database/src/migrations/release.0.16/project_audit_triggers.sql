@@ -1,5 +1,4 @@
  create trigger audit_activity before insert or update or delete on biohub.activity for each row execute procedure tr_audit_trigger();
- create trigger audit_administrative_activity_type before insert or update or delete on biohub.administrative_activity_type for each row execute procedure tr_audit_trigger();
  create trigger audit_administrative_activity_status_type before insert or update or delete on biohub.administrative_activity_status_type for each row execute procedure tr_audit_trigger();
  create trigger audit_climate_change_initiative before insert or update or delete on biohub.climate_change_initiative for each row execute procedure tr_audit_trigger();
  create trigger audit_funding_source before insert or update or delete on biohub.funding_source for each row execute procedure tr_audit_trigger();

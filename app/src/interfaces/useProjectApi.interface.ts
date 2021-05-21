@@ -6,7 +6,6 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { IProjectSpeciesForm } from 'features/projects/components/ProjectSpeciesForm';
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
@@ -53,7 +52,6 @@ export interface ICreateProjectRequest {
   permit: IProjectPermitForm;
   project: IProjectDetailsForm;
   objectives: IProjectObjectivesForm;
-  species: IProjectSpeciesForm;
   location: IProjectLocationForm;
   iucn: IProjectIUCNForm;
   funding: IProjectFundingForm;
@@ -97,7 +95,6 @@ export enum UPDATE_GET_ENTITIES {
   project = 'project',
   objectives = 'objectives',
   location = 'location',
-  species = 'species',
   iucn = 'iucn',
   funding = 'funding',
   partnerships = 'partnerships'
@@ -115,7 +112,6 @@ export interface IGetProjectForUpdateResponse {
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
-  species?: IGetProjectForUpdateResponseSpecies;
   iucn?: IGetProjectForUpdateResponseIUCN;
   funding?: IGetProjectForUpdateResponseFundingData;
   partnerships?: IGetProjectForUpdateResponsePartnerships;
@@ -160,11 +156,6 @@ export interface IGetProjectForUpdateResponseCoordinator {
   coordinator_agency: string;
   share_contact_details: string;
   revision_count: number;
-}
-
-export interface IGetProjectForUpdateResponseSpecies {
-  focal_species: string[];
-  ancillary_species: string[];
 }
 
 interface IGetProjectForUpdateResponseIUCNArrayItem {
@@ -220,7 +211,6 @@ export interface IGetProjectForViewResponse {
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
-  species: IGetProjectForViewResponseSpecies;
   iucn: IGetProjectForViewResponseIUCN;
   funding: IGetProjectForViewResponseFundingData;
   partnerships: IGetProjectForViewResponsePartnerships;
@@ -290,11 +280,6 @@ export interface IGetProjectForViewResponseFundingData {
   fundingSources: IGetProjectForViewResponseFundingSource[];
 }
 
-export interface IGetProjectForViewResponseSpecies {
-  focal_species: string[];
-  ancillary_species: string[];
-}
-
 export interface IGetProjectForViewResponsePartnerships {
   indigenous_partnerships: string[];
   stakeholder_partnerships: string[];
@@ -309,92 +294,4 @@ export interface IGetProjectForViewResponsePartnerships {
 export interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
-}
-
-/**
- * Create project survey post object.
- *
- * @export
- * @interface ICreateProjectSurveyRequest
- */
-export interface ICreateProjectSurveyRequest {
-  biologist_first_name: string;
-  biologist_last_name: string;
-  category_rationale: string;
-  data_sharing_agreement_required: string;
-  end_date: string;
-  foippa_requirements_accepted: boolean;
-  management_unit: string[];
-  park: string[];
-  proprietary_data_category: string;
-  proprietor_name: string;
-  sedis_procedures_accepted: boolean;
-  species: string;
-  start_date: string;
-  survey_area_name: string;
-  survey_data_proprietary: string;
-  survey_name: string;
-  survey_purpose: string;
-  geometry: Feature[];
-}
-
-/**
- * Create project survey response object.
- *
- * @export
- * @interface ICreateProjectSurveyResponse
- */
-export interface ICreateProjectSurveyResponse {
-  id: number;
-}
-
-export interface IGetSurveyForViewResponse {
-  survey_name: string;
-  survey_purpose: string;
-  species: string;
-  start_date: string;
-  end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
-}
-
-export interface ISurveyUpdateRequest extends IGetSurveyForViewResponse {
-  revision_count: number;
-}
-
-export interface IGetSurveyForUpdateResponse extends ISurveyUpdateRequest {}
-
-/**
- * An interface for a single instance of project survey metadata, for view-only use cases.
- *
- * @export
- * @interface IGetProjectSurveyForViewResponse
- */
-export interface IGetProjectSurveyForViewResponse {
-  id: number;
-  survey: IGetSurveyForViewResponse;
-  surveyProprietor: {
-    proprietor_type_name: string;
-    first_nations_name: string;
-    category_rationale: string;
-    proprietor_name: string;
-    data_sharing_agreement_required: string;
-  };
-}
-
-/**
- * Get surveys list response object.
- *
- * @export
- * @interface IGetProjectSurveysListResponse
- */
-export interface IGetProjectSurveysListResponse {
-  id: number;
-  name: string;
-  species: string;
-  start_date: string;
-  end_date: string;
-  status_name: string;
 }

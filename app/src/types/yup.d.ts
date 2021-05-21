@@ -37,6 +37,36 @@ declare module 'yup' {
       dateFormat?: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
       message?: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Determine if a date is after a given min date
+     *
+     * @param {ISOString} minDate - min date not to be preceeded in ISOString format
+     * @param {DATE_FORMAT} dateFormat=DATE_FORMAT.ShortDateFormat - date format the string must match
+     * @param {string} message=error message if this check fails
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof StringSchema
+     */
+    isAfterDate(
+      minDate: string | undefined,
+      dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+      message?: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Determine if a date is before a given max date
+     *
+     * @param {ISOString} maxDate - max date not to be exceeded in ISOString format
+     * @param {DATE_FORMAT} dateFormat=DATE_FORMAT.ShortDateFormat - date format the string must match
+     * @param {string} message=error message if this check fails
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof StringSchema
+     */
+    isBeforeDate(
+      maxDate: string | undefined,
+      dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+      message?: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 
   export class ArraySchema extends yup.ArraySchema {

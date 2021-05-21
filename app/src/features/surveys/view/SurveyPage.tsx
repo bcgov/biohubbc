@@ -17,7 +17,8 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
@@ -64,7 +65,7 @@ const SurveyPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
 
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetProjectSurveyForViewResponse | null>(null);
+  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   useEffect(() => {
@@ -95,7 +96,7 @@ const SurveyPage: React.FC = () => {
   }, [biohubApi.project, urlParams]);
 
   const getSurvey = useCallback(async () => {
-    const surveyWithDetailsResponse = await biohubApi.project.getSurveyForView(urlParams['id'], urlParams['survey_id']);
+    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id']);
 
     if (!surveyWithDetailsResponse) {
       return;
@@ -192,7 +193,7 @@ const SurveyPage: React.FC = () => {
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <SurveyDetails
-                projectId={projectWithDetails.id}
+                projectForViewData={projectWithDetails}
                 surveyForViewData={surveyWithDetails}
                 codes={codes}
                 refresh={getSurvey}

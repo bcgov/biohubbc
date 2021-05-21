@@ -1,7 +1,8 @@
 import { cleanup, render } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -14,7 +15,9 @@ const history = createMemoryHistory({ initialEntries: ['/projects/1'] });
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
-    getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>(),
+    getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
+  },
+  survey: {
     getSurveysList: jest.fn()
   },
   codes: {
@@ -30,7 +33,7 @@ describe('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().project.getSurveysList.mockClear();
+    mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
   });
 
@@ -118,11 +121,11 @@ describe('ProjectPage', () => {
 
   it('shows the project surveys when pathname includes /surveys', async () => {
     await act(async () => {
-      const surveysList: IGetProjectSurveysListResponse[] = [
+      const surveysList: IGetSurveysListResponse[] = [
         {
           id: 1,
           name: 'Moose Survey 1',
-          species: 'Moose',
+          species: ['Moose'],
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-05-09 11:53:53',
           status_name: 'Unpublished'
@@ -130,14 +133,14 @@ describe('ProjectPage', () => {
         {
           id: 2,
           name: 'Moose Survey 2',
-          species: 'Moose',
+          species: ['Moose'],
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-06-10 11:53:53',
           status_name: 'Published'
         }
       ];
 
-      mockBiohubApi().project.getSurveysList.mockResolvedValue(surveysList);
+      mockBiohubApi().survey.getSurveysList.mockResolvedValue(surveysList);
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         activity: [{ id: 1, name: 'activity 1' }]

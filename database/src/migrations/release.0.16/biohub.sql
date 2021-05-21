@@ -1318,7 +1318,7 @@ COMMENT ON COLUMN study_species.update_user IS 'The id of the user who updated t
 ;
 COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE study_species IS 'The study species for the project and survey.'
+COMMENT ON TABLE study_species IS 'The study species for the survey.'
 ;
 
 -- 
@@ -2125,12 +2125,6 @@ CREATE INDEX "Ref9732" ON project_management_actions(mat_id)
 CREATE INDEX "Ref4533" ON project_management_actions(p_id)
 ;
 -- 
--- INDEX: pp_uk1 
---
-
-CREATE UNIQUE INDEX pp_uk1 ON project_participation(p_id, su_id, pr_id)
-;
--- 
 -- INDEX: "Ref4528" 
 --
 
@@ -2449,14 +2443,14 @@ ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50"
 -- TABLE: project_funding_source 
 --
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
-;
-
 ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51" 
     FOREIGN KEY (iac_id)
     REFERENCES investment_action_category(id)
+;
+
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20" 
+    FOREIGN KEY (p_id)
+    REFERENCES project(id)
 ;
 
 
@@ -2527,6 +2521,21 @@ ALTER TABLE project_region ADD CONSTRAINT "Refproject24"
 ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
+;
+
+
+-- 
+-- TABLE: study_species 
+--
+
+ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91" 
+    FOREIGN KEY (wu_id)
+    REFERENCES wldtaxonomic_units(id)
 ;
 
 

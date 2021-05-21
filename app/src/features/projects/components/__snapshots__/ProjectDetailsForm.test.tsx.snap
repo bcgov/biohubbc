@@ -131,6 +131,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="project_activities"
           role="combobox"
         >
           <div
@@ -459,6 +460,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="project_activities"
           role="combobox"
         >
           <div

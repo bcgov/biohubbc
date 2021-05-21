@@ -59,6 +59,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -162,6 +163,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div
@@ -644,6 +646,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -769,6 +772,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div
@@ -1295,6 +1299,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -1427,6 +1432,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div

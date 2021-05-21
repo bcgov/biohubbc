@@ -1,5 +1,4 @@
  create trigger journal_activity after insert or update or delete on biohub.activity for each row execute procedure tr_journal_trigger();
- create trigger journal_administrative_activity_type after insert or update or delete on biohub.administrative_activity_type for each row execute procedure tr_journal_trigger();
  create trigger journal_administrative_activity_status_type after insert or update or delete on biohub.administrative_activity_status_type for each row execute procedure tr_journal_trigger();
  create trigger journal_climate_change_initiative after insert or update or delete on biohub.climate_change_initiative for each row execute procedure tr_journal_trigger();
  create trigger journal_funding_source after insert or update or delete on biohub.funding_source for each row execute procedure tr_journal_trigger();

@@ -12,6 +12,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -525,6 +526,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -1015,6 +1017,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -1529,6 +1532,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div

@@ -7,6 +7,8 @@ interface IStartEndDateFieldsProps {
   formikProps: any;
   startRequired: boolean;
   endRequired: boolean;
+  startDateHelperText?: string;
+  endDateHelperText?: string;
 }
 
 /**
@@ -17,7 +19,9 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const {
     formikProps: { values, handleChange, errors, touched },
     startRequired,
-    endRequired
+    endRequired,
+    startDateHelperText,
+    endDateHelperText
   } = props;
 
   return (
@@ -32,10 +36,19 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           required={startRequired}
           value={values.start_date}
           type="date"
-          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }}
+          InputProps={{
+            // Chrome min/max dates
+            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'start-date' }
+          }}
+          inputProps={{
+            // Firefox min/max dates
+            min: DATE_LIMIT.min,
+            max: DATE_LIMIT.max,
+            'data-testid': 'start-date'
+          }}
           onChange={handleChange}
           error={touched.start_date && Boolean(errors.start_date)}
-          helperText={touched.start_date && errors.start_date}
+          helperText={(touched.start_date && errors.start_date) || startDateHelperText}
           InputLabelProps={{
             shrink: true
           }}
@@ -51,10 +64,19 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           required={endRequired}
           value={values.end_date}
           type="date"
-          inputProps={{ min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'end-date' }}
+          InputProps={{
+            // Chrome min/max dates
+            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'end-date' }
+          }}
+          inputProps={{
+            // Firefox min/max dates
+            min: DATE_LIMIT.min,
+            max: DATE_LIMIT.max,
+            'data-testid': 'end-date'
+          }}
           onChange={handleChange}
           error={touched.end_date && Boolean(errors.end_date)}
-          helperText={errors.end_date}
+          helperText={(touched.end_date && errors.end_date) || endDateHelperText}
           InputLabelProps={{
             shrink: true
           }}
