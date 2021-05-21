@@ -57,7 +57,7 @@ export class GetPermitData {
           return {
             permit_number: item.number,
             permit_type: item.type,
-            sampling_conducted: item.sampling_conducted
+            sampling_conducted: true
           };
         })) ||
       [];

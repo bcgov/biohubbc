@@ -22,6 +22,7 @@ import {
 } from '../queries/project/project-create-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
+import { insertNoSamplePermit } from './permit-no-sampling';
 
 const defaultLog = getLogger('paths/project');
 
@@ -155,18 +156,16 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle project permits
+        // Handle project and no sampling permits
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
-              insertPermitNumber(
-                permit.permit_number,
-                permit.permit_type,
-                projectId,
-                permit.sampling_conducted,
-                connection
-              )
-            )
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) => {
+              if (permit.sampling_conducted) {
+                return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
+              }
+
+              return insertNoSamplePermit(permit, sanitizedProjectPostData.coordinator, connection);
+            })
           )
         );
 
@@ -294,16 +293,19 @@ export const insertPermitNumber = async (
   permit_number: string,
   permit_type: string,
   project_id: number,
-  sampling_conducted: boolean,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id, sampling_conducted);
+  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
   }
 
+  console.log('INSERTINGGGGGGGGGGGGGGGGGGGG');
+
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  console.log(response);
 
   const result = (response && response.rows && response.rows[0]) || null;
 
