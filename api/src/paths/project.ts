@@ -301,11 +301,7 @@ export const insertPermitNumber = async (
     throw new HTTP400('Failed to build SQL insert statement');
   }
 
-  console.log('INSERTINGGGGGGGGGGGGGGGGGGGG');
-
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  console.log(response);
 
   const result = (response && response.rows && response.rows[0]) || null;
 
