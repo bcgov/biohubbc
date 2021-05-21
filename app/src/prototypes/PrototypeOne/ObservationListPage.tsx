@@ -52,16 +52,16 @@ const ObservationListPage: React.FC = () => {
     <Box mb={6} my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Animals Observed</Typography>
+          <Typography variant="h2">Blocks</Typography>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
               <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v1()}>
-                Create Observation v1
+                Add Block v1
               </Button>
             </Box>
 
             <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
-              Create Observation v2
+              Add Block v2
             </Button>
           </Box>
         </Box>
@@ -70,13 +70,9 @@ const ObservationListPage: React.FC = () => {
             <Table className={classes.table} aria-label="observation-list-table">
               <TableHead>
                 <TableRow>
-                  <TableCell className={classes.heading}>Group</TableCell>
-                  <TableCell className={classes.heading}>Waypoint</TableCell>
-                  <TableCell className={classes.heading}>Species</TableCell>
-                  <TableCell className={classes.heading}>Demographic</TableCell>
-                  <TableCell className={classes.heading}>Count</TableCell>
-                  <TableCell className={classes.heading}>Activity</TableCell>
-                  <TableCell className={classes.heading}>Time</TableCell>
+                  <TableCell className={classes.heading}>Block</TableCell>
+                  <TableCell className={classes.heading}># Observations</TableCell>
+                  <TableCell className={classes.heading}>Date</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -84,12 +80,15 @@ const ObservationListPage: React.FC = () => {
                   <TableCell component="th" scope="row">
                     {'1'}
                   </TableCell>
-                  <TableCell>{'103'}</TableCell>
-                  <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
-                  <TableCell>{'Dense'}</TableCell>
-                  <TableCell>{'30'}</TableCell>
-                  <TableCell>{'Bedding'}</TableCell>
-                  <TableCell>{'3 pm'}</TableCell>
+                  <TableCell>{'5'}</TableCell>
+                  <TableCell>{'Today'}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    {'2'}
+                  </TableCell>
+                  <TableCell>{'3'}</TableCell>
+                  <TableCell>{'Yesterday'}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>

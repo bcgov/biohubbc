@@ -575,7 +575,7 @@ const NewBlockCondensed: React.FC = () => {
                       <ObservationTable />
                     </Grid>
                   </Grid> */}
-                  <Box>
+                  <Box mt={3}>
                     <ObservationTable />
                   </Box>
                 </form>

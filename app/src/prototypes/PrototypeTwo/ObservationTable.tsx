@@ -1,35 +1,34 @@
-// @ts-nocheck
-import React from 'react';
 import { HotTable } from '@handsontable/react';
 import { makeStyles } from '@material-ui/core';
+import React from 'react';
 
 import 'handsontable/dist/handsontable.min.css';
 import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
-  hotTable: {
-    backgroundColor: 'red',
-    '& td': {}
-  }
+  hotTable: {}
 }));
 
 const ObservationTable: React.FC = () => {
   const classes = useStyles();
 
   const data = [
-    [, , , , , , ],
-    [, , , , , , ],
-    [, , , , , , ],
-    [, , , , , , ],
-    [, , , , , , ],
-    [, , , , , , ]
+    [, , , , , , , , ,],
+    [, , , , , , , , ,],
+    [, , , , , , , , ,],
+    [, , , , , , , , ,],
+    [, , , , , , , , ,],
+    [, , , , , , , , ,]
   ];
 
   return (
     <HotTable
       className={classes.hotTable}
       data={data}
-      colHeaders={['Bull', 'Cow', 'Cow w/ 1 child', 'Cow w/ 2 child', 'Veg Coverage', 'Snow Coverage']}
+      nestedHeaders={[
+        ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 3 }],
+        ['', 'Yrlings', 'Mature', 'Lone', 'W/1 Calf', 'W/2 Calf', 'Lone Calf', 'Unk Ages/Sex', 'TOTAL']
+      ]}
       rowHeaders={true}
       formulas={true}
       height={'500px'}
