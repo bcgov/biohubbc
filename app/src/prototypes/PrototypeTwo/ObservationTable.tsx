@@ -24,6 +24,13 @@ const ObservationTable: React.FC<IObservationTableProps> = (props) => {
   // Used to trigger re-renders on window size changes
   useWindowDimensions();
 
+  const [parentWidth, setParentWidth] = useState<number>();
+  const [colWidthsPixels, setColWidthsPixels] = useState<number[]>([]);
+
+  const getColumnWidthsPixels = (colWidthsPercent: number[], parentWidth: number) => {
+    return colWidthsPercent.map((item) => parentWidth * item);
+  };
+
   useEffect(() => {
     if (!props.hotTableParentRef?.current?.offsetWidth) {
       return;
@@ -33,13 +40,6 @@ const ObservationTable: React.FC<IObservationTableProps> = (props) => {
 
     setColWidthsPixels(getColumnWidthsPixels(colWidthsPercent, props.hotTableParentRef.current.offsetWidth - 105));
   }, [props.hotTableParentRef, props.hotTableParentRef?.current, props.hotTableParentRef?.current?.offsetWidth]);
-
-  const [colWidthsPixels, setColWidthsPixels] = useState<number[]>([]);
-  const [parentWidth, setParentWidth] = useState<number>();
-
-  const getColumnWidthsPixels = (colWidthsPercent: number[], parentWidth: number) => {
-    return colWidthsPercent.map((item) => parentWidth * item);
-  };
 
   const headers = [
     ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 7 }],
