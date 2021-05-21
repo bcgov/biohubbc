@@ -111,7 +111,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_91"
+                    name="leaflet-base-layers_97"
                     type="radio"
                   />
                   <span>
@@ -123,7 +123,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_91"
+                    name="leaflet-base-layers_97"
                     type="radio"
                   />
                   <span>
@@ -134,11 +134,44 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
             </div>
             <div
               class="leaflet-control-layers-separator"
-              style="display: none;"
             />
             <div
               class="leaflet-control-layers-overlays"
-            />
+            >
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Wildlife Management Units
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Section
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Regional
+                  </span>
+                </div>
+              </label>
+            </div>
           </section>
         </div>
         <div
@@ -420,11 +453,44 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
             </div>
             <div
               class="leaflet-control-layers-separator"
-              style="display: none;"
             />
             <div
               class="leaflet-control-layers-overlays"
-            />
+            >
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Wildlife Management Units
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Section
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Regional
+                  </span>
+                </div>
+              </label>
+            </div>
           </section>
         </div>
         <div
@@ -698,7 +764,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_77"
+                    name="leaflet-base-layers_80"
                     type="radio"
                   />
                   <span>
@@ -710,7 +776,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_77"
+                    name="leaflet-base-layers_80"
                     type="radio"
                   />
                   <span>
@@ -721,11 +787,44 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
             </div>
             <div
               class="leaflet-control-layers-separator"
-              style="display: none;"
             />
             <div
               class="leaflet-control-layers-overlays"
-            />
+            >
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Wildlife Management Units
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Section
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Regional
+                  </span>
+                </div>
+              </label>
+            </div>
           </section>
         </div>
         <div
@@ -984,7 +1083,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_156"
+                    name="leaflet-base-layers_168"
                     type="radio"
                   />
                   <span>
@@ -996,7 +1095,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_156"
+                    name="leaflet-base-layers_168"
                     type="radio"
                   />
                   <span>
@@ -1007,11 +1106,44 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
             </div>
             <div
               class="leaflet-control-layers-separator"
-              style="display: none;"
             />
             <div
               class="leaflet-control-layers-overlays"
-            />
+            >
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Wildlife Management Units
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Section
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    type="checkbox"
+                  />
+                  <span>
+                     Parks - Regional
+                  </span>
+                </div>
+              </label>
+            </div>
           </section>
         </div>
         <div

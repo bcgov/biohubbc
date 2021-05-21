@@ -1,10 +1,12 @@
+import axios from 'axios';
+import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
-import useProjectApi from './api/useProjectApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
-import useUserApi from './api/useUserApi';
-import useAdminApi from './api/useAdminApi';
+import useExternalApi from './api/useExternalApi';
+import useProjectApi from './api/useProjectApi';
 import useSurveyApi from './api/useSurveyApi';
+import useUserApi from './api/useUserApi';
 
 /**
  * Returns a set of supported api methods.
@@ -12,19 +14,21 @@ import useSurveyApi from './api/useSurveyApi';
  * @return {*} object whose properties are supported api methods.
  */
 export const useBiohubApi = () => {
-  const axios = useAxios();
+  const customAxios = useAxios();
 
-  const project = useProjectApi(axios);
+  const project = useProjectApi(customAxios);
 
-  const survey = useSurveyApi(axios);
+  const survey = useSurveyApi(customAxios);
 
-  const codes = useCodesApi(axios);
+  const codes = useCodesApi(customAxios);
 
-  const draft = useDraftApi(axios);
+  const draft = useDraftApi(customAxios);
 
-  const user = useUserApi(axios);
+  const user = useUserApi(customAxios);
 
-  const admin = useAdminApi(axios);
+  const admin = useAdminApi(customAxios);
+
+  const external = useExternalApi(axios);
 
   return {
     project,
@@ -32,6 +36,7 @@ export const useBiohubApi = () => {
     codes,
     draft,
     user,
-    admin
+    admin,
+    external
   };
 };

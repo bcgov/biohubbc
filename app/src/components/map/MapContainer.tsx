@@ -1,22 +1,23 @@
-import React from 'react';
-import 'leaflet/dist/leaflet.css';
+import { Feature } from 'geojson';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet/dist/leaflet.css';
+import React, { useEffect, useState } from 'react';
 import {
-  MapContainer as LeafletMapContainer,
-  TileLayer,
-  LayersControl,
   FeatureGroup,
   GeoJSON,
+  LayersControl,
+  MapContainer as LeafletMapContainer,
+  TileLayer,
   useMap
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
-import { Feature } from 'geojson';
+import WFSFeatureGroup from './WFSFeatureGroup';
 
 export interface IMapBoundsProps {
   bounds?: any[];
 }
 
-const MapBounds: React.FC<IMapBoundsProps> = (props) => {
+export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
   const { bounds } = props;
 
@@ -34,10 +35,25 @@ export interface IMapContainerProps {
   nonEditableGeometries?: Feature[];
   bounds?: any[];
   hideDrawControls?: boolean;
+  hideOverlayLayers?: boolean;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
-  const { classes, mapId, geometryState, nonEditableGeometries, bounds, hideDrawControls } = props;
+  const { classes, mapId, geometryState, nonEditableGeometries, bounds, hideDrawControls, hideOverlayLayers } = props;
+
+  const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
+
+  // Add a geometry defined from an existing overlay feature (via its popup)
+  useEffect(() => {
+    if (!preDefinedGeometry) {
+      return;
+    }
+
+    geometryState?.setGeometry([...geometryState.geometry, preDefinedGeometry]);
+
+    // @ts-ignore react-hooks/exhaustive-deps
+  }, [preDefinedGeometry]);
+
   let shownDrawControls: any = {};
   let showEditControls: any = {};
 
@@ -87,6 +103,32 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.BaseLayer name="BC Government">
           <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
+        {hideOverlayLayers !== true && (
+          <>
+            <LayersControl.Overlay name="Wildlife Management Units">
+              <WFSFeatureGroup
+                name={'Wildlife Management Units'}
+                typeName={'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'}
+                minZoom={8}
+                onSelectGeometry={setPreDefinedGeometry}
+              />
+            </LayersControl.Overlay>
+            <LayersControl.Overlay name="Parks - Section">
+              <WFSFeatureGroup
+                name={'Parks - Section'}
+                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP'}
+                minZoom={7}
+              />
+            </LayersControl.Overlay>
+            <LayersControl.Overlay name="Parks - Regional">
+              <WFSFeatureGroup
+                name={'Parks - Regional'}
+                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP'}
+                minZoom={7}
+              />
+            </LayersControl.Overlay>
+          </>
+        )}
       </LayersControl>
     </LeafletMapContainer>
   );
