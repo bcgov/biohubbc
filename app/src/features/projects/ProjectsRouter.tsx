@@ -8,6 +8,7 @@ import NewBlock from 'prototypes/PrototypeOne/NewBlock';
 import NewBlockCondensed from 'prototypes/PrototypeTwo/NewBlockCondensed';
 import { FormikTestWrapper } from 'prototypes/PrototypeOne/Observation';
 import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
+import ObservationListPage from 'prototypes/PrototypeOne/ObservationListPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
@@ -79,10 +80,18 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/prototype/1/list"
+        path="/projects/:id?/surveys/:survey_id?/prototype/1/observationlist"
+        component={ObservationListPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/prototype/1/blocklist"
         component={BlockListPage}
         componentProps={props}
       />
+
       <PrivateRoute
         exact
         layout={ProjectsLayout}

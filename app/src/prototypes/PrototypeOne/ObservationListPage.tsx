@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const BlockListPage: React.FC = () => {
+const ObservationListPage: React.FC = () => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -52,7 +52,7 @@ const BlockListPage: React.FC = () => {
     <Box mb={6} my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Blocks List</Typography>
+          <Typography variant="h2">Animals Observed</Typography>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
               <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v1()}>
@@ -100,4 +100,4 @@ const BlockListPage: React.FC = () => {
   );
 };
 
-export default BlockListPage;
+export default ObservationListPage;

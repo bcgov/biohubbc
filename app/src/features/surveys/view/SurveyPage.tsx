@@ -176,7 +176,7 @@ const SurveyPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText>Survey Details</ListItemText>
                   </ListItem>
-                  <ListItem component={NavLink} to="observations">
+                  <ListItem component={NavLink} to="prototype/1/observationlist">
                     <ListItemIcon>
                       <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
                     </ListItemIcon>
@@ -205,6 +205,12 @@ const SurveyPage: React.FC = () => {
                       <Icon path={mdiInformationOutline} size={1} />
                     </ListItemIcon>
                     <ListItemText>Prototype Two</ListItemText>
+                  </ListItem>
+                  <ListItem component={NavLink} to="prototype/1/blocklist">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Block List</ListItemText>
                   </ListItem>
                 </List>
               </Paper>
