@@ -113,7 +113,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.BaseLayer name="BC Government">
           <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
-        {hideOverlayLayers !== true && (
+        {!hideOverlayLayers && (
           <>
             <LayersControl.Overlay name="Wildlife Management Units">
               <WFSFeatureGroup

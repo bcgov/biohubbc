@@ -16,7 +16,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('MapContainer', () => {
+describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().external.get.mockClear();
