@@ -54,7 +54,7 @@ export interface IGetSurveyForViewResponseDetails {
 
 export interface IGetSurveyForViewResponseProprietor {
   id: number;
-  proprietor_type_name: string;
+  proprietary_data_category_name: string;
   first_nations_name: string;
   category_rationale: string;
   proprietor_name: string;
@@ -77,14 +77,15 @@ export interface IGetSurveyForUpdateResponseDetails {
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
+  isProprietary: string;
   id?: number;
-  proprietor_type_name?: string;
+  proprietary_data_category_name?: string;
   first_nations_name?: string;
-  proprietor_type_id: number;
-  first_nations_id: number;
-  category_rationale: string;
-  proprietor_name: string;
-  data_sharing_agreement_required: string;
+  proprietary_data_category?: number;
+  first_nations_id?: number;
+  category_rationale?: string;
+  proprietor_name?: string;
+  data_sharing_agreement_required?: string;
   revision_count?: number;
 }
 
@@ -118,7 +119,6 @@ export interface IGetSurveyForViewResponse {
  * @extends {IGetSurveyForUpdateResponse}
  */
 export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {
-  survey_data_proprietary?: string
 }
 
 /**
@@ -136,9 +136,7 @@ export interface IGetSurveysListResponse {
   status_name: string;
 }
 
-
 export enum UPDATE_GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
   survey_proprietor = 'survey_proprietor'
 }
-

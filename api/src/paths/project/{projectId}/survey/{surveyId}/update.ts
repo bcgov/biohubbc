@@ -3,19 +3,26 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
-import { PutSurveyData } from '../../../../../models/survey-update';
+import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../../../../models/survey-update';
 import { GetSurveyDetailsData, GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import {
   surveyIdResponseObject,
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { getSurveyProprietorSQL } from '../../../../../queries/survey/survey-view-update-queries';
-import { putSurveySQL, getSurveyForUpdateSQL } from '../../../../../queries/survey/survey-update-queries';
-import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL } from '../../../../../queries/survey/survey-delete-queries';
+import { getSurveyDetailsForUpdateSQL, getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { putSurveyDetailsSQL, putSurveyProprietorSQL } from '../../../../../queries/survey/survey-update-queries';
+import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL, deleteSurveyProprietorSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 import { insertAncillarySpecies, insertFocalSpecies } from '../create';
+import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
+import { PostSurveyProprietorData } from '../../../../../models/survey-create';
+
+export interface IUpdateSurvey {
+  survey_details: object | null;
+  survey_proprietor: object | null;
+}
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
@@ -165,6 +172,10 @@ export function getSurveyForUpdate(): RequestHandler {
 
       const survey_entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
 
+      if (!surveyId) {
+        throw new HTTP400('Missing required path parameter: surveyId');
+      }
+
       await connection.open();
 
       const results: IGetSurveyForUpdate = {
@@ -173,7 +184,6 @@ export function getSurveyForUpdate(): RequestHandler {
       };
 
       const promises: Promise<any>[] = [];
-      console.log('survey_entities', survey_entities);
 
       if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_details)) {
         promises.push(
@@ -211,7 +221,7 @@ export const getSurveyDetailsData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyDetailsData> => {
-  const sqlStatement = getSurveyForUpdateSQL(surveyId);
+  const sqlStatement = getSurveyDetailsForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey details SQL get statement');
@@ -234,7 +244,7 @@ export const getSurveyProprietorData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyProprietorData> => {
-  const sqlStatement = getSurveyProprietorSQL(surveyId);
+  const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey proprietor SQL get statement');
@@ -243,7 +253,7 @@ export const getSurveyProprietorData = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   const result =
-    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
+    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || { isProprietary: 'false'};
 
   console.log('result', result);
 
@@ -266,7 +276,11 @@ export function updateSurvey(): RequestHandler {
     try {
       const projectId = Number(req.params.projectId);
       const surveyId = Number(req.params.surveyId);
-      const surveyData = req.body;
+      //const surveyData = req.body;
+
+      const entities: IUpdateSurvey = req.body;
+
+      console.log('entities', entities);
 
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');
@@ -276,74 +290,23 @@ export function updateSurvey(): RequestHandler {
         throw new HTTP400('Missing required path parameter: surveyId');
       }
 
-      if (!surveyData) {
+      if (!entities) {
         throw new HTTP400('Missing required request body');
       }
 
       await connection.open();
 
-      const putSurveyData = new PutSurveyData(surveyData);
+      const promises: Promise<any>[] = [];
 
-      // Update survey table
-      const revision_count = putSurveyData.revision_count ?? null;
-
-      if (!revision_count && revision_count !== 0) {
-        throw new HTTP400('Failed to parse request body');
+      if (entities?.survey_details) {
+        promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
       }
 
-      const updateSurveySQLStatement = putSurveySQL(projectId, surveyId, putSurveyData, revision_count);
-
-      if (!updateSurveySQLStatement) {
-        throw new HTTP400('Failed to build SQL update statement');
+      if (entities?.survey_proprietor) {
+        const surveyProprietorId = 1;
+        promises.push(updateSurveyProprietorData(surveyId, surveyProprietorId, entities, connection));
       }
-
-      const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
-
-      if (!result || !result.rowCount) {
-        throw new HTTP409('Failed to update stale survey data');
-      }
-
-      const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
-      const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
-
-      if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
-
-      const deleteFocalSpeciesPromises = connection.query(
-        sqlDeleteFocalSpeciesStatement.text,
-        sqlDeleteFocalSpeciesStatement.values
-      );
-
-      const deleteAncillarySpeciesPromises = connection.query(
-        sqlDeleteAncillarySpeciesStatement.text,
-        sqlDeleteAncillarySpeciesStatement.values
-      );
-
-      const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
-        deleteFocalSpeciesPromises,
-        deleteAncillarySpeciesPromises
-      ]);
-
-      if (!deleteFocalSpeciesResult) {
-        throw new HTTP409('Failed to delete survey focal species data');
-      }
-
-      if (!deleteAncillarySpeciesResult) {
-        throw new HTTP409('Failed to delete survey ancillary species data');
-      }
-
-      const insertFocalSpeciesPromises =
-        putSurveyData.focal_species.map((focalSpeciesId: number) =>
-          insertFocalSpecies(focalSpeciesId, surveyId, connection)
-        ) || [];
-
-      const insertAncillarySpeciesPromises =
-        putSurveyData.ancillary_species.map((ancillarySpeciesId: number) =>
-          insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
-        ) || [];
-
-      await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
+      await Promise.all(promises);
 
       await connection.commit();
 
@@ -357,3 +320,116 @@ export function updateSurvey(): RequestHandler {
     }
   };
 }
+
+export const updateSurveyDetailsData = async (
+  projectId: number,
+  surveyId: number,
+  data: IUpdateSurvey,
+  connection: IDBConnection
+): Promise<void> => {
+
+  const putDetailsData = new PutSurveyDetailsData(data);
+
+  const revision_count = putDetailsData.revision_count ?? null;
+
+  if (!revision_count && revision_count !== 0) {
+    throw new HTTP400('Failed to parse request body');
+  }
+
+  const updateSurveySQLStatement = putSurveyDetailsSQL(projectId, surveyId, putDetailsData, revision_count);
+
+  if (!updateSurveySQLStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
+
+  if (!result || !result.rowCount) {
+    throw new HTTP409('Failed to update stale survey data');
+  }
+
+  const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
+  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
+
+  if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
+    throw new HTTP400('Failed to build SQL delete statement');
+  }
+
+  const deleteFocalSpeciesPromises = connection.query(
+    sqlDeleteFocalSpeciesStatement.text,
+    sqlDeleteFocalSpeciesStatement.values
+  );
+
+  const deleteAncillarySpeciesPromises = connection.query(
+    sqlDeleteAncillarySpeciesStatement.text,
+    sqlDeleteAncillarySpeciesStatement.values
+  );
+
+  const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+    deleteFocalSpeciesPromises,
+    deleteAncillarySpeciesPromises
+  ]);
+
+  if (!deleteFocalSpeciesResult) {
+    throw new HTTP409('Failed to delete survey focal species data');
+  }
+
+  if (!deleteAncillarySpeciesResult) {
+    throw new HTTP409('Failed to delete survey ancillary species data');
+  }
+
+  const insertFocalSpeciesPromises =
+    putDetailsData.focal_species.map((focalSpeciesId: number) =>
+      insertFocalSpecies(focalSpeciesId, surveyId, connection)
+    ) || [];
+
+  const insertAncillarySpeciesPromises =
+    putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
+      insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
+    ) || [];
+
+  await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
+};
+
+
+export const updateSurveyProprietorData = async (
+  projectId: number,
+  surveyId: number,
+  data: IUpdateSurvey,
+  connection: IDBConnection
+): Promise<void> => {
+  const putProprietorData = new PutSurveyProprietorData(surveyId, data);
+  const isProprietary = putProprietorData.isProprietary;
+  const wasProprietary = (putProprietorData.id || putProprietorData.id === 0) && true || false;
+
+  let sqlStatement = null;
+
+  if ( !wasProprietary && !isProprietary ) {
+    // 1. did not have proprietor data; still not requiring proprietor data
+    // do nothing
+    return;
+  } else if ( wasProprietary && !isProprietary ) {
+    // 2. did have proprietor data; no longer requires proprietor data
+    // delete old record
+    sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
+  } else if ( !wasProprietary && isProprietary ) {
+    // 3. did not have proprietor data; now requires proprietor data
+    // insert new record
+    sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(data.survey_proprietor));
+  } else {
+    // 4. did have proprietor data; updating proprietor data
+    // update existing record
+    sqlStatement = putSurveyProprietorSQL(surveyId, putProprietorData);
+  }
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL statement');
+  }
+
+  const result = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!result || !result.rowCount) {
+    throw new HTTP409('Failed to update survey proprietor data');
+  }
+};
+

@@ -9,8 +9,8 @@ import ProprietaryDataForm, {
   ProprietaryDataYupSchema,
   IProprietaryDataForm
 } from 'features/surveys/components/ProprietaryDataForm';
-import { IGetProjectForViewResponse}  from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse} from 'interfaces/useSurveyApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -25,7 +25,8 @@ export interface ISurveyProprietaryDataProps {
   surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
-  refresh: () => void;}
+  refresh: () => void;
+}
 
 /**
  * Proprietary data content for a survey.
@@ -46,7 +47,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponse>(null as any);
   const [surveyProprietorFormData, setSurveyProprietorFormData] = useState<IProprietaryDataForm>(
     ProprietaryDataInitialValues
-
   );
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -61,81 +61,80 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
     }
   });
 
-
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
   const handleDialogEditOpen = async () => {
-    let surveyProprietorResponseData;
+    let response;
 
     if (survey_proprietor) {
       try {
-        const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id,  [UPDATE_GET_SURVEY_ENTITIES.survey_proprietor]);
+        response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+          UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
+        ]);
 
         if (!response) {
           showErrorDialog({ open: true });
           return;
         }
 
-        surveyProprietorResponseData = response;
       } catch (error) {
         const apiError = error as APIError;
         showErrorDialog({ dialogText: apiError.message, open: true });
         return;
       }
 
-      if (surveyProprietorResponseData.survey_proprietor) {
-        setSurveyProprietorFormData({
-          proprietary_data_category: surveyProprietorResponseData.survey_proprietor.proprietor_type_id,
-          proprietor_name: surveyProprietorResponseData.survey_proprietor.proprietor_name,
-          first_nations_id: surveyProprietorResponseData.survey_proprietor.first_nations_id,
-          category_rationale: surveyProprietorResponseData.survey_proprietor.category_rationale,
-          survey_data_proprietary: 'true',
-          data_sharing_agreement_required: surveyProprietorResponseData.survey_proprietor.data_sharing_agreement_required
-        });
-        //console.log('surveyProprietorFormData', surveyProprietorFormData);
+      const proprietor = response.survey_proprietor;
 
-        setSurveyDataForUpdate(surveyProprietorResponseData);
-      } else {
-        setSurveyProprietorFormData(ProprietaryDataInitialValues);
-      }
+      setSurveyDataForUpdate(response);
+
+      setSurveyProprietorFormData({
+        survey_data_proprietary: proprietor?.isProprietary || ProprietaryDataInitialValues.survey_data_proprietary,
+        proprietary_data_category: proprietor?.proprietary_data_category || ProprietaryDataInitialValues.proprietary_data_category,
+        proprietor_name: proprietor?.proprietor_name || ProprietaryDataInitialValues.proprietor_name,
+        first_nations_id: proprietor?.first_nations_id || ProprietaryDataInitialValues.first_nations_id,
+        category_rationale: proprietor?.category_rationale || ProprietaryDataInitialValues.category_rationale,
+        data_sharing_agreement_required: proprietor?.data_sharing_agreement_required || ProprietaryDataInitialValues.data_sharing_agreement_required
+      });
     } else {
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
     }
 
-    // console.log('surveyProprietorFormData', surveyProprietorFormData);
     setOpenEditDialog(true);
   };
 
-  const handleDialogEditSave = async (values:  IProprietaryDataForm) => {
-    console.log('surveyDataForUpdate', surveyDataForUpdate);
+  const handleDialogEditSave = async (values: IProprietaryDataForm) => {
 
     try {
-      const surveyProprietorData = {
+      let surveyProprietorData = {
         survey_proprietor: {
-          proprietor_type_id: values.proprietary_data_category,
-          proprietor_name: values.proprietor_name,
-          first_nations_id: values.first_nations_id,
-          category_rationale: values.category_rationale,
-          data_sharing_agreement_required: values.data_sharing_agreement_required,
-          id: (surveyDataForUpdate?.survey_proprietor && surveyDataForUpdate?.survey_proprietor.id) || undefined,
-          revision_count: (surveyDataForUpdate?.survey_proprietor && surveyDataForUpdate?.survey_proprietor?.revision_count) || undefined
-        },
-        survey_data_proprietary: values.survey_data_proprietary
+          isProprietary: values.survey_data_proprietary
+        }
       };
 
-      await biohubApi.survey.updateSurvey(
-        projectForViewData.id,
-        survey_details.id,
-        surveyProprietorData
-      );
+      if (values.survey_data_proprietary === 'true') {
+        surveyProprietorData.survey_proprietor['proprietary_data_category'] = values.proprietary_data_category;
+        surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
+        surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
+        surveyProprietorData.survey_proprietor['category_rationale'] = values.category_rationale;
+        surveyProprietorData.survey_proprietor['data_sharing_agreement_required'] = values.data_sharing_agreement_required;
+      }
+
+      if (surveyDataForUpdate?.survey_proprietor) {
+        const proprietorDataForUpdate = surveyDataForUpdate?.survey_proprietor;
+        surveyProprietorData.survey_proprietor['id'] = proprietorDataForUpdate.id;
+        surveyProprietorData.survey_proprietor['revision_count'] = proprietorDataForUpdate.revision_count;
+      }
+
+      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyProprietorData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
       return;
     } finally {
       setOpenEditDialog(false);
+      setSurveyDataForUpdate(null as any);
     }
 
     refresh();
@@ -205,7 +204,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   Proprietary Data Category
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietor_type_name}
+                  {survey_proprietor.proprietary_data_category_name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -231,7 +230,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         </dl>
       </Box>
     </>
-  )
+  );
 };
 
 export default SurveyProprietaryData;

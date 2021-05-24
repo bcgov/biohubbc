@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyData } from './survey-update';
+import { PutSurveyDetailsData } from './survey-update';
 
 describe('PutSurveyData', () => {
   describe('No values provided', () => {
-    let data: PutSurveyData;
+    let data: PutSurveyDetailsData;
 
     before(() => {
-      data = new PutSurveyData(null);
+      data = new PutSurveyDetailsData(null);
     });
 
     it('sets name', () => {
@@ -56,7 +56,7 @@ describe('PutSurveyData', () => {
   });
 
   describe('All values provided', () => {
-    let data: PutSurveyData;
+    let data: PutSurveyDetailsData;
 
     const surveyData = {
       survey_name: 'survey name',
@@ -89,7 +89,7 @@ describe('PutSurveyData', () => {
     };
 
     before(() => {
-      data = new PutSurveyData(surveyData);
+      data = new PutSurveyDetailsData(surveyData);
     });
 
     it('sets name', () => {

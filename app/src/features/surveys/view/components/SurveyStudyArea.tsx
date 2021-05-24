@@ -17,10 +17,13 @@ import StudyAreaForm, {
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse, IUpdateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyForViewResponse,
+  IUpdateSurveyRequest,
+  UPDATE_GET_SURVEY_ENTITIES
+} from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
-
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -60,10 +63,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details},
+    surveyForViewData: { survey_details },
     refresh
   } = props;
-
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
 

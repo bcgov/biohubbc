@@ -11,7 +11,7 @@ import GeneralInformationForm, {
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse, IGetSurveyForUpdateResponseDetails } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -47,7 +47,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponse>(null as any);
+  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponseDetails>(null as any);
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
@@ -88,11 +88,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       return;
     }
 
-    setSurveyDataForUpdate(generalInformationResponseData);
-
-    console.log(generalInformationResponseData.survey_details);
-
     if (generalInformationResponseData.survey_details) {
+      setSurveyDataForUpdate(generalInformationResponseData?.survey_details);
       setGeneralInformationFormData({
         ...generalInformationResponseData.survey_details,
         start_date: getFormattedDate(
@@ -108,25 +105,20 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
-    console.log('surveyDataForUpdate', surveyDataForUpdate);
 
     try {
-      if (surveyDataForUpdate.survey_details) {
+      if (surveyDataForUpdate) {
         const surveyDetailsData = {
           survey_details: {
             ...values,
-            id: surveyDataForUpdate.survey_details.id,
-            revision_count: surveyDataForUpdate.survey_details.revision_count,
-            survey_area_name: surveyDataForUpdate.survey_details.survey_area_name,
-            geometry: surveyDataForUpdate.survey_details.geometry
+            id: surveyDataForUpdate.id,
+            revision_count: surveyDataForUpdate.revision_count,
+            survey_area_name: surveyDataForUpdate.survey_area_name,
+            geometry: surveyDataForUpdate.geometry
           }
         };
 
-        await biohubApi.survey.updateSurvey(
-          projectForViewData.id,
-          surveyDataForUpdate.survey_details.id,
-          surveyDetailsData
-        );
+        await biohubApi.survey.updateSurvey(projectForViewData.id, surveyDataForUpdate.id, surveyDetailsData);
       }
     } catch (error) {
       const apiError = error as APIError;

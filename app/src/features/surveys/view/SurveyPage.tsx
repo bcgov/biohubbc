@@ -101,11 +101,8 @@ const SurveyPage: React.FC = () => {
     if (!surveyWithDetailsResponse) {
       return;
     }
-
-    console.log(surveyWithDetailsResponse);
-
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.survey, urlParams]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {

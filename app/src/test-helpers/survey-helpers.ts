@@ -16,7 +16,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   },
   survey_proprietor: {
     id: 23,
-    proprietor_type_name: 'proprietor type',
+    proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',
     proprietor_name: 'prop name',

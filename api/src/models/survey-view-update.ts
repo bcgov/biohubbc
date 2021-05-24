@@ -65,31 +65,33 @@ export class GetSurveyDetailsData {
  * @class GetSurveyDetailsData
  */
 export class GetSurveyProprietorData {
+  isProprietary: string;
   id: number;
-  proprietor_type_name: string;
+  proprietary_data_category_name: string;
   first_nations_name: string;
-  proprietor_type_id: number;
+  proprietary_data_category: number;
   first_nations_id: number;
   category_rationale: string;
   proprietor_name: string;
   data_sharing_agreement_required: string;
   revision_count: number;
 
-  constructor(surveyProprietorData?: any) {
+  constructor(data?: any) {
     defaultLog.debug({
       label: 'GetSurveyProprietorData',
       message: 'params',
-      surveyProprietorData: surveyProprietorData
+      surveyProprietorData: data
     });
 
-    this.id = surveyProprietorData?.id ?? null;
-    this.proprietor_type_name = surveyProprietorData?.proprietor_type_name || '';
-    this.first_nations_name = surveyProprietorData?.first_nations_name || '';
-    this.proprietor_type_id = surveyProprietorData?.proprietor_type_id ?? null;
-    this.first_nations_id = surveyProprietorData?.first_nations_id ?? null;
-    this.category_rationale = surveyProprietorData?.category_rationale || '';
-    this.proprietor_name = surveyProprietorData?.proprietor_name || '';
-    this.data_sharing_agreement_required = surveyProprietorData?.disa_required ? 'true' : 'false';
-    this.revision_count = surveyProprietorData?.revision_count ?? null;
+    this.isProprietary = (data && 'true') || 'false';
+    this.id = data?.id ?? null;
+    this.proprietary_data_category_name = data?.proprietor_type_name || '';
+    this.first_nations_name = data?.first_nations_name || '';
+    this.proprietary_data_category = data?.proprietor_type_id ?? null;
+    this.first_nations_id = data?.first_nations_id ?? null;
+    this.category_rationale = data?.category_rationale || '';
+    this.proprietor_name = data?.proprietor_name || '';
+    this.data_sharing_agreement_required = data?.disa_required ? 'true' : 'false';
+    this.revision_count = data?.revision_count ?? null;
   }
 }

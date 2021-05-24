@@ -63,7 +63,7 @@ describe('getSurveyForUpdate', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(null);
+    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
       const result = update.getSurveyForUpdate();
@@ -103,7 +103,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
@@ -137,7 +137,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
