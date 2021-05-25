@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
-import { postSurveyProprietorSQL, postSurveySQL } from './survey-create-queries';
+import {
+  postFocalSpeciesSQL,
+  postAncillarySpeciesSQL,
+  postSurveyProprietorSQL,
+  postSurveySQL
+} from './survey-create-queries';
 
 describe('postSurveySQL', () => {
   it('returns null when null project param provided', () => {
@@ -97,6 +102,46 @@ describe('postSurveyProprietarySQL', () => {
 
     const postSurveyProprietorData = new PostSurveyProprietorData(surveyProprietorData);
     const response = postSurveyProprietorSQL(1, postSurveyProprietorData);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postFocalSpeciesSQL', () => {
+  it('returns null when null speciesId provided', () => {
+    const response = postFocalSpeciesSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null when null surveyId provided', () => {
+    const response = postFocalSpeciesSQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = postFocalSpeciesSQL(1, 2);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postAncillarySpeciesSQL', () => {
+  it('returns null when null speciesId provided', () => {
+    const response = postAncillarySpeciesSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null when null surveyId provided', () => {
+    const response = postAncillarySpeciesSQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = postAncillarySpeciesSQL(1, 2);
 
     expect(response).to.not.be.null;
   });
