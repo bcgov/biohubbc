@@ -88,7 +88,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
       setSurveyDataForUpdate(response);
 
-
       setSurveyProprietorFormData({
         survey_data_proprietary: proprietor?.isProprietary || ProprietaryDataInitialValues.survey_data_proprietary,
         proprietary_data_category:
@@ -115,14 +114,11 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       };
 
       if (values.survey_data_proprietary === 'true') {
-
         surveyProprietorData.survey_proprietor['proprietary_data_category'] = values.proprietary_data_category;
 
-
-        if (values.proprietary_data_category === 2){
+        if (values.proprietary_data_category === 2) {
           surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
           surveyProprietorData.survey_proprietor['proprietor_name'] = ProprietaryDataInitialValues.proprietor_name;
-
         } else {
           surveyProprietorData.survey_proprietor['first_nations_id'] = null;
           surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;

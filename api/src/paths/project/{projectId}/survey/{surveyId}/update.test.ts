@@ -80,8 +80,9 @@ describe('getSurveyForUpdate', () => {
     }
   });
 
-  it('should return the survey row on success', async () => {
-    const survey = {
+  it('should return survey details and proprietor info when no entity is specified, on success', async () => {
+    const survey_details = {
+      id: 1,
       name: 'name',
       objectives: 'objective',
       focal_species: 1,
@@ -95,9 +96,30 @@ describe('getSurveyForUpdate', () => {
       geometry: []
     };
 
+    const survey_proprietor = {
+      category_rationale: '',
+      data_sharing_agreement_required: 'false',
+      first_nations_id: null,
+      first_nations_name: '',
+      id: 1,
+      isProprietary: 'true',
+      proprietary_data_category: null,
+      proprietary_data_category_name: '',
+      proprietor_name: '',
+      revision_count: 1
+    };
+
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [survey] });
+    mockQuery
+      .onFirstCall()
+      .resolves({
+        rows: [survey_details]
+      })
+      .onSecondCall()
+      .resolves({
+        rows: [survey_proprietor]
+      });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -108,6 +130,7 @@ describe('getSurveyForUpdate', () => {
     });
 
     sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
@@ -115,56 +138,34 @@ describe('getSurveyForUpdate', () => {
 
     expect(actualResult).to.eql({
       survey_details: {
-        id: null,
-        survey_name: survey.name,
-        survey_purpose: survey.objectives,
-        focal_species: [survey.focal_species],
-        ancillary_species: [survey.ancillary_species],
-        start_date: survey.start_date,
-        end_date: survey.end_date,
-        biologist_first_name: survey.lead_first_name,
-        biologist_last_name: survey.lead_last_name,
-        survey_area_name: survey.location_name,
-        revision_count: survey.revision_count,
-        geometry: survey.geometry
+        id: 1,
+        survey_name: survey_details.name,
+        survey_purpose: survey_details.objectives,
+        focal_species: [survey_details.focal_species],
+        ancillary_species: [survey_details.ancillary_species],
+        start_date: survey_details.start_date,
+        end_date: survey_details.end_date,
+        biologist_first_name: survey_details.lead_first_name,
+        biologist_last_name: survey_details.lead_last_name,
+        survey_area_name: survey_details.location_name,
+        revision_count: survey_details.revision_count,
+        geometry: survey_details.geometry
       },
 
       survey_proprietor: {
-        category_rationale: "",
-        data_sharing_agreement_required: "false",
-        first_nations_id: null,
-        first_nations_name: '',
-        id: null,
-        isProprietary: "true",
-        proprietary_data_category: null,
-        proprietary_data_category_name: '',
-        proprietor_name: '',
-        revision_count: 1
+        category_rationale: survey_proprietor.category_rationale,
+        data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
+        first_nations_id: survey_proprietor.first_nations_id,
+        first_nations_name: survey_proprietor.first_nations_name,
+        id: survey_proprietor.id,
+        isProprietary: survey_proprietor.isProprietary,
+        proprietary_data_category: survey_proprietor.proprietary_data_category,
+        proprietary_data_category_name: survey_proprietor.proprietary_data_category_name,
+        proprietor_name: survey_proprietor.proprietor_name,
+        revision_count: survey_proprietor.revision_count
       }
     });
   });
-
-  // it('should return null when response has no rows (no survey found)', async () => {
-  //   const mockQuery = sinon.stub();
-
-  //   mockQuery.resolves({ rows: null });
-
-  //   sinon.stub(db, 'getDBConnection').returns({
-  //     ...dbConnectionObj,
-  //     systemUserId: () => {
-  //       return 20;
-  //     },
-  //     query: mockQuery
-  //   });
-
-  //   sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
-
-  //   const result = update.getSurveyForUpdate();
-
-  //   actualResult = await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-  //   expect(actualResult).to.be.null;
-  // });
 });
 
 describe('updateSurvey', () => {

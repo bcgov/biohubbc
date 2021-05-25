@@ -259,7 +259,6 @@ export const getSurveyProprietorData = async (
     isProprietary: 'false'
   };
 
-
   if (!result) {
     throw new HTTP400('Failed to get project survey proprietor data');
   }
