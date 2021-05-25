@@ -3,7 +3,7 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { MemoryRouter, Router } from 'react-router';
+import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyAttachments from './SurveyAttachments';

@@ -49,7 +49,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         return error;
       }
     },
-    [biohubApi.survey, surveyId, attachmentsList.length]
+    [biohubApi.survey, projectId, surveyId, attachmentsList.length]
   );
 
   useEffect(() => {
