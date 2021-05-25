@@ -2,16 +2,15 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as delete_attachment from './delete';
+import * as get_signed_url from './getSignedUrl';
 import * as db from '../../../../../database/db';
 import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
-import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 
 chai.use(sinonChai);
 
-describe('deleteAttachment', () => {
+describe('getSingleAttachmentURL', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -61,7 +60,7 @@ describe('deleteAttachment', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = delete_attachment.deleteAttachment();
+      const result = get_signed_url.getSingleAttachmentURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -79,7 +78,7 @@ describe('deleteAttachment', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = delete_attachment.deleteAttachment();
+      const result = get_signed_url.getSingleAttachmentURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -101,20 +100,20 @@ describe('deleteAttachment', () => {
       }
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(null);
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(null);
 
     try {
-      const result = delete_attachment.deleteAttachment();
+      const result = get_signed_url.getSingleAttachmentURL();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect(actualError.message).to.equal('Failed to build SQL get statement');
     }
   });
 
-  it('should return null when deleting file from S3 fails', async () => {
+  it('should return null when getting signed url from S3 fails', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [{ key: 's3Key' }] });
@@ -127,20 +126,20 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(SQL`some query`);
+    sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
-    const result = delete_attachment.deleteAttachment();
+    const result = get_signed_url.getSingleAttachmentURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success', async () => {
+  it('should return the signed url response on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
+    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -150,13 +149,13 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(SQL`some query`);
+    sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
-    const result = delete_attachment.deleteAttachment();
+    const result = get_signed_url.getSingleAttachmentURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql(1);
+    expect(actualResult).to.eql('myurlsigned.com');
   });
 });
