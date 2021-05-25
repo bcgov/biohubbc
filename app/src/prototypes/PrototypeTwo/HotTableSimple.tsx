@@ -1,16 +1,20 @@
 import { HotTable } from '@handsontable/react';
 import { makeStyles } from '@material-ui/core';
+// import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.min.css';
 import React, { useRef, useState } from 'react';
 import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
-  hotTable: {
-    overflowY: 'visible'
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
   },
-  readOnly: {
-    backgroundColor: 'grey'
-  }
+  hotTable: {}
 }));
 
 const HotTableSimple: React.FC = () => {
@@ -37,122 +41,121 @@ const HotTableSimple: React.FC = () => {
     ]
   ];
 
-  // const colWidthsPercent = [0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.28];
-
   const [data] = useState<any[][]>([
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,]
+    [, , , , , , , , '=SUM(B1:H1)', , , , ,],
+    [, , , , , , , , '=SUM(B2:H2)', , , , ,],
+    [, , , , , , , , '=SUM(B3:H3)', , , , ,],
+    [, , , , , , , , '=SUM(B4:H4)', , , , ,],
+    [, , , , , , , , '=SUM(B5:H5)', , , , ,],
+    [, , , , , , , , '=SUM(B6:H6)', , , , ,]
   ]);
 
-  return (
-    <HotTable
-      ref={hotRef}
-      className={classes.hotTable}
-      data={data}
-      nestedHeaders={headers}
-      viewportRowRenderingOffset={'auto'}
-      width={'100%'}
-      minRows={6}
-      contextMenu={true}
-      collapsibleColumns={true}
-      rowHeaders={true}
-      search={true}
-      columnSorting={true}
-      afterChange={(changes, source) => {
-        if (source === 'auto') {
-          return;
-        }
+  const [settings] = useState<Handsontable.GridSettings>({
+    data: data,
+    nestedHeaders: headers,
+    viewportRowRenderingOffset: 'auto',
+    minRows: 6,
+    contextMenu: true,
+    collapsibleColumns: true,
+    rowHeaders: true,
+    search: true,
+    width: '100%',
+    height: '100%',
+    rowHeights: 30,
+    colWidths: 60,
+    readOnly: false,
+    columnSorting: true,
+    formulas: true,
+    manualColumnResize: true,
+    manualRowResize: true,
+    // afterChange: (changes, source) => {
+    //   if (source === 'auto') {
+    //     return;
+    //   }
 
-        changes?.forEach((change) => {
-          const row = change[0];
+    //   changes?.forEach((change) => {
+    //     const row = change[0];
 
-          const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(0, 8);
+    //     const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(0, 8);
 
-          const rowNumbers = rowData?.filter((item) => !isNaN(Number(item)));
+    //     const rowNumbers = rowData?.filter((item) => !isNaN(Number(item)));
 
-          hotRef.current?.hotInstance.setDataAtCell(
-            [[row, 8, rowNumbers?.splice(0, 8).reduce((a, b) => a + b, 0)]],
-            'auto'
-          );
-        });
-      }}
-      columns={[
-        {
-          type: 'numeric',
-          validator: function (this: any, value: any, callback: (valid: boolean) => void): void {
-            if (isNaN(Number(value))) {
-              callback(false);
-              return;
-            }
+    //     console.log(rowNumbers);
 
-            if (value > 100) {
-              callback(false);
-              return;
-            }
-
-            callback(true);
+    //     hotRef.current?.hotInstance.setDataAtCell(
+    //       [[row, 8, rowNumbers?.splice(0, 8).reduce((a, b) => a + b, 0)]],
+    //       'auto'
+    //     );
+    //   });
+    // },
+    columns: [
+      {
+        type: 'numeric',
+        validator: function (this: any, value: any, callback: (valid: boolean) => void): void {
+          if (isNaN(Number(value))) {
+            callback(false);
+            return;
           }
-          // width: colWidthsPixels[0]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[1]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[2]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[3]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[4]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[5]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[6]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[7]
-        },
-        {
-          type: 'numeric',
-          readOnly: true
-          // width: colWidthsPixels[8]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[9]
-        },
-        {
-          type: 'numeric'
-          // width: colWidthsPixels[10]
-        },
-        {
-          type: 'dropdown',
-          source: ['yellow', 'red', 'orange', 'green', 'blue', 'gray', 'black', 'white']
-          // width: colWidthsPixels[11]
-        },
-        {
-          type: 'text'
-          // width: colWidthsPixels[12]
+
+          if (value > 100) {
+            callback(false);
+            return;
+          }
+
+          callback(true);
         }
-      ]}
-      formulas={true}
-      height={'500px'}
-      licenseKey="non-commercial-and-evaluation"
-    />
+      },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric', readOnly: true },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'dropdown', source: ['None', 'Mild', 'Medium', 'Dense'] },
+      { type: 'text' }
+    ]
+  });
+
+  return (
+    <Box mt={3}>
+      {/* <Box mb={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.actionButton}
+          onClick={() =>
+            setSettings((currentSettings) => {
+              return { ...currentSettings, colWidths: (currentSettings.colWidths === 60 && 100) || 60 };
+            })
+          }>
+          {`${(settings.colWidths === 60 && 'Expand') || 'Shrink'} Columns`}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.actionButton}
+          onClick={() =>
+            setSettings((currentSettings) => {
+              return { ...currentSettings, readOnly: !currentSettings.readOnly };
+            })
+          }>
+          {`${(settings.readOnly && 'Unlock') || 'Lock'} Data`}
+        </Button>
+      </Box> */}
+      <Box style={{ height: '400px' }}>
+        <HotTable
+          id="hot"
+          ref={hotRef}
+          className={classes.hotTable}
+          settings={settings}
+          licenseKey="non-commercial-and-evaluation"
+        />
+      </Box>
+    </Box>
   );
 };
 

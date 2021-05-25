@@ -15,10 +15,10 @@ import Typography from '@material-ui/core/Typography';
 import { DATE_LIMIT } from 'constants/dateFormats';
 import { Formik, FormikProps } from 'formik';
 import moment from 'moment';
-import HotTableFancyWidth from 'prototypes/PrototypeTwo/HotTableFancyWidth';
 import HotTableSimple from 'prototypes/PrototypeTwo/HotTableSimple';
 import React, { useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
+import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -105,7 +105,7 @@ const NewBlockCondensed: React.FC = () => {
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
-  const hotTableParentRef = useRef(null);
+  // const hotTableParentRef = useRef(null);
 
   return (
     <>
@@ -581,13 +581,13 @@ const NewBlockCondensed: React.FC = () => {
                       <HotTableSimple />
                     </Grid>
                   </Grid>
-                  <Grid container spacing={1}>
+                  {/* <Grid container spacing={1}>
                     <Grid item xs={12}>
                       <div ref={hotTableParentRef}>
                         <HotTableFancyWidth hotTableParentRef={hotTableParentRef} />
                       </div>
                     </Grid>
-                  </Grid>
+                  </Grid> */}
                 </form>
               )}
             </Formik>

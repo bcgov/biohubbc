@@ -29,8 +29,8 @@ const HotTableFancyWidth: React.FC<IHotTableProps> = (props) => {
   // const [parentWidth, setParentWidth] = useState<number>();
   const [colWidthsPixels, setColWidthsPixels] = useState<number[]>([]);
 
-  const getColumnWidthsPixels = (colWidthsPercent: number[], parentWidth: number) => {
-    return colWidthsPercent.map((item) => parentWidth * item);
+  const getColumnWidthsPixels = (colWidthsPercent: number[], totalWidth: number) => {
+    return colWidthsPercent.map((item) => totalWidth * item);
   };
 
   useEffect(() => {
@@ -92,7 +92,6 @@ const HotTableFancyWidth: React.FC<IHotTableProps> = (props) => {
       search={true}
       columnSorting={true}
       rowHeights={'50px'}
-      colWidths={'75px'}
       afterChange={(changes, source) => {
         if (source === 'auto') {
           return;
