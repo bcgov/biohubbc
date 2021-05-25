@@ -10,9 +10,16 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import { getSurveyDetailsForUpdateSQL, getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import {
+  getSurveyDetailsForUpdateSQL,
+  getSurveyProprietorForUpdateSQL
+} from '../../../../../queries/survey/survey-view-update-queries';
 import { putSurveyDetailsSQL, putSurveyProprietorSQL } from '../../../../../queries/survey/survey-update-queries';
-import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL, deleteSurveyProprietorSQL } from '../../../../../queries/survey/survey-delete-queries';
+import {
+  deleteFocalSpeciesSQL,
+  deleteAncillarySpeciesSQL,
+  deleteSurveyProprietorSQL
+} from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
 import { insertAncillarySpecies, insertFocalSpecies } from '../create';
@@ -201,8 +208,6 @@ export function getSurveyForUpdate(): RequestHandler {
         );
       }
 
-      console.log('promises', promises);
-
       await Promise.all(promises);
 
       await connection.commit();
@@ -252,8 +257,9 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result =
-    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || { isProprietary: 'false'};
+  const result = (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || {
+    isProprietary: 'false'
+  };
 
   console.log('result', result);
 
@@ -327,7 +333,6 @@ export const updateSurveyDetailsData = async (
   data: IUpdateSurvey,
   connection: IDBConnection
 ): Promise<void> => {
-
   const putDetailsData = new PutSurveyDetailsData(data);
 
   const revision_count = putDetailsData.revision_count ?? null;
@@ -391,7 +396,6 @@ export const updateSurveyDetailsData = async (
   await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
 };
 
-
 export const updateSurveyProprietorData = async (
   projectId: number,
   surveyId: number,
@@ -400,19 +404,19 @@ export const updateSurveyProprietorData = async (
 ): Promise<void> => {
   const putProprietorData = new PutSurveyProprietorData(surveyId, data);
   const isProprietary = putProprietorData.isProprietary;
-  const wasProprietary = (putProprietorData.id || putProprietorData.id === 0) && true || false;
+  const wasProprietary = ((putProprietorData.id || putProprietorData.id === 0) && true) || false;
 
   let sqlStatement = null;
 
-  if ( !wasProprietary && !isProprietary ) {
+  if (!wasProprietary && !isProprietary) {
     // 1. did not have proprietor data; still not requiring proprietor data
     // do nothing
     return;
-  } else if ( wasProprietary && !isProprietary ) {
+  } else if (wasProprietary && !isProprietary) {
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
     sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
-  } else if ( !wasProprietary && isProprietary ) {
+  } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
     sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(data.survey_proprietor));
@@ -432,4 +436,3 @@ export const updateSurveyProprietorData = async (
     throw new HTTP409('Failed to update survey proprietor data');
   }
 };
-

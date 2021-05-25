@@ -118,8 +118,7 @@ export interface IGetSurveyForViewResponse {
  * @interface IUpdateSurveyRequest
  * @extends {IGetSurveyForUpdateResponse}
  */
-export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {
-}
+export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {}
 
 /**
  * Get surveys list response object.

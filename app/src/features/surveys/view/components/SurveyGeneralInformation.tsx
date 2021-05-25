@@ -105,7 +105,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
-
     try {
       if (surveyDataForUpdate) {
         const surveyDetailsData = {

@@ -78,7 +78,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
           showErrorDialog({ open: true });
           return;
         }
-
       } catch (error) {
         const apiError = error as APIError;
         showErrorDialog({ dialogText: apiError.message, open: true });
@@ -91,11 +90,13 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
       setSurveyProprietorFormData({
         survey_data_proprietary: proprietor?.isProprietary || ProprietaryDataInitialValues.survey_data_proprietary,
-        proprietary_data_category: proprietor?.proprietary_data_category || ProprietaryDataInitialValues.proprietary_data_category,
+        proprietary_data_category:
+          proprietor?.proprietary_data_category || ProprietaryDataInitialValues.proprietary_data_category,
         proprietor_name: proprietor?.proprietor_name || ProprietaryDataInitialValues.proprietor_name,
         first_nations_id: proprietor?.first_nations_id || ProprietaryDataInitialValues.first_nations_id,
         category_rationale: proprietor?.category_rationale || ProprietaryDataInitialValues.category_rationale,
-        data_sharing_agreement_required: proprietor?.data_sharing_agreement_required || ProprietaryDataInitialValues.data_sharing_agreement_required
+        data_sharing_agreement_required:
+          proprietor?.data_sharing_agreement_required || ProprietaryDataInitialValues.data_sharing_agreement_required
       });
     } else {
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
@@ -105,7 +106,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   };
 
   const handleDialogEditSave = async (values: IProprietaryDataForm) => {
-
     try {
       let surveyProprietorData = {
         survey_proprietor: {
@@ -118,7 +118,8 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
         surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
         surveyProprietorData.survey_proprietor['category_rationale'] = values.category_rationale;
-        surveyProprietorData.survey_proprietor['data_sharing_agreement_required'] = values.data_sharing_agreement_required;
+        surveyProprietorData.survey_proprietor['data_sharing_agreement_required'] =
+          values.data_sharing_agreement_required;
       }
 
       if (surveyDataForUpdate?.survey_proprietor) {

@@ -201,7 +201,7 @@ describe('GetSurveyProprietorData', () => {
     });
 
     it('sets proprietor_type_name', () => {
-      expect(data.proprietor_type_name).to.equal('');
+      expect(data.proprietary_data_category_name).to.equal('');
     });
 
     it('sets first_nations_name', () => {
@@ -227,17 +227,17 @@ describe('GetSurveyProprietorData', () => {
     const proprietorData = {
       proprietor_type_name: 'type',
       first_nations_name: 'fn name',
-      rationale: 'rationale',
+      category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: true
+      disa_required: true
     };
 
     before(() => {
       data = new GetSurveyProprietorData(proprietorData);
     });
 
-    it('sets proprietor_type_name', () => {
-      expect(data.proprietor_type_name).to.equal(proprietorData.proprietor_type_name);
+    it('sets proprietary_data_category_name', () => {
+      expect(data.proprietary_data_category_name).to.equal(proprietorData.proprietor_type_name);
     });
 
     it('sets first_nations_name', () => {
@@ -245,7 +245,7 @@ describe('GetSurveyProprietorData', () => {
     });
 
     it('sets category_rationale', () => {
-      expect(data.category_rationale).to.equal(proprietorData.rationale);
+      expect(data.category_rationale).to.equal(proprietorData.category_rationale);
     });
 
     it('sets proprietor_name', () => {

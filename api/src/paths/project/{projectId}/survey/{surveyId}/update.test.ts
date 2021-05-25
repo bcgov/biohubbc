@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as update from './update';
 import * as db from '../../../../../database/db';
+import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import SQL from 'sql-template-strings';
 
@@ -63,7 +64,7 @@ describe('getSurveyForUpdate', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
       const result = update.getSurveyForUpdate();
@@ -72,7 +73,7 @@ describe('getSurveyForUpdate', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect(actualError.message).to.equal('Failed to build survey details SQL get statement');
     }
   });
 
@@ -103,7 +104,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
@@ -137,11 +138,11 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
 
     const result = update.getSurveyForUpdate();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    actualResult = await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.null;
   });
@@ -180,16 +181,18 @@ describe('updateSurvey', () => {
       surveyId: 2
     },
     body: {
-      survey_name: 'name',
-      survey_purpose: 'purpose',
-      species: 'species',
-      start_date: '2020/03/03',
-      end_date: '2020/04/04',
-      biologist_first_name: 'first',
-      biologist_last_name: 'last',
-      survey_area_name: 'area name',
-      revision_count: 1,
-      geometry: []
+      survey_details: {
+        survey_name: 'name',
+        survey_purpose: 'purpose',
+        species: 'species',
+        start_date: '2020/03/03',
+        end_date: '2020/04/04',
+        biologist_first_name: 'first',
+        biologist_last_name: 'last',
+        survey_area_name: 'area name',
+        revision_count: 1,
+        geometry: []
+      }
     }
   } as any;
 
@@ -282,7 +285,7 @@ describe('updateSurvey', () => {
       const result = update.updateSurvey();
 
       await result(
-        { ...sampleReq, body: { ...sampleReq.body, revision_count: null } },
+        { ...sampleReq, body: { ...sampleReq.body, survey_details: { revision_count: null } } },
         (null as unknown) as any,
         (null as unknown) as any
       );
@@ -301,7 +304,7 @@ describe('updateSurvey', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'putSurveySQL').returns(null);
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
 
     try {
       const result = update.updateSurvey();
@@ -327,7 +330,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'putSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
 
     try {
       const result = update.updateSurvey();
@@ -353,7 +356,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'putSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
 
     const result = update.updateSurvey();
 

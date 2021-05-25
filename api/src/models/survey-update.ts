@@ -46,7 +46,7 @@ export class PutSurveyDetailsData {
  * @export
  * @class PutSurveyDetailsData
  */
- export class PutSurveyProprietorData {
+export class PutSurveyProprietorData {
   isProprietary: boolean;
   id: number;
   prt_id: number;
@@ -66,9 +66,9 @@ export class PutSurveyDetailsData {
     this.s_id = surveyId;
     this.fn_id = obj?.survey_proprietor?.first_nations_id ?? null;
     this.rationale = obj?.survey_proprietor?.category_rationale ?? null;
-    this.proprietor_name = (!obj?.survey_proprietor?.first_nations_id && obj?.survey_proprietor?.proprietor_name) || null;
+    this.proprietor_name =
+      (!obj?.survey_proprietor?.first_nations_id && obj?.survey_proprietor?.proprietor_name) || null;
     this.disa_required = obj?.survey_proprietor?.data_sharing_agreement_required === 'true' || false;
     this.revision_count = obj?.survey_proprietor?.revision_count ?? null;
   }
 }
-

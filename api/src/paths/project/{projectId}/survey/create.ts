@@ -136,8 +136,6 @@ export function createSurvey(): RequestHandler {
 
         await Promise.all(promises);
 
-        console.log('HELLO', sanitizedPostSurveyData);
-
         if (sanitizedPostSurveyData.survey_proprietor) {
           const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
             surveyId,

@@ -96,10 +96,7 @@ export const putSurveyDetailsSQL = (
  * @param {PutSurveyProprietorData} data
  * @returns {SQLStatement} sql query object
  */
-export const putSurveyProprietorSQL = (
-  surveyId: number,
-  data: PutSurveyProprietorData | null
-): SQLStatement | null => {
+export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyProprietorData | null): SQLStatement | null => {
   defaultLog.debug({
     label: 'putSurveyProprietorSQL',
     message: 'params',
@@ -135,9 +132,3 @@ export const putSurveyProprietorSQL = (
 
   return sqlStatement;
 };
-
-
-
-
-
-

@@ -90,7 +90,7 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
     surveyProprietorId
   });
 
-  if ( ( !surveyId && surveyId !== 0) || ( !surveyProprietorId && surveyProprietorId !== 0 ) ) {
+  if ((!surveyId && surveyId !== 0) || (!surveyProprietorId && surveyProprietorId !== 0)) {
     return null;
   }
 
