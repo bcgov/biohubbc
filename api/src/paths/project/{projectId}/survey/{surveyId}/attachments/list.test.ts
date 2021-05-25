@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as listAttachments from './list';
 import * as db from '../../../../../../database/db';
-import * as survey_attachments_queries from '../../../../queries/survey/survey-attachments-queries';
+import * as survey_attachments_queries from '../../../../../../queries/survey/survey-attachments-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);

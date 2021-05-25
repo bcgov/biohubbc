@@ -7,6 +7,9 @@ jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
     getAttachmentSignedURL: jest.fn()
+  },
+  survey: {
+    getSurveyAttachmentSignedURL: jest.fn()
   }
 };
 
@@ -18,6 +21,7 @@ describe('AttachmentsList', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getAttachmentSignedURL.mockClear();
+    mockBiohubApi().survey.getSurveyAttachmentSignedURL.mockClear();
   });
 
   afterEach(() => {
@@ -70,6 +74,26 @@ describe('AttachmentsList', () => {
 
     const { getByText } = render(
       <AttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+    );
+
+    expect(getByText('filename.test')).toBeInTheDocument();
+
+    fireEvent.click(getByText('filename.test'));
+
+    await waitFor(() => {
+      expect(window.open).toHaveBeenCalledWith(signedUrl);
+    });
+  });
+
+  it('viewing file contents in new tab works as expected for survey attachments', async () => {
+    window.open = jest.fn();
+
+    const signedUrl = 'www.signedurl.com';
+
+    mockBiohubApi().survey.getSurveyAttachmentSignedURL.mockResolvedValue(signedUrl);
+
+    const { getByText } = render(
+      <AttachmentsList projectId={1} surveyId={32} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
     );
 
     expect(getByText('filename.test')).toBeInTheDocument();
