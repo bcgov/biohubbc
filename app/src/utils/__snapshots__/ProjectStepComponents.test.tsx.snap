@@ -1718,11 +1718,44 @@ exports[`ProjectStepComponents renders the project location with the codes value
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -2186,7 +2219,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
@@ -2198,7 +2231,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_69"
                             type="radio"
                           />
                           <span>
@@ -2209,11 +2242,44 @@ exports[`ProjectStepComponents renders the project location without the codes va
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
