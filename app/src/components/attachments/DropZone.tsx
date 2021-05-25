@@ -23,13 +23,6 @@ const BYTES_PER_MEGABYTE = 1048576;
 
 export interface IFileUploadProps {
   /**
-   * Project ID.
-   *
-   * @type {number}
-   * @memberof IFileUploadProps
-   */
-  projectId: number;
-  /**
    * Function called when files are accepted/rejected (via either drag/drop or browsing).
    *
    * Note: Files may be rejected due of file size limits or file number limits

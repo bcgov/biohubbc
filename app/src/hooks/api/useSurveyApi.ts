@@ -1,11 +1,12 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IGetSurveyForViewResponse,
   IGetSurveysListResponse,
   ISurveyUpdateRequest,
-  IGetSurveyForUpdateResponse
+  IGetSurveyForUpdateResponse,
+  IGetSurveyAttachmentsResponse
 } from 'interfaces/useSurveyApi.interface';
 
 /**
@@ -79,12 +80,92 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Upload survey attachments.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File[]} files
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const uploadSurveyAttachments = async (
+    projectId: number,
+    surveyId: number,
+    files: File[],
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<string[]> => {
+    const req_message = new FormData();
+
+    files.forEach((file) => req_message.append('media', file));
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
+  /**
+   * Get survey attachments based on survey ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetSurveyAttachmentsResponse>}
+   */
+  const getSurveyAttachments = async (projectId: number, surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/list`);
+
+    return data;
+  };
+
+  /**
+   * Delete survey attachment based on survey and attachment ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteSurveyAttachment = async (projectId: number, surveyId: number, attachmentId: number): Promise<number> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`
+    );
+
+    return data;
+  };
+
+  /**
+   * Get survey attachment S3 url based on survey and attachment ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getSurveyAttachmentSignedURL = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number
+  ): Promise<string> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
     getSurveysList,
     getSurveyForUpdate,
-    updateSurvey
+    updateSurvey,
+    uploadSurveyAttachments,
+    getSurveyAttachments,
+    deleteSurveyAttachment,
+    getSurveyAttachmentSignedURL
   };
 };
 

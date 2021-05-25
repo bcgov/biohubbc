@@ -99,3 +99,20 @@ export interface IGetSurveysListResponse {
   end_date: string;
   status_name: string;
 }
+
+export interface IGetSurveyAttachment {
+  id: number;
+  fileName: string;
+  lastModified: string;
+  size: number;
+}
+
+/**
+ * Get survey attachments response object.
+ *
+ * @export
+ * @interface IGetSurveyAttachmentsResponse
+ */
+export interface IGetSurveyAttachmentsResponse {
+  attachmentsList: IGetSurveyAttachment[];
+}

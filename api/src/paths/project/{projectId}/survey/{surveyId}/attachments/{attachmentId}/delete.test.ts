@@ -3,10 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as delete_attachment from './delete';
-import * as db from '../../../../../database/db';
-import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
+import * as db from '../../../../../../../database/db';
+import * as survey_attachments_queries from '../../../../../../../queries/survey/survey-attachments-queries';
 import SQL from 'sql-template-strings';
-import * as file_utils from '../../../../../utils/file-utils';
+import * as file_utils from '../../../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 
 chai.use(sinonChai);
@@ -41,6 +41,7 @@ describe('deleteAttachment', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
+      surveyId: 1,
       attachmentId: 2
     }
   } as any;
@@ -57,21 +58,21 @@ describe('deleteAttachment', () => {
     }
   };
 
-  it('should throw an error when projectId is missing', async () => {
+  it('should throw an error when surveyId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
       const result = delete_attachment.deleteAttachment();
 
       await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect(actualError.message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -101,7 +102,7 @@ describe('deleteAttachment', () => {
       }
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(null);
+    sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(null);
 
     try {
       const result = delete_attachment.deleteAttachment();
@@ -127,7 +128,7 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
     const result = delete_attachment.deleteAttachment();
@@ -150,7 +151,7 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
     const result = delete_attachment.deleteAttachment();
