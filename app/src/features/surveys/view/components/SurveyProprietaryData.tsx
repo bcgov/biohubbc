@@ -86,8 +86,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
       const proprietor = response.survey_proprietor;
 
-      console.log('proprietor is (before set): ' , proprietor);
-
       setSurveyDataForUpdate(response);
 
 
@@ -118,7 +116,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
       if (values.survey_data_proprietary === 'true') {
 
-        //surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
         surveyProprietorData.survey_proprietor['proprietary_data_category'] = values.proprietary_data_category;
 
 
@@ -141,8 +138,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         surveyProprietorData.survey_proprietor['id'] = proprietorDataForUpdate.id;
         surveyProprietorData.survey_proprietor['revision_count'] = proprietorDataForUpdate.revision_count;
       }
-
-      console.log('got this far with surveyProprietorData: ', surveyProprietorData);
 
       await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyProprietorData);
     } catch (error) {
