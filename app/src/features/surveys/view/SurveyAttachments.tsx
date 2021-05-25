@@ -24,6 +24,7 @@ export interface ISurveyAttachmentsProps {
  */
 const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const urlParams = useParams();
+  const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
   const biohubApi = useBiohubApi();
 
@@ -32,27 +33,18 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
-      // if (attachmentsList.length && !forceFetch) {
-      //   return;
-      // }
+      if (attachmentsList.length && !forceFetch) {
+        return;
+      }
 
       try {
-        // const response = await biohubApi.survey.getSurveyAttachments(surveyId);
+        const response = await biohubApi.survey.getSurveyAttachments(projectId, surveyId);
 
-        // if (!response?.attachmentsList) {
-        //   return;
-        // }
+        if (!response?.attachmentsList) {
+          return;
+        }
 
-        const listData = [{
-          id: 2,
-          fileName: 'string',
-          lastModified: '2020/04/04',
-          size: 2345
-        }];
-
-        setAttachmentsList(listData);
-
-        // setAttachmentsList([...response.attachmentsList]);
+        setAttachmentsList([...response.attachmentsList]);
       } catch (error) {
         return error;
       }
@@ -74,7 +66,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload id={surveyId} type="survey" />
+        <FileUpload projectId={projectId} surveyId={surveyId} />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">
@@ -90,7 +82,12 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <AttachmentsList id={surveyId} type="survey" attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList
+          projectId={projectId}
+          surveyId={surveyId}
+          attachmentsList={attachmentsList}
+          getAttachments={getAttachments}
+        />
       </Box>
     </>
   );

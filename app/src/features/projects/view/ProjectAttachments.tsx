@@ -63,7 +63,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload id={projectId} type="project" />
+        <FileUpload projectId={projectId} />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">
@@ -79,7 +79,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         </Box>
       </Box>
       <Box mb={3}>
-        <AttachmentsList id={projectId} type="project" attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
       </Box>
     </>
   );

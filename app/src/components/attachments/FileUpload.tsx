@@ -24,8 +24,8 @@ export interface IUploadFileListProps {
 }
 
 export interface IFileUploadProps {
-  id: number;
-  type: string;
+  projectId: number;
+  surveyId?: number;
 }
 
 export const FileUpload: React.FC<IFileUploadProps> = (props) => {
@@ -88,8 +88,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     return (
       <MemoizedFileUploadItem
         key={file.name}
-        id={props.id}
-        type={props.type}
+        projectId={props.projectId}
+        surveyId={props.surveyId || undefined}
         file={file}
         error={error}
         onCancel={() => setFileToRemove(file.name)}

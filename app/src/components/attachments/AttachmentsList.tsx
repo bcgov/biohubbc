@@ -33,8 +33,8 @@ const useStyles = makeStyles({
 });
 
 export interface IAttachmentsListProps {
-  id: number;
-  type: string;
+  projectId: number;
+  surveyId?: number;
   attachmentsList: IGetProjectAttachment[];
   getAttachments: (forceFetch: boolean) => void;
 }
@@ -76,10 +76,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (props.type === 'project') {
-        response = await biohubApi.project.deleteProjectAttachment(props.id, attachment.id);
-      } else if (props.type === 'survey') {
-        response = await biohubApi.survey.deleteSurveyAttachment(props.id, attachment.id);
+      if (!props.surveyId) {
+        response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
+      } else if (props.surveyId) {
+        response = await biohubApi.survey.deleteSurveyAttachment(props.projectId, props.surveyId, attachment.id);
       }
 
       if (!response) {
@@ -96,10 +96,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (props.type === 'project') {
-        response = await biohubApi.project.getAttachmentSignedURL(props.id, attachment.id);
-      } else if (props.type === 'survey') {
-        response = await biohubApi.survey.getAttachmentSignedURL(props.id, attachment.id);
+      if (!props.surveyId) {
+        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      } else if (props.surveyId) {
+        response = await biohubApi.survey.getSurveyAttachmentSignedURL(props.projectId, props.surveyId, attachment.id);
       }
 
       if (!response) {

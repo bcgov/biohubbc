@@ -3,18 +3,22 @@
 import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
-import { uploadFileToS3 } from '../../../../utils/file-utils';
-import { getLogger } from '../../../../utils/logger';
-import { upsertProjectAttachment } from '../../../project';
+import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/CustomError';
+import {
+  getSurveyAttachmentByFileNameSQL,
+  postSurveyAttachmentSQL,
+  putSurveyAttachmentSQL
+} from '../../../../../../queries/survey/survey-attachments-queries';
+import { uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
 export const POST: Operation = [uploadMedia()];
 POST.apiDoc = {
-  description: 'Upload project-specific attachments.',
+  description: 'Upload survey-specific attachments.',
   tags: ['attachments'],
   security: [
     {
@@ -25,6 +29,11 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       required: true
     }
   ],
@@ -83,7 +92,7 @@ POST.apiDoc = {
 
 /**
  * Uploads any media in the request to S3, adding their keys to the request.
- * Also adds the metadata to the project_attachment DB table
+ * Also adds the metadata to the survey_attachment DB table
  * Does nothing if no media is present in the request.
  *
  * TODO: make media handling an extension that can be added to different endpoints/record types
@@ -99,23 +108,23 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing projectId');
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing surveyId');
     }
 
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
     const connection = getDBConnection(req['keycloak_token']);
 
-    // Insert file metadata into project_attachment table
+    // Insert file metadata into survey_attachment table
     try {
       await connection.open();
 
-      const insertProjectAttachmentsPromises =
+      const insertSurveyAttachmentsPromises =
         rawMediaArray.map((file: Express.Multer.File) =>
-          upsertProjectAttachment(file, Number(req.params.projectId), connection)
+          upsertSurveyAttachment(file, Number(req.params.surveyId), connection)
         ) || [];
 
-      await Promise.all([...insertProjectAttachmentsPromises]);
+      await Promise.all([...insertSurveyAttachmentsPromises]);
 
       // Upload files to S3
       const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
@@ -125,7 +134,7 @@ export function uploadMedia(): RequestHandler {
           return;
         }
 
-        const key = req.params.projectId + '/' + file.originalname;
+        const key = req.params.surveyId + '/' + file.originalname;
 
         const metadata = {
           filename: key,
@@ -153,3 +162,49 @@ export function uploadMedia(): RequestHandler {
     }
   };
 }
+
+export const upsertSurveyAttachment = async (
+  file: Express.Multer.File,
+  surveyId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
+
+  if (!getSqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  if (getResponse && getResponse.rowCount > 0) {
+    const updateSqlStatement = putSurveyAttachmentSQL(surveyId, file.originalname);
+
+    if (!updateSqlStatement) {
+      throw new HTTP400('Failed to build SQL update statement');
+    }
+
+    const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+    const updateResult = (updateResponse && updateResponse.rowCount) || null;
+
+    if (!updateResult) {
+      throw new HTTP400('Failed to update survey attachment data');
+    }
+
+    return updateResult;
+  }
+
+  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, surveyId);
+
+  if (!insertSqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
+  const insertResult = (insertResponse && insertResponse.rows && insertResponse.rows[0]) || null;
+
+  if (!insertResult || !insertResult.id) {
+    throw new HTTP400('Failed to insert survey attachment data');
+  }
+
+  return insertResult.id;
+};
