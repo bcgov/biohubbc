@@ -80,7 +80,7 @@ export function deleteAttachment(): RequestHandler {
       const deleteFileResult = await deleteFileFromS3(s3Key);
 
       if (!deleteFileResult) {
-        return null;
+        return res.status(200).json(null);
       }
 
       return res.status(200).json(result && result.rowCount);

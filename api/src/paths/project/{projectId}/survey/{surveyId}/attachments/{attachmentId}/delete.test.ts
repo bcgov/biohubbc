@@ -133,7 +133,9 @@ describe('deleteAttachment', () => {
 
     const result = delete_attachment.deleteAttachment();
 
-    expect(await result(sampleReq, (null as unknown) as any, (null as unknown) as any)).to.equal(null);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.equal(null);
   });
 
   it('should return the rowCount response on success', async () => {
@@ -156,6 +158,6 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql(1);
+    expect(actualResult).to.equal(1);
   });
 });
