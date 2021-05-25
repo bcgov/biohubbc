@@ -86,7 +86,10 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
       const proprietor = response.survey_proprietor;
 
+      console.log('proprietor is (before set): ' , proprietor);
+
       setSurveyDataForUpdate(response);
+
 
       setSurveyProprietorFormData({
         survey_data_proprietary: proprietor?.isProprietary || ProprietaryDataInitialValues.survey_data_proprietary,
@@ -114,9 +117,20 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       };
 
       if (values.survey_data_proprietary === 'true') {
+
+        //surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
         surveyProprietorData.survey_proprietor['proprietary_data_category'] = values.proprietary_data_category;
-        surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
-        surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
+
+
+        if (values.proprietary_data_category === 2){
+          surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
+          surveyProprietorData.survey_proprietor['proprietor_name'] = ProprietaryDataInitialValues.proprietor_name;
+
+        } else {
+          surveyProprietorData.survey_proprietor['first_nations_id'] = null;
+          surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
+        }
+
         surveyProprietorData.survey_proprietor['category_rationale'] = values.category_rationale;
         surveyProprietorData.survey_proprietor['data_sharing_agreement_required'] =
           values.data_sharing_agreement_required;
@@ -127,6 +141,8 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         surveyProprietorData.survey_proprietor['id'] = proprietorDataForUpdate.id;
         surveyProprietorData.survey_proprietor['revision_count'] = proprietorDataForUpdate.revision_count;
       }
+
+      console.log('got this far with surveyProprietorData: ', surveyProprietorData);
 
       await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyProprietorData);
     } catch (error) {

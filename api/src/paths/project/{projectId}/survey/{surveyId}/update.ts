@@ -236,8 +236,6 @@ export const getSurveyDetailsData = async (
 
   const result = (response && response.rows && new GetSurveyDetailsData(response.rows)) || null;
 
-  console.log('result', result);
-
   if (!result) {
     throw new HTTP400('Failed to get project survey details data');
   }
@@ -261,7 +259,6 @@ export const getSurveyProprietorData = async (
     isProprietary: 'false'
   };
 
-  console.log('result', result);
 
   if (!result) {
     throw new HTTP400('Failed to get project survey proprietor data');
@@ -286,8 +283,6 @@ export function updateSurvey(): RequestHandler {
 
       const entities: IUpdateSurvey = req.body;
 
-      console.log('entities', entities);
-
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');
       }
@@ -309,8 +304,8 @@ export function updateSurvey(): RequestHandler {
       }
 
       if (entities?.survey_proprietor) {
-        const surveyProprietorId = 1;
-        promises.push(updateSurveyProprietorData(surveyId, surveyProprietorId, entities, connection));
+        //const surveyProprietorId = 1;
+        promises.push(updateSurveyProprietorData(surveyId, entities, connection));
       }
       await Promise.all(promises);
 
@@ -397,7 +392,6 @@ export const updateSurveyDetailsData = async (
 };
 
 export const updateSurveyProprietorData = async (
-  projectId: number,
   surveyId: number,
   data: IUpdateSurvey,
   connection: IDBConnection
