@@ -1083,7 +1083,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_168"
+                    name="leaflet-base-layers_204"
                     type="radio"
                   />
                   <span>
@@ -1095,7 +1095,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_168"
+                    name="leaflet-base-layers_204"
                     type="radio"
                   />
                   <span>

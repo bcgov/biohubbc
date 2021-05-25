@@ -102,7 +102,7 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test.only('updates the geometry when a pre-defined feature is returned by an overlay layer', async () => {
+  test('updates the geometry when a pre-defined feature is returned by an overlay layer', async () => {
     const feature = {
       type: 'Feature',
       geometry: {
