@@ -121,7 +121,7 @@ export function uploadMedia(): RequestHandler {
 
       const insertSurveyAttachmentsPromises =
         rawMediaArray.map((file: Express.Multer.File) =>
-          upsertSurveyAttachment(file, Number(req.params.surveyId), connection)
+          upsertSurveyAttachment(file, Number(req.params.projectId), Number(req.params.surveyId), connection)
         ) || [];
 
       await Promise.all([...insertSurveyAttachmentsPromises]);
@@ -134,7 +134,7 @@ export function uploadMedia(): RequestHandler {
           return;
         }
 
-        const key = req.params.surveyId + '/' + file.originalname;
+        const key = req.params.projectId + '/' + req.params.surveyId + '/' + file.originalname;
 
         const metadata = {
           filename: key,
@@ -165,6 +165,7 @@ export function uploadMedia(): RequestHandler {
 
 export const upsertSurveyAttachment = async (
   file: Express.Multer.File,
+  projectId: number,
   surveyId: number,
   connection: IDBConnection
 ): Promise<number> => {
@@ -193,7 +194,7 @@ export const upsertSurveyAttachment = async (
     return updateResult;
   }
 
-  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, surveyId);
+  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

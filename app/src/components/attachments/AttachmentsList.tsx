@@ -96,10 +96,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (!props.surveyId) {
-        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
-      } else if (props.surveyId) {
+      if (props.surveyId) {
         response = await biohubApi.survey.getSurveyAttachmentSignedURL(props.projectId, props.surveyId, attachment.id);
+      } else {
+        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
       }
 
       if (!response) {

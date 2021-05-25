@@ -114,19 +114,26 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
  *
  * @param fileName
  * @param fileSize
+ * @param projectId
  * @param surveyId
  * @returns {SQLStatement} sql query object
  */
-export const postSurveyAttachmentSQL = (fileName: string, fileSize: number, surveyId: number): SQLStatement | null => {
+export const postSurveyAttachmentSQL = (
+  fileName: string,
+  fileSize: number,
+  projectId: number,
+  surveyId: number
+): SQLStatement | null => {
   defaultLog.debug({
     label: 'postSurveyAttachmentSQL',
     message: 'params',
     fileName,
     fileSize,
+    projectId,
     surveyId
   });
 
-  if (!fileName || !fileSize || !surveyId) {
+  if (!fileName || !fileSize || !projectId || !surveyId) {
     return null;
   }
 
@@ -140,7 +147,7 @@ export const postSurveyAttachmentSQL = (fileName: string, fileSize: number, surv
       ${surveyId},
       ${fileName},
       ${fileSize},
-      ${surveyId + '/' + fileName}
+      ${projectId + '/' + surveyId + '/' + fileName}
     )
     RETURNING
       id;

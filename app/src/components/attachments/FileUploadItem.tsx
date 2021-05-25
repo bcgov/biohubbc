@@ -133,14 +133,14 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       setIsSafeToCancel(true);
     };
 
-    if (!props.surveyId) {
-      biohubApi.project
-        .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    } else if (props.surveyId) {
+    if (props.surveyId) {
       biohubApi.survey
         .uploadSurveyAttachments(props.projectId, props.surveyId, [file], cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+        .catch();
+    } else {
+      biohubApi.project
+        .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
     }
