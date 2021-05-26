@@ -545,10 +545,6 @@ export const updateProjectPermitData = async (
     throw new HTTP400('Missing request body entity `permit`');
   }
 
-  if (!putCoordinatorData) {
-    throw new HTTP400('Missing request body entity `coordinator`');
-  }
-
   const sqlDeleteStatement = deletePermitSQL(projectId);
 
   if (!sqlDeleteStatement) {
