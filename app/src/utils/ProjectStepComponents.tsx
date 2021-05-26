@@ -5,7 +5,6 @@ import ProjectIUCNForm from 'features/projects/components/ProjectIUCNForm';
 import ProjectLocationForm from 'features/projects/components/ProjectLocationForm';
 import ProjectObjectivesForm from 'features/projects/components/ProjectObjectivesForm';
 import ProjectPartnershipsForm from 'features/projects/components/ProjectPartnershipsForm';
-import ProjectSpeciesForm from 'features/projects/components/ProjectSpeciesForm';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 
@@ -55,16 +54,6 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
         <ProjectLocationForm
           region={
             codes?.region?.map((item) => {
-              return { value: item.name, label: item.name };
-            }) || []
-          }
-        />
-      )}
-
-      {component === 'ProjectSpecies' && (
-        <ProjectSpeciesForm
-          species={
-            codes?.species?.map((item) => {
               return { value: item.name, label: item.name };
             }) || []
           }

@@ -96,12 +96,26 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Species
+            Focal Species
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            species
+            focal species 1
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Anciliary Species
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            ancillary species 1
           </dd>
         </div>
       </div>
@@ -235,12 +249,26 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Species
+            Focal Species
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            spec
+            species 1
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Anciliary Species
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            ancillary species
           </dd>
         </div>
       </div>

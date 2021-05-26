@@ -136,6 +136,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       value={getExistingValue(values[props.id])}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
       id={props.id}
+      data-testid={props.id}
       options={props.options}
       getOptionLabel={(option) => option.label}
       getOptionSelected={handleGetOptionSelected}

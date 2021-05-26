@@ -12,6 +12,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -457,7 +458,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_135"
+                            name="leaflet-base-layers_147"
                             type="radio"
                           />
                           <span>
@@ -469,7 +470,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_135"
+                            name="leaflet-base-layers_147"
                             type="radio"
                           />
                           <span>
@@ -480,11 +481,44 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -525,6 +559,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -970,11 +1005,44 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -1015,6 +1083,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -1461,7 +1530,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_99"
                             type="radio"
                           />
                           <span>
@@ -1473,7 +1542,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_99"
                             type="radio"
                           />
                           <span>
@@ -1484,11 +1553,44 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -1529,6 +1631,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="regions"
           role="combobox"
         >
           <div
@@ -1968,7 +2071,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1980,7 +2083,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1991,11 +2094,44 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div

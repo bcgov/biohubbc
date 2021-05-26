@@ -12,7 +12,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { SurveyStatusType } from 'constants/misc';
 import clsx from 'clsx';
-import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveysListProps {
-  surveysList: IGetProjectSurveysListResponse[];
+  surveysList: IGetSurveysListResponse[];
   projectId: number;
 }
 
@@ -94,7 +94,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       {row.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.species}</TableCell>
+                  <TableCell>{row.species?.join(', ')}</TableCell>
                   <TableCell>
                     {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, row.start_date, row.end_date)}
                   </TableCell>

@@ -690,104 +690,7 @@ exports[`ProjectDetails renders correctly 1`] = `
       class="MuiBox-root MuiBox-root-32 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-33"
-      >
-        <div
-          class="MuiBox-root MuiBox-root-34"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Species
-          </h3>
-          <button
-            aria-label="Edit Species"
-            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-            tabindex="0"
-            title="Edit Species"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.3125rem; height: 1.3125rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              Edit
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-        <dl
-          class="ddInline"
-        >
-          <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-          >
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Focal Species
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                species 1
-              </dd>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                species 2
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Anciliary Species
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                species 3
-              </dd>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                species 4
-              </dd>
-            </div>
-          </div>
-        </dl>
-      </div>
-    </section>
-  </div>
-  <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-35 MuiPaper-elevation1 MuiPaper-rounded"
-  >
-    <section
-      class="MuiBox-root MuiBox-root-36 makeStyles-projectDetailsSection-1"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-38"
+        class="MuiBox-root MuiBox-root-34"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -826,16 +729,16 @@ exports[`ProjectDetails renders correctly 1`] = `
         </button>
       </div>
       <ul
-        class="MuiBox-root MuiBox-root-39 listNoBullets"
+        class="MuiBox-root MuiBox-root-35 listNoBullets"
       >
         <li
-          class="MuiBox-root MuiBox-root-40 makeStyles-iucnListItem-37"
+          class="MuiBox-root MuiBox-root-36 makeStyles-iucnListItem-33"
         >
           <hr
             class="MuiDivider-root"
           />
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-37"
           >
             <span
               class="MuiTypography-root MuiTypography-body1"
@@ -853,13 +756,13 @@ exports[`ProjectDetails renders correctly 1`] = `
           </div>
         </li>
         <li
-          class="MuiBox-root MuiBox-root-42 makeStyles-iucnListItem-37"
+          class="MuiBox-root MuiBox-root-38 makeStyles-iucnListItem-33"
         >
           <hr
             class="MuiDivider-root"
           />
           <div
-            class="MuiBox-root MuiBox-root-43"
+            class="MuiBox-root MuiBox-root-39"
           >
             <span
               class="MuiTypography-root MuiTypography-body1"
@@ -880,16 +783,16 @@ exports[`ProjectDetails renders correctly 1`] = `
     </section>
   </div>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-44 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-40 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <section
-      class="MuiBox-root MuiBox-root-45 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-41 makeStyles-projectDetailsSection-1"
     >
       <div
-        class="MuiBox-root MuiBox-root-46"
+        class="MuiBox-root MuiBox-root-42"
       >
         <div
-          class="MuiBox-root MuiBox-root-47"
+          class="MuiBox-root MuiBox-root-43"
         >
           <h3
             class="MuiTypography-root MuiTypography-h3"
@@ -977,13 +880,13 @@ exports[`ProjectDetails renders correctly 1`] = `
     </section>
   </div>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-48 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-44 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <section
-      class="MuiBox-root MuiBox-root-49 makeStyles-projectDetailsSection-1"
+      class="MuiBox-root MuiBox-root-45 makeStyles-projectDetailsSection-1"
     >
       <header
-        class="MuiBox-root MuiBox-root-50"
+        class="MuiBox-root MuiBox-root-46"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -1022,13 +925,13 @@ exports[`ProjectDetails renders correctly 1`] = `
         </button>
       </header>
       <div
-        class="MuiBox-root MuiBox-root-51"
+        class="MuiBox-root MuiBox-root-47"
       >
         <hr
           class="MuiDivider-root"
         />
         <div
-          class="MuiBox-root MuiBox-root-52"
+          class="MuiBox-root MuiBox-root-48"
         >
           <h4
             class="MuiTypography-root MuiTypography-h4"
@@ -1036,7 +939,7 @@ exports[`ProjectDetails renders correctly 1`] = `
             agency name
           </h4>
           <div
-            class="MuiBox-root MuiBox-root-53"
+            class="MuiBox-root MuiBox-root-49"
           >
             <button
               aria-label="Edit Funding Source"

@@ -7,7 +7,8 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -21,7 +22,8 @@ export interface IGeneralInformationForm {
   survey_name: string;
   start_date: string;
   end_date: string;
-  species: string;
+  focal_species: number[];
+  ancillary_species: number[];
   survey_purpose: string;
   biologist_first_name: string;
   biologist_last_name: string;
@@ -31,7 +33,8 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   survey_name: '',
   start_date: '',
   end_date: '',
-  species: '',
+  focal_species: [],
+  ancillary_species: [],
   survey_purpose: '',
   biologist_first_name: '',
   biologist_last_name: ''
@@ -44,7 +47,8 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
       .string()
       .max(3000, 'Cannot exceed 3000 characters')
       .required('You must provide a purpose for the survey'),
-    species: yup.string().required('Required'),
+    focal_species: yup.array().required('Required'),
+    ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique'),
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
@@ -53,7 +57,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 };
 
 export interface IGeneralInformationFormProps {
-  species: IAutocompleteFieldOption<string>[];
+  species: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -103,7 +107,20 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           }
         />
         <Grid item xs={12}>
-          <AutocompleteField id="species" name="species" label="Species" options={props.species} required={true} />
+          <MultiAutocompleteFieldVariableSize
+            id="focal_species"
+            label="Focal Species"
+            options={props.species}
+            required={true}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id="ancillary_species"
+            label="Ancillary Species"
+            options={props.species}
+            required={false}
+          />
         </Grid>
         <Grid item xs={12}>
           <TextField

@@ -14,7 +14,7 @@ const generalInformationFilledValues = {
   survey_name: 'survey name',
   start_date: '2000-04-09 11:53:53',
   end_date: '2020-05-10 11:53:53',
-  species: 'Species code',
+  species: [1],
   survey_purpose: 'purpose',
   biologist_first_name: 'first',
   biologist_last_name: 'last'
@@ -35,7 +35,7 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.name, label: item.name };
+                return { value: item.id, label: item.name };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -62,7 +62,7 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.name, label: item.name };
+                return { value: item.id, label: item.name };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -107,7 +107,7 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.name, label: item.name };
+                return { value: item.id, label: item.name };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}

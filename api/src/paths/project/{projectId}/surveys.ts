@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
+import { GetSurveyListData } from '../../../models/survey-view';
 import { surveyIdResponseObject } from '../../../openapi/schemas/survey';
 import { getSurveyListSQL } from '../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../utils/logger';
@@ -93,8 +94,8 @@ export function getSurveyList(): RequestHandler {
 
       let rows: any[] = [];
 
-      if (getSurveyListResponse && getSurveyListResponse.rows) {
-        rows = getSurveyListResponse.rows;
+      if (getSurveyListResponse && getSurveyListResponse.rows && new GetSurveyListData(getSurveyListResponse.rows)) {
+        rows = new GetSurveyListData(getSurveyListResponse.rows).surveys;
       }
 
       const result: any[] = _extractSurveys(rows);

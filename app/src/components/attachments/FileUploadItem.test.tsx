@@ -8,6 +8,9 @@ jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
     uploadProjectAttachments: jest.fn<Promise<any>, []>()
+  },
+  survey: {
+    uploadSurveyAttachments: jest.fn<Promise<any>, []>()
   }
 };
 
@@ -16,6 +19,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const projectId = 1;
+const surveyId = 2;
 const onCancel = jest.fn();
 
 const renderContainer = (props: IFileUploadItemProps) => {
@@ -26,6 +30,7 @@ describe('FileUploadItem', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.uploadProjectAttachments.mockClear();
+    mockBiohubApi().survey.uploadSurveyAttachments.mockClear();
   });
 
   it('calls props.onCancel when the `X` button is clicked', async () => {
@@ -74,7 +79,7 @@ describe('FileUploadItem', () => {
     });
   });
 
-  it('handles file upload success', async () => {
+  it('handles file upload success for project attachment', async () => {
     let resolveRef: (value: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
@@ -95,6 +100,48 @@ describe('FileUploadItem', () => {
     await waitFor(() => {
       expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
         projectId,
+        [testFile],
+        expect.any(Object),
+        expect.any(Function)
+      );
+
+      expect(getByText('testpng.txt')).toBeVisible();
+
+      expect(getByText('Uploading')).toBeVisible();
+    });
+
+    // Manually trigger the upload resolve to simulate a successful upload
+    // @ts-ignore
+    resolveRef(null);
+
+    await waitFor(() => {
+      expect(getByText('Complete')).toBeVisible();
+    });
+  });
+
+  it('handles file upload success for survey attachment', async () => {
+    let resolveRef: (value: unknown) => void;
+
+    const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
+      resolveRef = resolve;
+    });
+
+    mockBiohubApi().survey.uploadSurveyAttachments.mockReturnValue(mockUploadPromise);
+
+    const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
+
+    const { getByText } = renderContainer({
+      projectId,
+      surveyId,
+      file: testFile,
+      error: '',
+      onCancel: () => onCancel()
+    });
+
+    await waitFor(() => {
+      expect(mockBiohubApi().survey.uploadSurveyAttachments).toHaveBeenCalledWith(
+        projectId,
+        surveyId,
         [testFile],
         expect.any(Object),
         expect.any(Function)

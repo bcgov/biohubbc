@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { IGetProjectSurveysListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import SurveysList from './SurveysList';
 import { createMemoryHistory } from 'history';
@@ -9,11 +9,11 @@ const history = createMemoryHistory();
 
 describe('SurveysList', () => {
   it('renders correctly with surveys', () => {
-    const surveysList: IGetProjectSurveysListResponse[] = [
+    const surveysList: IGetSurveysListResponse[] = [
       {
         id: 1,
         name: 'Moose Survey 1',
-        species: 'Moose',
+        species: ['Moose'],
         start_date: '2021-04-09 11:53:53',
         end_date: '2021-05-09 11:53:53',
         status_name: 'Unpublished'
@@ -21,7 +21,7 @@ describe('SurveysList', () => {
       {
         id: 2,
         name: 'Moose Survey 2',
-        species: 'Moose',
+        species: ['Moose'],
         start_date: '2021-04-09 11:53:53',
         end_date: '2021-06-10 11:53:53',
         status_name: 'Published'
