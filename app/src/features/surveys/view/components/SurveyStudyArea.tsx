@@ -16,13 +16,18 @@ import StudyAreaForm, {
 } from 'features/surveys/components/StudyAreaForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyForViewResponse, ISurveyUpdateRequest } from 'interfaces/useSurveyApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IGetSurveyForViewResponse,
+  IUpdateSurveyRequest,
+  UPDATE_GET_SURVEY_ENTITIES
+} from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
-  projectId: number;
+  projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
 }
 
@@ -57,15 +62,15 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   ];
 
   const {
-    projectId,
-    surveyForViewData: { id, survey },
+    projectForViewData,
+    surveyForViewData: { survey_details },
     refresh
   } = props;
 
-  const { geometryCollection, bounds } = generateValidGeometryCollection(survey.geometry);
+  const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<ISurveyUpdateRequest>(null as any);
+  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -88,7 +93,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     let studyAreaResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectId, id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      ]);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -102,26 +109,30 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return;
     }
 
-    setSurveyDataForUpdate(studyAreaResponseData);
+    setSurveyDetailsDataForUpdate(studyAreaResponseData);
     setStudyAreaFormData({
       ...StudyAreaInitialValues,
-      survey_area_name: studyAreaResponseData.survey_area_name,
-      geometry: generateValidGeometryCollection(studyAreaResponseData.geometry).geometryCollection
+      survey_area_name:
+        (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
+      geometry: generateValidGeometryCollection(studyAreaResponseData.survey_details?.geometry).geometryCollection
     });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
-    const surveyData = {
-      ...surveyDataForUpdate,
-      revision_count: surveyDataForUpdate.revision_count,
-      survey_area_name: values.survey_area_name,
-      geometry: values.geometry
-    };
-
     try {
-      await biohubApi.survey.updateSurvey(projectId, id, surveyData);
+      if (surveyDetailsDataForUpdate.survey_details) {
+        const surveyData = {
+          survey_details: {
+            ...surveyDetailsDataForUpdate.survey_details,
+            survey_area_name: values.survey_area_name,
+            geometry: values.geometry
+          }
+        };
+
+        await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
+      }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -168,7 +179,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 Survey Area Name
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey.survey_area_name}
+                {survey_details.survey_area_name}
               </Typography>
             </Grid>
           </Grid>

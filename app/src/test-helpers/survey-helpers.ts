@@ -1,8 +1,8 @@
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
-  id: 1,
-  survey: {
+  survey_details: {
+    id: 1,
     survey_name: 'survey name',
     survey_purpose: 'survey purpose',
     focal_species: ['focal species 1'],
@@ -14,8 +14,9 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     survey_area_name: 'study area',
     geometry: []
   },
-  surveyProprietor: {
-    proprietor_type_name: 'proprietor type',
+  survey_proprietor: {
+    id: 23,
+    proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',
     proprietor_name: 'prop name',
