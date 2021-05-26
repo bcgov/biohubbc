@@ -11,7 +11,11 @@ import GeneralInformationForm, {
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse, IGetSurveyForUpdateResponseDetails } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyForViewResponse,
+  IGetSurveyForUpdateResponseDetails,
+  UPDATE_GET_SURVEY_ENTITIES
+} from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -22,7 +26,6 @@ import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import moment from 'moment';
 import yup from 'utils/YupSchema';
-import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetSurveyForViewResponse;

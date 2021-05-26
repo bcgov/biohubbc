@@ -62,7 +62,7 @@ export class GetSurveyDetailsData {
  * Pre-processes GET /project/{projectId}/survey/{surveyId} survey proprietor data
  *
  * @export
- * @class GetSurveyDetailsData
+ * @class GetSurveyProprietorData
  */
 export class GetSurveyProprietorData {
   isProprietary: string;

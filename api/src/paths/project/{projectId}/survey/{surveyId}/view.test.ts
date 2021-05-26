@@ -83,26 +83,6 @@ describe('getSurveyForView', () => {
     }
   });
 
-  // it('should throw a 400 error when no get survey proprietor sql statement produced', async () => {
-  //   sinon.stub(db, 'getDBConnection').returns({
-  //     ...dbConnectionObj,
-  //     systemUserId: () => {
-  //       return 20;
-  //     }
-  //   });
-  //   sinon.stub(survey_view_update_queries, 'getSurveyProprietorSQL').returns(null);
-
-  //   try {
-  //     const result = view.getSurveyForView();
-
-  //     await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-  //     expect.fail();
-  //   } catch (actualError) {
-  //     expect(actualError.status).to.equal(400);
-  //     expect(actualError.message).to.equal('Failed to build SQL get statement');
-  //   }
-  // });
-
   it('should return the survey and survey proprietor row on success', async () => {
     const survey_proprietor = {
       id: 20,

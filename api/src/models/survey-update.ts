@@ -41,10 +41,10 @@ export class PutSurveyDetailsData {
 }
 
 /**
- * Pre-processes PUT /project/{projectId}/survey/{surveyId} survey data for update
+ * Pre-processes PUT /project/{projectId}/survey/{surveyId} survey proprietor data for update
  *
  * @export
- * @class PutSurveyDetailsData
+ * @class PutSurveyProprietorData
  */
 export class PutSurveyProprietorData {
   isProprietary: boolean;
