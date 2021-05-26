@@ -1,10 +1,11 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyData } from '../../models/survey-update';
-import { putSurveySQL, getSurveyForUpdateSQL } from './survey-update-queries';
+import { PutSurveyDetailsData } from '../../models/survey-update';
+import { putSurveyDetailsSQL } from './survey-update-queries';
+import { getSurveyDetailsForUpdateSQL } from './survey-view-update-queries';
 
-describe('putSurveySQL', () => {
-  const surveyData: PutSurveyData = {
+describe('putSurveyDetailsSQL', () => {
+  const surveyData: PutSurveyDetailsData = {
     name: 'test',
     objectives: 'objectives',
     focal_species: [1, 2],
@@ -38,31 +39,31 @@ describe('putSurveySQL', () => {
   };
 
   it('returns null when null project id param provided', () => {
-    const response = putSurveySQL((null as unknown) as number, 1, surveyData, 1);
+    const response = putSurveyDetailsSQL((null as unknown) as number, 1, surveyData, 1);
 
     expect(response).to.be.null;
   });
 
   it('returns null when null survey id param provided', () => {
-    const response = putSurveySQL(1, (null as unknown) as number, surveyData, 1);
+    const response = putSurveyDetailsSQL(1, (null as unknown) as number, surveyData, 1);
 
     expect(response).to.be.null;
   });
 
   it('returns null when null survey data param provided', () => {
-    const response = putSurveySQL((null as unknown) as number, (null as unknown) as number, null, 1);
+    const response = putSurveyDetailsSQL((null as unknown) as number, (null as unknown) as number, null, 1);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided with geometry', () => {
-    const response = putSurveySQL(1, 2, surveyData, 1);
+    const response = putSurveyDetailsSQL(1, 2, surveyData, 1);
 
     expect(response).to.not.be.null;
   });
 
   it('returns non null response when valid params provided without geometry', () => {
-    const response = putSurveySQL(1, 2, { ...surveyData, geometry: null as any }, 1);
+    const response = putSurveyDetailsSQL(1, 2, { ...surveyData, geometry: null as any }, 1);
 
     expect(response).to.not.be.null;
   });
@@ -70,13 +71,13 @@ describe('putSurveySQL', () => {
 
 describe('getSurveyForUpdateSQL', () => {
   it('returns null when no surveyId provided', () => {
-    const response = getSurveyForUpdateSQL((null as unknown) as number);
+    const response = getSurveyDetailsForUpdateSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns sql statement when valid params provided', () => {
-    const response = getSurveyForUpdateSQL(1);
+    const response = getSurveyDetailsForUpdateSQL(1);
 
     expect(response).to.not.be.null;
   });

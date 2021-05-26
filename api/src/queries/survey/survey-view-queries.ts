@@ -4,54 +4,6 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
- * SQL query to retrieve a survey_proprietor row.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyProprietorSQL',
-    message: 'params',
-    surveyId
-  });
-
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      prt.name as proprietor_type_name,
-      fn.name as first_nations_name,
-      rationale,
-      proprietor_name,
-      disa_required
-    from
-      survey_proprietor as sp
-    LEFT OUTER JOIN
-      proprietor_type as prt
-    ON
-      sp.prt_id = prt.id
-    LEFT OUTER JOIN
-      first_nations as fn
-    ON
-      sp.fn_id = fn.id
-    WHERE
-      s_id = ${surveyId};
-  `;
-
-  defaultLog.debug({
-    label: 'getSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to get all surveys for list view.
  *
  * @param {number} projectId
@@ -121,6 +73,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
+      s.id,
       s.name,
       s.objectives,
       s.start_date,
