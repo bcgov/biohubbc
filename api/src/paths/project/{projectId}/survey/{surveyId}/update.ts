@@ -395,7 +395,7 @@ export const updateSurveyProprietorData = async (
 ): Promise<void> => {
   const putProprietorData = new PutSurveyProprietorData(surveyId, data);
   const isProprietary = putProprietorData.isProprietary;
-  const wasProprietary = (putProprietorData.id || putProprietorData.id === 0)|| false;
+  const wasProprietary = putProprietorData.id || putProprietorData.id === 0 || false;
 
   let sqlStatement = null;
 

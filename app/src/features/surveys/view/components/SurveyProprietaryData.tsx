@@ -8,16 +8,20 @@ import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
 import ProprietaryDataForm, {
-  IProprietaryDataForm, ProprietaryDataInitialValues,
+  IProprietaryDataForm,
+  ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyForUpdateResponse,
+  IGetSurveyForViewResponse,
+  UPDATE_GET_SURVEY_ENTITIES
+} from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
-
 
 export interface ISurveyProprietaryDataProps {
   surveyForViewData: IGetSurveyForViewResponse;

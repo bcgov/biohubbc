@@ -4,24 +4,25 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import EditDialog from 'components/dialog/EditDialog';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
-import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
-import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForUpdateResponseDetails, IGetSurveyForViewResponse, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
+import { IGetSurveyForViewResponse, IGetSurveyForUpdateResponseDetails } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
+import EditDialog from 'components/dialog/EditDialog';
+import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import moment from 'moment';
 import yup from 'utils/YupSchema';
+import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -68,8 +69,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditOpen = async () => {
-    let generalInformationResponseData;
-
     try {
       const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_details
@@ -80,26 +79,19 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         return;
       }
 
-      generalInformationResponseData = response;
+      if (response.survey_details) {
+        setSurveyDataForUpdate(response?.survey_details);
+        setGeneralInformationFormData({
+          ...response.survey_details,
+          start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, response.survey_details.start_date),
+          end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, response.survey_details.end_date)
+        });
+        setOpenEditDialog(true);
+      }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
-    }
-
-    if (generalInformationResponseData.survey_details) {
-      setSurveyDataForUpdate(generalInformationResponseData?.survey_details);
-      setGeneralInformationFormData({
-        ...generalInformationResponseData.survey_details,
-        start_date: getFormattedDate(
-          DATE_FORMAT.ShortDateFormat,
-          generalInformationResponseData.survey_details.start_date
-        ),
-        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.survey_details.end_date)
-      });
-      setOpenEditDialog(true);
-    } else {
-      showErrorDialog({ dialogText: 'Unable to retrieve survey details', open: true });
     }
   };
 
