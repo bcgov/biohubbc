@@ -278,7 +278,6 @@ export function updateSurvey(): RequestHandler {
     try {
       const projectId = Number(req.params.projectId);
       const surveyId = Number(req.params.surveyId);
-      //const surveyData = req.body;
 
       const entities: IUpdateSurvey = req.body;
 
@@ -303,7 +302,6 @@ export function updateSurvey(): RequestHandler {
       }
 
       if (entities?.survey_proprietor) {
-        //const surveyProprietorId = 1;
         promises.push(updateSurveyProprietorData(surveyId, entities, connection));
       }
       await Promise.all(promises);
@@ -397,7 +395,7 @@ export const updateSurveyProprietorData = async (
 ): Promise<void> => {
   const putProprietorData = new PutSurveyProprietorData(surveyId, data);
   const isProprietary = putProprietorData.isProprietary;
-  const wasProprietary = ((putProprietorData.id || putProprietorData.id === 0) && true) || false;
+  const wasProprietary = (putProprietorData.id || putProprietorData.id === 0)|| false;
 
   let sqlStatement = null;
 

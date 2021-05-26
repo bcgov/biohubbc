@@ -4,25 +4,24 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse, IGetSurveyForUpdateResponseDetails } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForUpdateResponseDetails, IGetSurveyForViewResponse, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { APIError } from 'hooks/api/useAxios';
-import EditDialog from 'components/dialog/EditDialog';
-import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import moment from 'moment';
 import yup from 'utils/YupSchema';
-import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 
 export interface ISurveyGeneralInformationProps {
   surveyForViewData: IGetSurveyForViewResponse;
