@@ -93,6 +93,14 @@ describe('ProjectPermits', () => {
             sampling_conducted: 'true'
           }
         ]
+      },
+      coordinator: {
+        first_name: 'first',
+        last_name: 'last',
+        email_address: 'email@example.com',
+        coordinator_agency: 'agency',
+        share_contact_details: 'true',
+        revision_count: 1
       }
     });
 
@@ -106,7 +114,8 @@ describe('ProjectPermits', () => {
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.permit
+        UPDATE_GET_ENTITIES.permit,
+        UPDATE_GET_ENTITIES.coordinator
       ]);
     });
 
@@ -139,6 +148,14 @@ describe('ProjectPermits', () => {
               sampling_conducted: 'true'
             }
           ]
+        },
+        coordinator: {
+          first_name: 'first',
+          last_name: 'last',
+          email_address: 'email@example.com',
+          coordinator_agency: 'agency',
+          share_contact_details: 'true',
+          revision_count: 1
         }
       });
 
@@ -202,6 +219,14 @@ describe('ProjectPermits', () => {
             sampling_conducted: 'true'
           }
         ]
+      },
+      coordinator: {
+        first_name: 'first',
+        last_name: 'last',
+        email_address: 'email@example.com',
+        coordinator_agency: 'agency',
+        share_contact_details: 'true',
+        revision_count: 1
       }
     });
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
@@ -216,7 +241,8 @@ describe('ProjectPermits', () => {
 
     await waitFor(() => {
       expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
-        UPDATE_GET_ENTITIES.permit
+        UPDATE_GET_ENTITIES.permit,
+        UPDATE_GET_ENTITIES.coordinator
       ]);
     });
 

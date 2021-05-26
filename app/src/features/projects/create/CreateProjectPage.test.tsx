@@ -15,7 +15,6 @@ import { ProjectLocationFormInitialValues } from 'features/projects/components/P
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
-import { ProjectSpeciesFormInitialValues } from 'features/projects/components/ProjectSpeciesForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -81,8 +80,6 @@ describe('CreateProjectPage', () => {
 
       expect(getByText('Locations')).toBeVisible();
 
-      expect(getByText('Species')).toBeVisible();
-
       expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
 
       expect(getByText('Funding')).toBeVisible();
@@ -118,8 +115,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('Objectives')).toBeVisible();
 
       expect(getByText('Locations')).toBeVisible();
-
-      expect(getByText('Species')).toBeVisible();
 
       expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
 
@@ -172,8 +167,6 @@ describe('CreateProjectPage', () => {
       expect(queryByText('Objectives')).toBeNull();
 
       expect(queryByText('Locations')).toBeNull();
-
-      expect(queryByText('Species')).toBeNull();
 
       expect(queryByText('IUCN Conservation Actions Classification')).toBeNull();
 
@@ -298,7 +291,6 @@ describe('CreateProjectPage', () => {
           permit: ProjectPermitFormInitialValues,
           project: ProjectDetailsFormInitialValues,
           objectives: ProjectObjectivesFormInitialValues,
-          species: ProjectSpeciesFormInitialValues,
           location: ProjectLocationFormInitialValues,
           iucn: ProjectIUCNFormInitialValues,
           funding: ProjectFundingFormInitialValues,
@@ -435,7 +427,6 @@ describe('CreateProjectPage', () => {
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
-          species: expect.any(Object),
           iucn: expect.any(Object),
           funding: expect.any(Object),
           partnerships: expect.any(Object)
@@ -470,7 +461,6 @@ describe('CreateProjectPage', () => {
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
-          species: expect.any(Object),
           iucn: expect.any(Object),
           funding: expect.any(Object),
           partnerships: expect.any(Object)

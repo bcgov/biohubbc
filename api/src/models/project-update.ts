@@ -22,18 +22,6 @@ export class PutIUCNData {
   }
 }
 
-export class PutSpeciesData {
-  focal_species: string[];
-  ancillary_species: string[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutSpeciesData', message: 'params', obj });
-
-    this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
-    this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
-  }
-}
-
 export class PutProjectData {
   name: string;
   type: number;
@@ -356,7 +344,7 @@ export class GetPermitData {
           return {
             permit_number: item.number,
             permit_type: item.type,
-            sampling_conducted: item.sampling_conducted ? 'true' : 'false'
+            sampling_conducted: 'true' // any permit associated with project has sampling conducted true
           };
         })) ||
       [];

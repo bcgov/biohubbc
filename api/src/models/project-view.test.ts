@@ -9,82 +9,6 @@ import {
   GetPermitData,
   GetProjectData
 } from './project-view';
-import { GetSpeciesData } from './project-view-update';
-
-describe('GetSpeciesData', () => {
-  describe('No values provided', () => {
-    let data: GetSpeciesData;
-
-    before(() => {
-      data = new GetSpeciesData((null as unknown) as any[], []);
-    });
-
-    it('sets focal_species', function () {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', function () {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('focal species values provided', () => {
-    let data: GetSpeciesData;
-
-    const focal_species = [{ name: 'species 1' }, { name: 'species 2' }];
-    const ancillary_species: any[] = [];
-
-    before(() => {
-      data = new GetSpeciesData(focal_species, ancillary_species);
-    });
-
-    it('sets focal_species', function () {
-      expect(data.focal_species).to.eql(['species 1', 'species 2']);
-    });
-
-    it('sets ancillary_species', function () {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('ancillary species values provided', () => {
-    let data: GetSpeciesData;
-
-    const focal_species = (null as unknown) as any[];
-    const ancillary_species = [{ name: 'species 3' }, { name: 'species 4' }];
-
-    before(() => {
-      data = new GetSpeciesData(focal_species, ancillary_species);
-    });
-
-    it('sets focal_species', function () {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', function () {
-      expect(data.ancillary_species).to.eql(['species 3', 'species 4']);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetSpeciesData;
-
-    const focal_species = [{ name: 'species 1' }, { name: 'species 2' }];
-    const ancillary_species = [{ name: 'species 3' }];
-
-    before(() => {
-      data = new GetSpeciesData(focal_species, ancillary_species);
-    });
-
-    it('sets focal_species', function () {
-      expect(data.focal_species).to.eql(['species 1', 'species 2']);
-    });
-
-    it('sets ancillary_species', function () {
-      expect(data.ancillary_species).to.eql(['species 3']);
-    });
-  });
-});
 
 describe('GetPartnershipsData', () => {
   describe('No values provided', () => {
@@ -494,14 +418,13 @@ describe('GetPermitData', () => {
     });
   });
 
-  describe('All values provided with sampling conducted as true', () => {
+  describe('All values provided', () => {
     let projectPermitData: GetPermitData;
 
     const permits = [
       {
         number: '1',
-        type: 'permit type',
-        sampling_conducted: true
+        type: 'permit type'
       }
     ];
 
@@ -515,32 +438,6 @@ describe('GetPermitData', () => {
           permit_number: '1',
           permit_type: 'permit type',
           sampling_conducted: true
-        }
-      ]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as false', () => {
-    let projectPermitData: GetPermitData;
-
-    const permits = [
-      {
-        number: '1',
-        type: 'permit type',
-        sampling_conducted: false
-      }
-    ];
-
-    before(() => {
-      projectPermitData = new GetPermitData(permits);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type',
-          sampling_conducted: false
         }
       ]);
     });

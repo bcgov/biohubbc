@@ -8,7 +8,8 @@ export const surveyCreatePostRequestObject = {
     'survey_name',
     'start_date',
     'end_date',
-    'species',
+    'focal_species',
+    'ancillary_species',
     'survey_purpose',
     'biologist_first_name',
     'biologist_last_name',
@@ -29,9 +30,19 @@ export const surveyCreatePostRequestObject = {
       type: 'string',
       description: 'ISO 8601 date string'
     },
-    species: {
-      type: 'string',
-      description: 'Selected species'
+    focal_species: {
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected focal species ids'
+    },
+    ancillary_species: {
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected ancillary species ids'
     },
     survey_purpose: {
       type: 'string'
@@ -119,7 +130,20 @@ export const surveyUpdatePutRequestObject = {
   properties: {
     survey_name: { type: 'string' },
     survey_purpose: { type: 'string' },
-    species: { type: 'string' },
+    focal_species: {
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected focal species ids'
+    },
+    ancillary_species: {
+      type: 'array',
+      items: {
+        type: 'number'
+      },
+      description: 'Selected ancillary species ids'
+    },
     start_date: { type: 'string' },
     end_date: { type: 'string' },
     biologist_first_name: { type: 'string' },

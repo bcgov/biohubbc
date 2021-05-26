@@ -59,6 +59,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -162,6 +163,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div
@@ -552,11 +554,44 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -644,6 +679,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -769,6 +805,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div
@@ -1173,7 +1210,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1185,7 +1222,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1196,11 +1233,44 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div
@@ -1295,6 +1365,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="park"
           role="combobox"
         >
           <div
@@ -1427,6 +1498,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+          data-testid="management_unit"
           role="combobox"
         >
           <div
@@ -1838,7 +1910,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_99"
                             type="radio"
                           />
                           <span>
@@ -1850,7 +1922,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_99"
                             type="radio"
                           />
                           <span>
@@ -1861,11 +1933,44 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
-                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    />
+                    >
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Wildlife Management Units
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Section
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            type="checkbox"
+                          />
+                          <span>
+                             Parks - Regional
+                          </span>
+                        </div>
+                      </label>
+                    </div>
                   </section>
                 </div>
                 <div

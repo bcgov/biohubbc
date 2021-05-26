@@ -12,7 +12,7 @@ import {
   GetLocationData,
   GetPermitData
 } from '../../../models/project-view';
-import { GetSpeciesData, GetFundingData } from '../../../models/project-view-update';
+import { GetFundingData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getIndigenousPartnershipsByProjectSQL,
@@ -22,8 +22,6 @@ import {
 } from '../../../queries/project/project-view-queries';
 import {
   getStakeholderPartnershipsByProjectSQL,
-  getFocalSpeciesByProjectSQL,
-  getAncillarySpeciesByProjectSQL,
   getLocationByProjectSQL,
   getActivitiesByProjectSQL,
   getFundingSourceByProjectSQL
@@ -100,8 +98,6 @@ function getProjectForView(): RequestHandler {
         Number(req.params.projectId)
       );
       const getProjectFundingSourceSQLStatement = getFundingSourceByProjectSQL(Number(req.params.projectId));
-      const getProjectFocalSpeciesSQLStatement = getFocalSpeciesByProjectSQL(Number(req.params.projectId));
-      const getProjectAncillarySpeciesSQLStatement = getAncillarySpeciesByProjectSQL(Number(req.params.projectId));
       const getProjectIndigenousPartnershipsSQLStatement = getIndigenousPartnershipsByProjectSQL(
         Number(req.params.projectId)
       );
@@ -116,8 +112,6 @@ function getProjectForView(): RequestHandler {
         !getProjectActivitiesSQLStatement ||
         !getProjectIUCNActionClassificationSQLStatement ||
         !getProjectFundingSourceSQLStatement ||
-        !getProjectFocalSpeciesSQLStatement ||
-        !getProjectAncillarySpeciesSQLStatement ||
         !getProjectIndigenousPartnershipsSQLStatement ||
         !getProjectStakeholderPartnershipsSQLStatement
       ) {
@@ -133,8 +127,6 @@ function getProjectForView(): RequestHandler {
         activityData,
         iucnClassificationData,
         fundingData,
-        focalSpecies,
-        ancillarySpecies,
         indigenousPartnerships,
         stakeholderPartnerships
       ] = await Promise.all([
@@ -147,11 +139,6 @@ function getProjectForView(): RequestHandler {
           getProjectIUCNActionClassificationSQLStatement.values
         ),
         await connection.query(getProjectFundingSourceSQLStatement.text, getProjectFundingSourceSQLStatement.values),
-        await connection.query(getProjectFocalSpeciesSQLStatement.text, getProjectFocalSpeciesSQLStatement.values),
-        await connection.query(
-          getProjectAncillarySpeciesSQLStatement.text,
-          getProjectAncillarySpeciesSQLStatement.values
-        ),
         await connection.query(
           getProjectIndigenousPartnershipsSQLStatement.text,
           getProjectIndigenousPartnershipsSQLStatement.values
@@ -181,14 +168,6 @@ function getProjectForView(): RequestHandler {
       const getCoordinatorData =
         (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
 
-      const getSpeciesData =
-        (focalSpecies &&
-          focalSpecies.rows &&
-          ancillarySpecies &&
-          ancillarySpecies.rows &&
-          new GetSpeciesData(focalSpecies.rows, ancillarySpecies.rows)) ||
-        null;
-
       const getPartnershipsData =
         (indigenousPartnerships &&
           indigenousPartnerships.rows &&
@@ -214,7 +193,6 @@ function getProjectForView(): RequestHandler {
         location: getLocationData,
         iucn: getIUCNClassificationData,
         funding: getFundingData,
-        species: getSpeciesData,
         partnerships: getPartnershipsData
       };
 

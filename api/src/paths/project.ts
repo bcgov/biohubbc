@@ -11,8 +11,6 @@ import {
   putProjectAttachmentSQL
 } from '../queries/project/project-attachments-queries';
 import {
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL,
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
@@ -24,6 +22,7 @@ import {
 } from '../queries/project/project-create-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
+import { insertNoSamplePermit } from './permit-no-sampling';
 
 const defaultLog = getLogger('paths/project');
 
@@ -121,24 +120,6 @@ function createProject(): RequestHandler {
 
         const promises: Promise<any>[] = [];
 
-        // Handle focal species
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.species.focal_species.map((focalSpecies: string) =>
-              insertFocalSpecies(focalSpecies, projectId, connection)
-            )
-          )
-        );
-
-        // Handle ancillary species
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.species.ancillary_species.map((ancillarySpecies: string) =>
-              insertAncillarySpecies(ancillarySpecies, projectId, connection)
-            )
-          )
-        );
-
         // Handle regions
         promises.push(
           Promise.all(
@@ -175,18 +156,16 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle project permits
+        // Handle project and no sampling permits
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
-              insertPermitNumber(
-                permit.permit_number,
-                permit.permit_type,
-                projectId,
-                permit.sampling_conducted,
-                connection
-              )
-            )
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) => {
+              if (permit.sampling_conducted) {
+                return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
+              }
+
+              return insertNoSamplePermit(permit, sanitizedProjectPostData.coordinator, connection);
+            })
           )
         );
 
@@ -225,50 +204,6 @@ function createProject(): RequestHandler {
     }
   };
 }
-
-export const insertFocalSpecies = async (
-  focal_species: string,
-  project_id: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = postFocalSpeciesSQL(focal_species, project_id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project focal species data');
-  }
-
-  return result.id;
-};
-
-export const insertAncillarySpecies = async (
-  ancillary_species: string,
-  project_id: number,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = postAncillarySpeciesSQL(ancillary_species, project_id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project ancillary species data');
-  }
-
-  return result.id;
-};
 
 export const insertRegion = async (region: string, project_id: number, connection: IDBConnection): Promise<number> => {
   const sqlStatement = postProjectRegionSQL(region, project_id);
@@ -358,10 +293,9 @@ export const insertPermitNumber = async (
   permit_number: string,
   permit_type: string,
   project_id: number,
-  sampling_conducted: boolean,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id, sampling_conducted);
+  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

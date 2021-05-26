@@ -34,6 +34,7 @@ const useStyles = makeStyles({
 
 export interface IAttachmentsListProps {
   projectId: number;
+  surveyId?: number;
   attachmentsList: IGetProjectAttachment[];
   getAttachments: (forceFetch: boolean) => void;
 }
@@ -73,7 +74,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
+      let response;
+
+      if (!props.surveyId) {
+        response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
+      } else if (props.surveyId) {
+        response = await biohubApi.survey.deleteSurveyAttachment(props.projectId, props.surveyId, attachment.id);
+      }
 
       if (!response) {
         return;
@@ -87,7 +94,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const viewFileContents = async (attachment: any) => {
     try {
-      const response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      let response;
+
+      if (props.surveyId) {
+        response = await biohubApi.survey.getSurveyAttachmentSignedURL(props.projectId, props.surveyId, attachment.id);
+      } else {
+        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      }
 
       if (!response) {
         return;

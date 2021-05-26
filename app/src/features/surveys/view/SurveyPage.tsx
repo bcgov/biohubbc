@@ -17,11 +17,13 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse, IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import SurveyAttachments from './SurveyAttachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -64,7 +66,7 @@ const SurveyPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
 
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetProjectSurveyForViewResponse | null>(null);
+  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
   useEffect(() => {
@@ -95,14 +97,13 @@ const SurveyPage: React.FC = () => {
   }, [biohubApi.project, urlParams]);
 
   const getSurvey = useCallback(async () => {
-    const surveyWithDetailsResponse = await biohubApi.project.getSurveyForView(urlParams['id'], urlParams['survey_id']);
+    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id']);
 
     if (!surveyWithDetailsResponse) {
       return;
     }
-
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.survey, urlParams]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
@@ -142,20 +143,20 @@ const SurveyPage: React.FC = () => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>
-              <Typography variant="body2">{surveyWithDetails.survey.survey_name}</Typography>
+              <Typography variant="body2">{surveyWithDetails.survey_details.survey_name}</Typography>
             </Breadcrumbs>
           </Box>
 
           <Box pb={4}>
             <Box mb={1}>
-              <Typography variant="h1">{surveyWithDetails.survey.survey_name}</Typography>
+              <Typography variant="h1">{surveyWithDetails.survey_details.survey_name}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle1" color="textSecondary">
                 {getFormattedDateRangeString(
                   DATE_FORMAT.ShortMediumDateFormat2,
-                  surveyWithDetails.survey.start_date,
-                  surveyWithDetails.survey.end_date
+                  surveyWithDetails.survey_details.start_date,
+                  surveyWithDetails.survey_details.end_date
                 )}
               </Typography>
             </Box>
@@ -197,6 +198,9 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+            )}
+            {location.pathname.includes('/attachments') && (
+              <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
           </Box>
         </Box>

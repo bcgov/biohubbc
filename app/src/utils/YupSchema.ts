@@ -69,7 +69,7 @@ yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: str
 
     let hasDuplicates = false;
 
-    this.parent.focal_species.forEach((species: string) => {
+    this.parent.focal_species.forEach((species: number) => {
       if (values.includes(species)) {
         hasDuplicates = true;
       }

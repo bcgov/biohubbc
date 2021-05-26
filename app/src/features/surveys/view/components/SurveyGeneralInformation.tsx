@@ -10,11 +10,12 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
-  IGetProjectForViewResponse,
-  IGetProjectSurveyForViewResponse,
-  ISurveyUpdateRequest
-} from 'interfaces/useProjectApi.interface';
+  IGetSurveyForViewResponse,
+  IGetSurveyForUpdateResponseDetails,
+  UPDATE_GET_SURVEY_ENTITIES
+} from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -27,7 +28,7 @@ import moment from 'moment';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyGeneralInformationProps {
-  surveyForViewData: IGetProjectSurveyForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
   codes: IGetAllCodeSetsResponse;
   projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
@@ -43,13 +44,13 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const {
     projectForViewData,
-    surveyForViewData: { id, survey },
+    surveyForViewData: { survey_details },
     codes,
     refresh
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<ISurveyUpdateRequest>(null as any);
+  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponseDetails>(null as any);
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
@@ -71,43 +72,48 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditOpen = async () => {
-    let generalInformationResponseData;
+    let surveyDetailsResponseData;
 
     try {
-      const response = await biohubApi.project.getSurveyForUpdate(projectForViewData.id, id);
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      ]);
 
-      if (!response) {
+      if (!response?.survey_details) {
         showErrorDialog({ open: true });
         return;
       }
 
-      generalInformationResponseData = response;
+      surveyDetailsResponseData = response.survey_details;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setSurveyDataForUpdate(generalInformationResponseData);
-
+    setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
-      ...generalInformationResponseData,
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, generalInformationResponseData.end_date)
+      ...surveyDetailsResponseData,
+      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.start_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.end_date)
     });
     setOpenEditDialog(true);
   };
-
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
-    const surveyData = {
-      ...values,
-      revision_count: surveyDataForUpdate.revision_count,
-      survey_area_name: surveyDataForUpdate.survey_area_name,
-      geometry: surveyDataForUpdate.geometry
-    };
-
     try {
-      await biohubApi.project.updateSurvey(projectForViewData.id, id, surveyData);
+      if (surveyDataForUpdate) {
+        const surveyDetailsData = {
+          survey_details: {
+            ...values,
+            id: surveyDataForUpdate.id,
+            revision_count: surveyDataForUpdate.revision_count,
+            survey_area_name: surveyDataForUpdate.survey_area_name,
+            geometry: surveyDataForUpdate.geometry
+          }
+        };
+
+        await biohubApi.survey.updateSurvey(projectForViewData.id, surveyDataForUpdate.id, surveyDetailsData);
+      }
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -128,8 +134,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           element: (
             <GeneralInformationForm
               species={
-                codes?.species?.map((item: any) => {
-                  return { value: item.name, label: item.name };
+                codes?.species?.map((item) => {
+                  return { value: item.id, label: item.name };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -202,7 +208,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 Survey Name
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey.survey_name}
+                {survey_details.survey_name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -210,18 +216,18 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 Survey Timeline
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey.end_date ? (
+                {survey_details.end_date ? (
                   <>
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat2,
-                      survey.start_date,
-                      survey.end_date
+                      survey_details.start_date,
+                      survey_details.end_date
                     )}
                   </>
                 ) : (
                   <>
                     <span>Start Date:</span>{' '}
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey.start_date)}
+                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey_details.start_date)}
                   </>
                 )}
               </Typography>
@@ -231,16 +237,37 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 Survey Lead
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey.biologist_first_name} {survey.biologist_last_name}
+                {survey_details.biologist_first_name} {survey_details.biologist_last_name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Species
+                Focal Species
               </Typography>
-              <Typography component="dd" variant="body1">
-                {survey.species}
+              {survey_details.focal_species.map((focalSpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {focalSpecies}
+                  </Typography>
+                );
+              })}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Anciliary Species
               </Typography>
+              {survey_details.ancillary_species?.map((ancillarySpecies: string, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {ancillarySpecies}
+                  </Typography>
+                );
+              })}
+              {survey_details.ancillary_species.length <= 0 && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>
@@ -251,7 +278,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                     Purpose
                   </Typography>
                 </Box>
-                <Typography>{survey.survey_purpose}</Typography>
+                <Typography>{survey_details.survey_purpose}</Typography>
               </Box>
             </Grid>
           </Grid>

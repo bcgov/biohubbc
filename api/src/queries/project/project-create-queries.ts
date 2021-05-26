@@ -96,76 +96,6 @@ export const postProjectSQL = (
 };
 
 /**
- * SQL query to insert a focal species row.
- *
- * @param {string} species
- * @returns {SQLStatement} sql query object
- */
-export const postFocalSpeciesSQL = (species: string, projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', postFocalSpeciesSQL, projectId });
-
-  if (!species || !projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-      INSERT INTO focal_species (
-        p_id,
-        name
-      ) VALUES (
-        ${projectId},
-        ${species}
-      )
-      RETURNING
-        id;
-    `;
-
-  defaultLog.debug({
-    label: 'postFocalSpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to insert a ancillary species row.
- *
- * @param {string} species
- * @returns {SQLStatement} sql query object
- */
-export const postAncillarySpeciesSQL = (species: string, projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', postAncillarySpeciesSQL, projectId });
-
-  if (!species || !projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-        INSERT INTO ancillary_species (
-          p_id,
-          name
-        ) VALUES (
-          ${projectId},
-          ${species}
-        )
-        RETURNING
-          id;
-      `;
-
-  defaultLog.debug({
-    label: 'postAncillarySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to insert a project region row.
  *
  * @param {string} region
@@ -332,25 +262,23 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
 };
 
 /**
- * SQL query to insert a project permit row.
+ * SQL query to insert a permit row for permit associated to a project.
  *
  * @param permit_number
+ * @param permit_type
  * @param projectId
- * @param sampling_conducted
  * @returns {SQLStatement} sql query object
  */
 export const postProjectPermitSQL = (
   permit_number: string,
   permit_type: string,
-  projectId: number,
-  sampling_conducted: boolean
+  projectId: number
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectPermitSQL',
     message: 'params',
     permit_number,
     permit_type,
-    sampling_conducted,
     projectId
   });
 
@@ -359,16 +287,14 @@ export const postProjectPermitSQL = (
   }
 
   const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_permit (
+      INSERT INTO permit (
         p_id,
         number,
-        type,
-        sampling_conducted
+        type
       ) VALUES (
         ${projectId},
         ${permit_number},
-        ${permit_type},
-        ${sampling_conducted}
+        ${permit_type}
       )
       RETURNING
         id;

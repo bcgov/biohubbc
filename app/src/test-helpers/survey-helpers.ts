@@ -1,11 +1,12 @@
-import { IGetProjectSurveyForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
-export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse = {
-  id: 1,
-  survey: {
+export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
+  survey_details: {
+    id: 1,
     survey_name: 'survey name',
     survey_purpose: 'survey purpose',
-    species: 'species',
+    focal_species: ['focal species 1'],
+    ancillary_species: ['ancillary species 1'],
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     biologist_first_name: 'first',
@@ -13,8 +14,9 @@ export const getProjectSurveyForViewResponse: IGetProjectSurveyForViewResponse =
     survey_area_name: 'study area',
     geometry: []
   },
-  surveyProprietor: {
-    proprietor_type_name: 'proprietor type',
+  survey_proprietor: {
+    id: 23,
+    proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',
     proprietor_name: 'prop name',

@@ -18,8 +18,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_purpose).to.equal(null);
     });
 
-    it('sets species', () => {
-      expect(data.species).to.equal(null);
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
     });
 
     it('sets start_date', () => {
@@ -63,7 +67,8 @@ describe('PostSurveyObject', () => {
       biologist_last_name: 'last',
       end_date: '2020/04/04',
       foippa_requirements_accepted: 'true',
-      species: 'species',
+      focal_species: [1, 2],
+      ancillary_species: [3, 4],
       start_date: '2020/03/03',
       survey_area_name: 'area name',
       survey_data_proprietary: 'false',
@@ -105,8 +110,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
     });
 
-    it('sets species', () => {
-      expect(data.species).to.equal(surveyObj.species);
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql(surveyObj.focal_species);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
     });
 
     it('sets start_date', () => {
@@ -154,7 +163,8 @@ describe('PostSurveyObject', () => {
       biologist_last_name: 'last',
       end_date: '2020/04/04',
       foippa_requirements_accepted: 'true',
-      species: 'species',
+      focal_species: [1, 2],
+      ancillary_species: [3, 4],
       start_date: '2020/03/03',
       survey_area_name: 'area name',
       survey_data_proprietary: 'true',
@@ -179,8 +189,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
     });
 
-    it('sets species', () => {
-      expect(data.species).to.equal(surveyObj.species);
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql(surveyObj.focal_species);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
     });
 
     it('sets start_date', () => {

@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { GetAttachmentsData } from '../../../../models/project-attachments';
+import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
 import { getLogger } from '../../../../utils/logger';
 
