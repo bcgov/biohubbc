@@ -46,7 +46,7 @@ GET.apiDoc = {
   ]
 };
 
-function getSingleAttachmentURL(): RequestHandler {
+export function getSingleAttachmentURL(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get single attachment url', message: 'params', req_params: req.params });
 
@@ -79,7 +79,7 @@ function getSingleAttachmentURL(): RequestHandler {
 
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0]?.key;
+      const s3Key = result && result.rows.length && result.rows[0].key;
 
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
