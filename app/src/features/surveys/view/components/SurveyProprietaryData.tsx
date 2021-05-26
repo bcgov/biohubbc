@@ -4,22 +4,20 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import ProprietaryDataForm, {
-  ProprietaryDataInitialValues,
-  ProprietaryDataYupSchema,
-  IProprietaryDataForm
-} from 'features/surveys/components/ProprietaryDataForm';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-
-import { APIError } from 'hooks/api/useAxios';
 import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
+import ProprietaryDataForm, {
+  IProprietaryDataForm, ProprietaryDataInitialValues,
+  ProprietaryDataYupSchema
+} from 'features/surveys/components/ProprietaryDataForm';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForUpdateResponse, IGetSurveyForViewResponse, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import React, { useState } from 'react';
+
 
 export interface ISurveyProprietaryDataProps {
   surveyForViewData: IGetSurveyForViewResponse;
