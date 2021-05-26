@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetAttachmentsData } from './project-attachments';
+import { GetAttachmentsData } from './project-survey-attachments';
 
 describe('GetAttachmentsData', () => {
   describe('No values provided', () => {
