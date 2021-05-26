@@ -9,27 +9,29 @@ export const projectCreatePostRequestObject = {
     coordinator: {
       title: 'Project coordinator',
       type: 'object',
+      required: [
+        'first_name',
+        'last_name',
+        'email_address',
+        'coordinator_agency',
+        'share_contact_details'
+      ],
       properties: {
         first_name: {
-          type: 'string',
-          required: true
+          type: 'string'
         },
         last_name: {
-          type: 'string',
-          required: true
+          type: 'string'
         },
         email_address: {
-          type: 'string',
-          required: true
+          type: 'string'
         },
         coordinator_agency: {
-          type: 'string',
-          required: true
+          type: 'string'
         },
         share_contact_details: {
           type: 'string',
-          enum: ['true', 'false'],
-          required: true
+          enum: ['true', 'false']
         }
       }
     },
