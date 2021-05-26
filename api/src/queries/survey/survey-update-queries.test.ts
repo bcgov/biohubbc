@@ -1,9 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PutSurveyDetailsData } from '../../models/survey-update';
-import { putSurveyDetailsSQL } from './survey-update-queries';
+import {putSurveyDetailsSQL } from './survey-update-queries';
+import { getSurveyDetailsForUpdateSQL} from './survey-view-update-queries';
 
-describe('putSurveySQL', () => {
+
+
+describe('putSurveyDetailsSQL', () => {
   const surveyData: PutSurveyDetailsData = {
     name: 'test',
     objectives: 'objectives',
@@ -55,8 +58,28 @@ describe('putSurveySQL', () => {
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid params provided', () => {
+  it('returns non null response when valid params provided with geometry', () => {
     const response = putSurveyDetailsSQL(1, 2, surveyData, 1);
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid params provided without geometry', () => {
+    const response = putSurveyDetailsSQL(1, 2, { ...surveyData, geometry: null as any }, 1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyForUpdateSQL', () => {
+  it('returns null when no surveyId provided', () => {
+    const response = getSurveyDetailsForUpdateSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = getSurveyDetailsForUpdateSQL(1);
 
     expect(response).to.not.be.null;
   });

@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveyListSQL } from './survey-view-queries';
 import { getSurveyProprietorForUpdateSQL } from './survey-view-update-queries';
+import { getSurveyForViewSQL } from './survey-view-queries';
+import { getSurveyListSQL } from '../../queries/survey/survey-view-queries';
 
 describe('getSurveyProprietorSQL', () => {
   it('returns null when null survey id param provided', () => {
@@ -26,6 +27,20 @@ describe('getSurveyListSQL', () => {
 
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyListSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyForViewSQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getSurveyForViewSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getSurveyForViewSQL(1);
 
     expect(response).to.not.be.null;
   });
