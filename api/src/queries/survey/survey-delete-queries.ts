@@ -74,3 +74,41 @@ export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete survey proprietor rows.
+ *
+ * @param {number} surveyId
+ * @param {number} surveyProprietorId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyProprietorSQL',
+    message: 'params',
+    surveyId,
+    surveyProprietorId
+  });
+
+  if ((!surveyId && surveyId !== 0) || (!surveyProprietorId && surveyProprietorId !== 0)) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_proprietor
+    WHERE
+      id = ${surveyProprietorId}
+    AND
+      s_id = ${surveyId}
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyProprietorSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
