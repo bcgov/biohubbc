@@ -11,20 +11,25 @@ export const projectCreatePostRequestObject = {
       type: 'object',
       properties: {
         first_name: {
-          type: 'string'
+          type: 'string',
+          required: true
         },
         last_name: {
-          type: 'string'
+          type: 'string',
+          required: true
         },
         email_address: {
-          type: 'string'
+          type: 'string',
+          required: true
         },
         coordinator_agency: {
-          type: 'string'
+          type: 'string',
+          required: true
         },
         share_contact_details: {
           type: 'string',
-          enum: ['true', 'false']
+          enum: ['true', 'false'],
+          required: true
         }
       }
     },

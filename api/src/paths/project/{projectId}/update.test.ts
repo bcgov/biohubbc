@@ -79,24 +79,6 @@ describe('updateProjectPermitData', () => {
     }
   });
 
-  it('should throw a 400 error when no coordinator entities', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    try {
-      await update.updateProjectPermitData(projectId, { ...entities, coordinator: null }, dbConnectionObj);
-
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing request body entity `coordinator`');
-    }
-  });
-
   it('should throw a 400 error when failed to generate delete permit SQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
