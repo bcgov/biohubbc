@@ -56,7 +56,7 @@ function getSingleAttachmentURL(): RequestHandler {
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {
-        return null;
+        return res.status(200).json(null);
       }
 
       return res.status(200).json(s3SignedUrl);

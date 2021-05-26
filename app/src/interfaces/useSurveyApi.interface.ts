@@ -139,3 +139,20 @@ export enum UPDATE_GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
   survey_proprietor = 'survey_proprietor'
 }
+
+export interface IGetSurveyAttachment {
+  id: number;
+  fileName: string;
+  lastModified: string;
+  size: number;
+}
+
+/**
+ * Get survey attachments response object.
+ *
+ * @export
+ * @interface IGetSurveyAttachmentsResponse
+ */
+export interface IGetSurveyAttachmentsResponse {
+  attachmentsList: IGetSurveyAttachment[];
+}

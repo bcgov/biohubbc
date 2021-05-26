@@ -23,6 +23,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import SurveyAttachments from './SurveyAttachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -197,6 +198,9 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+            )}
+            {location.pathname.includes('/attachments') && (
+              <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
           </Box>
         </Box>

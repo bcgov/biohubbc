@@ -2,19 +2,19 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/CustomError';
+import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
+import { getSurveyAttachmentsSQL } from '../../../../../../queries/survey/survey-attachments-queries';
+import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
 
-export const GET: Operation = [getAttachments()];
+export const GET: Operation = [getSurveyAttachments()];
 
 GET.apiDoc = {
-  description: 'Fetches a list of attachments of a project.',
+  description: 'Fetches a list of attachments of a survey.',
   tags: ['attachments'],
   security: [
     {
@@ -29,11 +29,19 @@ GET.apiDoc = {
         type: 'number'
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
     }
   ],
   responses: {
     200: {
-      description: 'Project get response file description array.',
+      description: 'Survey get response file description array.',
       content: {
         'application/json': {
           schema: {
@@ -64,28 +72,28 @@ GET.apiDoc = {
   }
 };
 
-export function getAttachments(): RequestHandler {
+export function getSurveyAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get attachments list', message: 'params', req_params: req.params });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectAttachmentsSQLStatement = getProjectAttachmentsSQL(Number(req.params.projectId));
+      const getSurveyAttachmentsSQLStatement = getSurveyAttachmentsSQL(Number(req.params.surveyId));
 
-      if (!getProjectAttachmentsSQLStatement) {
+      if (!getSurveyAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const attachmentsData = await connection.query(
-        getProjectAttachmentsSQLStatement.text,
-        getProjectAttachmentsSQLStatement.values
+        getSurveyAttachmentsSQLStatement.text,
+        getSurveyAttachmentsSQLStatement.values
       );
 
       await connection.commit();
@@ -95,7 +103,7 @@ export function getAttachments(): RequestHandler {
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectAttachments', message: 'error', error });
+      defaultLog.debug({ label: 'getSurveyAttachments', message: 'error', error });
       throw error;
     } finally {
       connection.release();
