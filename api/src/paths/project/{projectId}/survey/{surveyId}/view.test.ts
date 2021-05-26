@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as view from './view';
 import * as db from '../../../../../database/db';
 import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
+import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -44,9 +45,12 @@ describe('getSurveyForView', () => {
   } as any;
 
   let actualResult = {
-    id: null,
-    survey: null,
-    surveyProprietor: null
+    survey_details: {
+      id: null
+    },
+    survey_proprietor: {
+      id: null
+    }
   };
 
   const sampleRes = {
@@ -79,36 +83,22 @@ describe('getSurveyForView', () => {
     }
   });
 
-  it('should throw a 400 error when no get survey proprietor sql statement produced', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-    sinon.stub(survey_view_queries, 'getSurveyProprietorSQL').returns(null);
-
-    try {
-      const result = view.getSurveyForView();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should return the survey and survey proprietor row on success', async () => {
-    const surveyProprietor = {
+    const survey_proprietor = {
+      id: 20,
+      proprietor_type_id: 12,
       proprietor_type_name: 'type',
       first_nations_name: 'fn name',
-      rationale: 'rationale',
+      category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: true
+      disa_required: true,
+      first_nations_id: 1,
+      isProprietary: 'true',
+      revision_count: 3
     };
 
-    const survey = {
+    const survey_details = {
+      id: 2,
       name: 'name',
       objectives: 'objective',
       focal_species: 'species',
@@ -127,11 +117,11 @@ describe('getSurveyForView', () => {
     mockQuery
       .onFirstCall()
       .resolves({
-        rows: [survey]
+        rows: [survey_details]
       })
       .onSecondCall()
       .resolves({
-        rows: [surveyProprietor]
+        rows: [survey_proprietor]
       });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -142,33 +132,39 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyProprietorSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
     sinon.stub(survey_view_queries, 'getSurveyForViewSQL').returns(SQL`some query`);
 
     const result = view.getSurveyForView();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult.id).to.equal(2);
-    expect(actualResult.survey).to.eql({
-      survey_name: survey.name,
-      survey_purpose: survey.objectives,
-      focal_species: [survey.focal_species],
-      ancillary_species: [survey.ancillary_species],
-      start_date: survey.start_date,
-      end_date: survey.end_date,
-      biologist_first_name: survey.lead_first_name,
-      biologist_last_name: survey.lead_last_name,
-      survey_area_name: survey.location_name,
-      revision_count: survey.revision_count,
-      geometry: survey.geometry
+    expect(actualResult.survey_details.id).to.equal(2);
+    expect(actualResult.survey_details).to.eql({
+      id: survey_details.id,
+      survey_name: survey_details.name,
+      survey_purpose: survey_details.objectives,
+      focal_species: [survey_details.focal_species],
+      ancillary_species: [survey_details.ancillary_species],
+      start_date: survey_details.start_date,
+      end_date: survey_details.end_date,
+      biologist_first_name: survey_details.lead_first_name,
+      biologist_last_name: survey_details.lead_last_name,
+      survey_area_name: survey_details.location_name,
+      revision_count: survey_details.revision_count,
+      geometry: survey_details.geometry
     });
-    expect(actualResult.surveyProprietor).to.eql({
-      proprietor_type_name: surveyProprietor.proprietor_type_name,
-      first_nations_name: surveyProprietor.first_nations_name,
-      category_rationale: surveyProprietor.rationale,
-      proprietor_name: surveyProprietor.proprietor_name,
-      data_sharing_agreement_required: 'true'
+    expect(actualResult.survey_proprietor).to.eql({
+      isProprietary: survey_proprietor.isProprietary,
+      id: survey_proprietor.id,
+      proprietary_data_category: survey_proprietor.proprietor_type_id,
+      proprietary_data_category_name: survey_proprietor.proprietor_type_name,
+      first_nations_name: survey_proprietor.first_nations_name,
+      first_nations_id: survey_proprietor.first_nations_id,
+      category_rationale: survey_proprietor.category_rationale,
+      proprietor_name: survey_proprietor.proprietor_name,
+      data_sharing_agreement_required: 'true',
+      revision_count: survey_proprietor.revision_count
     });
   });
 
@@ -193,15 +189,14 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyProprietorSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
     sinon.stub(survey_view_queries, 'getSurveyForViewSQL').returns(SQL`some query`);
 
     const result = view.getSurveyForView();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult.survey).to.be.null;
-    expect(actualResult.surveyProprietor).to.be.null;
-    expect(actualResult.id).to.equal(2);
+    expect(actualResult.survey_details).to.be.null;
+    expect(actualResult.survey_proprietor).to.be.null;
   });
 });

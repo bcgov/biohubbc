@@ -1,16 +1,18 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveyProprietorSQL, getSurveyListSQL, getSurveyForViewSQL } from './survey-view-queries';
+import { getSurveyProprietorForUpdateSQL } from './survey-view-update-queries';
+import { getSurveyForViewSQL } from './survey-view-queries';
+import { getSurveyListSQL } from '../../queries/survey/survey-view-queries';
 
 describe('getSurveyProprietorSQL', () => {
   it('returns null when null survey id param provided', () => {
-    const response = getSurveyProprietorSQL((null as unknown) as number);
+    const response = getSurveyProprietorForUpdateSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns a non null response when valid params passed in', () => {
-    const response = getSurveyProprietorSQL(1);
+    const response = getSurveyProprietorForUpdateSQL(1);
 
     expect(response).to.not.be.null;
   });
