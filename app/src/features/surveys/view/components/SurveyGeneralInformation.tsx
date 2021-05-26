@@ -69,32 +69,33 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditOpen = async () => {
+    let surveyDetailsResponseData;
+
     try {
       const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_details
       ]);
 
-      if (!response) {
+      if (!response?.survey_details) {
         showErrorDialog({ open: true });
         return;
       }
 
-      if (response.survey_details) {
-        setSurveyDataForUpdate(response?.survey_details);
-        setGeneralInformationFormData({
-          ...response.survey_details,
-          start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, response.survey_details.start_date),
-          end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, response.survey_details.end_date)
-        });
-        setOpenEditDialog(true);
-      }
+      surveyDetailsResponseData = response.survey_details;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
-  };
 
+    setSurveyDataForUpdate(surveyDetailsResponseData);
+    setGeneralInformationFormData({
+      ...surveyDetailsResponseData,
+      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.start_date),
+      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.end_date)
+    });
+    setOpenEditDialog(true);
+  };
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
     try {
       if (surveyDataForUpdate) {
