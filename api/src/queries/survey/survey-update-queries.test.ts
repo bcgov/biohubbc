@@ -1,10 +1,8 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PutSurveyDetailsData } from '../../models/survey-update';
-import {putSurveyDetailsSQL } from './survey-update-queries';
-import { getSurveyDetailsForUpdateSQL} from './survey-view-update-queries';
-
-
+import { putSurveyDetailsSQL } from './survey-update-queries';
+import { getSurveyDetailsForUpdateSQL } from './survey-view-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
   const surveyData: PutSurveyDetailsData = {
