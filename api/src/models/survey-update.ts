@@ -62,10 +62,10 @@ export class PutSurveyProprietorData {
 
     this.isProprietary = obj?.survey_proprietor?.isProprietary === 'true' || false;
     this.id = obj?.survey_proprietor?.id ?? null;
-    this.prt_id = obj?.survey_proprietor?.proprietary_data_category ?? null;
+    this.prt_id = obj?.survey_proprietor?.proprietary_data_category || null;
     this.s_id = surveyId;
-    this.fn_id = obj?.survey_proprietor?.first_nations_id ?? null;
-    this.rationale = obj?.survey_proprietor?.category_rationale ?? null;
+    this.fn_id = obj?.survey_proprietor?.first_nations_id || null;
+    this.rationale = obj?.survey_proprietor?.category_rationale || null;
     this.proprietor_name =
       (!obj?.survey_proprietor?.first_nations_id && obj?.survey_proprietor?.proprietor_name) || null;
     this.disa_required = obj?.survey_proprietor?.data_sharing_agreement_required === 'true' || false;

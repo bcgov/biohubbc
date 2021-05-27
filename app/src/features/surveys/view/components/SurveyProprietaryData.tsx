@@ -105,39 +105,22 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
     }
 
     setOpenEditDialog(true);
+    console.log(surveyProprietorFormData);
   };
 
   const handleDialogEditSave = async (values: IProprietaryDataForm) => {
+    const surveyData = {
+      survey_proprietor: {
+        ...values,
+        isProprietary: values.survey_data_proprietary,
+        id: surveyDataForUpdate?.survey_proprietor?.id,
+        surveyId: survey_details?.id,
+        revision_count: surveyDataForUpdate?.survey_proprietor?.revision_count
+      }
+    };
+
     try {
-      let surveyProprietorData = {
-        survey_proprietor: {
-          isProprietary: values.survey_data_proprietary
-        }
-      };
-
-      if (values.survey_data_proprietary === 'true') {
-        surveyProprietorData.survey_proprietor['proprietary_data_category'] = values.proprietary_data_category;
-
-        if (values.proprietary_data_category === 2) {
-          surveyProprietorData.survey_proprietor['first_nations_id'] = values.first_nations_id;
-          surveyProprietorData.survey_proprietor['proprietor_name'] = ProprietaryDataInitialValues.proprietor_name;
-        } else {
-          surveyProprietorData.survey_proprietor['first_nations_id'] = null;
-          surveyProprietorData.survey_proprietor['proprietor_name'] = values.proprietor_name;
-        }
-
-        surveyProprietorData.survey_proprietor['category_rationale'] = values.category_rationale;
-        surveyProprietorData.survey_proprietor['data_sharing_agreement_required'] =
-          values.data_sharing_agreement_required;
-      }
-
-      if (surveyDataForUpdate?.survey_proprietor) {
-        const proprietorDataForUpdate = surveyDataForUpdate?.survey_proprietor;
-        surveyProprietorData.survey_proprietor['id'] = proprietorDataForUpdate.id;
-        surveyProprietorData.survey_proprietor['revision_count'] = proprietorDataForUpdate.revision_count;
-      }
-
-      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyProprietorData);
+      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

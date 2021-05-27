@@ -95,7 +95,21 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 name="survey_data_proprietary"
                 aria-label="Survey Data Proprietary"
                 value={values.survey_data_proprietary}
-                onChange={handleChange}>
+                onChange={(event) => {
+                  handleChange(event);
+
+                  if (event.target.value === 'false') {
+                    setFieldValue('proprietary_data_category', ProprietaryDataInitialValues.proprietary_data_category);
+                    setFieldValue('first_nations_id', ProprietaryDataInitialValues.first_nations_id);
+                    setFieldValue('proprietor_name', ProprietaryDataInitialValues.proprietor_name);
+                    setFieldValue('category_rationale', ProprietaryDataInitialValues.category_rationale);
+                    setFieldValue(
+                      'data_sharing_agreement_required',
+                      ProprietaryDataInitialValues.data_sharing_agreement_required
+                    );
+                  }
+                  setFieldValue('survey_data_proprietary', event.target.value);
+                }}>
                 <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
                 <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
                 <FormHelperText>{errors.survey_data_proprietary}</FormHelperText>
@@ -120,7 +134,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   // Need to reset proprietor name if user changes category from first nations to something else
                   // because the name will now be freeform text
                   if (values.proprietary_data_category === 2 && option?.value !== 2) {
-                    setFieldValue('proprietor_name', '');
+                    setFieldValue('proprietor_name', ProprietaryDataInitialValues.proprietor_name);
                   }
                 }}
                 required={true}
