@@ -105,7 +105,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
     }
 
     setOpenEditDialog(true);
-    console.log(surveyProprietorFormData);
   };
 
   const handleDialogEditSave = async (values: IProprietaryDataForm) => {
