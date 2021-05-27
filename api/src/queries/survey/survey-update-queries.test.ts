@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyDetailsData } from '../../models/survey-update';
-import { putSurveyDetailsSQL } from './survey-update-queries';
+import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
+import { putSurveyDetailsSQL, putSurveyProprietorSQL } from './survey-update-queries';
 import { getSurveyDetailsForUpdateSQL } from './survey-view-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
@@ -78,6 +78,26 @@ describe('getSurveyForUpdateSQL', () => {
 
   it('returns sql statement when valid params provided', () => {
     const response = getSurveyDetailsForUpdateSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putSurveyProprietorSQL', () => {
+  it('returns null when surveyId is falsey value not equal to 0', () => {
+    const response = putSurveyProprietorSQL((null as unknown) as number, { prt_id: 1 } as PutSurveyProprietorData);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null when survey proprietor id is falsey value not equal to 0', () => {
+    const response = putSurveyProprietorSQL(1, (null as unknown) as PutSurveyProprietorData);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null when valid params passed in', () => {
+    const response = putSurveyProprietorSQL(1, { prt_id: 1 } as PutSurveyProprietorData);
 
     expect(response).to.not.be.null;
   });
