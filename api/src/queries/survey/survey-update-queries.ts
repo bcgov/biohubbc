@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutSurveyData } from '../../models/survey-update';
+import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
 import { getLogger } from '../../utils/logger';
 import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 
@@ -10,32 +10,32 @@ const defaultLog = getLogger('queries/survey/survey-update-queries');
  *
  * @param {number} projectId
  * @param {number} surveyId
- * @param {PutSurveyData} survey
+ * @param {PutSurveyDetailsData} data
  * @returns {SQLStatement} sql query object
  */
-export const putSurveySQL = (
+export const putSurveyDetailsSQL = (
   projectId: number,
   surveyId: number,
-  survey: PutSurveyData | null,
+  data: PutSurveyDetailsData | null,
   revision_count: number
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'putSurveySQL',
+    label: 'putSurveyDetailsSQL',
     message: 'params',
     projectId,
     surveyId,
-    survey,
+    data,
     revision_count
   });
 
-  if (!projectId || !surveyId || !survey) {
+  if (!projectId || !surveyId || !data) {
     return null;
   }
 
   const geometrySqlStatement = SQL``;
 
-  if (survey.geometry && survey.geometry.length) {
-    const geometryCollectionSQL = generateGeometryCollectionSQL(survey.geometry);
+  if (data.geometry && data.geometry.length) {
+    const geometryCollectionSQL = generateGeometryCollectionSQL(data.geometry);
 
     geometrySqlStatement.append(SQL`
       public.geography(
@@ -57,14 +57,14 @@ export const putSurveySQL = (
   const sqlStatement = SQL`
     UPDATE survey
     SET
-      name = ${survey.name},
-      objectives = ${survey.objectives},
-      start_date = ${survey.start_date},
-      end_date = ${survey.end_date},
-      lead_first_name = ${survey.lead_first_name},
-      lead_last_name = ${survey.lead_last_name},
-      location_name = ${survey.location_name},
-      geography = 
+      name = ${data.name},
+      objectives = ${data.objectives},
+      start_date = ${data.start_date},
+      end_date = ${data.end_date},
+      lead_first_name = ${data.lead_first_name},
+      lead_last_name = ${data.lead_last_name},
+      location_name = ${data.location_name},
+      geography =
   `;
 
   sqlStatement.append(geometrySqlStatement);
@@ -79,7 +79,7 @@ export const putSurveySQL = (
   `);
 
   defaultLog.debug({
-    label: 'putSurveySQL',
+    label: 'putSurveyDetailsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -89,55 +89,42 @@ export const putSurveySQL = (
 };
 
 /**
- * SQL query to retrieve a survey row for update purposes.
+ * SQL query to update a survey row.
  *
  * @param {number} surveyId
+ * @param {number} surveyProprietorId
+ * @param {PutSurveyProprietorData} data
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyForUpdateSQL = (surveyId: number): SQLStatement | null => {
+export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyProprietorData | null): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getSurveyForUpdateSQL',
+    label: 'putSurveyProprietorSQL',
     message: 'params',
-    surveyId
+    surveyId,
+    data
   });
 
-  if (!surveyId) {
+  if (!surveyId || !data) {
     return null;
   }
 
   const sqlStatement = SQL`
-    SELECT
-      s.name,
-      s.objectives,
-      s.start_date,
-      s.end_date,
-      s.lead_first_name,
-      s.lead_last_name,
-      s.location_name,
-      public.ST_asGeoJSON(s.geography) as geometry,
-      s.revision_count,
-      CASE
-        WHEN ss.is_focal = TRUE THEN wtu.id
-      END as focal_species,
-      CASE
-        WHEN ss.is_focal = FALSE THEN wtu.id
-      END as ancillary_species
-    FROM
-      wldtaxonomic_units as wtu
-    LEFT OUTER JOIN
-      study_species as ss
-    ON
-      ss.wu_id = wtu.id
-    LEFT OUTER JOIN
-      survey as s
-    ON
-      s.id = ss.s_id
+    UPDATE survey_proprietor
+    SET
+      prt_id = ${data.prt_id},
+      fn_id = ${data.fn_id},
+      rationale = ${data.rationale},
+      proprietor_name = ${data.proprietor_name},
+      disa_required = ${data.disa_required},
+      revision_count = ${data.revision_count}
     WHERE
-      s.id = ${surveyId};
+      id = ${data.id}
+    AND
+      s_id = ${surveyId}
   `;
 
   defaultLog.debug({
-    label: 'getSurveyForUpdateSQL',
+    label: 'putSurveyProprietorSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

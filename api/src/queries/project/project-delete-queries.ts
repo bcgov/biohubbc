@@ -72,7 +72,7 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
 };
 
 /**
- * SQL query to delete project permit rows (project_permit)
+ * SQL query to delete permit rows associated to a project
  *
  * @param {projectId} projectId
  * @returns {SQLStatement} sql query object
@@ -90,7 +90,7 @@ export const deletePermitSQL = (projectId: number): SQLStatement | null => {
 
   const sqlStatement: SQLStatement = SQL`
     DELETE
-      from project_permit
+      from permit
     WHERE
       p_id = ${projectId};
   `;

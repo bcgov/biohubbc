@@ -23,6 +23,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import SurveyAttachments from './SurveyAttachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -101,9 +102,8 @@ const SurveyPage: React.FC = () => {
     if (!surveyWithDetailsResponse) {
       return;
     }
-
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.survey, urlParams]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
@@ -143,20 +143,20 @@ const SurveyPage: React.FC = () => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>
-              <Typography variant="body2">{surveyWithDetails.survey.survey_name}</Typography>
+              <Typography variant="body2">{surveyWithDetails.survey_details.survey_name}</Typography>
             </Breadcrumbs>
           </Box>
 
           <Box pb={4}>
             <Box mb={1}>
-              <Typography variant="h1">{surveyWithDetails.survey.survey_name}</Typography>
+              <Typography variant="h1">{surveyWithDetails.survey_details.survey_name}</Typography>
             </Box>
             <Box>
               <Typography variant="subtitle1" color="textSecondary">
                 {getFormattedDateRangeString(
                   DATE_FORMAT.ShortMediumDateFormat2,
-                  surveyWithDetails.survey.start_date,
-                  surveyWithDetails.survey.end_date
+                  surveyWithDetails.survey_details.start_date,
+                  surveyWithDetails.survey_details.end_date
                 )}
               </Typography>
             </Box>
@@ -224,6 +224,9 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+            )}
+            {location.pathname.includes('/attachments') && (
+              <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
           </Box>
         </Box>

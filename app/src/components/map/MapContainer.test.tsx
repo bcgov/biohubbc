@@ -1,12 +1,33 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import MapContainer from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+
+jest.mock('../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  external: {
+    get: jest.fn()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
 
 describe('MapContainer', () => {
   // To ignore: Deprecated use of _flat, please use L.LineUtil.isFlat instead
   console.warn = jest.fn();
+
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().external.get.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
 
   const classes = jest.fn().mockImplementation(() => {
     return jest.fn().mockReturnValue({
@@ -79,6 +100,62 @@ describe('MapContainer', () => {
     const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} hideDrawControls={true} />);
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('updates the geometry when a pre-defined feature is returned by an overlay layer', async () => {
+    const feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-124.044265, 48.482268],
+            [-124.044265, 49.140633],
+            [-122.748143, 49.140633],
+            [-122.748143, 48.482268],
+            [-124.044265, 48.482268]
+          ]
+        ]
+      },
+      properties: {
+        OBJECTID: 332
+      }
+    };
+
+    mockBiohubApi().external.get.mockResolvedValue({
+      features: [feature]
+    });
+
+    const setGeometry = jest.fn();
+
+    const { getByText, getByTestId, container } = render(
+      <MapContainer mapId="myMap" zoom={10} classes={classes} geometryState={{ geometry: [], setGeometry }} />
+    );
+
+    fireEvent.click(getByText('Wildlife Management Units'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().external.get).toHaveBeenCalledWith(
+        expect.stringContaining('pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
+      );
+    });
+
+    // Get the child element from the overlay pane (which should be our single feature element)
+    const overlayFeatureElement = container.querySelector('.leaflet-overlay-pane .leaflet-interactive');
+
+    if (!overlayFeatureElement) {
+      fail();
+    }
+
+    fireEvent.click(overlayFeatureElement);
+
+    await waitFor(() => {
+      expect(getByTestId('add_boundary')).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId('add_boundary'));
+
+    expect(setGeometry).toHaveBeenCalledWith([feature]);
   });
 
   test('draws a marker successfully on the map and updates the geometry', () => {

@@ -90,7 +90,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           DEBUG=* npm run db:build -- --pr=$BUILD_ID --branch=$BRANCH --type=static
@@ -138,7 +138,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -185,7 +185,7 @@ jobs:
 
       # Build the api image
       - name: Build API Image
-        working-directory: './api/.pipeline/'
+        working-directory: "./api/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -234,7 +234,7 @@ jobs:
 
       # Build the app image
       - name: Build APP Image
-        working-directory: './app/.pipeline/'
+        working-directory: "./app/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -283,7 +283,7 @@ jobs:
 
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -333,7 +333,7 @@ jobs:
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -383,7 +383,7 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: './api/.pipeline/'
+        working-directory: "./api/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -432,7 +432,7 @@ jobs:
 
       # Deploy the app image
       - name: Deploy App Image
-        working-directory: './app/.pipeline'
+        working-directory: "./app/.pipeline"
         run: |
           npm install
           # npm ci
@@ -484,7 +484,7 @@ jobs:
 
       # Clean the database build/deployment artifacts
       - name: Clean Database Artifacts
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -493,7 +493,7 @@ jobs:
 
       # Clean the api build/deployment artifacts
       - name: Clean API Artifacts
-        working-directory: './api/.pipeline/'
+        working-directory: "./api/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -502,7 +502,7 @@ jobs:
 
       # Clean the app build/deployment artifacts
       - name: Clean APP Artifacts
-        working-directory: './app/.pipeline/'
+        working-directory: "./app/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -516,3 +516,18 @@ jobs:
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
           oc project af2668-tools
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      - deployDatabase
+      - deployDatabaseSetup
+      - deployAPI
+      - deployAPP
+    steps:
+      - name: Notify
+        uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ secrets.github_token }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}

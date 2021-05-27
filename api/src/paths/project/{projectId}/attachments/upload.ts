@@ -15,7 +15,7 @@ const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 export const POST: Operation = [uploadMedia()];
 POST.apiDoc = {
   description: 'Upload project-specific attachments.',
-  tags: ['artifacts'],
+  tags: ['attachments'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -29,7 +29,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Artifacts upload post request object.',
+    description: 'Attachments upload post request object.',
     content: {
       'multipart/form-data': {
         schema: {
@@ -99,7 +99,7 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
-    if (!req.params.projectId || !req.params.projectId.length) {
+    if (!req.params.projectId) {
       throw new HTTP400('Missing projectId');
     }
 

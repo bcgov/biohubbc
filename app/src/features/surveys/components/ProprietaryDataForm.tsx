@@ -129,8 +129,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             <Grid item xs={12}>
               {values.proprietary_data_category === 2 && (
                 <AutocompleteField
-                  id="proprietor_name"
-                  name="proprietor_name"
+                  id="first_nations_id"
+                  name="first_nations_id"
                   label="Proprietor Name"
                   options={props.first_nations}
                   onChange={(event, option) => {
