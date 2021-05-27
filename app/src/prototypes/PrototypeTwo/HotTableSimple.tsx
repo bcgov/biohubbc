@@ -42,12 +42,12 @@ const HotTableSimple: React.FC = () => {
   ];
 
   const [data] = useState<any[][]>([
-    [, , , , , , , , '=SUM(B1:H1)', , , , ,],
-    [, , , , , , , , '=SUM(B2:H2)', , , , ,],
-    [, , , , , , , , '=SUM(B3:H3)', , , , ,],
-    [, , , , , , , , '=SUM(B4:H4)', , , , ,],
-    [, , , , , , , , '=SUM(B5:H5)', , , , ,],
-    [, , , , , , , , '=SUM(B6:H6)', , , , ,]
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,],
+    [, , , , , , , , , , , , ,]
   ]);
 
   const [settings] = useState<Handsontable.GridSettings>({
@@ -68,26 +68,24 @@ const HotTableSimple: React.FC = () => {
     formulas: true,
     manualColumnResize: true,
     manualRowResize: true,
-    // afterChange: (changes, source) => {
-    //   if (source === 'auto') {
-    //     return;
-    //   }
+    afterChange: (changes, source) => {
+      if (source === 'auto') {
+        return;
+      }
 
-    //   changes?.forEach((change) => {
-    //     const row = change[0];
+      changes?.forEach((change) => {
+        const row = change[0];
 
-    //     const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(0, 8);
+        const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(0, 8);
 
-    //     const rowNumbers = rowData?.filter((item) => !isNaN(Number(item)));
+        const rowNumbers = rowData?.filter((item) => !isNaN(Number(item)));
 
-    //     console.log(rowNumbers);
-
-    //     hotRef.current?.hotInstance.setDataAtCell(
-    //       [[row, 8, rowNumbers?.splice(0, 8).reduce((a, b) => a + b, 0)]],
-    //       'auto'
-    //     );
-    //   });
-    // },
+        hotRef.current?.hotInstance.setDataAtCell(
+          [[row, 8, rowNumbers?.splice(0, 8).reduce((a, b) => a + b, 0)]],
+          'auto'
+        );
+      });
+    },
     columns: [
       {
         type: 'numeric',
