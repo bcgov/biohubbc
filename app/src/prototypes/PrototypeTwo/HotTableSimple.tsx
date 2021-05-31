@@ -41,28 +41,21 @@ const HotTableSimple: React.FC = () => {
     ]
   ];
 
-  const [data] = useState<any[][]>([
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,],
-    [, , , , , , , , , , , , ,]
-  ]);
+  const [data] = useState<any[][]>([[, , , , , , , , , , , , ,]]);
 
   const [settings] = useState<Handsontable.GridSettings>({
     data: data,
     nestedHeaders: headers,
     viewportRowRenderingOffset: 'auto',
-    minRows: 6,
+    minRows: 8,
     contextMenu: true,
     collapsibleColumns: true,
     rowHeaders: true,
     search: true,
     width: '100%',
     height: '100%',
-    rowHeights: 30,
-    colWidths: 60,
+    rowHeights: 40,
+    colWidths: 75,
     readOnly: false,
     columnSorting: true,
     formulas: true,
@@ -114,7 +107,7 @@ const HotTableSimple: React.FC = () => {
       { type: 'numeric' },
       { type: 'numeric' },
       { type: 'dropdown', source: ['None', 'Mild', 'Medium', 'Dense'] },
-      { type: 'text' }
+      { type: 'text', width: 200 }
     ]
   });
 

@@ -19,6 +19,7 @@ import HotTableSimple from 'prototypes/PrototypeTwo/HotTableSimple';
 import React, { useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import './handsontable.scss';
+import { IPageState } from './PrototypeTypePage';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-interface INewBlockForm {
+export interface INewBlockForm {
   block_name: string;
   block_size: number;
   date: string;
@@ -98,7 +99,13 @@ const blockSurveyInitialValues: INewBlockForm = {
   aircraft_gps_readout: ''
 };
 
-const NewBlockCondensed: React.FC = () => {
+export interface INewBlockCondensedProps {
+  pageState?: IPageState;
+  setPageState?: any;
+  goToBlockListPage?: () => void;
+}
+
+const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
   const classes = useStyles();
   const history = useHistory();
   const urlParams = useParams();
@@ -116,12 +123,12 @@ const NewBlockCondensed: React.FC = () => {
               <Link color="primary" aria-current="page" className={classes.breadCrumbLink}>
                 <Typography variant="body2">Moose Inventory of Upper Mainland</Typography>
               </Link>
-              <Typography variant="body2">New Block Survey (Condensed)</Typography>
+              <Typography variant="body2">New Block</Typography>
             </Breadcrumbs>
           </Box>
 
           <Box mb={3}>
-            <Typography variant="h1">New Block Survey (Condensed)</Typography>
+            <Typography variant="h1">New Block</Typography>
           </Box>
 
           <Box display="block">
@@ -600,7 +607,17 @@ const NewBlockCondensed: React.FC = () => {
                   history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
                 }}
                 className={classes.actionButton}>
-                Save and Continue
+                Save and Add Another
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+                }}
+                className={classes.actionButton}>
+                Save and Review
               </Button>
               <Button
                 variant="outlined"

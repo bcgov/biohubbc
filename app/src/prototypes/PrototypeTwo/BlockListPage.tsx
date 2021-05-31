@@ -1,18 +1,18 @@
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { useHistory } from 'react-router';
-import TableBody from '@material-ui/core/TableBody';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { IBlockData, IPageState } from './PrototypeTypePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -37,17 +37,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const BlockListPage: React.FC = () => {
+export interface IBlockListPageProps {
+  pageState?: IPageState;
+  setPageState?: any;
+  goToNewBlockPage: () => void;
+}
+
+const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
   const classes = useStyles();
-  const history = useHistory();
-
-  // const navigateToCreateObservationPage_v1 = () => {
-  //   history.push('/projects/1/surveys/1/prototype/1');
-  // };
-
-  const navigateToCreateObservationPage_v2 = () => {
-    history.push('/projects/1/surveys/1/prototype/2');
-  };
 
   return (
     <Box mb={6} my={4}>
@@ -55,13 +52,7 @@ const BlockListPage: React.FC = () => {
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h2">Blocks</Typography>
           <Box display="flex" justifyContent="space-between">
-            {/* <Box mr={1}>
-              <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v1()}>
-                Add Block v1
-              </Button>
-            </Box> */}
-
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
+            <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
               Add Block
             </Button>
           </Box>
@@ -77,20 +68,15 @@ const BlockListPage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    {'1'}
-                  </TableCell>
-                  <TableCell>{'5'}</TableCell>
-                  <TableCell>{'2021-05-15'}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    {'2'}
-                  </TableCell>
-                  <TableCell>{'3'}</TableCell>
-                  <TableCell>{'2021-05-16'}</TableCell>
-                </TableRow>
+                {props?.pageState?.blockData?.map((item: IBlockData) => (
+                  <TableRow>
+                    <TableCell component="th" scope="row">
+                      {item.block}
+                    </TableCell>
+                    <TableCell>{item.numObservations}</TableCell>
+                    <TableCell>{item.date}</TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </TableContainer>

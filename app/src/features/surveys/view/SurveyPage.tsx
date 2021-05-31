@@ -176,7 +176,7 @@ const SurveyPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText>Survey Details</ListItemText>
                   </ListItem>
-                  <ListItem component={NavLink} to="prototype/1/observationlist">
+                  <ListItem component={NavLink} to="prototype/2">
                     <ListItemIcon>
                       <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
                     </ListItemIcon>
@@ -191,7 +191,7 @@ const SurveyPage: React.FC = () => {
                 </List>
               </Paper>
             </Box>
-            <Box component="aside" mr={6} mt={5}>
+            {/* <Box component="aside" mr={6} mt={5}>
               <Paper>
                 <List component="nav" role="navigation" className={classes.surveyNav} aria-label="Prototype Navigation">
                   <ListItem component={NavLink} to="prototype/1">
@@ -214,7 +214,7 @@ const SurveyPage: React.FC = () => {
                   </ListItem>
                 </List>
               </Paper>
-            </Box>
+            </Box> */}
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (

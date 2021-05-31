@@ -4,11 +4,10 @@ import { default as ProjectsLayout } from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
-import NewBlock from 'prototypes/PrototypeOne/NewBlock';
-import NewBlockCondensed from 'prototypes/PrototypeTwo/NewBlockCondensed';
-import { FormikTestWrapper } from 'prototypes/PrototypeOne/Observation';
-import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
-import ObservationListPage from 'prototypes/PrototypeOne/ObservationListPage';
+import PrototypeTypePage from 'prototypes/PrototypeTwo/PrototypeTypePage';
+// import Observation from 'prototypes/PrototypeOne/Observation';
+// import ObservationListPage from 'prototypes/PrototypeOne/ObservationListPage';
+// import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
@@ -73,38 +72,31 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/prototype/1"
-        component={NewBlock}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
         path="/projects/:id?/surveys/:survey_id?/prototype/2"
-        component={NewBlockCondensed}
+        component={PrototypeTypePage}
         componentProps={props}
       />
-      <PrivateRoute
+      {/* <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/prototype/1/observationlist"
+        path="/projects/:id?/surveys/:survey_id?/prototype/1/blocklist"
+        component={BlockListPage}
+        componentProps={props}
+      /> */}
+      {/* <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/prototype/1/Observationlist"
         component={ObservationListPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/prototype/1/blocklist"
-        component={BlockListPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
         path="/projects/:id?/surveys/:survey_id?/prototype/1/observation"
-        component={FormikTestWrapper}
+        component={Observation}
         componentProps={props}
-      />
+      /> */}
       <PrivateRoute
         exact
         layout={ProjectsLayout}
