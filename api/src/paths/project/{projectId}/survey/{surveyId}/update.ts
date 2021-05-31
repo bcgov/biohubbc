@@ -273,10 +273,7 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result =
-    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
-
-  return result;
+  return (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
 };
 
 /**
