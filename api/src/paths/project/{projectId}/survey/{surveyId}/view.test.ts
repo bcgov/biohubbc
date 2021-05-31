@@ -93,7 +93,7 @@ describe('getSurveyForView', () => {
       proprietor_name: 'name',
       disa_required: true,
       first_nations_id: 1,
-      isProprietary: 'true',
+      survey_data_proprietary: 'true',
       revision_count: 3
     };
 
@@ -155,7 +155,6 @@ describe('getSurveyForView', () => {
       geometry: survey_details.geometry
     });
     expect(actualResult.survey_proprietor).to.eql({
-      isProprietary: survey_proprietor.isProprietary,
       id: survey_proprietor.id,
       proprietary_data_category: survey_proprietor.proprietor_type_id,
       proprietary_data_category_name: survey_proprietor.proprietor_type_name,
@@ -163,6 +162,7 @@ describe('getSurveyForView', () => {
       first_nations_id: survey_proprietor.first_nations_id,
       category_rationale: survey_proprietor.category_rationale,
       proprietor_name: survey_proprietor.proprietor_name,
+      survey_data_proprietary: survey_proprietor.survey_data_proprietary,
       data_sharing_agreement_required: 'true',
       revision_count: survey_proprietor.revision_count
     });

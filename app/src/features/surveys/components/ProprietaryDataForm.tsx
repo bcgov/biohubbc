@@ -77,7 +77,21 @@ export interface IProprietaryDataFormProps {
 const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   const classes = useStyles();
 
-  const { values, touched, errors, handleChange, setFieldValue } = useFormikContext<IProprietaryDataForm>();
+  const {
+    values,
+    touched,
+    errors,
+    handleChange,
+    setFieldValue,
+    setFieldTouched,
+    setFieldError
+  } = useFormikContext<IProprietaryDataForm>();
+
+  const resetField = (name: string) => {
+    setFieldValue(name, ProprietaryDataInitialValues[name]);
+    setFieldTouched(name, false);
+    setFieldError(name, undefined);
+  };
 
   return (
     <form>
@@ -96,19 +110,16 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 aria-label="Survey Data Proprietary"
                 value={values.survey_data_proprietary}
                 onChange={(event) => {
-                  handleChange(event);
-
+                  // If radio button is toggled to `false`, reset the now hidden form fields
                   if (event.target.value === 'false') {
-                    setFieldValue('proprietary_data_category', ProprietaryDataInitialValues.proprietary_data_category);
-                    setFieldValue('first_nations_id', ProprietaryDataInitialValues.first_nations_id);
-                    setFieldValue('proprietor_name', ProprietaryDataInitialValues.proprietor_name);
-                    setFieldValue('category_rationale', ProprietaryDataInitialValues.category_rationale);
-                    setFieldValue(
-                      'data_sharing_agreement_required',
-                      ProprietaryDataInitialValues.data_sharing_agreement_required
-                    );
+                    resetField('proprietary_data_category');
+                    resetField('first_nations_id');
+                    resetField('proprietor_name');
+                    resetField('category_rationale');
+                    resetField('data_sharing_agreement_required');
                   }
-                  setFieldValue('survey_data_proprietary', event.target.value);
+
+                  handleChange(event);
                 }}>
                 <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
                 <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
@@ -129,13 +140,24 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 label="Proprietary Data Category"
                 options={props.proprietary_data_category}
                 onChange={(event, option) => {
-                  setFieldValue('proprietary_data_category', option?.value);
-
-                  // Need to reset proprietor name if user changes category from first nations to something else
-                  // because the name will now be freeform text
+                  // Reset proprietor_name and first_nations_id if user changes proprietary_data_category from
+                  // `First Nations Land` to any other option. This is because the `First Nations Land` category is
+                  // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
+                  // `first_nations_id` should be populated at a time.
                   if (values.proprietary_data_category === 2 && option?.value !== 2) {
-                    setFieldValue('proprietor_name', ProprietaryDataInitialValues.proprietor_name);
+                    resetField('first_nations_id');
+                    resetField('proprietor_name');
                   }
+
+                  // Reset proprietor_name if user changes proprietary_data_category from any other option to
+                  // `First Nations Land`. This is because the other options are free-text, where as the
+                  // `First Nations Land` category is based on a dropdown, and only one of `proprietor_name` or
+                  // `first_nations_id` should be populated at a time.
+                  if (values.proprietary_data_category !== 2 && option?.value === 2) {
+                    resetField('proprietor_name');
+                  }
+
+                  setFieldValue('proprietary_data_category', option?.value);
                 }}
                 required={true}
               />

@@ -17,7 +17,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
-  IGetSurveyForUpdateResponse,
+  IGetSurveyForUpdateResponseProprietor,
   IGetSurveyForViewResponse,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
@@ -46,7 +46,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponse>(null as any);
+  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponseProprietor | null>(null);
   const [surveyProprietorFormData, setSurveyProprietorFormData] = useState<IProprietaryDataForm>(
     ProprietaryDataInitialValues
   );
@@ -68,54 +68,56 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   };
 
   const handleDialogEditOpen = async () => {
-    let response;
+    if (!survey_proprietor) {
+      setSurveyProprietorFormData(ProprietaryDataInitialValues);
+      return;
+    }
 
-    if (survey_proprietor) {
-      try {
-        response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-          UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
-        ]);
+    let surveyProprietorResponseData;
 
-        if (!response) {
-          showErrorDialog({ open: true });
-          return;
-        }
-      } catch (error) {
-        const apiError = error as APIError;
-        showErrorDialog({ dialogText: apiError.message, open: true });
+    try {
+      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
+      ]);
+
+      if (!response) {
+        showErrorDialog({ open: true });
         return;
       }
 
-      const proprietor = response.survey_proprietor;
-
-      setSurveyDataForUpdate(response);
-
-      setSurveyProprietorFormData({
-        survey_data_proprietary: proprietor?.isProprietary || ProprietaryDataInitialValues.survey_data_proprietary,
-        proprietary_data_category:
-          proprietor?.proprietary_data_category || ProprietaryDataInitialValues.proprietary_data_category,
-        proprietor_name: proprietor?.proprietor_name || ProprietaryDataInitialValues.proprietor_name,
-        first_nations_id: proprietor?.first_nations_id || ProprietaryDataInitialValues.first_nations_id,
-        category_rationale: proprietor?.category_rationale || ProprietaryDataInitialValues.category_rationale,
-        data_sharing_agreement_required:
-          proprietor?.data_sharing_agreement_required || ProprietaryDataInitialValues.data_sharing_agreement_required
-      });
-    } else {
-      setSurveyProprietorFormData(ProprietaryDataInitialValues);
+      surveyProprietorResponseData = response?.survey_proprietor || null;
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
     }
 
+    setSurveyDataForUpdate(surveyProprietorResponseData);
+
+    setSurveyProprietorFormData({
+      survey_data_proprietary:
+        surveyProprietorResponseData?.survey_data_proprietary || ProprietaryDataInitialValues.survey_data_proprietary,
+      proprietary_data_category:
+        surveyProprietorResponseData?.proprietary_data_category ||
+        ProprietaryDataInitialValues.proprietary_data_category,
+      proprietor_name: surveyProprietorResponseData?.proprietor_name || ProprietaryDataInitialValues.proprietor_name,
+      first_nations_id: surveyProprietorResponseData?.first_nations_id || ProprietaryDataInitialValues.first_nations_id,
+      category_rationale:
+        surveyProprietorResponseData?.category_rationale || ProprietaryDataInitialValues.category_rationale,
+      data_sharing_agreement_required:
+        surveyProprietorResponseData?.data_sharing_agreement_required ||
+        ProprietaryDataInitialValues.data_sharing_agreement_required
+    });
+
     setOpenEditDialog(true);
-    console.log(surveyProprietorFormData);
   };
 
   const handleDialogEditSave = async (values: IProprietaryDataForm) => {
     const surveyData = {
       survey_proprietor: {
         ...values,
-        isProprietary: values.survey_data_proprietary,
-        id: surveyDataForUpdate?.survey_proprietor?.id,
-        surveyId: survey_details?.id,
-        revision_count: surveyDataForUpdate?.survey_proprietor?.revision_count
+        id: surveyDataForUpdate?.id,
+        revision_count: surveyDataForUpdate?.revision_count
       }
     };
 
@@ -127,7 +129,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       return;
     } finally {
       setOpenEditDialog(false);
-      setSurveyDataForUpdate(null as any);
     }
 
     refresh();

@@ -79,7 +79,6 @@ export interface IGetSurveyForUpdateResponseDetails {
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
-  isProprietary: string;
   id?: number;
   proprietary_data_category_name?: string;
   first_nations_name?: string;
@@ -87,6 +86,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
   first_nations_id?: number;
   category_rationale?: string;
   proprietor_name?: string;
+  survey_data_proprietary?: string;
   data_sharing_agreement_required?: string;
   revision_count?: number;
 }
@@ -99,7 +99,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
  */
 export interface IGetSurveyForUpdateResponse {
   survey_details?: IGetSurveyForUpdateResponseDetails;
-  survey_proprietor?: IGetSurveyForUpdateResponseProprietor;
+  survey_proprietor?: IGetSurveyForUpdateResponseProprietor | null;
 }
 
 /**
