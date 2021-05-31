@@ -70,6 +70,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   const handleDialogEditOpen = async () => {
     if (!survey_proprietor) {
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
+      setOpenEditDialog(true);
       return;
     }
 
