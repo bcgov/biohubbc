@@ -12,6 +12,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getDwcFileValidationErrors } from 'utils/customErrors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadListItem: {
@@ -66,8 +67,9 @@ export interface IUploadFile {
 }
 
 export interface IFileUploadItemProps {
-  projectId: number;
+  projectId?: number;
   surveyId?: number;
+  setValidationStatus?: (validationStatus: string[]) => void;
   file: File;
   error?: string;
   onCancel: () => void;
@@ -75,10 +77,10 @@ export interface IFileUploadItemProps {
 
 const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const isMounted = useIsMounted();
-
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
+
+  const { projectId, surveyId, setValidationStatus } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -120,27 +122,48 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       }
     };
 
-    const handleFileUploadSuccess = () => {
+    const handleFileUploadSuccess = (uploadResult: any) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request resolves
         return;
       }
 
-      setStatus(UploadFileStatus.COMPLETE);
+      if (!uploadResult || Array.isArray(uploadResult)) {
+        // normal upload call result
+        setStatus(UploadFileStatus.COMPLETE);
+      } else {
+        // validate call result
+        if (uploadResult.isValid) {
+          setStatus(UploadFileStatus.COMPLETE);
+          setValidationStatus && setValidationStatus(['File being uploaded is valid.']);
+        } else {
+          const customErrorMessage = getDwcFileValidationErrors(uploadResult);
+
+          setStatus(UploadFileStatus.FAILED);
+          setValidationStatus && setValidationStatus(customErrorMessage);
+        }
+      }
+
+      // the upload request has finished
       setProgress(100);
 
-      // the upload request has finished and its safe to call the onCancel prop
+      // it's now safe to call the onCancel prop
       setIsSafeToCancel(true);
     };
 
-    if (props.surveyId) {
+    if (surveyId && projectId) {
       biohubApi.survey
-        .uploadSurveyAttachments(props.projectId, props.surveyId, [file], cancelToken, handleFileUploadProgress)
+        .uploadSurveyAttachments(projectId, surveyId, [file], cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+        .catch();
+    } else if (projectId) {
+      biohubApi.project
+        .uploadProjectAttachments(projectId, [file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
     } else {
-      biohubApi.project
-        .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
+      biohubApi.dwc
+        .validateDwcAttachments([file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
     }
@@ -151,8 +174,9 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     biohubApi,
     status,
     cancelToken,
-    props.projectId,
-    props.surveyId,
+    projectId,
+    surveyId,
+    setValidationStatus,
     isMounted,
     initiateCancel,
     error,
@@ -205,7 +229,13 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
           </Box>
         </Box>
         <Box ml={2} display="flex" alignItems="center">
-          <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
+          <MemoizedActionButton
+            status={status}
+            onCancel={() => {
+              setInitiateCancel(true);
+              setValidationStatus && setValidationStatus([]);
+            }}
+          />
         </Box>
       </Box>
     </ListItem>

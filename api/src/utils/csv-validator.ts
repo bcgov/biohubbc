@@ -78,26 +78,26 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
   const csvValidationError = new CsvValidationError();
 
   if (isFileNull(file)) {
-    csvValidationError.setFileErrors(['file is null']);
+    csvValidationError.setFileErrors(['File is null']);
   }
 
   if (!isFileMimeValid(file, ['text/csv'])) {
-    csvValidationError.setFileErrors(['file mimetype is invalid']);
+    csvValidationError.setFileErrors(['File mimetype is invalid']);
   }
 
   const fileContent = getFileContent(file, { skipEmptyLines: true });
 
   if (!fileContent) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
   }
 
   if (fileContent.errors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.setRowErrors(fileContent.errors);
   }
 
   if (isCSVNull(fileContent.data)) {
-    csvValidationError.setFileErrors(['file is empty']);
+    csvValidationError.setFileErrors(['File is empty']);
   }
 
   const headers = getHeaderRow(fileContent.data);
@@ -105,21 +105,21 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
   const duplicateHeaderErrors = getDuplicateHeaders(headers);
 
   if (duplicateHeaderErrors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.addHeaderErrors(duplicateHeaderErrors);
   }
 
   const requriedHeaderErrors = hasRequiredHeaders(headers, headerRules?.requiredHeaders);
 
   if (requriedHeaderErrors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.addHeaderErrors(requriedHeaderErrors);
   }
 
   const validHeaderErrors = hasValidHeaders(headers, headerRules?.validHeaders);
 
   if (validHeaderErrors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.addHeaderErrors(validHeaderErrors);
   }
 
@@ -128,7 +128,7 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
   const requiredFieldErrors = hasRequiredFields(rows, headers, headerRules?.requiredFieldsByHeader);
 
   if (requiredFieldErrors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.addRowErrors(requiredFieldErrors);
   }
 
