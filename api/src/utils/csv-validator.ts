@@ -82,8 +82,15 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
     return csvValidationError.getState();
   }
 
-  if (!isFileMimeValid(file, ['text/csv'])) {
-    csvValidationError.setFileErrors(['File mimetype is invalid']);
+  if (
+    !isFileMimeValid(file, [
+      'text/csv',
+      'text/plain',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ])
+  ) {
+    csvValidationError.setFileErrors(['File mime type is invalid, must be `.txt`, `.csv`, `.xls`, or `.xlsx']);
     return csvValidationError.getState();
   }
 
@@ -153,6 +160,9 @@ export const getFileContent = (file: Express.Multer.File, options?: ParseConfig<
 };
 
 export const isFileMimeValid = (file: Express.Multer.File, validMimeTypes: string[]): boolean => {
+  console.log(file);
+  console.log(validMimeTypes);
+
   if (!validMimeTypes?.length) {
     return true;
   }

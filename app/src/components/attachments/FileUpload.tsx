@@ -133,6 +133,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         newFileUploadItems.splice(index, 1);
         return newFileUploadItems;
       });
+
+      setFileToRemove('');
     };
 
     removeFile(fileToRemove);
