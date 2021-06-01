@@ -14,7 +14,8 @@ export interface IBlockData {
   blockSize?: number;
   strata?: string;
   numObservations?: number;
-  date?: string;
+  start_time?: string;
+  end_time?: string;
   blockMeta: INewBlockForm;
 }
 

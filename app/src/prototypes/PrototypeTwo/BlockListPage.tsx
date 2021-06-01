@@ -70,8 +70,8 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
                 <TableCell className={classes.heading}>Block</TableCell>
                 <TableCell className={classes.heading}>Block Size</TableCell>
                 <TableCell className={classes.heading}>Strata</TableCell>
-
-                <TableCell className={classes.heading}>Date</TableCell>
+                <TableCell className={classes.heading}>Start Time</TableCell>
+                <TableCell className={classes.heading}>End Time</TableCell>
                 <TableCell className={classes.heading}># Observations</TableCell>
               </TableRow>
             </TableHead>
@@ -83,7 +83,8 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
                   </TableCell>
                   <TableCell>{item.blockSize}</TableCell>
                   <TableCell>{item.strata}</TableCell>
-                  <TableCell>{item.date}</TableCell>
+                  <TableCell>{item.start_time}</TableCell>
+                  <TableCell>{item.end_time}</TableCell>
                   <TableCell>{item.numObservations}</TableCell>
                 </TableRow>
               ))}

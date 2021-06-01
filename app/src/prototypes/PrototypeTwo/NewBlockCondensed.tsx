@@ -17,7 +17,7 @@ import { Formik, FormikProps } from 'formik';
 import moment from 'moment';
 import HotTableSimple from 'prototypes/PrototypeTwo/HotTableSimple';
 import React, { useRef, useState } from 'react';
-import { useHistory, useParams } from 'react-router';
+//import { useHistory, useParams } from 'react-router';
 import './handsontable.scss';
 import { IPageState } from './PrototypeTypePage';
 
@@ -109,8 +109,8 @@ export interface INewBlockCondensedProps {
 
 const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCondensedProps) => {
   const classes = useStyles();
-  const history = useHistory();
-  const urlParams = useParams();
+  // const history = useHistory();
+  // const urlParams = useParams();
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -634,18 +634,15 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="contained"
               color="primary"
               onClick={() => {
-                //history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
                 const blockData = (props.pageState && props.pageState.blockData) || [];
-
-                // hotRef.current?.hotInstance.clear();
-                // hotRef.current?.hotInstance.getData();
 
                 blockData.push({
                   block: blockData.length + 1,
                   blockSize: formikRef?.current?.values.block_size || 0,
                   strata: formikRef?.current?.values.strata || '',
                   numObservations: Math.floor(Math.random() * (50 - 0) + 0),
-                  date: formikRef?.current?.values.date || '',
+                  start_time: formikRef?.current?.values.start_time || '',
+                  end_time: formikRef?.current?.values.end_time || '',
                   blockMeta: blockSurveyInitialValues
                 });
                 props.setPageState({ ...props.pageState, blockData: blockData, page: 1 });
@@ -658,16 +655,28 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="contained"
               color="primary"
               onClick={() => {
-                //history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+
+                console.log('just clicked save and continue)')
+                console.log('hotref ', hotRef.current);
+                //hotRef.current?.hotInstance.loadData([[, , , , , , , , , , , , , , , , ]]);
+                const temp = hotRef.current?.hotInstance.getData();
+
+                console.log(temp);
+
+
+
                 const blockData = (props.pageState && props.pageState.blockData) || [];
+
                 blockData.push({
                   block: blockData.length + 1,
                   blockSize: formikRef?.current?.values.block_size || 0,
                   strata: formikRef?.current?.values.strata || '',
-                  numObservations: Math.floor(Math.random() * (50 - 0) + 0),
-                  date: formikRef?.current?.values.date || '',
+                  numObservations: Math.floor(Math.random() * (50 - 0) + 10),
+                  start_time: formikRef?.current?.values.start_time || '',
+                  end_time: formikRef?.current?.values.end_time || '',
                   blockMeta: blockSurveyInitialValues
                 });
+
                 props.setPageState({ ...props.pageState, blockData: blockData, page: 2 });
               }}
               className={classes.actionButton}>
@@ -677,7 +686,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/projects/${urlParams['id']}/surveys/${urlParams['survey_id']}/details`);
+                props.setPageState({ ...props.pageState, blockData: null, page: 1 });
               }}
               className={classes.actionButton}>
               Cancel

@@ -26,33 +26,34 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
 
   const headers = [
     [
-      'Group No',
-      'Wpt No',
-      { label: 'Bulls', colspan: 2 },
-      { label: 'Cows', colspan: 3 },
-      { label: 'Unclassified', colspan: 2 },
-      { label: '', colspan: 6 }
+      'No',
+      'WPT',
+      { label: 'Bulls', colspan: 3 },
+      { label: 'Cows', colspan: 3 }
     ],
     [
       '',
       '',
       'Yrlings',
       'Mature',
+      'Unclass',
       'Lone',
       'W/1 Calf',
       'W/2 Calf',
       'Lone Calf',
-      'Unk Ages/Sex',
-      'Activity',
+      'Unclass',
       'TOTAL',
+      'Activity',
       '% Veg Cover',
       'Veg Class',
       '% Snow',
-      'Comments'
+      'Notes'
     ]
   ];
 
-  const [data] = useState<any[][]>([[, , , , , , , , , , , , , , ,]]);
+
+
+  const [data] = useState<any[][]>([[, , , , , , , , , , , , , , , , ]]);
 
   const [settings] = useState<Handsontable.GridSettings>({
     data: data,
@@ -61,7 +62,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
     minRows: 8,
     contextMenu: true,
     collapsibleColumns: true,
-    rowHeaders: true,
+    rowHeaders: false,
     search: true,
     width: '100%',
     height: '100%',
@@ -115,8 +116,9 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
       { type: 'numeric' },
       { type: 'numeric' },
       { type: 'numeric' },
-      { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
+      { type: 'numeric' },
       { type: 'numeric', readOnly: true },
+      { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
       {
         type: 'dropdown',
         source: [
