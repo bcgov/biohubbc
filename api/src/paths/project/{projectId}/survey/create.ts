@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { PostSurveyObject } from '../../../../models/survey-create';
+import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
 import {
   postAncillarySpeciesSQL,
@@ -109,7 +109,7 @@ export function createSurvey(): RequestHandler {
           (createSurveyResponse && createSurveyResponse.rows && createSurveyResponse.rows[0]) || null;
 
         if (!surveyResult || !surveyResult.id) {
-          throw new HTTP400('Failed to create the survey record');
+          throw new HTTP400('Failed to insert survey data');
         }
 
         surveyId = surveyResult.id;
@@ -134,33 +134,11 @@ export function createSurvey(): RequestHandler {
           )
         );
 
+        // Handle survey proprietor data
+        sanitizedPostSurveyData.survey_proprietor &&
+          promises.push(insertSurveyProprietor(sanitizedPostSurveyData.survey_proprietor, surveyId, connection));
+
         await Promise.all(promises);
-
-        if (sanitizedPostSurveyData.survey_proprietor) {
-          const postSurveyProprietorSQLStatement = postSurveyProprietorSQL(
-            surveyId,
-            sanitizedPostSurveyData.survey_proprietor
-          );
-
-          if (!postSurveyProprietorSQLStatement) {
-            throw new HTTP400('Failed to build survey_proprietor SQL insert statement');
-          }
-
-          const createSurveyProprietorResponse = await connection.query(
-            postSurveyProprietorSQLStatement.text,
-            postSurveyProprietorSQLStatement.values
-          );
-
-          const surveyProprietorResult =
-            (createSurveyProprietorResponse &&
-              createSurveyProprietorResponse.rows &&
-              createSurveyProprietorResponse.rows[0]) ||
-            null;
-
-          if (!surveyProprietorResult || !surveyProprietorResult.id) {
-            throw new HTTP400('Failed to create the survey proprietor record');
-          }
-        }
 
         await connection.commit();
       } catch (error) {
@@ -215,6 +193,27 @@ export const insertAncillarySpecies = async (
 
   if (!result || !result.id) {
     throw new HTTP400('Failed to insert ancillary species data');
+  }
+
+  return result.id;
+};
+
+export const insertSurveyProprietor = async (
+  survey_proprietor: PostSurveyProprietorData,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = postSurveyProprietorSQL(survey_id, survey_proprietor);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert survey proprietor data');
   }
 
   return result.id;

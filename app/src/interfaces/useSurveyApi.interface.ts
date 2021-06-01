@@ -7,11 +7,13 @@ import { Feature } from 'geojson';
  * @interface ICreateSurveyRequest
  */
 export interface ICreateSurveyRequest {
+  id: number;
   biologist_first_name: string;
   biologist_last_name: string;
   category_rationale: string;
   data_sharing_agreement_required: string;
   end_date: string;
+  first_nations_id: number;
   foippa_requirements_accepted: boolean;
   management_unit: string[];
   park: string[];
@@ -77,7 +79,6 @@ export interface IGetSurveyForUpdateResponseDetails {
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
-  isProprietary: string;
   id?: number;
   proprietary_data_category_name?: string;
   first_nations_name?: string;
@@ -85,6 +86,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
   first_nations_id?: number;
   category_rationale?: string;
   proprietor_name?: string;
+  survey_data_proprietary?: string;
   data_sharing_agreement_required?: string;
   revision_count?: number;
 }
@@ -97,7 +99,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
  */
 export interface IGetSurveyForUpdateResponse {
   survey_details?: IGetSurveyForUpdateResponseDetails;
-  survey_proprietor?: IGetSurveyForUpdateResponseProprietor;
+  survey_proprietor?: IGetSurveyForUpdateResponseProprietor | null;
 }
 
 /**
