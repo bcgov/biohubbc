@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTP400 } from '../../errors/CustomError';
-import { isFileValid } from '../../utils/csv-validator';
+import { isFileValid } from '../../utils/csv/csv-validator';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
