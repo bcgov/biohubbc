@@ -92,7 +92,6 @@ export const putSurveyDetailsSQL = (
  * SQL query to update a survey row.
  *
  * @param {number} surveyId
- * @param {number} surveyProprietorId
  * @param {PutSurveyProprietorData} data
  * @returns {SQLStatement} sql query object
  */

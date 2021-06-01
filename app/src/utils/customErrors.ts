@@ -1,6 +1,4 @@
-export const getDwcFileValidationError = (errorObj: any): string[] => {
-  console.log(errorObj);
-
+export const getDwcFileValidationErrors = (errorObj: any): string[] => {
   const fileError = errorObj.fileErrors[0] + '.';
   const headerErrors = errorObj.headerErrors.map((headerError: any) => {
     return `Column ${headerError.col}: ${headerError.message}.`;

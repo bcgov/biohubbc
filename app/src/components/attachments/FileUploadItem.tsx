@@ -12,7 +12,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
-import { getDwcFileValidationError } from 'utils/customErrors';
+import { getDwcFileValidationErrors } from 'utils/customErrors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadListItem: {
@@ -137,7 +137,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
           setStatus(UploadFileStatus.COMPLETE);
           setValidationStatus && setValidationStatus(['File being uploaded is valid.']);
         } else {
-          const customErrorMessage = getDwcFileValidationError(uploadResult);
+          const customErrorMessage = getDwcFileValidationErrors(uploadResult);
 
           setStatus(UploadFileStatus.FAILED);
           setValidationStatus && setValidationStatus(customErrorMessage);
