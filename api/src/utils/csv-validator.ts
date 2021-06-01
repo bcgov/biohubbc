@@ -20,7 +20,6 @@ export interface ICsvState {
   headerErrors?: IHeaderErrors[];
   rowErrors?: ParseError[];
   colErrors?: string[];
-  rowColErrors?: string[];
   isValid: boolean;
 }
 
@@ -29,7 +28,6 @@ export class CsvValidationError {
   headerErrors: IHeaderErrors[];
   rowErrors: ParseError[];
   colErrors: string[];
-  rowColErrors: string[];
   isValid: boolean;
 
   constructor() {
@@ -37,7 +35,6 @@ export class CsvValidationError {
     this.headerErrors = [];
     this.rowErrors = [];
     this.colErrors = [];
-    this.rowColErrors = [];
     this.isValid = true;
   }
 
@@ -57,6 +54,11 @@ export class CsvValidationError {
   }
 
   setRowErrors(errors: ParseError[]) {
+    this.rowErrors = errors;
+    this.isValid = false;
+  }
+
+  addRowErrors(errors: ParseError[]) {
     this.rowErrors = this.rowErrors.concat(errors);
     this.isValid = false;
   }
@@ -71,7 +73,6 @@ export class CsvValidationError {
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
       colErrors: this.colErrors,
-      rowColErrors: this.rowColErrors,
       isValid: this.isValid
     };
   }
@@ -88,9 +89,7 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
     csvValidationError.setFileErrors(['File mimetype is invalid']);
   }
 
-  const fileContent = getFileContent(file, { header: true, skipEmptyLines: true });
-
-  console.log(fileContent);
+  const fileContent = getFileContent(file, { skipEmptyLines: true });
 
   if (!fileContent) {
     csvValidationError.setFileErrors(['Failed to parse file']);
@@ -128,6 +127,15 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
     csvValidationError.addHeaderErrors(validHeaderErrors);
   }
 
+  const rows = getRows(fileContent.data);
+
+  const requiredFieldErrors = hasRequiredFields(rows, headers, headerRules?.requiredFieldsByHeader);
+
+  if (requiredFieldErrors.length) {
+    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.addRowErrors(requiredFieldErrors);
+  }
+
   return csvValidationError.getState();
 };
 
@@ -161,6 +169,16 @@ export const getHeaderRow = (data: string[][]): string[] => {
   }
 
   return data[0];
+};
+
+export const getRows = (data: string[][]): string[][] => {
+  if (!data?.length) {
+    return [];
+  }
+
+  data.splice(0, 1);
+
+  return data;
 };
 
 export const isCSVNull = (data: string[][]): boolean => {
@@ -247,4 +265,46 @@ export const hasValidHeaders = (headers: string[], validHeaders?: string[]): IHe
   }
 
   return headerErrors;
+};
+
+export const hasRequiredFields = (
+  rows: string[][],
+  headers: string[],
+  requiredFieldsByHeader?: string[]
+): ParseError[] => {
+  if (!requiredFieldsByHeader?.length) {
+    return [];
+  }
+
+  if (!rows?.length) {
+    return requiredFieldsByHeader.map((requiredFieldByHeader) => {
+      return {
+        type: 'Missing',
+        code: 'MissingRequiredField',
+        message: `Missing value for required column: ${requiredFieldByHeader}`,
+        row: 2
+      };
+    });
+  }
+
+  const rowErrors: ParseError[] = [];
+
+  rows.forEach((row, rowIndex) => {
+    for (const requiredFieldByHeader of requiredFieldsByHeader) {
+      const columnIndex = headers.indexOf(requiredFieldByHeader);
+
+      const rowValueForColumn = row[columnIndex];
+
+      if (!rowValueForColumn) {
+        rowErrors.push({
+          type: 'Missing',
+          code: 'MissingRequiredField',
+          message: `Missing value for required column: ${requiredFieldByHeader}`,
+          row: rowIndex + 2
+        });
+      }
+    }
+  });
+
+  return rowErrors;
 };
