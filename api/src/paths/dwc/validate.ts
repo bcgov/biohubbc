@@ -60,21 +60,47 @@ POST.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'object',
-                        properties: {}
+                        properties: {
+                          type: {
+                            type: 'string'
+                          },
+                          code: {
+                            type: 'string'
+                          },
+                          message: {
+                            type: 'string'
+                          },
+                          col: {
+                            oneOf: [
+                              {
+                                type: 'string'
+                              },
+                              {
+                                type: 'number'
+                              }
+                            ]
+                          }
+                        }
                       }
                     },
                     rowErrors: {
                       type: 'array',
                       items: {
                         type: 'object',
-                        properties: {}
-                      }
-                    },
-                    colErrors: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {}
+                        properties: {
+                          type: {
+                            type: 'string'
+                          },
+                          code: {
+                            type: 'string'
+                          },
+                          message: {
+                            type: 'string'
+                          },
+                          row: {
+                            type: 'number'
+                          }
+                        }
                       }
                     },
                     isValid: {

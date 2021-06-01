@@ -19,7 +19,6 @@ export interface ICsvState {
   fileErrors?: string[];
   headerErrors?: IHeaderErrors[];
   rowErrors?: ParseError[];
-  colErrors?: string[];
   isValid: boolean;
 }
 
@@ -27,14 +26,12 @@ export class CsvValidationError {
   fileErrors: string[];
   headerErrors: IHeaderErrors[];
   rowErrors: ParseError[];
-  colErrors: string[];
   isValid: boolean;
 
   constructor() {
     this.fileErrors = [];
     this.headerErrors = [];
     this.rowErrors = [];
-    this.colErrors = [];
     this.isValid = true;
   }
 
@@ -72,7 +69,6 @@ export class CsvValidationError {
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
-      colErrors: this.colErrors,
       isValid: this.isValid
     };
   }
