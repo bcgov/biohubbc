@@ -128,7 +128,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
         return;
       }
 
-      if (Array.isArray(uploadResult)) {
+      if (!uploadResult || Array.isArray(uploadResult)) {
         // normal upload call result
         setStatus(UploadFileStatus.COMPLETE);
       } else {
