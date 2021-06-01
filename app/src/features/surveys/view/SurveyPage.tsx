@@ -24,6 +24,7 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
+import SurveyObservations from './SurveyObservations';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -199,6 +200,7 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
+            {location.pathname.includes('/observations') && <SurveyObservations />}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
