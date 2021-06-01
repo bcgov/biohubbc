@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
@@ -51,6 +52,280 @@ const ObservationsDialog: React.FC = () => {
         Add Survey
       </Button>
 
+      <Container>
+        <Box component="fieldset">
+          <Box component="legend" mb={2}><b>Block Information</b></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                label="Block ID"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Block Size"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Stratum"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Date"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Start Time"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="End Time"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box component="fieldset" mt={4}>
+          <Box component="legend" mb={2}><b>Flight Information</b></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label="Pilot"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Navigator"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Left Observer"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Right Observer"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box component="fieldset" mt={4}>
+          <Box component="legend" mb={2}><b>Conditions</b></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                label="Visibility"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Light"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Cloud Cover"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                label="Temperature"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Precipitation"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Wind Speed"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                label="Snow Cover"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Snow Depth"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Days Since Snowfall"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box component="fieldset" mt={4}>
+          <Box component="legend" mb={2}><b>Aircraft Details</b></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <TextField
+                label="Company"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Aircraft Type"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Registration Number"
+                type="number"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="GPS Model"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="GPS Datum"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label="Readout"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Box component="fieldset" mt={4}>
+          <Box component="legend" mb={2}><b>Comments</b></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Weather Description"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Habitat Description"
+                size="small"
+                variant="outlined"
+                fullWidth>
+              </TextField>
+            </Grid>
+          </Grid>
+        </Box>
+
+      </Container>
+
       <Dialog aria-labelledby="simple-dialog-title"open={open} onClose={handleClose} fullScreen>
         <Box className={classes.dialogTitle} p={3}>
           <Typography variant="h2">Moose Survey Form</Typography>
@@ -63,7 +338,7 @@ const ObservationsDialog: React.FC = () => {
             
             {/* BOX INFORMATION */}
             <Grid item xs={6}>
-              <fieldset>
+              <Box component="fieldset">
                 <Box component="legend" mb={2}><b>Block Information</b></Box>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
@@ -207,7 +482,7 @@ const ObservationsDialog: React.FC = () => {
                 </Grid>
                 </Box>
 
-              </fieldset>
+              </Box>
             </Grid>
 
             {/* PARTICIPANTS */}
@@ -283,6 +558,29 @@ const ObservationsDialog: React.FC = () => {
                         fullWidth>
                       </TextField>
                     </Grid>
+                </Grid>
+              </Box>
+              <Box component="fieldset" mt={4}>
+                <Box component="legend" mb={2}><b>Comments</b></Box>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Weather Description"
+                      type="number"
+                      size="small"
+                      variant="outlined"
+                      fullWidth>
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      label="Habitat Description"
+                      type="number"
+                      size="small"
+                      variant="outlined"
+                      fullWidth>
+                    </TextField>
+                  </Grid>
                 </Grid>
               </Box>
             </Grid>
