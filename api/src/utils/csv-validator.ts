@@ -132,7 +132,7 @@ export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRule
   const requiredFieldErrors = hasRequiredFields(rows, headers, headerRules?.requiredFieldsByHeader);
 
   if (requiredFieldErrors.length) {
-    csvValidationError.setFileErrors(['failed to parse file']);
+    csvValidationError.setFileErrors(['Failed to parse file']);
     csvValidationError.addRowErrors(requiredFieldErrors);
   }
 

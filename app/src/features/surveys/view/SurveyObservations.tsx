@@ -16,7 +16,7 @@ const SurveyObservations = () => {
       <Box mb={4}>
         <Typography variant="h2">Validate File</Typography>
       </Box>
-      <Box mb={2}>
+      <Box mb={4}>
         <FileUpload setValidationStatus={setValidationStatus} />
       </Box>
       {validationStatus.length > 0 && (

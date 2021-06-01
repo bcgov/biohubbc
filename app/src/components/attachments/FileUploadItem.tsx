@@ -77,10 +77,10 @@ export interface IFileUploadItemProps {
 
 const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const isMounted = useIsMounted();
-
   const classes = useStyles();
-
   const biohubApi = useBiohubApi();
+
+  const { projectId, surveyId, setValidationStatus } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -135,12 +135,12 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
         // validate call result
         if (uploadResult.isValid) {
           setStatus(UploadFileStatus.COMPLETE);
-          props.setValidationStatus && props.setValidationStatus(['File being uploaded is valid.']);
+          setValidationStatus && setValidationStatus(['File being uploaded is valid.']);
         } else {
           const customErrorMessage = getDwcFileValidationError(uploadResult);
 
           setStatus(UploadFileStatus.FAILED);
-          props.setValidationStatus && props.setValidationStatus(customErrorMessage);
+          setValidationStatus && setValidationStatus(customErrorMessage);
         }
       }
 
@@ -151,14 +151,14 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       setIsSafeToCancel(true);
     };
 
-    if (props.surveyId && props.projectId) {
+    if (surveyId && projectId) {
       biohubApi.survey
-        .uploadSurveyAttachments(props.projectId, props.surveyId, [file], cancelToken, handleFileUploadProgress)
+        .uploadSurveyAttachments(projectId, surveyId, [file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
-    } else if (props.projectId) {
+    } else if (projectId) {
       biohubApi.project
-        .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
+        .uploadProjectAttachments(projectId, [file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
     } else {
@@ -174,8 +174,9 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     biohubApi,
     status,
     cancelToken,
-    props.projectId,
-    props.surveyId,
+    projectId,
+    surveyId,
+    setValidationStatus,
     isMounted,
     initiateCancel,
     error,
@@ -232,7 +233,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
             status={status}
             onCancel={() => {
               setInitiateCancel(true);
-              props.setValidationStatus && props.setValidationStatus([]);
+              setValidationStatus && setValidationStatus([]);
             }}
           />
         </Box>
