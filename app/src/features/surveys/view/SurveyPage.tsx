@@ -24,6 +24,7 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
+import PrototypeTypePage from 'prototypes/PrototypeTwo/PrototypeTypePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -176,7 +177,7 @@ const SurveyPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText>Survey Details</ListItemText>
                   </ListItem>
-                  <ListItem component={NavLink} to="prototype/2">
+                  <ListItem component={NavLink} to="prototype">
                     <ListItemIcon>
                       <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
                     </ListItemIcon>
@@ -200,7 +201,7 @@ const SurveyPage: React.FC = () => {
                     </ListItemIcon>
                     <ListItemText>Prototype One</ListItemText>
                   </ListItem>
-                  <ListItem component={NavLink} to="prototype/2">
+                  <ListItem component={NavLink} to="prototype">
                     <ListItemIcon>
                       <Icon path={mdiInformationOutline} size={1} />
                     </ListItemIcon>
@@ -224,6 +225,9 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+            )}
+            {location.pathname.includes('/prototype') && (
+              <PrototypeTypePage projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />

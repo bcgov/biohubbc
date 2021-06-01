@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -46,58 +45,56 @@ const ObservationListPage: React.FC = () => {
   // };
 
   const navigateToCreateObservationPage_v2 = () => {
-    history.push('/projects/1/surveys/1/prototype/2');
+    history.push('/projects/1/surveys/1/prototype');
   };
 
   return (
-    <Box mb={6} my={4}>
-      <Container maxWidth="xl">
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Observations</Typography>
-          <Box display="flex" justifyContent="space-between">
-            {/* <Box mr={1}>
+    <>
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Observations</Typography>
+        <Box display="flex" justifyContent="space-between">
+          {/* <Box mr={1}>
               <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v1()}>
                 Create Observation v1
               </Button>
             </Box> */}
 
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
-              Create Observation v2
-            </Button>
-          </Box>
+          <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
+            Create Observation v2
+          </Button>
         </Box>
-        <Box mb={3}>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="observation-list-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Group</TableCell>
-                  <TableCell className={classes.heading}>Waypoint</TableCell>
-                  <TableCell className={classes.heading}>Species</TableCell>
-                  <TableCell className={classes.heading}>Demographic</TableCell>
-                  <TableCell className={classes.heading}>Count</TableCell>
-                  <TableCell className={classes.heading}>Activity</TableCell>
-                  <TableCell className={classes.heading}>Time</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    {'1'}
-                  </TableCell>
-                  <TableCell>{'103'}</TableCell>
-                  <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
-                  <TableCell>{'Dense'}</TableCell>
-                  <TableCell>{'30'}</TableCell>
-                  <TableCell>{'Bedding'}</TableCell>
-                  <TableCell>{'3 pm'}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Container>
-    </Box>
+      </Box>
+      <Box mb={3}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="observation-list-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.heading}>Group</TableCell>
+                <TableCell className={classes.heading}>Waypoint</TableCell>
+                <TableCell className={classes.heading}>Species</TableCell>
+                <TableCell className={classes.heading}>Demographic</TableCell>
+                <TableCell className={classes.heading}>Count</TableCell>
+                <TableCell className={classes.heading}>Activity</TableCell>
+                <TableCell className={classes.heading}>Time</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  {'1'}
+                </TableCell>
+                <TableCell>{'103'}</TableCell>
+                <TableCell>{'Grizzlybear Prickly Pear - x columbiana'}</TableCell>
+                <TableCell>{'Dense'}</TableCell>
+                <TableCell>{'30'}</TableCell>
+                <TableCell>{'Bedding'}</TableCell>
+                <TableCell>{'3 pm'}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   );
 };
 

@@ -4,7 +4,6 @@ import { default as ProjectsLayout } from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
-import PrototypeTypePage from 'prototypes/PrototypeTwo/PrototypeTypePage';
 // import Observation from 'prototypes/PrototypeOne/Observation';
 // import ObservationListPage from 'prototypes/PrototypeOne/ObservationListPage';
 // import BlockListPage from 'prototypes/PrototypeOne/BlockListPage';
@@ -72,8 +71,8 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/prototype/2"
-        component={PrototypeTypePage}
+        path="/projects/:id?/surveys/:survey_id?/prototype"
+        component={SurveyPage}
         componentProps={props}
       />
       {/* <PrivateRoute

@@ -46,57 +46,55 @@ const BlockListPage: React.FC = () => {
   // };
 
   const navigateToCreateObservationPage_v2 = () => {
-    history.push('/projects/1/surveys/1/prototype/2');
+    history.push('/projects/1/surveys/1/prototype');
   };
 
   return (
-    <Box mb={6} my={4}>
-      <Container maxWidth="xl">
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Blocks</Typography>
-          <Box display="flex" justifyContent="space-between">
-            {/* <Box mr={1}>
+    <Container maxWidth="xl">
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Blocks</Typography>
+        <Box display="flex" justifyContent="space-between">
+          {/* <Box mr={1}>
               <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v1()}>
                 Add Block v1
               </Button>
             </Box> */}
 
-            <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
-              Add Block
-            </Button>
-          </Box>
+          <Button variant="outlined" color="primary" onClick={() => navigateToCreateObservationPage_v2()}>
+            Add Block
+          </Button>
         </Box>
-        <Box mb={3}>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="observation-list-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Block</TableCell>
-                  <TableCell className={classes.heading}># Observations</TableCell>
-                  <TableCell className={classes.heading}>Date</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    {'1'}
-                  </TableCell>
-                  <TableCell>{'5'}</TableCell>
-                  <TableCell>{'2021-05-15'}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component="th" scope="row">
-                    {'2'}
-                  </TableCell>
-                  <TableCell>{'3'}</TableCell>
-                  <TableCell>{'2021-05-16'}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Container>
-    </Box>
+      </Box>
+      <Box mb={3}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="observation-list-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.heading}>Block</TableCell>
+                <TableCell className={classes.heading}># Observations</TableCell>
+                <TableCell className={classes.heading}>Date</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  {'1'}
+                </TableCell>
+                <TableCell>{'5'}</TableCell>
+                <TableCell>{'2021-05-15'}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell component="th" scope="row">
+                  {'2'}
+                </TableCell>
+                <TableCell>{'3'}</TableCell>
+                <TableCell>{'2021-05-16'}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </Container>
   );
 };
 

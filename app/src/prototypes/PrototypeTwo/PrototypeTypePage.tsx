@@ -1,4 +1,8 @@
+import { Container, Dialog } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
+import Header from 'components/layout/Header';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import BlockListPage from './BlockListPage';
 import NewBlockCondensed, { INewBlockForm } from './NewBlockCondensed';
@@ -20,7 +24,12 @@ export interface IPageState {
   blockData: IBlockData[];
 }
 
-const PrototypeTypePage: React.FC = () => {
+export interface IPrototypeTypePageProps {
+  projectForViewData: IGetProjectForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
+}
+
+const PrototypeTypePage: React.FC<IPrototypeTypePageProps> = () => {
   const [pageState, setPageState] = useState<IPageState>({
     page: 1,
     block: 2,
@@ -45,9 +54,12 @@ const PrototypeTypePage: React.FC = () => {
 
   if (pageState.page === 2) {
     return (
-      <Box>
-        <NewBlockCondensed pageState={pageState} setPageState={setPageState} goToBlockListPage={goToBlockListPage} />
-      </Box>
+      <Dialog open={true} fullScreen={true}>
+        <Header />
+        <Container maxWidth="xl">
+          <NewBlockCondensed pageState={pageState} setPageState={setPageState} goToBlockListPage={goToBlockListPage} />
+        </Container>
+      </Dialog>
     );
   }
 

@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
@@ -47,19 +46,17 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
   };
 
   return (
-    <Box mb={6}>
-      <Container maxWidth="xl">
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Surveys</Typography>
-          <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
-            Create Survey
-          </Button>
-        </Box>
-        <Box mb={3}>
-          <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
-        </Box>
-      </Container>
-    </Box>
+    <>
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Surveys</Typography>
+        <Button variant="outlined" color="primary" onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
+          Create Survey
+        </Button>
+      </Box>
+      <Box mb={3}>
+        <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+      </Box>
+    </>
   );
 };
 

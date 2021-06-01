@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -47,54 +46,52 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <Box mb={6} my={4}>
-      <Container maxWidth="xl">
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2">Blocks</Typography>
-          <Box>
-            <Box display="flex" justifyContent="space-between">
-              <Box mr={1}>
-                <Button variant="outlined" color="primary">
-                  Export to CSV
-                </Button>
-              </Box>
-              <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
-                Add Block
+    <>
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Blocks</Typography>
+        <Box>
+          <Box display="flex" justifyContent="space-between">
+            <Box mr={1}>
+              <Button variant="outlined" color="primary">
+                Export to CSV
               </Button>
             </Box>
+            <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
+              Add Block
+            </Button>
           </Box>
         </Box>
-        <Box mb={3}>
-          <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="observation-list-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Block</TableCell>
-                  <TableCell className={classes.heading}>Block Size</TableCell>
-                  <TableCell className={classes.heading}>Strata</TableCell>
+      </Box>
+      <Box mb={3}>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="observation-list-table">
+            <TableHead>
+              <TableRow>
+                <TableCell className={classes.heading}>Block</TableCell>
+                <TableCell className={classes.heading}>Block Size</TableCell>
+                <TableCell className={classes.heading}>Strata</TableCell>
 
-                  <TableCell className={classes.heading}>Date</TableCell>
-                  <TableCell className={classes.heading}># Observations</TableCell>
+                <TableCell className={classes.heading}>Date</TableCell>
+                <TableCell className={classes.heading}># Observations</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {props?.pageState?.blockData?.map((item: IBlockData) => (
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    {item.block}
+                  </TableCell>
+                  <TableCell>{item.blockSize}</TableCell>
+                  <TableCell>{item.strata}</TableCell>
+                  <TableCell>{item.date}</TableCell>
+                  <TableCell>{item.numObservations}</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {props?.pageState?.blockData?.map((item: IBlockData) => (
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {item.block}
-                    </TableCell>
-                    <TableCell>{item.blockSize}</TableCell>
-                    <TableCell>{item.strata}</TableCell>
-                    <TableCell>{item.date}</TableCell>
-                    <TableCell>{item.numObservations}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Container>
-    </Box>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   );
 };
 
