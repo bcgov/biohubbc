@@ -23,8 +23,16 @@ const HotTableSimple: React.FC = () => {
   const hotRef = useRef<HotTable>(null);
 
   const headers = [
-    ['Group No.', { label: 'Bulls', colspan: 2 }, { label: 'Cows', colspan: 3 }, { label: '', colspan: 7 }],
     [
+      'Group No',
+      'Wpt No',
+      { label: 'Bulls', colspan: 2 },
+      { label: 'Cows', colspan: 3 },
+      { label: 'Unclassified', colspan: 2 },
+      { label: '', colspan: 6 }
+    ],
+    [
+      '',
       '',
       'Yrlings',
       'Mature',
@@ -33,15 +41,16 @@ const HotTableSimple: React.FC = () => {
       'W/2 Calf',
       'Lone Calf',
       'Unk Ages/Sex',
+      'Activity',
       'TOTAL',
-      'Wpt No.',
-      'Act.',
       '% Veg Cover',
-      'Notes'
+      'Veg Class',
+      '% Snow',
+      'Comments'
     ]
   ];
 
-  const [data] = useState<any[][]>([[, , , , , , , , , , , , ,]]);
+  const [data] = useState<any[][]>([[, , , , , , , , , , , , , , ,]]);
 
   const [settings] = useState<Handsontable.GridSettings>({
     data: data,
@@ -61,20 +70,20 @@ const HotTableSimple: React.FC = () => {
     formulas: true,
     manualColumnResize: true,
     manualRowResize: true,
-    afterChange: (changes, source) => {
+    afterChange: (changes: any, source: any) => {
       if (source === 'auto') {
         return;
       }
 
-      changes?.forEach((change) => {
+      changes?.forEach((change: any) => {
         const row = change[0];
 
-        const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(0, 8);
+        const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(2, 9);
 
-        const rowNumbers = rowData?.filter((item) => !isNaN(Number(item)));
+        const rowNumbers = rowData?.filter((item: any) => !isNaN(Number(item)));
 
         hotRef.current?.hotInstance.setDataAtCell(
-          [[row, 8, rowNumbers?.splice(0, 8).reduce((a, b) => a + b, 0)]],
+          [[row, 10, rowNumbers?.reduce((a: any, b: any) => a + b, 0)]],
           'auto'
         );
       });
@@ -103,11 +112,38 @@ const HotTableSimple: React.FC = () => {
       { type: 'numeric' },
       { type: 'numeric' },
       { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
       { type: 'numeric', readOnly: true },
+      {
+        type: 'dropdown',
+        source: [
+          '0',
+          '5',
+          '10',
+          '15',
+          '20',
+          '25',
+          '30',
+          '35',
+          '40',
+          '45',
+          '50',
+          '55',
+          '60',
+          '65',
+          '70',
+          '75',
+          '80',
+          '85',
+          '90',
+          '95',
+          '100'
+        ]
+      },
+      { type: 'dropdown', source: ['1', '2', '3', '4', '5', '6', '7', '8'] },
       { type: 'numeric' },
-      { type: 'numeric' },
-      { type: 'dropdown', source: ['None', 'Mild', 'Medium', 'Dense'] },
-      { type: 'text', width: 200 }
+      { type: 'text', width: 250 }
     ]
   });
 

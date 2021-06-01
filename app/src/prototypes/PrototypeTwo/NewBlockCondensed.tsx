@@ -42,8 +42,9 @@ const useStyles = makeStyles(() => ({
 }));
 
 export interface INewBlockForm {
-  block_name: string;
+  block_name: number;
   block_size: number;
+  strata: string;
   date: string;
   start_time: string;
   end_time: string;
@@ -70,9 +71,10 @@ export interface INewBlockForm {
   aircraft_gps_readout: string;
 }
 
-const blockSurveyInitialValues: INewBlockForm = {
-  block_name: '',
+export const blockSurveyInitialValues: INewBlockForm = {
+  block_name: ('' as unknown) as number,
   block_size: ('' as unknown) as number,
+  strata: '',
   date: '',
   start_time: '',
   end_time: '',
@@ -105,7 +107,7 @@ export interface INewBlockCondensedProps {
   goToBlockListPage?: () => void;
 }
 
-const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
+const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCondensedProps) => {
   const classes = useStyles();
   const history = useHistory();
   const urlParams = useParams();
@@ -121,14 +123,14 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
           <Box mb={3}>
             <Breadcrumbs>
               <Link color="primary" aria-current="page" className={classes.breadCrumbLink}>
-                <Typography variant="body2">Moose Inventory of Upper Mainland</Typography>
+                <Typography variant="body2">Skeena Moose Population Assessment </Typography>
               </Link>
-              <Typography variant="body2">New Block</Typography>
+              <Typography variant="body2">Moose Stratified Random Block Survey 2021</Typography>
             </Breadcrumbs>
           </Box>
 
           <Box mb={3}>
-            <Typography variant="h1">New Block</Typography>
+            <Typography variant="h1">New Block Survey</Typography>
           </Box>
 
           <Box display="block">
@@ -168,6 +170,30 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                         error={touched.block_size && Boolean(errors.block_size)}
                         helperText={touched.block_size && errors.block_size}
                       />
+                    </Grid>
+
+                    <Grid item xs={12} md={3}>
+                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
+                        <InputLabel id="strata_label">Strata</InputLabel>
+                        <Select
+                          id="strata"
+                          name="strata"
+                          labelId="strata_label"
+                          label="Strata"
+                          value={values.strata}
+                          labelWidth={300}
+                          onChange={handleChange}
+                          error={touched.strata && Boolean(errors.strata)}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'strata' }}>
+                          {['High', 'Medium', 'Low', 'Very Low'].map((item) => (
+                            <MenuItem key={item} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{touched.strata && errors.strata}</FormHelperText>
+                      </FormControl>
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <TextField
@@ -310,27 +336,18 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                       />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
-                        <InputLabel id="aircraft_type-label">Aircraft Type</InputLabel>
-                        <Select
-                          id="aircraft_type"
-                          name="aircraft_type"
-                          labelId="aircraft_type-label"
-                          label="Aircraft Type"
-                          value={values.aircraft_type}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.aircraft_type && Boolean(errors.aircraft_type)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'aircraft_type' }}>
-                          {['Fighter Jet', 'Helicopter', 'Hot Air Balloon', 'Glider', 'Paramotor'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.aircraft_type && errors.aircraft_type}</FormHelperText>
-                      </FormControl>
+                      <TextField
+                        fullWidth
+                        required={false}
+                        id="aircraft_type"
+                        name="aircraft_type"
+                        label="Aircraft Type"
+                        variant="outlined"
+                        value={values.aircraft_type}
+                        onChange={handleChange}
+                        error={touched.aircraft_type && Boolean(errors.aircraft_type)}
+                        helperText={touched.aircraft_type && errors.aircraft_type}
+                      />
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <TextField
@@ -374,7 +391,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                           error={touched.aircraft_gps_datum && Boolean(errors.aircraft_gps_datum)}
                           displayEmpty
                           inputProps={{ 'aria-label': 'aircraft_gps_datum' }}>
-                          {['WGS84', 'NAD83'].map((item) => (
+                          {['NAD27', 'NAD83', 'WGS84'].map((item) => (
                             <MenuItem key={item} value={item}>
                               {item}
                             </MenuItem>
@@ -384,18 +401,27 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                       </FormControl>
                     </Grid>
                     <Grid item xs={12} md={3}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="aircraft_gps_readout"
-                        name="aircraft_gps_readout"
-                        label="GPS Readout"
-                        variant="outlined"
-                        value={values.aircraft_gps_readout}
-                        onChange={handleChange}
-                        error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
-                        helperText={touched.aircraft_gps_readout && errors.aircraft_gps_readout}
-                      />
+                      <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
+                        <InputLabel id="aircraft_gps_readout-label">GPS Readout</InputLabel>
+                        <Select
+                          id="aircraft_gps_readout"
+                          name="aircraft_gps_readout"
+                          labelId="aircraft_gps_readout-label"
+                          label="GPS Readout"
+                          value={values.aircraft_gps_readout}
+                          labelWidth={300}
+                          onChange={handleChange}
+                          error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
+                          displayEmpty
+                          inputProps={{ 'aria-label': 'aircraft_gps_readout' }}>
+                          {['Decimal Degrees', 'Degrees Decimal Minutes', 'Degrees Minutes Seconds'].map((item) => (
+                            <MenuItem key={item} value={item}>
+                              {item}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
+                      </FormControl>
                     </Grid>
                     <Grid item xs={12} md={3}>
                       <FormControl fullWidth variant="outlined" required={false} style={{ width: '100%' }}>
@@ -411,7 +437,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                           error={touched.visibility && Boolean(errors.visibility)}
                           displayEmpty
                           inputProps={{ 'aria-label': 'visibility' }}>
-                          {['Clear', 'Cloudy', 'Foggy'].map((item) => (
+                          {['Very Poor', 'Moderate', 'Good', 'Very Good'].map((item) => (
                             <MenuItem key={item} value={item}>
                               {item}
                             </MenuItem>
@@ -434,7 +460,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                           error={touched.light && Boolean(errors.light)}
                           displayEmpty
                           inputProps={{ 'aria-label': 'light' }}>
-                          {['Bright', 'Very Bright', 'Dark', 'Very Dark'].map((item) => (
+                          {['Bright', 'Flat'].map((item) => (
                             <MenuItem key={item} value={item}>
                               {item}
                             </MenuItem>
@@ -485,11 +511,13 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                           error={touched.precipitation && Boolean(errors.precipitation)}
                           displayEmpty
                           inputProps={{ 'aria-label': 'precipitation' }}>
-                          {['Pouring Rain', 'Light Drizzle', 'Snowing', 'Hailing'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
+                          {['None', 'Fog', 'Misty drizzle', 'Drizzle', 'Light Rain', 'Hard Rain', 'Snow'].map(
+                            (item) => (
+                              <MenuItem key={item} value={item}>
+                                {item}
+                              </MenuItem>
+                            )
+                          )}
                         </Select>
                         <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
                       </FormControl>
@@ -550,6 +578,9 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                         helperText={touched.days_since_snowfall && errors.days_since_snowfall}
                       />
                     </Grid>
+                  </Grid>
+
+                  <Grid container spacing={1}>
                     <Grid item xs={12} md={6}>
                       <TextField
                         id="weather_description"
@@ -604,20 +635,40 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = () => {
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+                  //history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+                  const blockData = (props.pageState && props.pageState.blockData) || [];
+                  blockData.push({
+                    block: blockData.length + 1,
+                    blockSize: formikRef?.current?.values.block_size || 0,
+                    strata: formikRef?.current?.values.strata || '',
+                    numObservations: Math.floor(Math.random() * (50 - 0) + 0),
+                    date: formikRef?.current?.values.date || '',
+                    blockMeta: blockSurveyInitialValues
+                  });
+                  props.setPageState({ ...props.pageState, blockData: blockData, page: 1 });
                 }}
                 className={classes.actionButton}>
-                Save and Add Another
+                Save and Exit
               </Button>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
                 onClick={() => {
-                  history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+                  //history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
+                  const blockData = (props.pageState && props.pageState.blockData) || [];
+                  blockData.push({
+                    block: blockData.length + 1,
+                    blockSize: formikRef?.current?.values.block_size || 0,
+                    strata: formikRef?.current?.values.strata || '',
+                    numObservations: Math.floor(Math.random() * (50 - 0) + 0),
+                    date: formikRef?.current?.values.date || '',
+                    blockMeta: blockSurveyInitialValues
+                  });
+                  props.setPageState({ ...props.pageState, blockData: blockData, page: 2 });
                 }}
                 className={classes.actionButton}>
-                Save and Review
+                Save and Continue
               </Button>
               <Button
                 variant="outlined"

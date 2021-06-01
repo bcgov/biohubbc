@@ -51,10 +51,17 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h2">Blocks</Typography>
-          <Box display="flex" justifyContent="space-between">
-            <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
-              Add Block
-            </Button>
+          <Box>
+            <Box display="flex" justifyContent="space-between">
+              <Box mr={1}>
+                <Button variant="outlined" color="primary">
+                  Export to CSV
+                </Button>
+              </Box>
+              <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
+                Add Block
+              </Button>
+            </Box>
           </Box>
         </Box>
         <Box mb={3}>
@@ -63,8 +70,11 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
               <TableHead>
                 <TableRow>
                   <TableCell className={classes.heading}>Block</TableCell>
-                  <TableCell className={classes.heading}># Observations</TableCell>
+                  <TableCell className={classes.heading}>Block Size</TableCell>
+                  <TableCell className={classes.heading}>Strata</TableCell>
+
                   <TableCell className={classes.heading}>Date</TableCell>
+                  <TableCell className={classes.heading}># Observations</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -73,8 +83,10 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
                     <TableCell component="th" scope="row">
                       {item.block}
                     </TableCell>
-                    <TableCell>{item.numObservations}</TableCell>
+                    <TableCell>{item.blockSize}</TableCell>
+                    <TableCell>{item.strata}</TableCell>
                     <TableCell>{item.date}</TableCell>
+                    <TableCell>{item.numObservations}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
