@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.min.css';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import './handsontable.scss';
 
 const useStyles = makeStyles(() => ({
@@ -17,10 +17,12 @@ const useStyles = makeStyles(() => ({
   hotTable: {}
 }));
 
-const HotTableSimple: React.FC = () => {
-  const classes = useStyles();
+export interface IHotTableSimpleProps {
+  innerRef: React.RefObject<HotTable>;
+}
 
-  const hotRef = useRef<HotTable>(null);
+const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
+  const classes = useStyles();
 
   const headers = [
     [
@@ -78,11 +80,11 @@ const HotTableSimple: React.FC = () => {
       changes?.forEach((change: any) => {
         const row = change[0];
 
-        const rowData = hotRef.current?.hotInstance.getDataAtRow(row).slice(2, 9);
+        const rowData = props.innerRef.current?.hotInstance.getDataAtRow(row).slice(2, 9);
 
         const rowNumbers = rowData?.filter((item: any) => !isNaN(Number(item)));
 
-        hotRef.current?.hotInstance.setDataAtCell(
+        props.innerRef.current?.hotInstance.setDataAtCell(
           [[row, 10, rowNumbers?.reduce((a: any, b: any) => a + b, 0)]],
           'auto'
         );
@@ -176,7 +178,7 @@ const HotTableSimple: React.FC = () => {
       <Box style={{ height: '400px' }}>
         <HotTable
           id="hot"
-          ref={hotRef}
+          ref={props.innerRef}
           className={classes.hotTable}
           settings={settings}
           licenseKey="non-commercial-and-evaluation"

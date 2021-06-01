@@ -1,3 +1,4 @@
+import HotTable from '@handsontable/react';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
@@ -113,6 +114,8 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
   const urlParams = useParams();
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
+
+  const hotRef = useRef<HotTable>(null);
 
   // const hotTableParentRef = useRef(null);
 
@@ -616,7 +619,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
                   </Grid>
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
-                      <HotTableSimple />
+                      <HotTableSimple innerRef={hotRef} />
                     </Grid>
                   </Grid>
                   {/* <Grid container spacing={1}>
@@ -637,6 +640,10 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
                 onClick={() => {
                   //history.push(`/projects/1/surveys/1/prototype/1/observationlist`);
                   const blockData = (props.pageState && props.pageState.blockData) || [];
+
+                  // hotRef.current?.hotInstance.clear();
+                  // hotRef.current?.hotInstance.getData();
+
                   blockData.push({
                     block: blockData.length + 1,
                     blockSize: formikRef?.current?.values.block_size || 0,
