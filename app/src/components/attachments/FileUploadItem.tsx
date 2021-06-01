@@ -12,6 +12,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getDwcFileValidationError } from 'utils/customErrors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadListItem: {
@@ -66,8 +67,9 @@ export interface IUploadFile {
 }
 
 export interface IFileUploadItemProps {
-  projectId: number;
+  projectId?: number;
   surveyId?: number;
+  setValidationStatus?: (validationStatus: string[]) => void;
   file: File;
   error?: string;
   onCancel: () => void;
@@ -120,27 +122,48 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       }
     };
 
-    const handleFileUploadSuccess = () => {
+    const handleFileUploadSuccess = (uploadResult: any) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request resolves
         return;
       }
 
-      setStatus(UploadFileStatus.COMPLETE);
+      if (Array.isArray(uploadResult)) {
+        // normal upload call result
+        setStatus(UploadFileStatus.COMPLETE);
+      } else {
+        // validate call result
+        if (uploadResult.isValid) {
+          setStatus(UploadFileStatus.COMPLETE);
+          props.setValidationStatus && props.setValidationStatus(['File being uploaded is valid.']);
+        } else {
+          const customErrorMessage = getDwcFileValidationError(uploadResult);
+
+          setStatus(UploadFileStatus.FAILED);
+          props.setValidationStatus && props.setValidationStatus(customErrorMessage);
+        }
+      }
+
+      // the upload request has finished
       setProgress(100);
 
-      // the upload request has finished and its safe to call the onCancel prop
+      // it's now safe to call the onCancel prop
       setIsSafeToCancel(true);
     };
 
-    if (props.surveyId) {
+    if (props.surveyId && props.projectId) {
       biohubApi.survey
         .uploadSurveyAttachments(props.projectId, props.surveyId, [file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
-    } else {
+    } else if (props.projectId) {
       biohubApi.project
         .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
+        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+        .catch();
+    } else {
+      biohubApi.dwc
+        .validateDwcAttachments([file], cancelToken, handleFileUploadProgress)
         .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
         .catch();
     }
@@ -205,7 +228,13 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
           </Box>
         </Box>
         <Box ml={2} display="flex" alignItems="center">
-          <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
+          <MemoizedActionButton
+            status={status}
+            onCancel={() => {
+              setInitiateCancel(true);
+              props.setValidationStatus && props.setValidationStatus([]);
+            }}
+          />
         </Box>
       </Box>
     </ListItem>

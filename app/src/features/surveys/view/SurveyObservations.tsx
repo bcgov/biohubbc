@@ -1,9 +1,7 @@
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import FileUpload from 'components/attachments/FileUpload';
-import React from 'react';
-import { useParams } from 'react-router';
+import React, { useState } from 'react';
 
 /**
  * Survey observations content.
@@ -11,18 +9,26 @@ import { useParams } from 'react-router';
  * @return {*}
  */
 const SurveyObservations = () => {
-  const urlParams = useParams();
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
+  const [validationStatus, setValidationStatus] = useState<string[]>([]);
 
   return (
     <>
       <Box mb={4}>
-        <Typography variant="h2">Upload</Typography>
+        <Typography variant="h2">Validate File</Typography>
       </Box>
-      <Paper>
-        <FileUpload projectId={projectId} surveyId={surveyId} />
-      </Paper>
+      <Box mb={2}>
+        <FileUpload setValidationStatus={setValidationStatus} />
+      </Box>
+      {validationStatus.length > 0 && (
+        <>
+          <Box mb={2}>
+            <Typography variant="h3">Validation Status</Typography>
+          </Box>
+          {validationStatus.map((message: string, index: number) => (
+            <Typography key={index}>{message}</Typography>
+          ))}
+        </>
+      )}
     </>
   );
 };

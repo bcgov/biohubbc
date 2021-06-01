@@ -5,6 +5,7 @@ import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
 import useProjectApi from './api/useProjectApi';
+import useDwcApi from './api/useDwcApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 
@@ -28,6 +29,8 @@ export const useBiohubApi = () => {
 
   const admin = useAdminApi(customAxios);
 
+  const dwc = useDwcApi(customAxios);
+
   const external = useExternalApi(axios);
 
   return {
@@ -37,6 +40,7 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
+    dwc,
     external
   };
 };
