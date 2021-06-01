@@ -59,8 +59,26 @@ POST.apiDoc = {
                     headerErrors: {
                       type: 'array',
                       items: {
-                        type: 'string'
+                        type: 'object',
+                        properties: {}
                       }
+                    },
+                    rowErrors: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {}
+                      }
+                    },
+                    colErrors: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {}
+                      }
+                    },
+                    isValid: {
+                      type: 'boolean'
                     }
                   }
                 }
@@ -89,11 +107,15 @@ POST.apiDoc = {
 };
 
 const getValidHeaders = () => {
-  return ['first_name', 'last_name', 'date-time', 'species'];
+  return ['first_name', 'last_name', 'date', 'time', 'species', 'count', 'location'];
 };
 
 const getRequiredHeaders = () => {
-  return ['first_name', 'last_name', 'date-time', 'species', 'count', 'location', 'elevation'];
+  return ['first_name', 'last_name', 'date', 'species'];
+};
+
+const getRequiredFieldsByHeader = () => {
+  return ['first_name', 'last_name', 'date'];
 };
 
 /**
@@ -117,8 +139,9 @@ function validateDWC(): RequestHandler {
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
         response = isFileValid(file, {
-          requiredHeaders: getValidHeaders(),
-          validHeaders: getRequiredHeaders()
+          requiredHeaders: getRequiredHeaders(),
+          validHeaders: getValidHeaders(),
+          requiredFieldsByHeader: getRequiredFieldsByHeader()
         });
       });
 
