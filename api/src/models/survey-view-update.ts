@@ -65,7 +65,6 @@ export class GetSurveyDetailsData {
  * @class GetSurveyProprietorData
  */
 export class GetSurveyProprietorData {
-  isProprietary: string;
   id: number;
   proprietary_data_category_name: string;
   first_nations_name: string;
@@ -73,6 +72,7 @@ export class GetSurveyProprietorData {
   first_nations_id: number;
   category_rationale: string;
   proprietor_name: string;
+  survey_data_proprietary: string;
   data_sharing_agreement_required: string;
   revision_count: number;
 
@@ -83,7 +83,6 @@ export class GetSurveyProprietorData {
       surveyProprietorData: data
     });
 
-    this.isProprietary = (data && 'true') || 'false';
     this.id = data?.id ?? null;
     this.proprietary_data_category_name = data?.proprietor_type_name || '';
     this.first_nations_name = data?.first_nations_name || '';
@@ -91,6 +90,7 @@ export class GetSurveyProprietorData {
     this.first_nations_id = data?.first_nations_id ?? null;
     this.category_rationale = data?.category_rationale || '';
     this.proprietor_name = data?.proprietor_name || '';
+    this.survey_data_proprietary = data?.survey_data_proprietary || 'true';
     this.data_sharing_agreement_required = data?.disa_required ? 'true' : 'false';
     this.revision_count = data?.revision_count ?? null;
   }
