@@ -24,6 +24,7 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
+import PrototypeTypePage from 'prototypes/PrototypeTwo/PrototypeTypePage';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -166,29 +167,55 @@ const SurveyPage: React.FC = () => {
 
       <Container maxWidth="xl">
         <Box display="flex" flexDirection="row" py={6}>
-          <Box component="aside" mr={6} mt={-2}>
-            <Paper>
-              <List component="nav" role="navigation" className={classes.surveyNav} aria-label="Survey Navigation">
-                <ListItem component={NavLink} to="details">
-                  <ListItemIcon>
-                    <Icon path={mdiInformationOutline} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Survey Details</ListItemText>
-                </ListItem>
-                <ListItem component={NavLink} to="observations">
-                  <ListItemIcon>
-                    <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Observations</ListItemText>
-                </ListItem>
-                <ListItem component={NavLink} to="attachments">
-                  <ListItemIcon>
-                    <Icon path={mdiPaperclip} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Attachments</ListItemText>
-                </ListItem>
-              </List>
-            </Paper>
+          <Box>
+            <Box component="aside" mr={6} mt={-2}>
+              <Paper>
+                <List component="nav" role="navigation" className={classes.surveyNav} aria-label="Survey Navigation">
+                  <ListItem component={NavLink} to="details">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Survey Details</ListItemText>
+                  </ListItem>
+                  <ListItem component={NavLink} to="prototype">
+                    <ListItemIcon>
+                      <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Observations</ListItemText>
+                  </ListItem>
+                  <ListItem component={NavLink} to="attachments">
+                    <ListItemIcon>
+                      <Icon path={mdiPaperclip} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Attachments</ListItemText>
+                  </ListItem>
+                </List>
+              </Paper>
+            </Box>
+            {/* <Box component="aside" mr={6} mt={5}>
+              <Paper>
+                <List component="nav" role="navigation" className={classes.surveyNav} aria-label="Prototype Navigation">
+                  <ListItem component={NavLink} to="prototype/1">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Prototype One</ListItemText>
+                  </ListItem>
+                  <ListItem component={NavLink} to="prototype">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Prototype Two</ListItemText>
+                  </ListItem>
+                  <ListItem component={NavLink} to="prototype/1/blocklist">
+                    <ListItemIcon>
+                      <Icon path={mdiInformationOutline} size={1} />
+                    </ListItemIcon>
+                    <ListItemText>Block List</ListItemText>
+                  </ListItem>
+                </List>
+              </Paper>
+            </Box> */}
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
@@ -198,6 +225,9 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+            )}
+            {location.pathname.includes('/prototype') && (
+              <PrototypeTypePage projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
