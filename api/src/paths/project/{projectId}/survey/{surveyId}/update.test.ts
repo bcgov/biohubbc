@@ -59,6 +59,29 @@ describe('getSurveyForUpdate', () => {
     }
   };
 
+  it('should throw a 400 error when no survey id path param', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.getSurveyForUpdate();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
+    }
+  });
+
   it('should throw a 400 error when no get survey sql statement produced', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -78,6 +101,62 @@ describe('getSurveyForUpdate', () => {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build survey details SQL get statement');
     }
+  });
+
+  it('should return only survey details when entity specified with survey_details, on success', async () => {
+    const survey_details = {
+      id: 1,
+      name: 'name',
+      objectives: 'objective',
+      focal_species: 1,
+      ancillary_species: 3,
+      start_date: '2020/04/04',
+      end_date: '2020/05/05',
+      lead_first_name: 'first',
+      lead_last_name: 'last',
+      location_name: 'location',
+      revision_count: 1,
+      geometry: []
+    };
+
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({
+      rows: [survey_details]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
+
+    const result = update.getSurveyForUpdate();
+
+    await result({ ...sampleReq, query: { entity: ['survey_details'] } }, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql({
+      survey_details: {
+        id: 1,
+        survey_name: survey_details.name,
+        survey_purpose: survey_details.objectives,
+        focal_species: [survey_details.focal_species],
+        ancillary_species: [survey_details.ancillary_species],
+        start_date: survey_details.start_date,
+        end_date: survey_details.end_date,
+        biologist_first_name: survey_details.lead_first_name,
+        biologist_last_name: survey_details.lead_last_name,
+        survey_area_name: survey_details.location_name,
+        revision_count: survey_details.revision_count,
+        geometry: survey_details.geometry
+      },
+      survey_proprietor: null
+    });
   });
 
   it('should return survey details and proprietor info when no entity is specified, on success', async () => {
@@ -151,7 +230,6 @@ describe('getSurveyForUpdate', () => {
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry
       },
-
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
         data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
@@ -383,5 +461,153 @@ describe('updateSurvey', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(200);
+  });
+});
+
+describe('getSurveyDetailsData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return null;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const surveyId = 1;
+
+  it('should throw a 400 error when no sql statement returned', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
+
+    try {
+      await update.getSurveyDetailsData(surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build survey details SQL get statement');
+    }
+  });
+
+  it('should throw a 400 error when no result returned', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`something`);
+
+    try {
+      await update.getSurveyDetailsData(surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to get project survey details data');
+    }
+  });
+});
+
+describe('getSurveyProprietorData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return null;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const surveyId = 1;
+
+  it('should throw a 400 error when no sql statement returned', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
+
+    try {
+      await update.getSurveyProprietorData(surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build survey proprietor SQL get statement');
+    }
+  });
+
+  it('should throw a 400 error when no result returned', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
+
+    try {
+      await update.getSurveyProprietorData(surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to get project survey proprietor data');
+    }
   });
 });

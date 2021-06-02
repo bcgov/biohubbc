@@ -193,7 +193,7 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveyId = Number(req.params?.surveyId);
+      const surveyId = Number(req.params.surveyId);
 
       const entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
 
@@ -273,7 +273,14 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
+  const result =
+    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get project survey proprietor data');
+  }
+
+  return result;
 };
 
 /**
@@ -307,13 +314,14 @@ export function updateSurvey(): RequestHandler {
 
       const promises: Promise<any>[] = [];
 
-      if (entities?.survey_details) {
+      if (entities.survey_details) {
         promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
       }
 
-      if (entities?.survey_proprietor) {
+      if (entities.survey_proprietor) {
         promises.push(updateSurveyProprietorData(surveyId, entities, connection));
       }
+
       await Promise.all(promises);
 
       await connection.commit();
