@@ -1,6 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
-import { ProjectListSearchCriteria } from '../../models/project-view';
 
 const defaultLog = getLogger('queries/project/project-view-queries');
 
@@ -61,9 +60,10 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 /**
  * SQL query to get all projects.
  *
+ * @param {any} filterFields
  * @returns {SQLStatement} sql query object
  */
-export const getProjectListSQL = (): SQLStatement | null => {
+export const getProjectListSQL = (filterFields: any): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectListSQL', message: 'getProjectListSQL' });
 
   const sqlStatement = SQL`
@@ -81,6 +81,14 @@ export const getProjectListSQL = (): SQLStatement | null => {
       on p.pt_id = pt.id
     left outer join permit as pp
       on p.id = pp.p_id
+  `;
+
+  
+  if (filterFields.coordinator_agency) {
+    sqlStatement.append(SQL`where p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+  }
+
+  sqlStatement.append(SQL`
     group by
       p.id,
       p.name,
@@ -88,7 +96,7 @@ export const getProjectListSQL = (): SQLStatement | null => {
       p.end_date,
       p.coordinator_agency_name,
       pt.name;
-  `;
+  `);
 
   defaultLog.debug({
     label: 'getProjectListSQL',
@@ -220,28 +228,26 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
   return sqlStatement;
 };
 
+// /**
+//  * SQL query to fetch activity records based on search criteria.
+//  *
+//  * @param {ActivitySearchCriteria} searchCriteria
+//  * @returns {SQLStatement} sql query object
+//  */
+//  export const getFilteredProjectListSQL = (searchCriteria: ProjectListSearchCriteria):SQLStatement | null  => {
+//   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-/**
- * SQL query to fetch activity records based on search criteria.
- *
- * @param {ActivitySearchCriteria} searchCriteria
- * @returns {SQLStatement} sql query object
- */
- export const getFilteredProjectListSQL = (searchCriteria: ProjectListSearchCriteria):SQLStatement | null  => {
-  const sqlStatement: SQLStatement = SQL`SELECT`;
+//   if (searchCriteria.column_names && searchCriteria.column_names.length) {
+//     // do not include the `SQL` template string prefix, as column names can not be parameterized
+//     sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
+//   } else {
+//     // if no column_names specified, select all
+//     sqlStatement.append(SQL` *`);
+//   }
 
-  if (searchCriteria.column_names && searchCriteria.column_names.length) {
-    // do not include the `SQL` template string prefix, as column names can not be parameterized
-    sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
-  } else {
-    // if no column_names specified, select all
-    sqlStatement.append(SQL` *`);
-  }
+//   sqlStatement.append(SQL` FROM project WHERE 1 = 1`);
 
-  sqlStatement.append(SQL` FROM project WHERE 1 = 1`);
+//   sqlStatement.append(SQL`;`);
 
-  sqlStatement.append(SQL`;`);
-
-  return sqlStatement;
-};
-
+//   return sqlStatement;
+// };

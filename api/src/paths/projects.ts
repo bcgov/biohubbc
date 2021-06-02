@@ -4,61 +4,13 @@ import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { projectIdResponseObject } from '../openapi/schemas/project';
-import { getProjectListSQL , getFilteredProjectListSQL } from '../queries/project/project-view-queries';
+import { getProjectListSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
-import { ProjectListSearchCriteria} from '../models/project-view';
 
 const defaultLog = getLogger('paths/projects');
 
-export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjectList()];
-
-
-export const POST: Operation = [getProjectListBySearchFilterCriteria()];
-
-GET.apiDoc = {
-  description: 'Get all Projects.',
-  tags: ['project'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Project response object.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              ...(projectIdResponseObject as object)
-            }
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-
-
-
+export const POST: Operation = [logRequest('paths/projects', 'POST'), getProjectList()];
 
 POST.apiDoc = {
   description: 'Gets a list of projects based on search parameters.',
@@ -69,16 +21,25 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'ProjectList search filter criteria object.',
+    description: 'Project list search filter criteria object.',
     content: {
       'application/json': {
         schema: {
           properties: {
-            column_names: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
+            coordinator_agency: {
+              type: 'string'
+            },
+            permit_number: {
+              type: 'string'
+            },
+            permit_type: {
+              type: 'string'
+            },
+            start_date: {
+              type: 'string'
+            },
+            end_date: {
+              type: 'string'
             }
           }
         }
@@ -87,25 +48,13 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Activity get response object array.',
+      description: 'Project response object.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              type: 'object',
-              properties: {
-                rows: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      // Don't specify exact object properties, as it will vary, and is not currently enforced anyways
-                      // Eventually this could be updated to be a oneOf list, similar to the Post request below.
-                    }
-                  }
-                }
-              }
+              ...(projectIdResponseObject as object)
             }
           }
         }
@@ -124,7 +73,7 @@ POST.apiDoc = {
 };
 
 /**
- * Get all projects.
+ * Get all projects (potentially based on filter criteria).
  *
  * @returns {RequestHandler}
  */
@@ -132,9 +81,10 @@ function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    try {
+    const filterFields = req.body || null;
 
-      const getProjectListSQLStatement = getProjectListSQL();
+    try {
+      const getProjectListSQLStatement = getProjectListSQL(filterFields);
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -196,50 +146,4 @@ export function _extractProjects(rows: any[]): any[] {
   });
 
   return projects;
-}
-
-
-function getProjectListBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({ label: 'projectList', message: 'getProjectListBySearchFilterCriteria', body: req.body });
-
-    const sanitizedSearchCriteria = new ProjectListSearchCriteria(req.body);
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-
-
-      const sqlStatement = getFilteredProjectListSQL(sanitizedSearchCriteria);
-
-      if (!sqlStatement) {
-        throw {
-          status: 400,
-          message: 'Failed to build SQL statement'
-        };
-      }
-
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      await connection.commit();
-
-      // parse the rows from the response
-      const rows = { rows: (response && response.rows) || [] };
-
-      // parse the count from the response
-      const count = { count: rows.rows.length && parseInt(rows.rows[0]['total_rows_count']) } || {};
-
-      // build the return object
-      const result = { ...rows, ...count };
-
-      return res.status(200).json(result);
-    } catch (error) {
-      defaultLog.debug({ label: 'getProjectListBySearchFilterCriteria', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
 }

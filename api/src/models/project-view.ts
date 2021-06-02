@@ -197,22 +197,16 @@ export class GetPartnershipsData {
   }
 }
 
+// export class ProjectListSearchCriteria {
+//   column_names: string[];
 
-
-
-export class ProjectListSearchCriteria {
-
-  column_names: string[];
-
-  /**
-   * Creates an instance of ProjectListSearchCriteria.
-   *
-   * @param {*} [obj]
-   * @memberof ProjectListSearchCriteria
-   */
-  constructor(obj?: any) {
-    this.column_names = (obj && obj.column_names) || [];
-  }
-
-}
-
+//   /**
+//    * Creates an instance of ProjectListSearchCriteria.
+//    *
+//    * @param {*} [obj]
+//    * @memberof ProjectListSearchCriteria
+//    */
+//   constructor(obj?: any) {
+//     this.column_names = (obj && obj.column_names) || [];
+//   }
+// }
