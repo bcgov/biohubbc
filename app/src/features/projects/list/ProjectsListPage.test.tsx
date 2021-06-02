@@ -57,14 +57,15 @@ describe('ProjectsListPage', () => {
       });
       mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
 
-      const { baseElement } = render(
+      const { getByText } = render(
         <MemoryRouter>
           <ProjectsListPage />
         </MemoryRouter>
       );
 
-      expect(baseElement).toHaveTextContent('Create Project');
-      expect(baseElement).toHaveTextContent('Open Advanced Filters');
+      await waitFor(() => {
+        expect(getByText('Open Advanced Filters')).toBeInTheDocument();
+      });
     });
   });
 
