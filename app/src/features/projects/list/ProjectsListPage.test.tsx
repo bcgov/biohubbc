@@ -50,6 +50,25 @@ describe('ProjectsListPage', () => {
     });
   });
 
+  test('renders with the open advanced filters button', async () => {
+    await act(async () => {
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+      });
+      mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+
+      const { getByText } = render(
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByText('Open Advanced Filters')).toBeInTheDocument();
+      });
+    });
+  });
+
   test('renders with a proper list of projects', async () => {
     await act(async () => {
       mockBiohubApi().project.getProjectsList.mockResolvedValue([
