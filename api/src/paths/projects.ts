@@ -27,7 +27,8 @@ POST.apiDoc = {
         schema: {
           properties: {
             coordinator_agency: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             permit_number: {
               type: 'string'

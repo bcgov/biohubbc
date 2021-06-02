@@ -239,8 +239,8 @@ const ProjectsListPage: React.FC = () => {
   return (
     <Box my={4}>
       <Container maxWidth="xl">
-        <Typography variant="h1">Projects</Typography>
-        <Box mb={5} display="flex" justifyContent="flex-end">
+        <Box mb={5} display="flex" justifyContent="space-between">
+          <Typography variant="h1">Projects</Typography>
           <Button
             className={classes.actionButton}
             variant="outlined"
@@ -248,6 +248,8 @@ const ProjectsListPage: React.FC = () => {
             onClick={() => navigateToCreateProjectPage()}>
             Create Project
           </Button>
+        </Box>
+        <Box mb={2} display="flex" justifyContent="flex-end">
           {codes && (
             <Button
               className={classes.actionButton}

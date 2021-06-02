@@ -67,7 +67,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getProjectsList = async (
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.post(`/api/projects`, filterFieldData || null);
+    const { data } = await axios.post(`/api/projects`, filterFieldData || {});
 
     return data;
   };

@@ -63,7 +63,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
  * @param {any} filterFields
  * @returns {SQLStatement} sql query object
  */
-export const getProjectListSQL = (filterFields: any): SQLStatement | null => {
+export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectListSQL', message: 'getProjectListSQL' });
 
   const sqlStatement = SQL`
@@ -83,7 +83,6 @@ export const getProjectListSQL = (filterFields: any): SQLStatement | null => {
       on p.id = pp.p_id
   `;
 
-  
   if (filterFields.coordinator_agency) {
     sqlStatement.append(SQL`where p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
   }
