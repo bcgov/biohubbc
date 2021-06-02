@@ -1,6 +1,5 @@
 import { HotTable } from '@handsontable/react';
 import { makeStyles } from '@material-ui/core';
-// import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.min.css';
@@ -72,7 +71,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
       changes?.forEach((change: any) => {
         const row = change[0];
 
-        const rowData = props.innerRef.current?.hotInstance.getDataAtRow(row).slice(2, 9);
+        const rowData = props.innerRef.current?.hotInstance.getDataAtRow(row).slice(2, 10);
 
         const rowNumbers = rowData?.filter((item: any) => !isNaN(Number(item)));
 
