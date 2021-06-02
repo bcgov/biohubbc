@@ -35,6 +35,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Add system roles to a user request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

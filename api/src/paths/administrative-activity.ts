@@ -31,6 +31,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Administrative Activity post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -80,6 +81,7 @@ GET.apiDoc = {
   ],
   requestBody: {
     description: 'Administrative Activity get request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -229,6 +231,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Administrative activity request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

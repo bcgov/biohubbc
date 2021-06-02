@@ -1,3 +1,5 @@
+import { geoJSONFeature } from "../components/geojson-feature";
+
 /**
  * Request Object for project create POST request
  */
@@ -194,10 +196,74 @@ const projectUpdateProperties = {
       revision_count: { type: 'number' }
     }
   },
-  permit: { type: 'object', properties: {} },
-  project: { type: 'object', properties: {} },
-  objectives: { type: 'object', properties: {} },
-  location: { type: 'object', properties: {} },
+  permit: {
+    type: 'object',
+    properties: {
+      permits: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            permit_number: {
+              type: 'string'
+            },
+            permit_type: {
+              type: 'string'
+            },
+            sampling_conducted: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
+  project: {
+    type: 'object',
+    properties: {
+      project_name: {
+        type: 'string'
+      },
+      project_type: {
+        type: 'number'
+      },
+      project_activities: {
+        type: 'number'
+      },
+      start_date: {
+        type: 'string'
+      },
+      end_date: {
+        type: 'string'
+      }
+    }
+  },
+  objectives: {
+    type: 'object',
+    properties: {
+      objectives: {
+        type: 'string'
+      },
+      caveats: {
+        type: 'number'
+      }
+    }
+  },
+  location: {
+    type: 'object',
+    properties: {
+      regions: {
+        type: 'string'
+      },
+      location_description: {
+        type: 'string'
+      },
+      geometry: {
+        type: 'array',
+        items: geoJSONFeature
+      }
+    }
+  },
   iucn: {
     type: 'object',
     properties: {

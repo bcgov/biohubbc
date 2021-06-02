@@ -118,6 +118,7 @@ export const addFundingSourceApiDocObject = (basicDescription: string, successDe
     ],
     requestBody: {
       description: 'Add funding source request object.',
+      required: true,
       content: {
         'application/json': {
           schema: {

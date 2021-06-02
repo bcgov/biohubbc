@@ -51,6 +51,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Draft post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -87,6 +88,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Draft put request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

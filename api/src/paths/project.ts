@@ -38,6 +38,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Project post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

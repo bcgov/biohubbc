@@ -25,6 +25,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'No sample permits post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
