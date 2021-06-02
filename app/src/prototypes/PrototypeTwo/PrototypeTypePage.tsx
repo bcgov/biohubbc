@@ -58,8 +58,9 @@ const PrototypeTypePage: React.FC<IPrototypeTypePageProps> = () => {
   }
 
   if (pageState.page === 2) {
+    // overwrite dialog z-index, as the handsontable context menu has z-index of 1060, and dialog defaults to 1300
     return (
-      <Dialog open={true} fullScreen={true}>
+      <Dialog open={true} fullScreen={true} style={{ zIndex: 1055 }}>
         <Header />
         <Container maxWidth="xl">
           <NewBlockCondensed pageState={pageState} setPageState={setPageState} goToBlockListPage={goToBlockListPage} />
