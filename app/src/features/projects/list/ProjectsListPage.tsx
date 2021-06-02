@@ -19,7 +19,6 @@ import { DATE_FORMAT } from 'constants/dateFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-// import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
@@ -134,14 +133,17 @@ const ProjectsListPage: React.FC = () => {
       return;
     }
 
-    console.log(formikRef.current.values);
-
     try {
       const response = await biohubApi.project.getProjectsList(formikRef.current.values);
 
       if (!response) {
         return;
       }
+
+      setProjects(() => {
+        setIsLoading(false);
+        return response;
+      });
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
