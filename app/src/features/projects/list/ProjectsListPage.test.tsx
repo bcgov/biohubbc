@@ -64,6 +64,7 @@ describe('ProjectsListPage', () => {
       );
 
       expect(baseElement).toHaveTextContent('Create Project');
+      expect(baseElement).toHaveTextContent('Open Advanced Filters');
     });
   });
 
