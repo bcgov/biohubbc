@@ -227,27 +227,3 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
 
   return sqlStatement;
 };
-
-// /**
-//  * SQL query to fetch activity records based on search criteria.
-//  *
-//  * @param {ActivitySearchCriteria} searchCriteria
-//  * @returns {SQLStatement} sql query object
-//  */
-//  export const getFilteredProjectListSQL = (searchCriteria: ProjectListSearchCriteria):SQLStatement | null  => {
-//   const sqlStatement: SQLStatement = SQL`SELECT`;
-
-//   if (searchCriteria.column_names && searchCriteria.column_names.length) {
-//     // do not include the `SQL` template string prefix, as column names can not be parameterized
-//     sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
-//   } else {
-//     // if no column_names specified, select all
-//     sqlStatement.append(SQL` *`);
-//   }
-
-//   sqlStatement.append(SQL` FROM project WHERE 1 = 1`);
-
-//   sqlStatement.append(SQL`;`);
-
-//   return sqlStatement;
-// };
