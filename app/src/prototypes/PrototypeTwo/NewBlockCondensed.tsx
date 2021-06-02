@@ -118,6 +118,17 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
 
   // const hotTableParentRef = useRef(null);
 
+  const initialValues =
+    (props.pageState?.blockData[props.pageState.blockData?.length - 1]?.blockMeta && {
+      ...props.pageState?.blockData[props.pageState.blockData?.length - 1]?.blockMeta,
+      block_name: ('' as unknown) as number,
+      block_size: ('' as unknown) as number,
+      strata: '',
+      start_time: moment().format('HH:mm'),
+      end_time: moment().format('HH:mm')
+    }) ||
+    blockSurveyInitialValues;
+
   return (
     <>
       <Box>
@@ -137,8 +148,9 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
         <Box display="block">
           <Formik
             innerRef={formikRef}
-            initialValues={blockSurveyInitialValues}
-            validateOnBlur={true}
+            initialValues={initialValues}
+            enableReinitialize={true}
+            validateOnBlur={false}
             validateOnChange={false}
             onSubmit={() => {}}>
             {({ values, touched, errors, handleChange }) => (
@@ -615,7 +627,14 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
                 </Grid>
                 <Grid container spacing={1}>
                   <Grid item xs={12}>
-                    <HotTableSimple innerRef={hotRef} />
+                    <HotTableSimple
+                      innerRef={hotRef}
+                      tableData={
+                        props.pageState?.blockData[props.pageState.blockData.length + 1]?.tableData || [
+                          [, , , , , , , , , , , , , , ,]
+                        ]
+                      }
+                    />
                   </Grid>
                 </Grid>
                 {/* <Grid container spacing={1}>
@@ -634,17 +653,19 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="contained"
               color="primary"
               onClick={() => {
-                const blockData = (props.pageState && props.pageState.blockData) || [];
+                const blockData = (props.pageState && props.pageState?.blockData) || [];
 
                 blockData.push({
-                  block: blockData.length + 1,
+                  block: blockData.length,
                   blockSize: formikRef?.current?.values.block_size || 0,
                   strata: formikRef?.current?.values.strata || '',
                   numObservations: Math.floor(Math.random() * (50 - 0) + 0),
                   start_time: formikRef?.current?.values.start_time || '',
                   end_time: formikRef?.current?.values.end_time || '',
-                  blockMeta: blockSurveyInitialValues
+                  blockMeta: blockSurveyInitialValues,
+                  tableData: [[, , , , , , , , , , , , , , ,]]
                 });
+
                 props.setPageState({ ...props.pageState, blockData: blockData, page: 1 });
               }}
               className={classes.actionButton}>
@@ -655,26 +676,18 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="contained"
               color="primary"
               onClick={() => {
-
-                console.log('just clicked save and continue)')
-                console.log('hotref ', hotRef.current);
-                //hotRef.current?.hotInstance.loadData([[, , , , , , , , , , , , , , , , ]]);
-                const temp = hotRef.current?.hotInstance.getData();
-
-                console.log(temp);
-
-
-
-                const blockData = (props.pageState && props.pageState.blockData) || [];
+                const blockData = (props.pageState && props.pageState?.blockData) || [];
 
                 blockData.push({
-                  block: blockData.length + 1,
-                  blockSize: formikRef?.current?.values.block_size || 0,
+                  block: blockData.length,
+                  blockName: formikRef?.current?.values.block_name || (('' as unknown) as number),
+                  blockSize: formikRef?.current?.values.block_size || (('' as unknown) as number),
                   strata: formikRef?.current?.values.strata || '',
                   numObservations: Math.floor(Math.random() * (50 - 0) + 10),
                   start_time: formikRef?.current?.values.start_time || '',
                   end_time: formikRef?.current?.values.end_time || '',
-                  blockMeta: blockSurveyInitialValues
+                  blockMeta: formikRef?.current?.values,
+                  tableData: hotRef.current?.hotInstance.getData() || [[, , , , , , , , , , , , , , ,]]
                 });
 
                 props.setPageState({ ...props.pageState, blockData: blockData, page: 2 });
@@ -686,7 +699,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
               variant="outlined"
               color="primary"
               onClick={() => {
-                props.setPageState({ ...props.pageState, blockData: null, page: 1 });
+                props.setPageState({ ...props.pageState, page: 1 });
               }}
               className={classes.actionButton}>
               Cancel

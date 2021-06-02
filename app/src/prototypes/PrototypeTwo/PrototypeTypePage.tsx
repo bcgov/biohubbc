@@ -11,12 +11,14 @@ export interface IObservationData {}
 
 export interface IBlockData {
   block?: number;
+  blockName?: number;
   blockSize?: number;
   strata?: string;
   numObservations?: number;
   start_time?: string;
   end_time?: string;
   blockMeta: INewBlockForm;
+  tableData: any[][];
 }
 
 export interface IPageState {
@@ -44,6 +46,8 @@ const PrototypeTypePage: React.FC<IPrototypeTypePageProps> = () => {
   const goToNewBlockPage = () => {
     setPageState({ ...pageState, page: 2 });
   };
+
+  console.log(pageState);
 
   if (pageState.page === 1) {
     return (

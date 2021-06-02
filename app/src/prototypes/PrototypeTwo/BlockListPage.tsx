@@ -76,10 +76,10 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {props?.pageState?.blockData?.map((item: IBlockData) => (
-                <TableRow>
+              {props?.pageState?.blockData?.map((item: IBlockData, index) => (
+                <TableRow key={index}>
                   <TableCell component="th" scope="row">
-                    {item.block}
+                    {item.blockName}
                   </TableCell>
                   <TableCell>{item.blockSize}</TableCell>
                   <TableCell>{item.strata}</TableCell>

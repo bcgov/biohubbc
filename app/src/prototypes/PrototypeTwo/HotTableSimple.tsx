@@ -19,6 +19,7 @@ const useStyles = makeStyles(() => ({
 
 export interface IHotTableSimpleProps {
   innerRef: React.RefObject<HotTable>;
+  tableData: any[][];
 }
 
 const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
@@ -51,12 +52,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
     ]
   ];
 
-
-
-  const [data] = useState<any[][]>([[, , , , , , , , , , , , , , , , ]]);
-
   const [settings] = useState<Handsontable.GridSettings>({
-    data: data,
     nestedHeaders: headers,
     viewportRowRenderingOffset: 'auto',
     minRows: 8,
@@ -93,20 +89,20 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
     },
     columns: [
       {
-        type: 'numeric',
-        validator: function (this: any, value: any, callback: (valid: boolean) => void): void {
-          if (isNaN(Number(value))) {
-            callback(false);
-            return;
-          }
+        type: 'numeric'
+        // validator: function (this: any, value: any, callback: (valid: boolean) => void): void {
+        //   if (isNaN(Number(value))) {
+        //     callback(false);
+        //     return;
+        //   }
 
-          if (value > 100) {
-            callback(false);
-            return;
-          }
+        //   if (value > 100) {
+        //     callback(false);
+        //     return;
+        //   }
 
-          callback(true);
-        }
+        //   callback(true);
+        // }
       },
       { type: 'numeric' },
       { type: 'numeric' },
@@ -182,6 +178,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
           id="hot"
           ref={props.innerRef}
           className={classes.hotTable}
+          data={props.tableData}
           settings={settings}
           licenseKey="non-commercial-and-evaluation"
         />
