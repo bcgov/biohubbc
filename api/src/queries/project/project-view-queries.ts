@@ -83,8 +83,10 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       on p.id = pp.p_id
   `;
 
-  if (filterFields.coordinator_agency) {
-    sqlStatement.append(SQL`where p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+  if (filterFields) {
+    if (filterFields.coordinator_agency) {
+      sqlStatement.append(SQL`where p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+    }
   }
 
   sqlStatement.append(SQL`
