@@ -43,7 +43,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
       '% Veg Cover',
       'Veg Class',
       '% Snow',
-      'Notes'
+      'Comments'
     ]
   ];
 
@@ -52,7 +52,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
     viewportRowRenderingOffset: 'auto',
     minRows: 8,
     contextMenu: true,
-    collapsibleColumns: true,
+    // collapsibleColumns: true,
     rowHeaders: false,
     search: true,
     width: '100%',
@@ -62,8 +62,8 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
     readOnly: false,
     columnSorting: true,
     formulas: true,
-    manualColumnResize: true,
-    manualRowResize: true,
+    // manualColumnResize: true,
+    // manualRowResize: true,
     afterChange: (changes: any, source: any) => {
       if (source === 'auto') {
         return;
@@ -138,46 +138,20 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
       },
       { type: 'dropdown', source: ['1', '2', '3', '4', '5', '6', '7', '8'] },
       { type: 'numeric' },
-      { type: 'text', width: 250 }
+      { type: 'text', width: 245 }
     ]
   });
 
   return (
-    <Box mt={3}>
-      {/* <Box mb={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.actionButton}
-          onClick={() =>
-            setSettings((currentSettings) => {
-              return { ...currentSettings, colWidths: (currentSettings.colWidths === 60 && 100) || 60 };
-            })
-          }>
-          {`${(settings.colWidths === 60 && 'Expand') || 'Shrink'} Columns`}
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.actionButton}
-          onClick={() =>
-            setSettings((currentSettings) => {
-              return { ...currentSettings, readOnly: !currentSettings.readOnly };
-            })
-          }>
-          {`${(settings.readOnly && 'Unlock') || 'Lock'} Data`}
-        </Button>
-      </Box> */}
-      <Box style={{ height: '400px' }}>
-        <HotTable
-          id="hot"
-          ref={props.innerRef}
-          className={classes.hotTable}
-          data={props.tableData}
-          settings={settings}
-          licenseKey="non-commercial-and-evaluation"
-        />
-      </Box>
+    <Box style={{ height: '400px' }}>
+      <HotTable
+        id="hot"
+        ref={props.innerRef}
+        className={classes.hotTable}
+        data={props.tableData}
+        settings={settings}
+        licenseKey="non-commercial-and-evaluation"
+      />
     </Box>
   );
 };

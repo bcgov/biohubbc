@@ -48,7 +48,7 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
   return (
     <>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Blocks</Typography>
+        <Typography variant="h2">Observations</Typography>
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
