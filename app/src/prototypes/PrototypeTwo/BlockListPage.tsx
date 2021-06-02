@@ -57,7 +57,7 @@ const BlockListPage: React.FC<IBlockListPageProps> = (props) => {
               </Button>
             </Box>
             <Button variant="outlined" color="primary" onClick={() => props.goToNewBlockPage()}>
-              Add Block
+              Add Block Survey
             </Button>
           </Box>
         </Box>

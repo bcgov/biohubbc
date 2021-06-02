@@ -151,7 +151,7 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
         </Box>
 
         <Box mb={3}>
-          <Typography variant="h1">New Block Survey</Typography>
+          <Typography variant="h1">Add Block Survey</Typography>
         </Box>
 
         <Box>
@@ -164,208 +164,216 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
             onSubmit={() => {}}>
             {({ values, touched, errors, handleChange }) => (
               <form>
-                <Box component="fieldset" mt={2}>
-                  <Box component="legend" mb={1}>
-                    <b>Block Information</b>
-                  </Box>
-                  <Grid container spacing={2} className={classes.customGridContainer}>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="block_name"
-                        size="small"
-                        name="block_name"
-                        label="Block ID"
-                        variant="outlined"
-                        value={values.block_name}
-                        onChange={handleChange}
-                        error={touched.block_name && Boolean(errors.block_name)}
-                        helperText={touched.block_name && errors.block_name}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        size="small"
-                        id="block_size"
-                        name="block_size"
-                        label={`Block Size (km\u00B2)`}
-                        variant="outlined"
-                        value={values.block_size}
-                        onChange={handleChange}
-                        error={touched.block_size && Boolean(errors.block_size)}
-                        helperText={touched.block_size && errors.block_size}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <FormControl fullWidth variant="outlined" required={false} size="small">
-                        <InputLabel id="strata_label">Strata</InputLabel>
-                        <Select
-                          id="strata"
-                          name="strata"
-                          labelId="strata_label"
-                          label="Strata"
-                          value={values.strata}
+
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={6}>
+                    <Box component="fieldset" mt={3}>
+                    <Box component="legend" mb={1}>
+                      <b>Block Information</b>
+                    </Box>
+                    <Grid container spacing={2} className={classes.customGridContainer}>
+                      <Grid item xs={4}>
+                        <TextField
+                          fullWidth
+                          required={false}
+                          id="block_name"
+                          size="small"
+                          name="block_name"
+                          label="Block ID"
+                          variant="outlined"
+                          value={values.block_name}
                           onChange={handleChange}
-                          error={touched.strata && Boolean(errors.strata)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'strata' }}>
-                          {['High', 'Medium', 'Low', 'Very Low'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.strata && errors.strata}</FormHelperText>
-                      </FormControl>
+                          error={touched.block_name && Boolean(errors.block_name)}
+                          helperText={touched.block_name && errors.block_name}
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          fullWidth
+                          required={false}
+                          size="small"
+                          id="block_size"
+                          name="block_size"
+                          label={`Block Size (km\u00B2)`}
+                          variant="outlined"
+                          value={values.block_size}
+                          onChange={handleChange}
+                          error={touched.block_size && Boolean(errors.block_size)}
+                          helperText={touched.block_size && errors.block_size}
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <FormControl fullWidth variant="outlined" required={false} size="small">
+                          <InputLabel id="strata_label">Strata</InputLabel>
+                          <Select
+                            id="strata"
+                            name="strata"
+                            labelId="strata_label"
+                            label="Strata"
+                            value={values.strata}
+                            onChange={handleChange}
+                            error={touched.strata && Boolean(errors.strata)}
+                            displayEmpty
+                            inputProps={{ 'aria-label': 'strata' }}>
+                            {['High', 'Medium', 'Low', 'Very Low'].map((item) => (
+                              <MenuItem key={item} value={item}>
+                                {item}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText>{touched.strata && errors.strata}</FormHelperText>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          fullWidth
+                          id="date"
+                          name="date"
+                          label="Date"
+                          size="small"
+                          variant="outlined"
+                          required={false}
+                          value={values.date}
+                          type="date"
+                          InputProps={{
+                            // Chrome min/max dates
+                            inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'date' }
+                          }}
+                          inputProps={{
+                            // Firefox min/max dates
+                            min: DATE_LIMIT.min,
+                            max: DATE_LIMIT.max,
+                            'data-testid': 'date'
+                          }}
+                          onChange={handleChange}
+                          error={touched.date && Boolean(errors.date)}
+                          helperText={touched.date && errors.date}
+                          InputLabelProps={{
+                            shrink: true
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          fullWidth
+                          id="start_time"
+                          name="start_time"
+                          label="Start Time"
+                          variant="outlined"
+                          size="small"
+                          required={false}
+                          value={values.start_time}
+                          type="time"
+                          inputProps={{
+                            step: 300 // 5 min
+                          }}
+                          onChange={handleChange}
+                          error={touched.start_time && Boolean(errors.start_time)}
+                          helperText={touched.start_time && errors.start_time}
+                          InputLabelProps={{
+                            shrink: true
+                          }}
+                        />
+                      </Grid>
+                      <Grid item xs={4}>
+                        <TextField
+                          fullWidth
+                          id="end_time"
+                          name="end_time"
+                          label="End Time"
+                          size="small"
+                          variant="outlined"
+                          required={false}
+                          value={values.end_time}
+                          type="time"
+                          inputProps={{
+                            step: 300 // 5 min
+                          }}
+                          onChange={handleChange}
+                          error={touched.end_time && Boolean(errors.end_time)}
+                          helperText={touched.end_time && errors.end_time}
+                          InputLabelProps={{
+                            shrink: true
+                          }}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        id="date"
-                        name="date"
-                        label="Date"
-                        size="small"
-                        variant="outlined"
-                        required={false}
-                        value={values.date}
-                        type="date"
-                        InputProps={{
-                          // Chrome min/max dates
-                          inputProps: { min: DATE_LIMIT.min, max: DATE_LIMIT.max, 'data-testid': 'date' }
-                        }}
-                        inputProps={{
-                          // Firefox min/max dates
-                          min: DATE_LIMIT.min,
-                          max: DATE_LIMIT.max,
-                          'data-testid': 'date'
-                        }}
-                        onChange={handleChange}
-                        error={touched.date && Boolean(errors.date)}
-                        helperText={touched.date && errors.date}
-                        InputLabelProps={{
-                          shrink: true
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        id="start_time"
-                        name="start_time"
-                        label="Start Time"
-                        variant="outlined"
-                        size="small"
-                        required={false}
-                        value={values.start_time}
-                        type="time"
-                        inputProps={{
-                          step: 300 // 5 min
-                        }}
-                        onChange={handleChange}
-                        error={touched.start_time && Boolean(errors.start_time)}
-                        helperText={touched.start_time && errors.start_time}
-                        InputLabelProps={{
-                          shrink: true
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        id="end_time"
-                        name="end_time"
-                        label="End Time"
-                        size="small"
-                        variant="outlined"
-                        required={false}
-                        value={values.end_time}
-                        type="time"
-                        inputProps={{
-                          step: 300 // 5 min
-                        }}
-                        onChange={handleChange}
-                        error={touched.end_time && Boolean(errors.end_time)}
-                        helperText={touched.end_time && errors.end_time}
-                        InputLabelProps={{
-                          shrink: true
-                        }}
-                      />
-                    </Grid>
-                  </Grid>
-                </Box>
-
-                <Box component="fieldset" mt={3}>
-                  <Box component="legend" mb={1}>
-                    <b>Flight Information</b>
                   </Box>
-                  <Grid container spacing={2} className={classes.customGridContainer}>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="pilot_name"
-                        name="pilot_name"
-                        size="small"
-                        label="Pilot"
-                        variant="outlined"
-                        value={values.pilot_name}
-                        onChange={handleChange}
-                        error={touched.pilot_name && Boolean(errors.pilot_name)}
-                        helperText={touched.pilot_name && errors.pilot_name}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="navigator"
-                        name="navigator"
-                        label="Navigator"
-                        size="small"
-                        variant="outlined"
-                        value={values.navigator}
-                        onChange={handleChange}
-                        error={touched.navigator && Boolean(errors.navigator)}
-                        helperText={touched.navigator && errors.navigator}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="rear_left_observer"
-                        name="rear_left_observer"
-                        label="Left Observer"
-                        size="small"
-                        variant="outlined"
-                        value={values.rear_left_observer}
-                        onChange={handleChange}
-                        error={touched.rear_left_observer && Boolean(errors.rear_left_observer)}
-                        helperText={touched.rear_left_observer && errors.rear_left_observer}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="rear_right_observer"
-                        name="rear_right_observer"
-                        label="Right Observer"
-                        size="small"
-                        variant="outlined"
-                        value={values.rear_right_observer}
-                        onChange={handleChange}
-                        error={touched.rear_right_observer && Boolean(errors.rear_right_observer)}
-                        helperText={touched.rear_right_observer && errors.rear_right_observer}
-                      />
-                    </Grid>
+                  </Grid>         
+                  <Grid item xs={12} md={6}>
+                    <Box component="fieldset" mt={3}>
+                      <Box component="legend" mb={1}>
+                        <b>Flight Information</b>
+                      </Box>
+                      <Grid container spacing={2} className={classes.customGridContainer}>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="pilot_name"
+                            name="pilot_name"
+                            size="small"
+                            label="Pilot"
+                            variant="outlined"
+                            value={values.pilot_name}
+                            onChange={handleChange}
+                            error={touched.pilot_name && Boolean(errors.pilot_name)}
+                            helperText={touched.pilot_name && errors.pilot_name}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="navigator"
+                            name="navigator"
+                            label="Navigator"
+                            size="small"
+                            variant="outlined"
+                            value={values.navigator}
+                            onChange={handleChange}
+                            error={touched.navigator && Boolean(errors.navigator)}
+                            helperText={touched.navigator && errors.navigator}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="rear_left_observer"
+                            name="rear_left_observer"
+                            label="Left Observer"
+                            size="small"
+                            variant="outlined"
+                            value={values.rear_left_observer}
+                            onChange={handleChange}
+                            error={touched.rear_left_observer && Boolean(errors.rear_left_observer)}
+                            helperText={touched.rear_left_observer && errors.rear_left_observer}
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="rear_right_observer"
+                            name="rear_right_observer"
+                            label="Right Observer"
+                            size="small"
+                            variant="outlined"
+                            value={values.rear_right_observer}
+                            onChange={handleChange}
+                            error={touched.rear_right_observer && Boolean(errors.rear_right_observer)}
+                            helperText={touched.rear_right_observer && errors.rear_right_observer}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Box>
                   </Grid>
-                </Box>
+                </Grid>
 
-                <Box component="fieldset" mt={3}>
+                <Grid container spacing={4}>
+                  <Grid item xs={12} md={6}>
+                    <Box component="fieldset" mt={3}>
                   <Box component="legend" mb={1}>
                     <b>Conditions</b>
                   </Box>
@@ -537,120 +545,123 @@ const NewBlockCondensed: React.FC<INewBlockCondensedProps> = (props: INewBlockCo
                     </Grid>
                   </Grid>
                 </Box>
-
-                <Box component="fieldset" mt={3}>
-                  <Box component="legend" mb={1}>
-                    <b>Aircraft Details</b>
-                  </Box>
-                  <Grid container spacing={2} className={classes.customGridContainer}>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="aircraft_company"
-                        name="aircraft_company"
-                        size="small"
-                        label="Company"
-                        variant="outlined"
-                        value={values.aircraft_company}
-                        onChange={handleChange}
-                        error={touched.aircraft_company && Boolean(errors.aircraft_company)}
-                        helperText={touched.aircraft_company && errors.aircraft_company}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="aircraft_type"
-                        name="aircraft_type"
-                        size="small"
-                        label="Aircraft Type"
-                        variant="outlined"
-                        value={values.aircraft_type}
-                        onChange={handleChange}
-                        error={touched.aircraft_type && Boolean(errors.aircraft_type)}
-                        helperText={touched.aircraft_type && errors.aircraft_type}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="aircraft_registration_number"
-                        name="aircraft_registration_number"
-                        size="small"
-                        label="Registration Number"
-                        variant="outlined"
-                        value={values.aircraft_registration_number}
-                        onChange={handleChange}
-                        error={touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)}
-                        helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TextField
-                        fullWidth
-                        required={false}
-                        id="aircraft_gps_model"
-                        name="aircraft_gps_model"
-                        size="small"
-                        label="GPS Model"
-                        variant="outlined"
-                        value={values.aircraft_gps_model}
-                        onChange={handleChange}
-                        error={touched.aircraft_gps_model && Boolean(errors.aircraft_gps_model)}
-                        helperText={touched.aircraft_gps_model && errors.aircraft_gps_model}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <FormControl fullWidth variant="outlined" required={false} size="small">
-                        <InputLabel id="aircraft_gps_datum-label">GPS Datum</InputLabel>
-                        <Select
-                          id="aircraft_gps_datum"
-                          name="aircraft_gps_datum"
-                          labelId="aircraft_gps_datum-label"
-                          label="GPS Datum"
-                          value={values.aircraft_gps_datum}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.aircraft_gps_datum && Boolean(errors.aircraft_gps_datum)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'aircraft_gps_datum' }}>
-                          {['NAD27', 'NAD83', 'WGS84'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.aircraft_gps_datum && errors.aircraft_gps_datum}</FormHelperText>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <FormControl fullWidth variant="outlined" required={false} size="small">
-                        <InputLabel id="aircraft_gps_readout-label">Readout</InputLabel>
-                        <Select
-                          id="aircraft_gps_readout"
-                          name="aircraft_gps_readout"
-                          labelId="aircraft_gps_readout-label"
-                          label="Readout"
-                          value={values.aircraft_gps_readout}
-                          labelWidth={300}
-                          onChange={handleChange}
-                          error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
-                          displayEmpty
-                          inputProps={{ 'aria-label': 'aircraft_gps_readout' }}>
-                          {['Decimal Degrees', 'Degrees Decimal Minutes', 'Degrees Minutes Seconds'].map((item) => (
-                            <MenuItem key={item} value={item}>
-                              {item}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
-                      </FormControl>
-                    </Grid>
                   </Grid>
-                </Box>
+                  <Grid item  xs={12} md={6}>
+                    <Box component="fieldset" mt={3}>
+                      <Box component="legend" mb={1}>
+                        <b>Aircraft Details</b>
+                      </Box>
+                      <Grid container spacing={2} className={classes.customGridContainer}>
+                        <Grid item xs={4}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="aircraft_company"
+                            name="aircraft_company"
+                            size="small"
+                            label="Company"
+                            variant="outlined"
+                            value={values.aircraft_company}
+                            onChange={handleChange}
+                            error={touched.aircraft_company && Boolean(errors.aircraft_company)}
+                            helperText={touched.aircraft_company && errors.aircraft_company}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="aircraft_type"
+                            name="aircraft_type"
+                            size="small"
+                            label="Aircraft Type"
+                            variant="outlined"
+                            value={values.aircraft_type}
+                            onChange={handleChange}
+                            error={touched.aircraft_type && Boolean(errors.aircraft_type)}
+                            helperText={touched.aircraft_type && errors.aircraft_type}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="aircraft_registration_number"
+                            name="aircraft_registration_number"
+                            size="small"
+                            label="Registration Number"
+                            variant="outlined"
+                            value={values.aircraft_registration_number}
+                            onChange={handleChange}
+                            error={touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)}
+                            helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <TextField
+                            fullWidth
+                            required={false}
+                            id="aircraft_gps_model"
+                            name="aircraft_gps_model"
+                            size="small"
+                            label="GPS Model"
+                            variant="outlined"
+                            value={values.aircraft_gps_model}
+                            onChange={handleChange}
+                            error={touched.aircraft_gps_model && Boolean(errors.aircraft_gps_model)}
+                            helperText={touched.aircraft_gps_model && errors.aircraft_gps_model}
+                          />
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth variant="outlined" required={false} size="small">
+                            <InputLabel id="aircraft_gps_datum-label">GPS Datum</InputLabel>
+                            <Select
+                              id="aircraft_gps_datum"
+                              name="aircraft_gps_datum"
+                              labelId="aircraft_gps_datum-label"
+                              label="GPS Datum"
+                              value={values.aircraft_gps_datum}
+                              labelWidth={300}
+                              onChange={handleChange}
+                              error={touched.aircraft_gps_datum && Boolean(errors.aircraft_gps_datum)}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'aircraft_gps_datum' }}>
+                              {['NAD27', 'NAD83', 'WGS84'].map((item) => (
+                                <MenuItem key={item} value={item}>
+                                  {item}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{touched.aircraft_gps_datum && errors.aircraft_gps_datum}</FormHelperText>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={4}>
+                          <FormControl fullWidth variant="outlined" required={false} size="small">
+                            <InputLabel id="aircraft_gps_readout-label">Readout</InputLabel>
+                            <Select
+                              id="aircraft_gps_readout"
+                              name="aircraft_gps_readout"
+                              labelId="aircraft_gps_readout-label"
+                              label="Readout"
+                              value={values.aircraft_gps_readout}
+                              labelWidth={300}
+                              onChange={handleChange}
+                              error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'aircraft_gps_readout' }}>
+                              {['Decimal Degrees', 'Degrees Decimal Minutes', 'Degrees Minutes Seconds'].map((item) => (
+                                <MenuItem key={item} value={item}>
+                                  {item}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </Box>
+                  </Grid>
+                </Grid>
 
                 <Box component="fieldset" mt={3}>
                   <Box component="legend" mb={1}>
