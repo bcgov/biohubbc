@@ -154,7 +154,7 @@ describe('createSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to create the survey record');
+      expect(actualError.message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -180,7 +180,7 @@ describe('createSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to create the survey record');
+      expect(actualError.message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -207,7 +207,7 @@ describe('createSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build survey_proprietor SQL insert statement');
+      expect(actualError.message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -295,7 +295,7 @@ describe('createSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to create the survey proprietor record');
+      expect(actualError.message).to.equal('Failed to insert survey proprietor data');
     }
   });
 
@@ -326,7 +326,7 @@ describe('createSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to create the survey proprietor record');
+      expect(actualError.message).to.equal('Failed to insert survey proprietor data');
     }
   });
 });

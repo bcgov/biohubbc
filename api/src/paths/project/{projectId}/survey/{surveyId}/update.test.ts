@@ -102,10 +102,10 @@ describe('getSurveyForUpdate', () => {
       first_nations_id: null,
       first_nations_name: '',
       id: 1,
-      isProprietary: 'true',
       proprietary_data_category: null,
       proprietary_data_category_name: '',
       proprietor_name: '',
+      survey_data_proprietary: 'true',
       revision_count: 1
     };
 
@@ -158,10 +158,10 @@ describe('getSurveyForUpdate', () => {
         first_nations_id: survey_proprietor.first_nations_id,
         first_nations_name: survey_proprietor.first_nations_name,
         id: survey_proprietor.id,
-        isProprietary: survey_proprietor.isProprietary,
         proprietary_data_category: survey_proprietor.proprietary_data_category,
         proprietary_data_category_name: survey_proprietor.proprietary_data_category_name,
         proprietor_name: survey_proprietor.proprietor_name,
+        survey_data_proprietary: survey_proprietor.survey_data_proprietary,
         revision_count: survey_proprietor.revision_count
       }
     });

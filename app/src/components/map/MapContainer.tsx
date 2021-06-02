@@ -61,7 +61,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
     geometryState?.setGeometry([...geometryState.geometry, preDefinedGeometry]);
 
-    // @ts-ignore react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preDefinedGeometry]);
 
   let shownDrawControls: any = {};

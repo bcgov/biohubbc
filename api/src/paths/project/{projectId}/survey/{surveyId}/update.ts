@@ -121,6 +121,24 @@ PUT.apiDoc = {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    }
+  ],
   requestBody: {
     description: 'Survey put request object.',
     content: {
@@ -177,7 +195,7 @@ export function getSurveyForUpdate(): RequestHandler {
     try {
       const surveyId = Number(req.params?.surveyId);
 
-      const survey_entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
+      const entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
 
       if (!surveyId) {
         throw new HTTP400('Missing required path parameter: surveyId');
@@ -192,7 +210,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       const promises: Promise<any>[] = [];
 
-      if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_details)) {
+      if (entities.includes(GET_SURVEY_ENTITIES.survey_details)) {
         promises.push(
           getSurveyDetailsData(surveyId, connection).then((value) => {
             results.survey_details = value;
@@ -200,7 +218,7 @@ export function getSurveyForUpdate(): RequestHandler {
         );
       }
 
-      if (survey_entities.includes(GET_SURVEY_ENTITIES.survey_proprietor)) {
+      if (entities.includes(GET_SURVEY_ENTITIES.survey_proprietor)) {
         promises.push(
           getSurveyProprietorData(surveyId, connection).then((value) => {
             results.survey_proprietor = value;
@@ -246,7 +264,7 @@ export const getSurveyDetailsData = async (
 export const getSurveyProprietorData = async (
   surveyId: number,
   connection: IDBConnection
-): Promise<GetSurveyProprietorData> => {
+): Promise<GetSurveyProprietorData | null> => {
   const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
@@ -255,15 +273,7 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || {
-    isProprietary: 'false'
-  };
-
-  if (!result) {
-    throw new HTTP400('Failed to get project survey proprietor data');
-  }
-
-  return result;
+  return (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
 };
 
 /**
@@ -390,12 +400,12 @@ export const updateSurveyDetailsData = async (
 
 export const updateSurveyProprietorData = async (
   surveyId: number,
-  data: IUpdateSurvey,
+  entities: IUpdateSurvey,
   connection: IDBConnection
 ): Promise<void> => {
-  const putProprietorData = new PutSurveyProprietorData(surveyId, data);
-  const isProprietary = putProprietorData.isProprietary;
-  const wasProprietary = putProprietorData.id || putProprietorData.id === 0 || false;
+  const putProprietorData = new PutSurveyProprietorData(entities.survey_proprietor);
+  const isProprietary = putProprietorData.survey_data_proprietary;
+  const wasProprietary = putProprietorData.id > 0 || false;
 
   let sqlStatement = null;
 
@@ -410,7 +420,7 @@ export const updateSurveyProprietorData = async (
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
-    sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(data.survey_proprietor));
+    sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(entities.survey_proprietor));
   } else {
     // 4. did have proprietor data; updating proprietor data
     // update existing record

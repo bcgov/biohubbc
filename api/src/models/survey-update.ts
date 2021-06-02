@@ -47,28 +47,25 @@ export class PutSurveyDetailsData {
  * @class PutSurveyProprietorData
  */
 export class PutSurveyProprietorData {
-  isProprietary: boolean;
   id: number;
   prt_id: number;
-  s_id: number;
   fn_id: number;
   rationale: string;
   proprietor_name: string;
+  survey_data_proprietary: boolean;
   disa_required: boolean;
   revision_count: number;
 
-  constructor(surveyId: number, obj?: any) {
-    defaultLog.debug({ label: 'PutSurveyProprietorData', message: 'params', surveyId, obj });
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PutSurveyProprietorData', message: 'params', obj });
 
-    this.isProprietary = obj?.survey_proprietor?.isProprietary === 'true' || false;
-    this.id = obj?.survey_proprietor?.id ?? null;
-    this.prt_id = obj?.survey_proprietor?.proprietary_data_category ?? null;
-    this.s_id = surveyId;
-    this.fn_id = obj?.survey_proprietor?.first_nations_id ?? null;
-    this.rationale = obj?.survey_proprietor?.category_rationale ?? null;
-    this.proprietor_name =
-      (!obj?.survey_proprietor?.first_nations_id && obj?.survey_proprietor?.proprietor_name) || null;
-    this.disa_required = obj?.survey_proprietor?.data_sharing_agreement_required === 'true' || false;
-    this.revision_count = obj?.survey_proprietor?.revision_count ?? null;
+    this.id = obj?.id ?? null;
+    this.prt_id = obj?.proprietary_data_category || null;
+    this.fn_id = obj?.first_nations_id || null;
+    this.rationale = obj?.category_rationale || null;
+    this.proprietor_name = (!obj?.first_nations_id && obj?.proprietor_name) || null;
+    this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
+    this.disa_required = obj?.data_sharing_agreement_required === 'true' || false;
+    this.revision_count = obj?.revision_count ?? null;
   }
 }
