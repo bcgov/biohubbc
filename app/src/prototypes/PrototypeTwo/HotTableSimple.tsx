@@ -26,12 +26,7 @@ const HotTableSimple: React.FC<IHotTableSimpleProps> = (props) => {
   const classes = useStyles();
 
   const headers = [
-    [
-      'No',
-      'WPT',
-      { label: 'Bulls', colspan: 3 },
-      { label: 'Cows', colspan: 3 }
-    ],
+    ['No', 'WPT', { label: 'Bulls', colspan: 3 }, { label: 'Cows', colspan: 3 }],
     [
       '',
       '',
