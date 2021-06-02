@@ -15,6 +15,9 @@ const mockUseBiohubApi = {
   },
   draft: {
     getDraftsList: jest.fn()
+  },
+  codes: {
+    getAllCodeSets: jest.fn()
   }
 };
 
@@ -26,6 +29,7 @@ describe('ProjectsListPage', () => {
   beforeEach(() => {
     mockBiohubApi().project.getProjectsList.mockClear();
     mockBiohubApi().draft.getDraftsList.mockClear();
+    mockBiohubApi().codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -34,6 +38,23 @@ describe('ProjectsListPage', () => {
 
   test('renders with the create project button', async () => {
     await act(async () => {
+      mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+
+      const { baseElement } = render(
+        <MemoryRouter>
+          <ProjectsListPage />
+        </MemoryRouter>
+      );
+
+      expect(baseElement).toHaveTextContent('Create Project');
+    });
+  });
+
+  test('renders with the open advanced filters button', async () => {
+    await act(async () => {
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+      });
       mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
 
       const { baseElement } = render(

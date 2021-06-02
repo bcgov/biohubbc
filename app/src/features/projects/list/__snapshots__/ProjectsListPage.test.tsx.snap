@@ -3,21 +3,21 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root MuiBox-root-7"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
-      <div
-        class="MuiBox-root MuiBox-root-6"
+      <h1
+        class="MuiTypography-root MuiTypography-h1"
       >
-        <h1
-          class="MuiTypography-root MuiTypography-h1"
-        >
-          Projects
-        </h1>
+        Projects
+      </h1>
+      <div
+        class="MuiBox-root MuiBox-root-8"
+      >
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-4 MuiButton-outlinedPrimary"
           tabindex="0"
           type="button"
         >
@@ -25,6 +25,20 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
             class="MuiButton-label"
           >
             Create Project
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-4 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Open Advanced Filters
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -127,21 +141,21 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 exports[`ProjectsListPage renders with a proper list of projects 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-5"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
-      <div
-        class="MuiBox-root MuiBox-root-4"
+      <h1
+        class="MuiTypography-root MuiTypography-h1"
       >
-        <h1
-          class="MuiTypography-root MuiTypography-h1"
-        >
-          Projects
-        </h1>
+        Projects
+      </h1>
+      <div
+        class="MuiBox-root MuiBox-root-6"
+      >
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-3 MuiButton-outlinedPrimary"
           tabindex="0"
           type="button"
         >
@@ -149,6 +163,20 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
             class="MuiButton-label"
           >
             Create Project
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-3 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Open Advanced Filters
           </span>
           <span
             class="MuiTouchRipple-root"
