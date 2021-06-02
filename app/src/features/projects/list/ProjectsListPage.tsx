@@ -260,7 +260,7 @@ const ProjectsListPage: React.FC = () => {
         </Box>
         {isFiltersOpen && (
           <Box mb={4}>
-            <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={() => {}}>
+            <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
               <ProjectAdvancedFilters
                 coordinator_agency={
                   codes?.coordinator_agency?.map((item: any) => {
