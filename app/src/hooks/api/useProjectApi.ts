@@ -9,7 +9,8 @@ import {
   UPDATE_GET_ENTITIES,
   IGetProjectForUpdateResponse,
   IUpdateProjectRequest,
-  IGetProjectAttachmentsResponse
+  IGetProjectAttachmentsResponse,
+  IProjectAdvancedFilterRequest
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -58,12 +59,15 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get projects list.
+   * Get projects list (potentially based on filter criteria).
    *
+   * @param {IProjectAdvancedFilterRequest} filterFieldData
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
-  const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/projects`);
+  const getProjectsList = async (
+    filterFieldData?: IProjectAdvancedFilterRequest
+  ): Promise<IGetProjectsListResponse[]> => {
+    const { data } = await axios.post(`/api/projects`, filterFieldData || null);
 
     return data;
   };

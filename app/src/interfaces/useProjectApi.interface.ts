@@ -101,6 +101,17 @@ export enum UPDATE_GET_ENTITIES {
 }
 
 /**
+ * An interface for an instance of filter fields for project advanced filter search
+ */
+export interface IProjectAdvancedFilterRequest {
+  coordinator_agency: string;
+  permit_number: string;
+  permit_type: string;
+  start_date: string;
+  end_date: string;
+}
+
+/**
  * An interface for a single instance of project metadata, for update-only use cases.
  *
  * @export
