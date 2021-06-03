@@ -99,7 +99,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
 
     if (filterFields.start_date && filterFields.end_date) {
       sqlStatement.append(
-        SQL` AND p.start_date >= ${filterFields.start_date}  AND p.end_date <= ${filterFields.end_date}`
+        SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
       );
     }
 
