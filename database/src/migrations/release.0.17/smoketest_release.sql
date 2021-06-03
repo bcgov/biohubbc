@@ -125,6 +125,12 @@ begin
   insert into study_species (s_id, wu_id, is_focal) values (__s_id, (select id from wldtaxonomic_units where CODE = 'AMARALB'), true);
   select count(1) into __count from study_species;
   assert __count = 1, 'FAIL study_species';
+  insert into survey_publish_history (s_id, publish_date) values (__s_id, now());
+  select count(1) into __count from survey_publish_history;
+  assert __count = 1, 'FAIL survey_publish_history';
+  insert into survey_occurrence (s_id, associatedtaxa, lifestage) values (__s_id, 'M-ALAL', 'Adult');
+  select count(1) into __count from survey_occurrence;
+  assert __count = 1, 'FAIL survey_occurrence';
 
   -- test ancillary data
   delete from webform_draft;
@@ -151,6 +157,8 @@ begin
   insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
   -- delete project
+  delete from survey_publish_history;
+  delete from survey_occurrence;
   call api_delete_project(__p_id);
 end
 $$;
