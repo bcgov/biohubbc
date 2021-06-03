@@ -15,9 +15,7 @@ const DB_RELEASE = 'release.0.17';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  const create_spatial_extensions = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'create_spatial_extensions.psql')
-  );
+  const create_spatial_extensions = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'create_spatial_extensions.psql'));
   const biohub_ddl = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'biohub.sql'));
   const populate_user_identity_source = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_user_identity_source.sql')
@@ -27,12 +25,8 @@ export async function up(knex: Knex): Promise<void> {
   const project_audit_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_audit_triggers.sql'));
   const api_get_context_user_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_user_id.sql'));
   const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
-  const project_journal_triggers = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql')
-  );
-  const tr_project_funding_source = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql')
-  );
+  const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
+  const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
   const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
 
   const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
@@ -59,9 +53,7 @@ export async function up(knex: Knex): Promise<void> {
   const populate_administrative_activity_status_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_administrative_activity_status_type.sql')
   );
-  const populate_proprietor_type = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'populate_proprietor_type.sql')
-  );
+  const populate_proprietor_type = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_proprietor_type.sql'));
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
   );
