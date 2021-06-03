@@ -3,19 +3,19 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-10"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
-      <h1
-        class="MuiTypography-root MuiTypography-h1"
-      >
-        Projects
-      </h1>
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-11"
       >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Projects
+        </h1>
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-4 MuiButton-outlinedPrimary"
           tabindex="0"
@@ -30,6 +30,10 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
             class="MuiTouchRipple-root"
           />
         </button>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-12"
+      >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-4 MuiButton-outlinedPrimary"
           tabindex="0"
@@ -141,19 +145,19 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 exports[`ProjectsListPage renders with a proper list of projects 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root MuiBox-root-7"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
-      <h1
-        class="MuiTypography-root MuiTypography-h1"
-      >
-        Projects
-      </h1>
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiBox-root MuiBox-root-8"
       >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Projects
+        </h1>
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-3 MuiButton-outlinedPrimary"
           tabindex="0"
@@ -168,6 +172,10 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
             class="MuiTouchRipple-root"
           />
         </button>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-9"
+      >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-3 MuiButton-outlinedPrimary"
           tabindex="0"
