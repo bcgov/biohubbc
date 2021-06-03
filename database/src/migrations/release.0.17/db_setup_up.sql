@@ -67,6 +67,7 @@ set search_path = biohub_dapi_v1;
 
 -- setup api user
 create user biohub_api password 'flatpass';
+alter schema biohub_dapi_v1 owner to biohub_api;
 grant usage on schema biohub_dapi_v1 to biohub_api;
 grant usage on schema biohub to biohub_api;
 grant all on all tables in schema biohub_dapi_v1 to biohub_api;

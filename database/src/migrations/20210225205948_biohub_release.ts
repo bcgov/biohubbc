@@ -113,6 +113,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- setup api user
     create user ${DB_USER_API} password '${DB_USER_API_PASS}';
+    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
     grant usage on schema biohub_dapi_v1 to ${DB_USER_API};
     grant usage on schema biohub to ${DB_USER_API};
     grant all on all tables in schema biohub_dapi_v1 to ${DB_USER_API};
