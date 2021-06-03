@@ -81,11 +81,30 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       on p.pt_id = pt.id
     left outer join permit as pp
       on p.id = pp.p_id
+    WHERE 1 = 1
   `;
 
   if (filterFields) {
     if (filterFields.coordinator_agency) {
-      sqlStatement.append(SQL`where p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+      sqlStatement.append(SQL` AND p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+    }
+
+    if (filterFields.start_date && !filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
+    }
+
+    if (!filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.end_date <= ${filterFields.end_date}`);
+    }
+
+    if (filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(
+        SQL` AND p.start_date >= ${filterFields.start_date}  AND p.end_date <= ${filterFields.end_date}`
+      );
+    }
+
+    if (filterFields.project_type) {
+      sqlStatement.append(SQL` AND pt.name = ${filterFields.project_type} `);
     }
   }
 

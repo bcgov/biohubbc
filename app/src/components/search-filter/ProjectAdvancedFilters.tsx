@@ -12,7 +12,7 @@ import React from 'react';
 export interface IProjectAdvancedFilters {
   coordinator_agency: string;
   permit_number: string;
-  permit_type: string;
+  project_type: string;
   start_date: string;
   end_date: string;
 }
@@ -20,7 +20,7 @@ export interface IProjectAdvancedFilters {
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   coordinator_agency: '',
   permit_number: '',
-  permit_type: '',
+  project_type: '',
   start_date: '',
   end_date: ''
 };
@@ -65,24 +65,27 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         </Grid>
         <Grid item xs={12} md={4}>
           <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
-            <InputLabel id="permit_type">Permit Type</InputLabel>
+            <InputLabel id="project_type">Project Type</InputLabel>
             <Select
-              id="permit_type"
-              name="permit_type"
-              labelId="permit_type"
-              label="Permit Type"
-              value={values.permit_type}
+              id="project_type"
+              name="project_type"
+              labelId="project_type"
+              label="Project Type"
+              value={values.project_type}
               onChange={handleChange}
               displayEmpty
-              inputProps={{ 'aria-label': 'Permit Type' }}>
-              <MenuItem key={1} value="Park Use Permit">
-                Park Use Permit
+              inputProps={{ 'aria-label': 'Project Type' }}>
+              <MenuItem key={1} value="Fisheries">
+                Fisheries
               </MenuItem>
-              <MenuItem key={2} value="Wildlife Permit - General">
-                Wildlife Permit - General
+              <MenuItem key={2} value="Wildlife">
+                Wildlife
               </MenuItem>
-              <MenuItem key={3} value="Scientific Fish Collection Permit">
-                Scientific Fish Collection Permit
+              <MenuItem key={3} value="Aquatic Habitat">
+                Aquatic Habitat
+              </MenuItem>
+              <MenuItem key={3} value="Terrestrial Habitat">
+                Terrestrial Habitat
               </MenuItem>
             </Select>
           </FormControl>

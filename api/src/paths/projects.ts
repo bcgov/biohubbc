@@ -33,7 +33,7 @@ POST.apiDoc = {
             permit_number: {
               type: 'string'
             },
-            permit_type: {
+            project_type: {
               type: 'string'
             },
             start_date: {
