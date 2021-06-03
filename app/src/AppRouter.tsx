@@ -1,6 +1,7 @@
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminRouter from 'features/admin/AdminRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
+import SearchRouter from 'features/search/SearchRouter';
 import PublicLayout from 'layouts/PublicLayout';
 import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
@@ -58,6 +59,14 @@ const AppRouter: React.FC = (props: any) => {
         layout={PublicLayout}
         title={getTitle('Admin')}
         validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+      />
+      <AppRoute
+        protected
+        path="/search"
+        component={SearchRouter}
+        layout={PublicLayout}
+        title={getTitle('Search')}
+        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

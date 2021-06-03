@@ -8,6 +8,7 @@ import useProjectApi from './api/useProjectApi';
 import useDwcApi from './api/useDwcApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
+import useObservationApi from './api/useObservationApi';
 
 /**
  * Returns a set of supported api methods.
@@ -18,6 +19,8 @@ export const useBiohubApi = () => {
   const customAxios = useAxios();
 
   const project = useProjectApi(customAxios);
+
+  const observation = useObservationApi(customAxios);
 
   const survey = useSurveyApi(customAxios);
 
@@ -35,6 +38,7 @@ export const useBiohubApi = () => {
 
   return {
     project,
+    observation,
     survey,
     codes,
     draft,
