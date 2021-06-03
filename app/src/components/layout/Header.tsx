@@ -165,10 +165,10 @@ const Header: React.FC = () => {
               id="menu_admin_users"
             />
             <SecureLink
-              to="/search/observations"
-              label="Observations Search"
+              to="/search"
+              label="Search"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_observations_search"
+              id="menu_search"
             />
           </Toolbar>
         </Container>

@@ -11,7 +11,7 @@ import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 
-export interface IObservationAdvancedFilters {
+export interface ISearchAdvancedFilters {
   keyword: string;
   project_name: string;
   start_date: string;
@@ -22,7 +22,7 @@ export interface IObservationAdvancedFilters {
   species: number[];
 }
 
-export const ObservationAdvancedFiltersInitialValues: IObservationAdvancedFilters = {
+export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
   keyword: '',
   project_name: '',
   start_date: '',
@@ -33,19 +33,19 @@ export const ObservationAdvancedFiltersInitialValues: IObservationAdvancedFilter
   species: []
 };
 
-export interface IObservationAdvancedFiltersProps {
+export interface ISearchAdvancedFiltersProps {
   region: IMultiAutocompleteFieldOption[];
   species: IMultiAutocompleteFieldOption[];
   funding_sources: IMultiAutocompleteFieldOption[];
 }
 
 /**
- * Observation - Advanced filters
+ * General Search - Advanced filters
  *
  * @return {*}
  */
-const ObservationAdvancedFilters: React.FC<IObservationAdvancedFiltersProps> = (props) => {
-  const formikProps = useFormikContext<IObservationAdvancedFilters>();
+const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => {
+  const formikProps = useFormikContext<ISearchAdvancedFilters>();
 
   const { handleSubmit, handleChange, values } = formikProps;
 
@@ -120,4 +120,4 @@ const ObservationAdvancedFilters: React.FC<IObservationAdvancedFiltersProps> = (
   );
 };
 
-export default ObservationAdvancedFilters;
+export default SearchAdvancedFilters;

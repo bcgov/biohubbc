@@ -10,42 +10,29 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/styles/makeStyles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import ObservationAdvancedFilters, {
-  ObservationAdvancedFiltersInitialValues
-} from 'components/search-filter/ObservationAdvancedFilters';
+import SearchAdvancedFilters, {
+  SearchAdvancedFiltersInitialValues
+} from 'components/search-filter/SearchAdvancedFilters';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetObservationsListResponse } from 'interfaces/useObservationApi.interface';
+import { IGetSearchResultsListResponse } from 'interfaces/useSearchApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 
-const useStyles = makeStyles({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  }
-});
-
 /**
- * Page to search for and display a list of observation records.
+ * Page to search for and display a list of records.
  *
  * @return {*}
  */
-const ObservationsSearchPage: React.FC = () => {
-  const classes = useStyles();
+const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
-  const [observations, setObservations] = useState<IGetObservationsListResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<IGetSearchResultsListResponse[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
@@ -69,21 +56,6 @@ const ObservationsSearchPage: React.FC = () => {
     }
   }, [biohubApi.codes, isLoadingCodes, codes]);
 
-  useEffect(() => {
-    const getObservations = async () => {
-      const observationsResponse = await biohubApi.observation.getObservationsList();
-
-      setObservations(() => {
-        setIsLoading(false);
-        return observationsResponse;
-      });
-    };
-
-    if (isLoading) {
-      getObservations();
-    }
-  }, [biohubApi, isLoading]);
-
   const showFilterErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       onClose: () => {
@@ -105,45 +77,29 @@ const ObservationsSearchPage: React.FC = () => {
     console.log(formikRef.current.values);
 
     try {
-      const response = await biohubApi.observation.getObservationsList(formikRef.current.values);
+      const response = await biohubApi.search.getSearchResultsList(formikRef.current.values);
 
       if (!response) {
         return;
       }
 
-      setObservations(() => {
-        setIsLoading(false);
+      setSearchResults(() => {
         return response;
       });
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
-        dialogTitle: 'Error Filtering Observations',
+        dialogTitle: 'Error Searching For Results',
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
     }
   };
 
-  const getObservationsTableData = () => {
-    const hasObservations = observations?.length > 0;
+  const getSearchResultsTableData = () => {
+    const hasSearchResults = searchResults?.length > 0;
 
-    if (!hasObservations) {
-      return (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow></TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>No Observations found</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    } else {
+    if (hasSearchResults) {
       return (
         <TableContainer component={Paper}>
           <Table>
@@ -160,7 +116,7 @@ const ObservationsSearchPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody data-testid="observation-table">
-              {observations?.map((row: any) => (
+              {searchResults?.map((row: any) => (
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
                     <Link
@@ -189,58 +145,48 @@ const ObservationsSearchPage: React.FC = () => {
   };
 
   /**
-   * Displays observations list and search filters.
+   * Displays search results list and filters.
    */
   return (
     <Box my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Observations Search</Typography>
+          <Typography variant="h1">Search</Typography>
+        </Box>
+        <Box>
           {codes && (
-            <Button
-              className={classes.actionButton}
-              variant="outlined"
-              color="primary"
-              onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-              {!isFiltersOpen ? `Open Advanced Filters` : `Close Advanced Filters`}
-            </Button>
+            <Box mb={4}>
+              <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
+                <SearchAdvancedFilters
+                  region={
+                    codes?.region?.map((item) => {
+                      return { value: item.name, label: item.name };
+                    }) || []
+                  }
+                  species={
+                    codes?.species?.map((item) => {
+                      return { value: item.id, label: item.name };
+                    }) || []
+                  }
+                  funding_sources={
+                    codes?.funding_source?.map((item) => {
+                      return { value: item.id, label: item.name };
+                    }) || []
+                  }
+                />
+              </Formik>
+              <Box mt={2} display="flex" justifyContent="flex-end">
+                <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
+                  Search
+                </Button>
+              </Box>
+            </Box>
           )}
         </Box>
-        {isFiltersOpen && (
-          <Box mb={4}>
-            <Formik
-              innerRef={formikRef}
-              initialValues={ObservationAdvancedFiltersInitialValues}
-              onSubmit={handleSubmit}>
-              <ObservationAdvancedFilters
-                region={
-                  codes?.region?.map((item) => {
-                    return { value: item.name, label: item.name };
-                  }) || []
-                }
-                species={
-                  codes?.species?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-                funding_sources={
-                  codes?.funding_source?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
-            </Formik>
-            <Box mt={2} display="flex" justifyContent="flex-end">
-              <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
-                Search
-              </Button>
-            </Box>
-          </Box>
-        )}
-        {getObservationsTableData()}
+        {getSearchResultsTableData()}
       </Container>
     </Box>
   );
 };
 
-export default ObservationsSearchPage;
+export default SearchPage;

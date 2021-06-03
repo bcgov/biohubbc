@@ -1,10 +1,10 @@
 /**
- * Get observations list response object.
+ * Get search results list response object.
  *
  * @export
- * @interface IGetObservationsListResponse
+ * @interface IGetSearchResultsListResponse
  */
-export interface IGetObservationsListResponse {
+export interface IGetSearchResultsListResponse {
   id: number;
   name: string;
   project_name: string;
@@ -17,9 +17,9 @@ export interface IGetObservationsListResponse {
 }
 
 /**
- * An interface for an instance of filter fields for observation advanced filter search
+ * An interface for an instance of filter fields for search results
  */
-export interface IObservationAdvancedFilterRequest {
+export interface ISearchResultsAdvancedFilterRequest {
   keyword: string;
   project_name: string;
   start_date: string;

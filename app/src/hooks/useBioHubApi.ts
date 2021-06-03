@@ -8,7 +8,7 @@ import useProjectApi from './api/useProjectApi';
 import useDwcApi from './api/useDwcApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
-import useObservationApi from './api/useObservationApi';
+import useSearchApi from './api/useSearchApi';
 
 /**
  * Returns a set of supported api methods.
@@ -20,7 +20,7 @@ export const useBiohubApi = () => {
 
   const project = useProjectApi(customAxios);
 
-  const observation = useObservationApi(customAxios);
+  const search = useSearchApi(customAxios);
 
   const survey = useSurveyApi(customAxios);
 
@@ -38,7 +38,7 @@ export const useBiohubApi = () => {
 
   return {
     project,
-    observation,
+    search,
     survey,
     codes,
     draft,
