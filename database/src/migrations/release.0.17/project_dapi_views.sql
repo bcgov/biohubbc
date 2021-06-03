@@ -29,7 +29,9 @@
  create or replace view survey as select * from biohub.survey;
  create or replace view survey_attachment as select * from biohub.survey_attachment;
  create or replace view survey_funding_source as select * from biohub.survey_funding_source;
+ create or replace view survey_occurrence as select * from biohub.survey_occurrence;
  create or replace view survey_proprietor as select * from biohub.survey_proprietor;
+ create or replace view survey_publish_history as select * from biohub.survey_publish_history;
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_role as select * from biohub.system_role;
  create or replace view system_user as select * from biohub.system_user;
