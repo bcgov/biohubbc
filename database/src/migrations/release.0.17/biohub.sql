@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, May 18, 2021 10:47:16
+-- Date Created : Thursday, June 03, 2021 12:01:34
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -652,7 +652,15 @@ COMMENT ON COLUMN permit.update_user IS 'The id of the user who updated the reco
 ;
 COMMENT ON COLUMN permit.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE permit IS 'Provides a record of scientific permits.'
+COMMENT ON TABLE permit IS 'Provides a record of scientific permits. Note that permits are first class objects in the data model and do not require an association to either a project or survey. Additionally:
+- Association to a survey or project implies that sampling was conducted related to the permit 
+- No association to a survey or project implies that sampling was not conducted related to the permit
+- Permits that are associated with a project should eventually be related to a survey
+- Permits can be associated with one or zero projects
+- Permits can only be associated with one survey
+- Permits that have no association with a project or survey require values for coordinator first name, last name, email address and agency name
+
+NOTE: there are conceptual problems with associating permits to projects early instead of at the survey level and these should be addressed in subsequent versions of the application.'
 ;
 
 -- 
@@ -783,7 +791,7 @@ CREATE TABLE project_attachment(
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
-    key               varchar(300)      NOT NULL,
+    key               varchar(1000)     NOT NULL,
     file_size         integer,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
     create_user       integer           NOT NULL,
@@ -1318,7 +1326,7 @@ COMMENT ON COLUMN study_species.update_user IS 'The id of the user who updated t
 ;
 COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE study_species IS 'The study species for the project and survey.'
+COMMENT ON TABLE study_species IS 'The study species for the survey.'
 ;
 
 -- 
@@ -1397,7 +1405,7 @@ CREATE TABLE survey_attachment(
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
-    key               varchar(300)      NOT NULL,
+    key               varchar(1000)     NOT NULL,
     file_size         integer,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
     create_user       integer           NOT NULL,
@@ -1476,6 +1484,56 @@ COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surve
 ;
 
 -- 
+-- TABLE: survey_occurrence 
+--
+
+CREATE TABLE survey_occurrence(
+    id                integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    s_id              integer                     NOT NULL,
+    associatedtaxa    varchar(3000)               NOT NULL,
+    lifestage         varchar(3000)               NOT NULL,
+    data              json,
+    geometry          geometry(geometry, 3005),
+    geography         geography(geometry),
+    create_date       timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user       integer                     NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer                     DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK169" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_occurrence.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_occurrence.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_occurrence.associatedtaxa IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN survey_occurrence.lifestage IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN survey_occurrence.data IS 'The json data associated with the record.'
+;
+COMMENT ON COLUMN survey_occurrence.geometry IS 'The containing geometry of the record.'
+;
+COMMENT ON COLUMN survey_occurrence.geography IS 'The containing geography of the record.'
+;
+COMMENT ON COLUMN survey_occurrence.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_occurrence.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_occurrence.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_occurrence.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_occurrence.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_occurrence IS 'Occurrence records associated with a survey.'
+;
+
+-- 
 -- TABLE: survey_proprietor 
 --
 
@@ -1523,6 +1581,47 @@ COMMENT ON COLUMN survey_proprietor.update_user IS 'The id of the user who updat
 COMMENT ON COLUMN survey_proprietor.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE survey_proprietor IS 'Intersection table associating surveys to proprietary types and associated meta data.'
+;
+
+-- 
+-- TABLE: survey_publish_history 
+--
+
+CREATE TABLE survey_publish_history(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    s_id              integer           NOT NULL,
+    publish_date      date              NOT NULL,
+    key               varchar(1000),
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK165" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_publish_history.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_publish_history.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_publish_history.publish_date IS 'The date that the survey version was published.'
+;
+COMMENT ON COLUMN survey_publish_history.key IS 'The identifying key to the file in the storage system.'
+;
+COMMENT ON COLUMN survey_publish_history.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_publish_history.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_publish_history.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_publish_history.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_publish_history.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_publish_history IS 'Provides a historical listing of published dates and pointers to raw data versions.'
 ;
 
 -- 
@@ -2239,6 +2338,12 @@ CREATE INDEX "Ref7487" ON survey_funding_source(pfs_id)
 CREATE INDEX "Ref15388" ON survey_funding_source(s_id)
 ;
 -- 
+-- INDEX: "Ref15396" 
+--
+
+CREATE INDEX "Ref15396" ON survey_occurrence(s_id)
+;
+-- 
 -- INDEX: "Ref15983" 
 --
 
@@ -2255,6 +2360,12 @@ CREATE INDEX "Ref15384" ON survey_proprietor(s_id)
 --
 
 CREATE INDEX "Ref12785" ON survey_proprietor(fn_id)
+;
+-- 
+-- INDEX: "Ref15395" 
+--
+
+CREATE INDEX "Ref15395" ON survey_publish_history(s_id)
 ;
 -- 
 -- INDEX: sc_uk1 
@@ -2581,6 +2692,16 @@ ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88"
 
 
 -- 
+-- TABLE: survey_occurrence 
+--
+
+ALTER TABLE survey_occurrence ADD CONSTRAINT "Refsurvey96" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+
+-- 
 -- TABLE: survey_proprietor 
 --
 
@@ -2597,6 +2718,16 @@ ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey84"
 ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85" 
     FOREIGN KEY (fn_id)
     REFERENCES first_nations(id)
+;
+
+
+-- 
+-- TABLE: survey_publish_history 
+--
+
+ALTER TABLE survey_publish_history ADD CONSTRAINT "Refsurvey95" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
 ;
 
 
