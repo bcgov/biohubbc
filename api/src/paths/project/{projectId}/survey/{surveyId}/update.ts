@@ -273,14 +273,7 @@ export const getSurveyProprietorData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result =
-    (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project survey proprietor data');
-  }
-
-  return result;
+  return (response && response.rows && response.rows[0] && new GetSurveyProprietorData(response.rows[0])) || null;
 };
 
 /**

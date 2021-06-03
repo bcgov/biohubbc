@@ -586,7 +586,7 @@ describe('getSurveyProprietorData', () => {
     }
   });
 
-  it('should throw a 400 error when no result returned', async () => {
+  it('should return null when no result returned', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [] });
@@ -601,13 +601,8 @@ describe('getSurveyProprietorData', () => {
 
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
 
-    try {
-      await update.getSurveyProprietorData(surveyId, dbConnectionObj);
+    const result = await update.getSurveyProprietorData(surveyId, dbConnectionObj);
 
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get project survey proprietor data');
-    }
+    expect(result).to.be.null;
   });
 });
