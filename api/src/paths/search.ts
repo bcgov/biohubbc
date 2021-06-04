@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
+//import { GetRegionNames } from '../models/project-view';
 import { projectIdResponseObject } from '../openapi/schemas/project';
 import { getProjectListBySearchParamSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';

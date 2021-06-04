@@ -196,3 +196,19 @@ export class GetPartnershipsData {
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.name)) || [];
   }
 }
+
+/**
+ * Pre-processes GET /projects/{id} coordinator data
+ *
+ * @export
+ * @class GetCoordinatorData
+ */
+export class GetRegionNames {
+  region_name: string;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'GetRegionName', message: 'params', obj });
+
+    this.region_name = obj?.region_name || '';
+  }
+}
