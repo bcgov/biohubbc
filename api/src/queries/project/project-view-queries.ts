@@ -326,7 +326,6 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
     if (filterFields.funding_agency_name) {
       sqlStatement.append(SQL` AND fs.name = ${filterFields.funding_agency_name}`);
     }
-
   }
 
   sqlStatement.append(SQL`

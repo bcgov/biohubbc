@@ -90,6 +90,9 @@ function getProjectListBySearchParam(): RequestHandler {
         getProjectListBySearchParamSQLStatement.values
       );
 
+      console.log('RESPONSEEEEE')
+      console.log(response);
+
       await connection.commit();
 
       let rows: any[] = [];
