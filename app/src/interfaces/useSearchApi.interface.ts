@@ -1,3 +1,5 @@
+import { Feature } from 'geojson';
+
 interface IGetSearchResultsSurvey {
   id: number;
   name: string;
@@ -33,4 +35,8 @@ export interface ISearchResultsAdvancedFilterRequest {
   agency_project_id: string;
   coordinator_agency: string;
   species: number[];
+}
+
+export interface IGetSurveyOccurrenceForViewResponse {
+  geometry: Feature[];
 }

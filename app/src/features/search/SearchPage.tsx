@@ -11,7 +11,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/styles/makeStyles';
-import bbox from '@turf/bbox';
 import MapContainer from 'components/map/MapContainer';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SearchAdvancedFilters, {
@@ -26,8 +25,9 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetSearchResultsListResponse } from 'interfaces/useSearchApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles({
   actionButton: {
@@ -129,7 +129,10 @@ const SearchPage: React.FC = () => {
       });
     }
 
+    // setShowSearchFields(false);
+
     // const mockResponse = [{
+    //   id: 1,
     //   project_name: 'Project Tima',
     //   regions: ['Region 1', 'Region 2'],
     //   funding_agency_name: 'Agency Name',
@@ -139,30 +142,25 @@ const SearchPage: React.FC = () => {
     //   start_date: '2020/04/04',
     //   end_date: '2020/05/05'
     // }];
+
+    // setSearchResults(mockResponse);
   };
 
   const getSurveyOccurrenceData = async (survey: any) => {
+    setSurveyOccurrences([]);
     setSelectedSurveyName(survey.name);
 
     try {
       const response = await biohubApi.search.getSurveyOccurrences(survey.id);
 
-      if (!response) {
+      if (!response || !response.geometry || !response.geometry.length) {
         return;
       }
 
-      const allGeosFeatureCollection = {
-        type: 'FeatureCollection',
-        features: response
-      };
+      const { geometryCollection, bounds } = generateValidGeometryCollection(response.geometry);
 
-      let mapBounds: any[] = [];
-      const bboxCoords = bbox(allGeosFeatureCollection);
-
-      mapBounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
-
-      setSurveyOccurrences(response);
-      setBounds(mapBounds);
+      setSurveyOccurrences(geometryCollection);
+      setBounds(bounds);
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
@@ -171,29 +169,6 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-
-    // const mockResponse: Feature[] = [
-    //   {
-    //     type: 'Feature',
-    //     geometry: {
-    //       type: 'Point',
-    //       coordinates: [125.6, 10.1]
-    //     },
-    //     properties: {
-    //       name: 'Biohub Islands'
-    //     }
-    //   },
-    //   {
-    //     type: 'Feature',
-    //     geometry: {
-    //       type: 'Point',
-    //       coordinates: [126.6, 11.1]
-    //     },
-    //     properties: {
-    //       name: 'Biohub Islands 2'
-    //     }
-    //   }
-    // ];
   };
 
   const getSearchResultsTableData = () => {
@@ -241,9 +216,9 @@ const SearchPage: React.FC = () => {
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                   <TableCell>
-                    {row.surveys.map((survey: any, index: number) => {
-                      if (index !== row.surveys.length - 1) {
-                        return (
+                    {row.surveys.map((survey: any, index: number) => (
+                      <Fragment key={index}>
+                        {index !== row.surveys.length - 1 && (
                           <>
                             <Link
                               underline="always"
@@ -254,19 +229,18 @@ const SearchPage: React.FC = () => {
                             </Link>
                             <br />
                           </>
-                        );
-                      }
-
-                      return (
-                        <Link
-                          underline="always"
-                          component="button"
-                          variant="body2"
-                          onClick={() => getSurveyOccurrenceData(survey)}>
-                          {survey.name}
-                        </Link>
-                      );
-                    })}
+                        )}
+                        {index === row.surveys.length - 1 && (
+                          <Link
+                            underline="always"
+                            component="button"
+                            variant="body2"
+                            onClick={() => getSurveyOccurrenceData(survey)}>
+                            {survey.name}
+                          </Link>
+                        )}
+                      </Fragment>
+                    ))}
                   </TableCell>
                 </TableRow>
               ))}
@@ -352,7 +326,7 @@ const SearchPage: React.FC = () => {
           )}
         </Box>
         {getSearchResultsTableData()}
-        {surveyOccurrences.length > 0 && (
+        {selectedSurveyName && (
           <>
             <Box mt={6}>
               <Typography variant="h2">Survey Occurrences</Typography>
@@ -360,15 +334,22 @@ const SearchPage: React.FC = () => {
             <Box mt={2}>
               <Typography>{selectedSurveyName}</Typography>
             </Box>
-            <Box mt={4} height={500}>
-              <MapContainer
-                mapId="survey_occurrences_map"
-                hideDrawControls={true}
-                hideOverlayLayers={true}
-                nonEditableGeometries={surveyOccurrences}
-                bounds={bounds}
-              />
-            </Box>
+            {surveyOccurrences.length > 0 && (
+              <Box mt={4} height={500}>
+                <MapContainer
+                  mapId="survey_occurrences_map"
+                  hideDrawControls={true}
+                  hideOverlayLayers={true}
+                  nonEditableGeometries={surveyOccurrences}
+                  bounds={bounds}
+                />
+              </Box>
+            )}
+            {surveyOccurrences.length === 0 && (
+              <Box mt={4} height={500}>
+                <Typography>No Occurrence Data</Typography>
+              </Box>
+            )}
           </>
         )}
       </Container>
