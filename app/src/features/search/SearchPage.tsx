@@ -10,19 +10,33 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/styles/makeStyles';
+import bbox from '@turf/bbox';
+import MapContainer from 'components/map/MapContainer';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import SearchAdvancedFilters, {
+  ISearchAdvancedFilters,
   SearchAdvancedFiltersInitialValues
 } from 'components/search-filter/SearchAdvancedFilters';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
+import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetSearchResultsListResponse } from 'interfaces/useSearchApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
+
+const useStyles = makeStyles({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+});
 
 /**
  * Page to search for and display a list of records.
@@ -31,8 +45,13 @@ import { getFormattedDate } from 'utils/Utils';
  */
 const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
+  const classes = useStyles();
 
+  const [showSearchFields, setShowSearchFields] = useState(true);
   const [searchResults, setSearchResults] = useState<IGetSearchResultsListResponse[]>([]);
+  const [surveyOccurrences, setSurveyOccurrences] = useState<Feature[]>([]);
+  const [bounds, setBounds] = useState<any[]>([]);
+  const [selectedSurveyName, setSelectedSurveyName] = useState('');
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
@@ -69,19 +88,34 @@ const SearchPage: React.FC = () => {
     });
   };
 
+  const handleReset = () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    formikRef.current.handleReset();
+
+    setSearchResults([]);
+    getSearchResults(formikRef.current.values);
+  };
+
   const handleSubmit = async () => {
     if (!formikRef?.current) {
       return;
     }
 
-    console.log(formikRef.current.values);
+    getSearchResults(formikRef.current.values);
+  };
 
+  const getSearchResults = async (values: ISearchAdvancedFilters) => {
     try {
-      const response = await biohubApi.search.getSearchResultsList(formikRef.current.values);
+      const response = await biohubApi.search.getSearchResultsList(values);
 
       if (!response) {
         return;
       }
+
+      setShowSearchFields(false);
 
       setSearchResults(() => {
         return response;
@@ -94,6 +128,72 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
+
+    // const mockResponse = [{
+    //   project_name: 'Project Tima',
+    //   regions: ['Region 1', 'Region 2'],
+    //   funding_agency_name: 'Agency Name',
+    //   funding_agency_project_id: '123',
+    //   coordinator_agency_name: 'Coordinator Agency',
+    //   surveys: [{ id: 1, name: 'Survey 1' }, { id: 2, name: 'Survey 2' }],
+    //   start_date: '2020/04/04',
+    //   end_date: '2020/05/05'
+    // }];
+  };
+
+  const getSurveyOccurrenceData = async (survey: any) => {
+    setSelectedSurveyName(survey.name);
+
+    try {
+      const response = await biohubApi.search.getSurveyOccurrences(survey.id);
+
+      if (!response) {
+        return;
+      }
+
+      const allGeosFeatureCollection = {
+        type: 'FeatureCollection',
+        features: response
+      };
+
+      let mapBounds: any[] = [];
+      const bboxCoords = bbox(allGeosFeatureCollection);
+
+      mapBounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
+
+      setSurveyOccurrences(response);
+      setBounds(mapBounds);
+    } catch (error) {
+      const apiError = error as APIError;
+      showFilterErrorDialog({
+        dialogTitle: 'Error Getting Survey Occurrences Data',
+        dialogError: apiError?.message,
+        dialogErrorDetails: apiError?.errors
+      });
+    }
+
+    // const mockResponse: Feature[] = [
+    //   {
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'Point',
+    //       coordinates: [125.6, 10.1]
+    //     },
+    //     properties: {
+    //       name: 'Biohub Islands'
+    //     }
+    //   },
+    //   {
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'Point',
+    //       coordinates: [126.6, 11.1]
+    //     },
+    //     properties: {
+    //       name: 'Biohub Islands 2'
+    //     }
+    //   }
+    // ];
   };
 
   const getSearchResultsTableData = () => {
@@ -105,36 +205,54 @@ const SearchPage: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Observation Name</TableCell>
                 <TableCell>Project Name</TableCell>
-                <TableCell>Region</TableCell>
-                <TableCell>Species</TableCell>
+                <TableCell>Coordinator Agency</TableCell>
+                <TableCell>Regions</TableCell>
                 <TableCell>Funding Agency Name</TableCell>
                 <TableCell>Funding Agency Project ID</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
+                <TableCell>Surveys</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="observation-table">
               {searchResults?.map((row: any) => (
                 <TableRow key={row.id}>
-                  <TableCell component="th" scope="row">
-                    <Link
-                      data-testid={row.name}
-                      underline="always"
-                      component="button"
-                      variant="body2"
-                      onClick={() => console.log(row.id)}>
-                      {row.name}
-                    </Link>
-                  </TableCell>
                   <TableCell>{row.project_name}</TableCell>
-                  <TableCell>{row.regions_list}</TableCell>
-                  <TableCell>{row.species_list}</TableCell>
+                  <TableCell>{row.coordinator_agency_name}</TableCell>
+                  <TableCell>{row.regions.join(', ')}</TableCell>
                   <TableCell>{row.funding_agency_name}</TableCell>
                   <TableCell>{row.funding_agency_project_id}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                  <TableCell>
+                    {row.surveys.map((survey: any, index: number) => {
+                      if (index !== row.surveys.length - 1) {
+                        return (
+                          <>
+                            <Link
+                              underline="always"
+                              component="button"
+                              variant="body2"
+                              onClick={() => getSurveyOccurrenceData(survey)}>
+                              {survey.name}
+                            </Link>
+                            <br />
+                          </>
+                        );
+                      }
+
+                      return (
+                        <Link
+                          underline="always"
+                          component="button"
+                          variant="body2"
+                          onClick={() => getSurveyOccurrenceData(survey)}>
+                          {survey.name}
+                        </Link>
+                      );
+                    })}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -154,7 +272,7 @@ const SearchPage: React.FC = () => {
           <Typography variant="h1">Search</Typography>
         </Box>
         <Box>
-          {codes && (
+          {codes && showSearchFields && (
             <Box mb={4}>
               <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
                 <SearchAdvancedFilters
@@ -173,17 +291,71 @@ const SearchPage: React.FC = () => {
                       return { value: item.id, label: item.name };
                     }) || []
                   }
+                  coordinator_agency={
+                    codes?.coordinator_agency?.map((item: any) => {
+                      return item.name;
+                    }) || []
+                  }
                 />
               </Formik>
               <Box mt={2} display="flex" justifyContent="flex-end">
-                <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
+                {searchResults?.length > 0 && (
+                  <Button
+                    className={classes.actionButton}
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => setShowSearchFields(false)}>
+                    Hide Advanced Filters
+                  </Button>
+                )}
+                <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
+                  Reset Fields
+                </Button>
+                <Button
+                  className={classes.actionButton}
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSubmit}>
                   Search
+                </Button>
+              </Box>
+            </Box>
+          )}
+          {!showSearchFields && (
+            <Box mb={4}>
+              <Box mt={2} display="flex" justifyContent="flex-end">
+                <Button
+                  className={classes.actionButton}
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setShowSearchFields(true)}>
+                  Show Advanced Filters
                 </Button>
               </Box>
             </Box>
           )}
         </Box>
         {getSearchResultsTableData()}
+        {surveyOccurrences.length > 0 && (
+          <>
+            <Box mt={6}>
+              <Typography variant="h2">Survey Occurrences</Typography>
+            </Box>
+            <Box mt={2}>
+              <Typography>{selectedSurveyName}</Typography>
+            </Box>
+            <Box mt={4} height={500}>
+              <MapContainer
+                mapId="survey_occurrences_map"
+                hideDrawControls={true}
+                hideOverlayLayers={true}
+                nonEditableGeometries={surveyOccurrences}
+                bounds={bounds}
+              />
+            </Box>
+          </>
+        )}
       </Container>
     </Box>
   );

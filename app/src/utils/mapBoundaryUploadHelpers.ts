@@ -170,6 +170,7 @@ export const generateValidGeometryCollection = (geometry: any) => {
     type: 'FeatureCollection',
     features: geometryCollection
   };
+
   const bboxCoords = bbox(allGeosFeatureCollection);
 
   bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);

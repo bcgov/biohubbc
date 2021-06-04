@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { Feature } from 'geojson';
 import { IGetSearchResultsListResponse, ISearchResultsAdvancedFilterRequest } from 'interfaces/useSearchApi.interface';
 
 /**
@@ -22,8 +23,21 @@ const useSearchApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey occurrences based on survey ID
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<Feature[]>}
+   */
+  const getSurveyOccurrences = async (surveyId: number): Promise<Feature[]> => {
+    const { data } = await axios.get(`/api/search/${surveyId}/occurrences`);
+
+    return data;
+  };
+
   return {
-    getSearchResultsList
+    getSearchResultsList,
+    getSurveyOccurrences
   };
 };
 

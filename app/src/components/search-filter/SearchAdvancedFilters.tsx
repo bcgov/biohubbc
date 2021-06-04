@@ -4,6 +4,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -20,6 +21,7 @@ export interface ISearchAdvancedFilters {
   agency_id: number;
   agency_project_id: string;
   species: number[];
+  coordinator_agency: string;
 }
 
 export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
@@ -30,13 +32,15 @@ export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
   regions: [],
   agency_id: ('' as unknown) as number,
   agency_project_id: '',
-  species: []
+  species: [],
+  coordinator_agency: ''
 };
 
 export interface ISearchAdvancedFiltersProps {
   region: IMultiAutocompleteFieldOption[];
   species: IMultiAutocompleteFieldOption[];
   funding_sources: IMultiAutocompleteFieldOption[];
+  coordinator_agency: string[];
 }
 
 /**
@@ -52,7 +56,7 @@ const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => 
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <TextField
             fullWidth
             required={false}
@@ -74,6 +78,15 @@ const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => 
             variant="outlined"
             value={values.project_name}
             onChange={handleChange}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <AutocompleteFreeSoloField
+            id="coordinator_agency"
+            name="coordinator_agency"
+            label="Coordinator Agency"
+            options={props.coordinator_agency}
+            required={false}
           />
         </Grid>
         <Grid item xs={12} md={6}>

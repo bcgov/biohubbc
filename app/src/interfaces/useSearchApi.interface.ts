@@ -1,3 +1,8 @@
+interface IGetSearchResultsSurvey {
+  id: number;
+  name: string;
+}
+
 /**
  * Get search results list response object.
  *
@@ -5,13 +10,12 @@
  * @interface IGetSearchResultsListResponse
  */
 export interface IGetSearchResultsListResponse {
-  id: number;
-  name: string;
   project_name: string;
-  regions_list: string;
-  species_list: string;
+  regions: string[];
   funding_agency_name: string;
   funding_agency_project_id: string;
+  coordinator_agency_name: string;
+  surveys: IGetSearchResultsSurvey[];
   start_date: string;
   end_date: string;
 }
@@ -27,5 +31,6 @@ export interface ISearchResultsAdvancedFilterRequest {
   regions: string[];
   agency_id: number;
   agency_project_id: string;
+  coordinator_agency: string;
   species: number[];
 }
