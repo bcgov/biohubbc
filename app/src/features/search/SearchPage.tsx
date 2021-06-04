@@ -88,7 +88,7 @@ const SearchPage: React.FC = () => {
     });
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     if (!formikRef?.current) {
       return;
     }
@@ -96,7 +96,9 @@ const SearchPage: React.FC = () => {
     formikRef.current.handleReset();
 
     setSearchResults([]);
-    getSearchResults(formikRef.current.values);
+    await getSearchResults(formikRef.current.values);
+
+    setShowSearchFields(true);
   };
 
   const handleSubmit = async () => {
@@ -163,7 +165,7 @@ const SearchPage: React.FC = () => {
   const getSearchResultsTableData = () => {
     const hasSearchResults = searchResults?.length > 0;
 
-    console.log(searchResults)
+    console.log(searchResults);
 
     if (!hasSearchResults) {
       return (
@@ -216,16 +218,14 @@ const SearchPage: React.FC = () => {
                             variant="body2"
                             onClick={() => {
                               getSurveyOccurrenceData(
-                                parseInt(survey.substring(survey.indexOf(":") + 1, survey.lastIndexOf(','))),
-                                survey.split(':').pop().split(',')[0],
+                                parseInt(survey.substring(survey.indexOf(':') + 1, survey.lastIndexOf(','))),
+                                survey.split(':').pop().split(',')[0]
                               );
                             }}>
                             {survey.split(':').pop().split(',')[0]}
                           </Link>
                         )}
-                        {index !== row.surveys.length - 1 && (
-                          <br />
-                        )}
+                        {index !== row.surveys.length - 1 && <br />}
                       </Fragment>
                     ))}
                   </TableCell>
@@ -285,7 +285,7 @@ const SearchPage: React.FC = () => {
                   </Button>
                 )}
                 <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
-                  Reset Fields
+                  Reset
                 </Button>
                 <Button
                   className={classes.actionButton}
