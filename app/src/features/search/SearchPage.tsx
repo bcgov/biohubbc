@@ -111,7 +111,12 @@ const SearchPage: React.FC = () => {
     try {
       const response = await biohubApi.search.getSearchResultsList(values);
 
-      if (!response || !response.length) {
+      if (!response) {
+        return;
+      }
+
+      if (!response.length) {
+        setSearchResults([]);
         return;
       }
 
@@ -132,10 +137,10 @@ const SearchPage: React.FC = () => {
 
   const getSurveyOccurrenceData = async (survey: any) => {
     setSurveyOccurrences([]);
-    setSelectedSurveyName(survey.name);
+    setSelectedSurveyName(survey);
 
     try {
-      const response = await biohubApi.search.getSurveyOccurrences(survey.id);
+      const response = await biohubApi.search.getSurveyOccurrences(survey);
 
       if (!response || !response.geometry || !response.geometry.length) {
         return;
@@ -209,7 +214,7 @@ const SearchPage: React.FC = () => {
                               component="button"
                               variant="body2"
                               onClick={() => getSurveyOccurrenceData(survey)}>
-                              {survey.name}
+                              {survey}
                             </Link>
                             <br />
                           </>
@@ -220,7 +225,7 @@ const SearchPage: React.FC = () => {
                             component="button"
                             variant="body2"
                             onClick={() => getSurveyOccurrenceData(survey)}>
-                            {survey.name}
+                            {survey}
                           </Link>
                         )}
                       </Fragment>

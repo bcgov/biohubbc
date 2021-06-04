@@ -127,11 +127,11 @@ export function _extractProjectsBySearchParam(rows: any[]): any[] {
   rows.forEach((row) => {
     const project: any = {
       id: row.id,
-      project_name: row.name,
+      project_name: row.project_name,
       regions: row.regions,
       funding_agency_name: row.funding_agency_name,
       funding_agency_project_id: row.funding_agency_project_id,
-      coordinator_agency: row.coordinator_agency_name,
+      coordinator_agency_name: row.coordinator_agency_name,
       surveys: row.surveys,
       start_date: row.start_date,
       end_date: row.end_date

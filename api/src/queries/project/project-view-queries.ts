@@ -258,7 +258,8 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
   defaultLog.debug({ label: 'getProjectListBySearchParamSQL', message: 'getProjectListBySearchParamSQL' });
 
   const sqlStatement = SQL`
-  p.id,
+    SELECT
+      p.id,
       p.name as project_name,
       p.start_date,
       p.end_date,
@@ -267,29 +268,29 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       array_agg(distinct(s.id)) as surveys,
       array_agg(distinct(r.name)) as regions,
       array_agg(distinct(fs.name)) as funding_agency_name
-FROM
-  project as p
-LEFT OUTER JOIN
-  project_funding_source as pfs
-ON
-  pfs.p_id = p.id
-LEFT OUTER JOIN
-  investment_action_category as iac
-ON
-  pfs.iac_id = iac.id
-left outer JOIN
-  funding_source as fs
-ON
-  iac.fs_id = fs.id
-left outer JOIN
-  survey as s
-ON
-  s.p_id = p.id
-left outer JOIN
-  project_region as r
-ON
-  r.p_id = p.id
-WHERE 1 = 1
+    FROM
+      project as p
+    LEFT OUTER JOIN
+      project_funding_source as pfs
+    ON
+      pfs.p_id = p.id
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    left outer JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
+    left outer JOIN
+      survey as s
+    ON
+      s.p_id = p.id
+    left outer JOIN
+      project_region as r
+    ON
+      r.p_id = p.id
+    WHERE 1 = 1
   `;
 
   if (filterFields) {
@@ -313,7 +314,7 @@ WHERE 1 = 1
   }
 
   sqlStatement.append(SQL`
-  GROUP BY
+    GROUP BY
       p.id,
       p.name,
       p.start_date,
