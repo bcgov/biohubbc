@@ -247,3 +247,95 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get all projects.
+ *
+ * @param {any} filterFields
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectListBySearchParamSQL', message: 'getProjectListBySearchParamSQL' });
+
+  const sqlStatement = SQL`
+
+SELECT
+  p.id,
+  p.name,
+  p.start_date,
+  p.end_date,
+  p.coordinator_agency_name,
+  pfs.funding_source_project_id as agency_project_id,
+  fs.name as funding_agency_name,
+  s.name,
+  r.name
+FROM
+  project as p
+LEFT OUTER JOIN
+  project_funding_source as pfs
+ON
+  pfs.p_id = p.id
+LEFT OUTER JOIN
+  investment_action_category as iac
+ON
+  pfs.iac_id = iac.id
+LEFT OUTER JOIN
+  funding_source as fs
+ON
+  iac.fs_id = fs.id
+LEFT OUTER JOIN
+  survey as s
+ON
+  s.p_id = p.id
+LEFT OUTER JOIN
+  project_region as r
+ON
+  r.p_id = p.id
+WHERE 1 = 1
+
+`;
+
+  if (filterFields) {
+    if (filterFields.coordinator_agency) {
+      sqlStatement.append(SQL` AND p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+    }
+
+    if (filterFields.start_date && !filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
+    }
+
+    if (!filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.end_date <= ${filterFields.end_date}`);
+    }
+
+    if (filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(
+        SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
+      );
+    }
+
+    if (filterFields.project_type) {
+      sqlStatement.append(SQL` AND pt.name = ${filterFields.project_type} `);
+    }
+  }
+
+  sqlStatement.append(SQL`
+  GROUP BY
+  p.id,
+  pfs.funding_source_project_id,
+  iac.id,
+  iac.name,
+  fs.name,
+  s.name,
+  r.name;
+  `);
+
+  defaultLog.debug({
+    label: 'getProjectListBySearchParamSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
