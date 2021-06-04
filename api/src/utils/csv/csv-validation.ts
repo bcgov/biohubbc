@@ -1,8 +1,10 @@
 import { ParseError } from 'papaparse';
-import { validateFileHeaders, validateFileRows, validateFileTypeAndContent } from './validateCsvFile';
+import { CSVFile } from './custom-file';
 
 export type IHeaderErrorType = 'Invalid' | 'Missing';
+
 export type IHeaderErrorCode = 'DuplicateHeader' | 'UnknownHeader' | 'MissingRequiredHeader';
+
 export interface IHeaderErrors {
   type: IHeaderErrorType;
   code: IHeaderErrorCode;
@@ -17,19 +19,22 @@ export interface IHeaderRules {
 }
 
 export interface ICsvState {
+  fileName: string;
   fileErrors?: string[];
   headerErrors?: IHeaderErrors[];
   rowErrors?: ParseError[];
   isValid: boolean;
 }
 
-export class CsvValidationError {
+export class CSVValidation {
+  fileName: string;
   fileErrors: string[];
   headerErrors: IHeaderErrors[];
   rowErrors: ParseError[];
   isValid: boolean;
 
-  constructor() {
+  constructor(fileName: string) {
+    this.fileName = fileName;
     this.fileErrors = [];
     this.headerErrors = [];
     this.rowErrors = [];
@@ -67,6 +72,7 @@ export class CsvValidationError {
 
   getState(): ICsvState {
     return {
+      fileName: this.fileName,
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
@@ -75,14 +81,10 @@ export class CsvValidationError {
   }
 }
 
-export const isFileValid = (file: Express.Multer.File, headerRules?: IHeaderRules): ICsvState => {
-  const csvValidationError = new CsvValidationError();
+export type CSVValidator = (file: CSVFile, ...rest: any) => CSVFile;
 
-  validateFileTypeAndContent(file, csvValidationError);
+export const validateCSVFile = (file: CSVFile, validators: CSVValidator[]): CSVValidation => {
+  validators.forEach((validator) => validator(file));
 
-  validateFileHeaders(file, csvValidationError, headerRules);
-
-  validateFileRows(file, csvValidationError, headerRules);
-
-  return csvValidationError.getState();
+  return file.csvValidation;
 };
