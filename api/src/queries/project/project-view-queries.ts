@@ -313,10 +313,6 @@ WHERE 1 = 1
         SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
       );
     }
-
-    if (filterFields.project_type) {
-      sqlStatement.append(SQL` AND pt.name = ${filterFields.project_type} `);
-    }
   }
 
   sqlStatement.append(SQL`
