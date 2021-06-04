@@ -258,42 +258,40 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
   defaultLog.debug({ label: 'getProjectListBySearchParamSQL', message: 'getProjectListBySearchParamSQL' });
 
   const sqlStatement = SQL`
-
-SELECT
-  p.id,
-  p.name,
-  p.start_date,
-  p.end_date,
-  p.coordinator_agency_name,
-  pfs.funding_source_project_id as agency_project_id,
-  fs.name as funding_agency_name,
-  s.name,
-  r.name
-FROM
-  project as p
-LEFT OUTER JOIN
-  project_funding_source as pfs
-ON
-  pfs.p_id = p.id
-LEFT OUTER JOIN
-  investment_action_category as iac
-ON
-  pfs.iac_id = iac.id
-LEFT OUTER JOIN
-  funding_source as fs
-ON
-  iac.fs_id = fs.id
-LEFT OUTER JOIN
-  survey as s
-ON
-  s.p_id = p.id
-LEFT OUTER JOIN
-  project_region as r
-ON
-  r.p_id = p.id
-WHERE 1 = 1
-
-`;
+    SELECT
+      p.id,
+      p.name as project_name,
+      p.start_date,
+      p.end_date,
+      p.coordinator_agency_name,
+      pfs.funding_source_project_id as agency_project_id,
+      fs.name as funding_agency_name,
+      s.name as survey_name,
+      r.name as region_name
+    FROM
+      project as p
+    LEFT OUTER JOIN
+      project_funding_source as pfs
+    ON
+      pfs.p_id = p.id
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    LEFT OUTER JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
+    LEFT OUTER JOIN
+      survey as s
+    ON
+      s.p_id = p.id
+    LEFT OUTER JOIN
+      project_region as r
+    ON
+      r.p_id = p.id
+    WHERE 1 = 1
+  `;
 
   if (filterFields) {
     if (filterFields.coordinator_agency) {
@@ -316,14 +314,18 @@ WHERE 1 = 1
   }
 
   sqlStatement.append(SQL`
-  GROUP BY
-  p.id,
-  pfs.funding_source_project_id,
-  iac.id,
-  iac.name,
-  fs.name,
-  s.name,
-  r.name;
+    GROUP BY
+      p.id,
+      p.name,
+      p.start_date,
+      p.end_date,
+      p.coordinator_agency_name,
+      pfs.funding_source_project_id,
+      iac.id,
+      iac.name,
+      fs.name,
+      s.name,
+      r.name;
   `);
 
   defaultLog.debug({

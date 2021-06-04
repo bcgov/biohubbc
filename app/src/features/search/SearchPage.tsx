@@ -199,7 +199,22 @@ const SearchPage: React.FC = () => {
   const getSearchResultsTableData = () => {
     const hasSearchResults = searchResults?.length > 0;
 
-    if (hasSearchResults) {
+    if (!hasSearchResults) {
+      return (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow></TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>No Search Results Found</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    } else {
       return (
         <TableContainer component={Paper}>
           <Table>
