@@ -135,12 +135,12 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const getSurveyOccurrenceData = async (survey: any) => {
+  const getSurveyOccurrenceData = async (surveyId: number, surveyName: string) => {
     setSurveyOccurrences([]);
-    setSelectedSurveyName(survey);
+    setSelectedSurveyName(surveyName);
 
     try {
-      const response = await biohubApi.search.getSurveyOccurrences(survey);
+      const response = await biohubApi.search.getSurveyOccurrences(surveyId);
 
       if (!response || !response.geometry || !response.geometry.length) {
         return;
@@ -162,6 +162,8 @@ const SearchPage: React.FC = () => {
 
   const getSearchResultsTableData = () => {
     const hasSearchResults = searchResults?.length > 0;
+
+    console.log(searchResults)
 
     if (!hasSearchResults) {
       return (
@@ -207,26 +209,22 @@ const SearchPage: React.FC = () => {
                   <TableCell>
                     {row.surveys.map((survey: any, index: number) => (
                       <Fragment key={index}>
-                        {index !== row.surveys.length - 1 && (
-                          <>
-                            <Link
-                              underline="always"
-                              component="button"
-                              variant="body2"
-                              onClick={() => getSurveyOccurrenceData(survey)}>
-                              {survey}
-                            </Link>
-                            <br />
-                          </>
-                        )}
-                        {index === row.surveys.length - 1 && (
+                        {survey && (
                           <Link
                             underline="always"
                             component="button"
                             variant="body2"
-                            onClick={() => getSurveyOccurrenceData(survey)}>
-                            {survey}
+                            onClick={() => {
+                              getSurveyOccurrenceData(
+                                parseInt(survey.substring(survey.indexOf(":") + 1, survey.lastIndexOf(','))),
+                                survey.split(':').pop().split(',')[0],
+                              );
+                            }}>
+                            {survey.split(':').pop().split(',')[0]}
                           </Link>
+                        )}
+                        {index !== row.surveys.length - 1 && (
+                          <br />
                         )}
                       </Fragment>
                     ))}

@@ -91,9 +91,6 @@ export function getObservationsForView(): RequestHandler {
       const getObservationsData =
         (observationsData && observationsData.rows && new GetObservationsData(observationsData.rows)) || null;
 
-      console.log('HERERERERERERERERERREEEEEE');
-      console.log(getObservationsData);
-
       return res.status(200).json(getObservationsData);
     } catch (error) {
       defaultLog.debug({ label: 'getObservationsForView', message: 'error', error });

@@ -265,7 +265,7 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       p.end_date,
       p.coordinator_agency_name,
       array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
-      array_agg(distinct(' {id:' || s.id || ' , name:' || s.name || ' } ' )) as surveys,
+      array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
       array_agg(distinct(r.name)) as regions,
       array_agg(distinct(fs.name)) as funding_agency_name
     FROM
