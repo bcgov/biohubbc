@@ -259,19 +259,19 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
 
   const sqlStatement = SQL`
   p.id,
-      p.name as project_name,
+    p.name as project_name,
       p.start_date,
       p.end_date,
       p.coordinator_agency_name,
       array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
-      array_agg(distinct(s.id)) as surveys,
+      array_agg(distinct(' {id:' || s.id || ' , name:' || s.name || ' } ' )) as surveys,
       array_agg(distinct(r.name)) as regions,
       array_agg(distinct(fs.name)) as funding_agency_name
-FROM
+  FROM
   project as p
-LEFT OUTER JOIN
+  LEFT OUTER JOIN
   project_funding_source as pfs
-ON
+  ON
   pfs.p_id = p.id
 LEFT OUTER JOIN
   investment_action_category as iac
