@@ -128,22 +128,6 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-
-    // setShowSearchFields(false);
-
-    // const mockResponse = [{
-    //   id: 1,
-    //   project_name: 'Project Tima',
-    //   regions: ['Region 1', 'Region 2'],
-    //   funding_agency_name: 'Agency Name',
-    //   funding_agency_project_id: '123',
-    //   coordinator_agency_name: 'Coordinator Agency',
-    //   surveys: [{ id: 1, name: 'Survey 1' }, { id: 2, name: 'Survey 2' }],
-    //   start_date: '2020/04/04',
-    //   end_date: '2020/05/05'
-    // }];
-
-    // setSearchResults(mockResponse);
   };
 
   const getSurveyOccurrenceData = async (survey: any) => {
@@ -211,8 +195,8 @@ const SearchPage: React.FC = () => {
                   <TableCell>{row.project_name}</TableCell>
                   <TableCell>{row.coordinator_agency_name}</TableCell>
                   <TableCell>{row.regions.join(', ')}</TableCell>
-                  <TableCell>{row.funding_agency_name}</TableCell>
-                  <TableCell>{row.funding_agency_project_id}</TableCell>
+                  <TableCell>{row.funding_agency_name.join(', ')}</TableCell>
+                  <TableCell>{row.funding_agency_project_id.join(', ')}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
                   <TableCell>
