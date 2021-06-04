@@ -111,7 +111,7 @@ const SearchPage: React.FC = () => {
     try {
       const response = await biohubApi.search.getSearchResultsList(values);
 
-      if (!response) {
+      if (!response || !response.length) {
         return;
       }
 
