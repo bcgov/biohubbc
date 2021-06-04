@@ -311,6 +311,22 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
         SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
       );
     }
+    if (filterFields.project_name) {
+      sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
+    }
+
+    if (filterFields.funding_agency_project_id) {
+      sqlStatement.append(SQL` AND pfs.funding_source_project_id = ${filterFields.funding_agency_project_id}`);
+    }
+
+    if (filterFields.regions) {
+      sqlStatement.append(SQL` AND r.name = ${filterFields.regions}`);
+    }
+
+    if (filterFields.funding_agency_name) {
+      sqlStatement.append(SQL` AND fs.name = ${filterFields.funding_agency_name}`);
+    }
+
   }
 
   sqlStatement.append(SQL`
