@@ -26,7 +26,7 @@ export interface IUploadFileListProps {
 export interface IFileUploadProps {
   projectId?: number;
   surveyId?: number;
-  setValidationStatus?: (validationStatus: string[]) => void;
+  onSuccess?: (response: any) => void; // currently only supports single file uploads (multiple will overwrite each other)
 }
 
 export const FileUpload: React.FC<IFileUploadProps> = (props) => {
@@ -91,7 +91,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         key={file.name}
         projectId={props.projectId || undefined}
         surveyId={props.surveyId || undefined}
-        setValidationStatus={props.setValidationStatus}
+        onSuccess={props.onSuccess}
         file={file}
         error={error}
         onCancel={() => setFileToRemove(file.name)}

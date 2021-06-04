@@ -12,7 +12,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
-import { getDwcFileValidationErrors } from 'utils/customErrors';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadListItem: {
@@ -69,7 +68,7 @@ export interface IUploadFile {
 export interface IFileUploadItemProps {
   projectId?: number;
   surveyId?: number;
-  setValidationStatus?: (validationStatus: string[]) => void;
+  onSuccess?: (response: any) => void;
   file: File;
   error?: string;
   onCancel: () => void;
@@ -80,7 +79,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const { projectId, surveyId, setValidationStatus } = props;
+  const { projectId, surveyId, onSuccess } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -122,33 +121,19 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       }
     };
 
-    const handleFileUploadSuccess = (uploadResult: any) => {
+    const handleFileUploadSuccess = (response?: any) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request resolves
         return;
       }
 
-      if (!uploadResult || Array.isArray(uploadResult)) {
-        // normal upload call result
-        setStatus(UploadFileStatus.COMPLETE);
-      } else {
-        // validate call result
-        if (uploadResult.isValid) {
-          setStatus(UploadFileStatus.COMPLETE);
-          setValidationStatus && setValidationStatus(['File being uploaded is valid.']);
-        } else {
-          const customErrorMessage = getDwcFileValidationErrors(uploadResult);
-
-          setStatus(UploadFileStatus.FAILED);
-          setValidationStatus && setValidationStatus(customErrorMessage);
-        }
-      }
-
-      // the upload request has finished
+      setStatus(UploadFileStatus.COMPLETE);
       setProgress(100);
 
-      // it's now safe to call the onCancel prop
+      // the upload request has finished and its safe to call the onCancel prop
       setIsSafeToCancel(true);
+
+      onSuccess?.(response);
     };
 
     if (surveyId && projectId) {
@@ -176,7 +161,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     cancelToken,
     projectId,
     surveyId,
-    setValidationStatus,
+    onSuccess,
     isMounted,
     initiateCancel,
     error,
@@ -229,13 +214,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
           </Box>
         </Box>
         <Box ml={2} display="flex" alignItems="center">
-          <MemoizedActionButton
-            status={status}
-            onCancel={() => {
-              setInitiateCancel(true);
-              setValidationStatus && setValidationStatus([]);
-            }}
-          />
+          <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
         </Box>
       </Box>
     </ListItem>

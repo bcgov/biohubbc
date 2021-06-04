@@ -1,8 +1,13 @@
+import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import mime from 'mime';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTP400 } from '../../errors/CustomError';
-import { isFileValid } from '../../utils/csv/csv-validator';
+import { ICsvState, validateCSVFile } from '../../utils/csv/csv-validation';
+import { CSVFile, CustomFile } from '../../utils/csv/custom-file';
+import { DWCArchive } from '../../utils/csv/dwc/dwc-archive';
+import { DWC_CLASS, getDWCCSVValidators, isDWCArchiveValid } from '../../utils/csv/dwc/dwc-validator';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -50,6 +55,9 @@ POST.apiDoc = {
                 items: {
                   type: 'object',
                   properties: {
+                    fileName: {
+                      type: 'string'
+                    },
                     fileErrors: {
                       type: 'array',
                       items: {
@@ -132,18 +140,6 @@ POST.apiDoc = {
   }
 };
 
-const getValidHeaders = () => {
-  return ['first_name', 'last_name', 'date', 'time', 'species', 'count', 'location'];
-};
-
-const getRequiredHeaders = () => {
-  return ['first_name', 'last_name', 'date', 'species'];
-};
-
-const getRequiredFieldsByHeader = () => {
-  return ['first_name', 'last_name', 'date'];
-};
-
 /**
  * Validate a Darwin Core csv file.
  *
@@ -161,14 +157,19 @@ function validateDWC(): RequestHandler {
     try {
       const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-      let response;
+      const response: ICsvState[] = [];
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
-        response = isFileValid(file, {
-          requiredHeaders: getRequiredHeaders(),
-          validHeaders: getValidHeaders(),
-          requiredFieldsByHeader: getRequiredFieldsByHeader()
-        });
+        const mimetype = mime.getType(file.originalname);
+
+        if (mimetype === 'application/zip') {
+          const dwcArchive = parseDWCArchive(file);
+          response.push(...isDWCArchiveValid(dwcArchive));
+          return;
+        }
+
+        const csvFile = new CSVFile(new CustomFile(file));
+        response.push(validateCSVFile(csvFile, getDWCCSVValidators(DWC_CLASS.OCCURRENCE)).getState());
       });
 
       return res.status(200).json(response);
@@ -177,4 +178,41 @@ function validateDWC(): RequestHandler {
       throw error;
     }
   };
+}
+
+export function parseDWCArchive(zipFile: Express.Multer.File): DWCArchive {
+  const unzippedFile = new AdmZip(zipFile.buffer);
+  const entries = unzippedFile.getEntries();
+
+  const dwcArchive = new DWCArchive();
+
+  entries.forEach((entry) => {
+    if (entry.isDirectory) {
+      return;
+    }
+
+    const csvFile = new CSVFile(new CustomFile(entry));
+
+    if (/^event\.\w+$/.test(csvFile.fileName)) {
+      dwcArchive.event = csvFile;
+    }
+
+    if (/^occurrence\.\w+$/.test(csvFile.fileName)) {
+      dwcArchive.occurrence = csvFile;
+    }
+
+    if (/^measurementorfact\.\w+$/.test(csvFile.fileName)) {
+      dwcArchive.measurementorfact = csvFile;
+    }
+
+    if (/^resourcerelationship\.\w+$/.test(csvFile.fileName)) {
+      dwcArchive.resourcerelationship = csvFile;
+    }
+
+    if (/^meta\.\w+$/.test(csvFile.fileName)) {
+      dwcArchive.meta = csvFile;
+    }
+  });
+
+  return dwcArchive;
 }
