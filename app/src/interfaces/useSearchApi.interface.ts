@@ -14,8 +14,8 @@ interface IGetSearchResultsSurvey {
 export interface IGetSearchResultsListResponse {
   project_name: string;
   regions: string[];
-  funding_agency_name: string;
-  funding_agency_project_id: string;
+  funding_agency_name: string[];
+  funding_agency_project_id: string[];
   coordinator_agency_name: string;
   surveys: IGetSearchResultsSurvey[];
   start_date: string;
