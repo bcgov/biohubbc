@@ -30,3 +30,9 @@ export function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement
 
   return sqlStatement;
 }
+
+export function generateGeometryFromUTM(crs: string, utm: string): SQLStatement {
+  const sqlStatement: SQLStatement = SQL``;
+
+  return sqlStatement;
+}

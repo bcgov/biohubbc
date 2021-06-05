@@ -167,6 +167,25 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const uploadOccurrenceFiles = async (
+    projectId: number,
+    surveyId: number,
+    files: File[],
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<any> => {
+    const req_message = new FormData();
+
+    files.forEach((file) => req_message.append('media', file));
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -176,7 +195,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     uploadSurveyAttachments,
     getSurveyAttachments,
     deleteSurveyAttachment,
-    getSurveyAttachmentSignedURL
+    getSurveyAttachmentSignedURL,
+    uploadOccurrenceFiles
   };
 };
 

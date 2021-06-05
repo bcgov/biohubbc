@@ -5,7 +5,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import DropZone from './DropZone';
-import { MemoizedFileUploadItem } from './FileUploadItem';
+import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -24,8 +24,7 @@ export interface IUploadFileListProps {
 }
 
 export interface IFileUploadProps {
-  projectId?: number;
-  surveyId?: number;
+  uploadHandler: IUploadHandler;
   onSuccess?: (response: any) => void; // currently only supports single file uploads (multiple will overwrite each other)
 }
 
@@ -89,8 +88,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
     return (
       <MemoizedFileUploadItem
         key={file.name}
-        projectId={props.projectId || undefined}
-        surveyId={props.surveyId || undefined}
+        uploadHandler={props.uploadHandler}
         onSuccess={props.onSuccess}
         file={file}
         error={error}

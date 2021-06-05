@@ -1,6 +1,10 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
 interface IDWCValidateResponse {
@@ -11,12 +15,19 @@ interface IDWCValidateResponse {
   isValid: boolean;
 }
 
+export interface ISurveyObservationProps {
+  projectForViewData: IGetProjectForViewResponse;
+  surveyForViewData: IGetSurveyForViewResponse;
+}
+
 /**
  * Survey observations content.
  *
  * @return {*}
  */
-const SurveyObservations = () => {
+const SurveyObservations: React.FC<ISurveyObservationProps> = (props) => {
+  const biohubApi = useBiohubApi();
+
   const [validationResponses, setValidationResponses] = useState<IDWCValidateResponse[]>();
 
   const getFileValidationErrors = (responses: IDWCValidateResponse[]) => {
@@ -36,13 +47,25 @@ const SurveyObservations = () => {
     });
   };
 
+  const uploadOccurrenceFiles = (): IUploadHandler => {
+    return (files, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.survey.uploadOccurrenceFiles(
+        props.projectForViewData.id,
+        props.surveyForViewData.survey_details.id,
+        files,
+        cancelToken,
+        handleFileUploadProgress
+      );
+    };
+  };
+
   return (
     <>
       <Box mb={4}>
-        <Typography variant="h2">Validate File</Typography>
+        <Typography variant="h2">Upload Occurrences</Typography>
       </Box>
       <Box mb={4}>
-        <FileUpload onSuccess={setValidationResponses} />
+        <FileUpload onSuccess={setValidationResponses} uploadHandler={uploadOccurrenceFiles()} />
       </Box>
       {validationResponses && validationResponses?.length > 0 && (
         <>

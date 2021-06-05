@@ -43,27 +43,42 @@ export class CSVValidation {
 
   setFileErrors(errors: string[]) {
     this.fileErrors = errors;
-    this.isValid = false;
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
   }
 
   setHeaderErrors(errors: IHeaderErrors[]) {
     this.headerErrors = errors;
-    this.isValid = false;
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
   }
 
   addHeaderErrors(errors: IHeaderErrors[]) {
     this.headerErrors = this.headerErrors.concat(errors);
-    this.isValid = false;
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
   }
 
   setRowErrors(errors: ParseError[]) {
     this.rowErrors = errors;
-    this.isValid = false;
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
   }
 
   addRowErrors(errors: ParseError[]) {
     this.rowErrors = this.rowErrors.concat(errors);
-    this.isValid = false;
+
+    if (errors?.length) {
+      this.isValid = false;
+    }
   }
 
   setIsValid(isValid: boolean) {

@@ -65,9 +65,14 @@ export interface IUploadFile {
   error?: string;
 }
 
+export type IUploadHandler = (
+  files: [File],
+  cancelToken: CancelTokenSource,
+  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+) => Promise<any>;
+
 export interface IFileUploadItemProps {
-  projectId?: number;
-  surveyId?: number;
+  uploadHandler: IUploadHandler;
   onSuccess?: (response: any) => void;
   file: File;
   error?: string;
@@ -79,7 +84,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const { projectId, surveyId, onSuccess } = props;
+  const { uploadHandler, onSuccess } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -136,22 +141,9 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    if (surveyId && projectId) {
-      biohubApi.survey
-        .uploadSurveyAttachments(projectId, surveyId, [file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    } else if (projectId) {
-      biohubApi.project
-        .uploadProjectAttachments(projectId, [file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    } else {
-      biohubApi.dwc
-        .validateDwcAttachments([file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    }
+    uploadHandler([file], cancelToken, handleFileUploadProgress)
+      .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+      .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
   }, [
@@ -159,8 +151,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
     biohubApi,
     status,
     cancelToken,
-    projectId,
-    surveyId,
+    uploadHandler,
     onSuccess,
     isMounted,
     initiateCancel,

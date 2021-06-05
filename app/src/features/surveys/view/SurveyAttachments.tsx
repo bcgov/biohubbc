@@ -5,6 +5,7 @@ import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -57,6 +58,18 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  const uploadSurveyAttachments = (): IUploadHandler => {
+    return (files, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.survey.uploadSurveyAttachments(
+        projectId,
+        surveyId,
+        files,
+        cancelToken,
+        handleFileUploadProgress
+      );
+    };
+  };
+
   return (
     <>
       <ComponentDialog
@@ -66,7 +79,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload projectId={projectId} surveyId={surveyId} />
+        <FileUpload uploadHandler={uploadSurveyAttachments()} />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">

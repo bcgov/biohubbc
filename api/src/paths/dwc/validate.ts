@@ -1,3 +1,5 @@
+'use strict';
+
 import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
@@ -52,6 +54,7 @@ POST.apiDoc = {
             type: 'object',
             properties: {
               errors: {
+                type: 'array',
                 items: {
                   type: 'object',
                   properties: {

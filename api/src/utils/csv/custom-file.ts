@@ -29,6 +29,12 @@ export class CustomFile implements ICustomFile {
   }
 }
 
+export interface ICSVFileJSON {
+  fileName: string;
+  mimetype: string;
+  data: string[][];
+}
+
 export class CSVFile implements ICustomFile {
   fileName: string;
   mimetype: string;
@@ -63,6 +69,8 @@ export class CSVFile implements ICustomFile {
 
     const parseResult = Papa.parse(this.buffer.toString(), { skipEmptyLines: true, ...options });
 
+    this._parsedBuffer = parseResult.data;
+
     this._headers = parseResult.data[0];
 
     this._rows = parseResult.data.slice(1, parseResult.data.length - 1);
@@ -82,5 +90,11 @@ export class CSVFile implements ICustomFile {
     this._parseBuffer(options);
 
     return this._rows;
+  }
+
+  toJSON(options?: Papa.ParseConfig<string[]>): ICSVFileJSON {
+    this._parseBuffer(options);
+
+    return { fileName: this.fileName, mimetype: this.mimetype, data: this._parsedBuffer };
   }
 }
