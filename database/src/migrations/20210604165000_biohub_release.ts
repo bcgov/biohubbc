@@ -116,15 +116,16 @@ export async function up(knex: Knex): Promise<void> {
     -- alter schema ${DB_SCHEMA_DAPI_V1} owner to ${DB_USER_API};
     grant usage on schema ${DB_SCHEMA_DAPI_V1} to ${DB_USER_API};
     grant usage on schema biohub to ${DB_USER_API};
-    grant all on all tables in schema ${DB_SCHEMA_DAPI_V1} to ${DB_USER_API};
-    alter DEFAULT PRIVILEGES in SCHEMA ${DB_SCHEMA_DAPI_V1} grant ALL on tables to ${DB_USER_API};
-    --grant postgis_reader to ${DB_USER_API};
-    alter role ${DB_USER_API} set search_path to ${DB_SCHEMA_DAPI_V1}, biohub, public, topology;
 
     set search_path = ${DB_SCHEMA_DAPI_V1};
     set role ${DB_USER_API};
     ${project_dapi_views}
     reset role;
+
+    grant all on all tables in schema ${DB_SCHEMA_DAPI_V1} to ${DB_USER_API};
+    alter DEFAULT PRIVILEGES in SCHEMA ${DB_SCHEMA_DAPI_V1} grant ALL on tables to ${DB_USER_API};
+    --grant postgis_reader to ${DB_USER_API};
+    alter role ${DB_USER_API} set search_path to ${DB_SCHEMA_DAPI_V1}, biohub, public, topology;
 
     set search_path = biohub;
     grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
