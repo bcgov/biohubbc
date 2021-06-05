@@ -332,9 +332,20 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       sqlStatement.append(SQL` AND fs.id = ${filterFields.agency_id}`);
     }
 
-    if (filterFields.species.length){
-      sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
+    if (filterFields.regions.length) {
+      sqlStatement.append(SQL` AND r.name =${filterFields.regions[0]}`);
+    }
 
+    if (filterFields.species.length) {
+      sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
+    }
+
+    if (filterFields.keyword) {
+      const keyword_string = filterFields.keyword.concat('%');
+      sqlStatement.append(SQL` AND p.name  ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR fs.name  ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR s.name  ilike ${keyword_string}`);
     }
   }
 
