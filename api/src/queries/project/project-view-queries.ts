@@ -258,39 +258,48 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
   defaultLog.debug({ label: 'getProjectListBySearchParamSQL', message: 'getProjectListBySearchParamSQL' });
 
   const sqlStatement = SQL`
-    SELECT
-      p.id,
-      p.name as project_name,
-      p.start_date,
-      p.end_date,
-      p.coordinator_agency_name,
-      array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
-      array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
-      array_agg(distinct(r.name)) as regions,
-      array_agg(distinct(fs.name)) as funding_agency_name
-    FROM
-      project as p
-    LEFT OUTER JOIN
-      project_funding_source as pfs
-    ON
-      pfs.p_id = p.id
-    LEFT OUTER JOIN
-      investment_action_category as iac
-    ON
-      pfs.iac_id = iac.id
-    left outer JOIN
-      funding_source as fs
-    ON
-      iac.fs_id = fs.id
-    left outer JOIN
-      survey as s
-    ON
-      s.p_id = p.id
-    left outer JOIN
-      project_region as r
-    ON
-      r.p_id = p.id
-    WHERE 1 = 1
+  SELECT
+    p.id,
+    p.name as project_name,
+    p.start_date,
+    p.end_date,
+    p.coordinator_agency_name,
+    array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
+    array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
+    array_agg(distinct(r.name)) as regions,
+    array_agg(distinct(fs.name)) as funding_agency_name,
+    array_agg(distinct(wu.english_name)) as species_names
+  FROM
+    project as p
+  LEFT OUTER JOIN
+    project_funding_source as pfs
+  ON
+    pfs.p_id = p.id
+  LEFT OUTER JOIN
+    investment_action_category as iac
+  ON
+    pfs.iac_id = iac.id
+  left outer JOIN
+    funding_source as fs
+  ON
+    iac.fs_id = fs.id
+  left outer JOIN
+    survey as s
+  ON
+    s.p_id = p.id
+  left outer JOIN
+    study_species as sp
+  ON
+    sp.s_id = s.id
+  left outer JOIN
+    wldtaxonomic_units as wu
+  ON
+    wu.id = sp.id
+  left outer JOIN
+    project_region as r
+  ON
+    r.p_id = p.id
+  where 1=1
   `;
 
   if (filterFields) {
@@ -321,6 +330,11 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
 
     if (filterFields.agency_id) {
       sqlStatement.append(SQL` AND fs.id = ${filterFields.agency_id}`);
+    }
+
+    if (filterFields.species.length){
+      sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
+
     }
   }
 
