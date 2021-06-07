@@ -341,7 +341,7 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
     }
 
     if (filterFields.keyword) {
-      const keyword_string = filterFields.keyword.concat('%');
+      const keyword_string = '%'.concat(filterFields.keyword).concat('%');
       sqlStatement.append(SQL` AND p.name  ilike ${keyword_string}`);
       sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
       sqlStatement.append(SQL` OR fs.name  ilike ${keyword_string}`);
