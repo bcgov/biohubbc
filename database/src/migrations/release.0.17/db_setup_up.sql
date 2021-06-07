@@ -62,17 +62,21 @@ set client_min_messages=notice;
 
 -- setup biohub api schema
 create schema if not exists biohub_dapi_v1;
-set search_path = biohub_dapi_v1;
-\i project_dapi_views.sql
 
 -- setup api user
 create user biohub_api password 'flatpass';
+alter schema biohub_dapi_v1 owner to biohub_api;
 grant usage on schema biohub_dapi_v1 to biohub_api;
 grant usage on schema biohub to biohub_api;
 grant all on all tables in schema biohub_dapi_v1 to biohub_api;
 alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to biohub_api;
 --grant postgis_reader to biohub_api;
 alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topology;
+
+set search_path = biohub_dapi_v1;
+set role biohub_api;
+\i  ${project_dapi_views};
+set role postgres;
 
 set search_path = biohub;
 grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to biohub_api;

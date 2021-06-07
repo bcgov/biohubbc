@@ -39,4 +39,3 @@
  create or replace view user_identity_source as select * from biohub.user_identity_source;
  create or replace view webform_draft as select * from biohub.webform_draft;
  create or replace view wldtaxonomic_units as select * from biohub.wldtaxonomic_units;
-

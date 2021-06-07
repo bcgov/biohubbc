@@ -108,17 +108,21 @@ export async function up(knex: Knex): Promise<void> {
 
     -- setup biohub api schema
     create schema if not exists biohub_dapi_v1;
-    set search_path = biohub_dapi_v1;
-    ${project_dapi_views}
 
     -- setup api user
     create user ${DB_USER_API} password '${DB_USER_API_PASS}';
+    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
     grant usage on schema biohub_dapi_v1 to ${DB_USER_API};
     grant usage on schema biohub to ${DB_USER_API};
     grant all on all tables in schema biohub_dapi_v1 to ${DB_USER_API};
     alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
     --grant postgis_reader to ${DB_USER_API};
     alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
+
+    set search_path = biohub_dapi_v1;
+    set role biohub_api;
+    ${project_dapi_views};
+    set role postgres;
 
     set search_path = biohub;
     grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
