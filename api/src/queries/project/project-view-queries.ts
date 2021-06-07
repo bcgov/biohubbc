@@ -249,7 +249,7 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
 };
 
 /**
- * SQL query to get all projects.
+ * SQL query to get all projects (by filter field criteria if exists).
  *
  * @param {any} filterFields
  * @returns {SQLStatement} sql query object
@@ -258,48 +258,48 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
   defaultLog.debug({ label: 'getProjectListBySearchParamSQL', message: 'getProjectListBySearchParamSQL' });
 
   const sqlStatement = SQL`
-  SELECT
-    p.id,
-    p.name as project_name,
-    p.start_date,
-    p.end_date,
-    p.coordinator_agency_name,
-    array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
-    array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
-    array_agg(distinct(r.name)) as regions,
-    array_agg(distinct(fs.name)) as funding_agency_name,
-    array_agg(distinct(wu.english_name)) as species_names
-  FROM
-    project as p
-  LEFT OUTER JOIN
-    project_funding_source as pfs
-  ON
-    pfs.p_id = p.id
-  LEFT OUTER JOIN
-    investment_action_category as iac
-  ON
-    pfs.iac_id = iac.id
-  left outer JOIN
-    funding_source as fs
-  ON
-    iac.fs_id = fs.id
-  left outer JOIN
-    survey as s
-  ON
-    s.p_id = p.id
-  left outer JOIN
-    study_species as sp
-  ON
-    sp.s_id = s.id
-  left outer JOIN
-    wldtaxonomic_units as wu
-  ON
-    wu.id = sp.id
-  left outer JOIN
-    project_region as r
-  ON
-    r.p_id = p.id
-  where 1=1
+    SELECT
+      p.id,
+      p.name as project_name,
+      p.start_date,
+      p.end_date,
+      p.coordinator_agency_name,
+      array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
+      array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
+      array_agg(distinct(r.name)) as regions,
+      array_agg(distinct(fs.name)) as funding_agency_name,
+      array_agg(distinct(wu.english_name)) as species_names
+    FROM
+      project as p
+    LEFT OUTER JOIN
+      project_funding_source as pfs
+    ON
+      pfs.p_id = p.id
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    left outer JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
+    left outer JOIN
+      survey as s
+    ON
+      s.p_id = p.id
+    left outer JOIN
+      study_species as sp
+    ON
+      sp.s_id = s.id
+    left outer JOIN
+      wldtaxonomic_units as wu
+    ON
+      wu.id = sp.id
+    left outer JOIN
+      project_region as r
+    ON
+      r.p_id = p.id
+    where 1=1
   `;
 
   if (filterFields) {
@@ -342,10 +342,10 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
 
     if (filterFields.keyword) {
       const keyword_string = '%'.concat(filterFields.keyword).concat('%');
-      sqlStatement.append(SQL` AND p.name  ilike ${keyword_string}`);
+      sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
       sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
-      sqlStatement.append(SQL` OR fs.name  ilike ${keyword_string}`);
-      sqlStatement.append(SQL` OR s.name  ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR fs.name ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
     }
   }
 
