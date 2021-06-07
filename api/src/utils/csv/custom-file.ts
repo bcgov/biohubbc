@@ -73,7 +73,7 @@ export class CSVFile implements ICustomFile {
 
     this._headers = parseResult.data[0];
 
-    this._rows = parseResult.data.slice(1, parseResult.data.length - 1);
+    this._rows = parseResult.data.slice(1);
 
     this.csvValidation.setRowErrors(parseResult.errors);
 
