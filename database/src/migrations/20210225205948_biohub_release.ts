@@ -125,7 +125,7 @@ export async function up(knex: Knex): Promise<void> {
     set role postgres;
 
     set search_path = biohub;
-    grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
+    grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
   `);
 }
 
