@@ -6,8 +6,8 @@
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
--- 
--- TABLE: activity 
+--
+-- TABLE: activity
 --
 
 CREATE TABLE activity(
@@ -50,8 +50,8 @@ COMMENT ON COLUMN activity.revision_count IS 'Revision count used for concurrenc
 COMMENT ON TABLE activity IS 'A list of project activities.'
 ;
 
--- 
--- TABLE: administrative_activity 
+--
+-- TABLE: administrative_activity
 --
 
 CREATE TABLE administrative_activity(
@@ -104,8 +104,8 @@ COMMENT ON COLUMN administrative_activity.revision_count IS 'Revision count used
 COMMENT ON TABLE administrative_activity IS 'Administrative activity is a list of activities to be performed in order to maintain the business processes of the system.'
 ;
 
--- 
--- TABLE: administrative_activity_status_type 
+--
+-- TABLE: administrative_activity_status_type
 --
 
 CREATE TABLE administrative_activity_status_type(
@@ -148,8 +148,8 @@ COMMENT ON COLUMN administrative_activity_status_type.revision_count IS 'Revisio
 COMMENT ON TABLE administrative_activity_status_type IS 'Administrative activity status type describes a class of statuses that describe the state of an administrative activity record.'
 ;
 
--- 
--- TABLE: administrative_activity_type 
+--
+-- TABLE: administrative_activity_type
 --
 
 CREATE TABLE administrative_activity_type(
@@ -192,8 +192,8 @@ COMMENT ON COLUMN administrative_activity_type.revision_count IS 'Revision count
 COMMENT ON TABLE administrative_activity_type IS 'Administrative activity type describes a class of administrative activities that is performed in order to maintain the business processes of the application.'
 ;
 
--- 
--- TABLE: audit_log 
+--
+-- TABLE: audit_log
 --
 
 CREATE TABLE audit_log(
@@ -227,8 +227,8 @@ COMMENT ON COLUMN audit_log.after_value IS 'The JSON representation of the after
 COMMENT ON TABLE audit_log IS 'Holds record level audit log data for the entire database.'
 ;
 
--- 
--- TABLE: climate_change_initiative 
+--
+-- TABLE: climate_change_initiative
 --
 
 CREATE TABLE climate_change_initiative(
@@ -271,8 +271,8 @@ COMMENT ON COLUMN climate_change_initiative.revision_count IS 'Revision count us
 COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change initiative for the project.'
 ;
 
--- 
--- TABLE: first_nations 
+--
+-- TABLE: first_nations
 --
 
 CREATE TABLE first_nations(
@@ -315,8 +315,8 @@ COMMENT ON COLUMN first_nations.revision_count IS 'Revision count used for concu
 COMMENT ON TABLE first_nations IS 'A list of first nations.'
 ;
 
--- 
--- TABLE: funding_source 
+--
+-- TABLE: funding_source
 --
 
 CREATE TABLE funding_source(
@@ -362,8 +362,8 @@ COMMENT ON COLUMN funding_source.revision_count IS 'Revision count used for conc
 COMMENT ON TABLE funding_source IS 'Agency or Ministry funding the project.'
 ;
 
--- 
--- TABLE: investment_action_category 
+--
+-- TABLE: investment_action_category
 --
 
 CREATE TABLE investment_action_category(
@@ -409,8 +409,8 @@ COMMENT ON COLUMN investment_action_category.revision_count IS 'Revision count u
 COMMENT ON TABLE investment_action_category IS 'The investment or action categories associated with the funding source. Funding sources may have no investment or action category thus the default category of Not Applicable is used.'
 ;
 
--- 
--- TABLE: iucn_conservation_action_level_1_classification 
+--
+-- TABLE: iucn_conservation_action_level_1_classification
 --
 
 CREATE TABLE iucn_conservation_action_level_1_classification(
@@ -453,8 +453,8 @@ COMMENT ON COLUMN iucn_conservation_action_level_1_classification.revision_count
 COMMENT ON TABLE iucn_conservation_action_level_1_classification IS 'List of IUCN conservation level 1 action classifications.'
 ;
 
--- 
--- TABLE: iucn_conservation_action_level_2_subclassification 
+--
+-- TABLE: iucn_conservation_action_level_2_subclassification
 --
 
 CREATE TABLE iucn_conservation_action_level_2_subclassification(
@@ -500,8 +500,8 @@ COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.revision_co
 COMMENT ON TABLE iucn_conservation_action_level_2_subclassification IS 'List of IUCN conservation action level 2 subclassifications.'
 ;
 
--- 
--- TABLE: iucn_conservation_action_level_3_subclassification 
+--
+-- TABLE: iucn_conservation_action_level_3_subclassification
 --
 
 CREATE TABLE iucn_conservation_action_level_3_subclassification(
@@ -548,8 +548,8 @@ COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.revision_co
 COMMENT ON TABLE iucn_conservation_action_level_3_subclassification IS 'List of IUCN conservation action level 3 subclassifications.'
 ;
 
--- 
--- TABLE: management_action_type 
+--
+-- TABLE: management_action_type
 --
 
 CREATE TABLE management_action_type(
@@ -592,8 +592,8 @@ COMMENT ON COLUMN management_action_type.revision_count IS 'Revision count used 
 COMMENT ON TABLE management_action_type IS 'List of Management Actions.'
 ;
 
--- 
--- TABLE: permit 
+--
+-- TABLE: permit
 --
 
 CREATE TABLE permit(
@@ -653,7 +653,7 @@ COMMENT ON COLUMN permit.update_user IS 'The id of the user who updated the reco
 COMMENT ON COLUMN permit.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE permit IS 'Provides a record of scientific permits. Note that permits are first class objects in the data model and do not require an association to either a project or survey. Additionally:
-- Association to a survey or project implies that sampling was conducted related to the permit 
+- Association to a survey or project implies that sampling was conducted related to the permit
 - No association to a survey or project implies that sampling was not conducted related to the permit
 - Permits that are associated with a project should eventually be related to a survey
 - Permits can be associated with one or zero projects
@@ -663,8 +663,8 @@ COMMENT ON TABLE permit IS 'Provides a record of scientific permits. Note that p
 NOTE: there are conceptual problems with associating permits to projects early instead of at the survey level and these should be addressed in subsequent versions of the application.'
 ;
 
--- 
--- TABLE: project 
+--
+-- TABLE: project
 --
 
 CREATE TABLE project(
@@ -743,8 +743,8 @@ COMMENT ON COLUMN project.revision_count IS 'Revision count used for concurrency
 COMMENT ON TABLE project IS 'The top level organizational structure for project data collection. '
 ;
 
--- 
--- TABLE: project_activity 
+--
+-- TABLE: project_activity
 --
 
 CREATE TABLE project_activity(
@@ -781,8 +781,8 @@ COMMENT ON COLUMN project_activity.revision_count IS 'Revision count used for co
 COMMENT ON TABLE project_activity IS 'A associative entity that joins projects and project activity types.'
 ;
 
--- 
--- TABLE: project_attachment 
+--
+-- TABLE: project_attachment
 --
 
 CREATE TABLE project_attachment(
@@ -831,8 +831,8 @@ COMMENT ON COLUMN project_attachment.revision_count IS 'Revision count used for 
 COMMENT ON TABLE project_attachment IS 'A list of project attachments.'
 ;
 
--- 
--- TABLE: project_climate_initiative 
+--
+-- TABLE: project_climate_initiative
 --
 
 CREATE TABLE project_climate_initiative(
@@ -869,8 +869,8 @@ COMMENT ON COLUMN project_climate_initiative.revision_count IS 'Revision count u
 COMMENT ON TABLE project_climate_initiative IS 'A associative entity that joins that joins projects and climate change initiative types.'
 ;
 
--- 
--- TABLE: project_first_nation 
+--
+-- TABLE: project_first_nation
 --
 
 CREATE TABLE project_first_nation(
@@ -907,8 +907,8 @@ COMMENT ON COLUMN project_first_nation.revision_count IS 'Revision count used fo
 COMMENT ON TABLE project_first_nation IS 'A associative entity that joins projects and first nations.'
 ;
 
--- 
--- TABLE: project_funding_source 
+--
+-- TABLE: project_funding_source
 --
 
 CREATE TABLE project_funding_source(
@@ -957,8 +957,8 @@ COMMENT ON COLUMN project_funding_source.revision_count IS 'Revision count used 
 COMMENT ON TABLE project_funding_source IS 'A associative entity that joins projects and funding source details.'
 ;
 
--- 
--- TABLE: project_iucn_action_classification 
+--
+-- TABLE: project_iucn_action_classification
 --
 
 CREATE TABLE project_iucn_action_classification(
@@ -995,8 +995,8 @@ COMMENT ON COLUMN project_iucn_action_classification.revision_count IS 'Revision
 COMMENT ON TABLE project_iucn_action_classification IS 'An associative entity that links projects and IUCN classifications.'
 ;
 
--- 
--- TABLE: project_management_actions 
+--
+-- TABLE: project_management_actions
 --
 
 CREATE TABLE project_management_actions(
@@ -1033,8 +1033,8 @@ COMMENT ON COLUMN project_management_actions.revision_count IS 'Revision count u
 COMMENT ON TABLE project_management_actions IS 'A associative entity that joins projects and management action types.'
 ;
 
--- 
--- TABLE: project_participation 
+--
+-- TABLE: project_participation
 --
 
 CREATE TABLE project_participation(
@@ -1074,8 +1074,8 @@ COMMENT ON COLUMN project_participation.revision_count IS 'Revision count used f
 COMMENT ON TABLE project_participation IS 'A associative entity that joins projects, system users and project role types.'
 ;
 
--- 
--- TABLE: project_region 
+--
+-- TABLE: project_region
 --
 
 CREATE TABLE project_region(
@@ -1112,8 +1112,8 @@ COMMENT ON COLUMN project_region.revision_count IS 'Revision count used for conc
 COMMENT ON TABLE project_region IS 'The region of a project.'
 ;
 
--- 
--- TABLE: project_role 
+--
+-- TABLE: project_role
 --
 
 CREATE TABLE project_role(
@@ -1159,8 +1159,8 @@ COMMENT ON COLUMN project_role.revision_count IS 'Revision count used for concur
 COMMENT ON TABLE project_role IS 'Project participation roles.'
 ;
 
--- 
--- TABLE: project_type 
+--
+-- TABLE: project_type
 --
 
 CREATE TABLE project_type(
@@ -1203,8 +1203,8 @@ COMMENT ON COLUMN project_type.revision_count IS 'Revision count used for concur
 COMMENT ON TABLE project_type IS 'Broad classification for the project.'
 ;
 
--- 
--- TABLE: proprietor_type 
+--
+-- TABLE: proprietor_type
 --
 
 CREATE TABLE proprietor_type(
@@ -1250,8 +1250,8 @@ COMMENT ON COLUMN proprietor_type.revision_count IS 'Revision count used for con
 COMMENT ON TABLE proprietor_type IS 'Identifies the available reasons that subject data can be proprietary.'
 ;
 
--- 
--- TABLE: stakeholder_partnership 
+--
+-- TABLE: stakeholder_partnership
 --
 
 CREATE TABLE stakeholder_partnership(
@@ -1288,8 +1288,8 @@ COMMENT ON COLUMN stakeholder_partnership.revision_count IS 'Revision count used
 COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated with the project.'
 ;
 
--- 
--- TABLE: study_species 
+--
+-- TABLE: study_species
 --
 
 CREATE TABLE study_species(
@@ -1329,8 +1329,8 @@ COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concu
 COMMENT ON TABLE study_species IS 'The study species for the survey.'
 ;
 
--- 
--- TABLE: survey 
+--
+-- TABLE: survey
 --
 
 CREATE TABLE survey(
@@ -1395,8 +1395,8 @@ COMMENT ON COLUMN survey.revision_count IS 'Revision count used for concurrency 
 COMMENT ON TABLE survey IS 'The top level organizational structure for survey data collection. '
 ;
 
--- 
--- TABLE: survey_attachment 
+--
+-- TABLE: survey_attachment
 --
 
 CREATE TABLE survey_attachment(
@@ -1445,8 +1445,8 @@ COMMENT ON COLUMN survey_attachment.revision_count IS 'Revision count used for c
 COMMENT ON TABLE survey_attachment IS 'A list of survey attachments.'
 ;
 
--- 
--- TABLE: survey_funding_source 
+--
+-- TABLE: survey_funding_source
 --
 
 CREATE TABLE survey_funding_source(
@@ -1483,8 +1483,8 @@ COMMENT ON COLUMN survey_funding_source.revision_count IS 'Revision count used f
 COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surveys and funding source details.'
 ;
 
--- 
--- TABLE: survey_occurrence 
+--
+-- TABLE: survey_occurrence
 --
 
 CREATE TABLE survey_occurrence(
@@ -1533,8 +1533,8 @@ COMMENT ON COLUMN survey_occurrence.revision_count IS 'Revision count used for c
 COMMENT ON TABLE survey_occurrence IS 'Occurrence records associated with a survey.'
 ;
 
--- 
--- TABLE: survey_proprietor 
+--
+-- TABLE: survey_proprietor
 --
 
 CREATE TABLE survey_proprietor(
@@ -1583,8 +1583,8 @@ COMMENT ON COLUMN survey_proprietor.revision_count IS 'Revision count used for c
 COMMENT ON TABLE survey_proprietor IS 'Intersection table associating surveys to proprietary types and associated meta data.'
 ;
 
--- 
--- TABLE: survey_publish_history 
+--
+-- TABLE: survey_publish_history
 --
 
 CREATE TABLE survey_publish_history(
@@ -1624,8 +1624,8 @@ COMMENT ON COLUMN survey_publish_history.revision_count IS 'Revision count used 
 COMMENT ON TABLE survey_publish_history IS 'Provides a historical listing of published dates and pointers to raw data versions.'
 ;
 
--- 
--- TABLE: system_constant 
+--
+-- TABLE: system_constant
 --
 
 CREATE TABLE system_constant(
@@ -1668,8 +1668,8 @@ COMMENT ON COLUMN system_constant.revision_count IS 'Revision count used for con
 COMMENT ON TABLE system_constant IS 'A list of system constants necessary for system functionality.'
 ;
 
--- 
--- TABLE: system_role 
+--
+-- TABLE: system_role
 --
 
 CREATE TABLE system_role(
@@ -1715,8 +1715,8 @@ COMMENT ON COLUMN system_role.revision_count IS 'Revision count used for concurr
 COMMENT ON TABLE system_role IS 'Agency or Ministry funding the project.'
 ;
 
--- 
--- TABLE: system_user 
+--
+-- TABLE: system_user
 --
 
 CREATE TABLE system_user(
@@ -1759,8 +1759,8 @@ COMMENT ON COLUMN system_user.revision_count IS 'Revision count used for concurr
 COMMENT ON TABLE system_user IS 'Agency or Ministry funding the project.'
 ;
 
--- 
--- TABLE: system_user_role 
+--
+-- TABLE: system_user_role
 --
 
 CREATE TABLE system_user_role(
@@ -1797,8 +1797,8 @@ COMMENT ON COLUMN system_user_role.revision_count IS 'Revision count used for co
 COMMENT ON TABLE system_user_role IS 'A associative entity that joins system users and system role types.'
 ;
 
--- 
--- TABLE: user_identity_source 
+--
+-- TABLE: user_identity_source
 --
 
 CREATE TABLE user_identity_source(
@@ -1844,8 +1844,8 @@ COMMENT ON COLUMN user_identity_source.revision_count IS 'Revision count used fo
 COMMENT ON TABLE user_identity_source IS 'The source of the user identifier. This source is traditionally the system that authenticates the user. Example sources could include IDIR, BCEID and DATABASE.'
 ;
 
--- 
--- TABLE: webform_draft 
+--
+-- TABLE: webform_draft
 --
 
 CREATE TABLE webform_draft(
@@ -1885,8 +1885,8 @@ COMMENT ON COLUMN webform_draft.revision_count IS 'Revision count used for concu
 COMMENT ON TABLE webform_draft IS 'A persistent store for draft webform data. For example, if a user starts a project creation process and wants to save that information as a draft then the webform data can be persisted for subsequent reload into the project creation process.'
 ;
 
--- 
--- TABLE: wldtaxonomic_units 
+--
+-- TABLE: wldtaxonomic_units
 --
 
 CREATE TABLE wldtaxonomic_units(
@@ -1971,798 +1971,796 @@ COMMENT ON COLUMN wldtaxonomic_units.revision_count IS 'Revision count used for 
 COMMENT ON TABLE wldtaxonomic_units IS 'A table to mimic a view into SPI taxonomic data, specifically CWI_TXN.WLDTAXONOMIC_UNITS, for development purposes. This table should be replaced by live views of the data in production systems.'
 ;
 
--- 
--- INDEX: a_nuk1 
+--
+-- INDEX: a_nuk1
 --
 
 CREATE UNIQUE INDEX a_nuk1 ON activity(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: "Ref14877" 
+--
+-- INDEX: "Ref14877"
 --
 
 CREATE INDEX "Ref14877" ON administrative_activity(aat_id)
 ;
--- 
--- INDEX: "Ref7878" 
+--
+-- INDEX: "Ref7878"
 --
 
 CREATE INDEX "Ref7878" ON administrative_activity(reported_su_id)
 ;
--- 
--- INDEX: "Ref7879" 
+--
+-- INDEX: "Ref7879"
 --
 
 CREATE INDEX "Ref7879" ON administrative_activity(assigned_su_id)
 ;
--- 
--- INDEX: "Ref15280" 
+--
+-- INDEX: "Ref15280"
 --
 
 CREATE INDEX "Ref15280" ON administrative_activity(aast_id)
 ;
--- 
--- INDEX: aast_nuk1 
+--
+-- INDEX: aast_nuk1
 --
 
 CREATE UNIQUE INDEX aast_nuk1 ON administrative_activity_status_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: aat_nuk1 
+--
+-- INDEX: aat_nuk1
 --
 
 CREATE UNIQUE INDEX aat_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: cci_nuk1 
+--
+-- INDEX: cci_nuk1
 --
 
 CREATE UNIQUE INDEX cci_nuk1 ON climate_change_initiative(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: cci_nuk1_1 
+--
+-- INDEX: cci_nuk1_1
 --
 
 CREATE UNIQUE INDEX cci_nuk1_1 ON first_nations(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: fs_nuk2 
+--
+-- INDEX: fs_nuk2
 --
 
 CREATE UNIQUE INDEX fs_nuk2 ON funding_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: iac_nuk1 
+--
+-- INDEX: iac_nuk1
 --
 
 CREATE UNIQUE INDEX iac_nuk1 ON investment_action_category(fs_id, name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: "Ref7345" 
+--
+-- INDEX: "Ref7345"
 --
 
 CREATE INDEX "Ref7345" ON investment_action_category(fs_id)
 ;
--- 
--- INDEX: iucn_nuk1 
+--
+-- INDEX: iucn_nuk1
 --
 
 CREATE UNIQUE INDEX iucn_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: iucn2_nuk1 
+--
+-- INDEX: iucn2_nuk1
 --
 
 CREATE UNIQUE INDEX iucn2_nuk1 ON iucn_conservation_action_level_2_subclassification(name, record_end_date, iucn1_id)
 ;
--- 
--- INDEX: "Ref13773" 
+--
+-- INDEX: "Ref13773"
 --
 
 CREATE INDEX "Ref13773" ON iucn_conservation_action_level_2_subclassification(iucn1_id)
 ;
--- 
--- INDEX: iucn3_nuk1 
+--
+-- INDEX: iucn3_nuk1
 --
 
 CREATE UNIQUE INDEX iucn3_nuk1 ON iucn_conservation_action_level_3_subclassification(name, iucn2_id, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: "Ref13974" 
+--
+-- INDEX: "Ref13974"
 --
 
 CREATE INDEX "Ref13974" ON iucn_conservation_action_level_3_subclassification(iucn2_id)
 ;
--- 
--- INDEX: mat_nuk1 
+--
+-- INDEX: mat_nuk1
 --
 
 CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: prm_uk1 
+--
+-- INDEX: prm_uk1
 --
 
 CREATE UNIQUE INDEX prm_uk1 ON permit(number)
 ;
--- 
--- INDEX: "Ref4593" 
+--
+-- INDEX: "Ref4593"
 --
 
 CREATE INDEX "Ref4593" ON permit(p_id)
 ;
--- 
--- INDEX: "Ref15394" 
+--
+-- INDEX: "Ref15394"
 --
 
 CREATE INDEX "Ref15394" ON permit(s_id)
 ;
--- 
--- INDEX: "Ref12852" 
+--
+-- INDEX: "Ref12852"
 --
 
 CREATE INDEX "Ref12852" ON project(pt_id)
 ;
--- 
--- INDEX: pa_uk1 
+--
+-- INDEX: pa_uk1
 --
 
 CREATE UNIQUE INDEX pa_uk1 ON project_activity(p_id, a_id)
 ;
--- 
--- INDEX: "Ref4556" 
+--
+-- INDEX: "Ref4556"
 --
 
 CREATE INDEX "Ref4556" ON project_activity(p_id)
 ;
--- 
--- INDEX: "Ref13658" 
+--
+-- INDEX: "Ref13658"
 --
 
 CREATE INDEX "Ref13658" ON project_activity(a_id)
 ;
--- 
--- INDEX: pat_uk1 
+--
+-- INDEX: pat_uk1
 --
 
 CREATE UNIQUE INDEX pat_uk1 ON project_attachment(p_id, file_name)
 ;
--- 
--- INDEX: "Ref4568" 
+--
+-- INDEX: "Ref4568"
 --
 
 CREATE INDEX "Ref4568" ON project_attachment(p_id)
 ;
--- 
--- INDEX: pci_uk1 
+--
+-- INDEX: pci_uk1
 --
 
 CREATE UNIQUE INDEX pci_uk1 ON project_climate_initiative(cci_id, p_id)
 ;
--- 
--- INDEX: "Ref9536" 
+--
+-- INDEX: "Ref9536"
 --
 
 CREATE INDEX "Ref9536" ON project_climate_initiative(cci_id)
 ;
--- 
--- INDEX: "Ref4537" 
+--
+-- INDEX: "Ref4537"
 --
 
 CREATE INDEX "Ref4537" ON project_climate_initiative(p_id)
 ;
--- 
--- INDEX: pfn_uk1 
+--
+-- INDEX: pfn_uk1
 --
 
 CREATE UNIQUE INDEX pfn_uk1 ON project_first_nation(p_id, fn_id)
 ;
--- 
--- INDEX: "Ref4549" 
+--
+-- INDEX: "Ref4549"
 --
 
 CREATE INDEX "Ref4549" ON project_first_nation(p_id)
 ;
--- 
--- INDEX: "Ref12750" 
+--
+-- INDEX: "Ref12750"
 --
 
 CREATE INDEX "Ref12750" ON project_first_nation(fn_id)
 ;
--- 
--- INDEX: pfs_uk1 
+--
+-- INDEX: pfs_uk1
 --
 
 CREATE UNIQUE INDEX pfs_uk1 ON project_funding_source(p_id, funding_source_project_id, iac_id)
 ;
--- 
--- INDEX: "Ref4520" 
+--
+-- INDEX: "Ref4520"
 --
 
 CREATE INDEX "Ref4520" ON project_funding_source(p_id)
 ;
--- 
--- INDEX: "Ref8351" 
+--
+-- INDEX: "Ref8351"
 --
 
 CREATE INDEX "Ref8351" ON project_funding_source(iac_id)
 ;
--- 
--- INDEX: piucn_uk1 
+--
+-- INDEX: piucn_uk1
 --
 
 CREATE UNIQUE INDEX piucn_uk1 ON project_iucn_action_classification(p_id, iucn3_id)
 ;
--- 
--- INDEX: "Ref4567" 
+--
+-- INDEX: "Ref4567"
 --
 
 CREATE INDEX "Ref4567" ON project_iucn_action_classification(p_id)
 ;
--- 
--- INDEX: "Ref14075" 
+--
+-- INDEX: "Ref14075"
 --
 
 CREATE INDEX "Ref14075" ON project_iucn_action_classification(iucn3_id)
 ;
--- 
--- INDEX: pma_uk1 
+--
+-- INDEX: pma_uk1
 --
 
 CREATE UNIQUE INDEX pma_uk1 ON project_management_actions(mat_id, p_id)
 ;
--- 
--- INDEX: "Ref9732" 
+--
+-- INDEX: "Ref9732"
 --
 
 CREATE INDEX "Ref9732" ON project_management_actions(mat_id)
 ;
--- 
--- INDEX: "Ref4533" 
+--
+-- INDEX: "Ref4533"
 --
 
 CREATE INDEX "Ref4533" ON project_management_actions(p_id)
 ;
--- 
--- INDEX: pp_uk1 
+--
+-- INDEX: pp_uk1
 --
 
 CREATE UNIQUE INDEX pp_uk1 ON project_participation(p_id, su_id, pr_id)
 ;
--- 
--- INDEX: "Ref4528" 
+--
+-- INDEX: "Ref4528"
 --
 
 CREATE INDEX "Ref4528" ON project_participation(p_id)
 ;
--- 
--- INDEX: "Ref7829" 
+--
+-- INDEX: "Ref7829"
 --
 
 CREATE INDEX "Ref7829" ON project_participation(su_id)
 ;
--- 
--- INDEX: "Ref10034" 
+--
+-- INDEX: "Ref10034"
 --
 
 CREATE INDEX "Ref10034" ON project_participation(pr_id)
 ;
--- 
--- INDEX: prr_uk1 
+--
+-- INDEX: prr_uk1
 --
 
 CREATE UNIQUE INDEX prr_uk1 ON project_region(p_id, name)
 ;
--- 
--- INDEX: "Ref4524" 
+--
+-- INDEX: "Ref4524"
 --
 
 CREATE INDEX "Ref4524" ON project_region(p_id)
 ;
--- 
--- INDEX: pr_nuk1 
+--
+-- INDEX: pr_nuk1
 --
 
 CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: pt_nuk1 
+--
+-- INDEX: pt_nuk1
 --
 
 CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: prt_nuk1 
+--
+-- INDEX: prt_nuk1
 --
 
 CREATE UNIQUE INDEX prt_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: sp_uk1 
+--
+-- INDEX: sp_uk1
 --
 
 CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
 ;
--- 
--- INDEX: "Ref4539" 
+--
+-- INDEX: "Ref4539"
 --
 
 CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
 ;
--- 
--- INDEX: ss_uk2 
+--
+-- INDEX: ss_uk2
 --
 
 CREATE UNIQUE INDEX ss_uk2 ON study_species(s_id, wu_id)
 ;
--- 
--- INDEX: "Ref15390" 
+--
+-- INDEX: "Ref15390"
 --
 
 CREATE INDEX "Ref15390" ON study_species(s_id)
 ;
--- 
--- INDEX: "Ref16091" 
+--
+-- INDEX: "Ref16091"
 --
 
 CREATE INDEX "Ref16091" ON study_species(wu_id)
 ;
--- 
--- INDEX: "Ref4581" 
+--
+-- INDEX: "Ref4581"
 --
 
 CREATE INDEX "Ref4581" ON survey(p_id)
 ;
--- 
--- INDEX: "Ref15386" 
+--
+-- INDEX: "Ref15386"
 --
 
 CREATE INDEX "Ref15386" ON survey_attachment(s_id)
 ;
--- 
--- INDEX: sfs_nuk1 
+--
+-- INDEX: sfs_nuk1
 --
 
 CREATE UNIQUE INDEX sfs_nuk1 ON survey_funding_source(pfs_id, s_id)
 ;
--- 
--- INDEX: "Ref7487" 
+--
+-- INDEX: "Ref7487"
 --
 
 CREATE INDEX "Ref7487" ON survey_funding_source(pfs_id)
 ;
--- 
--- INDEX: "Ref15388" 
+--
+-- INDEX: "Ref15388"
 --
 
 CREATE INDEX "Ref15388" ON survey_funding_source(s_id)
 ;
--- 
--- INDEX: "Ref15396" 
+--
+-- INDEX: "Ref15396"
 --
 
 CREATE INDEX "Ref15396" ON survey_occurrence(s_id)
 ;
--- 
--- INDEX: "Ref15983" 
+--
+-- INDEX: "Ref15983"
 --
 
 CREATE INDEX "Ref15983" ON survey_proprietor(prt_id)
 ;
--- 
--- INDEX: "Ref15384" 
+--
+-- INDEX: "Ref15384"
 --
 
 CREATE INDEX "Ref15384" ON survey_proprietor(s_id)
 ;
--- 
--- INDEX: "Ref12785" 
+--
+-- INDEX: "Ref12785"
 --
 
 CREATE INDEX "Ref12785" ON survey_proprietor(fn_id)
 ;
--- 
--- INDEX: "Ref15395" 
+--
+-- INDEX: "Ref15395"
 --
 
 CREATE INDEX "Ref15395" ON survey_publish_history(s_id)
 ;
--- 
--- INDEX: sc_uk1 
+--
+-- INDEX: sc_uk1
 --
 
 CREATE UNIQUE INDEX sc_uk1 ON system_constant(constant_name)
 ;
--- 
--- INDEX: sr_nuk1 
+--
+-- INDEX: sr_nuk1
 --
 
 CREATE UNIQUE INDEX sr_nuk1 ON system_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: su_nuk1 
+--
+-- INDEX: su_nuk1
 --
 
 CREATE UNIQUE INDEX su_nuk1 ON system_user(user_identifier, uis_id, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: "Ref12041" 
+--
+-- INDEX: "Ref12041"
 --
 
 CREATE INDEX "Ref12041" ON system_user(uis_id)
 ;
--- 
--- INDEX: sur_uk1 
+--
+-- INDEX: sur_uk1
 --
 
 CREATE UNIQUE INDEX sur_uk1 ON system_user_role(su_id, sr_id)
 ;
--- 
--- INDEX: "Ref7821" 
+--
+-- INDEX: "Ref7821"
 --
 
 CREATE INDEX "Ref7821" ON system_user_role(su_id)
 ;
--- 
--- INDEX: "Ref7922" 
+--
+-- INDEX: "Ref7922"
 --
 
 CREATE INDEX "Ref7922" ON system_user_role(sr_id)
 ;
--- 
--- INDEX: uis_nuk1 
+--
+-- INDEX: uis_nuk1
 --
 
 CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
--- 
--- INDEX: "Ref7876" 
+--
+-- INDEX: "Ref7876"
 --
 
 CREATE INDEX "Ref7876" ON webform_draft(su_id)
 ;
--- 
--- TABLE: administrative_activity 
+--
+-- TABLE: administrative_activity
 --
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type77" 
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type77"
     FOREIGN KEY (aat_id)
     REFERENCES administrative_activity_type(id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user78" 
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user78"
     FOREIGN KEY (reported_su_id)
     REFERENCES system_user(id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user79" 
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user79"
     FOREIGN KEY (assigned_su_id)
     REFERENCES system_user(id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type80" 
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type80"
     FOREIGN KEY (aast_id)
     REFERENCES administrative_activity_status_type(id)
 ;
 
 
--- 
--- TABLE: investment_action_category 
+--
+-- TABLE: investment_action_category
 --
 
-ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source45" 
+ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source45"
     FOREIGN KEY (fs_id)
     REFERENCES funding_source(id)
 ;
 
 
--- 
--- TABLE: iucn_conservation_action_level_2_subclassification 
+--
+-- TABLE: iucn_conservation_action_level_2_subclassification
 --
 
-ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification73" 
+ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification73"
     FOREIGN KEY (iucn1_id)
     REFERENCES iucn_conservation_action_level_1_classification(id)
 ;
 
 
--- 
--- TABLE: iucn_conservation_action_level_3_subclassification 
+--
+-- TABLE: iucn_conservation_action_level_3_subclassification
 --
 
-ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification74" 
+ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification74"
     FOREIGN KEY (iucn2_id)
     REFERENCES iucn_conservation_action_level_2_subclassification(id)
 ;
 
 
--- 
--- TABLE: permit 
+--
+-- TABLE: permit
 --
 
-ALTER TABLE permit ADD CONSTRAINT "Refproject93" 
+ALTER TABLE permit ADD CONSTRAINT "Refproject93"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE permit ADD CONSTRAINT "Refsurvey94" 
+ALTER TABLE permit ADD CONSTRAINT "Refsurvey94"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
 
--- 
--- TABLE: project 
+--
+-- TABLE: project
 --
 
-ALTER TABLE project ADD CONSTRAINT "Refproject_type52" 
+ALTER TABLE project ADD CONSTRAINT "Refproject_type52"
     FOREIGN KEY (pt_id)
     REFERENCES project_type(id)
 ;
 
 
--- 
--- TABLE: project_activity 
+--
+-- TABLE: project_activity
 --
 
-ALTER TABLE project_activity ADD CONSTRAINT "Refproject56" 
+ALTER TABLE project_activity ADD CONSTRAINT "Refproject56"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE project_activity ADD CONSTRAINT "Refactivity58" 
+ALTER TABLE project_activity ADD CONSTRAINT "Refactivity58"
     FOREIGN KEY (a_id)
     REFERENCES activity(id)
 ;
 
 
--- 
--- TABLE: project_attachment 
+--
+-- TABLE: project_attachment
 --
 
-ALTER TABLE project_attachment ADD CONSTRAINT "Refproject68" 
+ALTER TABLE project_attachment ADD CONSTRAINT "Refproject68"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: project_climate_initiative 
+--
+-- TABLE: project_climate_initiative
 --
 
-ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refclimate_change_initiative36" 
+ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refclimate_change_initiative36"
     FOREIGN KEY (cci_id)
     REFERENCES climate_change_initiative(id)
 ;
 
-ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refproject37" 
+ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refproject37"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: project_first_nation 
+--
+-- TABLE: project_first_nation
 --
 
-ALTER TABLE project_first_nation ADD CONSTRAINT "Refproject49" 
+ALTER TABLE project_first_nation ADD CONSTRAINT "Refproject49"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50" 
+ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50"
     FOREIGN KEY (fn_id)
     REFERENCES first_nations(id)
 ;
 
 
--- 
--- TABLE: project_funding_source 
+--
+-- TABLE: project_funding_source
 --
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20" 
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51" 
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51"
     FOREIGN KEY (iac_id)
     REFERENCES investment_action_category(id)
 ;
 
 
--- 
--- TABLE: project_iucn_action_classification 
+--
+-- TABLE: project_iucn_action_classification
 --
 
-ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refproject67" 
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refproject67"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification75" 
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification75"
     FOREIGN KEY (iucn3_id)
     REFERENCES iucn_conservation_action_level_3_subclassification(id)
 ;
 
 
--- 
--- TABLE: project_management_actions 
+--
+-- TABLE: project_management_actions
 --
 
-ALTER TABLE project_management_actions ADD CONSTRAINT "Refmanagement_action_type32" 
+ALTER TABLE project_management_actions ADD CONSTRAINT "Refmanagement_action_type32"
     FOREIGN KEY (mat_id)
     REFERENCES management_action_type(id)
 ;
 
-ALTER TABLE project_management_actions ADD CONSTRAINT "Refproject33" 
+ALTER TABLE project_management_actions ADD CONSTRAINT "Refproject33"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: project_participation 
+--
+-- TABLE: project_participation
 --
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refproject28" 
+ALTER TABLE project_participation ADD CONSTRAINT "Refproject28"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user29" 
+ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user29"
     FOREIGN KEY (su_id)
     REFERENCES system_user(id)
 ;
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34" 
+ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34"
     FOREIGN KEY (pr_id)
     REFERENCES project_role(id)
 ;
 
 
--- 
--- TABLE: project_region 
+--
+-- TABLE: project_region
 --
 
-ALTER TABLE project_region ADD CONSTRAINT "Refproject24" 
+ALTER TABLE project_region ADD CONSTRAINT "Refproject24"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: stakeholder_partnership 
+--
+-- TABLE: stakeholder_partnership
 --
 
-ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39" 
+ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: study_species 
+--
+-- TABLE: study_species
 --
 
-ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90" 
+ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
-ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91" 
+ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91"
     FOREIGN KEY (wu_id)
     REFERENCES wldtaxonomic_units(id)
 ;
 
 
--- 
--- TABLE: survey 
+--
+-- TABLE: survey
 --
 
-ALTER TABLE survey ADD CONSTRAINT "Refproject81" 
+ALTER TABLE survey ADD CONSTRAINT "Refproject81"
     FOREIGN KEY (p_id)
     REFERENCES project(id)
 ;
 
 
--- 
--- TABLE: survey_attachment 
+--
+-- TABLE: survey_attachment
 --
 
-ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey86" 
+ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey86"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
 
--- 
--- TABLE: survey_funding_source 
+--
+-- TABLE: survey_funding_source
 --
 
-ALTER TABLE survey_funding_source ADD CONSTRAINT "Refproject_funding_source87" 
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refproject_funding_source87"
     FOREIGN KEY (pfs_id)
     REFERENCES project_funding_source(id)
 ;
 
-ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88" 
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
 
--- 
--- TABLE: survey_occurrence 
+--
+-- TABLE: survey_occurrence
 --
 
-ALTER TABLE survey_occurrence ADD CONSTRAINT "Refsurvey96" 
+ALTER TABLE survey_occurrence ADD CONSTRAINT "Refsurvey96"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
 
--- 
--- TABLE: survey_proprietor 
+--
+-- TABLE: survey_proprietor
 --
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Refproprietor_type83" 
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refproprietor_type83"
     FOREIGN KEY (prt_id)
     REFERENCES proprietor_type(id)
 ;
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey84" 
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey84"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85" 
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85"
     FOREIGN KEY (fn_id)
     REFERENCES first_nations(id)
 ;
 
 
--- 
--- TABLE: survey_publish_history 
+--
+-- TABLE: survey_publish_history
 --
 
-ALTER TABLE survey_publish_history ADD CONSTRAINT "Refsurvey95" 
+ALTER TABLE survey_publish_history ADD CONSTRAINT "Refsurvey95"
     FOREIGN KEY (s_id)
     REFERENCES survey(id)
 ;
 
 
--- 
--- TABLE: system_user 
+--
+-- TABLE: system_user
 --
 
-ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source41" 
+ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source41"
     FOREIGN KEY (uis_id)
     REFERENCES user_identity_source(id)
 ;
 
 
--- 
--- TABLE: system_user_role 
+--
+-- TABLE: system_user_role
 --
 
-ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user21" 
+ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user21"
     FOREIGN KEY (su_id)
     REFERENCES system_user(id)
 ;
 
-ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role22" 
+ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role22"
     FOREIGN KEY (sr_id)
     REFERENCES system_role(id)
 ;
 
 
--- 
--- TABLE: webform_draft 
+--
+-- TABLE: webform_draft
 --
 
-ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user76" 
+ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user76"
     FOREIGN KEY (su_id)
     REFERENCES system_user(id)
 ;
-
-

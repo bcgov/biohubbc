@@ -519,7 +519,7 @@ jobs:
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }} && always()
     needs: # make sure the notification is sent AFTER the jobs you want included have completed
       - deployDatabase
       - deployDatabaseSetup
@@ -531,3 +531,6 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: '${{ github.workflow }}: {{STATUS}}'
+          username: ${{ github.actor }}
+          description: '${{ github.ref }} was deployed in ${{ github.base_ref }}!'
