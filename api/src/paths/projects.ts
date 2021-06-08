@@ -31,22 +31,28 @@ POST.apiDoc = {
               nullable: true
             },
             permit_number: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             project_type: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             start_date: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             end_date: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             keyword: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             project_name: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             regions: {
               type: 'array',
@@ -55,15 +61,25 @@ POST.apiDoc = {
               }
             },
             agency_id: {
-              type: 'number'
+              anyOf: [
+                {
+                  type: 'number'
+                },
+                {
+                  type: 'string',
+                  maxLength: 0
+                }
+              ],
+              nullable: true
             },
             agency_project_id: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             species: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'number'
               }
             }
           }

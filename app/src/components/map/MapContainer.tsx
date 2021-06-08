@@ -11,7 +11,9 @@ import {
   useMap
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
+import { SearchFeaturePopup } from './SearchFeaturePopup';
 import WFSFeatureGroup from './WFSFeatureGroup';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface IMapBoundsProps {
   bounds?: any[];
@@ -37,6 +39,7 @@ export interface IMapContainerProps {
   zoom?: number;
   hideDrawControls?: boolean;
   hideOverlayLayers?: boolean;
+  popupData?: any[];
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -100,7 +103,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       </FeatureGroup>
 
       {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
-        <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo} />
+        <GeoJSON key={uuidv4()} data={nonEditableGeo}>
+          {mapId === 'search_boundary_map' && (
+            <SearchFeaturePopup popupData={props.popupData} feature={nonEditableGeo} />
+          )}
+        </GeoJSON>
       ))}
 
       <LayersControl position="bottomright">
