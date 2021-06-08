@@ -281,6 +281,8 @@ export const uploadDWCArchiveOccurrences = async (surveyId: number, file: DWCArc
   const eventRows = file.event?.getRows();
 
   const eventEventIdHeader = eventHeaders?.indexOf('eventID') as number;
+  const eventGeodeticDatumHeader = eventHeaders?.indexOf('geodeticDatum') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
 
   const occurrenceHeaders = file.occurrence?.getHeaders();
   const occurrenceRows = file.occurrence?.getRows();
@@ -288,8 +290,6 @@ export const uploadDWCArchiveOccurrences = async (surveyId: number, file: DWCArc
   const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
   const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
   const lifestageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
-  const geodeticDatumHeader = occurrenceHeaders?.indexOf('geodeticDatum') as number;
-  const verbatimCoordinatesHeader = occurrenceHeaders?.indexOf('verbatimCoordinates') as number;
 
   return occurrenceRows?.map(async (row) => {
     const occurrenceEventId = row[occurrenceEventIdHeader];
@@ -303,8 +303,8 @@ export const uploadDWCArchiveOccurrences = async (surveyId: number, file: DWCArc
 
     eventRows?.forEach((row) => {
       if (row[eventEventIdHeader] === occurrenceEventId) {
-        geodeticDatum = row[geodeticDatumHeader];
-        verbatimCoordinates = row[verbatimCoordinatesHeader];
+        geodeticDatum = row[eventGeodeticDatumHeader];
+        verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
       }
     });
 

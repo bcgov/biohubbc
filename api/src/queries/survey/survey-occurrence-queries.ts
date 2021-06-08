@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostSurveyOccurrence } from '../../models/survey-occurrence';
 import { getLogger } from '../../utils/logger';
-// import { generateGeometryFromUTM } from '../generate-geometry-collection';
+import { parseUTMString } from '../generate-geometry-collection';
 
 const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 
@@ -21,31 +21,34 @@ export const postSurveyOccurrenceSQL = (surveyId: number, occurrence: PostSurvey
       s_id,
       associatedtaxa,
       lifestage,
-      data
+      data,
+      geography
     ) VALUES (
       ${surveyId},
       ${occurrence.associatedtaxa},
       ${occurrence.lifestage},
       ${occurrence.data}
-    );
   `;
 
-  // TODO add UTM
-  // const geometryCollectionSQL = generateGeometryFromUTM(occurrence.geodeticDatum, occurrence.verbatimCoordinates);
+  const utm = parseUTMString(occurrence.verbatimCoordinates);
 
-  // sqlStatement.append(SQL`
-  //     ,public.geography(
-  //       public.ST_Force2D(
-  //         public.ST_SetSRID(
-  //   `);
+  if (utm) {
+    sqlStatement.append(SQL`
+      ,public.ST_Transform(
+        public.ST_SetSRID(
+          public.ST_MakePoint(${utm.easting}, ${utm.northing}),
+          ${utm.zone_srid}
+        ),
+        4326
+      )
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      ,null
+    `);
+  }
 
-  // sqlStatement.append(geometryCollectionSQL);
-
-  // sqlStatement.append(SQL`
-  //     , 4326)))
-  //   `);
-
-  // sqlStatement.append(');');
+  sqlStatement.append(');');
 
   defaultLog.debug({
     label: 'postSurveyOccurrenceSQL',
