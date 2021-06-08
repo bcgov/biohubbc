@@ -51,6 +51,7 @@ set client_min_messages=warning;
 \i populate_administrative_activity_status_type.sql
 \i populate_proprietor_type.sql
 \i populate_wldtaxonomic_units.sql
+-- \i secured_objects.sql
 set client_min_messages=notice;
 \set QUIET off
 

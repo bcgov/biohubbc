@@ -24,6 +24,7 @@ export async function up(knex: Knex): Promise<void> {
   const tr_audit_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_audit_trigger.sql'));
   const project_audit_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_audit_triggers.sql'));
   const api_get_context_user_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_user_id.sql'));
+  const api_get_context_system_user_role_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_system_user_role_id.sql'));
   const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
   const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
   const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
@@ -64,13 +65,38 @@ export async function up(knex: Knex): Promise<void> {
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
 
+  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
+  const security_updates = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'security_updates.sql'));
+
   await knex.raw(`
     -- set up spatial extensions
     ${create_spatial_extensions}
 
     -- set up biohub schema
     create schema if not exists biohub;
+    GRANT ALL ON SCHEMA biohub TO postgres;
     set search_path = biohub, public;
+
+    -- setup biohub api schema
+    create schema if not exists biohub_dapi_v1;
+
+    -- setup api user
+    create user ${DB_USER_API} password '${DB_USER_API_PASS}';
+    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
+
+    -- Grant rights on biohub_dapi_v1 to biohub_api user
+    grant all on schema biohub_dapi_v1 to ${DB_USER_API};
+    grant all on schema biohub_dapi_v1 to postgres;
+    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
+    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to postgres;
+
+    -- Biohub grants
+    GRANT USAGE ON SCHEMA biohub TO ${DB_USER_API};
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO ${DB_USER_API};
+
+    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
+
+    --grant postgis_reader to ${DB_USER_API};
 
     ${biohub_ddl}
     ${populate_user_identity_source}
@@ -78,6 +104,7 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_audit_trigger}
     ${project_audit_triggers}
     ${api_get_context_user_id}
+    ${api_get_context_system_user_role_id}
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
@@ -103,25 +130,16 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_administrative_activity_type}
     ${populate_administrative_activity_status_type}
     ${populate_proprietor_type}
+    ${security_updates}
+    ${secured_objects}
+
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
 
-    -- setup biohub api schema
-    create schema if not exists biohub_dapi_v1;
-
-    -- setup api user
-    create user ${DB_USER_API} password '${DB_USER_API_PASS}';
-    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
-    grant usage on schema biohub_dapi_v1 to ${DB_USER_API};
-    grant usage on schema biohub to ${DB_USER_API};
-    grant all on all tables in schema biohub_dapi_v1 to ${DB_USER_API};
-    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
-    --grant postgis_reader to ${DB_USER_API};
-    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
-
+    -- create the views
     set search_path = biohub_dapi_v1;
     set role biohub_api;
-    ${project_dapi_views};
+    ${project_dapi_views}
     set role postgres;
 
     set search_path = biohub;
