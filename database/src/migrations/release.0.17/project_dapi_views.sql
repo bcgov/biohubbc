@@ -24,6 +24,8 @@
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
  create or replace view proprietor_type as select * from biohub.proprietor_type;
+ create or replace view security_rules as select * from biohub.security_rules;
+ create or replace view security_table as select * from biohub.security_table;
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
  create or replace view study_species as select * from biohub.study_species;
  create or replace view survey as select * from biohub.survey;
