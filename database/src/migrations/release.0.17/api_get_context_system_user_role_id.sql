@@ -1,0 +1,30 @@
+-- api_get_context_system_user_role_id.sql
+
+CREATE OR REPLACE FUNCTION biohub.api_get_context_system_user_role_id(
+	)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+AS $$
+-- *******************************************************************
+-- Procedure: api_get_context_system_user_role_id
+-- Purpose: returns the context system user role id from the invokers
+-- temp table
+--
+-- MODIFICATION HISTORY
+-- Person           Date        Comments
+-- ---------------- ----------- --------------------------------------
+-- roland.stens@gov.bc.ca
+--                  2021-06-03  initial release
+-- *******************************************************************
+declare
+  v_system_role_id system_user_role.sr_id%type;
+  old_row json := null;
+  new_row json := null;
+begin
+  select value::integer into v_system_role_id from biohub_context_temp where tag = 'system_user_role_id';
+
+  return v_system_role_id;
+end;
+$$;
