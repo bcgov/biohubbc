@@ -24,7 +24,9 @@ export async function up(knex: Knex): Promise<void> {
   const tr_audit_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_audit_trigger.sql'));
   const project_audit_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_audit_triggers.sql'));
   const api_get_context_user_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_user_id.sql'));
-  const api_get_context_system_user_role_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_system_user_role_id.sql'));
+  const api_get_context_system_user_role_id = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'api_get_context_system_user_role_id.sql')
+  );
   const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
   const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
   const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
