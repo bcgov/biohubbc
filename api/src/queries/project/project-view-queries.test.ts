@@ -28,8 +28,32 @@ describe('getProjectSQL', () => {
 });
 
 describe('getProjectListSQL', () => {
-  it('returns a SQLStatement', () => {
+  it('returns a SQLStatement when no filter fields provided', () => {
     const response = getProjectListSQL();
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only coordinator agency)', () => {
+    const response = getProjectListSQL({ coordinator_agency: 'agency' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only start date)', () => {
+    const response = getProjectListSQL({ start_date: '2020/04/04' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only end date)', () => {
+    const response = getProjectListSQL({ end_date: '2020/04/04' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (both start and end dates)', () => {
+    const response = getProjectListSQL({ start_date: '2020/04/04', end_date: '2020/05/05' });
 
     expect(response).to.not.be.null;
   });

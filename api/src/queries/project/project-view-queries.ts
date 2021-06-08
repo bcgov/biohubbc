@@ -137,11 +137,11 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       sqlStatement.append(SQL` AND fs.id = ${filterFields.agency_id}`);
     }
 
-    if (filterFields.regions.length) {
+    if (filterFields.regions && filterFields.regions.length) {
       sqlStatement.append(SQL` AND r.name =${filterFields.regions[0]}`);
     }
 
-    if (filterFields.species.length) {
+    if (filterFields.species && filterFields.species.length) {
       sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
     }
 
