@@ -41,6 +41,30 @@ POST.apiDoc = {
             },
             end_date: {
               type: 'string'
+            },
+            keyword: {
+              type: 'string'
+            },
+            project_name: {
+              type: 'string'
+            },
+            regions: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            agency_id: {
+              type: 'number'
+            },
+            agency_project_id: {
+              type: 'string'
+            },
+            species: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
             }
           }
         }
