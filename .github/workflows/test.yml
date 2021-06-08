@@ -41,7 +41,7 @@ jobs:
              npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@1.5.1
+        uses: codecov/codecov-action@v1.5.1
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
@@ -67,7 +67,7 @@ jobs:
              npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@1.5.1
+        uses: codecov/codecov-action@v1.5.1
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
