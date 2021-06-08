@@ -60,10 +60,11 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 /**
  * SQL query to get all projects.
  *
+ * @param {any} filterFields
  * @returns {SQLStatement} sql query object
  */
-export const getProjectListSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectListSQL', message: 'getProjectListSQL' });
+export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectListSQL', message: 'params', filterFields });
 
   const sqlStatement = SQL`
     SELECT
@@ -80,6 +81,80 @@ export const getProjectListSQL = (): SQLStatement | null => {
       on p.pt_id = pt.id
     left outer join permit as pp
       on p.id = pp.p_id
+    left outer join project_funding_source as pfs
+      on pfs.p_id = p.id
+    left outer join investment_action_category as iac
+      on pfs.iac_id = iac.id
+    left outer join funding_source as fs
+      on iac.fs_id = fs.id
+    left outer join survey as s
+      on s.p_id = p.id
+    left outer join study_species as sp
+      on sp.s_id = s.id
+    left outer join wldtaxonomic_units as wu
+      on wu.id = sp.id
+    left outer join project_region as r
+      on r.p_id = p.id
+    where 1 = 1
+  `;
+
+  if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {
+    if (filterFields.coordinator_agency) {
+      sqlStatement.append(SQL` AND p.coordinator_agency_name = ${filterFields.coordinator_agency}`);
+    }
+
+    if (filterFields.start_date && !filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.start_date >= ${filterFields.start_date}`);
+    }
+
+    if (!filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(SQL` AND p.end_date <= ${filterFields.end_date}`);
+    }
+
+    if (filterFields.start_date && filterFields.end_date) {
+      sqlStatement.append(
+        SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
+      );
+    }
+
+    if (filterFields.permit_number) {
+      sqlStatement.append(SQL` AND pp.number = ${filterFields.permit_number}`);
+    }
+
+    if (filterFields.project_type) {
+      sqlStatement.append(SQL` AND pt.name = ${filterFields.project_type}`);
+    }
+
+    if (filterFields.project_name) {
+      sqlStatement.append(SQL` AND p.name = ${filterFields.project_name}`);
+    }
+
+    if (filterFields.agency_project_id) {
+      sqlStatement.append(SQL` AND pfs.funding_source_project_id = ${filterFields.agency_project_id}`);
+    }
+
+    if (filterFields.agency_id) {
+      sqlStatement.append(SQL` AND fs.id = ${filterFields.agency_id}`);
+    }
+
+    if (filterFields.regions.length) {
+      sqlStatement.append(SQL` AND r.name =${filterFields.regions[0]}`);
+    }
+
+    if (filterFields.species.length) {
+      sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
+    }
+
+    if (filterFields.keyword) {
+      const keyword_string = '%'.concat(filterFields.keyword).concat('%');
+      sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR p.coordinator_agency_name ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR fs.name ilike ${keyword_string}`);
+      sqlStatement.append(SQL` OR s.name ilike ${keyword_string}`);
+    }
+  }
+
+  sqlStatement.append(SQL`
     group by
       p.id,
       p.name,
@@ -87,7 +162,7 @@ export const getProjectListSQL = (): SQLStatement | null => {
       p.end_date,
       p.coordinator_agency_name,
       pt.name;
-  `;
+  `);
 
   defaultLog.debug({
     label: 'getProjectListSQL',

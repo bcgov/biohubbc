@@ -10,16 +10,43 @@ import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/projects');
 
-export const GET: Operation = [logRequest('paths/projects', 'GET'), getProjectList()];
+export const POST: Operation = [logRequest('paths/projects', 'POST'), getProjectList()];
 
-GET.apiDoc = {
-  description: 'Get all Projects.',
-  tags: ['project'],
+POST.apiDoc = {
+  description: 'Gets a list of projects based on search parameters if passed in.',
+  tags: ['projects'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
+  requestBody: {
+    description: 'Project list search filter criteria object.',
+    content: {
+      'application/json': {
+        schema: {
+          properties: {
+            coordinator_agency: {
+              type: 'string',
+              nullable: true
+            },
+            permit_number: {
+              type: 'string'
+            },
+            project_type: {
+              type: 'string'
+            },
+            start_date: {
+              type: 'string'
+            },
+            end_date: {
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
+  },
   responses: {
     200: {
       description: 'Project response object.',
@@ -53,7 +80,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projects.
+ * Get all projects (potentially based on filter criteria).
  *
  * @returns {RequestHandler}
  */
@@ -61,8 +88,10 @@ function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    const filterFields = req.body || null;
+
     try {
-      const getProjectListSQLStatement = getProjectListSQL();
+      const getProjectListSQLStatement = getProjectListSQL(filterFields);
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
