@@ -89,6 +89,9 @@ function getProjectListBySearchParam(): RequestHandler {
         getProjectListBySearchParamSQLStatement.values
       );
 
+      console.log('HEYYYYYYYYYYYYYYYYYY');
+      console.log(response);
+
       await connection.commit();
 
       let rows: any[] = [];
@@ -133,7 +136,8 @@ export function _extractProjectsBySearchParam(rows: any[]): any[] {
       coordinator_agency_name: row.coordinator_agency_name,
       surveys: row.surveys,
       start_date: row.start_date,
-      end_date: row.end_date
+      end_date: row.end_date,
+      project_geometry: row.project_geometry && [JSON.parse(row.project_geometry)]
     };
 
     projects.push(project);

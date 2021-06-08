@@ -28,6 +28,8 @@ import { IGetSearchResultsListResponse } from 'interfaces/useSearchApi.interface
 import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import Dialog from '@material-ui/core/Dialog';
+import Header from 'components/layout/Header';
 
 const useStyles = makeStyles({
   actionButton: {
@@ -47,11 +49,10 @@ const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
 
-  const [showSearchFields, setShowSearchFields] = useState(true);
   const [searchResults, setSearchResults] = useState<IGetSearchResultsListResponse[]>([]);
-  const [surveyOccurrences, setSurveyOccurrences] = useState<Feature[]>([]);
-  const [bounds, setBounds] = useState<any[]>([]);
-  const [selectedSurveyName, setSelectedSurveyName] = useState('');
+  const [projectGeometries, setProjectGeometries] = useState<Feature[]>([]);
+  // const [bounds, setBounds] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
@@ -97,8 +98,6 @@ const SearchPage: React.FC = () => {
 
     setSearchResults([]);
     await getSearchResults(formikRef.current.values);
-
-    setShowSearchFields(true);
   };
 
   const handleSubmit = async () => {
@@ -122,11 +121,19 @@ const SearchPage: React.FC = () => {
         return;
       }
 
-      setShowSearchFields(false);
+      setShowSearchResults(true);
 
       setSearchResults(() => {
         return response;
       });
+
+      let projectGeos: any[] = [];
+
+      response.forEach((project: any) => {
+        projectGeos.push(generateValidGeometryCollection(project.project_geometry).geometryCollection);
+      });
+
+      setProjectGeometries(projectGeos);
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
@@ -137,105 +144,60 @@ const SearchPage: React.FC = () => {
     }
   };
 
-  const getSurveyOccurrenceData = async (surveyId: number, surveyName: string) => {
-    setSurveyOccurrences([]);
-    setSelectedSurveyName(surveyName);
-
-    try {
-      const response = await biohubApi.search.getSurveyOccurrences(surveyId);
-
-      if (!response || !response.geometry || !response.geometry.length) {
-        return;
-      }
-
-      const { geometryCollection, bounds } = generateValidGeometryCollection(response.geometry);
-
-      setSurveyOccurrences(geometryCollection);
-      setBounds(bounds);
-    } catch (error) {
-      const apiError = error as APIError;
-      showFilterErrorDialog({
-        dialogTitle: 'Error Getting Survey Occurrences Data',
-        dialogError: apiError?.message,
-        dialogErrorDetails: apiError?.errors
-      });
-    }
-  };
-
   const getSearchResultsTableData = () => {
-    const hasSearchResults = searchResults?.length > 0;
-
-    console.log(searchResults);
-
-    if (!hasSearchResults) {
-      return (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow></TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>No Search Results Found</TableCell>
+    return (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Project Name</TableCell>
+              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Regions</TableCell>
+              <TableCell>Funding Agency Name</TableCell>
+              <TableCell>Funding Agency Project ID</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
+              <TableCell>Surveys</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody data-testid="observation-table">
+            {searchResults?.map((row: any) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.project_name}</TableCell>
+                <TableCell>{row.coordinator_agency_name}</TableCell>
+                <TableCell>{row.regions.join(', ')}</TableCell>
+                <TableCell>{row.funding_agency_name.join(', ')}</TableCell>
+                <TableCell>{row.funding_agency_project_id.join(', ')}</TableCell>
+                <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
+                <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                <TableCell>
+                  {row.surveys.map((survey: any, index: number) => (
+                    <Fragment key={index}>
+                      {survey && (
+                        <Link
+                          underline="always"
+                          component="button"
+                          variant="body2"
+                          onClick={() => {
+                            // getSurveyOccurrenceData(
+                            //   parseInt(survey.substring(survey.indexOf(':') + 1, survey.lastIndexOf(','))),
+                            //   survey.split(':').pop().split(',')[0]
+                            // );
+                            console.log('je')
+                          }}>
+                          {survey.split(':').pop().split(',')[0]}
+                        </Link>
+                      )}
+                      {index !== row.surveys.length - 1 && <br />}
+                    </Fragment>
+                  ))}
+                </TableCell>
               </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    } else {
-      return (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Project Name</TableCell>
-                <TableCell>Coordinator Agency</TableCell>
-                <TableCell>Regions</TableCell>
-                <TableCell>Funding Agency Name</TableCell>
-                <TableCell>Funding Agency Project ID</TableCell>
-                <TableCell>Start Date</TableCell>
-                <TableCell>End Date</TableCell>
-                <TableCell>Surveys</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody data-testid="observation-table">
-              {searchResults?.map((row: any) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.project_name}</TableCell>
-                  <TableCell>{row.coordinator_agency_name}</TableCell>
-                  <TableCell>{row.regions.join(', ')}</TableCell>
-                  <TableCell>{row.funding_agency_name.join(', ')}</TableCell>
-                  <TableCell>{row.funding_agency_project_id.join(', ')}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
-                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
-                  <TableCell>
-                    {row.surveys.map((survey: any, index: number) => (
-                      <Fragment key={index}>
-                        {survey && (
-                          <Link
-                            underline="always"
-                            component="button"
-                            variant="body2"
-                            onClick={() => {
-                              getSurveyOccurrenceData(
-                                parseInt(survey.substring(survey.indexOf(':') + 1, survey.lastIndexOf(','))),
-                                survey.split(':').pop().split(',')[0]
-                              );
-                            }}>
-                            {survey.split(':').pop().split(',')[0]}
-                          </Link>
-                        )}
-                        {index !== row.surveys.length - 1 && <br />}
-                      </Fragment>
-                    ))}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    }
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
   };
 
   /**
@@ -248,7 +210,7 @@ const SearchPage: React.FC = () => {
           <Typography variant="h1">Search</Typography>
         </Box>
         <Box>
-          {codes && showSearchFields && (
+          {codes && (
             <Box mb={4}>
               <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
                 <SearchAdvancedFilters
@@ -275,15 +237,6 @@ const SearchPage: React.FC = () => {
                 />
               </Formik>
               <Box mt={2} display="flex" justifyContent="flex-end">
-                {searchResults?.length > 0 && (
-                  <Button
-                    className={classes.actionButton}
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => setShowSearchFields(false)}>
-                    Hide Advanced Filters
-                  </Button>
-                )}
                 <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
                   Reset
                 </Button>
@@ -298,47 +251,48 @@ const SearchPage: React.FC = () => {
               </Box>
             </Box>
           )}
-          {!showSearchFields && (
-            <Box mb={4}>
-              <Box mt={2} display="flex" justifyContent="flex-end">
+        </Box>
+        {searchResults.length === 0 && (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow></TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell>No Search Results Found</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+        <Dialog open={showSearchResults} fullScreen={true}>
+          <Header />
+          <Box my={4}>
+            <Container maxWidth="xl">
+              <Box mb={5} display="flex" justifyContent="space-between">
+                <Typography variant="h1">Search Results</Typography>
                 <Button
                   className={classes.actionButton}
                   variant="outlined"
                   color="primary"
-                  onClick={() => setShowSearchFields(true)}>
-                  Show Advanced Filters
+                  onClick={() => setShowSearchResults(false)}>
+                  Return to Search
                 </Button>
               </Box>
-            </Box>
-          )}
-        </Box>
-        {getSearchResultsTableData()}
-        {selectedSurveyName && (
-          <>
-            <Box mt={6}>
-              <Typography variant="h2">Survey Occurrences</Typography>
-            </Box>
-            <Box mt={2}>
-              <Typography>{selectedSurveyName}</Typography>
-            </Box>
-            {surveyOccurrences.length > 0 && (
+              {getSearchResultsTableData()}
               <Box mt={4} height={500}>
                 <MapContainer
-                  mapId="survey_occurrences_map"
+                  mapId="search_results_map"
                   hideDrawControls={true}
                   hideOverlayLayers={true}
-                  nonEditableGeometries={surveyOccurrences}
-                  bounds={bounds}
+                  nonEditableGeometries={[...projectGeometries]}
+                  // bounds={bounds}
                 />
               </Box>
-            )}
-            {surveyOccurrences.length === 0 && (
-              <Box mt={4} height={500}>
-                <Typography>No Occurrence Data</Typography>
-              </Box>
-            )}
-          </>
-        )}
+            </Container>
+          </Box>
+        </Dialog>
       </Container>
     </Box>
   );

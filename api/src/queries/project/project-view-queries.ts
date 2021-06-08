@@ -263,6 +263,7 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       p.name as project_name,
       p.start_date,
       p.end_date,
+      public.ST_asGeoJSON(p.geography) as project_geometry,
       p.coordinator_agency_name,
       array_agg(distinct(pfs.funding_source_project_id)) as funding_agency_project_id,
       array_agg(distinct('id:' || s.id || ', name:' || s.name)) as surveys,
@@ -340,6 +341,22 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
     }
 
+    if (filterFields.geometry.length) {
+      sqlStatement.append(SQL`
+         AND public.ST_INTERSECTS(
+          p.geography,
+          public.geography(
+            public.ST_Force2D(
+              public.ST_SetSRID(
+                public.ST_GeomFromGeoJSON(${filterFields.geometry[0].geometry}),
+                4326
+              )
+            )
+          )
+        )
+      `);
+    }
+
     if (filterFields.keyword) {
       const keyword_string = '%'.concat(filterFields.keyword).concat('%');
       sqlStatement.append(SQL` AND p.name ilike ${keyword_string}`);
@@ -355,6 +372,7 @@ export const getProjectListBySearchParamSQL = (filterFields?: any): SQLStatement
       p.name,
       p.start_date,
       p.end_date,
+      p.geography,
       p.coordinator_agency_name;
   `);
 

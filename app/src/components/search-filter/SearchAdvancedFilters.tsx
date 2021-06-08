@@ -4,13 +4,16 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
+import MapBoundary from 'components/boundary/MapBoundary';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import { Feature } from 'geojson';
+import React, { useEffect, useState } from 'react';
+import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISearchAdvancedFilters {
   keyword: string;
@@ -22,6 +25,7 @@ export interface ISearchAdvancedFilters {
   agency_project_id: string;
   species: number[];
   coordinator_agency: string;
+  geometry: Feature[];
 }
 
 export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
@@ -33,7 +37,8 @@ export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
   agency_id: ('' as unknown) as number,
   agency_project_id: '',
   species: [],
-  coordinator_agency: ''
+  coordinator_agency: '',
+  geometry: []
 };
 
 export interface ISearchAdvancedFiltersProps {
@@ -51,7 +56,16 @@ export interface ISearchAdvancedFiltersProps {
 const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => {
   const formikProps = useFormikContext<ISearchAdvancedFilters>();
 
-  const { handleSubmit, handleChange, values } = formikProps;
+  const { handleSubmit, handleChange, values, setFieldValue } = formikProps;
+
+  const [bounds, setBounds] = useState<any>([]);
+  const [uploadError, setUploadError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(false);
+    updateMapBounds(values.geometry, setBounds);
+  }, [values.geometry]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -128,6 +142,17 @@ const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => 
           />
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={false} endRequired={false} />
+        <MapBoundary
+          title="Search Boundary"
+          mapId="search_boundary_map"
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          uploadError={uploadError}
+          setUploadError={setUploadError}
+          values={values}
+          bounds={bounds}
+          setFieldValue={setFieldValue}
+        />
       </Grid>
     </form>
   );

@@ -11,6 +11,7 @@ import {
   useMap
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
+import { ObservationFeaturePopup } from './ObservationFeaturePopup';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
 export interface IMapBoundsProps {
@@ -100,7 +101,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       </FeatureGroup>
 
       {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
-        <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo} />
+        <GeoJSON key={nonEditableGeo.id} data={nonEditableGeo}>
+          {mapId === 'survey_occurrences_map' && (
+            <ObservationFeaturePopup feature={nonEditableGeo} />
+          )}
+        </GeoJSON>
       ))}
 
       <LayersControl position="bottomright">
