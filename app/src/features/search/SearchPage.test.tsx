@@ -4,9 +4,7 @@ import SearchPage from './SearchPage';
 
 describe('SearchPage', () => {
   it('matches the snapshot', () => {
-    const { asFragment } = render(
-      <SearchPage />
-    );
+    const { asFragment } = render(<SearchPage />);
 
     expect(asFragment()).toMatchSnapshot();
   });
