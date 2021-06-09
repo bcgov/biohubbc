@@ -14,7 +14,7 @@ import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DialogContext } from 'contexts/dialogContext';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import { generateValidGeometryCollection, updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 const useStyles = makeStyles({
   actionButton: {
@@ -37,6 +37,7 @@ const SearchPage: React.FC = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [geometries, setGeometries] = useState<Feature[]>([]);
+  const [bounds, setBounds] = useState<any[]>([]);
 
   const dialogContext = useContext(DialogContext);
 
@@ -79,6 +80,10 @@ const SearchPage: React.FC = () => {
         geos.push(generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0]);
       });
 
+      if (geos.length) {
+        updateMapBounds(geos, setBounds);
+      }
+
       setGeometries(geos);
       setSearchResults(results);
     } catch (error) {
@@ -103,7 +108,7 @@ const SearchPage: React.FC = () => {
         <Box>
           <Box mb={4}>
             <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-              <SearchAdvancedFilters geometryResult={geometries} searchResult={searchResults} />
+              <SearchAdvancedFilters geometryResult={geometries} boundsResult={bounds} searchResult={searchResults} />
             </Formik>
             <Box mt={2} display="flex" justifyContent="flex-end">
               <Button
