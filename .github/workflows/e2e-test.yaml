@@ -2,7 +2,7 @@ name: e2e
 on: workflow_dispatch
 jobs:
   cypress-run:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -24,7 +24,3 @@ jobs:
           CYPRESS_host: ${{ secrets.CYPRESS_HOST }}
           CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
           CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-      - name: Print Dashboard URL
-        run: |
-          echo Cypress finished with: ${{ steps.cypress.outcome }}
-          echo See results at ${{ steps.cypress.outputs.dashboardUrl }}

@@ -3,7 +3,7 @@
   "pluginsFile": "./cypress/plugins/index.ts",
   "screenshotsFolder": "./cypress/screenshots",
   "videosFolder": "./cypress/videos",
-  "projectId": "w8oxci",
+  "projectId": "guz5no",
   "chromeWebSecurity": false,
   "execTimeout": 10000,
   "taskTimeout": 10000,
