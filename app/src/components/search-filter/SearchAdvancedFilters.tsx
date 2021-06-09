@@ -7,7 +7,8 @@ import Select from '@material-ui/core/Select';
 import MapContainer from 'components/map/MapContainer';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISearchAdvancedFilters {
   record_type: string;
@@ -23,6 +24,7 @@ export interface ISearchAdvancedFiltersProps {
   geometryResult: Feature[];
   searchResult: any[];
   boundsResult: any[];
+  setBoundsResult: (boundsResult: any[]) => void;
 }
 
 /**
@@ -33,13 +35,14 @@ export interface ISearchAdvancedFiltersProps {
 const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => {
   const formikProps = useFormikContext<ISearchAdvancedFilters>();
 
-  const { handleSubmit, values, setFieldValue, handleChange, resetForm } = formikProps;
+  const { handleSubmit, values, setFieldValue, handleChange } = formikProps;
+
+  useEffect(() => {
+    updateMapBounds(values.geometry, props.setBoundsResult);
+  }, [values.geometry]);
 
   return (
-    <form onSubmit={(e) => {
-      resetForm();
-      handleSubmit(e);
-    }}>
+    <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <FormControl variant="outlined" required={false} style={{ width: '100%' }}>

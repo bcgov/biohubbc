@@ -108,7 +108,12 @@ const SearchPage: React.FC = () => {
         <Box>
           <Box mb={4}>
             <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-              <SearchAdvancedFilters geometryResult={geometries} boundsResult={bounds} searchResult={searchResults} />
+              <SearchAdvancedFilters
+                geometryResult={geometries}
+                setBoundsResult={setBounds}
+                boundsResult={bounds}
+                searchResult={searchResults}
+              />
             </Formik>
             <Box mt={2} display="flex" justifyContent="flex-end">
               <Button
