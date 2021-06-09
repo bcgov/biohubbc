@@ -96,6 +96,40 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  test('matches the snapshot with feature popup', () => {
+    const features: Feature[] = [
+      {
+        id: 1,
+        properties: {},
+        geometry: {
+          type: 'Point',
+          coordinates: [125.6, 10.1]
+        },
+        type: 'Feature'
+      }
+    ];
+
+    const popupData = [
+      {
+        id: 1,
+        name: 'Name',
+        objectives: 'Objectives'
+      }
+    ];
+
+    const { asFragment } = render(
+      <MapContainer
+        mapId="myMap"
+        classes={classes}
+        geometryState={{ geometry, setGeometry }}
+        nonEditableGeometries={features}
+        popupData={popupData}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   test('matches the snapshot with draw controls hidden', () => {
     const { asFragment } = render(<MapContainer mapId="myMap" classes={classes} hideDrawControls={true} />);
 
