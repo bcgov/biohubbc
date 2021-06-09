@@ -192,10 +192,11 @@ export const geoJsonFeature = {
       enum: ['Feature']
     },
     properties: {
-      type: 'object'
+      oneOf: [{ type: 'null' }, { type: 'object' }]
     },
     geometry: {
       oneOf: [
+        { type: 'null' },
         ...geoJsonGeometryTypes,
         {
           title: 'GeoJSON GeometryCollection',
