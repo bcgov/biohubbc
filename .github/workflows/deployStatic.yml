@@ -533,4 +533,4 @@ jobs:
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
           title: '${{ github.workflow }}: {{STATUS}}'
           username: ${{ github.actor }}
-          description: '${{ github.ref }} was deployed in ${{ github.base_ref }}!'
+          description: 'PR:${{ github.event.number }}-${{ github.event.pull_request.title }} was deployed in ${{ github.base_ref }}!'
