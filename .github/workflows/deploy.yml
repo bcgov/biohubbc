@@ -458,6 +458,10 @@ jobs:
     needs:
       - waitApp
     steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
         # let's give this action an ID so we can refer
