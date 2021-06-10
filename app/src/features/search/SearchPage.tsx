@@ -77,12 +77,14 @@ const SearchPage: React.FC = () => {
       let geos: Feature[] = [];
 
       response.forEach((result: any) => {
+        const feature = generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0];
+
         nonEditableGeometries.push({
-          feature: generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0],
+          feature,
           popupComponent: <SearchFeaturePopup featureData={result} />
         });
 
-        geos.push(generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0]);
+        geos.push(feature);
       });
 
       if (geos.length) {
