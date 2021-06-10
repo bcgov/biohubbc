@@ -37,11 +37,11 @@ jobs:
 
       - name: Run api tests with coverage
         working-directory: api
-        run: CI=true 
+        run: CI=true
              npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.5.1
+        uses: codecov/codecov-action@v1.5.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
@@ -63,11 +63,11 @@ jobs:
 
       - name: Run app tests with coverage
         working-directory: app
-        run: CI=true 
+        run: CI=true
              npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.5.1
+        uses: codecov/codecov-action@v1.5.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
