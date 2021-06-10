@@ -14,6 +14,7 @@ import StudyAreaForm, {
   StudyAreaInitialValues,
   StudyAreaYupSchema
 } from 'features/surveys/components/StudyAreaForm';
+import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -68,6 +69,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   } = props;
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
+  const nonEditableGeometries = geometryCollection.map((geom: Feature) => {
+    return { feature: geom };
+  });
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
@@ -189,7 +193,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             mapId="survey_study_area_map"
             hideDrawControls={true}
             hideOverlayLayers={true}
-            nonEditableGeometries={geometryCollection}
+            nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
           />
         </Box>

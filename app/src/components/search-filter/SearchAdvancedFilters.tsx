@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import MapContainer from 'components/map/MapContainer';
+import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useEffect } from 'react';
@@ -21,8 +21,7 @@ export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
 };
 
 export interface ISearchAdvancedFiltersProps {
-  geometryResult: Feature[];
-  searchResult: any[];
+  geometryResult: INonEditableGeometries[];
   boundsResult: any[];
   setBoundsResult: (boundsResult: any[]) => void;
 }
@@ -81,7 +80,6 @@ const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => 
               }}
               nonEditableGeometries={props.geometryResult}
               bounds={props.boundsResult}
-              popupData={props.searchResult}
             />
           </Box>
         </Grid>

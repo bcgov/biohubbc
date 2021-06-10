@@ -11,12 +11,16 @@ import {
   useMap
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
-import { SearchFeaturePopup } from './SearchFeaturePopup';
 import WFSFeatureGroup from './WFSFeatureGroup';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IMapBoundsProps {
   bounds?: any[];
+}
+
+export interface INonEditableGeometries {
+  feature: Feature;
+  popupComponent?: JSX.Element;
 }
 
 export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
@@ -34,12 +38,11 @@ export interface IMapContainerProps {
   classes?: any;
   mapId: string;
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
-  nonEditableGeometries?: Feature[];
+  nonEditableGeometries?: INonEditableGeometries[];
   bounds?: any[];
   zoom?: number;
   hideDrawControls?: boolean;
   hideOverlayLayers?: boolean;
-  popupData?: any[];
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -102,11 +105,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         />
       </FeatureGroup>
 
-      {nonEditableGeometries?.map((nonEditableGeo: Feature) => (
-        <GeoJSON key={uuidv4()} data={nonEditableGeo}>
-          {mapId === 'search_boundary_map' && (
-            <SearchFeaturePopup popupData={props.popupData} feature={nonEditableGeo} />
-          )}
+      {nonEditableGeometries?.map((nonEditableGeo: any) => (
+        <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>
+          {nonEditableGeo.popupComponent}
         </GeoJSON>
       ))}
 

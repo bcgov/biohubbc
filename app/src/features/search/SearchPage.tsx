@@ -15,6 +15,8 @@ import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import { generateValidGeometryCollection, updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
+import { INonEditableGeometries } from 'components/map/MapContainer';
 
 const useStyles = makeStyles({
   actionButton: {
@@ -35,8 +37,7 @@ const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [geometries, setGeometries] = useState<Feature[]>([]);
+  const [geometries, setGeometries] = useState<INonEditableGeometries[]>([]);
   const [bounds, setBounds] = useState<any[]>([]);
 
   const dialogContext = useContext(DialogContext);
@@ -72,11 +73,15 @@ const SearchPage: React.FC = () => {
         return;
       }
 
-      let results: any[] = [];
-      let geos: any[] = [];
+      let nonEditableGeometries: INonEditableGeometries[] = [];
+      let geos: Feature[] = [];
 
       response.forEach((result: any) => {
-        results.push({ ...result, geometry: generateValidGeometryCollection(result.geometry).geometryCollection });
+        nonEditableGeometries.push({
+          feature: generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0],
+          popupComponent: <SearchFeaturePopup featureData={result} />
+        });
+
         geos.push(generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0]);
       });
 
@@ -84,8 +89,7 @@ const SearchPage: React.FC = () => {
         updateMapBounds(geos, setBounds);
       }
 
-      setGeometries(geos);
-      setSearchResults(results);
+      setGeometries(nonEditableGeometries);
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
@@ -108,12 +112,7 @@ const SearchPage: React.FC = () => {
         <Box>
           <Box mb={4}>
             <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-              <SearchAdvancedFilters
-                geometryResult={geometries}
-                setBoundsResult={setBounds}
-                boundsResult={bounds}
-                searchResult={searchResults}
-              />
+              <SearchAdvancedFilters geometryResult={geometries} setBoundsResult={setBounds} boundsResult={bounds} />
             </Formik>
             <Box mt={2} display="flex" justifyContent="flex-end">
               <Button

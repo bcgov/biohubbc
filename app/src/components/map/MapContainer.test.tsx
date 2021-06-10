@@ -1,9 +1,10 @@
 import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
-import MapContainer from './MapContainer';
+import MapContainer, { INonEditableGeometries } from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { SearchFeaturePopup } from './SearchFeaturePopup';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -70,16 +71,18 @@ describe('MapContainer', () => {
   });
 
   test('matches the snapshot with non editable geos being passed in', () => {
-    const nonEditableGeometries: Feature[] = [
+    const nonEditableGeometries: INonEditableGeometries[] = [
       {
-        type: 'Feature',
-        id: 'nonEditableGeo',
-        geometry: {
-          type: 'Point',
-          coordinates: [125.6, 10.1]
-        },
-        properties: {
-          name: 'Biodiversity Land'
+        feature: {
+          type: 'Feature',
+          id: 'nonEditableGeo',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Biodiversity Land'
+          }
         }
       }
     ];
@@ -97,23 +100,26 @@ describe('MapContainer', () => {
   });
 
   test('matches the snapshot with feature popup', () => {
-    const features: Feature[] = [
+    const nonEditableGeometries: INonEditableGeometries[] = [
       {
-        id: 1,
-        properties: {},
-        geometry: {
-          type: 'Point',
-          coordinates: [125.6, 10.1]
+        feature: {
+          id: 1,
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          type: 'Feature'
         },
-        type: 'Feature'
-      }
-    ];
-
-    const popupData = [
-      {
-        id: 1,
-        name: 'Name',
-        objectives: 'Objectives'
+        popupComponent: (
+          <SearchFeaturePopup
+            featureData={{
+              id: 1,
+              name: 'Name',
+              objectives: 'Objectives'
+            }}
+          />
+        )
       }
     ];
 
@@ -122,8 +128,7 @@ describe('MapContainer', () => {
         mapId="myMap"
         classes={classes}
         geometryState={{ geometry, setGeometry }}
-        nonEditableGeometries={features}
-        popupData={popupData}
+        nonEditableGeometries={nonEditableGeometries}
       />
     );
 
