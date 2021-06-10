@@ -432,27 +432,13 @@ jobs:
           # npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
-  # Wait until the APP server becomes available
-  waitApp:
+  cypress-run:
     runs-on: ubuntu-latest
     needs:
       - deployDatabase
       - deployDatabaseSetup
       - deployAPI
       - deployAPP
-    steps:
-      - name: Wait For Response
-        uses: nev7n/wait_for_response@v1.0.1
-        with:
-          url: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
-          responseCode: 200
-          timeout: 30000
-          interval: 500
-
-  cypress-run:
-    runs-on: ubuntu-latest
-    needs:
-      - waitApp
     steps:
       # Checkout the PR branch
       - name: Checkout Target Branch
@@ -469,6 +455,8 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
+          wait-on: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+          wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
           env: host=https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca
