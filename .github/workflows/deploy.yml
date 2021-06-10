@@ -435,7 +435,6 @@ jobs:
   # Wait until the APP server becomes available
   waitApp:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -454,7 +453,6 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
