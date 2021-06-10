@@ -457,7 +457,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: $CYPRESS_BASE_URL
+          wait-on: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
