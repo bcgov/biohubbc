@@ -24,8 +24,6 @@ export function login(userName,passWord) {
 
   cy.get('#kc-login').click();
 
-  // make sure we are on the start page
-  cy.get('#menu_projects').should('be.visible')
 }
 
 export function logout() {
