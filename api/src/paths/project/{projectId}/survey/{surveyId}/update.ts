@@ -413,18 +413,22 @@ export const updateSurveyProprietorData = async (
   if (!wasProprietary && !isProprietary) {
     // 1. did not have proprietor data; still not requiring proprietor data
     // do nothing
+
     return;
   } else if (wasProprietary && !isProprietary) {
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
+
     sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
+
     sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(entities.survey_proprietor));
   } else {
     // 4. did have proprietor data; updating proprietor data
     // update existing record
+
     sqlStatement = putSurveyProprietorSQL(surveyId, putProprietorData);
   }
 

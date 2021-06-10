@@ -46,7 +46,10 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponseProprietor | null>(null);
+  const [
+    surveyProprietorDataForUpdate,
+    setSurveyDataForUpdate
+  ] = useState<IGetSurveyForUpdateResponseProprietor | null>(null);
   const [surveyProprietorFormData, setSurveyProprietorFormData] = useState<IProprietaryDataForm>(
     ProprietaryDataInitialValues
   );
@@ -69,6 +72,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
   const handleDialogEditOpen = async () => {
     if (!survey_proprietor) {
+      setSurveyDataForUpdate(null);
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
       setOpenEditDialog(true);
       return;
@@ -117,8 +121,8 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
     const surveyData = {
       survey_proprietor: {
         ...values,
-        id: surveyDataForUpdate?.id,
-        revision_count: surveyDataForUpdate?.revision_count
+        id: surveyProprietorDataForUpdate?.id,
+        revision_count: surveyProprietorDataForUpdate?.revision_count
       }
     };
 
