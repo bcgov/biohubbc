@@ -514,23 +514,6 @@ jobs:
           oc project af2668-tools
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
 
-  # Wait until the APP server becomes available
-  waitApp:
-    runs-on: ubuntu-latest
-    needs:
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
-      - deployAPP
-    steps:
-      - name: Wait For Response
-        uses: nev7n/wait_for_response@v1.0.1
-        with:
-          url: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
-          responseCode: 200
-          timeout: 30000
-          interval: 500
-
   cypress-run:
     runs-on: ubuntu-latest
     env:
@@ -556,7 +539,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: CYPRESS_BASE_URL
+          wait-on: $CYPRESS_BASE_URL
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e

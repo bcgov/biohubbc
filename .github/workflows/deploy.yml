@@ -457,7 +457,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: CYPRESS_BASE_URL
+          wait-on: $CYPRESS_BASE_URL
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
@@ -468,5 +468,5 @@ jobs:
           echo Git Change ID: ${{ github.event.number }}
           echo Cypress Record Key: {$CYPRESS_RECORD_KEY}
           echo Cypress BaseUrl: $CYPRESS_BASE_URL
-          echo Cypress Host: {$CYPRESS_host}
+          echo Cypress Host: $CYPRESS_ENVIRONMENT
 
