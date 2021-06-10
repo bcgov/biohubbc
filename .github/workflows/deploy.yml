@@ -460,18 +460,18 @@ jobs:
 
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
+          CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
-        # Continue the build in case of an error, as we need to set the
-        # commit status in the next step, both in case of success and failure
         continue-on-error: false
         with:
           record: true
           working-directory: testing/e2e
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
-          CYPRESS_BASE_URL: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
-          CYPRESS_host: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
-          CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
-          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+          browser: chrome
+          headless: true
+          env: host=https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca
+
