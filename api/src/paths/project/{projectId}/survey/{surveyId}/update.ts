@@ -419,7 +419,6 @@ export const updateSurveyProprietorData = async (
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
 
-
     sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
