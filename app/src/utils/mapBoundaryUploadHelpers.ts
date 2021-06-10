@@ -126,7 +126,7 @@ export const updateMapBounds = (geometries: Feature[], setBounds: (bounds: any[]
 
   We also set the bounds based on those geometries so the extent is set
 */
-export const generateValidGeometryCollection = (geometry: any) => {
+export const generateValidGeometryCollection = (geometry: any, id?: string) => {
   let geometryCollection: Feature[] = [];
   let bounds: any[] = [];
 
@@ -137,7 +137,7 @@ export const generateValidGeometryCollection = (geometry: any) => {
   if (geometry[0]?.type === 'MultiPolygon') {
     geometry[0].coordinates.forEach((geoCoords: any) => {
       geometryCollection.push({
-        id: uuidv4(),
+        id: id || uuidv4(),
         type: 'Feature',
         geometry: {
           type: 'Polygon',
@@ -149,7 +149,7 @@ export const generateValidGeometryCollection = (geometry: any) => {
   } else if (geometry[0]?.type === 'GeometryCollection') {
     geometry[0].geometries.forEach((geometry: any) => {
       geometryCollection.push({
-        id: uuidv4(),
+        id: id || uuidv4(),
         type: 'Feature',
         geometry,
         properties: {}
@@ -157,7 +157,7 @@ export const generateValidGeometryCollection = (geometry: any) => {
     });
   } else if (geometry[0]?.type !== 'Feature') {
     geometryCollection.push({
-      id: uuidv4(),
+      id: id || uuidv4(),
       type: 'Feature',
       geometry: geometry[0],
       properties: {}
