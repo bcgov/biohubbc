@@ -435,8 +435,6 @@ jobs:
   # Wait until the APP server becomes available
   waitApp:
     runs-on: ubuntu-latest
-    env:
-      BUILD_ID: ${{ github.event.number }}
     needs:
       - deployDatabase
       - deployDatabaseSetup
@@ -446,15 +444,13 @@ jobs:
       - name: Wait For Response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: 'https://biohubbc-app-$BUILD_ID-af2668-dev.apps.silver.devops.gov.bc.ca'
+          url: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
           responseCode: 200
           timeout: 30000
           interval: 500
 
   cypress-run:
     runs-on: ubuntu-latest
-    env:
-      BUILD_ID: ${{ github.event.number }}
     needs:
       - waitApp
     steps:
@@ -475,7 +471,7 @@ jobs:
           working-directory: testing/e2e
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
-          CYPRESS_BASE_URL: 'https://biohubbc-app-$BUILD_ID-af2668-dev.apps.silver.devops.gov.bc.ca'
+          CYPRESS_BASE_URL: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
           CYPRESS_host: ${{ secrets.CYPRESS_HOST }}
           CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
           CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
