@@ -516,21 +516,62 @@ jobs:
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
           oc project af2668-tools
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
+
+  # Wait until the APP server becomes available
+  waitApp:
+    runs-on: ubuntu-latest
+    needs:
+      - deployDatabase
+      - deployDatabaseSetup
+      - deployAPI
+      - deployAPP
+    steps:
+      - name: Wait For Response
+        uses: nev7n/wait_for_response@v1.0.1
+        with:
+          url: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
+          responseCode: 200
+          timeout: 30000
+          interval: 500
+
+  cypress-run:
+    runs-on: ubuntu-latest
+    needs:
+      - waitApp
+    steps:
+      # Checkout the PR branch
+      - name: Checkout Target Branch
+        uses: actions/checkout@v2
+
+      - name: E2E Smoke tests
+        uses: cypress-io/github-action@v2
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
+          CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+        # let's give this action an ID so we can refer
+        # to its output values later
+        id: smoke
+        continue-on-error: false
+        with:
+          record: true
+          working-directory: testing/e2e
+          browser: chrome
+          headless: true
+          env: host=https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca
+
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }} && always()
     needs: # make sure the notification is sent AFTER the jobs you want included have completed
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
-      - deployAPP
+      - cypress-run
     steps:
       - name: Notify
         uses: nobrayner/discord-webhook@v1
         with:
           github-token: ${{ secrets.github_token }}
           discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: '${{ github.workflow }}: {{STATUS}}'
+          title: "${{ github.workflow }}: {{STATUS}}"
           username: ${{ github.actor }}
-          description: 'PR:${{ github.event.number }}-${{ github.event.pull_request.title }} was deployed in ${{ github.base_ref }}!'
+          description: "PR: ${{ github.event.number }} - ${{ github.event.pull_request.title }}: was deployed in ${{ github.base_ref }}!"
