@@ -1,9 +1,10 @@
 import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
-import MapContainer from './MapContainer';
+import MapContainer, { INonEditableGeometries } from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { SearchFeaturePopup } from './SearchFeaturePopup';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -70,17 +71,55 @@ describe('MapContainer', () => {
   });
 
   test('matches the snapshot with non editable geos being passed in', () => {
-    const nonEditableGeometries: Feature[] = [
+    const nonEditableGeometries: INonEditableGeometries[] = [
       {
-        type: 'Feature',
-        id: 'nonEditableGeo',
-        geometry: {
-          type: 'Point',
-          coordinates: [125.6, 10.1]
-        },
-        properties: {
-          name: 'Biodiversity Land'
+        feature: {
+          type: 'Feature',
+          id: 'nonEditableGeo',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Biodiversity Land'
+          }
         }
+      }
+    ];
+
+    const { asFragment } = render(
+      <MapContainer
+        mapId="myMap"
+        classes={classes}
+        geometryState={{ geometry, setGeometry }}
+        nonEditableGeometries={nonEditableGeometries}
+      />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  test('matches the snapshot with feature popup', () => {
+    const nonEditableGeometries: INonEditableGeometries[] = [
+      {
+        feature: {
+          id: 1,
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          type: 'Feature'
+        },
+        popupComponent: (
+          <SearchFeaturePopup
+            featureData={{
+              id: 1,
+              name: 'Name',
+              objectives: 'Objectives'
+            }}
+          />
+        )
       }
     ];
 
