@@ -15,17 +15,17 @@
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+  // // `on` is used to hook into various events Cypress emits
+  // // `config` is the resolved Cypress config
 
-  // modify config values
-  config.defaultCommandTimeout = 10000;
+  // // modify config values
+  // config.defaultCommandTimeout = 10000;
 
-  // TODO: add logic to use the urls based on the current environment
-  // https://dev-biohubbc.apps.silver.devops.gov.bc.ca
-  config.baseUrl = process.env.host || "https://dev-biohubbc.apps.silver.devops.gov.bc.ca";
-  config.env.ENVIRONMENT = 'dev';
+  // // TODO: add logic to use the urls based on the current environment
+  // // https://dev-biohubbc.apps.silver.devops.gov.bc.ca
+  // config.baseUrl = process.env.host || "https://dev-biohubbc.apps.silver.devops.gov.bc.ca";
+  // config.env.ENVIRONMENT = 'dev';
 
-  // return config
-  return config;
+  // // return config
+  // return config;
 };
