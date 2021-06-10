@@ -471,8 +471,6 @@ jobs:
         with:
           record: true
           working-directory: testing/e2e
-          browser: chrome
-          headless: true
           env: host=https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca
           config: baseUrl=https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca
 

@@ -556,9 +556,8 @@ jobs:
         with:
           record: true
           working-directory: testing/e2e
-          browser: chrome
-          headless: true
           env: host=https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca
+          config: baseUrl=https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca
 
   notify:
     name: Discord Notification
