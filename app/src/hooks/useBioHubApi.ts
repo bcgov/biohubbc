@@ -5,6 +5,7 @@ import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
 import useProjectApi from './api/useProjectApi';
+import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 
@@ -17,6 +18,8 @@ export const useBiohubApi = () => {
   const customAxios = useAxios();
 
   const project = useProjectApi(customAxios);
+
+  const search = useSearchApi(customAxios);
 
   const survey = useSurveyApi(customAxios);
 
@@ -32,6 +35,7 @@ export const useBiohubApi = () => {
 
   return {
     project,
+    search,
     survey,
     codes,
     draft,
