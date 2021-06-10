@@ -533,6 +533,12 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-latest
+    env:
+      CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
+      CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
+      CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+      CYPRESS_BASE_URL: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+      CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
     needs:
       - deployDatabase
       - deployDatabaseSetup
@@ -545,21 +551,23 @@ jobs:
 
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
-        env:
-          CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
-          CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
-          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
         continue-on-error: false
         with:
-          wait-on: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
+          wait-on: CYPRESS_BASE_URL
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
-          env: host=https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca
-          config: baseUrl=https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca
+
+      - name: Print Env Vars
+        run: |
+          echo Git Base Ref: ${{ github.base_ref }}
+          echo Git Change ID: ${{ github.event.number }}
+          echo Cypress Record Key: $CYPRESS_RECORD_KEY
+          echo Cypress BaseUrl: $CYPRESS_BASE_URL
+          echo Cypress Host: $CYPRESS_ENVIRONMENT
 
   notify:
     name: Discord Notification
