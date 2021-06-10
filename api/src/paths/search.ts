@@ -72,7 +72,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getSearchResults(): RequestHandler {
+export function getSearchResults(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
