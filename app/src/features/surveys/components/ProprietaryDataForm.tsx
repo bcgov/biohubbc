@@ -47,10 +47,11 @@ export const ProprietaryDataInitialValues: IProprietaryDataForm = {
 export const ProprietaryDataYupSchema = yup.object().shape({
   proprietary_data_category: yup
     .number()
-    .when('survey_data_proprietary', { is: 'true', then: yup.number().required('Required') }),
+    .when('survey_data_proprietary', { is: 'true', then: yup.number().min(1, 'required').required('Required') }),
   proprietor_name: yup
     .string()
     .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') }),
+  first_nations_id: yup.number().when('survey_data_category', { is: 2, then: yup.number().min(1, 'required') }),
   category_rationale: yup
     .string()
     .max(3000, 'Cannot exceed 3000 characters')
