@@ -85,7 +85,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -133,7 +133,7 @@ jobs:
 
       # Build the database image
       - name: Build Database Setup Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -181,7 +181,7 @@ jobs:
 
       # Build the api image
       - name: Build API Image
-        working-directory: './api/.pipeline/'
+        working-directory: "./api/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -229,7 +229,7 @@ jobs:
 
       # Build the app image
       - name: Build APP Image
-        working-directory: './app/.pipeline/'
+        working-directory: "./app/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -278,7 +278,7 @@ jobs:
 
       # Deploy the database image
       - name: Deploy Database Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           DEBUG=* npm run db:deploy -- --pr=$BUILD_ID --env=dev
@@ -327,7 +327,7 @@ jobs:
 
       # Deploy the database setup image
       - name: Deploy Database Setup Image
-        working-directory: './database/.pipeline/'
+        working-directory: "./database/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -377,7 +377,7 @@ jobs:
 
       # Deploy the api image
       - name: Deploy API Image
-        working-directory: './api/.pipeline/'
+        working-directory: "./api/.pipeline/"
         run: |
           npm install
           # npm ci
@@ -426,78 +426,54 @@ jobs:
 
       # Deploy the app image
       - name: Deploy App Image
-        working-directory: './app/.pipeline'
+        working-directory: "./app/.pipeline"
         run: |
           npm install
           # npm ci
           DEBUG=* npm run deploy -- --pr=$BUILD_ID --env=dev
 
-  # # Clean build/deployment artifacts
-  # clean:
-  #   name: Clean Build/Deployment Artifacts
-  #   runs-on: ubuntu-16.04
-  #   if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' && github.event.pull_request.draft == false }}
-  #   needs:
-  #     - deployDatabase
-  #     - deployAPI
-  #     - deployAPP
-  #   env:
-  #     BUILD_ID: ${{ github.event.number }}
-  #     BRANCH: ${{ github.base_ref }}
-  #   steps:
-  #     # Checkout the PR branch
-  #     - name: Checkout Target Branch
-  #       uses: actions/checkout@v2
+  # Wait until the APP server becomes available
+  waitApp:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' && github.event.pull_request.draft == false }}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    needs:
+      - deployDatabase
+      - deployDatabaseSetup
+      - deployAPI
+      - deployAPP
+    steps:
+      - name: Wait For Response
+        uses: nev7n/wait_for_response@v1.0.1
+        with:
+          url: 'https://biohubbc-app-$BUILD_ID-af2668-dev.apps.silver.devops.gov.bc.ca'
+          responseCode: 200
+          timeout: 30000
+          interval: 500
 
-  #     # Install Node - for `node` and `npm` commands
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v1
-  #       with:
-  #         node-version: 10.16
-
-  #     # Cache Node modules
-  #     - name: Cache node modules
-  #       uses: actions/cache@v2
-  #       env:
-  #         cache-name: cache-node-modules
-  #       with:
-  #         # npm cache files are stored in `~/.npm` on Linux/macOS
-  #         path: ~/.npm
-  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-build-${{ env.cache-name }}-
-  #           ${{ runner.os }}-build-
-  #           ${{ runner.os }}-
-
-  #     # Log in to OpenShift.
-  #     # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-  #     # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-  #     - name: Log in to OpenShift
-  #       run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-  #     # Clean the database build/deployment artifacts
-  #     - name: Clean Database Artifacts
-  #       working-directory: './database/.pipeline/'
-  #       run: |
-  #         npm install
-  #         # npm ci
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-  #     # Clean the api build/deployment artifacts
-  #     - name: Clean API Artifacts
-  #       working-directory: './api/.pipeline/'
-  #       run: |
-  #         npm install
-  #         # npm ci
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
-
-  #     # Clean the app build/deployment artifacts
-  #     - name: Clean APP Artifacts
-  #       working-directory: './app/.pipeline/'
-  #       run: |
-  #         npm install
-  #         # npm ci
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=build
-  #         DEBUG=* npm run clean -- --pr=$BUILD_ID --env=dev
+  cypress-run:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.base_ref != 'dev' && github.base_ref != 'test' && github.base_ref != 'prod' && github.event.pull_request.draft == false }}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    needs:
+      - waitApp
+    steps:
+      - name: E2E Smoke tests
+        uses: cypress-io/github-action@v2
+        # let's give this action an ID so we can refer
+        # to its output values later
+        id: smoke
+        # Continue the build in case of an error, as we need to set the
+        # commit status in the next step, both in case of success and failure
+        continue-on-error: false
+        with:
+          record: true
+          working-directory: testing/e2e
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
+          CYPRESS_BASE_URL: 'https://biohubbc-app-$BUILD_ID-af2668-dev.apps.silver.devops.gov.bc.ca'
+          CYPRESS_host: ${{ secrets.CYPRESS_HOST }}
+          CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
