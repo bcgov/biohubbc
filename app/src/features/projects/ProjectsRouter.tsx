@@ -68,6 +68,13 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/blocks"
+        component={SurveyPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
         path="/projects/:id?/survey/create"
         component={CreateSurveyPage}
         componentProps={props}
