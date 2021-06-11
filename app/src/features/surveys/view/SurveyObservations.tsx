@@ -106,7 +106,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                       {row.id}
                     </TableCell>
                     <TableCell className={classes.heading}>
-                      {surveyType} {row.block_id}
+                      {surveyType} {surveyType === 'Block' && row.block_id}
                     </TableCell>
                     <TableCell>
                       {row.number_of_observations > 0 ? row.number_of_observations : `No Observations`}
