@@ -16,7 +16,7 @@ import React, { useState, useEffect } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 import TablePagination from '@material-ui/core/TablePagination';
-import { IGetBlocksListResponse } from 'interfaces/useBlockObservationApi.interface';
+import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -27,66 +27,56 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export interface ISurveyBlocksProps {
+export interface ISurveyObservationsProps {
   projectForViewData: IGetProjectForViewResponse;
   surveyForViewData: IGetSurveyForViewResponse;
 }
 
-const SurveyBlocks: React.FC<ISurveyBlocksProps> = (props) => {
+const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const { projectForViewData, surveyForViewData } = props;
 
-  const [blocks, setBlocks] = useState<IGetBlocksListResponse[]>([]);
+  const [surveyType, setSurveyType] = useState<string>('');
+  const [observations, setObservations] = useState<IGetBlocksListResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    const getBlocks = async () => {
-      // const blocksResponse = await biohubApi.block_observation.getBlocksList(projectForViewData.id, surveyForViewData.survey_details.id);
+    const getObservations = async () => {
+      const observationsResponse = await biohubApi.observation.getObservationsList(
+        projectForViewData.id,
+        surveyForViewData.survey_details.id
+      );
 
-      // setBlocks(() => {
-      //   setIsLoading(false);
-      //   return blocksResponse;
-      // });
+      if (!observationsResponse || !observationsResponse.blocks) {
+        return;
+      }
 
-      const response = [
-        {
-          id: 1,
-          block_id: 24,
-          number_of_observations: 3,
-          start_time: '3:00PM',
-          end_time: '4:00PM'
-        },
-        {
-          id: 2,
-          block_id: 25,
-          number_of_observations: 31,
-          start_time: '3:40PM',
-          end_time: '4:40PM'
-        }
-      ];
+      if (observationsResponse.blocks) {
+        setSurveyType('Block');
+      }
 
       setIsLoading(false);
-      setBlocks(response);
+      setObservations(observationsResponse.blocks);
     };
 
     if (isLoading) {
-      getBlocks();
+      getObservations();
     }
   }, [biohubApi, isLoading, projectForViewData.id, surveyForViewData.survey_details.id]);
 
   return (
     <>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Blocks & Observations</Typography>
+        <Typography variant="h2">Observations</Typography>
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
               <Button variant="contained" color="primary" onClick={() => console.log('new block survey')}>
-                New Block Survey
+                {`New ${surveyType} Survey`}
               </Button>
             </Box>
             <Button variant="contained" color="primary">
@@ -109,13 +99,15 @@ const SurveyBlocks: React.FC<ISurveyBlocksProps> = (props) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {blocks.length > 0 &&
-                blocks.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+              {observations.length > 0 &&
+                observations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                   <TableRow key={row.id}>
                     <TableCell component="th" scope="row">
                       {row.id}
                     </TableCell>
-                    <TableCell className={classes.heading}>Block {row.block_id}</TableCell>
+                    <TableCell className={classes.heading}>
+                      {surveyType} {row.block_id}
+                    </TableCell>
                     <TableCell>
                       {row.number_of_observations > 0 ? row.number_of_observations : `No Observations`}
                     </TableCell>
@@ -132,21 +124,21 @@ const SurveyBlocks: React.FC<ISurveyBlocksProps> = (props) => {
                     </TableCell>
                   </TableRow>
                 ))}
-              {!blocks.length && (
+              {!observations.length && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No Blocks/Observations
+                  <TableCell colSpan={5} align="center">
+                    No Observations
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
-        {blocks.length > 0 && (
+        {observations.length > 0 && (
           <TablePagination
             rowsPerPageOptions={[5, 10, 15, 20]}
             component="div"
-            count={blocks.length}
+            count={observations.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
@@ -160,4 +152,4 @@ const SurveyBlocks: React.FC<ISurveyBlocksProps> = (props) => {
   );
 };
 
-export default SurveyBlocks;
+export default SurveyObservations;

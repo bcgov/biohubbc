@@ -24,7 +24,7 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
-import SurveyBlocks from './SurveyBlocks';
+import SurveyObservations from './SurveyObservations';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -176,11 +176,11 @@ const SurveyPage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText>Survey Details</ListItemText>
                 </ListItem>
-                <ListItem component={NavLink} to="blocks">
+                <ListItem component={NavLink} to="observations">
                   <ListItemIcon>
                     <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
                   </ListItemIcon>
-                  <ListItemText>Blocks & Observations</ListItemText>
+                  <ListItemText>Observations</ListItemText>
                 </ListItem>
                 <ListItem component={NavLink} to="attachments">
                   <ListItemIcon>
@@ -200,8 +200,8 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
-            {location.pathname.includes('/blocks') && (
-              <SurveyBlocks projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+            {location.pathname.includes('/observations') && (
+              <SurveyObservations projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />

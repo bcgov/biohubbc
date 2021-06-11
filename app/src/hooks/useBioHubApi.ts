@@ -1,7 +1,7 @@
 import axios from 'axios';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
-import useBlockObservationApi from './api/useBlockObservationApi';
+import useObservationApi from './api/useObservationApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
@@ -32,7 +32,7 @@ export const useBiohubApi = () => {
 
   const admin = useAdminApi(customAxios);
 
-  const blockObservation = useBlockObservationApi(customAxios);
+  const observation = useObservationApi(customAxios);
 
   const external = useExternalApi(axios);
 
@@ -44,7 +44,7 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
-    blockObservation,
+    observation,
     external
   };
 };

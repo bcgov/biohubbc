@@ -164,7 +164,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/blocks"
+              href="/projects/1/surveys/observations"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -186,7 +186,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 <span
                   class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
                 >
-                  Blocks & Observations
+                  Observations
                 </span>
               </div>
             </a>
@@ -369,7 +369,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/blocks"
+              href="/projects/1/surveys/observations"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -391,7 +391,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 <span
                   class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
                 >
-                  Blocks & Observations
+                  Observations
                 </span>
               </div>
             </a>
