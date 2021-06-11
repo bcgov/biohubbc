@@ -463,7 +463,7 @@ jobs:
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
-        continue-on-error: true
+        continue-on-error: false
         with:
           wait-on: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
           wait-on-timeout: 120

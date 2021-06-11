@@ -545,7 +545,7 @@ jobs:
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
-        continue-on-error: true
+        continue-on-error: false
         with:
           wait-on: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
           wait-on-timeout: 120
