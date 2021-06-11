@@ -450,12 +450,20 @@ jobs:
       - name: Checkout Target Branch
         uses: actions/checkout@v2
 
+      - name: Wait for application response
+        uses: nev7n/wait_for_response@v1.0.1
+        with:
+          url: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+          responseCode: 200
+          timeout: 120000
+          interval: 500
+
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
-        continue-on-error: true
+        continue-on-error: false
         with:
           wait-on: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
           wait-on-timeout: 120
