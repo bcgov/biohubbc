@@ -29,6 +29,7 @@ To test that it worked:
 ```
 ECHO $DB_SCHEMA 
 ```
+
 ### Seeds
 
 A set of scripts that populate the database tables with any ephemeral values required for the app to function during development. This can include dummy data so that when the app is running locally, you don't have to manually create a bunch of data in order to experience the app as it would be in a real environment.
