@@ -274,7 +274,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   required={false}
                   id="rear_left_observer"
                   name="rear_left_observer"
-                  label="Left Observer"
+                  label="Rear Left Observer"
                   size="small"
                   variant="outlined"
                   value={values.rear_left_observer}
@@ -289,7 +289,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   required={false}
                   id="rear_right_observer"
                   name="rear_right_observer"
-                  label="Right Observer"
+                  label="Rear Right Observer"
                   size="small"
                   variant="outlined"
                   value={values.rear_right_observer}
@@ -401,7 +401,18 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                     error={touched.precipitation && Boolean(errors.precipitation)}
                     displayEmpty
                     inputProps={{ 'aria-label': 'precipitation' }}>
-                    {['None', 'Fog', 'Misty drizzle', 'Drizzle', 'Light Rain', 'Hard Rain', 'Snow'].map((item) => (
+                    {[
+                      'None',
+                      'Fog',
+                      'Misty drizzle',
+                      'Drizzle',
+                      'Light Rain',
+                      'Hard Rain',
+                      'Snow',
+                      'Light Snow',
+                      'Heavy Snow',
+                      'Freezing'
+                    ].map((item) => (
                       <MenuItem key={item} value={item}>
                         {item}
                       </MenuItem>
@@ -518,7 +529,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   id="aircraft_registration_number"
                   name="aircraft_registration_number"
                   size="small"
-                  label="Registration Number"
+                  label="Call Sign"
                   variant="outlined"
                   value={values.aircraft_registration_number}
                   onChange={handleChange}
@@ -578,13 +589,13 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                     error={touched.aircraft_gps_readout && Boolean(errors.aircraft_gps_readout)}
                     displayEmpty
                     inputProps={{ 'aria-label': 'aircraft_gps_readout' }}>
-                    {['Decimal Degrees', 'Degrees Decimal Minutes', 'Degrees Minutes Seconds'].map((item) => (
+                    {['Decimal Degrees', 'Degrees Decimal Minutes', 'Degrees Minutes Seconds', 'UTM'].map((item) => (
                       <MenuItem key={item} value={item}>
                         {item}
                       </MenuItem>
                     ))}
                   </Select>
-                  <FormHelperText>{touched.precipitation && errors.precipitation}</FormHelperText>
+                  <FormHelperText>{touched.aircraft_gps_readout && errors.aircraft_gps_readout}</FormHelperText>
                 </FormControl>
               </Grid>
             </Grid>

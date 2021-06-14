@@ -38,7 +38,6 @@ const MooseHotTable: React.FC<IMooseHotTableProps> = (props) => {
       'TOTAL',
       'Activity',
       '% Veg Cover',
-      'Veg Class',
       '% Snow',
       'Comments'
     ]
@@ -54,7 +53,7 @@ const MooseHotTable: React.FC<IMooseHotTableProps> = (props) => {
     width: '100%',
     height: '100%',
     rowHeights: 40,
-    colWidths: 80,
+    colWidths: 90,
     readOnly: false,
     columnSorting: true,
     formulas: true,
@@ -112,7 +111,6 @@ const MooseHotTable: React.FC<IMooseHotTableProps> = (props) => {
           '100'
         ]
       },
-      { type: 'dropdown', source: ['1', '2', '3', '4', '5', '6', '7', '8'] },
       { type: 'numeric' },
       { type: 'text', width: 245 }
     ]

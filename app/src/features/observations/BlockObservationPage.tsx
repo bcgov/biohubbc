@@ -45,7 +45,7 @@ const BlockObservationPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck] = useState(true);
-  const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , , ,]]);
+  const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
   const [initialValues] = useState(BlockObservationInitialValues);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
