@@ -1,8 +1,6 @@
-
 import Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
-
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
@@ -34,67 +32,64 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
 ;
 
 
-COMMENT ON COLUMN block_observation.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN block_observation.b_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN block_observation.start_time IS 'The datetime the observation was started.'
-;
-COMMENT ON COLUMN block_observation.end_time IS 'The datetime the observation ended.'
-;
-COMMENT ON COLUMN block_observation.observation_cnt IS 'The computed total of the observations.'
-;
-COMMENT ON COLUMN block_observation.data IS 'The json data associated with the record.'
-;
-COMMENT ON COLUMN block_observation.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN block_observation.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN block_observation.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN block_observation.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN block_observation.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE block_observation IS 'A persistent store for draft block_observation data. For example, if a user starts a project creation process and wants to save that information as a draft then the block observation data can be persisted for subsequent reload into the project creation process.'
-;
+    COMMENT ON COLUMN block_observation.id IS 'System generated surrogate primary key identifier.'
+    ;
+    COMMENT ON COLUMN block_observation.b_id IS 'System generated surrogate primary key identifier.'
+    ;
+    COMMENT ON COLUMN block_observation.start_time IS 'The datetime the observation was started.'
+    ;
+    COMMENT ON COLUMN block_observation.end_time IS 'The datetime the observation ended.'
+    ;
+    COMMENT ON COLUMN block_observation.observation_cnt IS 'The computed total of the observations.'
+    ;
+    COMMENT ON COLUMN block_observation.data IS 'The json data associated with the record.'
+    ;
+    COMMENT ON COLUMN block_observation.create_date IS 'The datetime the record was created.'
+    ;
+    COMMENT ON COLUMN block_observation.create_user IS 'The id of the user who created the record as identified in the system user table.'
+    ;
+    COMMENT ON COLUMN block_observation.update_date IS 'The datetime the record was updated.'
+    ;
+    COMMENT ON COLUMN block_observation.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+    ;
+    COMMENT ON COLUMN block_observation.revision_count IS 'Revision count used for concurrency control.'
+    ;
+    COMMENT ON TABLE block_observation IS 'A persistent store for draft block_observation data. For example, if a user starts a project creation process and wants to save that information as a draft then the block observation data can be persisted for subsequent reload into the project creation process.'
+    ;
 
--- add unique keys
+    -- add unique keys
 
-ALTER TABLE block_observation ADD CONSTRAINT "Refblock100"
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
-;
+    ALTER TABLE block_observation ADD CONSTRAINT "Refblock100"
+        FOREIGN KEY (s_id)
+        REFERENCES survey(id)
+    ;
 
 
-create trigger audit_block_observation before insert or update or delete on biohub.block_observation for each row execute procedure tr_audit_trigger();
+    create trigger audit_block_observation before insert or update or delete on biohub.block_observation for each row execute procedure tr_audit_trigger();
 
-set search_path = biohub_dapi_v1;
+    set search_path = biohub_dapi_v1;
 
-set role biohub_api;
+    set role biohub_api;
 
-create or replace view block_observation as select * from ${DB_SCHEMA}.block_observation;
+    create or replace view block_observation as select * from ${DB_SCHEMA}.block_observation;
 
-set role postgres;
+    set role postgres;
 
-`);
+  `);
 }
 
-
-  /**
-   * Drop the `block_observation` table.
-   *
-   * @export
-   * @param {Knex} knex
-   * @return {*}  {Promise<void>}
-   */
-   export async function down(knex: Knex): Promise<void> {
-    await knex.raw(`
+/**
+ * Drop the `block_observation` table.
+ *
+ * @export
+ * @param {Knex} knex
+ * @return {*}  {Promise<void>}
+ */
+export async function down(knex: Knex): Promise<void> {
+  await knex.raw(`
       set schema '${DB_SCHEMA}';
       set search_path = ${DB_SCHEMA},public;
 
       DROP TABLE IF EXISTS ${DB_SCHEMA}.block_observation;
     `);
-  }
-
-
+}
