@@ -63,4 +63,21 @@ describe('BlockObservationPage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
   });
+
+  it('renders the page contents with the form when project and survey are loaded', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+
+    const { asFragment, getByTestId } = render(
+      <Router history={history}>
+        <BlockObservationPage />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('block-observation-heading')).toBeInTheDocument();
+    });
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });
