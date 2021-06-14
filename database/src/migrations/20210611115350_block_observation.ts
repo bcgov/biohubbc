@@ -52,7 +52,7 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     ;
     COMMENT ON COLUMN block_observation.revision_count IS 'Revision count used for concurrency control.'
     ;
-    COMMENT ON TABLE block_observation IS 'A persistent store for draft block_observation data.';
+    COMMENT ON TABLE block_observation IS 'A persistent store for the block_observation data.';
 
     -- add unique keys
 
