@@ -139,6 +139,60 @@ services:
         condition: service_healthy
     command: ["npm", "run", "setup"]
 
+  ## Run the  database migrations
+  db_migrate:
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-migrate-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-migrate-container
+    build:
+      context: ./database
+      dockerfile: ./.docker/db/Dockerfile.migrate
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_ADMIN=${DB_ADMIN}
+      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER_API=${DB_USER_API}
+      - DB_USER_API_PASS=${DB_USER_API_PASS}
+      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npm", "run", "migrate:latest"]
+
+  ## Rollback the latest database migrations
+  db_rollback:
+    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-rollback-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-rollback-container
+    build:
+      context: ./database
+      dockerfile: ./.docker/db/Dockerfile.rollback
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${DB_HOST}
+      - DB_ADMIN=${DB_ADMIN}
+      - DB_ADMIN_PASS=${DB_ADMIN_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER_API=${DB_USER_API}
+      - DB_USER_API_PASS=${DB_USER_API_PASS}
+      - DB_SCHEMA_DAPI_V1=${DB_SCHEMA_DAPI_V1}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npm", "run", "migrate:rollback"]
+
 networks:
   local-network:
     driver: bridge
