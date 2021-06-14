@@ -41,14 +41,53 @@ describe('SurveyPage', () => {
     cleanup();
   });
 
-  it('renders a spinner if no survey is loaded', () => {
+  it('renders a spinner if no project is loaded', async () => {
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+
     const { asFragment } = render(
       <Router history={history}>
         <SurveyPage />
       </Router>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('renders a spinner if no codes is loaded', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+
+    const { asFragment } = render(
+      <Router history={history}>
+        <SurveyPage />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('renders a spinner if no survey is loaded', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+
+    const { asFragment } = render(
+      <Router history={history}>
+        <SurveyPage />
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('renders survey page when survey is loaded', async () => {
