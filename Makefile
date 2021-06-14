@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app api install test lint lint-fix format help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app api db-setup db-migrate db-rollback install test lint lint-fix format help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -35,6 +35,10 @@ web-debug: | close build-web run-web-debug ## Performs all commands necessary to
 
 ionic: | close build-ionic run-ionic ## Performs all commands necessary to run all backend+ionic projects in docker
 ionic-debug: | close build-ionic run-ionic-debug ## Performs all commands necessary to run all backend+ionic projects in docker in debug mode
+
+db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
+db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
+db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
 
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
@@ -81,7 +85,6 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up
 
-
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
 ## - Builds all of the biohub backend projects (db, db_setup, api, nginx)
@@ -91,19 +94,22 @@ build-backend: ## Builds all backend containers
 	@echo "==============================================="
 	@echo "Make: build-backend - building backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx clamav
+	@docker-compose -f docker-compose.yml build db db_setup api nginx
+## @docker-compose -f docker-compose.yml build db db_setup api nginx clamav
 
 run-backend: ## Runs all backend containers
 	@echo "==============================================="
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx clamav
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
+## @docker-compose -f docker-compose.yml up -d db db_setup api nginx clamav
 
 run-backend-debug: ## Runs all backend containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx clamav
+	@docker-compose -f docker-compose.yml up db db_setup api nginx
+## @docker-compose -f docker-compose.yml up db db_setup api nginx clamav
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -114,19 +120,22 @@ build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx app clamav
+	@docker-compose -f docker-compose.yml build db db_setup api nginx app
+## @docker-compose -f docker-compose.yml build db db_setup api nginx app clamav
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app clamav
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app
+## @docker-compose -f docker-compose.yml up -d db db_setup api nginx app clamav
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx app clamav
+	@docker-compose -f docker-compose.yml up db db_setup api nginx app
+## @docker-compose -f docker-compose.yml up db db_setup api nginx app clamav
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Ionic Commands (backend + ionic frontend)
@@ -173,6 +182,69 @@ api: ## Executes into the workspace container.
 	@echo "Shelling into api container"
 	@echo "==============================================="
 	@docker-compose exec api bash
+
+## ------------------------------------------------------------------------------
+## Build/Run Database Commands
+## - Builds the biohub database (db)
+## ------------------------------------------------------------------------------
+
+build-db: ## Builds database container
+	@echo "==============================================="
+	@echo "Make: build-db - building db image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup api nginx
+
+run-db: ## Runs database container
+	@echo "==============================================="
+	@echo "Make: run-db - running db image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
+
+run-db-debug: ## Runs database container in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-db-debug - running db image in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db
+
+## ------------------------------------------------------------------------------
+## Database migration commands
+## ------------------------------------------------------------------------------
+
+build-db-setup: ## Build the db knex setup (migrations + seeding) image
+	@echo "==============================================="
+	@echo "Make: knex-rollback - building db knex setup image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db_setup
+
+run-db-setup: ## Run the database migrations and seeding
+	@echo "==============================================="
+	@echo "Make: knex-rollback - running database migrations and seeding"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db_setup
+
+build-db-migrate: ## Build the db knex migrations image
+	@echo "==============================================="
+	@echo "Make: knex-rollback - bnuilding db knex migrate image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db_migrate
+
+run-db-migrate: ## Run the database migrations
+	@echo "==============================================="
+	@echo "Make: knex-rollback - running database migrations"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db_migrate
+
+build-db-rollback: ## Build the db knex rollback image
+	@echo "==============================================="
+	@echo "Make: knex-rollback - building db knex rollback image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db_rollback
+
+run-db-rollback: ## Rollback the latest database migrations
+	@echo "==============================================="
+	@echo "Make: knex-rollback - rolling back the latest database migrations"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db_rollback
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects

@@ -150,5 +150,9 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.raw(``);
+  await knex.raw(`
+    DROP SCHEMA IF EXISTS biohub CASCADE;
+    DROP SCHEMA IF EXISTS biohub_dapi_v1 CASCADE;
+    DROP USER IF EXISTS ${DB_USER_API};
+  `);
 }
