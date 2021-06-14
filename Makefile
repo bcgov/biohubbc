@@ -184,29 +184,6 @@ api: ## Executes into the workspace container.
 	@docker-compose exec api bash
 
 ## ------------------------------------------------------------------------------
-## Build/Run Database Commands
-## - Builds the biohub database (db)
-## ------------------------------------------------------------------------------
-
-build-db: ## Builds database container
-	@echo "==============================================="
-	@echo "Make: build-db - building db image"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx
-
-run-db: ## Runs database container
-	@echo "==============================================="
-	@echo "Make: run-db - running db image"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
-
-run-db-debug: ## Runs database container in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-db-debug - running db image in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db
-
-## ------------------------------------------------------------------------------
 ## Database migration commands
 ## ------------------------------------------------------------------------------
 
