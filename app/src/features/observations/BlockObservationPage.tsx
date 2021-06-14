@@ -172,7 +172,9 @@ const BlockObservationPage = () => {
             </Breadcrumbs>
           </Box>
           <Box mb={3}>
-            <Typography data-testid="block-observation-heading" variant="h1">Add Block Observation</Typography>
+            <Typography data-testid="block-observation-heading" variant="h1">
+              Add Block Observation
+            </Typography>
           </Box>
           <Box mb={3}>
             <Typography variant="body1">
