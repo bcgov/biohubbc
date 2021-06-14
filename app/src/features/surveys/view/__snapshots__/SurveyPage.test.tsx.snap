@@ -1,0 +1,435 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SurveyPage renders a spinner if no survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SurveyPage renders correctly with no end date 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation2"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-14"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-13 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-13 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                survey name
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-15"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-16"
+        >
+          <h1
+            class="MuiTypography-root MuiTypography-h1"
+          >
+            survey name
+          </h1>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-17"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+          >
+            October 10, 1998
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-18"
+    >
+      <aside
+        class="MuiBox-root MuiBox-root-19"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <nav
+            aria-label="Survey Navigation"
+            class="MuiList-root makeStyles-surveyNav-12 MuiList-padding"
+            role="navigation"
+          >
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/details"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Survey Details
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/observations"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M4 7V21H18V23H4C2.9 23 2 22.1 2 21V7H4M12.8 15.35L9.5 12.05L10.9 10.65L12.8 12.55L17.1 8.25L18.5 9.65L12.8 15.35M20 3C21.1 3 22 3.9 22 5V17C22 18.1 21.1 19 20 19H8C6.9 19 6 18.1 6 17V5C6 3.9 6.9 3 8 3H11.18C11.6 1.84 12.7 1 14 1C15.3 1 16.4 1.84 16.82 3H20M14 3C13.45 3 13 3.45 13 4C13 4.55 13.45 5 14 5C14.55 5 15 4.55 15 4C15 3.45 14.55 3 14 3M10 7V5H8V17H20V5H18V7H10Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Observations
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/attachments"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Attachments
+                </span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <article
+        class="MuiBox-root MuiBox-root-20"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SurveyPage renders survey page when survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation2"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-5"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-4 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-4 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                survey name
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-6"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-7"
+        >
+          <h1
+            class="MuiTypography-root MuiTypography-h1"
+          >
+            survey name
+          </h1>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        >
+          <h6
+            class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+          >
+            October 10, 1998 - February 26, 2021
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-9"
+    >
+      <aside
+        class="MuiBox-root MuiBox-root-10"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <nav
+            aria-label="Survey Navigation"
+            class="MuiList-root makeStyles-surveyNav-3 MuiList-padding"
+            role="navigation"
+          >
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/details"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Survey Details
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/observations"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M4 7V21H18V23H4C2.9 23 2 22.1 2 21V7H4M12.8 15.35L9.5 12.05L10.9 10.65L12.8 12.55L17.1 8.25L18.5 9.65L12.8 15.35M20 3C21.1 3 22 3.9 22 5V17C22 18.1 21.1 19 20 19H8C6.9 19 6 18.1 6 17V5C6 3.9 6.9 3 8 3H11.18C11.6 1.84 12.7 1 14 1C15.3 1 16.4 1.84 16.82 3H20M14 3C13.45 3 13 3.45 13 4C13 4.55 13.45 5 14 5C14.55 5 15 4.55 15 4C15 3.45 14.55 3 14 3M10 7V5H8V17H20V5H18V7H10Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Observations
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/projects/1/surveys/attachments"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M16.5,6V17.5A4,4 0 0,1 12.5,21.5A4,4 0 0,1 8.5,17.5V5A2.5,2.5 0 0,1 11,2.5A2.5,2.5 0 0,1 13.5,5V15.5A1,1 0 0,1 12.5,16.5A1,1 0 0,1 11.5,15.5V6H10V15.5A2.5,2.5 0 0,0 12.5,18A2.5,2.5 0 0,0 15,15.5V5A4,4 0 0,0 11,1A4,4 0 0,0 7,5V17.5A5.5,5.5 0 0,0 12.5,23A5.5,5.5 0 0,0 18,17.5V6H16.5Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Attachments
+                </span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <article
+        class="MuiBox-root MuiBox-root-11"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
