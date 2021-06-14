@@ -559,7 +559,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         for="rear_left_observer"
                         id="rear_left_observer-label"
                       >
-                        Left Observer
+                        Rear Left Observer
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -580,7 +580,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                             class="PrivateNotchedOutline-legendLabelled-43"
                           >
                             <span>
-                              Left Observer
+                              Rear Left Observer
                             </span>
                           </legend>
                         </fieldset>
@@ -599,7 +599,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         for="rear_right_observer"
                         id="rear_right_observer-label"
                       >
-                        Right Observer
+                        Rear Right Observer
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -620,7 +620,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                             class="PrivateNotchedOutline-legendLabelled-43"
                           >
                             <span>
-                              Right Observer
+                              Rear Right Observer
                             </span>
                           </legend>
                         </fieldset>
@@ -1201,7 +1201,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         for="aircraft_registration_number"
                         id="aircraft_registration_number-label"
                       >
-                        Registration Number
+                        Call Sign
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -1222,7 +1222,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                             class="PrivateNotchedOutline-legendLabelled-43"
                           >
                             <span>
-                              Registration Number
+                              Call Sign
                             </span>
                           </legend>
                         </fieldset>
@@ -1529,7 +1529,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                       >
                         <div
                           class="wtHider"
-                          style="width: 1365px; height: 321px;"
+                          style="width: 1415px; height: 321px;"
                         >
                           <div
                             class="wtSpreader"
@@ -1541,7 +1541,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                               <colgroup>
                                 <col
                                   class="rowHeader"
-                                  style="width: 80px;"
+                                  style="width: 90px;"
                                 />
                               </colgroup>
                               <thead>
@@ -1691,7 +1691,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                       >
                         <div
                           class="wtHider"
-                          style="width: 1365px;"
+                          style="width: 1415px;"
                         >
                           <div
                             class="wtSpreader"
@@ -1703,7 +1703,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                               <colgroup>
                                 <col
                                   class="rowHeader"
-                                  style="width: 80px;"
+                                  style="width: 90px;"
                                 />
                               </colgroup>
                               <thead>
