@@ -34,9 +34,9 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     ;
     COMMENT ON COLUMN block_observation.b_id IS 'System generated surrogate primary key identifier.'
     ;
-    COMMENT ON COLUMN block_observation.start_datetime IS 'The time the observation was started.'
+    COMMENT ON COLUMN block_observation.start_datetime IS 'The date and time the observation was started.'
     ;
-    COMMENT ON COLUMN block_observation.end_datetime IS 'The time the observation ended.'
+    COMMENT ON COLUMN block_observation.end_datetime IS 'The date and time the observation ended.'
     ;
     COMMENT ON COLUMN block_observation.observation_cnt IS 'The computed total count of the observations.'
     ;

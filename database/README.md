@@ -11,7 +11,7 @@
 
 <br />
 
-## Migrations
+## Knex Migrations / Seeds
 
 An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
 
@@ -19,7 +19,7 @@ An ordered list of database changes (creates, deletes, alters, etc). The latest 
 
 Useful resource https://devhints.io/knex
 
-To run migrations locally using your terminal, export the required environment variables.  For example if an env variable is DB_SCHEMA=biohub
+To run migrations locally using your terminal, export the required environment variables. For example if an env variable is DB_SCHEMA=biohub
 
 ```
 EXPORT DB_SCHEMA=biohub
