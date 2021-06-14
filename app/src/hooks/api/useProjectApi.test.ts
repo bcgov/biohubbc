@@ -86,7 +86,7 @@ describe('useProjectApi', () => {
       }
     ];
 
-    mock.onGet(`/api/projects`).reply(200, response);
+    mock.onPost(`/api/projects`).reply(200, response);
 
     const result = await useProjectApi(axios).getProjectsList();
 
