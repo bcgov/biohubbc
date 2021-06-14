@@ -15,7 +15,7 @@
 
 An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
 
-### Knex Migrations
+### Migrations
 
 Useful resource https://devhints.io/knex
 
@@ -29,7 +29,7 @@ To test that it worked:
 ```
 ECHO $DB_SCHEMA 
 ```
-## Seeds
+### Seeds
 
 A set of scripts that populate the database tables with any ephemeral values required for the app to function during development. This can include dummy data so that when the app is running locally, you don't have to manually create a bunch of data in order to experience the app as it would be in a real environment.
 
