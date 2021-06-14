@@ -13,9 +13,10 @@
 
 ## Knex Migrations / Seeds
 
-An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
-
 ### Migrations
+
+
+An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
 
 Useful resource https://devhints.io/knex
 
