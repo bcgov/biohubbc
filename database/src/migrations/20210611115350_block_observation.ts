@@ -5,8 +5,6 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
 
-  GRANT ALL ON SCHEMA biohub TO postgres;
-
   set schema '${DB_SCHEMA}';
   set search_path = ${DB_SCHEMA},public;
 
@@ -18,8 +16,8 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     b_id              integer           NOT NULL,
     s_id              integer           NOT NULL,
-    start_time        timestamptz(6)    DEFAULT now() NOT NULL,
-    end_time          timestamptz(6)    DEFAULT now() NOT NULL,
+    start_datetime    timestamptz(6)    NOT NULL,
+    end_datetime      timestamptz(6)    NOT NULL,
     observation_cnt   integer           NOT NULL,
     data              json              NOT NULL,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
@@ -36,11 +34,11 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     ;
     COMMENT ON COLUMN block_observation.b_id IS 'System generated surrogate primary key identifier.'
     ;
-    COMMENT ON COLUMN block_observation.start_time IS 'The datetime the observation was started.'
+    COMMENT ON COLUMN block_observation.start_datetime IS 'The time the observation was started.'
     ;
-    COMMENT ON COLUMN block_observation.end_time IS 'The datetime the observation ended.'
+    COMMENT ON COLUMN block_observation.end_datetime IS 'The time the observation ended.'
     ;
-    COMMENT ON COLUMN block_observation.observation_cnt IS 'The computed total of the observations.'
+    COMMENT ON COLUMN block_observation.observation_cnt IS 'The computed total count of the observations.'
     ;
     COMMENT ON COLUMN block_observation.data IS 'The json data associated with the record.'
     ;
@@ -54,12 +52,11 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     ;
     COMMENT ON COLUMN block_observation.revision_count IS 'Revision count used for concurrency control.'
     ;
-    COMMENT ON TABLE block_observation IS 'A persistent store for draft block_observation data. For example, if a user starts a project creation process and wants to save that information as a draft then the block observation data can be persisted for subsequent reload into the project creation process.'
-    ;
+    COMMENT ON TABLE block_observation IS 'A persistent store for draft block_observation data.';
 
     -- add unique keys
 
-    ALTER TABLE block_observation ADD CONSTRAINT "Refblock100"
+    ALTER TABLE block_observation ADD CONSTRAINT "Refblock_observation100"
         FOREIGN KEY (s_id)
         REFERENCES survey(id)
     ;
@@ -87,9 +84,19 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
  */
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
-      set schema '${DB_SCHEMA}';
-      set search_path = ${DB_SCHEMA},public;
+      SET SCHEMA '${DB_SCHEMA}';
+      SET SEARCH_PATH = ${DB_SCHEMA},public, biohub_dapi_v1;
+
+      SET ROLE biohub_api;
+
+      DROP VIEW IF EXISTS biohub_dapi_v1.block_observation;
+
+      SET ROLE postgres;
+
+      DROP TRIGGER IF EXISTS survey_proprietor_val on biohub.survey_proprietor;
 
       DROP TABLE IF EXISTS ${DB_SCHEMA}.block_observation;
+
+
     `);
 }
