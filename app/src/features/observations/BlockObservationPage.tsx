@@ -7,12 +7,16 @@ import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Formik, FormikProps } from 'formik';
-import React, { useRef, useState, useContext } from 'react';
+import React, { useRef, useState, useContext, useCallback, useEffect } from 'react';
 import BlockObservationForm, { BlockObservationInitialValues } from './components/BlockObservationForm';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { DialogContext } from 'contexts/dialogContext';
 import { AddBlockObservationI18N } from 'constants/i18n';
 import * as History from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -32,20 +36,58 @@ const BlockObservationPage = () => {
   const classes = useStyles();
   const urlParams = useParams();
   const history = useHistory();
+  const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
-
-  // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck] = useState(true);
 
   const hotRef = useRef<HotTable>(null);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
+  // Ability to bypass showing the 'Are you sure you want to cancel' dialog
+  const [enableCancelCheck] = useState(true);
   const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , , ,]]);
   const [initialValues] = useState(BlockObservationInitialValues);
 
+  const [isLoadingProject, setIsLoadingProject] = useState(true);
+  const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
+  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
+
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
+
+  const getProject = useCallback(async () => {
+    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(projectId);
+
+    if (!projectWithDetailsResponse) {
+      return;
+    }
+
+    setProjectWithDetails(projectWithDetailsResponse);
+  }, [biohubApi.project, urlParams]);
+
+  const getSurvey = useCallback(async () => {
+    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(projectId, surveyId);
+
+    if (!surveyWithDetailsResponse) {
+      return;
+    }
+    setSurveyWithDetails(surveyWithDetailsResponse);
+  }, [biohubApi.survey, urlParams]);
+
+  useEffect(() => {
+    if (isLoadingProject && !projectWithDetails) {
+      getProject();
+      setIsLoadingProject(false);
+    }
+  }, [isLoadingProject, projectWithDetails, getProject]);
+
+  useEffect(() => {
+    if (isLoadingSurvey && !surveyWithDetails) {
+      getSurvey();
+      setIsLoadingSurvey(false);
+    }
+  }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
 
   const defaultCancelDialogProps = {
     dialogTitle: AddBlockObservationI18N.cancelTitle,
@@ -94,6 +136,10 @@ const BlockObservationPage = () => {
     return true;
   };
 
+  if (!projectWithDetails || !surveyWithDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -101,9 +147,26 @@ const BlockObservationPage = () => {
         <Container maxWidth="xl">
           <Box mb={3}>
             <Breadcrumbs>
-              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                {/* <Typography variant="body2">{projectWithDetails.project.project_name}</Typography> */}
-                <Typography variant="body2">Testing</Typography>
+              <Link
+                color="primary"
+                onClick={() => history.push('/projects')}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">Projects</Typography>
+              </Link>
+              <Link
+                color="primary"
+                onClick={() => history.push(`/projects/${projectId}/surveys`)}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+              </Link>
+              <Link
+                color="primary"
+                onClick={() => history.push(`/projects/${projectId}/surveys/${surveyId}/observations`)}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">{surveyWithDetails.survey_details.survey_name}</Typography>
               </Link>
               <Typography variant="body2">Add Block Observation</Typography>
             </Breadcrumbs>

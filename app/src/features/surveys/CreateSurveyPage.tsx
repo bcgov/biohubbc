@@ -337,6 +337,13 @@ const CreateSurveyPage = () => {
         <Container maxWidth="xl">
           <Box mb={3}>
             <Breadcrumbs>
+              <Link
+                color="primary"
+                onClick={() => history.push('/projects')}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">Projects</Typography>
+              </Link>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>

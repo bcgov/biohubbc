@@ -17,6 +17,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 import TablePagination from '@material-ui/core/TablePagination';
 import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
+import { useHistory } from 'react-router';
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -35,6 +36,7 @@ export interface ISurveyObservationsProps {
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
+  const history = useHistory();
 
   const { projectForViewData, surveyForViewData } = props;
 
@@ -68,6 +70,19 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
   }, [biohubApi, isLoading, projectForViewData.id, surveyForViewData.survey_details.id]);
 
+  const addNewObservation = () => {
+    if (surveyType === 'Block') {
+      history.push(
+        `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/create`
+      );
+    }
+
+    // remove later
+    history.push(
+      `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/create`
+    );
+  };
+
   return (
     <>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
@@ -75,7 +90,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
-              <Button variant="contained" color="primary" onClick={() => console.log('new block survey')}>
+              <Button variant="contained" color="primary" onClick={addNewObservation}>
                 {`New ${surveyType} Survey`}
               </Button>
             </Box>
