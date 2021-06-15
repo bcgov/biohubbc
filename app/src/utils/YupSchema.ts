@@ -3,7 +3,7 @@
  * - See types/yup.d.ts
  */
 
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import * as yup from 'yup';
 

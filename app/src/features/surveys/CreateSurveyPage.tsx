@@ -35,7 +35,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import yup from 'utils/YupSchema';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import { getFormattedDate } from 'utils/Utils';
 

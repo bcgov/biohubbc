@@ -8,7 +8,7 @@ import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AddFundingI18N, DeleteFundingI18N, EditFundingI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectFundingItemForm, {

@@ -9,7 +9,7 @@ import yup from 'utils/YupSchema';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles({
