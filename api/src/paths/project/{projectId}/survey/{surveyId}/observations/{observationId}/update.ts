@@ -105,7 +105,11 @@ export function getObservationForUpdate(): RequestHandler {
       throw new HTTP400('Missing required path param `observationId`');
     }
 
-    const entity: string = req.query?.entity as string;
+    if (!req.query.entity) {
+      throw new HTTP400('Missing required query param `entity`');
+    }
+
+    const entity: string = req.query.entity as string;
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
