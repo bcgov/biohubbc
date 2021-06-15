@@ -23,8 +23,8 @@ describe('GetBlockObservationListData', () => {
         id: 1,
         b_id: 2,
         observation_cnt: 3,
-        start_datetime: 'Mon 03-Jul-2017, 11:00 AM',
-        end_datetime: 'Mon 03-Jul-2017, 11:10 AM'
+        start_datetime: '2021-06-15 11:11:05',
+        end_datetime: '2021-06-15 11:15:05'
       }
     ];
 
@@ -39,8 +39,8 @@ describe('GetBlockObservationListData', () => {
             id: 1,
             block_id: 2,
             number_of_observations: 3,
-            start_time: 'Mon 03-Jul-2017, 11:00 AM',
-            end_time: 'Mon 03-Jul-2017, 11:10 AM'
+            start_time: '2021-06-15 11:11:05',
+            end_time: '2021-06-15 11:15:05'
           }
         ]
       });

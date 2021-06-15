@@ -88,7 +88,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   return (
     <>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Observations</Typography>
+        <Typography variant="h2" data-testid="observations-heading">
+          Observations
+        </Typography>
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
