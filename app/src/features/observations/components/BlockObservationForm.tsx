@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -10,7 +10,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { DATE_LIMIT } from 'constants/dateFormats';
-import MooseHotTable from './MooseHotTable';
+import { HotTable } from '@handsontable/react';
+import Handsontable from 'handsontable';
+import 'handsontable/dist/handsontable.min.css';
 
 const useStyles = makeStyles(() => ({
   customGridContainer: {
@@ -94,6 +96,85 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
 
   const formikProps = useFormikContext<IBlockObservationForm>();
   const { values, touched, errors, handleChange } = formikProps;
+
+  // Currently hard-coded to moose observation form fields
+  const tableHeaders = [
+    ['WPT', { label: 'Bulls', colspan: 3 }, { label: 'Cows', colspan: 3 }],
+    [
+      '',
+      'Yrlings',
+      'Mature',
+      'Unclass',
+      'Lone',
+      'W/1 Calf',
+      'W/2 Calf',
+      'Lone Calf',
+      'Unclass',
+      'TOTAL',
+      'Activity',
+      '% Veg Cover',
+      '% Snow',
+      'Comments'
+    ]
+  ];
+
+  // Currently hard-coded to moose observation form fields
+  const [tableSettings] = useState<Handsontable.GridSettings>({
+    nestedHeaders: tableHeaders,
+    viewportRowRenderingOffset: 'auto',
+    minRows: 8,
+    contextMenu: true,
+    rowHeaders: false,
+    search: true,
+    width: '100%',
+    height: '100%',
+    rowHeights: 40,
+    colWidths: 90,
+    readOnly: false,
+    columnSorting: true,
+    formulas: true,
+    columns: [
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric' },
+      { type: 'numeric', readOnly: true },
+      { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
+      {
+        type: 'dropdown',
+        source: [
+          '0',
+          '5',
+          '10',
+          '15',
+          '20',
+          '25',
+          '30',
+          '35',
+          '40',
+          '45',
+          '50',
+          '55',
+          '60',
+          '65',
+          '70',
+          '75',
+          '80',
+          '85',
+          '90',
+          '95',
+          '100'
+        ]
+      },
+      { type: 'numeric' },
+      { type: 'text', width: 245 }
+    ]
+  });
 
   return (
     <form>
@@ -650,7 +731,15 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
         </Box>
         <Grid container spacing={2} className={classes.customGridContainer}>
           <Grid item xs={12}>
-            <MooseHotTable innerRef={props.tableRef} tableData={props.tableData} />
+            <Box style={{ height: '400px' }}>
+              <HotTable
+                id="hot"
+                ref={props.tableRef}
+                data={props.tableData}
+                settings={tableSettings}
+                licenseKey="non-commercial-and-evaluation"
+              />
+            </Box>
           </Grid>
         </Grid>
       </Box>

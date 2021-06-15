@@ -51,13 +51,13 @@ exports[`BlockObservationPage renders a spinner if no survey is loaded 1`] = `
 exports[`BlockObservationPage renders the page contents with the form when project and survey are loaded 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-33"
+    class="MuiBox-root MuiBox-root-31"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-34"
+        class="MuiBox-root MuiBox-root-32"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -70,7 +70,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-31 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -90,7 +90,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-31 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -110,7 +110,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-31 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -138,7 +138,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-33"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -148,7 +148,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-36"
+        class="MuiBox-root MuiBox-root-34"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -157,7 +157,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
         </p>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-37"
+        class="MuiBox-root MuiBox-root-35"
       >
         <form>
           <div
@@ -167,17 +167,17 @@ exports[`BlockObservationPage renders the page contents with the form when proje
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
             >
               <fieldset
-                class="MuiBox-root MuiBox-root-39"
+                class="MuiBox-root MuiBox-root-37"
               >
                 <legend
-                  class="MuiBox-root MuiBox-root-40"
+                  class="MuiBox-root MuiBox-root-38"
                 >
                   <b>
                     Block Information
                   </b>
                 </legend>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
@@ -206,10 +206,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Block ID
@@ -246,10 +246,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Block Size (km²)
@@ -307,10 +307,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Strata
@@ -353,10 +353,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
                               Date
@@ -394,10 +394,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
                               Start Time
@@ -435,10 +435,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43 PrivateNotchedOutline-legendNotched-44"
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
                               End Time
@@ -455,17 +455,17 @@ exports[`BlockObservationPage renders the page contents with the form when proje
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
             >
               <fieldset
-                class="MuiBox-root MuiBox-root-45"
+                class="MuiBox-root MuiBox-root-43"
               >
                 <legend
-                  class="MuiBox-root MuiBox-root-46"
+                  class="MuiBox-root MuiBox-root-44"
                 >
                   <b>
                     Flight Information
                   </b>
                 </legend>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
@@ -494,10 +494,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Pilot
@@ -534,10 +534,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Navigator
@@ -574,10 +574,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Rear Left Observer
@@ -614,10 +614,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Rear Right Observer
@@ -638,17 +638,17 @@ exports[`BlockObservationPage renders the page contents with the form when proje
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
             >
               <fieldset
-                class="MuiBox-root MuiBox-root-47"
+                class="MuiBox-root MuiBox-root-45"
               >
                 <legend
-                  class="MuiBox-root MuiBox-root-48"
+                  class="MuiBox-root MuiBox-root-46"
                 >
                   <b>
                     Conditions
                   </b>
                 </legend>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
@@ -698,10 +698,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Visibility
@@ -762,10 +762,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Light
@@ -805,10 +805,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Cloud Cover
@@ -820,7 +820,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
@@ -849,10 +849,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Temperature
@@ -910,10 +910,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Precipitation
@@ -953,10 +953,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Wind Speed
@@ -968,7 +968,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
@@ -997,10 +997,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Snow Cover
@@ -1037,10 +1037,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Snow Depth
@@ -1077,10 +1077,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Days Since Snowfall
@@ -1097,17 +1097,17 @@ exports[`BlockObservationPage renders the page contents with the form when proje
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
             >
               <fieldset
-                class="MuiBox-root MuiBox-root-49"
+                class="MuiBox-root MuiBox-root-47"
               >
                 <legend
-                  class="MuiBox-root MuiBox-root-50"
+                  class="MuiBox-root MuiBox-root-48"
                 >
                   <b>
                     Aircraft Details
                   </b>
                 </legend>
                 <div
-                  class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
                 >
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
@@ -1136,10 +1136,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Company
@@ -1176,10 +1176,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Aircraft Type
@@ -1216,10 +1216,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Call Sign
@@ -1256,10 +1256,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               GPS Model
@@ -1317,10 +1317,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               GPS Datum
@@ -1381,10 +1381,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-43"
+                            class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
                               Readout
@@ -1402,17 +1402,17 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             </div>
           </div>
           <fieldset
-            class="MuiBox-root MuiBox-root-51"
+            class="MuiBox-root MuiBox-root-49"
           >
             <legend
-              class="MuiBox-root MuiBox-root-52"
+              class="MuiBox-root MuiBox-root-50"
             >
               <b>
                 Comments
               </b>
             </legend>
             <div
-              class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -1440,10 +1440,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-43"
+                        class="PrivateNotchedOutline-legendLabelled-41"
                       >
                         <span>
                           Weather Description
@@ -1479,10 +1479,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-41 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-43"
+                        class="PrivateNotchedOutline-legendLabelled-41"
                       >
                         <span>
                           Description of Habitat
@@ -1495,27 +1495,27 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             </div>
           </fieldset>
           <fieldset
-            class="MuiBox-root MuiBox-root-53"
+            class="MuiBox-root MuiBox-root-51"
           >
             <legend
-              class="MuiBox-root MuiBox-root-54"
+              class="MuiBox-root MuiBox-root-52"
             >
               <b>
                 Observations
               </b>
             </legend>
             <div
-              class="MuiGrid-root makeStyles-customGridContainer-38 MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-57"
+                  class="MuiBox-root MuiBox-root-53"
                   style="height: 400px;"
                 >
                   <div
-                    class="makeStyles-hotTable-56 handsontable htColumnHeaders"
+                    class="handsontable htColumnHeaders"
                     data-originalstyle="height: 100%; overflow: hidden; width: 100%;"
                     id="hot"
                     style="height: 100%; overflow: hidden; width: 100%;"
@@ -1577,49 +1577,49 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                               <tbody>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
                                 <tr>
                                   <td
-                                    class="makeStyles-hotTable-56"
+                                    class=""
                                     style="height: 39px;"
                                   />
                                 </tr>
@@ -1853,10 +1853,10 @@ exports[`BlockObservationPage renders the page contents with the form when proje
           </fieldset>
         </form>
         <div
-          class="MuiBox-root MuiBox-root-58"
+          class="MuiBox-root MuiBox-root-54"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-32 MuiButton-containedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-30 MuiButton-containedPrimary"
             tabindex="0"
             type="submit"
           >
@@ -1870,7 +1870,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             />
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-32 MuiButton-containedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-30 MuiButton-containedPrimary"
             tabindex="0"
             type="submit"
           >
@@ -1884,7 +1884,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
             />
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-32 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-30 MuiButton-outlinedPrimary"
             tabindex="0"
             type="button"
           >
