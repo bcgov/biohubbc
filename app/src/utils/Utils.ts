@@ -1,4 +1,5 @@
 import { DATE_FORMAT } from 'constants/dateFormats';
+import { TIME_FORMAT } from 'constants/timeFormats';
 import { IConfig } from 'contexts/configContext';
 import moment from 'moment';
 
@@ -59,6 +60,24 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
   }
 
   return dateMoment.format(dateFormat);
+};
+
+/**
+ * Get a formatted time string.
+ *
+ * @param {TIME_FORMAT} timeFormat
+ * @param {string} date ISO 8601 date string
+ * @return {string} formatted time string, or an empty string if unable to parse the date
+ */
+export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
+  const dateMoment = moment(date);
+
+  if (!dateMoment.isValid()) {
+    //date was invalid
+    return '';
+  }
+
+  return dateMoment.format(timeFormat);
 };
 
 /**
