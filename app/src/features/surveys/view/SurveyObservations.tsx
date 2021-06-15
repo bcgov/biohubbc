@@ -18,7 +18,7 @@ import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePagination
 import TablePagination from '@material-ui/core/TablePagination';
 import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
 import { useHistory } from 'react-router';
-import { TIME_FORMAT } from 'constants/timeFormats';
+import { TIME_FORMAT } from 'constants/dateTimeFormats';
 import { getFormattedTime } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({

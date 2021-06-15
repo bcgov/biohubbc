@@ -1,5 +1,4 @@
-import { DATE_FORMAT } from 'constants/dateFormats';
-import { TIME_FORMAT } from 'constants/timeFormats';
+import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
 import moment from 'moment';
 
