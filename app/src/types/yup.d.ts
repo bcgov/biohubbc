@@ -4,7 +4,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import yup from 'utils/YupSchema';
 
 declare module 'yup' {

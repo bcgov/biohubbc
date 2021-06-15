@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { CodeSet, ICode } from 'interfaces/useCodesApi.interface';

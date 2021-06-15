@@ -16,7 +16,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetObservationsListResponse>}
    */
   const getObservationsList = async (projectId: number, surveyId: number): Promise<IGetObservationsListResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observations`);
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observations/list`);
 
     return data;
   };

@@ -18,6 +18,8 @@ import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePagination
 import TablePagination from '@material-ui/core/TablePagination';
 import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
 import { useHistory } from 'react-router';
+import { TIME_FORMAT } from 'constants/dateTimeFormats';
+import { getFormattedTime } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
   table: {
@@ -86,7 +88,9 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   return (
     <>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Observations</Typography>
+        <Typography variant="h2" data-testid="observations-heading">
+          Observations
+        </Typography>
         <Box>
           <Box display="flex" justifyContent="space-between">
             <Box mr={1}>
@@ -126,8 +130,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                     <TableCell>
                       {row.number_of_observations > 0 ? row.number_of_observations : `No Observations`}
                     </TableCell>
-                    <TableCell>{row.start_time}</TableCell>
-                    <TableCell>{row.end_time}</TableCell>
+                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.start_time)}</TableCell>
+                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.end_time)}</TableCell>
                     <TableCell>
                       <Link
                         underline="always"

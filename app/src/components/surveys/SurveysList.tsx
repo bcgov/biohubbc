@@ -14,7 +14,7 @@ import { SurveyStatusType } from 'constants/misc';
 import clsx from 'clsx';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 import { useHistory } from 'react-router';

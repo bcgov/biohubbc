@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import { DATE_LIMIT } from 'constants/dateFormats';
+import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {

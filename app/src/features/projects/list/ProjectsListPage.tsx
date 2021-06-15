@@ -10,7 +10,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';

@@ -12,7 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';

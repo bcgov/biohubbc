@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';

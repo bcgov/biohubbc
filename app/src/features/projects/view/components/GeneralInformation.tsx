@@ -6,7 +6,7 @@ import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { EditGeneralInformationI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
