@@ -6,8 +6,16 @@ export const observationIdResponseObject = {
   type: 'object',
   required: ['id'],
   properties: {
-    id: {
-      type: 'number'
+    blocks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number'
+          }
+        }
+      }
     }
   }
 };
