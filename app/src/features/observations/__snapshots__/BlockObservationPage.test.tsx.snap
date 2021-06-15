@@ -1,0 +1,1905 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BlockObservationPage renders a spinner if no project is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`BlockObservationPage renders a spinner if no survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`BlockObservationPage renders the page contents with the form when project and survey are loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-31"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-32"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-29 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  survey name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                Add Block Observation
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-33"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+          data-testid="block-observation-heading"
+        >
+          Add Block Observation
+        </h1>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-34"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
+        </p>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-35"
+      >
+        <form>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+            >
+              <fieldset
+                class="MuiBox-root MuiBox-root-37"
+              >
+                <legend
+                  class="MuiBox-root MuiBox-root-38"
+                >
+                  <b>
+                    Block Information
+                  </b>
+                </legend>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="block_name"
+                        id="block_name-label"
+                      >
+                        Block ID
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="block_name"
+                          name="block_name"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Block ID
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="block_size"
+                        id="block_size-label"
+                      >
+                        Block Size (km²)
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="block_size"
+                          name="block_size"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Block Size (km²)
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="strata_label"
+                      >
+                        Strata
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="strata"
+                          aria-labelledby="strata_label strata"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="strata"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="strata"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Strata
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="true"
+                        for="date"
+                        id="date-label"
+                      >
+                        Date
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          data-testid="date"
+                          id="date"
+                          max="2100-12-31"
+                          min="1900-01-01"
+                          name="date"
+                          type="date"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
+                          >
+                            <span>
+                              Date
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="true"
+                        for="start_time"
+                        id="start_time-label"
+                      >
+                        Start Time
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="start_time"
+                          name="start_time"
+                          step="300"
+                          type="time"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
+                          >
+                            <span>
+                              Start Time
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="true"
+                        for="end_time"
+                        id="end_time-label"
+                      >
+                        End Time
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="end_time"
+                          name="end_time"
+                          step="300"
+                          type="time"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
+                          >
+                            <span>
+                              End Time
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+            >
+              <fieldset
+                class="MuiBox-root MuiBox-root-43"
+              >
+                <legend
+                  class="MuiBox-root MuiBox-root-44"
+                >
+                  <b>
+                    Flight Information
+                  </b>
+                </legend>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="pilot_name"
+                        id="pilot_name-label"
+                      >
+                        Pilot
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="pilot_name"
+                          name="pilot_name"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Pilot
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="navigator"
+                        id="navigator-label"
+                      >
+                        Navigator
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="navigator"
+                          name="navigator"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Navigator
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="rear_left_observer"
+                        id="rear_left_observer-label"
+                      >
+                        Rear Left Observer
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="rear_left_observer"
+                          name="rear_left_observer"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Rear Left Observer
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="rear_right_observer"
+                        id="rear_right_observer-label"
+                      >
+                        Rear Right Observer
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="rear_right_observer"
+                          name="rear_right_observer"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Rear Right Observer
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+            >
+              <fieldset
+                class="MuiBox-root MuiBox-root-45"
+              >
+                <legend
+                  class="MuiBox-root MuiBox-root-46"
+                >
+                  <b>
+                    Conditions
+                  </b>
+                </legend>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="visibility-label"
+                      >
+                        Visibility
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="visibility"
+                          aria-labelledby="visibility-label visibility"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="visibility"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="visibility"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Visibility
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="light-label"
+                      >
+                        Light
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="light"
+                          aria-labelledby="light-label light"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="light"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="light"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Light
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="cloud_cover"
+                        id="cloud_cover-label"
+                      >
+                        Cloud Cover
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="cloud_cover"
+                          name="cloud_cover"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Cloud Cover
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="temperature"
+                        id="temperature-label"
+                      >
+                        Temperature
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="temperature"
+                          name="temperature"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Temperature
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="precipitation-label"
+                      >
+                        Precipitation
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="precipitation"
+                          aria-labelledby="precipitation-label precipitation"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="precipitation"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="precipitation"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Precipitation
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="wind_speed"
+                        id="wind_speed-label"
+                      >
+                        Wind Speed
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="wind_speed"
+                          name="wind_speed"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Wind Speed
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="snow_cover"
+                        id="snow_cover-label"
+                      >
+                        Snow Cover
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="snow_cover"
+                          name="snow_cover"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Snow Cover
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="snow_depth"
+                        id="snow_depth-label"
+                      >
+                        Snow Depth
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="snow_depth"
+                          name="snow_depth"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Snow Depth
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="days_since_snowfall"
+                        id="days_since_snowfall-label"
+                      >
+                        Days Since Snowfall
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="days_since_snowfall"
+                          name="days_since_snowfall"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Days Since Snowfall
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+            >
+              <fieldset
+                class="MuiBox-root MuiBox-root-47"
+              >
+                <legend
+                  class="MuiBox-root MuiBox-root-48"
+                >
+                  <b>
+                    Aircraft Details
+                  </b>
+                </legend>
+                <div
+                  class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="aircraft_company"
+                        id="aircraft_company-label"
+                      >
+                        Company
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_company"
+                          name="aircraft_company"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Company
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="aircraft_type"
+                        id="aircraft_type-label"
+                      >
+                        Aircraft Type
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_type"
+                          name="aircraft_type"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Aircraft Type
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="aircraft_registration_number"
+                        id="aircraft_registration_number-label"
+                      >
+                        Call Sign
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_registration_number"
+                          name="aircraft_registration_number"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Call Sign
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        for="aircraft_gps_model"
+                        id="aircraft_gps_model-label"
+                      >
+                        GPS Model
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <input
+                          aria-invalid="false"
+                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_gps_model"
+                          name="aircraft_gps_model"
+                          type="text"
+                          value=""
+                        />
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              GPS Model
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="aircraft_gps_datum-label"
+                      >
+                        GPS Datum
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="aircraft_gps_datum"
+                          aria-labelledby="aircraft_gps_datum-label aircraft_gps_datum"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_gps_datum"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="aircraft_gps_datum"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              GPS Datum
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiFormControl-root MuiFormControl-fullWidth"
+                    >
+                      <label
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        data-shrink="false"
+                        id="aircraft_gps_readout-label"
+                      >
+                        Readout
+                      </label>
+                      <div
+                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                      >
+                        <div
+                          aria-haspopup="listbox"
+                          aria-label="aircraft_gps_readout"
+                          aria-labelledby="aircraft_gps_readout-label aircraft_gps_readout"
+                          class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                          id="aircraft_gps_readout"
+                          role="button"
+                          tabindex="0"
+                        >
+                          <span>
+                            ​
+                          </span>
+                        </div>
+                        <input
+                          aria-hidden="true"
+                          class="MuiSelect-nativeInput"
+                          name="aircraft_gps_readout"
+                          tabindex="-1"
+                          value=""
+                        />
+                        <svg
+                          aria-hidden="true"
+                          class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                          focusable="false"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7 10l5 5 5-5z"
+                          />
+                        </svg>
+                        <fieldset
+                          aria-hidden="true"
+                          class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                        >
+                          <legend
+                            class="PrivateNotchedOutline-legendLabelled-41"
+                          >
+                            <span>
+                              Readout
+                            </span>
+                          </legend>
+                        </fieldset>
+                      </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-marginDense"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <fieldset
+            class="MuiBox-root MuiBox-root-49"
+          >
+            <legend
+              class="MuiBox-root MuiBox-root-50"
+            >
+              <b>
+                Comments
+              </b>
+            </legend>
+            <div
+              class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+            >
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                    data-shrink="false"
+                    for="weather_description"
+                    id="weather_description-label"
+                  >
+                    Weather Description
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                  >
+                    <textarea
+                      aria-invalid="false"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                      id="weather_description"
+                      name="weather_description"
+                      rows="2"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-41"
+                      >
+                        <span>
+                          Weather Description
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                >
+                  <label
+                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                    data-shrink="false"
+                    for="description_of_habitat"
+                    id="description_of_habitat-label"
+                  >
+                    Description of Habitat
+                  </label>
+                  <div
+                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline MuiInputBase-marginDense MuiOutlinedInput-marginDense"
+                  >
+                    <textarea
+                      aria-invalid="false"
+                      class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
+                      id="description_of_habitat"
+                      name="description_of_habitat"
+                      rows="2"
+                    />
+                    <fieldset
+                      aria-hidden="true"
+                      class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+                    >
+                      <legend
+                        class="PrivateNotchedOutline-legendLabelled-41"
+                      >
+                        <span>
+                          Description of Habitat
+                        </span>
+                      </legend>
+                    </fieldset>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <fieldset
+            class="MuiBox-root MuiBox-root-51"
+          >
+            <legend
+              class="MuiBox-root MuiBox-root-52"
+            >
+              <b>
+                Observations
+              </b>
+            </legend>
+            <div
+              class="MuiGrid-root makeStyles-customGridContainer-36 MuiGrid-container MuiGrid-spacing-xs-2"
+            >
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-53"
+                  style="height: 400px;"
+                >
+                  <div
+                    class="handsontable htColumnHeaders"
+                    data-originalstyle="height: 100%; overflow: hidden; width: 100%;"
+                    id="hot"
+                    style="height: 100%; overflow: hidden; width: 100%;"
+                  >
+                    <div
+                      class="ht_master handsontable"
+                    >
+                      <div
+                        class="wtHolder"
+                        style="position: relative; height: 0px; width: 0px;"
+                      >
+                        <div
+                          class="wtHider"
+                          style="width: 1415px; height: 321px;"
+                        >
+                          <div
+                            class="wtSpreader"
+                            style="position: relative; top: 0px; left: 0px;"
+                          >
+                            <table
+                              class="htCore"
+                            >
+                              <colgroup>
+                                <col
+                                  class="rowHeader"
+                                  style="width: 90px;"
+                                />
+                              </colgroup>
+                              <thead>
+                                <tr>
+                                  <th
+                                    class=""
+                                  >
+                                    <div
+                                      class="relative"
+                                    >
+                                      <span
+                                        class="colHeader"
+                                      >
+                                        WPT
+                                      </span>
+                                    </div>
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <th
+                                    class=""
+                                  >
+                                    <div
+                                      class="relative"
+                                    >
+                                      <span
+                                        class="colHeader columnSorting sortAction"
+                                      />
+                                    </div>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                                <tr>
+                                  <td
+                                    class=""
+                                    style="height: 39px;"
+                                  />
+                                </tr>
+                              </tbody>
+                            </table>
+                            <div
+                              class="htBorders"
+                            >
+                              <div
+                                style="position: absolute; top: 0px; left: 0px;"
+                              >
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current corner"
+                                  style="background-color: rgb(75, 137, 255); height: 6px; width: 6px; border: 1px solid #fff; display: none;"
+                                />
+                              </div>
+                              <div
+                                style="position: absolute; top: 0px; left: 0px;"
+                              >
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill corner"
+                                  style="background-color: rgb(255, 0, 0); height: 6px; width: 6px; border: 1px solid #fff; display: none;"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="ht_clone_top handsontable"
+                      style="position: absolute; top: 0px; left: 0px; overflow: visible; width: 0px; height: 0px;"
+                    >
+                      <div
+                        class="wtHolder"
+                        style="position: relative; width: 0px; height: 3px;"
+                      >
+                        <div
+                          class="wtHider"
+                          style="width: 1415px;"
+                        >
+                          <div
+                            class="wtSpreader"
+                            style="position: relative; left: 0px;"
+                          >
+                            <table
+                              class="htCore"
+                            >
+                              <colgroup>
+                                <col
+                                  class="rowHeader"
+                                  style="width: 90px;"
+                                />
+                              </colgroup>
+                              <thead>
+                                <tr>
+                                  <th
+                                    class=""
+                                  >
+                                    <div
+                                      class="relative"
+                                    >
+                                      <span
+                                        class="colHeader"
+                                      >
+                                        WPT
+                                      </span>
+                                    </div>
+                                  </th>
+                                </tr>
+                                <tr>
+                                  <th
+                                    class=""
+                                  >
+                                    <div
+                                      class="relative"
+                                    >
+                                      <span
+                                        class="colHeader columnSorting sortAction"
+                                      />
+                                    </div>
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody />
+                            </table>
+                            <div
+                              class="htBorders"
+                            >
+                              <div
+                                style="position: absolute; top: 0px; left: 0px;"
+                              >
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current"
+                                  style="background-color: rgb(75, 137, 255); height: 2px; width: 2px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder current corner"
+                                  style="background-color: rgb(75, 137, 255); height: 6px; width: 6px; border: 1px solid #fff; display: none;"
+                                />
+                              </div>
+                              <div
+                                style="position: absolute; top: 0px; left: 0px;"
+                              >
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill"
+                                  style="background-color: rgb(255, 0, 0); height: 1px; width: 1px; display: none;"
+                                />
+                                <div
+                                  class="wtBorder fill corner"
+                                  style="background-color: rgb(255, 0, 0); height: 6px; width: 6px; border: 1px solid #fff; display: none;"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="ht_clone_bottom handsontable"
+                      style="position: absolute; top: 0px; left: 0px; overflow: visible;"
+                    >
+                      <div
+                        class="wtHolder"
+                        style="position: relative;"
+                      >
+                        <div
+                          class="wtHider"
+                        >
+                          <div
+                            class="wtSpreader"
+                            style="position: relative;"
+                          >
+                            <table
+                              class="htCore"
+                            >
+                              <colgroup />
+                              <thead />
+                              <tbody />
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="ht_clone_left handsontable"
+                      style="position: absolute; top: 0px; left: 0px; overflow: visible;"
+                    >
+                      <div
+                        class="wtHolder"
+                        style="position: relative;"
+                      >
+                        <div
+                          class="wtHider"
+                        >
+                          <div
+                            class="wtSpreader"
+                            style="position: relative;"
+                          >
+                            <table
+                              class="htCore"
+                            >
+                              <colgroup />
+                              <thead />
+                              <tbody />
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </form>
+        <div
+          class="MuiBox-root MuiBox-root-54"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-30 MuiButton-containedPrimary"
+            tabindex="0"
+            type="submit"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Save and Exit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-30 MuiButton-containedPrimary"
+            tabindex="0"
+            type="submit"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Save and Next Block
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-30 MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Cancel
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

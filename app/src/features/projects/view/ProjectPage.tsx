@@ -14,7 +14,7 @@ import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
-import SurveysListPage from 'features/projects/view/SurveysListPage';
+import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';

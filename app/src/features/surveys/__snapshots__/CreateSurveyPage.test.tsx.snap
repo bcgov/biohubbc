@@ -27,6 +27,26 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 <p
                   class="MuiTypography-root MuiTypography-body2"
                 >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-8 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
                   Test Project Name
                 </p>
               </a>
