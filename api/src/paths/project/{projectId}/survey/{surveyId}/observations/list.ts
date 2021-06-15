@@ -107,7 +107,7 @@ export function getObservationsList(): RequestHandler {
 
       await connection.commit();
 
-      let blockObservationsResult: any[] = [];
+      let blockObservationsResult: any[] | null = null;
 
       if (
         getBlockObservationListResponse &&
