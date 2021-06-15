@@ -10,7 +10,7 @@
 /**
  * Basic response object for an observation.
  */
- export const observationIdResponseObject = {
+export const observationIdResponseObject = {
   title: 'Observation Response Object',
   type: 'object',
   required: ['id'],
