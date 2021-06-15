@@ -17,7 +17,7 @@ describe('useObservationApi', () => {
   const surveyId = 2;
 
   it('getObservationsList works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observations`).reply(200, {
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observations/list`).reply(200, {
       blocks: [
         {
           id: 1,
