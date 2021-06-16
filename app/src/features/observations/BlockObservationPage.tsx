@@ -166,7 +166,7 @@ const BlockObservationPage = () => {
     return true;
   };
 
-  if (!projectWithDetails || !surveyWithDetails || !observationWithDetails) {
+  if (!projectWithDetails || !surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -229,6 +229,7 @@ const BlockObservationPage = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
+                    data-testid="save-and-exit-button"
                     onClick={() => console.log('add and exit functionality')}
                     className={classes.actionButton}>
                     Save and Exit
@@ -248,6 +249,7 @@ const BlockObservationPage = () => {
                   type="submit"
                   variant="contained"
                   color="primary"
+                  data-testid="save-changes-button"
                   onClick={() => console.log('edit functionality')}
                   className={classes.actionButton}>
                   Save Changes
