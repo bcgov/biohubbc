@@ -32,6 +32,6 @@ export const getObservationForUpdateResponse: IGetObservationResponse = {
       aircraft_gps_datum: 'NAD27',
       aircraft_gps_readout: 'UTM'
     },
-    tableData: [[]]
+    tableData: [[null, 1, 1, null, null, null, null, null, null, null, null, null, null, null]]
   }
 };

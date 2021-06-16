@@ -49,7 +49,7 @@ const BlockObservationPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck] = useState(true);
-  const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
+  const [tableData, setTableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
@@ -96,6 +96,7 @@ const BlockObservationPage = () => {
     }
 
     setObservationWithDetails(observationWithDetailsResponse.data.metaData);
+    setTableData(observationWithDetailsResponse.data.tableData);
   }, [biohubApi.observation, urlParams]);
 
   useEffect(() => {
