@@ -1,21 +1,14 @@
+
 /**
- * Basic response object for an observation.
+ * Basic response object for a survey.
  */
-export const observationIdResponseObject = {
-  title: 'Observation Response Object',
+export const blockObservationIdResponseObject = {
+  title: 'Block Observation Object',
   type: 'object',
   required: ['id'],
   properties: {
-    blocks: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'number'
-          }
-        }
-      }
+    id: {
+      type: 'number'
     }
   }
 };
