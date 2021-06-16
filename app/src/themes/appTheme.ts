@@ -62,7 +62,12 @@ const appTheme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        textTransform: 'none',
+        textTransform: 'none'
+      },
+      outlinedPrimary: {
+        background: '#ffffff'
+      },
+      containedPrimary: {
         fontWeight: 700
       },
       startIcon: {
@@ -97,6 +102,11 @@ const appTheme = createMuiTheme({
         '&$error': {
           color: '#db3131'
         }
+      }
+    },
+    MuiOutlinedInput: {
+      root: {
+        background: '#ffffff'
       }
     },
     MuiStepLabel: {
@@ -145,7 +155,8 @@ const appTheme = createMuiTheme({
         verticalAlign: 'top'
       },
       head: {
-        fontWeight: 700
+        fontWeight: 700,
+        lineHeight: 'auto'
       }
     }
   }
