@@ -157,7 +157,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
         </p>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiPaper-root MuiBox-root MuiBox-root-35 MuiPaper-elevation1 MuiPaper-rounded"
       >
         <form>
           <div
@@ -1529,7 +1529,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                       >
                         <div
                           class="wtHider"
-                          style="width: 1415px; height: 321px;"
+                          style="width: 1337px; height: 321px;"
                         >
                           <div
                             class="wtSpreader"
@@ -1541,7 +1541,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                               <colgroup>
                                 <col
                                   class="rowHeader"
-                                  style="width: 90px;"
+                                  style="width: 84px;"
                                 />
                               </colgroup>
                               <thead>
@@ -1691,7 +1691,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                       >
                         <div
                           class="wtHider"
-                          style="width: 1415px;"
+                          style="width: 1337px;"
                         >
                           <div
                             class="wtSpreader"
@@ -1703,7 +1703,7 @@ exports[`BlockObservationPage renders the page contents with the form when proje
                               <colgroup>
                                 <col
                                   class="rowHeader"
-                                  style="width: 90px;"
+                                  style="width: 84px;"
                                 />
                               </colgroup>
                               <thead>
