@@ -160,7 +160,6 @@ const BlockObservationPage = () => {
   }
 
   const handleSaveAndExit = async (values: ICreateBlockObservationPostRequest) => {
-
     if (!formikRef?.current) {
       return;
     }
@@ -179,6 +178,8 @@ const BlockObservationPage = () => {
 
       if (!response) {
         return;
+      } else {
+
       }
     } catch (error) {
       console.log('there is an error');

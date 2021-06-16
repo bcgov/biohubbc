@@ -5,7 +5,6 @@
  * @class PostBlockObservationObject
  */
 export class PostBlockObservationObject {
-
   block_name: number;
   block_size: number;
   strata: string;
@@ -33,7 +32,7 @@ export class PostBlockObservationObject {
   aircraft_gps_model: string;
   aircraft_gps_datum: string;
   aircraft_gps_readout: string;
-  tableData:string;
+  tableData: string;
 
   constructor(obj?: any) {
     this.block_name = obj?.data.metaData.block_name || null;

@@ -1,4 +1,3 @@
-
 /**
  * Basic response object for a survey.
  */

@@ -4,9 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { PostBlockObservationObject } from '../../../../../../models/block-observation-create';
-import {
-  blockObservationIdResponseObject
-} from '../../../../../../openapi/schemas/observation';
+import { blockObservationIdResponseObject } from '../../../../../../openapi/schemas/observation';
 import { postBlockObservationSQL } from '../../../../../../queries/observation/observation-create-queries';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
