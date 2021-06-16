@@ -17,6 +17,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -176,13 +177,13 @@ const BlockObservationPage = () => {
               Add Block Observation
             </Typography>
           </Box>
-          <Box mb={3}>
+          <Box mb={5}>
             <Typography variant="body1">
               Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit
               amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
             </Typography>
           </Box>
-          <Box display="block">
+          <Box pl={3} pr={3} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
               initialValues={initialValues}
@@ -192,7 +193,7 @@ const BlockObservationPage = () => {
               onSubmit={() => {}}>
               <BlockObservationForm tableRef={hotRef} tableData={tableData} />
             </Formik>
-            <Box mt={2} mb={6} display="flex" justifyContent="flex-end">
+            <Box mt={2} pb={3} display="flex" justifyContent="flex-end">
               <Button
                 type="submit"
                 variant="contained"

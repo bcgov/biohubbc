@@ -129,7 +129,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
     width: '100%',
     height: '100%',
     rowHeights: 40,
-    colWidths: 90,
+    colWidths: 84,
     readOnly: false,
     columnSorting: true,
     formulas: true,
