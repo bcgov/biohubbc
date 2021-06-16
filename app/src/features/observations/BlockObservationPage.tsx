@@ -178,8 +178,6 @@ const BlockObservationPage = () => {
 
       if (!response) {
         return;
-      } else {
-
       }
     } catch (error) {
       console.log('there is an error');
