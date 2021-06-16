@@ -223,22 +223,34 @@ const BlockObservationPage = () => {
               <BlockObservationForm tableRef={hotRef} tableData={tableData} />
             </Formik>
             <Box mt={2} pb={3} display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => {}}
-                className={classes.actionButton}>
-                Save {observationId ? 'Changes' : 'and Exit'}
-              </Button>
               {!observationId && (
+                <>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => console.log('add and exit functionality')}
+                    className={classes.actionButton}>
+                    Save and Exit
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => console.log('add and next block functionality')}
+                    className={classes.actionButton}>
+                    Save and Next Block
+                  </Button>
+                </>
+              )}
+              {observationId && (
                 <Button
                   type="submit"
                   variant="contained"
                   color="primary"
-                  onClick={() => {}}
+                  onClick={() => console.log('edit functionality')}
                   className={classes.actionButton}>
-                  Save and Next Block
+                  Save Changes
                 </Button>
               )}
               <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
