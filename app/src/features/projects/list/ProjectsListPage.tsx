@@ -1,6 +1,9 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
+import Divider from '@material-ui/core/Divider';
+import { mdiFilterOutline, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -29,10 +32,16 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 const useStyles = makeStyles({
   actionButton: {
-    minWidth: '6rem',
+    width: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
     }
+  },
+  linkButton: {
+    textAlign: 'left'
+  },
+  filtersBox: {
+    background: '#f7f8fa'
   }
 });
 
@@ -55,6 +64,7 @@ const ProjectsListPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const dialogContext = useContext(DialogContext);
+  const projectCount = projects.length;
 
   const navigateToCreateProjectPage = (draftId?: number) => {
     if (draftId) {
@@ -172,27 +182,36 @@ const ProjectsListPage: React.FC = () => {
 
     if (!hasProjects && !hasDrafts) {
       return (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow></TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>No Projects found</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Permits</TableCell>
+              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <TableRow>
+              <TableCell colSpan={6}>
+                <Box display="flex" justifyContent="center">
+                  No Results
+                </Box>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       );
     } else {
       return (
-        <TableContainer component={Paper}>
+        <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Project Name</TableCell>
-                <TableCell>Project Type</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Permits</TableCell>
                 <TableCell>Coordinator Agency</TableCell>
                 <TableCell>Start Date</TableCell>
@@ -207,6 +226,7 @@ const ProjectsListPage: React.FC = () => {
                       data-testid={row.name}
                       underline="always"
                       component="button"
+                      className={classes.linkButton}
                       variant="body2"
                       onClick={() => navigateToCreateProjectPage(row.id)}>
                       {row.name} (Draft)
@@ -254,61 +274,78 @@ const ProjectsListPage: React.FC = () => {
         <Box mb={5} display="flex" justifyContent="space-between">
           <Typography variant="h1">Projects</Typography>
           <Button
-            className={classes.actionButton}
-            variant="outlined"
+            variant="contained"
             color="primary"
+            startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => navigateToCreateProjectPage()}>
             Create Project
           </Button>
         </Box>
-        <Box mb={2} display="flex" justifyContent="flex-end">
-          {codes && (
-            <Button
-              className={classes.actionButton}
-              variant="outlined"
-              color="primary"
-              onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
-              {!isFiltersOpen ? `Open Advanced Filters` : `Close Advanced Filters`}
-            </Button>
-          )}
-        </Box>
-        {isFiltersOpen && (
-          <Box mb={4}>
-            <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-              <ProjectAdvancedFilters
-                coordinator_agency={
-                  codes?.coordinator_agency?.map((item: any) => {
-                    return item.name;
-                  }) || []
-                }
-                region={
-                  codes?.region?.map((item) => {
-                    return { value: item.name, label: item.name };
-                  }) || []
-                }
-                species={
-                  codes?.species?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-                funding_sources={
-                  codes?.funding_source?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
-            </Formik>
-            <Box mt={2} display="flex" justifyContent="flex-end">
-              <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
-                Reset
+        <Paper>
+          <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
+            <Typography variant="h4" component="h3">
+              {projectCount} {projectCount !== 1 ? 'Projects' : 'Project'} found
+            </Typography>
+            {codes && (
+              <Button
+                variant="text"
+                color="primary"
+                startIcon={<Icon path={mdiFilterOutline} size={0.8} />}
+                onClick={() => setIsFiltersOpen(!isFiltersOpen)}>
+                {!isFiltersOpen ? `Show Filters` : `Hide Filters`}
               </Button>
-              <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>
-                Search
-              </Button>
-            </Box>
+            )}
           </Box>
-        )}
-        {getProjectsTableData()}
+          <Divider></Divider>
+          {isFiltersOpen && (
+            <Box className={classes.filtersBox}>
+              <Box px={2} py={4}>
+                <Formik
+                  innerRef={formikRef}
+                  initialValues={ProjectAdvancedFiltersInitialValues}
+                  onSubmit={handleSubmit}>
+                  <ProjectAdvancedFilters
+                    coordinator_agency={
+                      codes?.coordinator_agency?.map((item: any) => {
+                        return item.name;
+                      }) || []
+                    }
+                    region={
+                      codes?.region?.map((item) => {
+                        return { value: item.name, label: item.name };
+                      }) || []
+                    }
+                    species={
+                      codes?.species?.map((item) => {
+                        return { value: item.id, label: item.name };
+                      }) || []
+                    }
+                    funding_sources={
+                      codes?.funding_source?.map((item) => {
+                        return { value: item.id, label: item.name };
+                      }) || []
+                    }
+                  />
+                </Formik>
+                <Box mt={4} display="flex" alignItems="center" justifyContent="flex-end">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    className={classes.actionButton}>
+                    Search
+                  </Button>
+                  <Button className={classes.actionButton} variant="outlined" color="primary" onClick={handleReset}>
+                    Clear
+                  </Button>
+                </Box>
+              </Box>
+              <Divider></Divider>
+            </Box>
+          )}
+          {getProjectsTableData()}
+        </Paper>
       </Container>
     </Box>
   );

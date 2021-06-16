@@ -72,7 +72,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             required={false}
@@ -84,8 +84,8 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth variant="outlined" required={false}>
             <InputLabel id="project_type">Project Type</InputLabel>
             <Select
               id="project_type"
@@ -112,6 +112,9 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
           </FormControl>
         </Grid>
         <Grid item xs={12} md={6}>
+          <StartEndDateFields formikProps={formikProps} startRequired={false} endRequired={false} />
+        </Grid>
+        <Grid item xs={12} md={3}>
           <AutocompleteFreeSoloField
             id="coordinator_agency"
             name="coordinator_agency"
@@ -120,7 +123,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             required={false}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             id="permit_number"
@@ -131,14 +134,8 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             value={values.permit_number}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={false} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <MultiAutocompleteFieldVariableSize id="regions" label="Regions" options={props.region} required={false} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
+        <Grid item xs={12} md={3}>
+          <FormControl fullWidth variant="outlined" required={false}>
             <InputLabel id="agency_id-label">Funding Agency Name</InputLabel>
             <Select
               id="agency_id"
@@ -157,7 +154,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={3}>
           <TextField
             fullWidth
             required={false}
@@ -169,7 +166,12 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
             onChange={handleChange}
           />
         </Grid>
-        <StartEndDateFields formikProps={formikProps} startRequired={false} endRequired={false} />
+        <Grid item xs={6}>
+          <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={false} />
+        </Grid>
+        <Grid item xs={6}>
+          <MultiAutocompleteFieldVariableSize id="regions" label="Regions" options={props.region} required={false} />
+        </Grid>
       </Grid>
     </form>
   );

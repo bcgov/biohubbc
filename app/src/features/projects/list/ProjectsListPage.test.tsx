@@ -64,7 +64,7 @@ describe('ProjectsListPage', () => {
       );
 
       await waitFor(() => {
-        expect(getByText('Open Advanced Filters')).toBeInTheDocument();
+        expect(getByText('Show Filters')).toBeInTheDocument();
       });
     });
   });
