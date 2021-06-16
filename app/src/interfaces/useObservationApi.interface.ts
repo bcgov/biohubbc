@@ -1,4 +1,4 @@
-import { IBlockObservationForm } from "features/observations/components/BlockObservationForm";
+import { IBlockObservationForm } from 'features/observations/components/BlockObservationForm';
 
 export interface IGetBlocksListResponse {
   id: number;
@@ -18,7 +18,7 @@ export interface IGetObservationsListResponse {
  * @export
  * @interface ICreateObservationRequest
  */
- export interface ICreateObservationRequest {
+export interface ICreateObservationRequest {
   metaData: IBlockObservationForm;
   tableData: any[][];
 }
@@ -29,7 +29,7 @@ export interface IGetObservationsListResponse {
  * @export
  * @interface IGetObservationResponse
  */
- export interface IGetObservationResponse {
+export interface IGetObservationResponse {
   id: number;
   data: ICreateObservationRequest;
 }

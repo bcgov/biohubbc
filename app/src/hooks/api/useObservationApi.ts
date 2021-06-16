@@ -31,13 +31,21 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {string} entity
    * @return {*}  {Promise<IGetObservationResponse>}
    */
-  const getObservationForUpdate = async (projectId: number, surveyId: number, observationId: number, entity: string): Promise<IGetObservationResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`, {
-      params: { entity },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
+  const getObservationForUpdate = async (
+    projectId: number,
+    surveyId: number,
+    observationId: number,
+    entity: string
+  ): Promise<IGetObservationResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
+      {
+        params: { entity },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
       }
-    });
+    );
 
     return data;
   };

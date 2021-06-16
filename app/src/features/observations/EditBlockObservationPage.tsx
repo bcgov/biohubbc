@@ -8,7 +8,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState, useContext, useCallback, useEffect } from 'react';
-import BlockObservationForm, { BlockObservationInitialValues, IBlockObservationForm } from './components/BlockObservationForm';
+import BlockObservationForm, {
+  BlockObservationInitialValues,
+  IBlockObservationForm
+} from './components/BlockObservationForm';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { DialogContext } from 'contexts/dialogContext';
 import { AddBlockObservationI18N } from 'constants/i18n';
@@ -53,7 +56,9 @@ const EditBlockObservationPage = () => {
   const [isLoadingObservation, setIsLoadingObservation] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
-  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(BlockObservationInitialValues);
+  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
+    BlockObservationInitialValues
+  );
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -80,7 +85,10 @@ const EditBlockObservationPage = () => {
 
   const getObservation = useCallback(async () => {
     const observationWithDetailsResponse = await biohubApi.observation.getObservationForUpdate(
-      projectId, surveyId, observationId, 'block'
+      projectId,
+      surveyId,
+      observationId,
+      'block'
     );
 
     if (!observationWithDetailsResponse || !observationWithDetailsResponse.data) {
