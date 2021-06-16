@@ -18,11 +18,11 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { ICreateBlockObservationPostRequest } from 'interfaces/useObservationApi.interface';
-// import { APIError } from 'hooks/api/useAxios';
-// import {
-//   //ErrorDialog,
-//   IErrorDialogProps
-// } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
+import {
+  //ErrorDialog,
+  IErrorDialogProps
+} from 'components/dialog/ErrorDialog';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -59,18 +59,18 @@ const BlockObservationPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
 
-  // const defaultErrorDialogProps = {
-  //   onClose: () => {
-  //     dialogContext.setErrorDialog({ open: false });
-  //   },
-  //   onOk: () => {
-  //     dialogContext.setErrorDialog({ open: false });
-  //   }
-  // };
+  const defaultErrorDialogProps = {
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
 
-  // const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-  //   dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
-  // };
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -160,20 +160,11 @@ const BlockObservationPage = () => {
   }
 
   const handleSaveAndExit = async (values: ICreateBlockObservationPostRequest) => {
-    //const handleSaveAndExit = async (values: any) => {
-
-    console.log('block metadata is: ', values);
 
     if (!formikRef?.current) {
-      console.log('formikref is null');
       return;
-    } else {
-      console.log('formikref values are: ', formikRef.current.values);
     }
 
-    //TODO:  convert the block meta and the table data to match the ICreateBlockObservationPostRequest format
-
-    //const postData: ICreateBlockObservationPostRequest = {
     const postData: any = {
       data: {
         metaData: formikRef.current.values,
@@ -183,8 +174,6 @@ const BlockObservationPage = () => {
       }
     };
 
-    console.log('Postdata is: ', postData);
-
     try {
       const response = await biohubApi.observation.createBlockObservation(projectId, surveyId, postData);
 
@@ -193,8 +182,8 @@ const BlockObservationPage = () => {
       }
     } catch (error) {
       console.log('there is an error');
-      // const apiError = error as APIError;
-      // showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
 
