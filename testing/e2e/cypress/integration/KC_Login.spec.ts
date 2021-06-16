@@ -1,5 +1,4 @@
 import * as faker from 'faker';
-import moment from 'moment';
 
 import {
   navigate, login, logout,

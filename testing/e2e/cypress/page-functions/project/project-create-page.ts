@@ -3,7 +3,7 @@ import * as faker from 'faker';
 
 export function navigate_project() {
   // Create project
-  cy.contains('Projects').should('be.visible')
+  cy.contains('0 Projects found').should('be.visible')
   cy.visit('/projects/create')
 
   // Main Projects Page

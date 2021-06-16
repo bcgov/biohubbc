@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as update from './update';
 import * as db from '../../../../../../../database/db';
 import * as observation_update_queries from '../../../../../../../queries/observation/observation-update-queries';
+import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -45,6 +46,18 @@ describe('getObservationForUpdate', () => {
       entity: 'block'
     }
   } as any;
+
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   it('should throw a 400 error when no project id path param', async () => {
     sinon.stub(db, 'getDBConnection').returns({
@@ -157,5 +170,75 @@ describe('getObservationForUpdate', () => {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build SQL get statement');
     }
+  });
+
+  it('should return only block observation details when entity type is block, on success', async () => {
+    const blockObservationDetails = {
+      id: 1,
+      data: {
+        metaData: {
+          key: 'value'
+        },
+        tableData: {
+          key: 'value'
+        }
+      }
+    };
+
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [blockObservationDetails]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(observation_update_queries, 'getBlockObservationSQL').returns(SQL`some query`);
+
+    const result = update.getObservationForUpdate();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql({
+      id: 1,
+      data: {
+        metaData: {
+          key: 'value'
+        },
+        tableData: {
+          key: 'value'
+        }
+      }
+    });
+  });
+
+  it('should return only block observation details when entity type is block, on no result (null)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: null
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(observation_update_queries, 'getBlockObservationSQL').returns(SQL`some query`);
+
+    const result = update.getObservationForUpdate();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.be.null;
   });
 });
