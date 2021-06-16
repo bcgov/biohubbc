@@ -9,6 +9,7 @@ import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
 import BlockObservationPage from 'features/observations/BlockObservationPage';
+import EditBlockObservationPage from 'features/observations/EditBlockObservationPage';
 
 interface IProjectsRouterProps {
   classes: any;
@@ -85,6 +86,13 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         layout={ProjectsLayout}
         path="/projects/:id?/surveys/:survey_id?/observations/create"
         component={BlockObservationPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/observations/:observation_id?/block"
+        component={EditBlockObservationPage}
         componentProps={props}
       />
       <PrivateRoute
