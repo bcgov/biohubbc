@@ -31,9 +31,23 @@ POST.apiDoc = {
         schema: {
           title: 'Block Observation request object',
           type: 'object',
-          required: ['data'],
           properties: {
-            data: {
+            block_name: {
+              title: 'Block name of the observation',
+              type: 'string'
+            },
+            start_datetime: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            end_datetime: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            observation_count: {
+              type: 'number'
+            },
+            observation_data: {
               title: 'Block observation json data',
               type: 'object',
               properties: {}

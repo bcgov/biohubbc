@@ -1,5 +1,6 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
+import { PostBlockObservationObject } from '../../models/block-observation-create';
 
 const defaultLog = getLogger('queries/observation-create-queries');
 
@@ -11,10 +12,13 @@ const defaultLog = getLogger('queries/observation-create-queries');
  * @param {unknown} data JSON data blob
  * @return {*}  {(SQLStatement | null)}
  */
-export const postBlockObservationSQL = (surveyId: number, data: unknown): SQLStatement | null => {
-  defaultLog.debug({ label: 'postBlockObservationSQL', message: 'params', data });
+export const postBlockObservationSQL = (
+  surveyId: number,
+  observationPostData: PostBlockObservationObject
+): SQLStatement | null => {
+  defaultLog.debug({ label: 'postBlockObservationSQL', message: 'params', observationPostData });
 
-  if (!surveyId || !data) {
+  if (!surveyId || !observationPostData) {
     return null;
   }
 
@@ -27,17 +31,15 @@ export const postBlockObservationSQL = (surveyId: number, data: unknown): SQLSta
       observation_cnt,
       data
     ) VALUES (
-      1,
-      1,
-      now(),
-      now(),
-      3,
-      ${data}
+      ${observationPostData.block_name},
+      ${surveyId},
+      ${observationPostData.start_datetime},
+      ${observationPostData.end_datetime},
+      ${observationPostData.observation_count},
+      ${observationPostData.observation_data}
     )
     RETURNING
-      id,
-      create_date::timestamptz,
-      update_date::timestamptz;
+      id
   `;
 
   defaultLog.debug({

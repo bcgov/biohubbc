@@ -18,6 +18,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { ICreateBlockObservationPostRequest } from 'interfaces/useObservationApi.interface';
+import moment from 'moment';
 import { APIError } from 'hooks/api/useAxios';
 import {
   //ErrorDialog,
@@ -50,7 +51,7 @@ const BlockObservationPage = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
   const [initialValues] = useState(BlockObservationInitialValues);
 
@@ -165,7 +166,11 @@ const BlockObservationPage = () => {
     }
 
     const postData: any = {
-      data: {
+      block_name: formikRef.current.values.block_name,
+      start_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.start_time).toISOString(),
+      end_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.end_time).toISOString(),
+      observation_count: Math.floor(Math.random() * 50) + 1,
+      observation_data: {
         metaData: formikRef.current.values,
         tableData: {
           data: tableData
@@ -178,6 +183,10 @@ const BlockObservationPage = () => {
 
       if (!response) {
         return;
+      } else {
+        console.log('we have a successful entry');
+        setEnableCancelCheck(false);
+        history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
       }
     } catch (error) {
       console.log('there is an error');
