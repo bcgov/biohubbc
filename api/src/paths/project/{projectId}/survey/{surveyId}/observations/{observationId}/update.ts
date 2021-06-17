@@ -143,11 +143,12 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Observation with matching entity type and observationId.',
+      description: 'Boolean true value representing successful update.',
       content: {
         'application/json': {
           schema: {
-            ...(observationUpdateGetResponseObject as object)
+            title: 'Observation put response',
+            type: 'boolean'
           }
         }
       }
