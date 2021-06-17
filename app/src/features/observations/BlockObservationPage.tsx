@@ -97,7 +97,7 @@ const BlockObservationPage = () => {
     }
 
     setObservationWithDetails(observationWithDetailsResponse.data.metaData);
-    setTableData(observationWithDetailsResponse.data.tableData);
+    setTableData(observationWithDetailsResponse.data.tableData.data);
   }, [biohubApi.observation, urlParams]);
 
   useEffect(() => {
