@@ -68,7 +68,6 @@ const BlockObservationPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
 
-
   const defaultErrorDialogProps = {
     onClose: () => {
       dialogContext.setErrorDialog({ open: false });
@@ -281,29 +280,44 @@ const BlockObservationPage = () => {
               onSubmit={() => {}}>
               <BlockObservationForm tableRef={hotRef} tableData={tableData} />
             </Formik>
-            <Box mt={2} mb={6} display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={(values: any) => handleSaveAndExit(values)}
-                className={classes.actionButton}>
-                Save and Exit
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  console.log('Save and next clicked');
-                }}
-                className={classes.actionButton}>
-                Save and Next Block
-              </Button>
+            <Box mt={2} pb={3} display="flex" justifyContent="flex-end">
+              {!observationId && (
+                <>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    data-testid="save-and-exit-button"
+                    onClick={(values:any) => handleSaveAndExit(values)}
+                    className={classes.actionButton}>
+                    Save and Exit
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => console.log('add and next block functionality')}
+                    className={classes.actionButton}>
+                    Save and Next Block
+                  </Button>
+                </>
+              )}
+              {observationId && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  data-testid="save-changes-button"
+                  onClick={() => console.log('edit functionality')}
+                  className={classes.actionButton}>
+                  Save Changes
+                </Button>
+              )}
               <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
                 Cancel
               </Button>
             </Box>
+
           </Box>
         </Container>
       </Box>
