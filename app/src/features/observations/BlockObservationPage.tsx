@@ -169,7 +169,7 @@ const BlockObservationPage = () => {
       block_name: formikRef.current.values.block_name,
       start_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.start_time).toISOString(),
       end_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.end_time).toISOString(),
-      observation_count: Math.floor(Math.random() * 50) + 1,
+      observation_count: 50,
       observation_data: {
         metaData: formikRef.current.values,
         tableData: {
