@@ -172,6 +172,29 @@ describe('getObservationForUpdate', () => {
     }
   });
 
+  it('should throw a 400 error when entity is not valid', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.getObservationForUpdate();
+
+      await result(
+        { ...sampleReq, query: { entity: 'incorrect' } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL get statement');
+    }
+  });
+
   it('should return only block observation details when entity type is block, on success', async () => {
     const blockObservationDetails = {
       id: 1,
@@ -378,6 +401,25 @@ describe('updateObservation', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing required body');
+    }
+  });
+
+  it('should throw a 400 error when entity is not provided', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result({ ...sampleReq, body: { entity: null } }, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
     }
   });
 
