@@ -100,8 +100,6 @@ const BlockObservationPage = () => {
     setTableData(observationWithDetailsResponse.data.tableData.data);
   }, [biohubApi.observation, urlParams]);
 
-  console.log(tableData);
-
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
       getProject();
