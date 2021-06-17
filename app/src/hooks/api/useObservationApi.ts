@@ -1,5 +1,9 @@
 import { AxiosInstance } from 'axios';
-import { IGetObservationResponse, IGetObservationsListResponse } from 'interfaces/useObservationApi.interface';
+import {
+  ICreateUpdateObservationRequest,
+  IGetObservationResponse,
+  IGetObservationsListResponse
+} from 'interfaces/useObservationApi.interface';
 import qs from 'qs';
 
 /**
@@ -50,9 +54,33 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Update an existing observation.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} observationId
+   * @param {ICreateUpdateObservationRequest} observationData
+   * @return {*}  {Promise<any>}
+   */
+  const updateObservation = async (
+    projectId: number,
+    surveyId: number,
+    observationId: number,
+    observationData: ICreateUpdateObservationRequest
+  ): Promise<any> => {
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
+      observationData
+    );
+
+    return data;
+  };
+
   return {
     getObservationsList,
-    getObservationForUpdate
+    getObservationForUpdate,
+    updateObservation
   };
 };
 

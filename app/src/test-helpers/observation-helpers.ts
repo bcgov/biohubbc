@@ -35,5 +35,6 @@ export const getObservationForUpdateResponse: IGetObservationResponse = {
     tableData: {
       data: [['', '1', '1', '', '', '', '', '', '', '', '', '', '', '']]
     }
-  }
+  },
+  revision_count: 1
 };

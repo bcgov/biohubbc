@@ -13,14 +13,22 @@ export interface IGetObservationsListResponse {
 }
 
 /**
- * Create observation post object.
+ * Create/Update observation post/put object.
  *
  * @export
- * @interface ICreateObservationRequest
+ * @interface ICreateUpdateObservationRequest
  */
-export interface ICreateObservationRequest {
-  metaData: IBlockObservationForm;
-  tableData: IBlockObservationTableData;
+export interface ICreateUpdateObservationRequest {
+  entity: string;
+  block_name: string;
+  start_datetime: string;
+  end_datetime: string;
+  observation_count: number;
+  observation_data: {
+    metaData: IBlockObservationForm;
+    tableData: IBlockObservationTableData;
+  };
+  revision_count?: number;
 }
 
 export interface IBlockObservationTableData {
@@ -35,5 +43,9 @@ export interface IBlockObservationTableData {
  */
 export interface IGetObservationResponse {
   id: number;
-  data: ICreateObservationRequest;
+  data: {
+    metaData: IBlockObservationForm;
+    tableData: IBlockObservationTableData;
+  };
+  revision_count: number;
 }

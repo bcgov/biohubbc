@@ -28,3 +28,17 @@ export const observationIdResponseObject = {
     }
   }
 };
+
+/**
+ * Request object for observation update PUT request
+ */
+export const observationUpdatePutRequestObject = {
+  title: 'Observation Put Object',
+  type: 'object',
+  properties: {
+    observation_data: {
+      type: 'object'
+    },
+    revision_count: { type: 'number' }
+  }
+};

@@ -22,6 +22,10 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import Paper from '@material-ui/core/Paper';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import moment from 'moment';
+import { APIError } from 'hooks/api/useAxios';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -37,6 +41,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+interface IObservationWithDetails {
+  data: IBlockObservationForm;
+  revision_count?: number;
+}
+
 const BlockObservationPage = () => {
   const classes = useStyles();
   const urlParams = useParams();
@@ -49,7 +58,7 @@ const BlockObservationPage = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [tableData, setTableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
@@ -57,13 +66,26 @@ const BlockObservationPage = () => {
   const [isLoadingObservation, setIsLoadingObservation] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
-  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
-    BlockObservationInitialValues
-  );
+  const [observationWithDetails, setObservationWithDetails] = useState<IObservationWithDetails>({
+    data: BlockObservationInitialValues
+  });
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
   const observationId = urlParams['observation_id'];
+
+  const defaultErrorDialogProps = {
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(projectId);
@@ -96,7 +118,10 @@ const BlockObservationPage = () => {
       return;
     }
 
-    setObservationWithDetails(observationWithDetailsResponse.data.metaData);
+    setObservationWithDetails({
+      data: observationWithDetailsResponse.data.metaData,
+      revision_count: observationWithDetailsResponse.revision_count
+    });
     setTableData(observationWithDetailsResponse.data.tableData.data);
   }, [biohubApi.observation, urlParams]);
 
@@ -168,6 +193,59 @@ const BlockObservationPage = () => {
     return true;
   };
 
+  // Function to update block observation data
+  const handleUpdate = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    await formikRef.current?.submitForm();
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    if (!isValid) {
+      showErrorDialog({
+        dialogTitle: 'Observation Form Incomplete',
+        dialogText:
+          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
+    const putData = {
+      entity: 'block',
+      block_name: formikRef.current.values.block_name,
+      start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
+      end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
+      observation_count: 50,
+      observation_data: {
+        metaData: formikRef.current.values,
+        tableData: {
+          data: tableData
+        }
+      },
+      revision_count: observationWithDetails.revision_count
+    };
+
+    try {
+      const response = await biohubApi.observation.updateObservation(projectId, surveyId, observationId, putData);
+
+      if (!response) {
+        return;
+      }
+
+      setEnableCancelCheck(false);
+      history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
   if (!projectWithDetails || !surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -217,7 +295,7 @@ const BlockObservationPage = () => {
           <Box pl={3} pr={3} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
-              initialValues={observationWithDetails}
+              initialValues={observationWithDetails.data}
               validationSchema={BlockObservationYupSchema}
               enableReinitialize={true}
               validateOnBlur={false}
@@ -253,7 +331,7 @@ const BlockObservationPage = () => {
                   variant="contained"
                   color="primary"
                   data-testid="save-changes-button"
-                  onClick={() => console.log('edit functionality')}
+                  onClick={handleUpdate}
                   className={classes.actionButton}>
                   Save Changes
                 </Button>
