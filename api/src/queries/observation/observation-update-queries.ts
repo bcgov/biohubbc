@@ -48,7 +48,7 @@ export const getBlockObservationSQL = (observationId: number): SQLStatement | nu
  * @param {any} observationData
  * @returns {SQLStatement} sql query object
  */
- export const updateBlockObservationSQL = (observationId: number, observationData: any): SQLStatement | null => {
+export const updateBlockObservationSQL = (observationId: number, observationData: any): SQLStatement | null => {
   defaultLog.debug({
     label: 'updateBlockObservationSQL',
     message: 'params',
