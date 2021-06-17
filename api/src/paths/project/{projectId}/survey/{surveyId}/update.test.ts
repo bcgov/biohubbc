@@ -6,6 +6,7 @@ import * as update from './update';
 import * as db from '../../../../../database/db';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
+import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -394,7 +395,7 @@ describe('updateSurvey', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned', async () => {
+  it('should throw a 400 error when no sql statement returned (surveyDetails)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -415,7 +416,7 @@ describe('updateSurvey', () => {
     }
   });
 
-  it('should throw a 409 error when no result or rowCount', async () => {
+  it('should throw a 409 error when no result or rowCount (surveyDetails)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: null, rowCount: 0 });
@@ -441,7 +442,7 @@ describe('updateSurvey', () => {
     }
   });
 
-  it('should send a valid HTTP response on success', async () => {
+  it('should send a valid HTTP response on success (with only survey_details)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1 });
@@ -461,6 +462,88 @@ describe('updateSurvey', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(200);
+  });
+
+  it('should send a valid HTTP response on success (when did not have proprietor data and still does not)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
+
+    const result = update.updateSurvey();
+
+    await result(
+      { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 0 } } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.equal(200);
+  });
+
+  it('should send a valid HTTP response on success (did have proprietor data and no longer requires proprietor data)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_delete_queries, 'deleteSurveyProprietorSQL').returns(SQL`some query`);
+
+    const result = update.updateSurvey();
+
+    await result(
+      { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 1 } } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.equal(200);
+  });
+
+  it('should throw HTTP 400 error when no sql statement (did have proprietor data and no longer requires proprietor data)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_delete_queries, 'deleteSurveyProprietorSQL').returns(null);
+
+    try {
+      const result = update.updateSurvey();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 1 } } },
+        sampleRes as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement');
+    }
   });
 });
 
