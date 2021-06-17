@@ -20,7 +20,11 @@ export interface IGetObservationsListResponse {
  */
 export interface ICreateObservationRequest {
   metaData: IBlockObservationForm;
-  tableData: any[][];
+  tableData: IBlockObservationTableData;
+}
+
+export interface IBlockObservationTableData {
+  data: string[][];
 }
 
 /**
