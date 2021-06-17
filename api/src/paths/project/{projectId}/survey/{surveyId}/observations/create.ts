@@ -17,8 +17,8 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Create a new block observation.',
-  tags: ['block observation'],
+  description: 'Create a new observation.',
+  tags: ['observation'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -29,11 +29,11 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          title: 'Block Observation request object',
+          title: 'Observation request object',
           type: 'object',
           properties: {
             block_name: {
-              title: 'Block name of the observation',
+              title: 'block_name of the observation',
               type: 'string'
             },
             start_datetime: {
@@ -94,7 +94,7 @@ POST.apiDoc = {
 export function createBlockObservation(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'Add a block observation to a survey',
+      label: 'createBlockObservation',
       message: 'params and body',
       'req.params': req.params,
       'req.body': req.body

@@ -5,11 +5,10 @@ import { PostBlockObservationObject } from '../../models/block-observation-creat
 const defaultLog = getLogger('queries/observation-create-queries');
 
 /**
- * SQL query to insert a row in the webform_draft table.
+ * SQL query to insert a row in the block_observation table.
  *
- * @param {number} systemUserId the ID of the user in context
- * @param {string} name name of the draft record
- * @param {unknown} data JSON data blob
+ * @param {number} surveyId
+ * @param {unknown} observationPostData JSON data blob
  * @return {*}  {(SQLStatement | null)}
  */
 export const postBlockObservationSQL = (

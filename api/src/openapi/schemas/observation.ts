@@ -1,5 +1,4 @@
 /**
- * Basic response object for a survey.
  * Response object for observation update GET request
  */
 export const observationUpdateGetResponseObject = {

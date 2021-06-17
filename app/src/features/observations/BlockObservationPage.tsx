@@ -24,10 +24,7 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { ICreateBlockObservationPostRequest } from 'interfaces/useObservationApi.interface';
 import moment from 'moment';
 import { APIError } from 'hooks/api/useAxios';
-import {
-  //ErrorDialog,
-  IErrorDialogProps
-} from 'components/dialog/ErrorDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(() => ({
@@ -216,12 +213,10 @@ const BlockObservationPage = () => {
       if (!response) {
         return;
       } else {
-        console.log('we have a successful entry');
         setEnableCancelCheck(false);
         history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
       }
     } catch (error) {
-      console.log('there is an error');
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
@@ -288,7 +283,7 @@ const BlockObservationPage = () => {
                     variant="contained"
                     color="primary"
                     data-testid="save-and-exit-button"
-                    onClick={(values:any) => handleSaveAndExit(values)}
+                    onClick={(values: any) => handleSaveAndExit(values)}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>
@@ -317,7 +312,6 @@ const BlockObservationPage = () => {
                 Cancel
               </Button>
             </Box>
-
           </Box>
         </Container>
       </Box>
