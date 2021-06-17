@@ -455,20 +455,6 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Data Sharing Agreement Required
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Yes
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
                 Proprietary Data Category
               </dt>
               <dd
@@ -489,6 +475,20 @@ exports[`SurveyDetails renders correctly 1`] = `
                 class="MuiTypography-root MuiTypography-body1"
               >
                 prop name
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Data Sharing Agreement Required
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Yes
               </dd>
             </div>
             <div
