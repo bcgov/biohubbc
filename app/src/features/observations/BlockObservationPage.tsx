@@ -208,7 +208,7 @@ const BlockObservationPage = () => {
 
     if (!isValid) {
       showErrorDialog({
-        dialogTitle: 'Observation Form Incomplete',
+        dialogTitle: 'Edit Observation Form Incomplete',
         dialogText:
           'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
       });
