@@ -242,3 +242,187 @@ describe('getObservationForUpdate', () => {
     expect(actualResult).to.be.null;
   });
 });
+
+describe('updateObservation', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return null;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const sampleReq = {
+    keycloak_token: {},
+    params: {
+      projectId: 1,
+      surveyId: 1,
+      observationId: 1
+    },
+    body: {
+      entity: 'block'
+    }
+  } as any;
+
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
+
+  it('should throw a 400 error when no project id path param', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path parameter: projectId');
+    }
+  });
+
+  it('should throw a 400 error when no survey id path param', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
+    }
+  });
+
+  it('should throw a 400 error when no observation id path param', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, observationId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path parameter: observationId');
+    }
+  });
+
+  it('should throw a 400 error when no req body', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement returned for put block observation', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(observation_update_queries, 'updateBlockObservationSQL').returns(null);
+
+    try {
+      const result = update.updateObservation();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
+  it('should return true when update is successful', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rowCount: 1
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(observation_update_queries, 'updateBlockObservationSQL').returns(SQL`some query`);
+
+    const result = update.updateObservation();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.equal(true);
+  });
+});
