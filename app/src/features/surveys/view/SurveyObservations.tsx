@@ -78,11 +78,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/create`
       );
     }
+  };
 
-    // remove later
-    history.push(
-      `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/create`
-    );
+  const editObservation = async (observationId: number) => {
+    if (surveyType === 'Block') {
+      history.push(
+        `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/${observationId}/block`
+      );
+    }
   };
 
   return (
@@ -137,7 +140,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                         underline="always"
                         component="button"
                         variant="body2"
-                        onClick={() => console.log('edit block details')}>
+                        onClick={() => editObservation(row.id)}>
                         Edit
                       </Link>
                     </TableCell>

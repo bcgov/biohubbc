@@ -13,6 +13,7 @@ import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { HotTable } from '@handsontable/react';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.min.css';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles(() => ({
   customGridContainer: {
@@ -81,6 +82,13 @@ export const BlockObservationInitialValues: IBlockObservationForm = {
   aircraft_gps_readout: ''
 };
 
+export const BlockObservationYupSchema = yup.object().shape({
+  block_name: yup.number().min(1, 'required').required('Required'),
+  date: yup.string().isValidDateString().required('Required'),
+  start_time: yup.string().required('Required'),
+  end_time: yup.string().required('Required')
+});
+
 export interface IBlockObservationFormProps {
   tableRef: any;
   tableData: any[][];
@@ -129,7 +137,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
     width: '100%',
     height: '100%',
     rowHeights: 40,
-    colWidths: 90,
+    colWidths: 84,
     readOnly: false,
     columnSorting: true,
     formulas: true,
@@ -188,7 +196,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
               <Grid item xs={4}>
                 <TextField
                   fullWidth
-                  required={false}
+                  required={true}
                   id="block_name"
                   size="small"
                   name="block_name"
@@ -245,7 +253,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   label="Date"
                   size="small"
                   variant="outlined"
-                  required={false}
+                  required={true}
                   value={values.date}
                   type="date"
                   InputProps={{
@@ -274,7 +282,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   label="Start Time"
                   variant="outlined"
                   size="small"
-                  required={false}
+                  required={true}
                   value={values.start_time}
                   type="time"
                   inputProps={{
@@ -296,7 +304,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   label="End Time"
                   size="small"
                   variant="outlined"
-                  required={false}
+                  required={true}
                   value={values.end_time}
                   type="time"
                   inputProps={{

@@ -4,7 +4,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
-import { Router } from 'react-router';
+import { Route, Router } from 'react-router';
+import { getObservationForUpdateResponse } from 'test-helpers/observation-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import BlockObservationPage from './BlockObservationPage';
@@ -18,6 +19,9 @@ const mockUseBiohubApi = {
   },
   survey: {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, [number]>()
+  },
+  observation: {
+    getObservationForUpdate: jest.fn()
   }
 };
 
@@ -30,6 +34,7 @@ describe('BlockObservationPage', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().survey.getSurveyForView.mockClear();
+    mockBiohubApi().observation.getObservationForUpdate.mockClear();
   });
 
   afterEach(() => {
@@ -64,18 +69,44 @@ describe('BlockObservationPage', () => {
     });
   });
 
-  it('renders the page contents with the form when project and survey are loaded', async () => {
+  it('renders the empty page contents (Add Block Observation) with the form when project and survey are loaded', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
 
     const { asFragment, getByTestId } = render(
       <Router history={history}>
-        <BlockObservationPage />
+        <Route path="/projects/:id/surveys/:survey_id/observations/create">
+          <BlockObservationPage />
+        </Route>
       </Router>
     );
 
     await waitFor(() => {
       expect(getByTestId('block-observation-heading')).toBeInTheDocument();
+      expect(getByTestId('save-and-exit-button')).toBeInTheDocument();
+    });
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('renders the filled page contents (Edit Block Observation) with the form when project, survey and observation are loaded', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockBiohubApi().observation.getObservationForUpdate.mockResolvedValue(getObservationForUpdateResponse);
+
+    const updatedHistory = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1/observations/1/block'] });
+
+    const { asFragment, getByTestId } = render(
+      <Router history={updatedHistory}>
+        <Route path="/projects/:id/surveys/:survey_id/observations/:observation_id/block">
+          <BlockObservationPage />
+        </Route>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('block-observation-heading')).toBeInTheDocument();
+      expect(getByTestId('save-changes-button')).toBeInTheDocument();
     });
 
     expect(asFragment()).toMatchSnapshot();

@@ -8,7 +8,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState, useContext, useCallback, useEffect } from 'react';
-import BlockObservationForm, { BlockObservationInitialValues } from './components/BlockObservationForm';
+import BlockObservationForm, {
+  BlockObservationInitialValues,
+  BlockObservationYupSchema,
+  IBlockObservationForm
+} from './components/BlockObservationForm';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { DialogContext } from 'contexts/dialogContext';
 import { AddBlockObservationI18N } from 'constants/i18n';
@@ -24,6 +28,7 @@ import {
   //ErrorDialog,
   IErrorDialogProps
 } from 'components/dialog/ErrorDialog';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -52,13 +57,17 @@ const BlockObservationPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [tableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
-  const [initialValues] = useState(BlockObservationInitialValues);
+  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
+    BlockObservationInitialValues
+  );
+  const [tableData, setTableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
+  const [isLoadingObservation, setIsLoadingObservation] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
+
 
   const defaultErrorDialogProps = {
     onClose: () => {
@@ -75,6 +84,7 @@ const BlockObservationPage = () => {
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
+  const observationId = urlParams['observation_id'];
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(projectId);
@@ -95,6 +105,22 @@ const BlockObservationPage = () => {
     setSurveyWithDetails(surveyWithDetailsResponse);
   }, [biohubApi.survey, urlParams]);
 
+  const getObservation = useCallback(async () => {
+    const observationWithDetailsResponse = await biohubApi.observation.getObservationForUpdate(
+      projectId,
+      surveyId,
+      observationId,
+      'block'
+    );
+
+    if (!observationWithDetailsResponse || !observationWithDetailsResponse.data) {
+      return;
+    }
+
+    setObservationWithDetails(observationWithDetailsResponse.data.metaData);
+    setTableData(observationWithDetailsResponse.data.tableData);
+  }, [biohubApi.observation, urlParams]);
+
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
       getProject();
@@ -108,6 +134,13 @@ const BlockObservationPage = () => {
       setIsLoadingSurvey(false);
     }
   }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
+
+  useEffect(() => {
+    if (isLoadingObservation && observationId) {
+      getObservation();
+      setIsLoadingObservation(false);
+    }
+  }, [observationId, isLoadingObservation, observationWithDetails, getObservation]);
 
   const defaultCancelDialogProps = {
     dialogTitle: AddBlockObservationI18N.cancelTitle,
@@ -223,24 +256,25 @@ const BlockObservationPage = () => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{surveyWithDetails.survey_details.survey_name}</Typography>
               </Link>
-              <Typography variant="body2">Add Block Observation</Typography>
+              <Typography variant="body2">{observationId ? 'Edit' : 'Add'} Block Observation</Typography>
             </Breadcrumbs>
           </Box>
           <Box mb={3}>
             <Typography data-testid="block-observation-heading" variant="h1">
-              Add Block Observation
+              {observationId ? 'Edit' : 'Add'} Block Observation
             </Typography>
           </Box>
-          <Box mb={3}>
+          <Box mb={5}>
             <Typography variant="body1">
               Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit
               amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
             </Typography>
           </Box>
-          <Box display="block">
+          <Box pl={3} pr={3} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
-              initialValues={initialValues}
+              initialValues={observationWithDetails}
+              validationSchema={BlockObservationYupSchema}
               enableReinitialize={true}
               validateOnBlur={false}
               validateOnChange={false}

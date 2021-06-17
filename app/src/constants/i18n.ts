@@ -106,6 +106,13 @@ export const EditSpeciesI18N = {
     'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const EditObservationI18N = {
+  editTitle: 'Edit Observation',
+  editErrorTitle: 'Error Editing Observation',
+  editErrorText:
+    'An error has occurred while attempting to edit your observation, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const AddFundingI18N = {
   addTitle: 'Add Funding Source',
   addErrorTitle: 'Error Adding Funding Source',

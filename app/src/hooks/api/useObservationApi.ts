@@ -2,8 +2,10 @@ import { AxiosInstance } from 'axios';
 import {
   IGetObservationsListResponse,
   ICreateBlockObservationPostRequest,
-  ICreateBlockObservationPostResponse
+  ICreateBlockObservationPostResponse,
+  IGetObservationResponse
 } from 'interfaces/useObservationApi.interface';
+import qs from 'qs';
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -24,7 +26,6 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     return data;
   };
-
   /**
    * Create a new block observation
    *
@@ -44,9 +45,38 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   *Get details for a single observation for update purposes.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} observationId
+   * @param {string} entity
+   * @return {*}  {Promise<IGetObservationResponse>}
+   */
+  const getObservationForUpdate = async (
+    projectId: number,
+    surveyId: number,
+    observationId: number,
+    entity: string
+  ): Promise<IGetObservationResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
+      {
+        params: { entity },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      }
+    );
+
+    return data;
+  };
+
   return {
     getObservationsList,
-    createBlockObservation
+    createBlockObservation,
+    getObservationForUpdate
   };
 };
 
