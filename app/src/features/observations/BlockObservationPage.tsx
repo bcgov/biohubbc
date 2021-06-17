@@ -10,6 +10,7 @@ import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState, useContext, useCallback, useEffect } from 'react';
 import BlockObservationForm, {
   BlockObservationInitialValues,
+  BlockObservationYupSchema,
   IBlockObservationForm
 } from './components/BlockObservationForm';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -217,6 +218,7 @@ const BlockObservationPage = () => {
             <Formik
               innerRef={formikRef}
               initialValues={observationWithDetails}
+              validationSchema={BlockObservationYupSchema}
               enableReinitialize={true}
               validateOnBlur={false}
               validateOnChange={false}

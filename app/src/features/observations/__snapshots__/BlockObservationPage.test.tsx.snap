@@ -186,12 +186,18 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
                         for="block_name"
                         id="block_name-label"
                       >
                         Block ID
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -201,6 +207,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="block_name"
                           name="block_name"
+                          required=""
                           type="text"
                           value=""
                         />
@@ -212,7 +219,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                             class="PrivateNotchedOutline-legendLabelled-41"
                           >
                             <span>
-                              Block ID
+                              Block ID *
                             </span>
                           </legend>
                         </fieldset>
@@ -330,12 +337,18 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="true"
                         for="date"
                         id="date-label"
                       >
                         Date
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -348,6 +361,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                           max="2100-12-31"
                           min="1900-01-01"
                           name="date"
+                          required=""
                           type="date"
                           value=""
                         />
@@ -359,7 +373,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                             class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
-                              Date
+                              Date *
                             </span>
                           </legend>
                         </fieldset>
@@ -373,12 +387,18 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="true"
                         for="start_time"
                         id="start_time-label"
                       >
                         Start Time
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -388,6 +408,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="start_time"
                           name="start_time"
+                          required=""
                           step="300"
                           type="time"
                           value=""
@@ -400,7 +421,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                             class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
-                              Start Time
+                              Start Time *
                             </span>
                           </legend>
                         </fieldset>
@@ -414,12 +435,18 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="true"
                         for="end_time"
                         id="end_time-label"
                       >
                         End Time
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -429,6 +456,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="end_time"
                           name="end_time"
+                          required=""
                           step="300"
                           type="time"
                           value=""
@@ -441,7 +469,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                             class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                           >
                             <span>
-                              End Time
+                              End Time *
                             </span>
                           </legend>
                         </fieldset>
@@ -2043,12 +2071,18 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                         data-shrink="true"
                         for="block_name"
                         id="block_name-label"
                       >
                         Block ID
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -2058,6 +2092,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="block_name"
                           name="block_name"
+                          required=""
                           type="text"
                           value="1"
                         />
@@ -2069,7 +2104,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                             class="PrivateNotchedOutline-legendLabelled-67 PrivateNotchedOutline-legendNotched-68"
                           >
                             <span>
-                              Block ID
+                              Block ID *
                             </span>
                           </legend>
                         </fieldset>
@@ -2185,12 +2220,18 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                         data-shrink="true"
                         for="date"
                         id="date-label"
                       >
                         Date
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -2203,6 +2244,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                           max="2100-12-31"
                           min="1900-01-01"
                           name="date"
+                          required=""
                           type="date"
                           value="2020/04/04"
                         />
@@ -2214,7 +2256,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                             class="PrivateNotchedOutline-legendLabelled-67 PrivateNotchedOutline-legendNotched-68"
                           >
                             <span>
-                              Date
+                              Date *
                             </span>
                           </legend>
                         </fieldset>
@@ -2228,12 +2270,18 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                         data-shrink="true"
                         for="start_time"
                         id="start_time-label"
                       >
                         Start Time
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -2243,6 +2291,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="start_time"
                           name="start_time"
+                          required=""
                           step="300"
                           type="time"
                           value="11:00"
@@ -2255,7 +2304,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                             class="PrivateNotchedOutline-legendLabelled-67 PrivateNotchedOutline-legendNotched-68"
                           >
                             <span>
-                              Start Time
+                              Start Time *
                             </span>
                           </legend>
                         </fieldset>
@@ -2269,12 +2318,18 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                     >
                       <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled"
+                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-marginDense MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                         data-shrink="true"
                         for="end_time"
                         id="end_time-label"
                       >
                         End Time
+                        <span
+                          aria-hidden="true"
+                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                        >
+                           *
+                        </span>
                       </label>
                       <div
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
@@ -2284,6 +2339,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           id="end_time"
                           name="end_time"
+                          required=""
                           step="300"
                           type="time"
                           value="11:00"
@@ -2296,7 +2352,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                             class="PrivateNotchedOutline-legendLabelled-67 PrivateNotchedOutline-legendNotched-68"
                           >
                             <span>
-                              End Time
+                              End Time *
                             </span>
                           </legend>
                         </fieldset>
