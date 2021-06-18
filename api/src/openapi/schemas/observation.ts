@@ -11,7 +11,7 @@ export const observationUpdateGetResponseObject = {
  * Basic response object for an observation.
  */
 export const observationPostResponseObject = {
-  title: 'Observation Response Object',
+  title: 'Observation Post Response Object',
   type: 'object',
   required: ['id'],
   properties: {
@@ -25,7 +25,7 @@ export const observationPostResponseObject = {
  * Basic response object for an observation.
  */
 export const observationGetResponseObject = {
-  title: 'Observation Response Object',
+  title: 'Observation Get Response Object',
   type: 'object',
   required: ['id'],
   properties: {
