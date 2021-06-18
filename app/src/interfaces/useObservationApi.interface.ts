@@ -55,16 +55,28 @@ export interface IGetObservationsListResponse {
  *
  * @export
  * @interface ICreateBlockObservationPostRequest
+ *
  */
 export interface ICreateBlockObservationPostRequest {
-  metaData: IBlockObservationForm;
-  tableData: IBlockObservationTableData;
+  block_name: number;
+  start_datetime: string;
+  end_datetime: string;
+  observation_count: number;
+  observation_data: {
+    metaData: IBlockObservationForm;
+    tableData: IBlockObservationTableData;
+  };
 }
 
 export interface IBlockObservationTableData {
   data: string[][];
 }
 
-export interface ICreateBlockObservationPostResponse {
+export interface ICreateObservationPostResponse {
   id: number;
+}
+
+export interface ICreateObservationPostRequest {
+  observation_type: string;
+  observation_post_data: ICreateBlockObservationPostRequest;
 }

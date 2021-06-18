@@ -8,7 +8,7 @@ export const observationUpdateGetResponseObject = {
 };
 
 /**
- * Basic response object for an observation.
+ * Basic post response object for an observation.
  */
 export const observationPostResponseObject = {
   title: 'Observation Post Response Object',
@@ -22,7 +22,7 @@ export const observationPostResponseObject = {
 };
 
 /**
- * Basic response object for an observation.
+ * Basic get response object for an observation.
  */
 export const observationGetResponseObject = {
   title: 'Observation Get Response Object',
