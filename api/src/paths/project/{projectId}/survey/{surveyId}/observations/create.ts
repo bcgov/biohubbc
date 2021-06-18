@@ -94,21 +94,21 @@ export function createObservation(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
+    if (!req.body.observation_type) {
+      throw new HTTP400('Missing required body param `observation_type`');
+    }
+
+    if (!req.body.observation_post_data) {
+      throw new HTTP400('Missing required body param `observation_post_data`');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     let sanitizedObservationData = null;
-
-    if (req.body.observation_type === 'block') {
-      sanitizedObservationData = (req.body && new PostBlockObservationObject(req.body.observation_post_data)) || null;
-    }
-
-    if (!sanitizedObservationData) {
-      throw new HTTP400('Missing observation data');
-    }
-
     let observationSQLStatement = null;
 
     if (req.body.observation_type === 'block') {
+      sanitizedObservationData = new PostBlockObservationObject(req.body.observation_post_data);
       observationSQLStatement = postBlockObservationSQL(Number(req.params.surveyId), sanitizedObservationData);
     }
 

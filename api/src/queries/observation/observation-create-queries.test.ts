@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostBlockObservationObject } from '../../models/block-observation-create';
-import {
-  postBlockObservationSQL
-} from './observation-create-queries';
+import { postBlockObservationSQL } from './observation-create-queries';
 
 describe('postBlockObservationSQL', () => {
   it('returns null when null surveyId param provided', () => {
@@ -14,14 +12,12 @@ describe('postBlockObservationSQL', () => {
   });
 
   it('returns a block_observation id when valid surveyId and data are provided', () => {
-
     const blockObservationData = {
       block_name: 'block_name',
       start_datetime: '2020/04/03',
       end_datetime: '2020/05/05',
       observation_count: 50,
-      observation_data: {
-      }
+      observation_data: {}
     };
 
     const postBlockObservationObject = new PostBlockObservationObject(blockObservationData);
