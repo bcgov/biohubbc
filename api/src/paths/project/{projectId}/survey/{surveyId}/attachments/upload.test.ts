@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as upload from './upload';
 import * as db from '../../../../../../database/db';
+import * as file_utils from '../../../../../../utils/file-utils';
 
 chai.use(sinonChai);
 
@@ -40,8 +41,32 @@ describe('uploadMedia', () => {
       surveyId: 1,
       attachmentId: 2
     },
-    files: ['file1', 'file2']
+    files: [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ],
+    auth_payload: {
+      preferred_username: 'user',
+      email: 'email@example.com'
+    }
   } as any;
+
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   it('should throw an error when surveyId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -92,5 +117,45 @@ describe('uploadMedia', () => {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Upload was not successful');
     }
+  });
+
+  it('should return a list of file keys on success (with username and email)', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+
+    const result = upload.uploadMedia();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql(['1/1/test.txt']);
+  });
+
+  it('should return a list of file keys on success (without username and email)', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      { ...sampleReq, auth_payload: { ...sampleReq.auth_payload, preferred_username: null, email: null } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.eql(['1/1/test.txt']);
   });
 });
