@@ -64,6 +64,7 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, DB_RELEASE, 'populate_administrative_activity_status_type.sql')
   );
   const populate_proprietor_type = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_proprietor_type.sql'));
+
   const populate_submission_status_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_submission_status_type.sql')
   );
