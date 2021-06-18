@@ -98,13 +98,12 @@ describe('createBlockObservation', () => {
       const result = create.createObservation();
 
       await result(
-        { ...sampleReq, body: { observation_type: null, observation_post_data: sampleReq.body.observation_post_data } },
+        { ...sampleReq, body: { ...sampleReq.body, observation_type: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
-      console.log('actualError', actualError);
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing required body param `observation_type`');
     }
@@ -128,7 +127,6 @@ describe('createBlockObservation', () => {
       );
       expect.fail();
     } catch (actualError) {
-      console.log('actualError', actualError);
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing required body param `observation_post_data`');
     }

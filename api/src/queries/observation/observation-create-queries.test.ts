@@ -25,4 +25,13 @@ describe('postBlockObservationSQL', () => {
 
     expect(response).to.not.be.null;
   });
+
+  it('returns null when surveyId is valid but data is null', () => {
+    const blockObservationData = null;
+
+    const postBlockObservationObject = new PostBlockObservationObject(blockObservationData);
+    const response = postBlockObservationSQL(1, postBlockObservationObject);
+
+    expect(response).to.not.be.null;
+  });
 });
