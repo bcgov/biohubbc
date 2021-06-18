@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { PostBlockObservationObject } from '../../../../../../models/block-observation-create';
-import { blockObservationIdResponseObject } from '../../../../../../openapi/schemas/observation';
+import { observationResponseObject } from '../../../../../../openapi/schemas/observation';
 import { postBlockObservationSQL } from '../../../../../../queries/observation/observation-create-queries';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -13,7 +13,7 @@ const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/observ
 
 export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/observations/create', 'POST'),
-  createBlockObservation()
+  createObservation()
 ];
 
 POST.apiDoc = {
@@ -25,30 +25,20 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Block Observation post request object.',
+    description: 'Observation post request object.',
     content: {
       'application/json': {
         schema: {
           title: 'Observation request object',
           type: 'object',
+          required: ['observation_type'],
           properties: {
-            block_name: {
-              title: 'block_name of the observation',
+            observation_type: {
+              title: 'type of observation',
               type: 'string'
             },
-            start_datetime: {
-              type: 'string',
-              description: 'ISO 8601 date string'
-            },
-            end_datetime: {
-              type: 'string',
-              description: 'ISO 8601 date string'
-            },
-            observation_count: {
-              type: 'number'
-            },
-            observation_data: {
-              title: 'Block observation json data',
+            observation_post_data: {
+              title: 'Generic observation json data',
               type: 'object',
               properties: {}
             }
@@ -59,11 +49,11 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Block Observation response object.',
+      description: 'Observation response object.',
       content: {
         'application/json': {
           schema: {
-            ...(blockObservationIdResponseObject as object)
+            ...(observationResponseObject as object)
           }
         }
       }
@@ -87,14 +77,14 @@ POST.apiDoc = {
 };
 
 /**
- * Creates a new block observation record.
+ * Creates a new observation record.
  *
  * @returns {RequestHandler}
  */
-export function createBlockObservation(): RequestHandler {
+export function createObservation(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'createBlockObservation',
+      label: 'createObservation',
       message: 'params and body',
       'req.params': req.params,
       'req.body': req.body
@@ -105,44 +95,45 @@ export function createBlockObservation(): RequestHandler {
     }
 
     const connection = getDBConnection(req['keycloak_token']);
-    const sanitizedPostBlockObservationData = (req.body && new PostBlockObservationObject(req.body)) || null;
 
-    if (!sanitizedPostBlockObservationData) {
-      throw new HTTP400('Missing block observation data');
+    let sanitizedObservationData = null;
+
+    if (req.body.observation_type === 'block') {
+      sanitizedObservationData = (req.body && new PostBlockObservationObject(req.body.observation_post_data)) || null;
+    }
+
+    if (!sanitizedObservationData) {
+      throw new HTTP400('Missing observation data');
+    }
+
+    let observationSQLStatement = null;
+
+    if (req.body.observation_type === 'block') {
+      observationSQLStatement = postBlockObservationSQL(Number(req.params.surveyId), sanitizedObservationData);
+    }
+
+    if (!observationSQLStatement) {
+      throw new HTTP400('Failed to build observation SQL insert statement');
     }
 
     try {
-      const postBlockObservationSQLStatement = postBlockObservationSQL(
-        Number(req.params.surveyId),
-        sanitizedPostBlockObservationData
-      );
-
-      if (!postBlockObservationSQLStatement) {
-        throw new HTTP400('Failed to build survey SQL insert statement');
-      }
       await connection.open();
 
-      // Handle observation block details
-      const createBlockObservationResponse = await connection.query(
-        postBlockObservationSQLStatement.text,
-        postBlockObservationSQLStatement.values
-      );
+      // Handle observation details
+      const observationResponse = await connection.query(observationSQLStatement.text, observationSQLStatement.values);
 
       await connection.commit();
 
-      const blockObservationResult =
-        (createBlockObservationResponse &&
-          createBlockObservationResponse.rows &&
-          createBlockObservationResponse.rows[0]) ||
-        null;
+      const observationResult =
+        (observationResponse && observationResponse.rows && observationResponse.rows[0]) || null;
 
-      if (!blockObservationResult || !blockObservationResult.id) {
-        throw new HTTP400('Failed to insert block observation data');
+      if (!observationResult || !observationResult.id) {
+        throw new HTTP400('Failed to insert observation data');
       }
 
-      return res.status(200).json({ id: blockObservationResult.id });
+      return res.status(200).json({ id: observationResult.id });
     } catch (error) {
-      defaultLog.debug({ label: 'createBlockObservation', message: 'error', error });
+      defaultLog.debug({ label: 'createObservation', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

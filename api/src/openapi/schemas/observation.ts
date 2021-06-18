@@ -10,8 +10,8 @@ export const observationUpdateGetResponseObject = {
 /**
  * Basic response object for an observation.
  */
-export const blockObservationIdResponseObject = {
-  title: 'Block Observation Object',
+export const observationResponseObject = {
+  title: 'observation Object',
   type: 'object',
   required: ['id'],
   properties: {

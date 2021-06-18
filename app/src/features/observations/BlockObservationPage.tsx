@@ -26,6 +26,7 @@ import moment from 'moment';
 import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -194,15 +195,35 @@ const BlockObservationPage = () => {
       return;
     }
 
+    await formikRef.current?.submitForm();
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    if (!isValid) {
+      showErrorDialog({
+        dialogTitle: 'Add Observation Form Incomplete',
+        dialogText:
+          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
     const postData: any = {
-      block_name: formikRef.current.values.block_name,
-      start_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.start_time).toISOString(),
-      end_datetime: moment(formikRef.current.values.date + ' ' + formikRef.current.values.end_time).toISOString(),
-      observation_count: 50,
-      observation_data: {
-        metaData: formikRef.current.values,
-        tableData: {
-          data: tableData
+      observation_type: 'block',
+      observation_post_data: {
+        block_name: formikRef.current.values.block_name,
+        start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
+        end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
+        observation_count: 50,
+        observation_data: {
+          metaData: formikRef.current.values,
+          tableData: {
+            data: tableData
+          }
         }
       }
     };
@@ -221,6 +242,8 @@ const BlockObservationPage = () => {
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
+
+  console.log(formikRef?.current?.values);
 
   return (
     <>

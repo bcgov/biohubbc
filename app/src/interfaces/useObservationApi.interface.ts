@@ -57,38 +57,8 @@ export interface IGetObservationsListResponse {
  * @interface ICreateBlockObservationPostRequest
  */
 export interface ICreateBlockObservationPostRequest {
-  metaData: IBlockObservationMeta;
+  metaData: IBlockObservationForm;
   tableData: IBlockObservationTableData;
-}
-
-export interface IBlockObservationMeta {
-  block_name: number;
-  block_size: number;
-  strata: string;
-  date: string;
-  start_time: string;
-  end_time: string;
-  pilot_name: string;
-  navigator: string;
-  rear_left_observer: string;
-  rear_right_observer: string;
-  visibility: string;
-  light: string;
-  cloud_cover: number;
-  temperature: number;
-  precipitation: string;
-  wind_speed: number;
-  snow_cover: number;
-  snow_depth: number;
-  days_since_snowfall: number;
-  weather_description: string;
-  description_of_habitat: string;
-  aircraft_company: string;
-  aircraft_type: string;
-  aircraft_registration_number: number;
-  aircraft_gps_model: string;
-  aircraft_gps_datum: string;
-  aircraft_gps_readout: string;
 }
 
 export interface IBlockObservationTableData {
