@@ -50,20 +50,21 @@ export interface IDBConnection {
    * Releases (closes) the connection.
    *
    * Note: Does nothing if the connection is already released.
+   * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   release: () => void;
   /**
    * Commits the transaction that was opened by calling `.open()`.
    *
-   * Note: Does nothing if the connection is not open, or was released.
+   * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   commit: () => Promise<void>;
   /**
    * Rollsback the transaction, undoing any queries performed by this connection.
    *
-   * Note: Does nothing if the connection is not open, or was released.
+   * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   rollback: () => Promise<void>;
@@ -75,6 +76,7 @@ export interface IDBConnection {
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any> | void>)}
+   * @throws If the connection is not open.
    * @memberof IDBConnection
    */
   query: (text: string, values?: any[]) => Promise<QueryResult<any> | void>;
@@ -112,6 +114,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   let _client: PoolClient;
 
   let _isOpen = false;
+  let _isReleased = false;
 
   let _systemUserId: number | null = null;
 
@@ -130,6 +133,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     _client = await pool.connect();
 
     _isOpen = true;
+    _isReleased = false;
 
     await _setUserContext();
 
@@ -142,23 +146,26 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Note: Does nothing if the connection is already released.
    */
   const _release = () => {
-    if (!_client || !_isOpen) {
+    if (_isReleased) {
       return;
+    }
+
+    if (!_client || !_isOpen) {
+      throw Error('DBConnection is not open');
     }
 
     _client.release();
 
     _isOpen = false;
+    _isReleased = true;
   };
 
   /**
    * Commits the transaction that was opened by calling `.open()`.
-   *
-   * Note: Does nothing if the connection is not open, or was released.
    */
   const _commit = async () => {
     if (!_client || !_isOpen) {
-      return;
+      throw Error('DBConnection is not open');
     }
 
     await _client.query('COMMIT');
@@ -166,12 +173,10 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 
   /**
    * Rollsback the transaction, undoing any queries performed by this connection.
-   *
-   * Note: Does nothing if the connection is not open, or was released.
    */
   const _rollback = async () => {
     if (!_client || !_isOpen) {
-      return;
+      throw Error('DBConnection is not open');
     }
 
     await _client.query('ROLLBACK');
@@ -180,15 +185,13 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   /**
    * Performs a query against this connection, returning the results.
    *
-   * Note: Does nothing if the connection is not open, or was released.
-   *
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any> | void>)}
    */
   const _query = async (text: string, values?: any[]): Promise<QueryResult<any> | void> => {
     if (!_client || !_isOpen) {
-      return;
+      throw Error('DBConnection is not open');
     }
 
     return _client.query(text, values || []);
