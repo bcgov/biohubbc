@@ -232,17 +232,16 @@ const BlockObservationPage = () => {
 
       if (!response) {
         return;
-      } else {
-        setEnableCancelCheck(false);
-        history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
       }
+
+      setEnableCancelCheck(false);
+      history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
+
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
-
-  console.log(formikRef?.current?.values);
 
   return (
     <>
