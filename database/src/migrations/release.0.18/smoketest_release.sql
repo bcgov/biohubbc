@@ -30,6 +30,8 @@ declare
   __count integer = 0;
   __system_user_id system_user.id%type;
   __ss_id study_species.id%type;
+  __os_id occurrence_submission.id%type;
+  __subs_id submission_status.id%type;
 begin
   set role biohub_api;
   set search_path to biohub_dapi_v1, biohub, public, topology;
@@ -38,20 +40,20 @@ begin
   select api_set_context('myIDIR', 'IDIR') into __system_user_id;
   --select api_set_context('biohub_api', 'DATABASE') into __system_user_id;
 
-  -- test project data
-  -- delete all project data
-  delete from study_species;
-  delete from stakeholder_partnership;
-  delete from project_activity;
-  delete from project_climate_initiative;
-  delete from project_region;
-  delete from permit;
-  delete from project_management_actions;
-  delete from project_funding_source;
-  delete from project_iucn_action_classification;
-  delete from project_attachment;
-  delete from project_first_nation;
-  delete from project;
+--  -- test project data
+--  -- delete all project data
+--  delete from study_species;
+--  delete from stakeholder_partnership;
+--  delete from project_activity;
+--  delete from project_climate_initiative;
+--  delete from project_region;
+--  delete from permit;
+--  delete from project_management_actions;
+--  delete from project_funding_source;
+--  delete from project_iucn_action_classification;
+--  delete from project_attachment;
+--  delete from project_first_nation;
+--  delete from project;
 
   insert into project (pt_id
     , name
@@ -125,12 +127,35 @@ begin
   insert into study_species (s_id, wu_id, is_focal) values (__s_id, (select id from wldtaxonomic_units where CODE = 'AMARALB'), true);
   select count(1) into __count from study_species;
   assert __count = 1, 'FAIL study_species';
-  insert into survey_publish_history (s_id, publish_date) values (__s_id, now());
-  select count(1) into __count from survey_publish_history;
-  assert __count = 1, 'FAIL survey_publish_history';
-  insert into survey_occurrence (s_id, associatedtaxa, lifestage) values (__s_id, 'M-ALAL', 'Adult');
-  select count(1) into __count from survey_occurrence;
-  assert __count = 1, 'FAIL survey_occurrence';
+
+  -- occurrence
+  -- occurrence submission 1
+  insert into occurrence_submission (s_id, source, event_timestamp) values (__s_id, 'BIOHUB BATCH', now()-interval '1 day') returning id into __os_id;
+  select count(1) into __count from occurrence_submission;
+  assert __count = 1, 'FAIL occurrence_submission';
+  insert into occurrence (os_id, associatedtaxa, lifestage, eventdate) values (__os_id, 'M-ALAL', 'Adult', now()-interval '10 day');
+  select count(1) into __count from occurrence;
+  assert __count = 1, 'FAIL occurrence';
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Submitted'), now()-interval '1 day') returning id into __subs_id;
+  insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage submitted.');
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Published'), now()-interval '1 day') returning id into __subs_id;
+  insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage published.');
+
+  -- occurrence submission 2
+  insert into occurrence_submission (s_id, source, event_timestamp) values (__s_id, 'BIOHUB BATCH', now()) returning id into __os_id;
+  select count(1) into __count from occurrence_submission;
+  assert __count = 2, 'FAIL occurrence_submission';
+  insert into occurrence (os_id, associatedtaxa, lifestage, eventdate) values (__os_id, 'M-ALAL', 'Adult', now()-interval '5 day');
+  select count(1) into __count from occurrence;
+  assert __count = 2, 'FAIL occurrence';
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Submitted'), now()) returning id into __subs_id;
+  insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage submitted.');
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Published'), now()) returning id into __subs_id;
+  insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage published.');
+  select count(1) into __count from submission_status;
+  assert __count = 4, 'FAIL submission_status';
+  select count(1) into __count from submission_message;
+  assert __count = 4, 'FAIL submission_message';  
 
   -- test ancillary data
   delete from webform_draft;
@@ -156,11 +181,11 @@ begin
 
   insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
-  -- delete project
-  delete from survey_publish_history;
-  delete from survey_occurrence;
-  call api_delete_project(__p_id);
+--  -- delete project
+--  delete from survey_publish_history;
+--  delete from survey_occurrence;
+--  call api_delete_project(__p_id);
 end
 $$;
 
-delete from administrative_activity;
+--delete from administrative_activity;
