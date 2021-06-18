@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useObservationApi from './useObservationApi';
+import { getObservationForUpdateResponse } from 'test-helpers/observation-helpers';
 
 describe('useObservationApi', () => {
   let mock: any;
@@ -40,5 +41,17 @@ describe('useObservationApi', () => {
 
     expect(result.blocks[0].id).toEqual(1);
     expect(result.blocks[1].id).toEqual(2);
+  });
+
+  it('createBlockObservation as expected', async () => {
+    const observation = getObservationForUpdateResponse.data;
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/create`).reply(200, {
+      id: 1
+    });
+
+    const result = await useObservationApi(axios).createObservation(projectId, surveyId, observation);
+
+    expect(result.id).toEqual(1);
   });
 });

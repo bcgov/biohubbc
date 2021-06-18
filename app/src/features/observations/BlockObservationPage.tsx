@@ -21,7 +21,11 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
+import { APIError } from 'hooks/api/useAxios';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -49,7 +53,10 @@ const BlockObservationPage = () => {
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
+    BlockObservationInitialValues
+  );
   const [tableData, setTableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
@@ -57,9 +64,19 @@ const BlockObservationPage = () => {
   const [isLoadingObservation, setIsLoadingObservation] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
-  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
-    BlockObservationInitialValues
-  );
+
+  const defaultErrorDialogProps = {
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -172,6 +189,59 @@ const BlockObservationPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const handleSaveAndExit = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    await formikRef.current?.submitForm();
+
+    const isValid = await validateFormFieldsAndReportCompletion(
+      formikRef.current?.values,
+      formikRef.current?.validateForm
+    );
+
+    if (!isValid) {
+      showErrorDialog({
+        dialogTitle: 'Add Observation Form Incomplete',
+        dialogText:
+          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
+      });
+
+      return;
+    }
+
+    const postData: any = {
+      observation_type: 'block',
+      observation_post_data: {
+        block_name: formikRef.current.values.block_name,
+        start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
+        end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
+        observation_count: 50,
+        observation_data: {
+          metaData: formikRef.current.values,
+          tableData: {
+            data: tableData
+          }
+        }
+      }
+    };
+
+    try {
+      const response = await biohubApi.observation.createObservation(projectId, surveyId, postData);
+
+      if (!response) {
+        return;
+      }
+
+      setEnableCancelCheck(false);
+      history.push(`/projects/${projectId}/surveys/${surveyId}/observations`);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -233,7 +303,7 @@ const BlockObservationPage = () => {
                     variant="contained"
                     color="primary"
                     data-testid="save-and-exit-button"
-                    onClick={() => console.log('add and exit functionality')}
+                    onClick={handleSaveAndExit}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>
