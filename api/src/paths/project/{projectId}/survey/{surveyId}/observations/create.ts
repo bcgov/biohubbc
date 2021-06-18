@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { PostBlockObservationObject } from '../../../../../../models/block-observation-create';
-import { observationResponseObject } from '../../../../../../openapi/schemas/observation';
+import { observationPostResponseObject } from '../../../../../../openapi/schemas/observation';
 import { postBlockObservationSQL } from '../../../../../../queries/observation/observation-create-queries';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -34,7 +34,7 @@ POST.apiDoc = {
           required: ['observation_type'],
           properties: {
             observation_type: {
-              title: 'type of observation',
+              title: 'type of observation (eg block)',
               type: 'string'
             },
             observation_post_data: {
@@ -53,7 +53,7 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(observationResponseObject as object)
+            ...(observationPostResponseObject as object)
           }
         }
       }

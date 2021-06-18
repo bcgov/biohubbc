@@ -21,7 +21,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { ICreateBlockObservationPostRequest } from 'interfaces/useObservationApi.interface';
 import moment from 'moment';
 import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -190,7 +189,7 @@ const BlockObservationPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const handleSaveAndExit = async (values: ICreateBlockObservationPostRequest) => {
+  const handleSaveAndExit = async () => {
     if (!formikRef?.current) {
       return;
     }
@@ -229,7 +228,7 @@ const BlockObservationPage = () => {
     };
 
     try {
-      const response = await biohubApi.observation.createBlockObservation(projectId, surveyId, postData);
+      const response = await biohubApi.observation.createObservation(projectId, surveyId, postData);
 
       if (!response) {
         return;
@@ -306,7 +305,7 @@ const BlockObservationPage = () => {
                     variant="contained"
                     color="primary"
                     data-testid="save-and-exit-button"
-                    onClick={(values: any) => handleSaveAndExit(values)}
+                    onClick={handleSaveAndExit}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>

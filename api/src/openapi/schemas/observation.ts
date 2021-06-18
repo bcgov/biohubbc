@@ -10,13 +10,35 @@ export const observationUpdateGetResponseObject = {
 /**
  * Basic response object for an observation.
  */
-export const observationResponseObject = {
-  title: 'observation Object',
+export const observationPostResponseObject = {
+  title: 'Observation Response Object',
   type: 'object',
   required: ['id'],
   properties: {
     id: {
       type: 'number'
+    }
+  }
+};
+
+/**
+ * Basic response object for an observation.
+ */
+export const observationGetResponseObject = {
+  title: 'Observation Response Object',
+  type: 'object',
+  required: ['id'],
+  properties: {
+    blocks: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number'
+          }
+        }
+      }
     }
   }
 };

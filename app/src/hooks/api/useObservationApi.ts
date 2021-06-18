@@ -32,21 +32,19 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {ICreateBlockObservationRequest} blockObservation
    * @return {*}  {Promise<ICreateBlockObservationResponse>}
    */
-  const createBlockObservation = async (
+  //TODO: make the observation generic ... for now it's just for blocks
+  const createObservation = async (
     projectId: number,
     surveyId: number,
-    blockObservation: ICreateBlockObservationPostRequest
+    observation: ICreateBlockObservationPostRequest
   ): Promise<ICreateBlockObservationPostResponse> => {
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/observations/create`,
-      blockObservation
-    );
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/create`, observation);
 
     return data;
   };
 
   /**
-   *Get details for a single observation for update purposes.
+   * Get details for a single observation for update purposes.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -75,7 +73,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   return {
     getObservationsList,
-    createBlockObservation,
+    createObservation,
     getObservationForUpdate
   };
 };

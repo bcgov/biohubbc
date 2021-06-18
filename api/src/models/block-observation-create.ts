@@ -12,7 +12,6 @@ export class PostBlockObservationObject {
   observation_data: string;
 
   constructor(obj?: any) {
-    //this.block_name = (obj?.block_name && Number(obj?.block_name)) || ((null as unknown) as number);
     this.block_name = obj?.block_name || null;
     this.start_datetime = obj?.start_datetime || null;
     this.end_datetime = obj?.end_datetime || null;
