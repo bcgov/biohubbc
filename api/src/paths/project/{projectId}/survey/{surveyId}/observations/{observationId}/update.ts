@@ -1,9 +1,6 @@
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import {
-  observationUpdateGetResponseObject,
-  observationUpdatePutRequestObject
-} from '../../../../../../../openapi/schemas/observation';
+import { observationUpdateGetResponseObject } from '../../../../../../../openapi/schemas/observation';
 import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { RequestHandler } from 'express';
@@ -272,7 +269,7 @@ export function updateObservation(): RequestHandler {
       if (!req.body.observation_type) {
         throw new HTTP400('Missing required body param `observation_type`');
       }
-  
+
       if (!req.body.observation_details_data) {
         throw new HTTP400('Missing required body param `observation_details_data`');
       }
@@ -282,7 +279,10 @@ export function updateObservation(): RequestHandler {
       let putObservationSQLStatement;
 
       if (req.body.observation_type === 'block') {
-        putObservationSQLStatement = updateBlockObservationSQL(Number(req.params.observationId), req.body.observation_details_data);
+        putObservationSQLStatement = updateBlockObservationSQL(
+          Number(req.params.observationId),
+          req.body.observation_details_data
+        );
       }
 
       if (!putObservationSQLStatement) {
