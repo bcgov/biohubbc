@@ -16,6 +16,12 @@ export const POST: Operation = [
   createObservation()
 ];
 
+export enum OBSERVATION_TYPES {
+  block = 'block'
+}
+
+export const getAllObservationTypes = (): string[] => Object.values(OBSERVATION_TYPES);
+
 POST.apiDoc = {
   description: 'Create a new observation.',
   tags: ['observation'],
@@ -35,7 +41,8 @@ POST.apiDoc = {
           properties: {
             observation_type: {
               title: 'type of observation (eg block)',
-              type: 'string'
+              type: 'string',
+              enum: getAllObservationTypes()
             },
             observation_details_data: {
               title: 'Generic observation json data',

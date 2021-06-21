@@ -11,6 +11,12 @@ import {
   updateBlockObservationSQL
 } from '../../../../../../../queries/observation/observation-update-queries';
 
+export enum OBSERVATION_TYPES {
+  block = 'block'
+}
+
+export const getAllObservationTypes = (): string[] => Object.values(OBSERVATION_TYPES);
+
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/observations/{observationId}/update');
 
 export const GET: Operation = [
@@ -139,7 +145,8 @@ PUT.apiDoc = {
           properties: {
             observation_type: {
               title: 'type of observation (eg block)',
-              type: 'string'
+              type: 'string',
+              enum: getAllObservationTypes()
             },
             observation_details_data: {
               title: 'Generic observation json data',
