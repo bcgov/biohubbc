@@ -28,6 +28,7 @@ export async function up(knex: Knex): Promise<void> {
       delete from survey_proprietor where s_id = __survey_id;
       delete from survey_attachment where s_id = __survey_id;
       delete from study_species where s_id = __survey_id;
+      delete from block_observation where s_id = __survey_id;
       delete from survey where id = __survey_id;
     exception
       when others THEN
