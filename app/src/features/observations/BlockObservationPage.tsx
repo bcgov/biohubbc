@@ -189,7 +189,7 @@ const BlockObservationPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const addupMooseData = (tableData: any[][]): number => {
+  const addupMooseData = (): number => {
     let sum = 0;
     for (let row = 0; row < tableData.length; row++) {
       for (let col = 1; col < 9; col++) {
@@ -229,7 +229,7 @@ const BlockObservationPage = () => {
         block_name: formikRef.current.values.block_name,
         start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
         end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
-        observation_count: addupMooseData(tableData),
+        observation_count: addupMooseData(),
         observation_data: {
           metaData: formikRef.current.values,
           tableData: {
