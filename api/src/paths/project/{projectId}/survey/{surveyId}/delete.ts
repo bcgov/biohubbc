@@ -14,7 +14,7 @@ export const DELETE: Operation = [deleteSurvey()];
 
 DELETE.apiDoc = {
   description: 'Delete a survey.',
-  tags: ['attachment'],
+  tags: ['survey'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]

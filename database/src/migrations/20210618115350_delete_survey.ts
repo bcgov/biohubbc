@@ -40,7 +40,7 @@ export async function up(knex: Knex): Promise<void> {
 
 /**
  * Drop the `api_delete_survey` procedure.
- * 
+ *
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
