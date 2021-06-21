@@ -16,6 +16,12 @@ export const POST: Operation = [
   createObservation()
 ];
 
+export enum OBSERVATION_TYPES {
+  block = 'block'
+}
+
+export const getAllObservationTypes = (): string[] => Object.values(OBSERVATION_TYPES);
+
 POST.apiDoc = {
   description: 'Create a new observation.',
   tags: ['observation'],
@@ -35,9 +41,10 @@ POST.apiDoc = {
           properties: {
             observation_type: {
               title: 'type of observation (eg block)',
-              type: 'string'
+              type: 'string',
+              enum: getAllObservationTypes()
             },
-            observation_post_data: {
+            observation_details_data: {
               title: 'Generic observation json data',
               type: 'object',
               properties: {}
@@ -98,8 +105,8 @@ export function createObservation(): RequestHandler {
       throw new HTTP400('Missing required body param `observation_type`');
     }
 
-    if (!req.body.observation_post_data) {
-      throw new HTTP400('Missing required body param `observation_post_data`');
+    if (!req.body.observation_details_data) {
+      throw new HTTP400('Missing required body param `observation_details_data`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -108,7 +115,7 @@ export function createObservation(): RequestHandler {
     let observationSQLStatement = null;
 
     if (req.body.observation_type === 'block') {
-      sanitizedObservationData = new PostBlockObservationObject(req.body.observation_post_data);
+      sanitizedObservationData = new PostBlockObservationObject(req.body.observation_details_data);
       observationSQLStatement = postBlockObservationSQL(Number(req.params.surveyId), sanitizedObservationData);
     }
 

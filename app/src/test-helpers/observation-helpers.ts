@@ -1,6 +1,6 @@
 import { IGetObservationResponse } from 'interfaces/useObservationApi.interface';
 
-export const getObservationForUpdateResponse: IGetObservationResponse = {
+export const getObservationForCreateUpdateResponse: IGetObservationResponse = {
   id: 1,
   data: {
     metaData: {
@@ -35,5 +35,6 @@ export const getObservationForUpdateResponse: IGetObservationResponse = {
     tableData: {
       data: [['', '1', '1', '', '', '', '', '', '', '', '', '', '', '']]
     }
-  }
+  },
+  revision_count: 1
 };
