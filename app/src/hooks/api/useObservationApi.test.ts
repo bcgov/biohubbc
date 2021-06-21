@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useObservationApi from './useObservationApi';
-import { getObservationForUpdateResponse } from 'test-helpers/observation-helpers';
+import { getObservationForCreateUpdateResponse } from 'test-helpers/observation-helpers';
 
 describe('useObservationApi', () => {
   let mock: any;
@@ -26,9 +26,9 @@ describe('useObservationApi', () => {
       end_datetime: '2020/05/05',
       observation_count: 50,
       observation_data: {
-        ...getObservationForUpdateResponse.data
+        ...getObservationForCreateUpdateResponse.data
       },
-      revision_count: getObservationForUpdateResponse.revision_count
+      revision_count: getObservationForCreateUpdateResponse.revision_count
     }
   };
 
