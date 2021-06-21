@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { GetBlockObservationListData } from '../../../../../../models/observation-view';
-import { observationIdResponseObject } from '../../../../../../openapi/schemas/observation';
+import { observationGetResponseObject } from '../../../../../../openapi/schemas/observation';
 import { getBlockObservationListSQL } from '../../../../../../queries/observation/observation-view-queries';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -50,7 +50,7 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(observationIdResponseObject as object)
+              ...(observationGetResponseObject as object)
             }
           }
         }
