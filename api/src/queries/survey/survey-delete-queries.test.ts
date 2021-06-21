@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL, deleteSurveyProprietorSQL, deleteSurveySQL } from './survey-delete-queries';
+import {
+  deleteFocalSpeciesSQL,
+  deleteAncillarySpeciesSQL,
+  deleteSurveyProprietorSQL,
+  deleteSurveySQL
+} from './survey-delete-queries';
 
 describe('deleteFocalSpeciesSQL', () => {
   it('returns null when null survey id param provided', () => {
