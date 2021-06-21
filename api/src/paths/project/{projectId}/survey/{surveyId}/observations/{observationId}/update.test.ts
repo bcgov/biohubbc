@@ -300,7 +300,19 @@ describe('updateObservation', () => {
       observationId: 1
     },
     body: {
-      entity: 'block'
+      observation_type: 'block',
+      observation_details_data: {
+        block_name: 'block_name',
+        start_datetime: '2021-06-01T01:06:00.000Z',
+        end_datetime: '2021-06-01T02:06:00.000Z',
+        observation_count: 50,
+        observation_data: {
+          metaData: { block_name: 'block_name' },
+          tableData: {
+            data: [['1', '2']]
+          }
+        }
+      }
     }
   } as any;
 
@@ -385,7 +397,7 @@ describe('updateObservation', () => {
     }
   });
 
-  it('should throw a 400 error when no req body', async () => {
+  it('should throw a 400 error when no observation_type is present', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -396,15 +408,19 @@ describe('updateObservation', () => {
     try {
       const result = update.updateObservation();
 
-      await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, observation_type: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body');
+      expect(actualError.message).to.equal('Missing required body param `observation_type`');
     }
   });
 
-  it('should throw a 400 error when entity is not provided', async () => {
+  it('should throw a 400 error when no observation_details_data present', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -415,11 +431,15 @@ describe('updateObservation', () => {
     try {
       const result = update.updateObservation();
 
-      await result({ ...sampleReq, body: { entity: null } }, (null as unknown) as any, (null as unknown) as any);
+      await result(
+        { ...sampleReq, body: { observation_type: 'block', observation_details_data: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect(actualError.message).to.equal('Missing required body param `observation_details_data`');
     }
   });
 
