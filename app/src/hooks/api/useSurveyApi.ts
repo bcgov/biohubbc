@@ -150,6 +150,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Delete survey based on survey ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteSurvey = async (projectId: number, surveyId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/delete`);
+
+    return data;
+  };
+
+  /**
    * Get survey attachment S3 url based on survey and attachment ID
    *
    * @param {AxiosInstance} axios
@@ -176,7 +189,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     uploadSurveyAttachments,
     getSurveyAttachments,
     deleteSurveyAttachment,
-    getSurveyAttachmentSignedURL
+    getSurveyAttachmentSignedURL,
+    deleteSurvey
   };
 };
 

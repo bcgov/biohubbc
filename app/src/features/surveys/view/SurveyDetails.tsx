@@ -14,6 +14,8 @@ import Button from '@material-ui/core/Button';
 import Icon from '@mdi/react';
 import { mdiDelete } from '@mdi/js';
 import { DialogContext } from 'contexts/dialogContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useHistory } from 'react-router';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -43,6 +45,8 @@ const useStyles = makeStyles((theme: Theme) => ({
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const { surveyForViewData, codes, refresh, projectForViewData } = props;
 
+  const biohubApi = useBiohubApi();
+  const history = useHistory();
   const classes = useStyles();
   const dialogContext = useContext(DialogContext);
 
@@ -66,8 +70,18 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
     });
   };
 
-  const deleteSurvey = () => {
-    console.log('delete survey');
+  const deleteSurvey = async () => {
+    try {
+      const response = await biohubApi.survey.deleteSurvey(projectForViewData.id, surveyForViewData.survey_details.id);
+
+      if (!response) {
+        return;
+      }
+
+      history.push(`/projects/${projectForViewData.id}/surveys`);
+    } catch (error) {
+      return error;
+    }
   };
 
   return (

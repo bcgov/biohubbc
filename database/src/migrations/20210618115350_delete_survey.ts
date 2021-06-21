@@ -37,3 +37,19 @@ export async function up(knex: Knex): Promise<void> {
     $$;
   `);
 }
+
+/**
+ * Drop the `api_delete_survey` procedure.
+ * 
+ * @export
+ * @param {Knex} knex
+ * @return {*}  {Promise<void>}
+ */
+export async function down(knex: Knex): Promise<void> {
+  await knex.raw(`
+    set schema '${DB_SCHEMA}';
+    set search_path = ${DB_SCHEMA},public;
+
+    drop procedure if exists api_delete_survey;
+  `);
+}
