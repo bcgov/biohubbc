@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.17';
+const DB_RELEASE = 'release.0.18';
 
 /**
  * Apply biohub release changes.
@@ -16,11 +16,13 @@ const DB_RELEASE = 'release.0.17';
  */
 export async function up(knex: Knex): Promise<void> {
   const create_spatial_extensions = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'create_spatial_extensions.psql'));
+
   const biohub_ddl = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'biohub.sql'));
   const populate_user_identity_source = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_user_identity_source.sql')
   );
   const api_set_context = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_set_context.sql'));
+
   const tr_audit_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_audit_trigger.sql'));
   const project_audit_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_audit_triggers.sql'));
   const api_get_context_user_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_user_id.sql'));
@@ -30,6 +32,11 @@ export async function up(knex: Knex): Promise<void> {
   const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
   const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
   const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
+  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey_proprietor.sql'));
+  const tr_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project.sql'));
+  const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
+  const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
+
   const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
 
   const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
@@ -57,18 +64,23 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, DB_RELEASE, 'populate_administrative_activity_status_type.sql')
   );
   const populate_proprietor_type = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_proprietor_type.sql'));
+
+  const populate_submission_status_type = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_submission_status_type.sql')
+  );
+  const populate_submission_message_type = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
+  );
+
+  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
+
+  const indexes = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'indexes.sql'));
+
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
   );
-  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey_proprietor.sql'));
-  const tr_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project.sql'));
-  const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
-  const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
-
-  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
-  const security_updates = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'security_updates.sql'));
 
   await knex.raw(`
     -- set up spatial extensions
@@ -97,8 +109,6 @@ export async function up(knex: Knex): Promise<void> {
     ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO ${DB_USER_API};
 
     alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
-
-    --grant postgis_reader to ${DB_USER_API};
 
     ${biohub_ddl}
     ${populate_user_identity_source}
@@ -132,8 +142,12 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_administrative_activity_type}
     ${populate_administrative_activity_status_type}
     ${populate_proprietor_type}
-    ${security_updates}
+    ${populate_submission_status_type}
+    ${populate_submission_message_type}
+
     ${secured_objects}
+
+    ${indexes}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}

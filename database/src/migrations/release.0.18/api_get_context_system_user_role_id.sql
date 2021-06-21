@@ -1,6 +1,6 @@
 -- api_get_context_system_user_role_id.sql
 
-CREATE OR REPLACE FUNCTION biohub.api_get_context_system_user_role_id(
+CREATE OR REPLACE FUNCTION api_get_context_system_user_role_id(
 	)
     RETURNS integer
     LANGUAGE 'plpgsql'
@@ -20,8 +20,6 @@ AS $$
 -- *******************************************************************
 declare
   v_system_role_id system_user_role.sr_id%type;
-  old_row json := null;
-  new_row json := null;
 begin
   select value::integer into v_system_role_id from biohub_context_temp where tag = 'system_user_role_id';
 
