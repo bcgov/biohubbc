@@ -197,7 +197,7 @@ const BlockObservationPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const handleSaveAndExit = async (action: string) => {
+  const handleSaveAndExit = async () => {
     if (!formikRef?.current) {
       return;
     }
@@ -237,10 +237,9 @@ const BlockObservationPage = () => {
     };
 
     try {
-      const response =
-        action === 'add'
-          ? await biohubApi.observation.createObservation(projectId, surveyId, data)
-          : await biohubApi.observation.updateObservation(projectId, surveyId, observationId, data);
+      const response = !observationId
+        ? await biohubApi.observation.createObservation(projectId, surveyId, data)
+        : await biohubApi.observation.updateObservation(projectId, surveyId, observationId, data);
 
       if (!response) {
         return;
@@ -315,7 +314,7 @@ const BlockObservationPage = () => {
                     variant="contained"
                     color="primary"
                     data-testid="save-and-exit-button"
-                    onClick={() => handleSaveAndExit('add')}
+                    onClick={handleSaveAndExit}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>
@@ -335,7 +334,7 @@ const BlockObservationPage = () => {
                   variant="contained"
                   color="primary"
                   data-testid="save-changes-button"
-                  onClick={() => handleSaveAndExit('edit')}
+                  onClick={handleSaveAndExit}
                   className={classes.actionButton}>
                   Save Changes
                 </Button>
