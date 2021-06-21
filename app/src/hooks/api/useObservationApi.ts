@@ -1,8 +1,9 @@
 import { AxiosInstance } from 'axios';
 import {
+  IGetObservationsListResponse,
   ICreateUpdateObservationRequest,
-  IGetObservationResponse,
-  IGetObservationsListResponse
+  ICreateObservationPostResponse,
+  IGetObservationResponse
 } from 'interfaces/useObservationApi.interface';
 import qs from 'qs';
 
@@ -22,6 +23,24 @@ const useObservationApi = (axios: AxiosInstance) => {
    */
   const getObservationsList = async (projectId: number, surveyId: number): Promise<IGetObservationsListResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observations/list`);
+
+    return data;
+  };
+  /**
+   * Create a new block observation
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateUpdateObservationRequest} observation
+   * @return {*}  {Promise<ICreateBlockObservationResponse>}
+   */
+  //TODO: make the observation generic ... for now it's just for blocks
+  const createObservation = async (
+    projectId: number,
+    surveyId: number,
+    observation: ICreateUpdateObservationRequest
+  ): Promise<ICreateObservationPostResponse> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/create`, observation);
 
     return data;
   };
@@ -60,18 +79,18 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} observationId
-   * @param {ICreateUpdateObservationRequest} observationData
+   * @param {ICreateUpdateObservationRequest} observation
    * @return {*}  {Promise<any>}
    */
   const updateObservation = async (
     projectId: number,
     surveyId: number,
     observationId: number,
-    observationData: ICreateUpdateObservationRequest
+    observation: ICreateUpdateObservationRequest
   ): Promise<any> => {
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
-      observationData
+      observation
     );
 
     return data;
@@ -80,7 +99,8 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     getObservationsList,
     getObservationForUpdate,
-    updateObservation
+    updateObservation,
+    createObservation
   };
 };
 

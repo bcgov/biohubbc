@@ -136,7 +136,20 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(observationUpdatePutRequestObject as object)
+          title: 'Observation request object',
+          type: 'object',
+          required: ['observation_type'],
+          properties: {
+            observation_type: {
+              title: 'type of observation (eg block)',
+              type: 'string'
+            },
+            observation_details_data: {
+              title: 'Generic observation json data',
+              type: 'object',
+              properties: {}
+            }
+          }
         }
       }
     }
@@ -243,7 +256,6 @@ export function updateObservation(): RequestHandler {
       const projectId = Number(req.params.projectId);
       const surveyId = Number(req.params.surveyId);
       const observationId = Number(req.params.observationId);
-      const observationData = req.body;
 
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');
@@ -257,16 +269,20 @@ export function updateObservation(): RequestHandler {
         throw new HTTP400('Missing required path parameter: observationId');
       }
 
-      if (!req.body) {
-        throw new HTTP400('Missing required body');
+      if (!req.body.observation_type) {
+        throw new HTTP400('Missing required body param `observation_type`');
+      }
+  
+      if (!req.body.observation_details_data) {
+        throw new HTTP400('Missing required body param `observation_details_data`');
       }
 
       await connection.open();
 
       let putObservationSQLStatement;
 
-      if (observationData.entity === 'block') {
-        putObservationSQLStatement = updateBlockObservationSQL(Number(req.params.observationId), observationData);
+      if (req.body.observation_type === 'block') {
+        putObservationSQLStatement = updateBlockObservationSQL(Number(req.params.observationId), req.body.observation_details_data);
       }
 
       if (!putObservationSQLStatement) {

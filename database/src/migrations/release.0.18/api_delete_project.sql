@@ -19,6 +19,8 @@ $$
 declare
   __count integer := 0;
 begin
+  raise exception 'Not Implemented';  
+
   select count(*) into __count from survey_publish_history where s_id in (select id from survey where p_id = __project_id);
   if (__count > 0) then
     raise exception 'Project cannot be deleted as associated published data exists.';  

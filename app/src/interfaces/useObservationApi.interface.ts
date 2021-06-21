@@ -1,5 +1,20 @@
 import { IBlockObservationForm } from 'features/observations/components/BlockObservationForm';
 
+/**
+ * Get single observation response object.
+ *
+ * @export
+ * @interface IGetObservationResponse
+ */
+export interface IGetObservationResponse {
+  id: number;
+  data: {
+    metaData: IBlockObservationForm;
+    tableData: IBlockObservationTableData;
+  };
+  revision_count: number;
+}
+
 export interface IGetBlocksListResponse {
   id: number;
   block_id: number;
@@ -13,14 +28,14 @@ export interface IGetObservationsListResponse {
 }
 
 /**
- * Create/Update observation post/put object.
+ * Create or update block observation object.
  *
  * @export
- * @interface ICreateUpdateObservationRequest
+ * @interface ICreateUpdateBlockObservationRequest
+ *
  */
-export interface ICreateUpdateObservationRequest {
-  entity: string;
-  block_name: string;
+export interface ICreateUpdateBlockObservationRequest {
+  block_name: number;
   start_datetime: string;
   end_datetime: string;
   observation_count: number;
@@ -35,17 +50,11 @@ export interface IBlockObservationTableData {
   data: string[][];
 }
 
-/**
- * Get single observation response object.
- *
- * @export
- * @interface IGetObservationResponse
- */
-export interface IGetObservationResponse {
+export interface ICreateObservationPostResponse {
   id: number;
-  data: {
-    metaData: IBlockObservationForm;
-    tableData: IBlockObservationTableData;
-  };
-  revision_count: number;
+}
+
+export interface ICreateUpdateObservationRequest {
+  observation_type: string;
+  observation_details_data: ICreateUpdateBlockObservationRequest;
 }

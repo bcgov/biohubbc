@@ -10,6 +10,8 @@
  create or replace view iucn_conservation_action_level_2_subclassification as select * from biohub.iucn_conservation_action_level_2_subclassification;
  create or replace view iucn_conservation_action_level_3_subclassification as select * from biohub.iucn_conservation_action_level_3_subclassification;
  create or replace view management_action_type as select * from biohub.management_action_type;
+ create or replace view occurrence as select * from biohub.occurrence;
+ create or replace view occurrence_submission as select * from biohub.occurrence_submission;
  create or replace view permit as select * from biohub.permit;
  create or replace view project as select * from biohub.project;
  create or replace view project_activity as select * from biohub.project_activity;
@@ -24,16 +26,18 @@
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
  create or replace view proprietor_type as select * from biohub.proprietor_type;
- create or replace view security_rules as select * from biohub.security_rules;
- create or replace view security_table as select * from biohub.security_table;
+ create or replace view security as select * from biohub.security;
+ create or replace view security_rule as select * from biohub.security_rule;
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
  create or replace view study_species as select * from biohub.study_species;
+ create or replace view submission_message as select * from biohub.submission_message;
+ create or replace view submission_message_type as select * from biohub.submission_message_type;
+ create or replace view submission_status as select * from biohub.submission_status;
+ create or replace view submission_status_type as select * from biohub.submission_status_type;
  create or replace view survey as select * from biohub.survey;
  create or replace view survey_attachment as select * from biohub.survey_attachment;
  create or replace view survey_funding_source as select * from biohub.survey_funding_source;
- create or replace view survey_occurrence as select * from biohub.survey_occurrence;
  create or replace view survey_proprietor as select * from biohub.survey_proprietor;
- create or replace view survey_publish_history as select * from biohub.survey_publish_history;
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_role as select * from biohub.system_role;
  create or replace view system_user as select * from biohub.system_user;
@@ -41,3 +45,4 @@
  create or replace view user_identity_source as select * from biohub.user_identity_source;
  create or replace view webform_draft as select * from biohub.webform_draft;
  create or replace view wldtaxonomic_units as select * from biohub.wldtaxonomic_units;
+

@@ -101,7 +101,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files.length', files: req?.files?.length });
+    defaultLog.debug({ label: 'uploadMedia', message: 'files.length', files: req.files?.length });
 
     if (!req.files || !req.files.length) {
       // no media objects included, skipping media upload step
@@ -119,10 +119,9 @@ export function uploadMedia(): RequestHandler {
     try {
       await connection.open();
 
-      const insertSurveyAttachmentsPromises =
-        rawMediaArray.map((file: Express.Multer.File) =>
-          upsertSurveyAttachment(file, Number(req.params.projectId), Number(req.params.surveyId), connection)
-        ) || [];
+      const insertSurveyAttachmentsPromises = rawMediaArray.map((file: Express.Multer.File) =>
+        upsertSurveyAttachment(file, Number(req.params.projectId), Number(req.params.surveyId), connection)
+      );
 
       await Promise.all([...insertSurveyAttachmentsPromises]);
 
@@ -130,10 +129,6 @@ export function uploadMedia(): RequestHandler {
       const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
-        if (!file) {
-          return;
-        }
-
         const key = req.params.projectId + '/' + req.params.surveyId + '/' + file.originalname;
 
         const metadata = {

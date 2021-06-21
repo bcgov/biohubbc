@@ -21,10 +21,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import Paper from '@material-ui/core/Paper';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import moment from 'moment';
 import { APIError } from 'hooks/api/useAxios';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import Paper from '@material-ui/core/Paper';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 
 const useStyles = makeStyles(() => ({
@@ -193,8 +193,11 @@ const BlockObservationPage = () => {
     return true;
   };
 
-  // Function to update block observation data
-  const handleUpdate = async () => {
+  if (!projectWithDetails || !surveyWithDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  const handleSaveAndExit = async (action: string) => {
     if (!formikRef?.current) {
       return;
     }
@@ -208,7 +211,7 @@ const BlockObservationPage = () => {
 
     if (!isValid) {
       showErrorDialog({
-        dialogTitle: 'Edit Observation Form Incomplete',
+        dialogTitle: 'Observation Form Incomplete',
         dialogText:
           'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
       });
@@ -216,23 +219,28 @@ const BlockObservationPage = () => {
       return;
     }
 
-    const putData = {
-      entity: 'block',
-      block_name: formikRef.current.values.block_name,
-      start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
-      end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
-      observation_count: 50,
-      observation_data: {
-        metaData: formikRef.current.values,
-        tableData: {
-          data: tableData
-        }
-      },
-      revision_count: observationWithDetails.revision_count
+    const data: any = {
+      observation_type: 'block',
+      observation_details_data: {
+        block_name: formikRef.current.values.block_name,
+        start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
+        end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
+        observation_count: 50,
+        observation_data: {
+          metaData: formikRef.current.values,
+          tableData: {
+            data: tableData
+          }
+        },
+        revision_count: observationWithDetails.revision_count
+      }
     };
 
     try {
-      const response = await biohubApi.observation.updateObservation(projectId, surveyId, observationId, putData);
+      const response =
+        action === 'add'
+          ? await biohubApi.observation.createObservation(projectId, surveyId, data)
+          : await biohubApi.observation.updateObservation(projectId, surveyId, observationId, data);
 
       if (!response) {
         return;
@@ -245,10 +253,6 @@ const BlockObservationPage = () => {
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
-
-  if (!projectWithDetails || !surveyWithDetails) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
 
   return (
     <>
@@ -311,7 +315,7 @@ const BlockObservationPage = () => {
                     variant="contained"
                     color="primary"
                     data-testid="save-and-exit-button"
-                    onClick={() => console.log('add and exit functionality')}
+                    onClick={() => handleSaveAndExit('add')}
                     className={classes.actionButton}>
                     Save and Exit
                   </Button>
@@ -331,7 +335,7 @@ const BlockObservationPage = () => {
                   variant="contained"
                   color="primary"
                   data-testid="save-changes-button"
-                  onClick={handleUpdate}
+                  onClick={() => handleSaveAndExit('edit')}
                   className={classes.actionButton}>
                   Save Changes
                 </Button>
