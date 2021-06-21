@@ -5,7 +5,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Route, Router } from 'react-router';
-import { getObservationForUpdateResponse } from 'test-helpers/observation-helpers';
+import { getObservationForCreateUpdateResponse } from 'test-helpers/observation-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import BlockObservationPage from './BlockObservationPage';
@@ -92,7 +92,7 @@ describe('BlockObservationPage', () => {
   it('renders the filled page contents (Edit Block Observation) with the form when project, survey and observation are loaded', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
-    mockBiohubApi().observation.getObservationForUpdate.mockResolvedValue(getObservationForUpdateResponse);
+    mockBiohubApi().observation.getObservationForUpdate.mockResolvedValue(getObservationForCreateUpdateResponse);
 
     const updatedHistory = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1/observations/1/block'] });
 

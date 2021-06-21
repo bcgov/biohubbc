@@ -38,7 +38,7 @@ describe('createBlockObservation', () => {
     keycloak_token: {},
     body: {
       observation_type: 'block',
-      observation_post_data: {
+      observation_details_data: {
         block_name: 'block_name',
         start_datetime: '2021-06-01T01:06:00.000Z',
         end_datetime: '2021-06-01T02:06:00.000Z',
@@ -109,7 +109,7 @@ describe('createBlockObservation', () => {
     }
   });
 
-  it('should throw a 400 error when no observation_post_data is present', async () => {
+  it('should throw a 400 error when no observation_details_data is present', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -121,14 +121,14 @@ describe('createBlockObservation', () => {
       const result = create.createObservation();
 
       await result(
-        { ...sampleReq, body: { observation_type: 'block', observation_post_data: null } },
+        { ...sampleReq, body: { observation_type: 'block', observation_details_data: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `observation_post_data`');
+      expect(actualError.message).to.equal('Missing required body param `observation_details_data`');
     }
   });
 

@@ -41,6 +41,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
+interface IObservationWithDetails {
+  data: IBlockObservationForm;
+  revision_count?: number;
+}
+
 const BlockObservationPage = () => {
   const classes = useStyles();
   const urlParams = useParams();
@@ -54,9 +59,6 @@ const BlockObservationPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [observationWithDetails, setObservationWithDetails] = useState<IBlockObservationForm>(
-    BlockObservationInitialValues
-  );
   const [tableData, setTableData] = useState<any[][]>([[, , , , , , , , , , , , , ,]]);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
@@ -64,6 +66,13 @@ const BlockObservationPage = () => {
   const [isLoadingObservation, setIsLoadingObservation] = useState(true);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
+  const [observationWithDetails, setObservationWithDetails] = useState<IObservationWithDetails>({
+    data: BlockObservationInitialValues
+  });
+
+  const projectId = urlParams['id'];
+  const surveyId = urlParams['survey_id'];
+  const observationId = urlParams['observation_id'];
 
   const defaultErrorDialogProps = {
     onClose: () => {
@@ -77,10 +86,6 @@ const BlockObservationPage = () => {
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
-
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
-  const observationId = urlParams['observation_id'];
 
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(projectId);
@@ -113,7 +118,10 @@ const BlockObservationPage = () => {
       return;
     }
 
-    setObservationWithDetails(observationWithDetailsResponse.data.metaData);
+    setObservationWithDetails({
+      data: observationWithDetailsResponse.data.metaData,
+      revision_count: observationWithDetailsResponse.revision_count
+    });
     setTableData(observationWithDetailsResponse.data.tableData.data);
   }, [biohubApi.observation, urlParams]);
 
@@ -203,7 +211,7 @@ const BlockObservationPage = () => {
 
     if (!isValid) {
       showErrorDialog({
-        dialogTitle: 'Add Observation Form Incomplete',
+        dialogTitle: 'Observation Form Incomplete',
         dialogText:
           'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
       });
@@ -211,9 +219,9 @@ const BlockObservationPage = () => {
       return;
     }
 
-    const postData: any = {
+    const data: any = {
       observation_type: 'block',
-      observation_post_data: {
+      observation_details_data: {
         block_name: formikRef.current.values.block_name,
         start_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.start_time}`).toISOString(),
         end_datetime: moment(`${formikRef.current.values.date} ${formikRef.current.values.end_time}`).toISOString(),
@@ -223,12 +231,15 @@ const BlockObservationPage = () => {
           tableData: {
             data: tableData
           }
-        }
+        },
+        revision_count: observationWithDetails.revision_count
       }
     };
 
     try {
-      const response = await biohubApi.observation.createObservation(projectId, surveyId, postData);
+      const response = !observationId
+        ? await biohubApi.observation.createObservation(projectId, surveyId, data)
+        : await biohubApi.observation.updateObservation(projectId, surveyId, observationId, data);
 
       if (!response) {
         return;
@@ -287,7 +298,7 @@ const BlockObservationPage = () => {
           <Box pl={3} pr={3} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
-              initialValues={observationWithDetails}
+              initialValues={observationWithDetails.data}
               validationSchema={BlockObservationYupSchema}
               enableReinitialize={true}
               validateOnBlur={false}
@@ -323,7 +334,7 @@ const BlockObservationPage = () => {
                   variant="contained"
                   color="primary"
                   data-testid="save-changes-button"
-                  onClick={() => console.log('edit functionality')}
+                  onClick={handleSaveAndExit}
                   className={classes.actionButton}>
                   Save Changes
                 </Button>
