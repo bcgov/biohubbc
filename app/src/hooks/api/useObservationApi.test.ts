@@ -1,7 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useObservationApi from './useObservationApi';
-import { getObservationForUpdateResponse } from 'test-helpers/observation-helpers';
+import { getObservationForCreateUpdateResponse } from 'test-helpers/observation-helpers';
 
 describe('useObservationApi', () => {
   let mock: any;
@@ -16,6 +16,21 @@ describe('useObservationApi', () => {
 
   const projectId = 1;
   const surveyId = 2;
+  const observationId = 2;
+
+  const observation = {
+    observation_type: 'block',
+    observation_details_data: {
+      block_name: 1,
+      start_datetime: '2020/04/04',
+      end_datetime: '2020/05/05',
+      observation_count: 50,
+      observation_data: {
+        ...getObservationForCreateUpdateResponse.data
+      },
+      revision_count: getObservationForCreateUpdateResponse.revision_count
+    }
+  };
 
   it('getObservationsList works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observations/list`).reply(200, {
@@ -43,9 +58,15 @@ describe('useObservationApi', () => {
     expect(result.blocks[1].id).toEqual(2);
   });
 
-  it('createBlockObservation as expected', async () => {
-    const observation = getObservationForUpdateResponse.data;
+  it('updateObservation works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`).reply(200, true);
 
+    const result = await useObservationApi(axios).updateObservation(projectId, surveyId, observationId, observation);
+
+    expect(result).toEqual(true);
+  });
+
+  it('createBlockObservation as expected', async () => {
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observations/create`).reply(200, {
       id: 1
     });

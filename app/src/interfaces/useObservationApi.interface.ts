@@ -1,32 +1,5 @@
 import { IBlockObservationForm } from 'features/observations/components/BlockObservationForm';
 
-export interface IGetBlocksListResponse {
-  id: number;
-  block_id: number;
-  number_of_observations: number;
-  start_time: string;
-  end_time: string;
-}
-
-export interface IGetObservationsListResponse {
-  blocks: IGetBlocksListResponse[];
-}
-
-/**
- * Create observation post object.
- *
- * @export
- * @interface ICreateObservationRequest
- */
-export interface ICreateObservationRequest {
-  metaData: IBlockObservationForm;
-  tableData: IBlockObservationTableData;
-}
-
-export interface IBlockObservationTableData {
-  data: string[][];
-}
-
 /**
  * Get single observation response object.
  *
@@ -35,7 +8,11 @@ export interface IBlockObservationTableData {
  */
 export interface IGetObservationResponse {
   id: number;
-  data: ICreateObservationRequest;
+  data: {
+    metaData: IBlockObservationForm;
+    tableData: IBlockObservationTableData;
+  };
+  revision_count: number;
 }
 
 export interface IGetBlocksListResponse {
@@ -51,13 +28,13 @@ export interface IGetObservationsListResponse {
 }
 
 /**
- * Create blockObservation post object.
+ * Create or update block observation object.
  *
  * @export
- * @interface ICreateBlockObservationPostRequest
+ * @interface ICreateUpdateBlockObservationRequest
  *
  */
-export interface ICreateBlockObservationPostRequest {
+export interface ICreateUpdateBlockObservationRequest {
   block_name: number;
   start_datetime: string;
   end_datetime: string;
@@ -66,6 +43,7 @@ export interface ICreateBlockObservationPostRequest {
     metaData: IBlockObservationForm;
     tableData: IBlockObservationTableData;
   };
+  revision_count?: number;
 }
 
 export interface IBlockObservationTableData {
@@ -76,7 +54,7 @@ export interface ICreateObservationPostResponse {
   id: number;
 }
 
-export interface ICreateObservationPostRequest {
+export interface ICreateUpdateObservationRequest {
   observation_type: string;
-  observation_post_data: ICreateBlockObservationPostRequest;
+  observation_details_data: ICreateUpdateBlockObservationRequest;
 }
