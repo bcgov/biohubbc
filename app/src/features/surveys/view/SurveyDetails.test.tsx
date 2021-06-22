@@ -53,18 +53,6 @@ describe('SurveyDetails', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('displays the delete survey confirmation modal when delete survey button is clicked', async () => {
-    const { getByTestId, getByText } = render(component);
-
-    fireEvent.click(getByTestId('delete-survey-button'));
-
-    await waitFor(() => {
-      expect(
-        getByText('Are you sure you want to delete this survey, its attachments and associated observations?')
-      ).toBeInTheDocument();
-    });
-  });
-
   it('delete survey works and takes user to the surveys list page', async () => {
     mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
 
