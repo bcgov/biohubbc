@@ -84,19 +84,17 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
  */
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
-      SET SCHEMA '${DB_SCHEMA}';
-      SET SEARCH_PATH = ${DB_SCHEMA},public, biohub_dapi_v1;
+    SET SCHEMA '${DB_SCHEMA}';
+    SET SEARCH_PATH = ${DB_SCHEMA},public, biohub_dapi_v1;
 
-      SET ROLE biohub_api;
+    SET ROLE biohub_api;
 
-      DROP VIEW IF EXISTS biohub_dapi_v1.block_observation;
+    DROP VIEW IF EXISTS biohub_dapi_v1.block_observation;
 
-      SET ROLE postgres;
+    SET ROLE postgres;
 
-      DROP TRIGGER IF EXISTS survey_proprietor_val on biohub.survey_proprietor;
+    DROP TRIGGER IF EXISTS survey_proprietor_val on biohub.survey_proprietor;
 
-      DROP TABLE IF EXISTS ${DB_SCHEMA}.block_observation;
-
-
-    `);
+    DROP TABLE IF EXISTS ${DB_SCHEMA}.block_observation;
+  `);
 }

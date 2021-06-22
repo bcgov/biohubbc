@@ -70,8 +70,6 @@ export function deleteSurvey(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      await connection.open();
-
       /**
        * PART 1
        * Get the attachment S3 keys for all attachments associated to this survey
@@ -98,13 +96,6 @@ export function deleteSurvey(): RequestHandler {
         return attachment.key;
       });
 
-      const promises: Promise<any>[] = [];
-
-      // Handle deleting the S3 attachments associated to this survey
-      promises.push(Promise.all(surveyAttachmentS3Keys.map((s3Key: string) => deleteFileFromS3(s3Key))));
-
-      await Promise.all(promises);
-
       /**
        * PART 2
        * Delete the survey and all associated records/resources from our DB
@@ -116,6 +107,17 @@ export function deleteSurvey(): RequestHandler {
       }
 
       await connection.query(deleteSurveySQLStatement.text, deleteSurveySQLStatement.values);
+
+      /**
+       * PART 3
+       * Delete the survey attachments from S3
+       */
+
+      const deleteResult = await Promise.all(surveyAttachmentS3Keys.map((s3Key: string) => deleteFileFromS3(s3Key)));
+
+      if (deleteResult.some((deleteResult) => !deleteResult)) {
+        return res.status(200).json(null);
+      }
 
       await connection.commit();
 
