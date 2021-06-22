@@ -12,6 +12,7 @@ exports[`SurveyDetails renders correctly 1`] = `
     </h2>
     <button
       class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      data-testid="delete-survey-button"
       tabindex="0"
       type="button"
     >

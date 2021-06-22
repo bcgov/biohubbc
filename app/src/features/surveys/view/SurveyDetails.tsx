@@ -91,6 +91,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
         <Button
           variant="outlined"
           color="primary"
+          data-testid="delete-survey-button"
           startIcon={<Icon path={mdiDelete} size={1} />}
           onClick={showDeleteSurveyDialog}>
           Delete Survey
