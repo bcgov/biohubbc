@@ -103,4 +103,58 @@ describe('deleteProject', () => {
       expect(actualError.message).to.equal('Failed to build SQL get statement');
     }
   });
+
+  it('should throw a 400 error when failed to get result for project attachments', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rows: null });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+
+    try {
+      const result = delete_project.deleteProject();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to get project attachments');
+    }
+  });
+
+  it('should throw a 400 error when failed to get result for survey ids', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rows: [] }).onSecondCall().resolves({ rows: null });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+
+    try {
+      const result = delete_project.deleteProject();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to get survey ids associated to project');
+    }
+  });
 });
