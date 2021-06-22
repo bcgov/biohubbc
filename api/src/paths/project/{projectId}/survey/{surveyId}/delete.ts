@@ -112,7 +112,6 @@ export function deleteSurvey(): RequestHandler {
        * PART 3
        * Delete the survey attachments from S3
        */
-
       const deleteResult = await Promise.all(surveyAttachmentS3Keys.map((s3Key: string) => deleteFileFromS3(s3Key)));
 
       if (deleteResult.some((deleteResult) => !deleteResult)) {
