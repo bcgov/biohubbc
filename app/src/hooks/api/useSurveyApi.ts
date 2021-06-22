@@ -154,9 +154,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {*} {Promise<number>}
+   * @returns {*} {Promise<boolean>}
    */
-  const deleteSurvey = async (projectId: number, surveyId: number): Promise<number> => {
+  const deleteSurvey = async (projectId: number, surveyId: number): Promise<boolean> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/delete`);
 
     return data;
