@@ -151,7 +151,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
       { type: 'numeric' },
       { type: 'numeric' },
       { type: 'numeric' },
-      { type: 'numeric', readOnly: true },
+      { type: 'numeric' },
       { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
       {
         type: 'dropdown',
