@@ -112,3 +112,32 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete a survey row based on survey ID.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveySQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`call api_delete_survey(${surveyId})`;
+
+  defaultLog.debug({
+    label: 'deleteSurveySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

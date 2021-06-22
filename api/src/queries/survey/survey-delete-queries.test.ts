@@ -1,6 +1,11 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { deleteFocalSpeciesSQL, deleteAncillarySpeciesSQL, deleteSurveyProprietorSQL } from './survey-delete-queries';
+import {
+  deleteFocalSpeciesSQL,
+  deleteAncillarySpeciesSQL,
+  deleteSurveyProprietorSQL,
+  deleteSurveySQL
+} from './survey-delete-queries';
 
 describe('deleteFocalSpeciesSQL', () => {
   it('returns null when null survey id param provided', () => {
@@ -43,8 +48,22 @@ describe('deleteSurveyProprietorSQL', () => {
     expect(response).to.be.null;
   });
 
-  it('returns a non null when valid params passed in', () => {
+  it('returns a non null response when valid params passed in', () => {
     const response = deleteSurveyProprietorSQL(1, 1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteSurveySQL', () => {
+  it('returns null when surveyId is null', () => {
+    const response = deleteSurveySQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = deleteSurveySQL(1);
 
     expect(response).to.not.be.null;
   });
