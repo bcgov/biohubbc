@@ -7,13 +7,13 @@ import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
-import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectCoordinatorForm {
   first_name: string;
@@ -90,7 +90,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
         <Grid item xs={12}>
           <CustomTextField
             name="email_address"
-            label="Email Address"
+            label="Business Email Address"
             other={{
               required: true
             }}

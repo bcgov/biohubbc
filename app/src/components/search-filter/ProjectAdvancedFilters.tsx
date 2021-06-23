@@ -3,7 +3,6 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -11,7 +10,7 @@ import MultiAutocompleteFieldVariableSize, {
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
-
+import CustomTextField from 'components/fields/CustomTextField';
 export interface IProjectAdvancedFilters {
   coordinator_agency: string;
   permit_number: string;
@@ -61,28 +60,10 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required={false}
-            id="keyword"
-            name="keyword"
-            label="Keyword (or any portion of any word)"
-            variant="outlined"
-            value={values.keyword}
-            onChange={handleChange}
-          />
+          <CustomTextField name="keyword" label="Keyword (or any portion of any word)" />
         </Grid>
         <Grid item xs={12} md={3}>
-          <TextField
-            fullWidth
-            required={false}
-            id="project_name"
-            name="project_name"
-            label="Project Name"
-            variant="outlined"
-            value={values.project_name}
-            onChange={handleChange}
-          />
+          <CustomTextField name="project_name" label="Project Name" />
         </Grid>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth variant="outlined" required={false}>
@@ -124,15 +105,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
           />
         </Grid>
         <Grid item xs={12} md={3}>
-          <TextField
-            fullWidth
-            id="permit_number"
-            name="permit_number"
-            label="Permit Number"
-            variant="outlined"
-            onChange={handleChange}
-            value={values.permit_number}
-          />
+          <CustomTextField name="permit_number" label="Permit Number" />
         </Grid>
         <Grid item xs={12} md={3}>
           <FormControl fullWidth variant="outlined" required={false}>
@@ -155,16 +128,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
           </FormControl>
         </Grid>
         <Grid item xs={12} md={3}>
-          <TextField
-            fullWidth
-            required={false}
-            id="agency_project_id"
-            name="agency_project_id"
-            label="Funding Agency Project ID"
-            variant="outlined"
-            value={values.agency_project_id}
-            onChange={handleChange}
-          />
+          <CustomTextField name="agency_project_id" label="Funding Agency Project ID" />
         </Grid>
         <Grid item xs={6}>
           <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={false} />

@@ -13,6 +13,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import CustomTextField from 'components/fields/CustomTextField';
 
 const useStyles = makeStyles(() => ({
   legend: {
@@ -179,17 +180,12 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 />
               )}
               {values.proprietary_data_category !== 2 && (
-                <TextField
-                  fullWidth
-                  required={true}
-                  id="proprietor_name"
+                <CustomTextField
                   name="proprietor_name"
                   label="Proprietor Name"
-                  variant="outlined"
-                  value={values.proprietor_name}
-                  onChange={handleChange}
-                  error={touched.proprietor_name && Boolean(errors.proprietor_name)}
-                  helperText={touched.proprietor_name && errors.proprietor_name}
+                  other={{
+                    required: true
+                  }}
                 />
               )}
             </Grid>

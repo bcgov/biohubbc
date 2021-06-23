@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
@@ -38,17 +39,12 @@ const BCeIDRequestForm: React.FC<IBCeIDRequestFormProps> = (props) => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <h3>Company Name</h3>
-          <TextField
-            fullWidth
-            id="company"
+          <CustomTextField
             name="company"
             label="Company Name"
-            variant="outlined"
-            required
-            value={values.company}
-            onChange={handleChange}
-            error={touched.company && Boolean(errors.company)}
-            helperText={errors.company}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12}>
