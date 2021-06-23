@@ -12,8 +12,14 @@ import ProjectCoordinator from 'features/projects/view/components/ProjectCoordin
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React from 'react';
+import React, { useContext } from 'react';
 import ProjectPermits from './components/ProjectPermits';
+import Button from '@material-ui/core/Button';
+import Icon from '@mdi/react';
+import { mdiDelete } from '@mdi/js';
+import { DialogContext } from 'contexts/dialogContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useHistory } from 'react-router';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -41,12 +47,58 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   const { projectForViewData, codes, refresh } = props;
+
   const classes = useStyles();
+  const biohubApi = useBiohubApi();
+  const history = useHistory();
+  const dialogContext = useContext(DialogContext);
+
+  const defaultYesNoDialogProps = {
+    dialogTitle: 'Delete Project',
+    dialogText: 'Are you sure you want to delete this project, its attachments and associated surveys/observations?',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const showDeleteProjectDialog = () => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        deleteProject();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const deleteProject = async () => {
+    try {
+      const response = await biohubApi.project.deleteProject(projectForViewData.id);
+
+      if (!response) {
+        return;
+      }
+
+      history.push(`/projects`);
+    } catch (error) {
+      return error;
+    }
+  };
 
   return (
     <>
-      <Box mb={6}>
+      <Box mb={5} display="flex" justifyContent="space-between">
         <Typography variant="h2">Project Details</Typography>
+        <Button
+          variant="outlined"
+          color="primary"
+          data-testid="delete-project-button"
+          startIcon={<Icon path={mdiDelete} size={1} />}
+          onClick={showDeleteProjectDialog}>
+          Delete Project
+        </Button>
       </Box>
 
       <Box component={Paper} p={4}>

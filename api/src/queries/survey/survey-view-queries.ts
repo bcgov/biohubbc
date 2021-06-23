@@ -4,6 +4,42 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
+ * SQL query to get all survey ids for a given project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyIdsSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      id
+    FROM
+      survey
+    WHERE
+      p_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyIdsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get all surveys for list view.
  *
  * @param {number} projectId
