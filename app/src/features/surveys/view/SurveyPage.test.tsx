@@ -1,4 +1,4 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -9,6 +9,7 @@ import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyPage from './SurveyPage';
+import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1'] });
 
@@ -18,7 +19,8 @@ const mockUseBiohubApi = {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
   },
   survey: {
-    getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, [number]>()
+    getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, [number]>(),
+    deleteSurvey: jest.fn()
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
@@ -34,6 +36,7 @@ describe('SurveyPage', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().survey.getSurveyForView.mockClear();
+    mockBiohubApi().survey.deleteSurvey.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
   });
 
@@ -41,17 +44,21 @@ describe('SurveyPage', () => {
     cleanup();
   });
 
+  const component = (
+    <DialogContextProvider>
+      <Router history={history}>
+        <SurveyPage />
+      </Router>
+    </DialogContextProvider>
+  );
+
   it('renders a spinner if no project is loaded', async () => {
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment } = render(
-      <Router history={history}>
-        <SurveyPage />
-      </Router>
-    );
+    const { asFragment } = render(component);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -62,11 +69,7 @@ describe('SurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
 
-    const { asFragment } = render(
-      <Router history={history}>
-        <SurveyPage />
-      </Router>
-    );
+    const { asFragment } = render(component);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -79,11 +82,7 @@ describe('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment } = render(
-      <Router history={history}>
-        <SurveyPage />
-      </Router>
-    );
+    const { asFragment } = render(component);
 
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
@@ -97,11 +96,7 @@ describe('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment, findByText } = render(
-      <Router history={history}>
-        <SurveyPage />
-      </Router>
-    );
+    const { asFragment, findByText } = render(component);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
 
@@ -124,17 +119,44 @@ describe('SurveyPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
 
-    const { asFragment, findByText } = render(
-      <Router history={history}>
-        <SurveyPage />
-      </Router>
-    );
+    const { asFragment, findByText } = render(component);
 
     const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
 
     await waitFor(() => {
       expect(surveyHeaderText).toBeVisible();
       expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('delete survey works and takes user to the surveys list page', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().survey.deleteSurvey.mockResolvedValue(true);
+
+    const { getByTestId, getByText, findByText } = render(component);
+
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+
+    await waitFor(() => {
+      expect(surveyHeaderText).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId('delete-survey-button'));
+
+    await waitFor(() => {
+      expect(
+        getByText('Are you sure you want to delete this survey, its attachments and associated observations?')
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('yes-button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toEqual(`/projects/${getProjectForViewResponse.id}/surveys`);
     });
   });
 });
