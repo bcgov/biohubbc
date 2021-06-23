@@ -41,11 +41,12 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   const { projectForViewData, codes, refresh } = props;
+
   const classes = useStyles();
 
   return (
     <>
-      <Box mb={6}>
+      <Box mb={5}>
         <Typography variant="h2">Project Details</Typography>
       </Box>
 

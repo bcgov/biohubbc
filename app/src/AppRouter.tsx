@@ -9,17 +9,20 @@ import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LogInPage from 'pages/login/LogInPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
-import { Redirect, Switch } from 'react-router-dom';
+import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
 import SearchPage from 'features/search/SearchPage';
 
 const AppRouter: React.FC = (props: any) => {
+  const location = useLocation();
+
   const getTitle = (page: string) => {
     return `BioHub - ${page}`;
   };
 
   return (
     <Switch>
+      <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
       <Redirect exact from="/" to="/login" />
       <AppRoute path="/login" title={getTitle('Login')} component={LogInPage} layout={PublicLayout} />
       <AppRoute
