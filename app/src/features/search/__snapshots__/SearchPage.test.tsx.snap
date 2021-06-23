@@ -3,13 +3,13 @@
 exports[`SearchPage matches the snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root MuiBox-root-2"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root MuiBox-root-3"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -18,10 +18,10 @@ exports[`SearchPage matches the snapshot 1`] = `
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-3"
+        class="MuiBox-root MuiBox-root-4"
       >
         <div
-          class="MuiBox-root MuiBox-root-4"
+          class="MuiBox-root MuiBox-root-5"
         >
           <form>
             <div
@@ -74,10 +74,10 @@ exports[`SearchPage matches the snapshot 1`] = `
                     </svg>
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
                       >
                         <span>
                           Record Type
@@ -91,7 +91,7 @@ exports[`SearchPage matches the snapshot 1`] = `
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-9"
+                  class="MuiBox-root MuiBox-root-10"
                 >
                   <div
                     class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -389,7 +389,7 @@ exports[`SearchPage matches the snapshot 1`] = `
             </div>
           </form>
           <div
-            class="MuiBox-root MuiBox-root-10"
+            class="MuiBox-root MuiBox-root-11"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"

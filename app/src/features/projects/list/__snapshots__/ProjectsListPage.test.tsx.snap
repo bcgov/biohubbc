@@ -3,13 +3,13 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-13"
+    class="MuiBox-root MuiBox-root-25"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-14"
+        class="MuiBox-root MuiBox-root-26"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -49,7 +49,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-15"
+          class="MuiBox-root MuiBox-root-27"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -151,7 +151,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   scope="row"
                 >
                   <button
-                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-11 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-23 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
                     data-testid="Draft 1"
                   >
                     Draft 1 (Draft)
@@ -185,13 +185,13 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 exports[`ProjectsListPage renders with a proper list of projects 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-9"
+    class="MuiBox-root MuiBox-root-18"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiBox-root MuiBox-root-19"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -231,7 +231,7 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-20"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
