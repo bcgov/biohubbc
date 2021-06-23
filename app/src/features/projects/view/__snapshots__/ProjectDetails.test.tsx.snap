@@ -10,6 +10,35 @@ exports[`ProjectDetails renders correctly 1`] = `
     >
       Project Details
     </h2>
+    <button
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      data-testid="delete-project-button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        <span
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+        Delete Project
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
   <div
     class="MuiPaper-root MuiBox-root MuiBox-root-3 MuiPaper-elevation1 MuiPaper-rounded"

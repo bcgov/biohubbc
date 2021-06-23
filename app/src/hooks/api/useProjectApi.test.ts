@@ -50,6 +50,14 @@ describe('useProjectApi', () => {
     ]);
   });
 
+  it('deleteProject works as expected', async () => {
+    mock.onDelete(`/api/project/${projectId}/delete`).reply(200, true);
+
+    const result = await useProjectApi(axios).deleteProject(projectId);
+
+    expect(result).toEqual(true);
+  });
+
   it('deleteProjectAttachment works as expected', async () => {
     mock.onDelete(`/api/project/${projectId}/attachments/${attachmentId}/delete`).reply(200, 1);
 

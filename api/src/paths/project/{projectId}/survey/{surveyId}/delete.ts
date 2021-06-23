@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getSurveyAttachmentsSQL } from '../../../../../queries/survey/survey-attachments-queries';
 import { deleteSurveySQL } from '../../../../../queries/survey/survey-delete-queries';
@@ -70,31 +70,13 @@ export function deleteSurvey(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      await connection.open();
       /**
        * PART 1
        * Get the attachment S3 keys for all attachments associated to this survey
        * Used to delete them from S3 separately later
        */
-      const getSurveyAttachmentSQLStatement = getSurveyAttachmentsSQL(Number(req.params.surveyId));
-
-      if (!getSurveyAttachmentSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      await connection.open();
-
-      const getResult = await connection.query(
-        getSurveyAttachmentSQLStatement.text,
-        getSurveyAttachmentSQLStatement.values
-      );
-
-      if (!getResult || !getResult.rows) {
-        throw new HTTP400('Failed to get survey attachments');
-      }
-
-      const surveyAttachmentS3Keys: string[] = getResult.rows.map((attachment: any) => {
-        return attachment.key;
-      });
+      const surveyAttachmentS3Keys: string[] = await getSurveyAttachmentS3Keys(Number(req.params.surveyId), connection);
 
       /**
        * PART 2
@@ -130,3 +112,22 @@ export function deleteSurvey(): RequestHandler {
     }
   };
 }
+
+export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
+  const getSurveyAttachmentSQLStatement = getSurveyAttachmentsSQL(surveyId);
+
+  if (!getSurveyAttachmentSQLStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const getResult = await connection.query(
+    getSurveyAttachmentSQLStatement.text,
+    getSurveyAttachmentSQLStatement.values
+  );
+
+  if (!getResult || !getResult.rows) {
+    throw new HTTP400('Failed to get survey attachments');
+  }
+
+  return getResult.rows.map((attachment: any) => attachment.key);
+};

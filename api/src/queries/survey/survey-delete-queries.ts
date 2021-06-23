@@ -114,7 +114,7 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
 };
 
 /**
- * SQL query to delete a survey row based on survey ID.
+ * SQL query to delete a survey row (and associated data) based on survey ID.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
