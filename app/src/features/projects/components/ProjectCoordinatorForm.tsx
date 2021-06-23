@@ -7,13 +7,13 @@ import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectCoordinatorForm {
   first_name: string;
@@ -64,50 +64,36 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
   const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
+  console.log(values);
 
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            required={true}
-            id="first_name"
+          <CustomTextField
             name="first_name"
             label="First Name"
-            variant="outlined"
-            value={values.first_name}
-            onChange={handleChange}
-            error={touched.first_name && Boolean(errors.first_name)}
-            helperText={touched.first_name && errors.first_name}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <TextField
-            fullWidth
-            required={true}
-            id="last_name"
+          <CustomTextField
             name="last_name"
             label="Last Name"
-            variant="outlined"
-            value={values.last_name}
-            onChange={handleChange}
-            error={touched.last_name && Boolean(errors.last_name)}
-            helperText={touched.last_name && errors.last_name}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required={true}
-            id="email_address"
+          <CustomTextField
             name="email_address"
-            label="Business Email Address"
-            variant="outlined"
-            value={values.email_address}
-            onChange={handleChange}
-            error={touched.email_address && Boolean(errors.email_address)}
-            helperText={touched.email_address && errors.email_address}
+            label="Email Address"
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12}>
