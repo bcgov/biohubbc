@@ -40,10 +40,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-5"
               >
                 <span>
                   First Name *
@@ -87,10 +87,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-5"
               >
                 <span>
                   Last Name *
@@ -134,10 +134,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-5"
               >
                 <span>
                   Business Email Address *
@@ -219,10 +219,10 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Coordinator Agency *
@@ -256,7 +256,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             Do you want the project coordinator contact information visible to the public?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-6"
+            class="MuiBox-root MuiBox-root-7"
           >
             <div
               aria-label="Share Contact Details"
@@ -268,21 +268,21 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-8 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-8 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-9 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-10"
+                      class="PrivateSwitchBase-input-11"
                       name="share_contact_details"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-11 PrivateRadioButtonIcon-checked-13"
+                      class="PrivateRadioButtonIcon-root-12 PrivateRadioButtonIcon-checked-14"
                     >
                       <svg
                         aria-hidden="true"
@@ -296,7 +296,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-13"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -321,20 +321,20 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-8 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-10"
+                      class="PrivateSwitchBase-input-11"
                       name="share_contact_details"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-11"
+                      class="PrivateRadioButtonIcon-root-12"
                     >
                       <svg
                         aria-hidden="true"
@@ -348,7 +348,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-13"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -374,6 +374,24 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
             </div>
           </div>
         </fieldset>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-2 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
@@ -420,10 +438,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
               >
                 <span>
                   First Name *
@@ -467,10 +485,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
               >
                 <span>
                   Last Name *
@@ -514,10 +532,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
               >
                 <span>
                   Business Email Address *
@@ -599,10 +617,10 @@ exports[`Project Coordinator Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-17 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                  class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
                 >
                   <span>
                     Coordinator Agency *
@@ -620,7 +638,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-14 Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-15 Mui-required"
           >
             Share Contact Details
             <span
@@ -636,7 +654,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             Do you want the project coordinator contact information visible to the public?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-19"
+            class="MuiBox-root MuiBox-root-21"
           >
             <div
               aria-label="Share Contact Details"
@@ -648,20 +666,20 @@ exports[`Project Coordinator Form renders correctly the filled component correct
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-23"
+                      class="PrivateSwitchBase-input-25"
                       name="share_contact_details"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-24"
+                      class="PrivateRadioButtonIcon-root-26"
                     >
                       <svg
                         aria-hidden="true"
@@ -675,7 +693,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -700,21 +718,21 @@ exports[`Project Coordinator Form renders correctly the filled component correct
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-20 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-21 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-22 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-23 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-23"
+                      class="PrivateSwitchBase-input-25"
                       name="share_contact_details"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-24 PrivateRadioButtonIcon-checked-26"
+                      class="PrivateRadioButtonIcon-root-26 PrivateRadioButtonIcon-checked-28"
                     >
                       <svg
                         aria-hidden="true"
@@ -728,7 +746,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-25"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-27"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -754,6 +772,24 @@ exports[`Project Coordinator Form renders correctly the filled component correct
             </div>
           </div>
         </fieldset>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-16 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>

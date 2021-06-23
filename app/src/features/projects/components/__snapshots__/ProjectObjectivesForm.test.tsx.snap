@@ -39,10 +39,10 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Objectives *
@@ -78,10 +78,10 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Caveats (Optional)
@@ -90,6 +90,24 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
             </fieldset>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
@@ -137,10 +155,10 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
               >
                 <span>
                   Objectives *
@@ -178,10 +196,10 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
               >
                 <span>
                   Caveats (Optional)
@@ -190,6 +208,24 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
             </fieldset>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-6 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>

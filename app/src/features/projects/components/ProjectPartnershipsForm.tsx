@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
@@ -5,6 +6,16 @@ import MultiAutocompleteFieldVariableSize, {
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+
+const useStyles = makeStyles(() => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+}));
 
 export interface IProjectPartnershipsForm {
   indigenous_partnerships: number[];
@@ -29,9 +40,11 @@ export interface IProjectPartnershipsFormProps {
  * @return {*}
  */
 const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props) => {
+  const classes = useStyles();
+
   const formikProps = useFormikContext<IProjectPartnershipsForm>();
 
-  const { handleSubmit } = formikProps;
+  const { handleSubmit, resetForm } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -51,6 +64,11 @@ const ProjectPartnershipsForm: React.FC<IProjectPartnershipsFormProps> = (props)
             options={props.stakeholder_partnerships}
             required={false}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <Button variant="outlined" color="primary" onClick={() => resetForm()} className={classes.actionButton}>
+            Clear
+          </Button>
         </Grid>
       </Grid>
     </form>

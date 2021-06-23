@@ -12,6 +12,17 @@ import yup from 'utils/YupSchema';
 import Link from '@material-ui/core/Link';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Button from '@material-ui/core/Button';
+
+const useStyles = makeStyles(() => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+}));
 
 export interface IProjectLocationForm {
   regions: string[];
@@ -40,9 +51,11 @@ export interface IProjectLocationFormProps {
  * @return {*}
  */
 const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
+  const classes = useStyles();
+
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, setFieldValue, resetForm } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
@@ -97,6 +110,11 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           bounds={bounds}
           setFieldValue={setFieldValue}
         />
+        <Grid item xs={12}>
+          <Button variant="outlined" color="primary" onClick={() => resetForm()} className={classes.actionButton}>
+            Clear
+          </Button>
+        </Grid>
       </Grid>
     </form>
   );

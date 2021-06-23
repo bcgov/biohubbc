@@ -96,10 +96,10 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Indigenous Partnerships
@@ -200,10 +200,10 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Other Partnerships
@@ -213,6 +213,24 @@ exports[`ProjectPartnershipsForm renders correctly with default empty values 1`]
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
@@ -359,10 +377,10 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-9 PrivateNotchedOutline-legendNotched-10"
+                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
                 >
                   <span>
                     Indigenous Partnerships
@@ -463,10 +481,10 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-7 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-9"
+                  class="PrivateNotchedOutline-legendLabelled-11"
                 >
                   <span>
                     Other Partnerships
@@ -476,6 +494,24 @@ exports[`ProjectPartnershipsForm renders correctly with existing funding values 
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-7 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>

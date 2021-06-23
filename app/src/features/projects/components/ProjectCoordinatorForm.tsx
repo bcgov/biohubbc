@@ -6,7 +6,6 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -14,6 +13,22 @@ import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloFie
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import Button from '@material-ui/core/Button';
+
+const useStyles = makeStyles(() => ({
+  legend: {
+    marginTop: '1rem',
+    float: 'left',
+    marginBottom: '0.75rem',
+    letterSpacing: '-0.01rem'
+  },
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+}));
 
 export interface IProjectCoordinatorForm {
   first_name: string;
@@ -47,15 +62,6 @@ export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  legend: {
-    marginTop: '1rem',
-    float: 'left',
-    marginBottom: '0.75rem',
-    letterSpacing: '-0.01rem'
-  }
-}));
-
 /**
  * Create project - coordinator fields
  *
@@ -63,7 +69,14 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
+  const {
+    values,
+    touched,
+    errors,
+    handleChange,
+    handleSubmit,
+    resetForm
+  } = useFormikContext<IProjectCoordinatorForm>();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -140,6 +153,11 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
               </RadioGroup>
             </Box>
           </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <Button variant="outlined" color="primary" onClick={() => resetForm()} className={classes.actionButton}>
+            Clear
+          </Button>
         </Grid>
       </Grid>
     </form>

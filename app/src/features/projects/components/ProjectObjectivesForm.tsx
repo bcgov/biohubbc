@@ -3,6 +3,17 @@ import TextField from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Button from '@material-ui/core/Button';
+
+const useStyles = makeStyles(() => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+}));
 
 export interface IProjectObjectivesForm {
   objectives: string;
@@ -28,9 +39,11 @@ export const ProjectObjectivesFormYupSchema = yup.object().shape({
  * @return {*}
  */
 const ProjectObjectivesForm = () => {
+  const classes = useStyles();
+
   const formikProps = useFormikContext<IProjectObjectivesForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, resetForm } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -51,7 +64,6 @@ const ProjectObjectivesForm = () => {
             helperText={touched.objectives && errors.objectives}
           />
         </Grid>
-
         <Grid item xs={12}>
           <TextField
             id="caveats"
@@ -66,6 +78,11 @@ const ProjectObjectivesForm = () => {
             error={touched.caveats && Boolean(errors.caveats)}
             helperText={errors.caveats}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <Button variant="outlined" color="primary" onClick={() => resetForm()} className={classes.actionButton}>
+            Clear
+          </Button>
         </Grid>
       </Grid>
     </form>

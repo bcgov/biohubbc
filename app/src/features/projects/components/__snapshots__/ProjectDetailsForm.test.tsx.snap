@@ -40,10 +40,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Project Name *
@@ -109,10 +109,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+                class="PrivateNotchedOutline-legendLabelled-4"
               >
                 <span>
                   Project Type
@@ -215,10 +215,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3"
+                  class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
                     Project Activities
@@ -269,10 +269,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
                 >
                   <span>
                     Start Date *
@@ -312,10 +312,10 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
+                  class="PrivateNotchedOutline-legendLabelled-4 PrivateNotchedOutline-legendNotched-5"
                 >
                   <span>
                     End Date
@@ -325,6 +325,24 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
@@ -371,10 +389,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
               >
                 <span>
                   Project Name *
@@ -438,10 +456,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
               >
                 <span>
                   Project Type
@@ -588,10 +606,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     Project Activities
@@ -642,10 +660,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     Start Date *
@@ -685,10 +703,10 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                  class="PrivateNotchedOutline-legendLabelled-10 PrivateNotchedOutline-legendNotched-11"
                 >
                   <span>
                     End Date
@@ -698,6 +716,24 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-7 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>

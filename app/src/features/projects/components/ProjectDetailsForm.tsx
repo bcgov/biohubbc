@@ -12,6 +12,17 @@ import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Button from '@material-ui/core/Button';
+
+const useStyles = makeStyles(() => ({
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
+  }
+}));
 
 export interface IProjectDetailsForm {
   project_name: string;
@@ -47,9 +58,11 @@ export interface IProjectDetailsFormProps {
  * @return {*}
  */
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
+  const classes = useStyles();
+
   const formikProps = useFormikContext<IProjectDetailsForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit, resetForm } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -100,6 +113,11 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
           />
         </Grid>
         <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
+        <Grid item xs={12}>
+          <Button variant="outlined" color="primary" onClick={() => resetForm()} className={classes.actionButton}>
+            Clear
+          </Button>
+        </Grid>
       </Grid>
     </form>
   );

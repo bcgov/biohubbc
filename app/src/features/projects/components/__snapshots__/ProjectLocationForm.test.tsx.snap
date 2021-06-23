@@ -103,10 +103,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-46 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-51 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-48"
+                  class="PrivateNotchedOutline-legendLabelled-53"
                 >
                   <span>
                     Regions *
@@ -117,7 +117,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-50"
+          class="MuiBox-root MuiBox-root-55"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -152,10 +152,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-46 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-51 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-48"
+                class="PrivateNotchedOutline-legendLabelled-53"
               >
                 <span>
                   Location Description
@@ -169,16 +169,16 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-51 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-56 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-53"
+          class="MuiBox-root MuiBox-root-58"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-52 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-57 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -199,7 +199,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-52 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-57 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -221,10 +221,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-54"
+          class="MuiBox-root MuiBox-root-59"
         />
         <div
-          class="MuiBox-root MuiBox-root-55"
+          class="MuiBox-root MuiBox-root-60"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -542,6 +542,24 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </div>
         </div>
       </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-49 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
   </form>
 </DocumentFragment>
@@ -650,10 +668,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
+                  class="PrivateNotchedOutline-legendLabelled-5"
                 >
                   <span>
                     Regions *
@@ -664,7 +682,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-6"
+          class="MuiBox-root MuiBox-root-7"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -699,10 +717,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-5"
               >
                 <span>
                   Location Description
@@ -716,16 +734,16 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-8 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-10"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-9 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -746,7 +764,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-9 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -768,10 +786,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-11"
         />
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1066,6 +1084,24 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
       </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
   </form>
 </DocumentFragment>
@@ -1174,10 +1210,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-26"
+                  class="PrivateNotchedOutline-legendLabelled-29"
                 >
                   <span>
                     Regions *
@@ -1188,7 +1224,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-28"
+          class="MuiBox-root MuiBox-root-31"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1226,10 +1262,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
+                class="PrivateNotchedOutline-legendLabelled-29 PrivateNotchedOutline-legendNotched-30"
               >
                 <span>
                   Location Description
@@ -1249,16 +1285,16 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-29 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-32 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-31"
+          class="MuiBox-root MuiBox-root-34"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-30 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-33 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1279,7 +1315,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-30 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-33 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1301,10 +1337,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-35"
         />
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiBox-root MuiBox-root-36"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1613,6 +1649,24 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-25 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
@@ -1722,10 +1776,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="PrivateNotchedOutline-legendLabelled-17"
                 >
                   <span>
                     Regions *
@@ -1736,7 +1790,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-19"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1773,10 +1827,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
               >
                 <span>
                   Location Description
@@ -1790,16 +1844,16 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-22"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1820,7 +1874,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1842,10 +1896,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-23"
         />
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-24"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2154,6 +2208,24 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-13 MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Clear
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
     </div>
   </form>
