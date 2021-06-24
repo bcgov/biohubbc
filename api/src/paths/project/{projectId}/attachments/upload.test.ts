@@ -3,7 +3,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as upload from './upload';
+import * as project from '../../../project';
 import * as db from '../../../../database/db';
+import * as file_utils from '../../../../utils/file-utils';
 
 chai.use(sinonChai);
 
@@ -39,8 +41,28 @@ describe('uploadMedia', () => {
       projectId: 1,
       attachmentId: 2
     },
-    files: ['file1', 'file2']
+    files: [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ]
   } as any;
+
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -85,11 +107,29 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...sampleReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Upload was not successful');
     }
+  });
+
+  it('should return a list of file keys on success (with username and email)', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
+    sinon.stub(project, 'upsertProjectAttachment').resolves(1);
+
+    const result = upload.uploadMedia();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql(['1/1/test.txt']);
   });
 });
