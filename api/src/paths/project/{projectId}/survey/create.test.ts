@@ -458,3 +458,92 @@ describe('insertFocalSpecies', () => {
     }
   });
 });
+
+describe('insertAncillarySpecies', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const ancillarySpeciesId = 1;
+  const surveyId = 2;
+
+  it('should throw an error when cannot generate post sql statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(null);
+
+    try {
+      await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to insert ancillary species data cause result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [null] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
+
+    try {
+      await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert ancillary species data');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to insert ancillary species data cause result id is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ id: null }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
+
+    try {
+      await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert ancillary species data');
+    }
+  });
+});
