@@ -23,7 +23,7 @@ describe('PostBlockObservationObject', () => {
     });
 
     it('sets observation_count', () => {
-      expect(data.observation_count).to.equal(null);
+      expect(data.observation_count).to.equal(0);
     });
 
     it('sets observation_data', () => {
