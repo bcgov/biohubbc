@@ -13,6 +13,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import Link from '@material-ui/core/Link';
 
 const useStyles = makeStyles(() => ({
   legend: {
@@ -105,6 +106,18 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             <FormLabel component="legend" className={classes.legend}>
               Is the data captured in this survey proprietary?
             </FormLabel>
+            <Box pt={2}>
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  window.open(
+                    'https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security'
+                  );
+                }}>
+                Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              </Link>
+            </Box>
             <Box mt={2}>
               <RadioGroup
                 name="survey_data_proprietary"

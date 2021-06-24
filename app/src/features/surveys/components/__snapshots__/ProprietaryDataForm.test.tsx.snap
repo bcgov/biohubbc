@@ -26,6 +26,15 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
           <div
             class="MuiBox-root MuiBox-root-3"
           >
+            <button
+              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+            >
+              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+            </button>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-4"
+          >
             <div
               aria-label="Survey Data Proprietary"
               class="MuiFormGroup-root"
@@ -36,21 +45,21 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-4 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-5 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-6 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-7"
+                      class="PrivateSwitchBase-input-8"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-8 PrivateRadioButtonIcon-checked-10"
+                      class="PrivateRadioButtonIcon-root-9 PrivateRadioButtonIcon-checked-11"
                     >
                       <svg
                         aria-hidden="true"
@@ -64,7 +73,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-9"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -89,20 +98,20 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-4 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-5 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-7"
+                      class="PrivateSwitchBase-input-8"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-8"
+                      class="PrivateRadioButtonIcon-root-9"
                     >
                       <svg
                         aria-hidden="true"
@@ -116,7 +125,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-9"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-10"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -161,7 +170,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-11 Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
           >
             Is the data captured in this survey proprietary?
             <span
@@ -172,7 +181,16 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             </span>
           </legend>
           <div
-            class="MuiBox-root MuiBox-root-13"
+            class="MuiBox-root MuiBox-root-14"
+          >
+            <button
+              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+            >
+              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+            </button>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-15"
           >
             <div
               aria-label="Survey Data Proprietary"
@@ -184,20 +202,20 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-14 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-17"
+                      class="PrivateSwitchBase-input-19"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-18"
+                      class="PrivateRadioButtonIcon-root-20"
                     >
                       <svg
                         aria-hidden="true"
@@ -211,7 +229,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-19"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -236,21 +254,21 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-14 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-15 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-17 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-17"
+                      class="PrivateSwitchBase-input-19"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-18 PrivateRadioButtonIcon-checked-20"
+                      class="PrivateRadioButtonIcon-root-20 PrivateRadioButtonIcon-checked-22"
                     >
                       <svg
                         aria-hidden="true"
@@ -264,7 +282,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-19"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -295,7 +313,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-12 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -397,10 +415,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23"
+                  class="PrivateNotchedOutline-legendLabelled-25"
                 >
                   <span>
                     Proprietary Data Category *
@@ -445,10 +463,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Proprietor Name *
@@ -493,10 +511,10 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Category Rationale *
@@ -513,7 +531,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-11 Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
           >
             Data and Information Sharing Agreement (DISA)
             <span
@@ -529,7 +547,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
             Do you require a data and information sharing agreement?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-25"
+            class="MuiBox-root MuiBox-root-27"
           >
             <div
               aria-label="Data and Information Sharing Agreement"
@@ -541,20 +559,20 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-14 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-17"
+                      class="PrivateSwitchBase-input-19"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-18"
+                      class="PrivateRadioButtonIcon-root-20"
                     >
                       <svg
                         aria-hidden="true"
@@ -568,7 +586,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-19"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -593,21 +611,21 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-14 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-15 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-16 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-17 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-17"
+                      class="PrivateSwitchBase-input-19"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-18 PrivateRadioButtonIcon-checked-20"
+                      class="PrivateRadioButtonIcon-root-20 PrivateRadioButtonIcon-checked-22"
                     >
                       <svg
                         aria-hidden="true"
@@ -621,7 +639,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-19"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-21"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -666,7 +684,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-41 Mui-error Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-44 Mui-error Mui-required"
           >
             Is the data captured in this survey proprietary?
             <span
@@ -677,7 +695,16 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             </span>
           </legend>
           <div
-            class="MuiBox-root MuiBox-root-43"
+            class="MuiBox-root MuiBox-root-46"
+          >
+            <button
+              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+            >
+              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+            </button>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-47"
           >
             <div
               aria-label="Survey Data Proprietary"
@@ -689,20 +716,20 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-44 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-48 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-47"
+                      class="PrivateSwitchBase-input-51"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-48"
+                      class="PrivateRadioButtonIcon-root-52"
                     >
                       <svg
                         aria-hidden="true"
@@ -716,7 +743,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-49"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-53"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -741,21 +768,21 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-44 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-45 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-48 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-49 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-47"
+                      class="PrivateSwitchBase-input-51"
                       name="survey_data_proprietary"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-48 PrivateRadioButtonIcon-checked-50"
+                      class="PrivateRadioButtonIcon-root-52 PrivateRadioButtonIcon-checked-54"
                     >
                       <svg
                         aria-hidden="true"
@@ -769,7 +796,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-49"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-53"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -802,7 +829,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-42 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-45 MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -905,10 +932,10 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-51 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-55 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-53"
+                  class="PrivateNotchedOutline-legendLabelled-57"
                 >
                   <span>
                     Proprietary Data Category *
@@ -960,10 +987,10 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-51 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-55 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-53 PrivateNotchedOutline-legendNotched-54"
+                class="PrivateNotchedOutline-legendLabelled-57 PrivateNotchedOutline-legendNotched-58"
               >
                 <span>
                   Proprietor Name *
@@ -1015,10 +1042,10 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-51 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-55 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-53 PrivateNotchedOutline-legendNotched-54"
+                class="PrivateNotchedOutline-legendLabelled-57 PrivateNotchedOutline-legendNotched-58"
               >
                 <span>
                   Category Rationale *
@@ -1041,7 +1068,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-41 Mui-error Mui-required"
+            class="MuiFormLabel-root makeStyles-legend-44 Mui-error Mui-required"
           >
             Data and Information Sharing Agreement (DISA)
             <span
@@ -1057,7 +1084,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
             Do you require a data and information sharing agreement?
           </p>
           <div
-            class="MuiBox-root MuiBox-root-55"
+            class="MuiBox-root MuiBox-root-59"
           >
             <div
               aria-label="Data and Information Sharing Agreement"
@@ -1069,20 +1096,20 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-44 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-48 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
-                      class="PrivateSwitchBase-input-47"
+                      class="PrivateSwitchBase-input-51"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="false"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-48"
+                      class="PrivateRadioButtonIcon-root-52"
                     >
                       <svg
                         aria-hidden="true"
@@ -1096,7 +1123,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-49"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-53"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
@@ -1121,21 +1148,21 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
               >
                 <span
                   aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-44 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-45 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-48 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-49 Mui-checked MuiIconButton-colorPrimary"
                 >
                   <span
                     class="MuiIconButton-label"
                   >
                     <input
                       checked=""
-                      class="PrivateSwitchBase-input-47"
+                      class="PrivateSwitchBase-input-51"
                       name="data_sharing_agreement_required"
                       required=""
                       type="radio"
                       value="true"
                     />
                     <div
-                      class="PrivateRadioButtonIcon-root-48 PrivateRadioButtonIcon-checked-50"
+                      class="PrivateRadioButtonIcon-root-52 PrivateRadioButtonIcon-checked-54"
                     >
                       <svg
                         aria-hidden="true"
@@ -1149,7 +1176,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                       </svg>
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-49"
+                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-53"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
