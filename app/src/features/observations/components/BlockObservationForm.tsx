@@ -197,7 +197,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
               <Grid item xs={4}>
                 <CustomTextField
                   name="block_name"
-                  label={`Block ID`}
+                  label="Block ID"
                   other={{
                     size: 'small',
                     required: true
