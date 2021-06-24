@@ -1,7 +1,6 @@
-import TextField from '@material-ui/core/TextField';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import CustomTextField from 'components/fields/CustomTextField';
 import StepperWizard, { IStepperWizardStep } from 'components/stepper-wizard/StepperWizard';
-import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -14,24 +13,9 @@ export const SampleFormikFormYupSchema = yup.object().shape({
 });
 
 const SampleFormikForm = () => {
-  const formikProps = useFormikContext<ISampleFormikFormProps>();
-
-  const { values, handleChange } = formikProps;
-
   return (
     <form>
-      <TextField
-        id="testfield"
-        name="testField"
-        label="Test Field"
-        multiline
-        required={true}
-        rows={4}
-        fullWidth
-        variant="outlined"
-        value={values.testField}
-        onChange={handleChange}
-      />
+      <CustomTextField name="testField" label="Test Field" other={{ multiline: true, required: true, rows: 4 }} />
     </form>
   );
 };

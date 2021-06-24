@@ -1,5 +1,5 @@
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -30,42 +30,16 @@ export const ProjectObjectivesFormYupSchema = yup.object().shape({
 const ProjectObjectivesForm = () => {
   const formikProps = useFormikContext<IProjectObjectivesForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
-            id="objectives"
-            name="objectives"
-            label="Objectives"
-            multiline
-            required={true}
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.objectives}
-            onChange={handleChange}
-            error={touched.objectives && Boolean(errors.objectives)}
-            helperText={touched.objectives && errors.objectives}
-          />
+          <CustomTextField name="objectives" label="Objectives" other={{ multiline: true, required: true, rows: 4 }} />
         </Grid>
-
         <Grid item xs={12}>
-          <TextField
-            id="caveats"
-            name="caveats"
-            label="Caveats (Optional)"
-            multiline
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.caveats}
-            onChange={handleChange}
-            error={touched.caveats && Boolean(errors.caveats)}
-            helperText={errors.caveats}
-          />
+          <CustomTextField name="caveats" label="Caveats (Optional)" other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </form>

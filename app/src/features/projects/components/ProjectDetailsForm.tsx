@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -55,17 +55,12 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required={true}
-            id="project_name"
+          <CustomTextField
             name="project_name"
             label="Project Name"
-            variant="outlined"
-            value={values.project_name}
-            onChange={handleChange}
-            error={touched.project_name && Boolean(errors.project_name)}
-            helperText={touched.project_name && errors.project_name}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12}>
