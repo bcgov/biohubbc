@@ -88,7 +88,7 @@ export const BlockObservationYupSchema = (customYupRules?: any) => {
     block_name: yup.number().min(1, 'required').required('Required'),
     date: customYupRules?.date || yup.string().isValidDateString().required('Required'),
     start_time: yup.string().required('Required'),
-    end_time: yup.string().required('Required')
+    end_time: yup.string().required('Required').isEndTimeAfterStartTime('start_time')
   });
 };
 
