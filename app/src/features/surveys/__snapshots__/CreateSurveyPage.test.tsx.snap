@@ -957,6 +957,15 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     class="MuiBox-root MuiBox-root-37"
                   >
+                    <p
+                      class="MuiTypography-root MuiTypography-body2"
+                    >
+                      You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+                    </p>
+                  </div>
+                  <div
+                    class="MuiBox-root MuiBox-root-38"
+                  >
                     <label
                       aria-disabled="false"
                       class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-36 MuiButton-outlinedPrimary"
@@ -1002,10 +1011,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </label>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-38"
+                    class="MuiBox-root MuiBox-root-39"
                   />
                   <div
-                    class="MuiBox-root MuiBox-root-39"
+                    class="MuiBox-root MuiBox-root-40"
                   >
                     <div
                       class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1308,13 +1317,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiBox-root MuiBox-root-41"
         >
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-42"
           >
             <div
-              class="MuiBox-root MuiBox-root-42"
+              class="MuiBox-root MuiBox-root-43"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -1323,7 +1332,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-43"
+              class="MuiBox-root MuiBox-root-44"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1333,7 +1342,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-44"
+            class="MuiBox-root MuiBox-root-45"
           >
             <form>
               <div
@@ -1346,7 +1355,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     class="MuiFormControl-root"
                   >
                     <legend
-                      class="MuiFormLabel-root makeStyles-legend-45 Mui-required"
+                      class="MuiFormLabel-root makeStyles-legend-46 Mui-required"
                     >
                       Is the data captured in this survey proprietary?
                       <span
@@ -1357,7 +1366,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </span>
                     </legend>
                     <div
-                      class="MuiBox-root MuiBox-root-47"
+                      class="MuiBox-root MuiBox-root-48"
                     >
                       <button
                         class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1366,7 +1375,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </button>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root-48"
+                      class="MuiBox-root MuiBox-root-49"
                     >
                       <div
                         aria-label="Survey Data Proprietary"
@@ -1378,21 +1387,21 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-49 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-50 Mui-checked MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-50 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-51 Mui-checked MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
                                 checked=""
-                                class="PrivateSwitchBase-input-52"
+                                class="PrivateSwitchBase-input-53"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="false"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-53 PrivateRadioButtonIcon-checked-55"
+                                class="PrivateRadioButtonIcon-root-54 PrivateRadioButtonIcon-checked-56"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -1406,7 +1415,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-54"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-55"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -1431,20 +1440,20 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-49 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-50 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
-                                class="PrivateSwitchBase-input-52"
+                                class="PrivateSwitchBase-input-53"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="true"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-53"
+                                class="PrivateRadioButtonIcon-root-54"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -1458,7 +1467,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-54"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-55"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -1493,13 +1502,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-56"
+          class="MuiBox-root MuiBox-root-57"
         >
           <div
-            class="MuiBox-root MuiBox-root-57"
+            class="MuiBox-root MuiBox-root-58"
           >
             <div
-              class="MuiBox-root MuiBox-root-58"
+              class="MuiBox-root MuiBox-root-59"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -1508,7 +1517,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </h2>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-59"
+              class="MuiBox-root MuiBox-root-60"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1518,7 +1527,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-60"
+            class="MuiBox-root MuiBox-root-61"
           >
             <form>
               <div
@@ -1528,7 +1537,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-bold-61 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-bold-62 MuiTypography-body1"
                   >
                     Species and Ecosystems Data and Information Security (SEDIS) Procedures
                   </p>
@@ -1544,13 +1553,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-49 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-50 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-52"
+                            class="PrivateSwitchBase-input-53"
                             data-indeterminate="false"
                             name="sedis_procedures_accepted"
                             type="checkbox"
@@ -1586,10 +1595,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-62"
+                    class="MuiBox-root MuiBox-root-63"
                   >
                     <p
-                      class="MuiTypography-root makeStyles-bold-61 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-bold-62 MuiTypography-body1"
                     >
                       Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
                     </p>
@@ -1606,13 +1615,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-49 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-50 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-52"
+                            class="PrivateSwitchBase-input-53"
                             data-indeterminate="false"
                             name="foippa_requirements_accepted"
                             type="checkbox"
@@ -1652,7 +1661,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-63"
+          class="MuiBox-root MuiBox-root-64"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-7 MuiButton-containedPrimary"

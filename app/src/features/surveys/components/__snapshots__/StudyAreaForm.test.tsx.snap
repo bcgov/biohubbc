@@ -272,6 +272,15 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           class="MuiBox-root MuiBox-root-8"
         >
+          <p
+            class="MuiTypography-root MuiTypography-body2"
+          >
+            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-9"
+        >
           <label
             aria-disabled="false"
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
@@ -317,10 +326,10 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-10"
         />
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-11"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -660,10 +669,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
               >
                 <span>
                   Survey Area Name *
@@ -785,10 +794,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
                 >
                   <span>
                     Park
@@ -911,10 +920,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
                 >
                   <span>
                     Management Unit
@@ -929,16 +938,25 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-17 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-19"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body2"
+          >
+            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-20"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-18 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -959,7 +977,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-18 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -981,10 +999,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-21"
         />
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-22"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1340,10 +1358,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Survey Area Name *
@@ -1472,10 +1490,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                  class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                 >
                   <span>
                     Park
@@ -1605,10 +1623,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                  class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
                 >
                   <span>
                     Management Unit
@@ -1629,16 +1647,25 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-26 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-28 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-28"
+          class="MuiBox-root MuiBox-root-30"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body2"
+          >
+            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-31"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-27 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1659,7 +1686,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-27 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1681,10 +1708,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-29"
+          class="MuiBox-root MuiBox-root-32"
         />
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-33"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
