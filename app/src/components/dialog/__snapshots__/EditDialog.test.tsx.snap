@@ -64,8 +64,8 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                   data-shrink="true"
-                  for="testfield"
-                  id="testfield-label"
+                  for="testField"
+                  id="testField-label"
                 >
                   Test Field
                   <span
@@ -82,7 +82,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
                   <textarea
                     aria-invalid="false"
                     class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                    id="testfield"
+                    id="testField"
                     name="testField"
                     required=""
                     rows="4"
@@ -237,8 +237,8 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
                   data-shrink="true"
-                  for="testfield"
-                  id="testfield-label"
+                  for="testField"
+                  id="testField-label"
                 >
                   Test Field
                   <span
@@ -255,7 +255,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
                   <textarea
                     aria-invalid="false"
                     class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                    id="testfield"
+                    id="testField"
                     name="testField"
                     required=""
                     rows="4"

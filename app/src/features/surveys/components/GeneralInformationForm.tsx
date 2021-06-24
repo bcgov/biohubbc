@@ -1,16 +1,16 @@
-import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import CustomTextField from 'components/fields/CustomTextField';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import React from 'react';
-import yup from 'utils/YupSchema';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { getFormattedDate } from 'utils/Utils';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles({
   bold: {
@@ -71,23 +71,17 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   const classes = useStyles();
 
   const formikProps = useFormikContext<IGeneralInformationForm>();
-  const { values, touched, errors, handleChange } = formikProps;
 
   return (
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required={true}
-            id="survey_name"
+          <CustomTextField
             name="survey_name"
             label="Survey Name"
-            variant="outlined"
-            value={values.survey_name}
-            onChange={handleChange}
-            error={touched.survey_name && Boolean(errors.survey_name)}
-            helperText={touched.survey_name && errors.survey_name}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <StartEndDateFields
@@ -123,19 +117,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            id="survey_purpose"
+          <CustomTextField
             name="survey_purpose"
             label="Purpose of Survey"
-            multiline
-            required={true}
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.survey_purpose}
-            onChange={handleChange}
-            error={touched.survey_purpose && Boolean(errors.survey_purpose)}
-            helperText={touched.survey_purpose && errors.survey_purpose}
+            other={{ multiline: true, required: true, rows: 4 }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -145,31 +130,21 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <Grid container item spacing={3}>
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              required={true}
-              id="biologist_first_name"
+            <CustomTextField
               name="biologist_first_name"
               label="First Name"
-              variant="outlined"
-              value={values.biologist_first_name}
-              onChange={handleChange}
-              error={touched.biologist_first_name && Boolean(errors.biologist_first_name)}
-              helperText={touched.biologist_first_name && errors.biologist_first_name}
+              other={{
+                required: true
+              }}
             />
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              required={true}
-              id="biologist_last_name"
+            <CustomTextField
               name="biologist_last_name"
               label="Last Name"
-              variant="outlined"
-              value={values.biologist_last_name}
-              onChange={handleChange}
-              error={touched.biologist_last_name && Boolean(errors.biologist_last_name)}
-              helperText={touched.biologist_last_name && errors.biologist_last_name}
+              other={{
+                required: true
+              }}
             />
           </Grid>
         </Grid>
