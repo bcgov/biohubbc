@@ -121,10 +121,6 @@ export function uploadMedia(): RequestHandler {
       const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
-        if (!file) {
-          return;
-        }
-
         const key = req.params.projectId + '/' + file.originalname;
 
         const metadata = {

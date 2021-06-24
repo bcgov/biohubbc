@@ -420,6 +420,29 @@ describe('updateObservation', () => {
     }
   });
 
+  it('should throw a 400 error when observation_type is invalid', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = update.updateObservation();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, observation_type: 'invalid_type' } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
   it('should throw a 400 error when no observation_details_data present', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
