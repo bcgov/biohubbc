@@ -190,19 +190,10 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               )}
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                id="category_rationale"
+              <CustomTextField
                 name="category_rationale"
                 label="Category Rationale"
-                multiline
-                required={true}
-                rows={4}
-                fullWidth
-                variant="outlined"
-                value={values.category_rationale}
-                onChange={handleChange}
-                error={touched.category_rationale && Boolean(errors.category_rationale)}
-                helperText={touched.category_rationale && errors.category_rationale}
+                other={{ multiline: true, required: true, rows: 4 }}
               />
             </Grid>
             <Grid item xs={12}>

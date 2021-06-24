@@ -607,7 +607,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
               name="weather_description"
               label="Weather Description"
               other={{
-                size: "small",
+                size: 'small',
                 multiline: true,
                 rows: 2
               }}
@@ -617,7 +617,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
             <CustomTextField
               name="description_of_habitat"
               label="Description of Habitat"
-              other={{size:"small",multiline: true, rows:2 }}
+              other={{ size: 'small', multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>

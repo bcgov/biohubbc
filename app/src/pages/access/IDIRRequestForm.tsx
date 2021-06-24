@@ -4,19 +4,19 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import TextField from '@material-ui/core/TextField';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { useFormikContext } from 'formik';
-import React from 'react';
-import yup from 'utils/YupSchema';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { useFormikContext } from 'formik';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import React from 'react';
+import yup from 'utils/YupSchema';
 
 export interface IIDIRRequestForm {
   role: number;
@@ -146,19 +146,7 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
 
         <Grid item xs={12}>
           <h3>Additional comments</h3>
-          <TextField
-            fullWidth
-            id="comments"
-            name="comments"
-            label="Comments "
-            variant="outlined"
-            multiline
-            rows={4}
-            value={values.comments}
-            onChange={handleChange}
-            error={touched.comments && Boolean(errors.comments)}
-            helperText={errors.comments}
-          />
+          <CustomTextField name="comments" label="Comments " other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </Box>

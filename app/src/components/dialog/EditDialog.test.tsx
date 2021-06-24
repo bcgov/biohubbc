@@ -23,11 +23,7 @@ const SampleFormikForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <CustomTextField
-        name="testField"
-        label="Test Field"
-        other={{multiline:true, required:true, rows:4}}
-      />
+      <CustomTextField name="testField" label="Test Field" other={{ multiline: true, required: true, rows: 4 }} />
     </form>
   );
 };

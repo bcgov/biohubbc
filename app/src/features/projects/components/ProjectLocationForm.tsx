@@ -12,6 +12,7 @@ import yup from 'utils/YupSchema';
 import Link from '@material-ui/core/Link';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectLocationForm {
   regions: string[];
@@ -72,18 +73,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            id="location_description"
+          <CustomTextField
             name="location_description"
             label="Location Description"
-            multiline
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.location_description}
-            onChange={handleChange}
-            error={touched.location_description && Boolean(errors.location_description)}
-            helperText={touched.location_description && errors.location_description}
+            other={{ multiline: true, rows: 4 }}
           />
         </Grid>
         <MapBoundary

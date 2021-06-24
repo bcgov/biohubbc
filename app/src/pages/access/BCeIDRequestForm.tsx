@@ -49,19 +49,7 @@ const BCeIDRequestForm: React.FC<IBCeIDRequestFormProps> = (props) => {
         </Grid>
         <Grid item xs={12}>
           <h3>Why are you requesting access to Biohub?</h3>
-          <TextField
-            fullWidth
-            id="request_reason"
-            name="request_reason"
-            label="Request Reason"
-            variant="outlined"
-            multiline
-            rows={4}
-            value={values.request_reason}
-            onChange={handleChange}
-            error={touched.request_reason && Boolean(errors.request_reason)}
-            helperText={errors.request_reason}
-          />
+          <CustomTextField name="request_reason" label="Request Reason" other={{ multiline: true, rows: 4 }} />
         </Grid>
       </Grid>
     </Box>

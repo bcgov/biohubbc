@@ -13,14 +13,9 @@ export const SampleFormikFormYupSchema = yup.object().shape({
 });
 
 const SampleFormikForm = () => {
-
   return (
     <form>
-      <CustomTextField
-        name="testField"
-        label="Test Field"
-        other={{multiline: true, required: true, rows: 4}}
-      />
+      <CustomTextField name="testField" label="Test Field" other={{ multiline: true, required: true, rows: 4 }} />
     </form>
   );
 };

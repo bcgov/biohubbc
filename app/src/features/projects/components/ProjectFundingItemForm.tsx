@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
+import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
@@ -158,18 +158,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
             </Grid>
           )}
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              required={false}
-              id="agency_project_id"
-              name="agency_project_id"
-              label="Agency Project ID"
-              variant="outlined"
-              value={values.agency_project_id}
-              onChange={handleChange}
-              error={touched.agency_project_id && Boolean(errors.agency_project_id)}
-              helperText={errors.agency_project_id}
-            />
+            <CustomTextField name="agency_project_id" label="Agency Project ID" />
           </Grid>
         </Grid>
       </Box>

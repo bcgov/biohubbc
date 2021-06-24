@@ -72,7 +72,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   const classes = useStyles();
 
   const formikProps = useFormikContext<IGeneralInformationForm>();
-  const { values, touched, errors, handleChange } = formikProps;
 
   return (
     <form>
@@ -119,19 +118,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            id="survey_purpose"
+          <CustomTextField
             name="survey_purpose"
             label="Purpose of Survey"
-            multiline
-            required={true}
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.survey_purpose}
-            onChange={handleChange}
-            error={touched.survey_purpose && Boolean(errors.survey_purpose)}
-            helperText={touched.survey_purpose && errors.survey_purpose}
+            other={{ multiline: true, required: true, rows: 4 }}
           />
         </Grid>
         <Grid item xs={12}>
