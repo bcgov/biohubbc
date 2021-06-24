@@ -83,16 +83,19 @@ export const BlockObservationInitialValues: IBlockObservationForm = {
   aircraft_gps_readout: ''
 };
 
-export const BlockObservationYupSchema = yup.object().shape({
-  block_name: yup.number().min(1, 'required').required('Required'),
-  date: yup.string().isValidDateString().required('Required'),
-  start_time: yup.string().required('Required'),
-  end_time: yup.string().required('Required')
-});
+export const BlockObservationYupSchema = (customYupRules?: any) => {
+  return yup.object().shape({
+    block_name: yup.number().min(1, 'required').required('Required'),
+    date: customYupRules?.date || yup.string().isValidDateString().required('Required'),
+    start_time: yup.string().required('Required'),
+    end_time: yup.string().required('Required')
+  });
+};
 
 export interface IBlockObservationFormProps {
   tableRef: any;
   tableData: any[][];
+  dateHelperText: string;
 }
 
 /**
@@ -258,7 +261,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   }}
                   onChange={handleChange}
                   error={touched.date && Boolean(errors.date)}
-                  helperText={touched.date && errors.date}
+                  helperText={(touched.date && errors.date) || props.dateHelperText}
                   InputLabelProps={{
                     shrink: true
                   }}
