@@ -515,7 +515,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           <legend
             class="MuiFormLabel-root makeStyles-legend-11 Mui-required"
           >
-            Data Sharing Agreement (DISA)
+            Data and Information Sharing Agreement (DISA)
             <span
               aria-hidden="true"
               class="MuiFormLabel-asterisk"
@@ -526,13 +526,13 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           <p
             class="MuiTypography-root MuiTypography-body1"
           >
-            Do you require a data sharing agreement?
+            Do you require a data and information sharing agreement?
           </p>
           <div
             class="MuiBox-root MuiBox-root-25"
           >
             <div
-              aria-label="Data Sharing Agreement"
+              aria-label="Data and Information Sharing Agreement"
               class="MuiFormGroup-root"
               role="radiogroup"
             >
@@ -1043,7 +1043,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           <legend
             class="MuiFormLabel-root makeStyles-legend-41 Mui-error Mui-required"
           >
-            Data Sharing Agreement (DISA)
+            Data and Information Sharing Agreement (DISA)
             <span
               aria-hidden="true"
               class="MuiFormLabel-asterisk Mui-error"
@@ -1054,13 +1054,13 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           <p
             class="MuiTypography-root MuiTypography-body1"
           >
-            Do you require a data sharing agreement?
+            Do you require a data and information sharing agreement?
           </p>
           <div
             class="MuiBox-root MuiBox-root-55"
           >
             <div
-              aria-label="Data Sharing Agreement"
+              aria-label="Data and Information Sharing Agreement"
               class="MuiFormGroup-root"
               role="radiogroup"
             >

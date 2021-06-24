@@ -215,13 +215,13 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 component="fieldset"
                 error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
                 <FormLabel component="legend" className={classes.legend}>
-                  Data Sharing Agreement (DISA)
+                  Data and Information Sharing Agreement (DISA)
                 </FormLabel>
-                <Typography>Do you require a data sharing agreement?</Typography>
+                <Typography>Do you require a data and information sharing agreement?</Typography>
                 <Box mt={2}>
                   <RadioGroup
                     name="data_sharing_agreement_required"
-                    aria-label="Data Sharing Agreement"
+                    aria-label="Data and Information Sharing Agreement"
                     value={values.data_sharing_agreement_required}
                     onChange={handleChange}>
                     <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />

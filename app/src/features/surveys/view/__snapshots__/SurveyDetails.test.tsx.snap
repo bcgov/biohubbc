@@ -483,7 +483,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Data Sharing Agreement Required
+                Data and Information Sharing Agreement Required
               </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
