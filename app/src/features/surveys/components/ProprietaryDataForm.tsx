@@ -8,11 +8,11 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import TextField from '@material-ui/core/TextField';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import CustomTextField from 'components/fields/CustomTextField';
 
 const useStyles = makeStyles(() => ({
   legend: {
@@ -179,34 +179,20 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 />
               )}
               {values.proprietary_data_category !== 2 && (
-                <TextField
-                  fullWidth
-                  required={true}
-                  id="proprietor_name"
+                <CustomTextField
                   name="proprietor_name"
                   label="Proprietor Name"
-                  variant="outlined"
-                  value={values.proprietor_name}
-                  onChange={handleChange}
-                  error={touched.proprietor_name && Boolean(errors.proprietor_name)}
-                  helperText={touched.proprietor_name && errors.proprietor_name}
+                  other={{
+                    required: true
+                  }}
                 />
               )}
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                id="category_rationale"
+              <CustomTextField
                 name="category_rationale"
                 label="Category Rationale"
-                multiline
-                required={true}
-                rows={4}
-                fullWidth
-                variant="outlined"
-                value={values.category_rationale}
-                onChange={handleChange}
-                error={touched.category_rationale && Boolean(errors.category_rationale)}
-                helperText={touched.category_rationale && errors.category_rationale}
+                other={{ multiline: true, required: true, rows: 4 }}
               />
             </Grid>
             <Grid item xs={12}>
