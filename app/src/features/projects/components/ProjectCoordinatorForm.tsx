@@ -64,7 +64,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
   const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
-  console.log(values);
 
   return (
     <form onSubmit={handleSubmit}>

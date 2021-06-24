@@ -1,5 +1,4 @@
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
@@ -31,7 +30,7 @@ export const ProjectObjectivesFormYupSchema = yup.object().shape({
 const ProjectObjectivesForm = () => {
   const formikProps = useFormikContext<IProjectObjectivesForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>

@@ -1,8 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { useFormikContext } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -32,8 +30,6 @@ export interface IBCeIDRequestFormProps {
  * @return {*}
  */
 const BCeIDRequestForm: React.FC<IBCeIDRequestFormProps> = (props) => {
-  const { values, touched, errors, handleChange } = useFormikContext<IBCeIDRequestForm>();
-
   return (
     <Box>
       <Grid container spacing={3}>

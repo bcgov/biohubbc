@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import {
   default as MultiAutocompleteFieldVariableSize,
   IMultiAutocompleteFieldOption
@@ -43,7 +42,7 @@ export interface IProjectLocationFormProps {
 const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
+  const { values, handleSubmit, setFieldValue } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
