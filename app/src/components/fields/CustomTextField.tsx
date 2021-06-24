@@ -23,7 +23,7 @@ const CustomTextField: React.FC<ICustomTextField> = (props) => {
       value={values[name]}
       fullWidth={true}
       error={touched[name] && Boolean(errors[name])}
-      helperText={touched[props.name] && errors[props.name]}
+      helperText={touched[name] && errors[name]}
       {...other}
     />
   );
