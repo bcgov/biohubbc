@@ -15,7 +15,7 @@ export class PostBlockObservationObject {
     this.block_name = obj?.block_name || null;
     this.start_datetime = obj?.start_datetime || null;
     this.end_datetime = obj?.end_datetime || null;
-    this.observation_count = obj?.observation_count || null;
+    this.observation_count = obj?.observation_count || 0;
     this.observation_data = obj?.observation_data || null;
   }
 }
