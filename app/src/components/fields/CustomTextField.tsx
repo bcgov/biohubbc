@@ -22,7 +22,7 @@ const CustomTextField: React.FC<ICustomTextField> = (props) => {
       variant="outlined"
       value={values[name]}
       fullWidth={true}
-      error={touched[props.name] && Boolean(errors[props.name])}
+      error={touched[name] && Boolean(errors[name])}
       helperText={touched[props.name] && errors[props.name]}
       {...other}
     />
