@@ -603,37 +603,21 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
         </Box>
         <Grid container spacing={2} className={classes.customGridContainer}>
           <Grid item xs={12}>
-            <TextField
-              id="weather_description"
+            <CustomTextField
               name="weather_description"
               label="Weather Description"
-              size="small"
-              multiline
-              required={false}
-              rows={2}
-              fullWidth
-              variant="outlined"
-              value={values.weather_description}
-              onChange={handleChange}
-              error={touched.weather_description && Boolean(errors.weather_description)}
-              helperText={touched.weather_description && errors.weather_description}
+              other={{
+                size: "small",
+                multiline: true,
+                rows: 2
+              }}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              id="description_of_habitat"
+            <CustomTextField
               name="description_of_habitat"
               label="Description of Habitat"
-              size="small"
-              multiline
-              required={false}
-              rows={2}
-              fullWidth
-              variant="outlined"
-              value={values.description_of_habitat}
-              onChange={handleChange}
-              error={touched.description_of_habitat && Boolean(errors.description_of_habitat)}
-              helperText={touched.description_of_habitat && errors.description_of_habitat}
+              other={{size:"small",multiline: true, rows:2 }}
             />
           </Grid>
         </Grid>

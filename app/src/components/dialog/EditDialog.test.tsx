@@ -1,6 +1,6 @@
-import TextField from '@material-ui/core/TextField';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import EditDialog from 'components/dialog/EditDialog';
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -19,21 +19,14 @@ export const SampleFormikFormYupSchema = yup.object().shape({
 const SampleFormikForm = () => {
   const formikProps = useFormikContext<ISampleFormikFormProps>();
 
-  const { values, handleChange, handleSubmit } = formikProps;
+  const { handleSubmit } = formikProps;
 
   return (
     <form onSubmit={handleSubmit}>
-      <TextField
-        id="testfield"
+      <CustomTextField
         name="testField"
         label="Test Field"
-        multiline
-        required={true}
-        rows={4}
-        fullWidth
-        variant="outlined"
-        value={values.testField}
-        onChange={handleChange}
+        other={{multiline:true, required:true, rows:4}}
       />
     </form>
   );
