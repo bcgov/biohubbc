@@ -4,7 +4,8 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('queries/search-queries');
 
 /**
- * SQL query to get project, survey, or survey occurrence geometries
+ * SQL query to get project geometries
+ * TODO: be modified to restrict based on published state and geo boundary
  *
  * @returns {SQLStatement} sql query object
  */
