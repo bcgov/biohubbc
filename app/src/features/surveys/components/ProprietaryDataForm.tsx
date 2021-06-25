@@ -12,6 +12,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import Link from '@material-ui/core/Link';
 import CustomTextField from 'components/fields/CustomTextField';
 
 const useStyles = makeStyles(() => ({
@@ -105,6 +106,18 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             <FormLabel component="legend" className={classes.legend}>
               Is the data captured in this survey proprietary?
             </FormLabel>
+            <Box pt={2}>
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  window.open(
+                    'https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security'
+                  );
+                }}>
+                Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              </Link>
+            </Box>
             <Box mt={2}>
               <RadioGroup
                 name="survey_data_proprietary"
@@ -201,13 +214,13 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 component="fieldset"
                 error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
                 <FormLabel component="legend" className={classes.legend}>
-                  Data Sharing Agreement (DISA)
+                  Data and Information Sharing Agreement (DISA)
                 </FormLabel>
-                <Typography>Do you require a data sharing agreement?</Typography>
+                <Typography>Do you require a data and information sharing agreement?</Typography>
                 <Box mt={2}>
                   <RadioGroup
                     name="data_sharing_agreement_required"
-                    aria-label="Data Sharing Agreement"
+                    aria-label="Data and Information Sharing Agreement"
                     value={values.data_sharing_agreement_required}
                     onChange={handleChange}>
                     <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
