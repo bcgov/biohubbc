@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import MapContainer, { INonEditableGeometries } from 'components/map/MapContainer';
+import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useEffect } from 'react';
@@ -21,7 +21,7 @@ export const SearchAdvancedFiltersInitialValues: ISearchAdvancedFilters = {
 };
 
 export interface ISearchAdvancedFiltersProps {
-  geometryResult: INonEditableGeometries[];
+  geometryResult: IClusteredPointGeometries[];
   boundsResult: any[];
   setBoundsResult: (boundsResult: any[]) => void;
 }
@@ -78,7 +78,7 @@ const SearchAdvancedFilters: React.FC<ISearchAdvancedFiltersProps> = (props) => 
                   setFieldValue('geometry', [newGeo[newGeo.length - 1]]);
                 }
               }}
-              nonEditableGeometries={props.geometryResult}
+              clusteredPointGeometries={props.geometryResult}
               bounds={props.boundsResult}
             />
           </Box>

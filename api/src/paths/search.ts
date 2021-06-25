@@ -7,43 +7,19 @@ import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
-import { geoJsonFeature } from '../openapi/schemas/geojson-feature';
 
 const defaultLog = getLogger('paths/searchString');
 
-export const POST: Operation = [logRequest('paths/search', 'POST'), getSearchResults()];
+export const GET: Operation = [logRequest('paths/search', 'GET'), getSearchResults()];
 
-POST.apiDoc = {
-  description: 'Gets a list of project, survey, and survey occurrence geometries based on a spatial boundary',
-  tags: ['projects', 'surveys'],
+GET.apiDoc = {
+  description: 'Gets a list of projects geometries',
+  tags: ['projects'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
-  requestBody: {
-    description: 'Spatial boundary geometry',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            record_type: {
-              title: 'Record Type',
-              type: 'string'
-            },
-            geometry: {
-              title: 'Geometry boundary',
-              type: 'array',
-              items: {
-                ...(geoJsonFeature as any)
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Spatial search response object.',
@@ -76,10 +52,8 @@ export function getSearchResults(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const filterFields = req.body || null;
-
     try {
-      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(filterFields);
+      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL();
 
       if (!getSpatialSearchResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

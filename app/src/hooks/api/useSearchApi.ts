@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IGetSearchResultsResponse, ISearchResultsAdvancedFilterRequest } from 'interfaces/useSearchApi.interface';
+import { IGetSearchResultsResponse } from 'interfaces/useSearchApi.interface';
 
 /**
  * Returns a set of supported api methods for working with search functionality
@@ -9,15 +9,12 @@ import { IGetSearchResultsResponse, ISearchResultsAdvancedFilterRequest } from '
  */
 const useSearchApi = (axios: AxiosInstance) => {
   /**
-   * Get search results (spatial) based on filter criteria
+   * Get search results (spatial)
    *
-   * @param {ISearchResultsAdvancedFilterRequest} filterFieldData
    * @return {*}  {Promise<IGetSearchResultsResponse[]>}
    */
-  const getSearchResults = async (
-    filterFieldData: ISearchResultsAdvancedFilterRequest
-  ): Promise<IGetSearchResultsResponse[]> => {
-    const { data } = await axios.post(`/api/search`, filterFieldData || {});
+  const getSearchResults = async (): Promise<IGetSearchResultsResponse[]> => {
+    const { data } = await axios.get(`/api/search`);
 
     return data;
   };

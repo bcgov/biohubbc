@@ -7,12 +7,15 @@ import {
   GeoJSON,
   LayersControl,
   MapContainer as LeafletMapContainer,
+  Marker,
   TileLayer,
   useMap
 } from 'react-leaflet';
+import L from 'leaflet';
 import MapEditControls from 'utils/MapEditControls';
 import WFSFeatureGroup from './WFSFeatureGroup';
 import { v4 as uuidv4 } from 'uuid';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 
 export interface IMapBoundsProps {
   bounds?: any[];
@@ -22,6 +25,18 @@ export interface INonEditableGeometries {
   feature: Feature;
   popupComponent?: JSX.Element;
 }
+
+export interface IClusteredPointGeometries {
+  coordinates: number[];
+  popupComponent?: JSX.Element;
+}
+
+const myIcon = L.icon({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  iconSize: [38, 60]
+});
 
 export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
@@ -37,8 +52,10 @@ export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
+  scrollWheelZoom?: boolean;
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: INonEditableGeometries[];
+  clusteredPointGeometries?: IClusteredPointGeometries[];
   bounds?: any[];
   zoom?: number;
   hideDrawControls?: boolean;
@@ -51,10 +68,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     mapId,
     geometryState,
     nonEditableGeometries,
+    clusteredPointGeometries,
     bounds,
     zoom,
     hideDrawControls,
-    hideOverlayLayers
+    hideOverlayLayers,
+    scrollWheelZoom
   } = props;
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
@@ -92,7 +111,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       id={mapId}
       center={[55, -128]}
       zoom={zoom || 5}
-      scrollWheelZoom={false}>
+      maxZoom={14}
+      scrollWheelZoom={scrollWheelZoom || false}>
       <MapBounds bounds={bounds} />
 
       <FeatureGroup>
@@ -104,6 +124,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           setGeometry={geometryState?.setGeometry}
         />
       </FeatureGroup>
+
+      <MarkerClusterGroup maxZoom={14} chunkedLoading>
+        {clusteredPointGeometries?.map((pointGeo: IClusteredPointGeometries, index: number) => (
+          <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]} icon={myIcon}>
+            {pointGeo.popupComponent}
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
 
       {nonEditableGeometries?.map((nonEditableGeo: any) => (
         <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>
