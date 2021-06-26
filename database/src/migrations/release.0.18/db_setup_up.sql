@@ -76,8 +76,6 @@ set search_path = biohub;
 \i populate_submission_status_type.sql
 \i populate_submission_message_type.sql
 
-\i secured_objects.sql
-
 \i indexes.sql
 
 -- temporary external interface tables

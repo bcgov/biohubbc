@@ -72,8 +72,6 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
   );
 
-  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
-
   const indexes = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'indexes.sql'));
 
   const populate_wldtaxonomic_units = fs.readFileSync(
@@ -144,8 +142,6 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_proprietor_type}
     ${populate_submission_status_type}
     ${populate_submission_message_type}
-
-    ${secured_objects}
 
     ${indexes}
 
