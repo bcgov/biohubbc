@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import {
   default as MultiAutocompleteFieldVariableSize,
   IMultiAutocompleteFieldOption
@@ -12,6 +11,7 @@ import yup from 'utils/YupSchema';
 import Link from '@material-ui/core/Link';
 import MapBoundary from 'components/boundary/MapBoundary';
 import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectLocationForm {
   regions: string[];
@@ -42,7 +42,7 @@ export interface IProjectLocationFormProps {
 const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, touched, errors, handleChange, handleSubmit, setFieldValue } = formikProps;
+  const { values, handleSubmit, setFieldValue } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
@@ -72,18 +72,10 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <TextField
-            id="location_description"
+          <CustomTextField
             name="location_description"
             label="Location Description"
-            multiline
-            rows={4}
-            fullWidth
-            variant="outlined"
-            value={values.location_description}
-            onChange={handleChange}
-            error={touched.location_description && Boolean(errors.location_description)}
-            helperText={touched.location_description && errors.location_description}
+            other={{ multiline: true, rows: 4 }}
           />
         </Grid>
         <MapBoundary

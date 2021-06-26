@@ -109,6 +109,29 @@ describe('createBlockObservation', () => {
     }
   });
 
+  it('should throw a 400 error when observation_type is invalid', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    try {
+      const result = create.createObservation();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, observation_type: 'invalid_type' } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build observation SQL insert statement');
+    }
+  });
+
   it('should throw a 400 error when no observation_details_data is present', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -157,6 +180,32 @@ describe('createBlockObservation', () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [{ id: null }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(observation_create_queries, 'postBlockObservationSQL').returns(SQL`some query`);
+
+    try {
+      const result = create.createObservation();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert observation data');
+    }
+  });
+
+  it('should throw a 400 error when the create observation fails because result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [null] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

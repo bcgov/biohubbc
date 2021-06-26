@@ -20,7 +20,7 @@ import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
-import makeStyles from '@material-ui/styles/makeStyles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ProjectAdvancedFilters, {
   ProjectAdvancedFiltersInitialValues
@@ -32,7 +32,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 const useStyles = makeStyles({
   actionButton: {
-    width: '6rem',
+    minWidth: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
     }

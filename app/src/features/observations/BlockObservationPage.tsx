@@ -26,6 +26,9 @@ import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import Paper from '@material-ui/core/Paper';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
+import yup from 'utils/YupSchema';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -265,6 +268,20 @@ const BlockObservationPage = () => {
     }
   };
 
+  const formattedSurveyStartDate = getFormattedDate(
+    DATE_FORMAT.ShortMediumDateFormat,
+    surveyWithDetails.survey_details.start_date
+  );
+
+  const formattedSurveyEndDate = getFormattedDate(
+    DATE_FORMAT.ShortMediumDateFormat,
+    surveyWithDetails.survey_details.end_date
+  );
+
+  const dateHelperText = surveyWithDetails.survey_details.end_date
+    ? `Observation date must be between ${formattedSurveyStartDate} and ${formattedSurveyEndDate}.`
+    : `Observation date must be after ${formattedSurveyStartDate}.`;
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -311,12 +328,37 @@ const BlockObservationPage = () => {
             <Formik
               innerRef={formikRef}
               initialValues={observationWithDetails.data}
-              validationSchema={BlockObservationYupSchema}
+              validationSchema={BlockObservationYupSchema({
+                date: yup
+                  .string()
+                  .isValidDateString()
+                  .isAfterDate(
+                    surveyWithDetails.survey_details.start_date,
+                    DATE_FORMAT.ShortDateFormat,
+                    `Observation date cannot be before survey start date ${formattedSurveyStartDate}`
+                  )
+                  .isAfterDate(
+                    moment(DATE_LIMIT.min).toISOString(),
+                    DATE_FORMAT.ShortDateFormat,
+                    `Observation date cannot be before ${DATE_LIMIT.min}`
+                  )
+                  .isBeforeDate(
+                    surveyWithDetails.survey_details.end_date,
+                    DATE_FORMAT.ShortDateFormat,
+                    `Observation date cannot be after survey end date ${formattedSurveyEndDate}`
+                  )
+                  .isBeforeDate(
+                    moment(DATE_LIMIT.max).toISOString(),
+                    DATE_FORMAT.ShortDateFormat,
+                    `Observation date cannot be after ${DATE_LIMIT.max}`
+                  )
+                  .required('Required')
+              })}
               enableReinitialize={true}
               validateOnBlur={false}
               validateOnChange={false}
               onSubmit={() => {}}>
-              <BlockObservationForm tableRef={hotRef} tableData={tableData} />
+              <BlockObservationForm dateHelperText={dateHelperText} tableRef={hotRef} tableData={tableData} />
             </Formik>
             <Box mt={2} pb={3} display="flex" justifyContent="flex-end">
               {!observationId && (

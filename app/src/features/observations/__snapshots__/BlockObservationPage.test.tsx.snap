@@ -354,6 +354,7 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
                       >
                         <input
+                          aria-describedby="date-helper-text"
                           aria-invalid="false"
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           data-testid="date"
@@ -378,6 +379,12 @@ exports[`BlockObservationPage renders the empty page contents (Add Block Observa
                           </legend>
                         </fieldset>
                       </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required MuiFormHelperText-marginDense"
+                        id="date-helper-text"
+                      >
+                        Observation date must be between Oct 10, 1998 and Feb 26, 2021.
+                      </p>
                     </div>
                   </div>
                   <div
@@ -2237,6 +2244,7 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                         class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-marginDense MuiOutlinedInput-marginDense"
                       >
                         <input
+                          aria-describedby="date-helper-text"
                           aria-invalid="false"
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMarginDense MuiOutlinedInput-inputMarginDense"
                           data-testid="date"
@@ -2261,6 +2269,12 @@ exports[`BlockObservationPage renders the filled page contents (Edit Block Obser
                           </legend>
                         </fieldset>
                       </div>
+                      <p
+                        class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required MuiFormHelperText-marginDense"
+                        id="date-helper-text"
+                      >
+                        Observation date must be between Oct 10, 1998 and Feb 26, 2021.
+                      </p>
                     </div>
                   </div>
                   <div

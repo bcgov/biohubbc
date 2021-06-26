@@ -96,5 +96,13 @@ pg_restore dumpFileName
 
 `Error: knex: Required configuration option 'client' is missing.`
 
+
 - Double check that your environment variables have been set correctly. (`export NODE_ENV=local`)
+=======
+- Double check that your environment variables have been set correctly, specifically `NODE_ENV`. To do this you can run the following command from the `database/src` directory:
+
+```
+export NODE_ENV = local
+```
+
 - Double check that the line endings of the `.env` file are `LF` and not `CLRF`

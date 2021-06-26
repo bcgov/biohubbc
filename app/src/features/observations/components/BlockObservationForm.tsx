@@ -14,6 +14,7 @@ import { HotTable } from '@handsontable/react';
 import Handsontable from 'handsontable';
 import 'handsontable/dist/handsontable.min.css';
 import yup from 'utils/YupSchema';
+import CustomTextField from 'components/fields/CustomTextField';
 
 const useStyles = makeStyles(() => ({
   customGridContainer: {
@@ -82,16 +83,19 @@ export const BlockObservationInitialValues: IBlockObservationForm = {
   aircraft_gps_readout: ''
 };
 
-export const BlockObservationYupSchema = yup.object().shape({
-  block_name: yup.number().min(1, 'required').required('Required'),
-  date: yup.string().isValidDateString().required('Required'),
-  start_time: yup.string().required('Required'),
-  end_time: yup.string().required('Required')
-});
+export const BlockObservationYupSchema = (customYupRules?: any) => {
+  return yup.object().shape({
+    block_name: yup.number().min(1, 'required').required('Required'),
+    date: customYupRules?.date || yup.string().isValidDateString().required('Required'),
+    start_time: yup.string().required('Required'),
+    end_time: yup.string().required('Required').isEndTimeAfterStartTime('start_time')
+  });
+};
 
 export interface IBlockObservationFormProps {
   tableRef: any;
   tableData: any[][];
+  dateHelperText: string;
 }
 
 /**
@@ -151,7 +155,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
       { type: 'numeric' },
       { type: 'numeric' },
       { type: 'numeric' },
-      { type: 'numeric', readOnly: true },
+      { type: 'numeric' },
       { type: 'dropdown', source: ['Bedded', 'Moving', 'Standing'] },
       {
         type: 'dropdown',
@@ -194,33 +198,22 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
             </Box>
             <Grid container spacing={2} className={classes.customGridContainer}>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={true}
-                  id="block_name"
-                  size="small"
+                <CustomTextField
                   name="block_name"
                   label="Block ID"
-                  variant="outlined"
-                  value={values.block_name}
-                  onChange={handleChange}
-                  error={touched.block_name && Boolean(errors.block_name)}
-                  helperText={touched.block_name && errors.block_name}
+                  other={{
+                    size: 'small',
+                    required: true
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  size="small"
-                  id="block_size"
+                <CustomTextField
                   name="block_size"
                   label={`Block Size (km\u00B2)`}
-                  variant="outlined"
-                  value={values.block_size}
-                  onChange={handleChange}
-                  error={touched.block_size && Boolean(errors.block_size)}
-                  helperText={touched.block_size && errors.block_size}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -268,7 +261,7 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                   }}
                   onChange={handleChange}
                   error={touched.date && Boolean(errors.date)}
-                  helperText={touched.date && errors.date}
+                  helperText={(touched.date && errors.date) || props.dateHelperText}
                   InputLabelProps={{
                     shrink: true
                   }}
@@ -328,63 +321,39 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
             </Box>
             <Grid container spacing={2} className={classes.customGridContainer}>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="pilot_name"
+                <CustomTextField
                   name="pilot_name"
-                  size="small"
                   label="Pilot"
-                  variant="outlined"
-                  value={values.pilot_name}
-                  onChange={handleChange}
-                  error={touched.pilot_name && Boolean(errors.pilot_name)}
-                  helperText={touched.pilot_name && errors.pilot_name}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="navigator"
+                <CustomTextField
                   name="navigator"
                   label="Navigator"
-                  size="small"
-                  variant="outlined"
-                  value={values.navigator}
-                  onChange={handleChange}
-                  error={touched.navigator && Boolean(errors.navigator)}
-                  helperText={touched.navigator && errors.navigator}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="rear_left_observer"
+                <CustomTextField
                   name="rear_left_observer"
                   label="Rear Left Observer"
-                  size="small"
-                  variant="outlined"
-                  value={values.rear_left_observer}
-                  onChange={handleChange}
-                  error={touched.rear_left_observer && Boolean(errors.rear_left_observer)}
-                  helperText={touched.rear_left_observer && errors.rear_left_observer}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="rear_right_observer"
+                <CustomTextField
                   name="rear_right_observer"
                   label="Rear Right Observer"
-                  size="small"
-                  variant="outlined"
-                  value={values.rear_right_observer}
-                  onChange={handleChange}
-                  error={touched.rear_right_observer && Boolean(errors.rear_right_observer)}
-                  helperText={touched.rear_right_observer && errors.rear_right_observer}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
             </Grid>
@@ -445,35 +414,23 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="cloud_cover"
+                <CustomTextField
                   name="cloud_cover"
                   label="Cloud Cover"
-                  size="small"
-                  variant="outlined"
-                  value={values.cloud_cover}
-                  onChange={handleChange}
-                  error={touched.cloud_cover && Boolean(errors.cloud_cover)}
-                  helperText={touched.cloud_cover && errors.cloud_cover}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
             </Grid>
             <Grid container spacing={2} className={classes.customGridContainer}>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="temperature"
+                <CustomTextField
                   name="temperature"
-                  size="small"
-                  label={`Temperature`}
-                  variant="outlined"
-                  value={values.temperature}
-                  onChange={handleChange}
-                  error={touched.temperature && Boolean(errors.temperature)}
-                  helperText={touched.temperature && errors.temperature}
+                  label="Temperature"
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -511,65 +468,41 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="wind_speed"
+                <CustomTextField
                   name="wind_speed"
-                  size="small"
                   label="Wind Speed"
-                  variant="outlined"
-                  value={values.wind_speed}
-                  onChange={handleChange}
-                  error={touched.wind_speed && Boolean(errors.wind_speed)}
-                  helperText={touched.wind_speed && errors.wind_speed}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
             </Grid>
             <Grid container spacing={2} className={classes.customGridContainer}>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="snow_cover"
+                <CustomTextField
                   name="snow_cover"
-                  size="small"
                   label="Snow Cover"
-                  variant="outlined"
-                  value={values.snow_cover}
-                  onChange={handleChange}
-                  error={touched.snow_cover && Boolean(errors.snow_cover)}
-                  helperText={touched.snow_cover && errors.snow_cover}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="snow_depth"
+                <CustomTextField
                   name="snow_depth"
-                  size="small"
                   label="Snow Depth"
-                  variant="outlined"
-                  value={values.snow_depth}
-                  onChange={handleChange}
-                  error={touched.snow_depth && Boolean(errors.snow_depth)}
-                  helperText={touched.snow_depth && errors.snow_depth}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="days_since_snowfall"
+                <CustomTextField
                   name="days_since_snowfall"
-                  size="small"
                   label="Days Since Snowfall"
-                  variant="outlined"
-                  value={values.days_since_snowfall}
-                  onChange={handleChange}
-                  error={touched.days_since_snowfall && Boolean(errors.days_since_snowfall)}
-                  helperText={touched.days_since_snowfall && errors.days_since_snowfall}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
             </Grid>
@@ -582,63 +515,39 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
             </Box>
             <Grid container spacing={2} className={classes.customGridContainer}>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="aircraft_company"
+                <CustomTextField
                   name="aircraft_company"
-                  size="small"
                   label="Company"
-                  variant="outlined"
-                  value={values.aircraft_company}
-                  onChange={handleChange}
-                  error={touched.aircraft_company && Boolean(errors.aircraft_company)}
-                  helperText={touched.aircraft_company && errors.aircraft_company}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="aircraft_type"
+                <CustomTextField
                   name="aircraft_type"
-                  size="small"
                   label="Aircraft Type"
-                  variant="outlined"
-                  value={values.aircraft_type}
-                  onChange={handleChange}
-                  error={touched.aircraft_type && Boolean(errors.aircraft_type)}
-                  helperText={touched.aircraft_type && errors.aircraft_type}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="aircraft_registration_number"
+                <CustomTextField
                   name="aircraft_registration_number"
-                  size="small"
                   label="Call Sign"
-                  variant="outlined"
-                  value={values.aircraft_registration_number}
-                  onChange={handleChange}
-                  error={touched.aircraft_registration_number && Boolean(errors.aircraft_registration_number)}
-                  helperText={touched.aircraft_registration_number && errors.aircraft_registration_number}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
-                <TextField
-                  fullWidth
-                  required={false}
-                  id="aircraft_gps_model"
+                <CustomTextField
                   name="aircraft_gps_model"
-                  size="small"
                   label="GPS Model"
-                  variant="outlined"
-                  value={values.aircraft_gps_model}
-                  onChange={handleChange}
-                  error={touched.aircraft_gps_model && Boolean(errors.aircraft_gps_model)}
-                  helperText={touched.aircraft_gps_model && errors.aircraft_gps_model}
+                  other={{
+                    size: 'small'
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -697,37 +606,21 @@ const BlockObservationForm: React.FC<IBlockObservationFormProps> = (props) => {
         </Box>
         <Grid container spacing={2} className={classes.customGridContainer}>
           <Grid item xs={12}>
-            <TextField
-              id="weather_description"
+            <CustomTextField
               name="weather_description"
               label="Weather Description"
-              size="small"
-              multiline
-              required={false}
-              rows={2}
-              fullWidth
-              variant="outlined"
-              value={values.weather_description}
-              onChange={handleChange}
-              error={touched.weather_description && Boolean(errors.weather_description)}
-              helperText={touched.weather_description && errors.weather_description}
+              other={{
+                size: 'small',
+                multiline: true,
+                rows: 2
+              }}
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              id="description_of_habitat"
+            <CustomTextField
               name="description_of_habitat"
               label="Description of Habitat"
-              size="small"
-              multiline
-              required={false}
-              rows={2}
-              fullWidth
-              variant="outlined"
-              value={values.description_of_habitat}
-              onChange={handleChange}
-              error={touched.description_of_habitat && Boolean(errors.description_of_habitat)}
-              helperText={touched.description_of_habitat && errors.description_of_habitat}
+              other={{ size: 'small', multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>

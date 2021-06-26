@@ -208,7 +208,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Data Sharing Agreement Required
+                  Data and Information Sharing Agreement Required
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}

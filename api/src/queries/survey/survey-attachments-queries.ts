@@ -22,7 +22,8 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       file_name,
       update_date,
       create_date,
-      file_size
+      file_size,
+      key
     from
       survey_attachment
     where

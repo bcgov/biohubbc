@@ -34,6 +34,18 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Delete project based on project ID
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<boolean>}
+   */
+  const deleteProject = async (projectId: number): Promise<boolean> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/delete`);
+
+    return data;
+  };
+
+  /**
    * Delete project attachment based on project and attachment ID
    *
    * @param {number} projectId
@@ -207,7 +219,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     getAttachmentSignedURL,
     deleteProjectAttachment,
     deleteFundingSource,
-    addFundingSource
+    addFundingSource,
+    deleteProject
   };
 };
 

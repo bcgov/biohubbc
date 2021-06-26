@@ -1436,6 +1436,15 @@ exports[`ProjectStepComponents renders the project location with the codes value
         <div
           class="MuiBox-root MuiBox-root-74"
         >
+          <p
+            class="MuiTypography-root MuiTypography-body2"
+          >
+            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-75"
+        >
           <label
             aria-disabled="false"
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
@@ -1481,10 +1490,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-76"
         />
         <div
-          class="MuiBox-root MuiBox-root-76"
+          class="MuiBox-root MuiBox-root-77"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1887,10 +1896,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-78 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-79 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-80"
+                  class="PrivateNotchedOutline-legendLabelled-81"
                 >
                   <span>
                     Regions *
@@ -1901,7 +1910,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-82"
+          class="MuiBox-root MuiBox-root-83"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1936,10 +1945,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-78 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-79 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-80"
+                class="PrivateNotchedOutline-legendLabelled-81"
               >
                 <span>
                   Location Description
@@ -1953,16 +1962,25 @@ exports[`ProjectStepComponents renders the project location without the codes va
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-83 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-84 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-85"
+          class="MuiBox-root MuiBox-root-86"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body2"
+          >
+            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-87"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-84 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-85 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1983,7 +2001,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-84 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-85 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -2005,10 +2023,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-86"
+          class="MuiBox-root MuiBox-root-88"
         />
         <div
-          class="MuiBox-root MuiBox-root-87"
+          class="MuiBox-root MuiBox-root-89"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"

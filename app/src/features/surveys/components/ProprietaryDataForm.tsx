@@ -8,11 +8,12 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import TextField from '@material-ui/core/TextField';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
+import Link from '@material-ui/core/Link';
+import CustomTextField from 'components/fields/CustomTextField';
 
 const useStyles = makeStyles(() => ({
   legend: {
@@ -105,6 +106,18 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
             <FormLabel component="legend" className={classes.legend}>
               Is the data captured in this survey proprietary?
             </FormLabel>
+            <Box pt={2}>
+              <Link
+                component="button"
+                variant="body2"
+                onClick={() => {
+                  window.open(
+                    'https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security'
+                  );
+                }}>
+                Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              </Link>
+            </Box>
             <Box mt={2}>
               <RadioGroup
                 name="survey_data_proprietary"
@@ -179,34 +192,20 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 />
               )}
               {values.proprietary_data_category !== 2 && (
-                <TextField
-                  fullWidth
-                  required={true}
-                  id="proprietor_name"
+                <CustomTextField
                   name="proprietor_name"
                   label="Proprietor Name"
-                  variant="outlined"
-                  value={values.proprietor_name}
-                  onChange={handleChange}
-                  error={touched.proprietor_name && Boolean(errors.proprietor_name)}
-                  helperText={touched.proprietor_name && errors.proprietor_name}
+                  other={{
+                    required: true
+                  }}
                 />
               )}
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                id="category_rationale"
+              <CustomTextField
                 name="category_rationale"
                 label="Category Rationale"
-                multiline
-                required={true}
-                rows={4}
-                fullWidth
-                variant="outlined"
-                value={values.category_rationale}
-                onChange={handleChange}
-                error={touched.category_rationale && Boolean(errors.category_rationale)}
-                helperText={touched.category_rationale && errors.category_rationale}
+                other={{ multiline: true, required: true, rows: 4 }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -215,13 +214,13 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 component="fieldset"
                 error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
                 <FormLabel component="legend" className={classes.legend}>
-                  Data Sharing Agreement (DISA)
+                  Data and Information Sharing Agreement (DISA)
                 </FormLabel>
-                <Typography>Do you require a data sharing agreement?</Typography>
+                <Typography>Do you require a data and information sharing agreement?</Typography>
                 <Box mt={2}>
                   <RadioGroup
                     name="data_sharing_agreement_required"
-                    aria-label="Data Sharing Agreement"
+                    aria-label="Data and Information Sharing Agreement"
                     value={values.data_sharing_agreement_required}
                     onChange={handleChange}>
                     <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />

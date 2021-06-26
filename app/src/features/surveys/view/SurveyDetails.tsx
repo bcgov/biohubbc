@@ -37,13 +37,13 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
-  const classes = useStyles();
-
   const { surveyForViewData, codes, refresh, projectForViewData } = props;
+
+  const classes = useStyles();
 
   return (
     <>
-      <Box mb={6}>
+      <Box mb={5}>
         <Typography variant="h2">Survey Details</Typography>
       </Box>
 

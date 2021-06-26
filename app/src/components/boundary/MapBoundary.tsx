@@ -45,6 +45,12 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   return (
     <Grid item xs={12}>
       <Typography className={classes.bold}>{title}</Typography>
+      <Box mt={2}>
+        <Typography variant="body2">
+          You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be
+          configured with a valid projection.
+        </Typography>
+      </Box>
       <Box display="flex" mt={3}>
         <Tooltip arrow color="secondary" title="Will only accept kml files, kmz files not accepted.">
           <Button
