@@ -20,6 +20,8 @@ export const getSpatialSearchResultsSQL = (): SQLStatement | null => {
       public.ST_asGeoJSON(p.geography) as geometry
     from
       project as p
+    where
+      p.publish_timestamp;
   `;
 
   defaultLog.debug({

@@ -8,6 +8,14 @@ export enum AdministrativeActivityStatusType {
   REJECTED = 'Rejected'
 }
 
+export enum ProjectStatusType {
+  UNPUBLISHED = 'Unpublished',
+  PUBLISHED = 'Published',
+  COMPLETED = 'Completed',
+  ACTIVE = 'Active',
+  DRAFT = 'Draft'
+}
+
 export enum SurveyStatusType {
   UNPUBLISHED = 'Unpublished',
   PUBLISHED = 'Published'
