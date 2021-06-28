@@ -31,22 +31,7 @@ describe('search', () => {
   };
 
   const sampleReq = {
-    keycloak_token: {},
-    body: {
-      record_type: 'project',
-      geometry: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [125.6, 10.1]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
-        }
-      ]
-    }
+    keycloak_token: {}
   } as any;
 
   describe('getSearchResults', () => {

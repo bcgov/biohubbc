@@ -16,6 +16,13 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = ${DB_SCHEMA},public;
 
     ALTER TABLE project ADD COLUMN publish_timestamp timestamptz(6);
+
+    set search_path = biohub_dapi_v1;
+    set role biohub_api;
+
+    create or replace view project as select * from biohub.project;
+
+    set role postgres;
   `);
 }
 
@@ -23,6 +30,12 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
+
+    SET ROLE biohub_api;
+
+    DROP VIEW IF EXISTS biohub_dapi_v1.project;
+
+    SET ROLE postgres;
 
     ALTER TABLE project DROP COLUMN publish_timestamp;
   `);

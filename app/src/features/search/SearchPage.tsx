@@ -1,31 +1,17 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import SearchAdvancedFilters, {
-  ISearchAdvancedFilters,
-  SearchAdvancedFiltersInitialValues
-} from 'components/search-filter/SearchAdvancedFilters';
-import { Formik, FormikProps } from 'formik';
-import React, { useRef, useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DialogContext } from 'contexts/dialogContext';
-import { generateValidGeometryCollection, updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
+import centroid from '@turf/centroid';
+import Grid from '@material-ui/core/Grid';
+import { useEffect } from 'react';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
-import { INonEditableGeometries } from 'components/map/MapContainer';
-
-const useStyles = makeStyles({
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
-  }
-});
 
 /**
  * Page to search for and display a list of records spatially.
@@ -33,12 +19,9 @@ const useStyles = makeStyles({
  * @return {*}
  */
 const SearchPage: React.FC = () => {
-  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
-  const [geometries, setGeometries] = useState<INonEditableGeometries[]>([]);
-  const [bounds, setBounds] = useState<any[]>([]);
+  const [geometries, setGeometries] = useState<IClusteredPointGeometries[]>([]);
 
   const dialogContext = useContext(DialogContext);
 
@@ -55,43 +38,34 @@ const SearchPage: React.FC = () => {
     });
   };
 
-  const handleSubmit = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
+  useEffect(() => {
+    const fetchResults = async () => {
+      await getSearchResults();
+    };
 
-    formikRef.current.handleReset();
+    fetchResults();
+  }, []);
 
-    await getSearchResults(formikRef.current.values);
-  };
-
-  const getSearchResults = async (values: ISearchAdvancedFilters) => {
+  const getSearchResults = async () => {
     try {
-      const response = await biohubApi.search.getSearchResults(values);
+      const response = await biohubApi.search.getSearchResults();
 
       if (!response) {
         return;
       }
 
-      let nonEditableGeometries: INonEditableGeometries[] = [];
-      let geos: Feature[] = [];
+      let clusteredPointGeometries: IClusteredPointGeometries[] = [];
 
       response.forEach((result: any) => {
         const feature = generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0];
 
-        nonEditableGeometries.push({
-          feature,
+        clusteredPointGeometries.push({
+          coordinates: centroid(feature as any).geometry.coordinates,
           popupComponent: <SearchFeaturePopup featureData={result} />
         });
-
-        geos.push(feature);
       });
 
-      if (geos.length) {
-        updateMapBounds(geos, setBounds);
-      }
-
-      setGeometries(nonEditableGeometries);
+      setGeometries(clusteredPointGeometries);
     } catch (error) {
       const apiError = error as APIError;
       showFilterErrorDialog({
@@ -113,19 +87,16 @@ const SearchPage: React.FC = () => {
         </Box>
         <Box>
           <Box mb={4}>
-            <Formik innerRef={formikRef} initialValues={SearchAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
-              <SearchAdvancedFilters geometryResult={geometries} setBoundsResult={setBounds} boundsResult={bounds} />
-            </Formik>
-            <Box mt={2} display="flex" justifyContent="flex-end">
-              <Button
-                className={classes.actionButton}
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}>
-                Search
-              </Button>
-            </Box>
+            <Grid item xs={12}>
+              <Box mt={2} height={750}>
+                <MapContainer
+                  mapId="search_boundary_map"
+                  scrollWheelZoom={true}
+                  hideDrawControls={true}
+                  clusteredPointGeometries={geometries}
+                />
+              </Box>
+            </Grid>
           </Box>
         </Box>
       </Container>

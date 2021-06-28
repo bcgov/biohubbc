@@ -27,7 +27,8 @@ export const ProjectLocationFormInitialValues: IProjectLocationForm = {
 
 export const ProjectLocationFormYupSchema = yup.object().shape({
   regions: yup.array().of(yup.string()).min(1, 'Required').required('Required'),
-  location_description: yup.string().max(3000, 'Cannot exceed 3000 characters')
+  location_description: yup.string().max(3000, 'Cannot exceed 3000 characters'),
+  geometry: yup.array().min(1, 'You must specify a project boundary').required('You must specify a project boundary')
 });
 
 export interface IProjectLocationFormProps {
@@ -42,7 +43,7 @@ export interface IProjectLocationFormProps {
 const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
   const formikProps = useFormikContext<IProjectLocationForm>();
 
-  const { values, handleSubmit, setFieldValue } = formikProps;
+  const { values, handleSubmit, setFieldValue, errors } = formikProps;
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
@@ -87,6 +88,7 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
           setUploadError={setUploadError}
           values={values}
           bounds={bounds}
+          errors={errors}
           setFieldValue={setFieldValue}
         />
       </Grid>
