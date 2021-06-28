@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,

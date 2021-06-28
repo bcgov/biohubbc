@@ -5,6 +5,8 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
+const DB_RELEASE = 'release.0.18';
+
 /**
  * Apply biohub release changes.
  *
@@ -13,62 +15,72 @@ const DB_USER_API = process.env.DB_USER_API;
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  const create_spatial_extensions = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'create_spatial_extensions.psql')
-  );
-  const biohub_ddl = fs.readFileSync(path.join(__dirname, 'release.0.16', 'biohub.sql'));
-  const populate_user_identity_source = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_user_identity_source.sql')
-  );
-  const api_set_context = fs.readFileSync(path.join(__dirname, 'release.0.16', 'api_set_context.sql'));
-  const tr_audit_trigger = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_audit_trigger.sql'));
-  const project_audit_triggers = fs.readFileSync(path.join(__dirname, 'release.0.16', 'project_audit_triggers.sql'));
-  const api_get_context_user_id = fs.readFileSync(path.join(__dirname, 'release.0.16', 'api_get_context_user_id.sql'));
-  const tr_journal_trigger = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_journal_trigger.sql'));
-  const project_journal_triggers = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'project_journal_triggers.sql')
-  );
-  const tr_project_funding_source = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'tr_project_funding_source.sql')
-  );
-  const api_delete_project = fs.readFileSync(path.join(__dirname, 'release.0.16', 'api_delete_project.sql'));
+  const create_spatial_extensions = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'create_spatial_extensions.psql'));
 
-  const populate_first_nations = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_first_nations.sql'));
+  const biohub_ddl = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'biohub.sql'));
+  const populate_user_identity_source = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_user_identity_source.sql')
+  );
+  const api_set_context = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_set_context.sql'));
+
+  const tr_audit_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_audit_trigger.sql'));
+  const project_audit_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_audit_triggers.sql'));
+  const api_get_context_user_id = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_context_user_id.sql'));
+  const api_get_context_system_user_role_id = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'api_get_context_system_user_role_id.sql')
+  );
+  const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
+  const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
+  const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
+  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey_proprietor.sql'));
+  const tr_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project.sql'));
+  const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
+  const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
+
+  const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
+
+  const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
   const populate_climate_change_initiatives = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_climate_change_initiatives.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_climate_change_initiatives.sql')
   );
   const populate_management_action_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_management_action_type.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_management_action_type.sql')
   );
-  const populate_funding_source = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_funding_source.sql'));
+  const populate_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_funding_source.sql'));
   const populate_investment_action_category = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_investment_action_category.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_investment_action_category.sql')
   );
-  const populate_project_type = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_project_type.sql'));
-  const populate_activity = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_activity.sql'));
+  const populate_project_type = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_project_type.sql'));
+  const populate_activity = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_activity.sql'));
   const populate_iucn_classifications = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_iucn_classifications.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_iucn_classifications.sql')
   );
-  const populate_project_role = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_project_role.sql'));
-  const populate_system_role = fs.readFileSync(path.join(__dirname, 'release.0.16', 'populate_system_role.sql'));
+  const populate_project_role = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_project_role.sql'));
+  const populate_system_role = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_system_role.sql'));
   const populate_administrative_activity_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_administrative_activity_type.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_administrative_activity_type.sql')
   );
   const populate_administrative_activity_status_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_administrative_activity_status_type.sql')
+    path.join(__dirname, DB_RELEASE, 'populate_administrative_activity_status_type.sql')
   );
-  const populate_proprietor_type = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_proprietor_type.sql')
-  );
-  const populate_wldtaxonomic_units = fs.readFileSync(
-    path.join(__dirname, 'release.0.16', 'populate_wldtaxonomic_units.sql')
-  );
-  const tr_survey_proprietor = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_survey_proprietor.sql'));
-  const tr_project = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_project.sql'));
-  const tr_survey = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_survey.sql'));
-  const tr_permit = fs.readFileSync(path.join(__dirname, 'release.0.16', 'tr_permit.sql'));
+  const populate_proprietor_type = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_proprietor_type.sql'));
 
-  const project_dapi_views = fs.readFileSync(path.join(__dirname, 'release.0.16', 'project_dapi_views.sql'));
+  const populate_submission_status_type = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_submission_status_type.sql')
+  );
+  const populate_submission_message_type = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
+  );
+
+  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
+
+  const indexes = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'indexes.sql'));
+
+  const populate_wldtaxonomic_units = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
+  );
+
+  const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
 
   await knex.raw(`
     -- set up spatial extensions
@@ -76,7 +88,27 @@ export async function up(knex: Knex): Promise<void> {
 
     -- set up biohub schema
     create schema if not exists biohub;
+    GRANT ALL ON SCHEMA biohub TO postgres;
     set search_path = biohub, public;
+
+    -- setup biohub api schema
+    create schema if not exists biohub_dapi_v1;
+
+    -- setup api user
+    create user ${DB_USER_API} password '${DB_USER_API_PASS}';
+    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
+
+    -- Grant rights on biohub_dapi_v1 to biohub_api user
+    grant all on schema biohub_dapi_v1 to ${DB_USER_API};
+    grant all on schema biohub_dapi_v1 to postgres;
+    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
+    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to postgres;
+
+    -- Biohub grants
+    GRANT USAGE ON SCHEMA biohub TO ${DB_USER_API};
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO ${DB_USER_API};
+
+    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
 
     ${biohub_ddl}
     ${populate_user_identity_source}
@@ -84,6 +116,7 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_audit_trigger}
     ${project_audit_triggers}
     ${api_get_context_user_id}
+    ${api_get_context_system_user_role_id}
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
@@ -109,28 +142,31 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_administrative_activity_type}
     ${populate_administrative_activity_status_type}
     ${populate_proprietor_type}
+    ${populate_submission_status_type}
+    ${populate_submission_message_type}
+
+    ${secured_objects}
+
+    ${indexes}
+
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
 
-    -- setup biohub api schema
-    create schema if not exists biohub_dapi_v1;
+    -- create the views
     set search_path = biohub_dapi_v1;
+    set role biohub_api;
     ${project_dapi_views}
-
-    -- setup api user
-    create user ${DB_USER_API} password '${DB_USER_API_PASS}';
-    grant usage on schema biohub_dapi_v1 to ${DB_USER_API};
-    grant usage on schema biohub to ${DB_USER_API};
-    grant all on all tables in schema biohub_dapi_v1 to ${DB_USER_API};
-    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
-    --grant postgis_reader to ${DB_USER_API};
-    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
+    set role postgres;
 
     set search_path = biohub;
-    grant execute on function api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
+    grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
   `);
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.raw(``);
+  await knex.raw(`
+    DROP SCHEMA IF EXISTS biohub CASCADE;
+    DROP SCHEMA IF EXISTS biohub_dapi_v1 CASCADE;
+    DROP USER IF EXISTS ${DB_USER_API};
+  `);
 }

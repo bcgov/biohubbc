@@ -35,7 +35,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import yup from 'utils/YupSchema';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateFormats';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -337,6 +337,13 @@ const CreateSurveyPage = () => {
         <Container maxWidth="xl">
           <Box mb={3}>
             <Breadcrumbs>
+              <Link
+                color="primary"
+                onClick={() => history.push('/projects')}
+                aria-current="page"
+                className={classes.breadCrumbLink}>
+                <Typography variant="body2">Projects</Typography>
+              </Link>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>

@@ -8,15 +8,17 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 describe('SurveyDetails', () => {
   const mockRefresh = jest.fn();
 
+  const component = (
+    <SurveyDetails
+      surveyForViewData={getSurveyForViewResponse}
+      codes={codes}
+      projectForViewData={getProjectForViewResponse}
+      refresh={mockRefresh}
+    />
+  );
+
   it('renders correctly', () => {
-    const { asFragment } = render(
-      <SurveyDetails
-        surveyForViewData={getSurveyForViewResponse}
-        codes={codes}
-        projectForViewData={getProjectForViewResponse}
-        refresh={mockRefresh}
-      />
-    );
+    const { asFragment } = render(component);
 
     expect(asFragment()).toMatchSnapshot();
   });

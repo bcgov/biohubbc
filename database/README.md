@@ -11,13 +11,27 @@
 
 <br />
 
-# Knex Migrations/Seeds
+## Knex Migrations / Seeds
 
-## Migrations
+### Migrations
+
 
 An ordered list of database changes (creates, deletes, alters, etc). The latest version of your database will then be the summation of all of the migration changes, applied in order.
 
-## Seeds
+Useful resource https://devhints.io/knex
+
+To run migrations locally using your terminal, export the required environment variables. For example if an env variable is DB_SCHEMA=biohub
+
+```
+EXPORT DB_SCHEMA=biohub
+```
+To test that it worked:
+
+```
+ECHO $DB_SCHEMA 
+```
+
+### Seeds
 
 A set of scripts that populate the database tables with any ephemeral values required for the app to function during development. This can include dummy data so that when the app is running locally, you don't have to manually create a bunch of data in order to experience the app as it would be in a real environment.
 
@@ -82,5 +96,10 @@ pg_restore dumpFileName
 
 `Error: knex: Required configuration option 'client' is missing.`
 
-- Double check that your environment variables have been set correctly.
+- Double check that your environment variables have been set correctly, specifically `NODE_ENV`. To do this you can run the following command from the `database/src` directory:
+
+```
+export NODE_ENV = local
+```
+
 - Double check that the line endings of the `.env` file are `LF` and not `CLRF`

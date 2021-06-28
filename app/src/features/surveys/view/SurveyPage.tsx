@@ -8,10 +8,10 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiClipboardCheckMultipleOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import { mdiClipboardCheckMultipleOutline, mdiTrashCanOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 import Icon from '@mdi/react';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useContext, useCallback, useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
@@ -21,10 +21,16 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
+<<<<<<< HEAD
 import PrototypeTypePage from 'prototypes/PrototypeTwo/PrototypeTypePage';
+=======
+import SurveyObservations from './SurveyObservations';
+import Button from '@material-ui/core/Button';
+import { DialogContext } from 'contexts/dialogContext';
+>>>>>>> 6b35ef2365f2c052d6f721512e0692aa941da5b3
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -61,6 +67,8 @@ const SurveyPage: React.FC = () => {
   const history = useHistory();
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
+
+  const dialogContext = useContext(DialogContext);
 
   const [isLoadingProject, setIsLoadingProject] = useState(true);
   const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
@@ -120,6 +128,44 @@ const SurveyPage: React.FC = () => {
     }
   }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
 
+  const defaultYesNoDialogProps = {
+    dialogTitle: 'Delete Survey',
+    dialogText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const showDeleteSurveyDialog = () => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        deleteSurvey();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const deleteSurvey = async () => {
+    if (!projectWithDetails || !surveyWithDetails) {
+      return;
+    }
+
+    try {
+      const response = await biohubApi.survey.deleteSurvey(projectWithDetails.id, surveyWithDetails.survey_details.id);
+
+      if (!response) {
+        return;
+      }
+
+      history.push(`/projects/${projectWithDetails.id}/surveys`);
+    } catch (error) {
+      return error;
+    }
+  };
+
   if (!projectWithDetails || !surveyWithDetails || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -148,18 +194,30 @@ const SurveyPage: React.FC = () => {
             </Breadcrumbs>
           </Box>
 
-          <Box pb={4}>
-            <Box mb={1}>
-              <Typography variant="h1">{surveyWithDetails.survey_details.survey_name}</Typography>
+          <Box display="flex" justifyContent="space-between">
+            <Box pb={4}>
+              <Box mb={1}>
+                <Typography variant="h1">{surveyWithDetails.survey_details.survey_name}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" color="textSecondary">
+                  {getFormattedDateRangeString(
+                    DATE_FORMAT.ShortMediumDateFormat2,
+                    surveyWithDetails.survey_details.start_date,
+                    surveyWithDetails.survey_details.end_date
+                  )}
+                </Typography>
+              </Box>
             </Box>
-            <Box>
-              <Typography variant="subtitle1" color="textSecondary">
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat2,
-                  surveyWithDetails.survey_details.start_date,
-                  surveyWithDetails.survey_details.end_date
-                )}
-              </Typography>
+            <Box ml={4} mb={4}>
+              <Button
+                variant="outlined"
+                color="primary"
+                data-testid="delete-survey-button"
+                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                onClick={showDeleteSurveyDialog}>
+                Delete Survey
+              </Button>
             </Box>
           </Box>
         </Container>
@@ -226,8 +284,13 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
+<<<<<<< HEAD
             {location.pathname.includes('/prototype') && (
               <PrototypeTypePage projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+=======
+            {location.pathname.includes('/observations') && (
+              <SurveyObservations projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+>>>>>>> 6b35ef2365f2c052d6f721512e0692aa941da5b3
             )}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />

@@ -14,6 +14,7 @@ import {
   ProjectLocationFormInitialValues,
   ProjectLocationFormYupSchema
 } from 'features/projects/components/ProjectLocationForm';
+import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -115,6 +116,9 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   };
 
   const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);
+  const nonEditableGeometries = geometryCollection.map((geom: Feature) => {
+    return { feature: geom };
+  });
 
   return (
     <>
@@ -168,7 +172,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             mapId="project_location_form_map"
             hideDrawControls={true}
             hideOverlayLayers={true}
-            nonEditableGeometries={geometryCollection}
+            nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
           />
         </Box>

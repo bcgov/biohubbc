@@ -24,3 +24,11 @@ export enum DATE_LIMIT {
   min = '1900-01-01',
   max = '2100-12-31'
 }
+
+/**
+ * Time formats.
+ *
+ */
+export enum TIME_FORMAT {
+  ShortTimeFormatAmPm = 'hh:mm A' //11:00 AM
+}

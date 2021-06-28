@@ -16,12 +16,11 @@ $$
 -- charlie.garrettjones@quartech.com
 --                  2021-04-19  initial release
 -- *******************************************************************
-declare
-  
 begin
   delete from survey_proprietor where s_id in (select id from survey where p_id = __project_id);
   delete from survey_attachment where s_id in (select id from survey where p_id = __project_id);
   delete from study_species where s_id in (select id from survey where p_id = __project_id);
+  delete from block_observation where s_id in (select id from survey where p_id = __project_id);
   delete from permit where p_id = __project_id;
   delete from survey where p_id = __project_id;
   delete from stakeholder_partnership where p_id = __project_id;
@@ -35,6 +34,8 @@ begin
   delete from project_first_nation where p_id = __project_id;
   delete from project_participation where p_id = __project_id;
   delete from project where id = __project_id;
-    
+exception
+  when others THEN
+    raise;    
 end;
 $$;

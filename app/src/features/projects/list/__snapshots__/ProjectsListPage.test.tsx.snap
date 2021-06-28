@@ -3,13 +3,13 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiBox-root MuiBox-root-25"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiBox-root MuiBox-root-26"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -17,13 +17,27 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
           Projects
         </h1>
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
           tabindex="0"
           type="button"
         >
           <span
             class="MuiButton-label"
           >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
             Create Project
           </span>
           <span
@@ -32,92 +46,136 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
         </button>
       </div>
       <div
-        class="MuiPaper-root MuiTableContainer-root MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
-        <table
-          class="MuiTable-root"
+        <div
+          class="MuiBox-root MuiBox-root-27"
         >
-          <thead
-            class="MuiTableHead-root"
+          <h3
+            class="MuiTypography-root MuiTypography-h4"
           >
-            <tr
-              class="MuiTableRow-root MuiTableRow-head"
-            >
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Project Name
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Project Type
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Permits
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Coordinator Agency
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Start Date
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                End Date
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            class="MuiTableBody-root"
-            data-testid="project-table"
+            0 Projects found
+          </h3>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            tabindex="0"
+            type="button"
           >
-            <tr
-              class="MuiTableRow-root"
+            <span
+              class="MuiButton-label"
             >
-              <th
-                class="MuiTableCell-root MuiTableCell-body"
-                role="cell"
-                scope="row"
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                <button
-                  class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-                  data-testid="Draft 1"
+                <svg
+                  role="presentation"
+                  style="width: 1.2000000000000002rem; height: 1.2000000000000002rem;"
+                  viewBox="0 0 24 24"
                 >
-                  Draft 1 (Draft)
-                </button>
-              </th>
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-            </tr>
-          </tbody>
-        </table>
+                  <path
+                    d="M15,19.88C15.04,20.18 14.94,20.5 14.71,20.71C14.32,21.1 13.69,21.1 13.3,20.71L9.29,16.7C9.06,16.47 8.96,16.16 9,15.87V10.75L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L15,10.75V19.88M7.04,5L11,10.06V15.58L13,17.58V10.05L16.96,5H7.04Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Show Filters
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <hr
+          class="MuiDivider-root"
+        />
+        <div
+          class="MuiTableContainer-root"
+        >
+          <table
+            class="MuiTable-root"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Name
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Type
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Permits
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Coordinator Agency
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Start Date
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  End Date
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+              data-testid="project-table"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  <button
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-23 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    data-testid="Draft 1"
+                  >
+                    Draft 1 (Draft)
+                  </button>
+                </th>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -127,13 +185,13 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 exports[`ProjectsListPage renders with a proper list of projects 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-18"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiBox-root MuiBox-root-19"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -141,13 +199,27 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
           Projects
         </h1>
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
           tabindex="0"
           type="button"
         >
           <span
             class="MuiButton-label"
           >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
             Create Project
           </span>
           <span
@@ -156,98 +228,142 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
         </button>
       </div>
       <div
-        class="MuiPaper-root MuiTableContainer-root MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
-        <table
-          class="MuiTable-root"
+        <div
+          class="MuiBox-root MuiBox-root-20"
         >
-          <thead
-            class="MuiTableHead-root"
+          <h3
+            class="MuiTypography-root MuiTypography-h4"
           >
-            <tr
-              class="MuiTableRow-root MuiTableRow-head"
-            >
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Project Name
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Project Type
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Permits
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Coordinator Agency
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                Start Date
-              </th>
-              <th
-                class="MuiTableCell-root MuiTableCell-head"
-                scope="col"
-              >
-                End Date
-              </th>
-            </tr>
-          </thead>
-          <tbody
-            class="MuiTableBody-root"
-            data-testid="project-table"
+            1 Project found
+          </h3>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            tabindex="0"
+            type="button"
           >
-            <tr
-              class="MuiTableRow-root"
+            <span
+              class="MuiButton-label"
             >
-              <th
-                class="MuiTableCell-root MuiTableCell-body"
-                role="cell"
-                scope="row"
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                <button
-                  class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-                  data-testid="Project 1"
+                <svg
+                  role="presentation"
+                  style="width: 1.2000000000000002rem; height: 1.2000000000000002rem;"
+                  viewBox="0 0 24 24"
                 >
-                  Project 1
-                </button>
-              </th>
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
+                  <path
+                    d="M15,19.88C15.04,20.18 14.94,20.5 14.71,20.71C14.32,21.1 13.69,21.1 13.3,20.71L9.29,16.7C9.06,16.47 8.96,16.16 9,15.87V10.75L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L15,10.75V19.88M7.04,5L11,10.06V15.58L13,17.58V10.05L16.96,5H7.04Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Show Filters
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <hr
+          class="MuiDivider-root"
+        />
+        <div
+          class="MuiTableContainer-root"
+        >
+          <table
+            class="MuiTable-root"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
               >
-                project type
-              </td>
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Name
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Type
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Permits
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Coordinator Agency
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Start Date
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  End Date
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+              data-testid="project-table"
+            >
+              <tr
+                class="MuiTableRow-root"
               >
-                1, 2, 3
-              </td>
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              >
-                coordinator agency
-              </td>
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-              <td
-                class="MuiTableCell-root MuiTableCell-body"
-              />
-            </tr>
-          </tbody>
-        </table>
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  <button
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    data-testid="Project 1"
+                  >
+                    Project 1
+                  </button>
+                </th>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  project type
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  1, 2, 3
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  coordinator agency
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

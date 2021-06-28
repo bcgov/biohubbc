@@ -247,3 +247,32 @@ export const deleteFundingSourceSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete a project row (and associated data) based on project ID.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteProjectSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`call api_delete_project(${projectId})`;
+
+  defaultLog.debug({
+    label: 'deleteProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

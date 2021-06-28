@@ -11,17 +11,17 @@ on:
 jobs:
   test:
     name: Running Tests
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
 
       - name: Setup node
         uses: actions/setup-node@v1
         with:
-          node-version: "10"
+          node-version: "12"
 
       - name: Cache api node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         env:
           cache-name: cache-api-node-modules
         with:
@@ -37,16 +37,17 @@ jobs:
 
       - name: Run api tests with coverage
         working-directory: api
-        run: CI=true npm run coverage
+        run: CI=true
+             npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v1.5.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
 
       - name: Cache app node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         env:
           cache-name: cache-app-node-modules
         with:
@@ -62,10 +63,11 @@ jobs:
 
       - name: Run app tests with coverage
         working-directory: app
-        run: CI=true npm run coverage
+        run: CI=true
+             npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v1.5.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false

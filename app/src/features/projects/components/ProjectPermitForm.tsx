@@ -7,10 +7,10 @@ import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, useFormikContext } from 'formik';
 import React, { useEffect } from 'react';
 import yup from 'utils/YupSchema';
@@ -97,17 +97,15 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
                       <Box flexBasis="30%" pr={1}>
-                        <TextField
-                          fullWidth
-                          required={true}
-                          id={`permits.[${index}].permit_number`}
+                        <CustomTextField
                           name={`permits.[${index}].permit_number`}
                           label="Permit Number"
-                          variant="outlined"
-                          value={permit.permit_number}
-                          onChange={handleChange}
-                          error={permitNumberMeta.touched && Boolean(permitNumberMeta.error)}
-                          helperText={permitNumberMeta.touched && permitNumberMeta.error}
+                          other={{
+                            required: true,
+                            value: permit.permit_number,
+                            error: permitNumberMeta.touched && Boolean(permitNumberMeta.error),
+                            helperText: permitNumberMeta.touched && permitNumberMeta.error
+                          }}
                         />
                       </Box>
                       <Box flexBasis="40%" pl={1}>

@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, May 18, 2021 10:47:16
+-- Date Created : Friday, June 18, 2021 14:30:41
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -593,6 +593,118 @@ COMMENT ON TABLE management_action_type IS 'List of Management Actions.'
 ;
 
 -- 
+-- TABLE: occurrence 
+--
+
+CREATE TABLE occurrence(
+    id                      integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    os_id                   integer                     NOT NULL,
+    associatedtaxa          varchar(3000),
+    lifestage               varchar(3000),
+    vernacularname          varchar(3000),
+    eventdate               TIMESTAMPTZ                 NOT NULL,
+    individualcount         varchar(3000),
+    organismquantity        varchar(3000),
+    organismquantitytype    varchar(3000),
+    data                    json,
+    geometry                geometry(geometry, 3005),
+    geography               geography(geometry),
+    security_token          uuid,
+    create_date             timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user             integer                     NOT NULL,
+    update_date             timestamptz(6),
+    update_user             integer,
+    revision_count          integer                     DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK169" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN occurrence.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence.os_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence.associatedtaxa IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.lifestage IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.vernacularname IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.eventdate IS 'A datetime representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.individualcount IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.organismquantity IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.organismquantitytype IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.data IS 'The json data associated with the record.'
+;
+COMMENT ON COLUMN occurrence.geometry IS 'The containing geometry of the record.'
+;
+COMMENT ON COLUMN occurrence.geography IS 'The containing geography of the record.'
+;
+COMMENT ON COLUMN occurrence.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
+;
+COMMENT ON COLUMN occurrence.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN occurrence.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN occurrence.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE occurrence IS 'Occurrence records that have been ingested from submissions sources.'
+;
+
+-- 
+-- TABLE: occurrence_submission 
+--
+
+CREATE TABLE occurrence_submission(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    s_id               integer,
+    source             varchar(300)      NOT NULL,
+    event_timestamp    TIMESTAMPTZ       NOT NULL,
+    key                varchar(1000),
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK165" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN occurrence_submission.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission.s_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission.source IS 'The name of the source system that is supplying the data.'
+;
+COMMENT ON COLUMN occurrence_submission.event_timestamp IS 'The timestamp of the associated event.'
+;
+COMMENT ON COLUMN occurrence_submission.key IS 'The identifying key to the file in the storage system.'
+;
+COMMENT ON COLUMN occurrence_submission.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN occurrence_submission.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_submission.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN occurrence_submission.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_submission.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE occurrence_submission IS 'Provides a historical listing of published dates and pointers to raw data versions for occurrence submissions.'
+;
+
+-- 
 -- TABLE: permit 
 --
 
@@ -652,7 +764,15 @@ COMMENT ON COLUMN permit.update_user IS 'The id of the user who updated the reco
 ;
 COMMENT ON COLUMN permit.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE permit IS 'Provides a record of scientific permits.'
+COMMENT ON TABLE permit IS 'Provides a record of scientific permits. Note that permits are first class objects in the data model and do not require an association to either a project or survey. Additionally:
+- Association to a survey or project implies that sampling was conducted related to the permit 
+- No association to a survey or project implies that sampling was not conducted related to the permit
+- Permits that are associated with a project should eventually be related to a survey
+- Permits can be associated with one or zero projects
+- Permits can only be associated with one survey
+- Permits that have no association with a project or survey require values for coordinator first name, last name, email address and agency name
+
+NOTE: there are conceptual problems with associating permits to projects early instead of at the survey level and these should be addressed in subsequent versions of the application.'
 ;
 
 -- 
@@ -677,6 +797,7 @@ CREATE TABLE project(
     coordinator_public            boolean                     NOT NULL,
     geometry                      geometry(geometry, 3005),
     geography                     geography(geometry),
+    security_token                uuid,
     create_date                   timestamptz(6)              DEFAULT now() NOT NULL,
     create_user                   integer                     NOT NULL,
     update_date                   timestamptz(6),
@@ -721,6 +842,8 @@ COMMENT ON COLUMN project.coordinator_public IS 'A flag that determines whether 
 COMMENT ON COLUMN project.geometry IS 'The containing geometry of the record.'
 ;
 COMMENT ON COLUMN project.geography IS 'The containing geography of the record.'
+;
+COMMENT ON COLUMN project.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN project.create_date IS 'The datetime the record was created.'
 ;
@@ -783,8 +906,9 @@ CREATE TABLE project_attachment(
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
-    key               varchar(300)      NOT NULL,
+    key               varchar(1000)     NOT NULL,
     file_size         integer,
+    security_token    uuid,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
     create_user       integer           NOT NULL,
     update_date       timestamptz(6),
@@ -809,6 +933,8 @@ COMMENT ON COLUMN project_attachment.description IS 'The description of the reco
 COMMENT ON COLUMN project_attachment.key IS 'The identifying key to the file in the storage system.'
 ;
 COMMENT ON COLUMN project_attachment.file_size IS 'The size of the file in bytes.'
+;
+COMMENT ON COLUMN project_attachment.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN project_attachment.create_date IS 'The datetime the record was created.'
 ;
@@ -1243,6 +1369,88 @@ COMMENT ON TABLE proprietor_type IS 'Identifies the available reasons that subje
 ;
 
 -- 
+-- TABLE: security 
+--
+
+CREATE TABLE security(
+    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    su_id             integer           NOT NULL,
+    secr_id           integer           NOT NULL,
+    security_token    uuid              NOT NULL,
+    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user       integer           NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK176" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN security.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN security.su_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN security.secr_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN security.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
+;
+COMMENT ON COLUMN security.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN security.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN security.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN security.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN security.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE security IS 'This is the security working table. This table does not need, journaling or audit trail as it is generated from the security rules. The tables contains references to the security rule, the security token of the secured object and the optional user id for when the rule applies to a specific user;'
+;
+
+-- 
+-- TABLE: security_rule 
+--
+
+CREATE TABLE security_rule(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name               varchar(300),
+    rule_definition    varchar(10000)    NOT NULL,
+    target             varchar(200)      NOT NULL,
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK177" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN security_rule.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN security_rule.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN security_rule.rule_definition IS 'The definition of the rule suitable for application in code to apply the security rule.'
+;
+COMMENT ON COLUMN security_rule.target IS 'The target table that the rule applies to.'
+;
+COMMENT ON COLUMN security_rule.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN security_rule.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN security_rule.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN security_rule.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN security_rule.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE security_rule IS 'Security subsystem table to persist security rules.'
+;
+
+-- 
 -- TABLE: stakeholder_partnership 
 --
 
@@ -1286,7 +1494,7 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 
 CREATE TABLE study_species(
     id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    s_id              integer,
+    s_id              integer           NOT NULL,
     wu_id             integer           NOT NULL,
     is_focal          boolean           NOT NULL,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
@@ -1318,7 +1526,180 @@ COMMENT ON COLUMN study_species.update_user IS 'The id of the user who updated t
 ;
 COMMENT ON COLUMN study_species.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE study_species IS 'The study species for the project and survey.'
+COMMENT ON TABLE study_species IS 'The study species for the survey.'
+;
+
+-- 
+-- TABLE: submission_message 
+--
+
+CREATE TABLE submission_message(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    smt_id             integer           NOT NULL,
+    subs_id            integer           NOT NULL,
+    event_timestamp    TIMESTAMPTZ       NOT NULL,
+    message            varchar(3000),
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK179" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN submission_message.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message.smt_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message.subs_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message.event_timestamp IS 'The timestamp of the associated event.'
+;
+COMMENT ON COLUMN submission_message.message IS 'The description of the record.'
+;
+COMMENT ON COLUMN submission_message.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN submission_message.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN submission_message.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE submission_message IS 'Intersection table to track submission messages.'
+;
+
+-- 
+-- TABLE: submission_message_type 
+--
+
+CREATE TABLE submission_message_type(
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_end_date          date,
+    record_effective_date    date              NOT NULL,
+    description              varchar(250),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk49_2_1_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN submission_message_type.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN submission_message_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN submission_message_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN submission_message_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN submission_message_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN submission_message_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN submission_message_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE submission_message_type IS 'The types of submission messages available to report. These messages may include metrics and validation concerns.'
+;
+
+-- 
+-- TABLE: submission_status 
+--
+
+CREATE TABLE submission_status(
+    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    os_id              integer           NOT NULL,
+    sst_id             integer           NOT NULL,
+    event_timestamp    TIMESTAMPTZ       NOT NULL,
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK184" PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN submission_status.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_status.os_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_status.sst_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_status.event_timestamp IS 'The timestamp of the associated event.'
+;
+COMMENT ON COLUMN submission_status.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN submission_status.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_status.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN submission_status.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_status.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE submission_status IS 'Provides a history of submission statuses.'
+;
+
+-- 
+-- TABLE: submission_status_type 
+--
+
+CREATE TABLE submission_status_type(
+    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                     varchar(50)       NOT NULL,
+    record_end_date          date,
+    record_effective_date    date              NOT NULL,
+    description              varchar(250),
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT pk49_2_1_1_1 PRIMARY KEY (id)
+)
+;
+
+
+
+COMMENT ON COLUMN submission_status_type.id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_status_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN submission_status_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN submission_status_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN submission_status_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN submission_status_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN submission_status_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_status_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN submission_status_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_status_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE submission_status_type IS 'The status types of submissions. Typical status types are those that represent submissions being submitted or rejected.'
 ;
 
 -- 
@@ -1338,6 +1719,7 @@ CREATE TABLE survey(
     location_name           varchar(300)                NOT NULL,
     geometry                geometry(geometry, 3005),
     geography               geography(geometry),
+    security_token          uuid,
     create_date             timestamptz(6)              DEFAULT now() NOT NULL,
     create_user             integer                     NOT NULL,
     update_date             timestamptz(6),
@@ -1374,6 +1756,8 @@ COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
 ;
 COMMENT ON COLUMN survey.geography IS 'The containing geography of the record.'
 ;
+COMMENT ON COLUMN survey.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
+;
 COMMENT ON COLUMN survey.create_date IS 'The datetime the record was created.'
 ;
 COMMENT ON COLUMN survey.create_user IS 'The id of the user who created the record as identified in the system user table.'
@@ -1397,8 +1781,9 @@ CREATE TABLE survey_attachment(
     file_name         varchar(300),
     title             varchar(300),
     description       varchar(250),
-    key               varchar(300)      NOT NULL,
+    key               varchar(1000)     NOT NULL,
     file_size         integer,
+    security_token    uuid,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
     create_user       integer           NOT NULL,
     update_date       timestamptz(6),
@@ -1423,6 +1808,8 @@ COMMENT ON COLUMN survey_attachment.description IS 'The description of the recor
 COMMENT ON COLUMN survey_attachment.key IS 'The identifying key to the file in the storage system.'
 ;
 COMMENT ON COLUMN survey_attachment.file_size IS 'The size of the file in bytes.'
+;
+COMMENT ON COLUMN survey_attachment.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN survey_attachment.create_date IS 'The datetime the record was created.'
 ;
@@ -1754,6 +2141,7 @@ CREATE TABLE webform_draft(
     su_id             integer           NOT NULL,
     name              varchar(300)      NOT NULL,
     data              json              NOT NULL,
+    security_token    uuid,
     create_date       timestamptz(6)    DEFAULT now() NOT NULL,
     create_user       integer           NOT NULL,
     update_date       timestamptz(6),
@@ -1772,6 +2160,8 @@ COMMENT ON COLUMN webform_draft.su_id IS 'System generated surrogate primary key
 COMMENT ON COLUMN webform_draft.name IS 'The name of the draft record.'
 ;
 COMMENT ON COLUMN webform_draft.data IS 'The json data associated with the record.'
+;
+COMMENT ON COLUMN webform_draft.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN webform_draft.create_date IS 'The datetime the record was created.'
 ;
@@ -1981,6 +2371,18 @@ CREATE INDEX "Ref13974" ON iucn_conservation_action_level_3_subclassification(iu
 CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: "Ref165117" 
+--
+
+CREATE INDEX "Ref165117" ON occurrence(os_id)
+;
+-- 
+-- INDEX: "Ref153110" 
+--
+
+CREATE INDEX "Ref153110" ON occurrence_submission(s_id)
+;
+-- 
 -- INDEX: prm_uk1 
 --
 
@@ -2179,6 +2581,18 @@ CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) whe
 CREATE UNIQUE INDEX prt_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: "Ref78100" 
+--
+
+CREATE INDEX "Ref78100" ON security(su_id)
+;
+-- 
+-- INDEX: "Ref177102" 
+--
+
+CREATE INDEX "Ref177102" ON security(secr_id)
+;
+-- 
 -- INDEX: sp_uk1 
 --
 
@@ -2207,6 +2621,42 @@ CREATE INDEX "Ref15390" ON study_species(s_id)
 --
 
 CREATE INDEX "Ref16091" ON study_species(wu_id)
+;
+-- 
+-- INDEX: "Ref182113" 
+--
+
+CREATE INDEX "Ref182113" ON submission_message(smt_id)
+;
+-- 
+-- INDEX: "Ref184118" 
+--
+
+CREATE INDEX "Ref184118" ON submission_message(subs_id)
+;
+-- 
+-- INDEX: smt_nuk1 
+--
+
+CREATE UNIQUE INDEX smt_nuk1 ON submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: "Ref165114" 
+--
+
+CREATE INDEX "Ref165114" ON submission_status(os_id)
+;
+-- 
+-- INDEX: "Ref183115" 
+--
+
+CREATE INDEX "Ref183115" ON submission_status(sst_id)
+;
+-- 
+-- INDEX: sst_nuk1 
+--
+
+CREATE UNIQUE INDEX sst_nuk1 ON submission_status_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref4581" 
@@ -2366,6 +2816,26 @@ ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "R
 
 
 -- 
+-- TABLE: occurrence 
+--
+
+ALTER TABLE occurrence ADD CONSTRAINT "Refoccurrence_submission117" 
+    FOREIGN KEY (os_id)
+    REFERENCES occurrence_submission(id)
+;
+
+
+-- 
+-- TABLE: occurrence_submission 
+--
+
+ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey110" 
+    FOREIGN KEY (s_id)
+    REFERENCES survey(id)
+;
+
+
+-- 
 -- TABLE: permit 
 --
 
@@ -2521,6 +2991,21 @@ ALTER TABLE project_region ADD CONSTRAINT "Refproject24"
 
 
 -- 
+-- TABLE: security 
+--
+
+ALTER TABLE security ADD CONSTRAINT "Refsystem_user100" 
+    FOREIGN KEY (su_id)
+    REFERENCES system_user(id)
+;
+
+ALTER TABLE security ADD CONSTRAINT "Refsecurity_rule102" 
+    FOREIGN KEY (secr_id)
+    REFERENCES security_rule(id)
+;
+
+
+-- 
 -- TABLE: stakeholder_partnership 
 --
 
@@ -2542,6 +3027,36 @@ ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90"
 ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91" 
     FOREIGN KEY (wu_id)
     REFERENCES wldtaxonomic_units(id)
+;
+
+
+-- 
+-- TABLE: submission_message 
+--
+
+ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_message_type113" 
+    FOREIGN KEY (smt_id)
+    REFERENCES submission_message_type(id)
+;
+
+ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_status118" 
+    FOREIGN KEY (subs_id)
+    REFERENCES submission_status(id)
+;
+
+
+-- 
+-- TABLE: submission_status 
+--
+
+ALTER TABLE submission_status ADD CONSTRAINT "Refoccurrence_submission114" 
+    FOREIGN KEY (os_id)
+    REFERENCES occurrence_submission(id)
+;
+
+ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type115" 
+    FOREIGN KEY (sst_id)
+    REFERENCES submission_status_type(id)
 ;
 
 

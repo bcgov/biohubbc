@@ -193,7 +193,7 @@ export function getSurveyForUpdate(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveyId = Number(req.params?.surveyId);
+      const surveyId = Number(req.params.surveyId);
 
       const entities: string[] = (req.query?.entity as string[]) || getAllSurveyEntities();
 
@@ -307,13 +307,14 @@ export function updateSurvey(): RequestHandler {
 
       const promises: Promise<any>[] = [];
 
-      if (entities?.survey_details) {
+      if (entities.survey_details) {
         promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
       }
 
-      if (entities?.survey_proprietor) {
+      if (entities.survey_proprietor) {
         promises.push(updateSurveyProprietorData(surveyId, entities, connection));
       }
+
       await Promise.all(promises);
 
       await connection.commit();
@@ -412,18 +413,22 @@ export const updateSurveyProprietorData = async (
   if (!wasProprietary && !isProprietary) {
     // 1. did not have proprietor data; still not requiring proprietor data
     // do nothing
+
     return;
   } else if (wasProprietary && !isProprietary) {
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
+
     sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
+
     sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(entities.survey_proprietor));
   } else {
     // 4. did have proprietor data; updating proprietor data
     // update existing record
+
     sqlStatement = putSurveyProprietorSQL(surveyId, putProprietorData);
   }
 

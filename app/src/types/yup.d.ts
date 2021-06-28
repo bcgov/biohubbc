@@ -4,7 +4,7 @@
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import yup from 'utils/YupSchema';
 
 declare module 'yup' {
@@ -24,7 +24,7 @@ declare module 'yup' {
 
     /**
      * Determine if the end date string is after the start date string. Does nothing if either the end or start
-     * date stings are null or invalid.
+     * date strings are null or invalid.
      *
      * @param {string} startDateName - name of the start date field
      * @param {DATE_FORMAT} dateFormat=DATE_FORMAT.ShortDateFormat - date format the string must match
@@ -35,6 +35,20 @@ declare module 'yup' {
     isEndDateAfterStartDate(
       startDateName: string,
       dateFormat?: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+      message?: string
+    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Determine if the end time string is after the start time string. Does nothing if either the end or start
+     * time strings are null or invalid.
+     *
+     * @param {string} startTimeName - name of the start time field
+     * @param {string} message='Invalid Time' - error message if this check fails
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof StringSchema
+     */
+    isEndTimeAfterStartTime(
+      startTimeName: string,
       message?: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
 

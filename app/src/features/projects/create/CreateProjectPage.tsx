@@ -12,7 +12,7 @@ import ArrowBack from '@material-ui/icons/ArrowBack';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import StepperWizard, { IStepperWizardStep } from 'components/stepper-wizard/StepperWizard';
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {

@@ -8,6 +8,7 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
+import BlockObservationPage from 'features/observations/BlockObservationPage';
 
 interface IProjectsRouterProps {
   classes: any;
@@ -68,7 +69,11 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
+<<<<<<< HEAD
         path="/projects/:id?/surveys/:survey_id?/prototype"
+=======
+        path="/projects/:id?/surveys/:survey_id?/observations"
+>>>>>>> 6b35ef2365f2c052d6f721512e0692aa941da5b3
         component={SurveyPage}
         componentProps={props}
       />
@@ -77,6 +82,20 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         layout={ProjectsLayout}
         path="/projects/:id?/survey/create"
         component={CreateSurveyPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/observations/create"
+        component={BlockObservationPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/projects/:id?/surveys/:survey_id?/observations/:observation_id?/block"
+        component={BlockObservationPage}
         componentProps={props}
       />
       <PrivateRoute

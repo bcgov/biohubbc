@@ -1,5 +1,4 @@
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
@@ -9,6 +8,7 @@ import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
+import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IStudyAreaForm {
   survey_area_name: string;
@@ -41,7 +41,7 @@ export interface IStudyAreaFormProps {
  * @return {*}
  */
 const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
-  const { values, touched, errors, handleChange, setFieldValue } = useFormikContext<IStudyAreaForm>();
+  const { values, setFieldValue } = useFormikContext<IStudyAreaForm>();
 
   const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
@@ -56,17 +56,12 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
-            fullWidth
-            required={true}
-            id="survey_area_name"
+          <CustomTextField
             name="survey_area_name"
             label="Survey Area Name"
-            variant="outlined"
-            value={values.survey_area_name}
-            onChange={handleChange}
-            error={touched.survey_area_name && Boolean(errors.survey_area_name)}
-            helperText={touched.survey_area_name && errors.survey_area_name}
+            other={{
+              required: true
+            }}
           />
         </Grid>
         <Grid item xs={12}>

@@ -14,6 +14,14 @@ export const CreateSurveyI18N = {
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const AddBlockObservationI18N = {
+  cancelTitle: 'Cancel Add Block Observation',
+  cancelText: 'Are you sure you want to cancel?',
+  createErrorTitle: 'Error Adding Block Observation',
+  createErrorText:
+    'An error has occurred while attempting to add your block observation, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const UploadProjectAttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
@@ -96,6 +104,13 @@ export const EditSpeciesI18N = {
   editErrorTitle: 'Error Editing Species',
   editErrorText:
     'An error has occurred while attempting to edit your species, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditObservationI18N = {
+  editTitle: 'Edit Observation',
+  editErrorTitle: 'Error Editing Observation',
+  editErrorText:
+    'An error has occurred while attempting to edit your observation, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const AddFundingI18N = {

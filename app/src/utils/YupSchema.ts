@@ -3,7 +3,7 @@
  * - See types/yup.d.ts
  */
 
-import { DATE_FORMAT } from 'constants/dateFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import * as yup from 'yup';
 
@@ -90,6 +90,25 @@ yup.addMethod(
       }
 
       return moment(value, dateFormat, true).isValid();
+    });
+  }
+);
+
+yup.addMethod(
+  yup.string,
+  'isEndTimeAfterStartTime',
+  function (startTimeName: string, message: string = 'End time must be after start time') {
+    return this.test('is-end-time-after-start-time', message, function (value) {
+      if (!value) {
+        // don't validate end_time if it is null
+        return true;
+      }
+
+      const endDateTime = moment(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
+      const startDateTime = moment(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
+
+      // compare valid start and end times
+      return startDateTime.isBefore(endDateTime);
     });
   }
 );

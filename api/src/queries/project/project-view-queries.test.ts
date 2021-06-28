@@ -28,8 +28,80 @@ describe('getProjectSQL', () => {
 });
 
 describe('getProjectListSQL', () => {
-  it('returns a SQLStatement', () => {
+  it('returns a SQLStatement when no filter fields provided', () => {
     const response = getProjectListSQL();
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only coordinator agency)', () => {
+    const response = getProjectListSQL({ coordinator_agency: 'agency' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only permit number)', () => {
+    const response = getProjectListSQL({ permit_number: '123' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only project type)', () => {
+    const response = getProjectListSQL({ project_type: 'type' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only project name)', () => {
+    const response = getProjectListSQL({ project_name: 'name' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only agency project id)', () => {
+    const response = getProjectListSQL({ agency_project_id: 'agency_project_id' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only agency id)', () => {
+    const response = getProjectListSQL({ agency_id: 'agency_id' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only keyword)', () => {
+    const response = getProjectListSQL({ keyword: 'agency' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only regions)', () => {
+    const response = getProjectListSQL({ regions: ['region 1', 'region 2'] });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only species)', () => {
+    const response = getProjectListSQL({ species: ['species 1', 'species 2'] });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only start date)', () => {
+    const response = getProjectListSQL({ start_date: '2020/04/04' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (only end date)', () => {
+    const response = getProjectListSQL({ end_date: '2020/04/04' });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns a SQLStatement when filter fields provided (both start and end dates)', () => {
+    const response = getProjectListSQL({ start_date: '2020/04/04', end_date: '2020/05/05' });
 
     expect(response).to.not.be.null;
   });
