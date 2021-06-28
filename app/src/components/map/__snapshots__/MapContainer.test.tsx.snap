@@ -111,7 +111,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_128"
+                    name="leaflet-base-layers_126"
                     type="radio"
                   />
                   <span>
@@ -123,7 +123,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_128"
+                    name="leaflet-base-layers_126"
                     type="radio"
                   />
                   <span>
@@ -1417,7 +1417,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_235"
+                    name="leaflet-base-layers_230"
                     type="radio"
                   />
                   <span>
@@ -1429,7 +1429,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_235"
+                    name="leaflet-base-layers_230"
                     type="radio"
                   />
                   <span>

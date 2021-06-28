@@ -11,11 +11,20 @@ import {
   TileLayer,
   useMap
 } from 'react-leaflet';
-import L from 'leaflet';
 import MapEditControls from 'utils/MapEditControls';
 import WFSFeatureGroup from './WFSFeatureGroup';
 import { v4 as uuidv4 } from 'uuid';
 import MarkerClusterGroup from 'react-leaflet-cluster';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 export interface IMapBoundsProps {
   bounds?: any[];
@@ -30,13 +39,6 @@ export interface IClusteredPointGeometries {
   coordinates: number[];
   popupComponent?: JSX.Element;
 }
-
-const myIcon = L.icon({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  iconSize: [38, 60]
-});
 
 export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
@@ -78,6 +80,13 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
+  // const myIcon = L.icon({
+  //   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  //   iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  //   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+  //   iconSize: [38, 60]
+  // });
+
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
     if (!preDefinedGeometry) {
@@ -115,23 +124,27 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       scrollWheelZoom={scrollWheelZoom || false}>
       <MapBounds bounds={bounds} />
 
-      <FeatureGroup>
-        <MapEditControls
-          position="topright"
-          draw={hideDrawControls ? shownDrawControls : { circle: false }}
-          edit={hideDrawControls ? showEditControls : undefined}
-          geometry={geometryState?.geometry}
-          setGeometry={geometryState?.setGeometry}
-        />
-      </FeatureGroup>
+      {!clusteredPointGeometries && (
+        <FeatureGroup>
+          <MapEditControls
+            position="topright"
+            draw={hideDrawControls ? shownDrawControls : { circle: false }}
+            edit={hideDrawControls ? showEditControls : undefined}
+            geometry={geometryState?.geometry}
+            setGeometry={geometryState?.setGeometry}
+          />
+        </FeatureGroup>
+      )}
 
-      <MarkerClusterGroup maxZoom={14} chunkedLoading>
-        {clusteredPointGeometries?.map((pointGeo: IClusteredPointGeometries, index: number) => (
-          <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]} icon={myIcon}>
-            {pointGeo.popupComponent}
-          </Marker>
-        ))}
-      </MarkerClusterGroup>
+      {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
+        <MarkerClusterGroup maxZoom={14} chunkedLoading>
+          {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries, index: number) => (
+            <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]} icon={DefaultIcon}>
+              {pointGeo.popupComponent}
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
+      )}
 
       {nonEditableGeometries?.map((nonEditableGeo: any) => (
         <GeoJSON key={uuidv4()} data={nonEditableGeo.feature}>

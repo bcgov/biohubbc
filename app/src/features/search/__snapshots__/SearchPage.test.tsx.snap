@@ -3,13 +3,13 @@
 exports[`SearchPage matches the snapshot 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiBox-root MuiBox-root-1"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-3"
+        class="MuiBox-root MuiBox-root-2"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -18,393 +18,319 @@ exports[`SearchPage matches the snapshot 1`] = `
         </h1>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiBox-root MuiBox-root-3"
       >
         <div
-          class="MuiBox-root MuiBox-root-5"
+          class="MuiBox-root MuiBox-root-4"
         >
-          <form>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+              class="MuiBox-root MuiBox-root-5"
             >
               <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                id="search_boundary_map"
+                style="height: 100%; position: relative;"
+                tabindex="0"
               >
                 <div
-                  class="MuiFormControl-root"
-                  style="width: 100%;"
+                  class="leaflet-pane leaflet-map-pane"
+                  style="left: 0px; top: 0px;"
                 >
-                  <label
-                    class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                    data-shrink="true"
-                    id="record_type"
-                  >
-                    Record Type
-                  </label>
                   <div
-                    class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    class="leaflet-pane leaflet-tile-pane"
                   >
                     <div
-                      aria-haspopup="listbox"
-                      aria-label="Record Type"
-                      aria-labelledby="record_type record_type"
-                      class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                      id="record_type"
-                      role="button"
-                      tabindex="0"
+                      class="leaflet-layer "
+                      style="z-index: 1;"
                     >
-                      Projects
-                    </div>
-                    <input
-                      aria-hidden="true"
-                      class="MuiSelect-nativeInput"
-                      name="record_type"
-                      tabindex="-1"
-                      value="project"
-                    />
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                    <fieldset
-                      aria-hidden="true"
-                      class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
-                    >
-                      <legend
-                        class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                      <div
+                        class="leaflet-tile-container leaflet-zoom-animated"
+                        style="z-index: 18; left: 0px; top: 0px;"
                       >
-                        <span>
-                          Record Type
-                        </span>
-                      </legend>
-                    </fieldset>
+                        <img
+                          alt=""
+                          class="leaflet-tile"
+                          role="presentation"
+                          src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                          style="width: 256px; height: 256px; left: -159px; top: -31px;"
+                        />
+                      </div>
+                    </div>
                   </div>
+                  <div
+                    class="leaflet-pane leaflet-shadow-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-overlay-pane"
+                  >
+                    <svg
+                      height="0"
+                      pointer-events="none"
+                      style="left: 0px; top: 0px;"
+                      viewBox="0 0 0 0"
+                      width="0"
+                    >
+                      <g />
+                    </svg>
+                  </div>
+                  <div
+                    class="leaflet-pane leaflet-marker-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-tooltip-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-popup-pane"
+                  />
                 </div>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-              >
                 <div
-                  class="MuiBox-root MuiBox-root-10"
+                  class="leaflet-control-container"
                 >
                   <div
-                    class="leaflet-container leaflet-grab leaflet-touch-drag"
-                    id="search_boundary_map"
-                    style="height: 100%; position: relative;"
-                    tabindex="0"
+                    class="leaflet-top leaflet-left"
                   >
                     <div
-                      class="leaflet-pane leaflet-map-pane"
-                      style="left: 0px; top: 0px;"
+                      class="leaflet-control-zoom leaflet-bar leaflet-control"
+                    >
+                      <a
+                        aria-label="Zoom in"
+                        class="leaflet-control-zoom-in"
+                        href="#"
+                        role="button"
+                        title="Zoom in"
+                      >
+                        +
+                      </a>
+                      <a
+                        aria-label="Zoom out"
+                        class="leaflet-control-zoom-out"
+                        href="#"
+                        role="button"
+                        title="Zoom out"
+                      >
+                        −
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-top leaflet-right"
+                  >
+                    <div
+                      class="leaflet-draw leaflet-control"
                     >
                       <div
-                        class="leaflet-pane leaflet-tile-pane"
+                        class="leaflet-draw-section"
                       >
                         <div
-                          class="leaflet-layer "
-                          style="z-index: 1;"
+                          class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                         >
-                          <div
-                            class="leaflet-tile-container leaflet-zoom-animated"
-                            style="z-index: 18; left: 0px; top: 0px;"
+                          <a
+                            class="leaflet-draw-draw-polyline"
+                            href="#"
+                            title="Draw a polyline"
                           >
-                            <img
-                              alt=""
-                              class="leaflet-tile"
-                              role="presentation"
-                              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
-                              style="width: 256px; height: 256px; left: -159px; top: -31px;"
-                            />
-                          </div>
+                            <span
+                              class="sr-only"
+                            >
+                              Draw a polyline
+                            </span>
+                          </a>
+                          <a
+                            class="leaflet-draw-draw-polygon"
+                            href="#"
+                            title="Draw a polygon"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Draw a polygon
+                            </span>
+                          </a>
+                          <a
+                            class="leaflet-draw-draw-rectangle"
+                            href="#"
+                            title="Draw a rectangle"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Draw a rectangle
+                            </span>
+                          </a>
+                          <a
+                            class="leaflet-draw-draw-marker"
+                            href="#"
+                            title="Draw a marker"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Draw a marker
+                            </span>
+                          </a>
+                          <a
+                            class="leaflet-draw-draw-circlemarker"
+                            href="#"
+                            title="Draw a circlemarker"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Draw a circlemarker
+                            </span>
+                          </a>
                         </div>
+                        <ul
+                          class="leaflet-draw-actions"
+                        />
                       </div>
                       <div
-                        class="leaflet-pane leaflet-shadow-pane"
+                        class="leaflet-draw-section"
+                      >
+                        <div
+                          class="leaflet-draw-toolbar leaflet-bar"
+                        >
+                          <a
+                            class="leaflet-draw-edit-edit leaflet-disabled"
+                            href="#"
+                            title="No layers to edit"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Edit layers
+                            </span>
+                          </a>
+                          <a
+                            class="leaflet-draw-edit-remove leaflet-disabled"
+                            href="#"
+                            title="No layers to delete"
+                          >
+                            <span
+                              class="sr-only"
+                            >
+                              Delete layers
+                            </span>
+                          </a>
+                        </div>
+                        <ul
+                          class="leaflet-draw-actions"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-bottom leaflet-left"
+                  />
+                  <div
+                    class="leaflet-bottom leaflet-right"
+                  >
+                    <div
+                      aria-haspopup="true"
+                      class="leaflet-control-layers leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-layers-toggle"
+                        href="#"
+                        title="Layers"
                       />
-                      <div
-                        class="leaflet-pane leaflet-overlay-pane"
-                      />
-                      <div
-                        class="leaflet-pane leaflet-marker-pane"
-                      />
-                      <div
-                        class="leaflet-pane leaflet-tooltip-pane"
-                      />
-                      <div
-                        class="leaflet-pane leaflet-popup-pane"
-                      />
+                      <section
+                        class="leaflet-control-layers-list"
+                      >
+                        <div
+                          class="leaflet-control-layers-base"
+                        >
+                          <label>
+                            <div>
+                              <input
+                                checked="checked"
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_49"
+                                type="radio"
+                              />
+                              <span>
+                                 Esri Imagery
+                              </span>
+                            </div>
+                          </label>
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_49"
+                                type="radio"
+                              />
+                              <span>
+                                 BC Government
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                        <div
+                          class="leaflet-control-layers-separator"
+                        />
+                        <div
+                          class="leaflet-control-layers-overlays"
+                        >
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                type="checkbox"
+                              />
+                              <span>
+                                 Wildlife Management Units
+                              </span>
+                            </div>
+                          </label>
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                type="checkbox"
+                              />
+                              <span>
+                                 Parks - Section
+                              </span>
+                            </div>
+                          </label>
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                type="checkbox"
+                              />
+                              <span>
+                                 Parks - Regional
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                      </section>
                     </div>
                     <div
-                      class="leaflet-control-container"
+                      class="leaflet-control-attribution leaflet-control"
                     >
-                      <div
-                        class="leaflet-top leaflet-left"
+                      <a
+                        href="https://leafletjs.com"
+                        title="A JS library for interactive maps"
                       >
-                        <div
-                          class="leaflet-control-zoom leaflet-bar leaflet-control"
-                        >
-                          <a
-                            aria-label="Zoom in"
-                            class="leaflet-control-zoom-in"
-                            href="#"
-                            role="button"
-                            title="Zoom in"
-                          >
-                            +
-                          </a>
-                          <a
-                            aria-label="Zoom out"
-                            class="leaflet-control-zoom-out"
-                            href="#"
-                            role="button"
-                            title="Zoom out"
-                          >
-                            −
-                          </a>
-                        </div>
-                      </div>
-                      <div
-                        class="leaflet-top leaflet-right"
+                        Leaflet
+                      </a>
+                       | © 
+                      <a
+                        href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
                       >
-                        <div
-                          class="leaflet-draw leaflet-control"
-                        >
-                          <div
-                            class="leaflet-draw-section"
-                          >
-                            <div
-                              class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
-                            >
-                              <a
-                                class="leaflet-draw-draw-polyline"
-                                href="#"
-                                title="Draw a polyline"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a polyline
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-polygon"
-                                href="#"
-                                title="Draw a polygon"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a polygon
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-rectangle"
-                                href="#"
-                                title="Draw a rectangle"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a rectangle
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-marker"
-                                href="#"
-                                title="Draw a marker"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a marker
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-circlemarker"
-                                href="#"
-                                title="Draw a circlemarker"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a circlemarker
-                                </span>
-                              </a>
-                            </div>
-                            <ul
-                              class="leaflet-draw-actions"
-                            />
-                          </div>
-                          <div
-                            class="leaflet-draw-section"
-                          >
-                            <div
-                              class="leaflet-draw-toolbar leaflet-bar"
-                            >
-                              <a
-                                class="leaflet-draw-edit-edit leaflet-disabled"
-                                href="#"
-                                title="No layers to edit"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Edit layers
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-edit-remove leaflet-disabled"
-                                href="#"
-                                title="No layers to delete"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Delete layers
-                                </span>
-                              </a>
-                            </div>
-                            <ul
-                              class="leaflet-draw-actions"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="leaflet-bottom leaflet-left"
-                      />
-                      <div
-                        class="leaflet-bottom leaflet-right"
-                      >
-                        <div
-                          aria-haspopup="true"
-                          class="leaflet-control-layers leaflet-control"
-                        >
-                          <a
-                            class="leaflet-control-layers-toggle"
-                            href="#"
-                            title="Layers"
-                          />
-                          <section
-                            class="leaflet-control-layers-list"
-                          >
-                            <div
-                              class="leaflet-control-layers-base"
-                            >
-                              <label>
-                                <div>
-                                  <input
-                                    checked="checked"
-                                    class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_43"
-                                    type="radio"
-                                  />
-                                  <span>
-                                     Esri Imagery
-                                  </span>
-                                </div>
-                              </label>
-                              <label>
-                                <div>
-                                  <input
-                                    class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_43"
-                                    type="radio"
-                                  />
-                                  <span>
-                                     BC Government
-                                  </span>
-                                </div>
-                              </label>
-                            </div>
-                            <div
-                              class="leaflet-control-layers-separator"
-                            />
-                            <div
-                              class="leaflet-control-layers-overlays"
-                            >
-                              <label>
-                                <div>
-                                  <input
-                                    class="leaflet-control-layers-selector"
-                                    type="checkbox"
-                                  />
-                                  <span>
-                                     Wildlife Management Units
-                                  </span>
-                                </div>
-                              </label>
-                              <label>
-                                <div>
-                                  <input
-                                    class="leaflet-control-layers-selector"
-                                    type="checkbox"
-                                  />
-                                  <span>
-                                     Parks - Section
-                                  </span>
-                                </div>
-                              </label>
-                              <label>
-                                <div>
-                                  <input
-                                    class="leaflet-control-layers-selector"
-                                    type="checkbox"
-                                  />
-                                  <span>
-                                     Parks - Regional
-                                  </span>
-                                </div>
-                              </label>
-                            </div>
-                          </section>
-                        </div>
-                        <div
-                          class="leaflet-control-attribution leaflet-control"
-                        >
-                          <a
-                            href="https://leafletjs.com"
-                            title="A JS library for interactive maps"
-                          >
-                            Leaflet
-                          </a>
-                           | © 
-                          <a
-                            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                          >
-                            ESRI Basemap
-                          </a>
-                        </div>
-                      </div>
+                        ESRI Basemap
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </form>
-          <div
-            class="MuiBox-root MuiBox-root-11"
-          >
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
-              tabindex="0"
-              type="submit"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                Search
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
           </div>
         </div>
       </div>

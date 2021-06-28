@@ -1531,7 +1531,17 @@ exports[`ProjectStepComponents renders the project location with the codes value
               />
               <div
                 class="leaflet-pane leaflet-overlay-pane"
-              />
+              >
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g />
+                </svg>
+              </div>
               <div
                 class="leaflet-pane leaflet-marker-pane"
               />
@@ -1704,7 +1714,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_47"
                             type="radio"
                           />
                           <span>
@@ -1716,7 +1726,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_47"
                             type="radio"
                           />
                           <span>
@@ -2064,7 +2074,17 @@ exports[`ProjectStepComponents renders the project location without the codes va
               />
               <div
                 class="leaflet-pane leaflet-overlay-pane"
-              />
+              >
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g />
+                </svg>
+              </div>
               <div
                 class="leaflet-pane leaflet-marker-pane"
               />
@@ -2237,7 +2257,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_77"
                             type="radio"
                           />
                           <span>
@@ -2249,7 +2269,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_77"
                             type="radio"
                           />
                           <span>

@@ -92,6 +92,7 @@ const SearchPage: React.FC = () => {
                 <MapContainer
                   mapId="search_boundary_map"
                   scrollWheelZoom={true}
+                  hideDrawControls={true}
                   clusteredPointGeometries={geometries}
                 />
               </Box>
