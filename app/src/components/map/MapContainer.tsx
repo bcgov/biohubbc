@@ -18,13 +18,19 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow
+/*
+  Get leaflet icons working
+*/
+//@ts-ignore
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: iconRetina,
+  iconUrl: icon,
+  shadowUrl: iconShadow
 });
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 export interface IMapBoundsProps {
   bounds?: any[];
@@ -80,13 +86,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
-  // const myIcon = L.icon({
-  //   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  //   iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  //   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
-  //   iconSize: [38, 60]
-  // });
-
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
     if (!preDefinedGeometry) {
@@ -124,22 +123,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       scrollWheelZoom={scrollWheelZoom || false}>
       <MapBounds bounds={bounds} />
 
-      {!clusteredPointGeometries && (
-        <FeatureGroup>
-          <MapEditControls
-            position="topright"
-            draw={hideDrawControls ? shownDrawControls : { circle: false }}
-            edit={hideDrawControls ? showEditControls : undefined}
-            geometry={geometryState?.geometry}
-            setGeometry={geometryState?.setGeometry}
-          />
-        </FeatureGroup>
-      )}
+      <FeatureGroup>
+        <MapEditControls
+          position="topright"
+          draw={hideDrawControls ? shownDrawControls : { circle: false }}
+          edit={hideDrawControls ? showEditControls : undefined}
+          geometry={geometryState?.geometry}
+          setGeometry={geometryState?.setGeometry}
+        />
+      </FeatureGroup>
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
         <MarkerClusterGroup maxZoom={14} chunkedLoading>
           {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries, index: number) => (
-            <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]} icon={DefaultIcon}>
+            <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
               {pointGeo.popupComponent}
             </Marker>
           ))}

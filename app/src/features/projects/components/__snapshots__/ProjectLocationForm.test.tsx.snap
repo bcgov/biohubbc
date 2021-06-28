@@ -467,7 +467,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_145"
+                            name="leaflet-base-layers_147"
                             type="radio"
                           />
                           <span>
@@ -479,7 +479,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_145"
+                            name="leaflet-base-layers_147"
                             type="radio"
                           />
                           <span>

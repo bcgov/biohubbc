@@ -271,17 +271,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               />
               <div
                 class="leaflet-pane leaflet-overlay-pane"
-              >
-                <svg
-                  height="0"
-                  pointer-events="none"
-                  style="left: 0px; top: 0px;"
-                  viewBox="0 0 0 0"
-                  width="0"
-                >
-                  <g />
-                </svg>
-              </div>
+              />
               <div
                 class="leaflet-pane leaflet-marker-pane"
               />
@@ -354,7 +344,7 @@ exports[`SurveyDetails renders correctly 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_36"
+                            name="leaflet-base-layers_32"
                             type="radio"
                           />
                           <span>
@@ -366,7 +356,7 @@ exports[`SurveyDetails renders correctly 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_36"
+                            name="leaflet-base-layers_32"
                             type="radio"
                           />
                           <span>
