@@ -21,7 +21,7 @@ export const getSpatialSearchResultsSQL = (): SQLStatement | null => {
     from
       project as p
     where
-      p.publish_timestamp;
+      p.publish_timestamp is not null;
   `;
 
   defaultLog.debug({
