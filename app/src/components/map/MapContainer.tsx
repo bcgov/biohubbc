@@ -119,7 +119,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       id={mapId}
       center={[55, -128]}
       zoom={zoom || 5}
-      maxZoom={14}
       scrollWheelZoom={scrollWheelZoom || false}>
       <MapBounds bounds={bounds} />
 
@@ -134,7 +133,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       </FeatureGroup>
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
-        <MarkerClusterGroup maxZoom={14} chunkedLoading>
+        <MarkerClusterGroup chunkedLoading>
           {clusteredPointGeometries.map((pointGeo: IClusteredPointGeometries, index: number) => (
             <Marker key={index} position={[pointGeo.coordinates[1], pointGeo.coordinates[0]]}>
               {pointGeo.popupComponent}

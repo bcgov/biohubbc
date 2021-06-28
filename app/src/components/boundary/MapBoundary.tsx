@@ -30,6 +30,7 @@ export interface IMapBoundaryProps {
   setUploadError: (error: string) => void;
   values: any;
   bounds: any[];
+  errors?: any;
   setFieldValue: (key: string, value: any) => void;
 }
 
@@ -40,7 +41,18 @@ export interface IMapBoundaryProps {
  */
 const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const classes = useStyles();
-  const { title, mapId, isLoading, setIsLoading, uploadError, setUploadError, values, bounds, setFieldValue } = props;
+  const {
+    title,
+    mapId,
+    isLoading,
+    setIsLoading,
+    uploadError,
+    setUploadError,
+    values,
+    bounds,
+    setFieldValue,
+    errors
+  } = props;
 
   return (
     <Grid item xs={12}>
@@ -104,6 +116,11 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           bounds={bounds}
         />
       </Box>
+      {errors && errors.geometry && (
+        <Box pt={2}>
+          <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.geometry}</Typography>
+        </Box>
+      )}
     </Grid>
   );
 };
