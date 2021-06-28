@@ -180,10 +180,6 @@ export function _extractProjects(rows: any[]): any[] {
   const projects: any[] = [];
 
   rows.forEach((row) => {
-    console.log(row.end_date);
-    console.log(new Date());
-    console.log(moment(row.end_date).isSameOrAfter(new Date()));
-
     const project: any = {
       id: row.id,
       name: row.name,
