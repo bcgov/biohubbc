@@ -17,6 +17,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
@@ -29,8 +30,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { ProjectStatusType } from 'constants/misc';
+import clsx from 'clsx';
+import Chip from '@material-ui/core/Chip';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
@@ -42,8 +46,22 @@ const useStyles = makeStyles({
   },
   filtersBox: {
     background: '#f7f8fa'
+  },
+  chip: {
+    padding: '0px 8px',
+    borderRadius: '4px',
+    color: 'white'
+  },
+  chipActive: {
+    backgroundColor: theme.palette.warning.light
+  },
+  chipPublishedCompleted: {
+    backgroundColor: theme.palette.success.light
+  },
+  chipUnpublishedDraft: {
+    backgroundColor: theme.palette.text.disabled
   }
-});
+}));
 
 /**
  * Page to display a list of projects.
@@ -65,6 +83,30 @@ const ProjectsListPage: React.FC = () => {
 
   const dialogContext = useContext(DialogContext);
   const projectCount = projects.length;
+
+  const getChipIcon = (status_name: string) => {
+    let chipLabel;
+    let chipStatusClass;
+
+    if (ProjectStatusType.UNPUBLISHED === status_name) {
+      chipLabel = 'UNPUBLISHED';
+      chipStatusClass = classes.chipUnpublishedDraft;
+    } else if (ProjectStatusType.PUBLISHED === status_name) {
+      chipLabel = 'PUBLISHED';
+      chipStatusClass = classes.chipPublishedCompleted;
+    } else if (ProjectStatusType.ACTIVE === status_name) {
+      chipLabel = 'ACTIVE';
+      chipStatusClass = classes.chipActive;
+    } else if (ProjectStatusType.COMPLETED === status_name) {
+      chipLabel = 'COMPLETED';
+      chipStatusClass = classes.chipPublishedCompleted;
+    } else if (ProjectStatusType.DRAFT === status_name) {
+      chipLabel = 'DRAFT';
+      chipStatusClass = classes.chipUnpublishedDraft;
+    }
+
+    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
 
   const navigateToCreateProjectPage = (draftId?: number) => {
     if (draftId) {
@@ -216,6 +258,8 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Coordinator Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
+                <TableCell>Completion Status</TableCell>
+                <TableCell>Publish Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="project-table">
@@ -229,7 +273,7 @@ const ProjectsListPage: React.FC = () => {
                       className={classes.linkButton}
                       variant="body2"
                       onClick={() => navigateToCreateProjectPage(row.id)}>
-                      {row.name} (Draft)
+                      {row.name}
                     </Link>
                   </TableCell>
                   <TableCell />
@@ -237,6 +281,8 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell />
                   <TableCell />
                   <TableCell />
+                  <TableCell>{getChipIcon('Draft')}</TableCell>
+                  <TableCell>{getChipIcon('Unpublished')}</TableCell>
                 </TableRow>
               ))}
               {projects?.map((row) => (
@@ -256,6 +302,8 @@ const ProjectsListPage: React.FC = () => {
                   <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>
+                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
+                  <TableCell>{getChipIcon(row.publish_status)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

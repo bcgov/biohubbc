@@ -64,12 +64,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
 
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
           <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>

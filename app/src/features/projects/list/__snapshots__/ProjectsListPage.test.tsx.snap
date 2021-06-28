@@ -3,13 +3,13 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-25"
+    class="MuiBox-root MuiBox-root-52"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-26"
+        class="MuiBox-root MuiBox-root-53"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -49,7 +49,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-27"
+          class="MuiBox-root MuiBox-root-54"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -136,6 +136,18 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                 >
                   End Date
                 </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Completion Status
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Publish Status
+                </th>
               </tr>
             </thead>
             <tbody
@@ -151,10 +163,10 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   scope="row"
                 >
                   <button
-                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-23 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-46 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
                     data-testid="Draft 1"
                   >
-                    Draft 1 (Draft)
+                    Draft 1
                   </button>
                 </th>
                 <td
@@ -172,6 +184,32 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
                 />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-48 makeStyles-chipUnpublishedDraft-51"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      DRAFT
+                    </span>
+                  </div>
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-48 makeStyles-chipUnpublishedDraft-51"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      UNPUBLISHED
+                    </span>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -182,16 +220,16 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 </DocumentFragment>
 `;
 
-exports[`ProjectsListPage renders with a proper list of projects 1`] = `
+exports[`ProjectsListPage renders with a proper list of projects when published and completed 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-18"
+    class="MuiBox-root MuiBox-root-30"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-19"
+        class="MuiBox-root MuiBox-root-31"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -231,7 +269,7 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-32"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -318,6 +356,18 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
                 >
                   End Date
                 </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Completion Status
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Publish Status
+                </th>
               </tr>
             </thead>
             <tbody
@@ -360,6 +410,258 @@ exports[`ProjectsListPage renders with a proper list of projects 1`] = `
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
                 />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-26 makeStyles-chipPublishedCompleted-28"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      COMPLETED
+                    </span>
+                  </div>
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-26 makeStyles-chipPublishedCompleted-28"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      PUBLISHED
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ProjectsListPage renders with a proper list of projects when unpublished and active 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-41"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-42"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Projects
+        </h1>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Create Project
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-43"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h4"
+          >
+            1 Project found
+          </h3>
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.2000000000000002rem; height: 1.2000000000000002rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M15,19.88C15.04,20.18 14.94,20.5 14.71,20.71C14.32,21.1 13.69,21.1 13.3,20.71L9.29,16.7C9.06,16.47 8.96,16.16 9,15.87V10.75L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L15,10.75V19.88M7.04,5L11,10.06V15.58L13,17.58V10.05L16.96,5H7.04Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Show Filters
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+        <hr
+          class="MuiDivider-root"
+        />
+        <div
+          class="MuiTableContainer-root"
+        >
+          <table
+            class="MuiTable-root"
+          >
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Name
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Type
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Permits
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Coordinator Agency
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Start Date
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  End Date
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Completion Status
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head"
+                  scope="col"
+                >
+                  Publish Status
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+              data-testid="project-table"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  <button
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    data-testid="Project 1"
+                  >
+                    Project 1
+                  </button>
+                </th>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  project type
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  1, 2, 3
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  coordinator agency
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                />
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-37 makeStyles-chipActive-38"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      ACTIVE
+                    </span>
+                  </div>
+                </td>
+                <td
+                  class="MuiTableCell-root MuiTableCell-body"
+                >
+                  <div
+                    class="MuiChip-root makeStyles-chip-37 makeStyles-chipUnpublishedDraft-40"
+                  >
+                    <span
+                      class="MuiChip-label"
+                    >
+                      UNPUBLISHED
+                    </span>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>
