@@ -12,9 +12,7 @@ const defaultLog = getLogger('queries/search-queries');
 export const getSpatialSearchResultsSQL = (): SQLStatement | null => {
   defaultLog.debug({ label: 'getSpatialSearchResultsSQL', message: 'params' });
 
-  let sqlStatement;
-
-  sqlStatement = SQL`
+  const sqlStatement = SQL`
     SELECT
       p.id,
       p.name,
