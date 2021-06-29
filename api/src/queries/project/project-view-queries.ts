@@ -74,6 +74,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       p.start_date,
       p.end_date,
       p.coordinator_agency_name,
+      p.publish_timestamp,
       pt.name as project_type,
       string_agg(DISTINCT pp.number, ', ') as permits_list
     from
@@ -162,6 +163,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       p.start_date,
       p.end_date,
       p.coordinator_agency_name,
+      p.publish_timestamp,
       pt.name;
   `);
 

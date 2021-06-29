@@ -56,6 +56,8 @@ export interface IGetProjectsListResponse {
   coordinator_agency: string;
   project_type: string;
   permits_list: string;
+  publish_status: string;
+  completion_status: string;
 }
 
 /**

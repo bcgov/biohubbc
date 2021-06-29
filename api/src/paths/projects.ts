@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import moment from 'moment';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
@@ -185,6 +186,8 @@ export function _extractProjects(rows: any[]): any[] {
       start_date: row.start_date,
       end_date: row.end_date,
       coordinator_agency: row.coordinator_agency_name,
+      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
+      completion_status: moment(row.end_date).isSameOrAfter(new Date()) ? 'Active' : 'Completed',
       project_type: row.project_type,
       permits_list: row.permits_list
     };
