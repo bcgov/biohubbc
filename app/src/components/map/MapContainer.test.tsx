@@ -5,6 +5,7 @@ import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SearchFeaturePopup } from './SearchFeaturePopup';
+import { createMemoryHistory } from 'history';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -16,6 +17,8 @@ const mockUseBiohubApi = {
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
   mockUseBiohubApi
 );
+
+const history = createMemoryHistory();
 
 describe('MapContainer', () => {
   // To ignore: Deprecated use of _flat, please use L.LineUtil.isFlat instead
@@ -118,6 +121,7 @@ describe('MapContainer', () => {
               name: 'Name',
               objectives: 'Objectives'
             }}
+            history={history}
           />
         )
       }

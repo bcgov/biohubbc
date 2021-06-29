@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     backgroundColor: theme.palette.text.secondary
   },
   chipPublished: {
-    backgroundColor: theme.palette.success.light
+    backgroundColor: theme.palette.success.main
   }
 }));
 

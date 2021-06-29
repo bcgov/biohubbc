@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import moment from 'moment';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-view');
@@ -16,6 +17,7 @@ export class GetProjectData {
   start_date: string;
   end_date: string;
   comments: string;
+  completion_status: string;
 
   constructor(projectData?: any, activityData?: any[]) {
     defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
@@ -26,6 +28,7 @@ export class GetProjectData {
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
+    this.completion_status = moment(projectData?.end_date).isSameOrAfter(new Date()) ? 'Active' : 'Completed';
   }
 }
 

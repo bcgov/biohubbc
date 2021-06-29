@@ -35,13 +35,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: 'white'
   },
   chipPending: {
-    backgroundColor: theme.palette.primary.light
+    backgroundColor: theme.palette.primary.main
   },
   chipActioned: {
-    backgroundColor: theme.palette.success.light
+    backgroundColor: theme.palette.success.main
   },
   chipRejected: {
-    backgroundColor: theme.palette.error.light
+    backgroundColor: theme.palette.error.main
   },
   actionButton: {
     minWidth: '6rem',

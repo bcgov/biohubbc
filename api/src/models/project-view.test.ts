@@ -364,6 +364,10 @@ describe('GetProjectData', () => {
     it('sets end_date', () => {
       expect(data.end_date).to.equal('');
     });
+
+    it('sets completion_status', () => {
+      expect(data.completion_status).to.equal('');
+    });
   });
 
   describe('all values provided', () => {
