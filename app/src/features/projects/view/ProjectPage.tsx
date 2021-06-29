@@ -208,37 +208,23 @@ const ProjectPage: React.FC = () => {
               </Box>
             </Box>
             <Box>
-              {projectWithDetails.project.publish_date ? (
-                <>
-                  <Box ml={4} mt={4} mb={4}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      data-testid="unpublish-project-button"
-                      startIcon={<Icon path={mdiToggleSwitch} size={1} />}
-                      onClick={async () => {
-                        await publishProject(false);
-                      }}>
-                      Unpublish Project
-                    </Button>
-                  </Box>
-                </>
-              ) : (
-                <>
-                  <Box ml={4} mt={4} mb={4}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      data-testid="publish-project-button"
-                      startIcon={<Icon path={mdiToggleSwitchOffOutline} size={1} />}
-                      onClick={async () => {
-                        publishProject(true);
-                      }}>
-                      Publish Project
-                    </Button>
-                  </Box>
-                </>
-              )}
+            <Box ml={4} mt={4} mb={4}>
+              <Button
+                variant="outlined"
+                color="primary"
+                data-testid="publish-project-button"
+                startIcon={<Icon path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                size={1} />}
+                onClick={async () => {
+                      if (projectWithDetails.project.publish_date) {
+                              await publishProject(false);
+                      } else {
+                              await publishProject(true);
+                      }
+                }}>
+                 {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+              </Button>
+            </Box>
               <Box ml={4} mt={4} mb={4}>
                 <Button
                   variant="outlined"

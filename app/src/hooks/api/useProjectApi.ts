@@ -12,7 +12,6 @@ import {
   IUpdateProjectRequest,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-//import moment from 'moment';
 import qs from 'qs';
 
 /**
