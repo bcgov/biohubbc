@@ -37,7 +37,8 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       project.create_user,
       project.update_date,
       project.update_user,
-      project.revision_count
+      project.revision_count,
+      project.publish_timestamp as publish_date
     from
       project
     left outer join

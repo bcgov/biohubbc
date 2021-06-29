@@ -4,14 +4,15 @@ import {
   ICreatePermitNoSamplingResponse,
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IGetProjectAttachmentsResponse,
+  IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
   IGetProjectsListResponse,
-  UPDATE_GET_ENTITIES,
-  IGetProjectForUpdateResponse,
+  IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
-  IGetProjectAttachmentsResponse,
-  IProjectAdvancedFilterRequest
+  UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
+//import moment from 'moment';
 import qs from 'qs';
 
 /**
@@ -207,6 +208,11 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -220,7 +226,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProjectAttachment,
     deleteFundingSource,
     addFundingSource,
-    deleteProject
+    deleteProject,
+    publishProject
   };
 };
 

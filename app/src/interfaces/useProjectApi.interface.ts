@@ -239,6 +239,7 @@ export interface IGetProjectForViewResponseDetails {
   project_activities: number[];
   start_date: string;
   end_date: string;
+  publish_date: string;
 }
 
 interface IGetProjectForViewResponsePermitArrayItem {
