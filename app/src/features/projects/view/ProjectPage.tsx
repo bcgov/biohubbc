@@ -208,23 +208,27 @@ const ProjectPage: React.FC = () => {
               </Box>
             </Box>
             <Box>
-            <Box ml={4} mt={4} mb={4}>
-              <Button
-                variant="outlined"
-                color="primary"
-                data-testid="publish-project-button"
-                startIcon={<Icon path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
-                size={1} />}
-                onClick={async () => {
-                      if (projectWithDetails.project.publish_date) {
-                              await publishProject(false);
-                      } else {
-                              await publishProject(true);
-                      }
-                }}>
-                 {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-              </Button>
-            </Box>
+              <Box ml={4} mt={4} mb={4}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  data-testid="publish-project-button"
+                  startIcon={
+                    <Icon
+                      path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                      size={1}
+                    />
+                  }
+                  onClick={async () => {
+                    if (projectWithDetails.project.publish_date) {
+                      await publishProject(false);
+                    } else {
+                      await publishProject(true);
+                    }
+                  }}>
+                  {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+                </Button>
+              </Box>
               <Box ml={4} mt={4} mb={4}>
                 <Button
                   variant="outlined"

@@ -88,17 +88,17 @@ function publishProject(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const projectId = Number(req.params?.projectId);
+      const projectId = Number(req.params.projectId);
+
+      if (!projectId) {
+        throw new HTTP400('Missing required path parameter: projectId');
+      }
+
+      if (!req.body) {
+        throw new HTTP400('Missing request body');
+      }
 
       const publish: boolean = req.body?.publish;
-
-      if (!projectId) {
-        throw new HTTP400('Missing required path parameter: projectId');
-      }
-
-      if (!projectId) {
-        throw new HTTP400('Missing required path parameter: projectId');
-      }
 
       const sqlStatement = updateProjectPublishStatusSQL(projectId, publish);
 
@@ -120,7 +120,7 @@ function publishProject(): RequestHandler {
 
       return res.status(200).send(result);
     } catch (error) {
-      defaultLog.debug({ label: 'updateProject', message: 'error', error });
+      defaultLog.debug({ label: 'publishProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
