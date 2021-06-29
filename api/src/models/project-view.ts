@@ -28,7 +28,9 @@ export class GetProjectData {
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
-    this.completion_status = moment(projectData?.end_date).isSameOrAfter(new Date()) ? 'Active' : 'Completed';
+    this.completion_status =
+      (projectData && projectData.end_date && moment(projectData.end_date).isBefore(new Date()) && 'Completed') ||
+      'Active';
   }
 }
 

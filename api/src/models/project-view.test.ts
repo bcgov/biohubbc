@@ -366,7 +366,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets completion_status', () => {
-      expect(data.completion_status).to.equal('');
+      expect(data.completion_status).to.equal('Active');
     });
   });
 
@@ -405,6 +405,10 @@ describe('GetProjectData', () => {
 
     it('sets end_date', () => {
       expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
+    });
+
+    it('sets completion_status', () => {
+      expect(data.completion_status).to.equal('Completed');
     });
   });
 });

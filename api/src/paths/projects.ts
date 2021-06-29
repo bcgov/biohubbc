@@ -187,7 +187,7 @@ export function _extractProjects(rows: any[]): any[] {
       end_date: row.end_date,
       coordinator_agency: row.coordinator_agency_name,
       publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
-      completion_status: moment(row.end_date).isSameOrAfter(new Date()) ? 'Active' : 'Completed',
+      completion_status: (row.end_date && moment(row.end_date).isBefore(new Date()) && 'Completed') || 'Active',
       project_type: row.project_type,
       permits_list: row.permits_list
     };
