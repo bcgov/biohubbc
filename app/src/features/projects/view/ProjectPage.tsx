@@ -131,8 +131,6 @@ const ProjectPage: React.FC = () => {
       }
 
       await getProject();
-
-      history.push(`/projects/${projectWithDetails.id}/details`);
     } catch (error) {
       return error;
     }
