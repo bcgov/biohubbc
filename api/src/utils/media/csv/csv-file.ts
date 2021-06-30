@@ -192,6 +192,12 @@ export class XLSXCSV implements IWorkbook {
 
     return mediaState;
   }
+
+  transform(transformers: CSVTransformer[], targetWorkbook: CSVWorkBook): CSVWorkBook {
+    transformers.forEach((transformer) => transformer(this.workbook, targetWorkbook));
+
+    return this.workbook;
+  }
 }
 
 export type IHeaderErrorType = 'Invalid' | 'Missing';
@@ -268,3 +274,5 @@ export class CSVValidation {
     };
   }
 }
+
+export type CSVTransformer = (sourceWorkbook: CSVWorkBook, targetWorkbook: CSVWorkBook, ...rest: any) => CSVWorkBook;
