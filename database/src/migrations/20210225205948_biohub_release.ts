@@ -29,6 +29,7 @@ export async function up(knex: Knex): Promise<void> {
   const api_get_context_system_user_role_id = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'api_get_context_system_user_role_id.sql')
   );
+  const api_user_is_administrator = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_user_is_administrator.sql'));
   const tr_journal_trigger = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_journal_trigger.sql'));
   const project_journal_triggers = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_journal_triggers.sql'));
   const tr_project_funding_source = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project_funding_source.sql'));
@@ -36,9 +37,16 @@ export async function up(knex: Knex): Promise<void> {
   const tr_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project.sql'));
   const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
   const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
+  const api_get_system_constant = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_system_constant.sql'));
+  const vw_survey_status = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'vw_survey_status.sql'));
 
+  const api_delete_occurrence_submission = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'api_delete_occurrence_submission.sql')
+  );
+  const api_delete_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_survey.sql'));
   const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
 
+  const populate_system_constants = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_system_constants.sql'));
   const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
   const populate_climate_change_initiatives = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_climate_change_initiatives.sql')
@@ -72,15 +80,12 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
   );
 
-  const secured_objects = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'secured_objects.sql'));
-
-  const indexes = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'indexes.sql'));
-
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
   );
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
+  const dapi_custom_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'dapi_custom_views.sql'));
 
   await knex.raw(`
     -- set up spatial extensions
@@ -117,6 +122,7 @@ export async function up(knex: Knex): Promise<void> {
     ${project_audit_triggers}
     ${api_get_context_user_id}
     ${api_get_context_system_user_role_id}
+    ${api_user_is_administrator}
     ${tr_journal_trigger}
     ${project_journal_triggers}
     ${tr_project_funding_source}
@@ -124,11 +130,16 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_project}
     ${tr_survey}
     ${tr_permit}
+    ${api_get_system_constant}
+    ${vw_survey_status}
 
+    ${api_delete_occurrence_submission}
+    ${api_delete_survey}
     ${api_delete_project}
 
     -- populate look up tables
     set search_path = biohub;
+    ${populate_system_constants}
     ${populate_first_nations}
     ${populate_climate_change_initiatives}
     ${populate_management_action_type}
@@ -145,10 +156,6 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_submission_status_type}
     ${populate_submission_message_type}
 
-    ${secured_objects}
-
-    ${indexes}
-
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
 
@@ -156,8 +163,9 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = biohub_dapi_v1;
     set role biohub_api;
     ${project_dapi_views}
+    ${dapi_custom_views}
+    
     set role postgres;
-
     set search_path = biohub;
     grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
   `);
