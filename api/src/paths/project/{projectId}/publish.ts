@@ -13,7 +13,7 @@ const defaultLog = getLogger('paths/project/{projectId}/publish');
 export const PUT: Operation = [logRequest('paths/project/{projectId}/publish', 'PUT'), publishProject()];
 
 PUT.apiDoc = {
-  description: 'Publish a project.',
+  description: 'Publish or unpublish a project.',
   tags: ['project'],
   security: [
     {
@@ -31,7 +31,7 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Publish put request object.',
+    description: 'Publish or unpublish put request object.',
     content: {
       'application/json': {
         schema: {

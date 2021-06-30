@@ -406,13 +406,18 @@ export const updateProjectPublishStatusSQL = (projectId: number, publish: boolea
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
-      UPDATE project
-      SET publish_timestamp = ${publish ? 'now()' : null}
-      WHERE id = ${projectId}
-      RETURNING
-        id;
-    `;
+  const sqlStatement: SQLStatement = SQL`UPDATE project SET publish_timestamp = `;
+
+  if (publish === true) {
+    sqlStatement.append(SQL`
+    now() WHERE publish_timestamp IS NULL AND id = ${projectId}
+    `);
+  } else {
+    sqlStatement.append(SQL`
+      null WHERE id = ${projectId}
+    `);
+  }
+  sqlStatement.append(SQL` RETURNING id;`);
 
   defaultLog.debug({
     label: 'updateProjectPublishStatusSQL',

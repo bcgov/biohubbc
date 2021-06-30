@@ -124,10 +124,7 @@ const ProjectPage: React.FC = () => {
     }
 
     try {
-      const response = await biohubApi.project.publishProject(
-        projectWithDetails.id,
-        !projectWithDetails.project.publish_date
-      );
+      const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
 
       if (!response) {
         return;
