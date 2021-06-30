@@ -83,7 +83,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function publishProject(): RequestHandler {
+export function publishProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -96,6 +96,10 @@ function publishProject(): RequestHandler {
 
       if (!req.body) {
         throw new HTTP400('Missing request body');
+      }
+
+      if (req.body.publish === undefined) {
+        throw new HTTP400('Missing publish flag in request body');
       }
 
       const publish: boolean = req.body?.publish;
@@ -117,8 +121,7 @@ function publishProject(): RequestHandler {
       }
 
       await connection.commit();
-
-      return res.status(200).send(result);
+      return res.status(200).json({ id: result.id });
     } catch (error) {
       defaultLog.debug({ label: 'publishProject', message: 'error', error });
       await connection.rollback();
