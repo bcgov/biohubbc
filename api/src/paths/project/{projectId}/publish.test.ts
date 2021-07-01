@@ -85,6 +85,7 @@ describe('project/{projectId}/publish', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path parameter: projectId');
     }
   });
 
@@ -107,6 +108,7 @@ describe('project/{projectId}/publish', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing request body');
     }
   });
 
@@ -129,6 +131,7 @@ describe('project/{projectId}/publish', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing publish flag in request body');
     }
   });
 

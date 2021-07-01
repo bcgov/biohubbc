@@ -208,10 +208,11 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a project based on projectId and a boolean true/false
+   * Publish/unpublish a project.
    *
-   * @param {number} projectId
-   * @returns {*} {Promise<any>}
+   * @param {number} projectId the project id
+   * @param {boolean} publish set to `true` to publish the project, `false` to unpublish the project.
+   * @return {*}  {Promise<any>}
    */
   const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });

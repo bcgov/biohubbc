@@ -102,7 +102,7 @@ export function publishProject(): RequestHandler {
         throw new HTTP400('Missing publish flag in request body');
       }
 
-      const publish: boolean = req.body?.publish;
+      const publish: boolean = req.body.publish;
 
       const sqlStatement = updateProjectPublishStatusSQL(projectId, publish);
 
