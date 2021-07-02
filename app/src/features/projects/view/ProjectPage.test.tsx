@@ -15,7 +15,8 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>(),
-    deleteProject: jest.fn()
+    deleteProject: jest.fn(),
+    publishProject: jest.fn()
   },
   survey: {
     getSurveysList: jest.fn()
@@ -36,6 +37,7 @@ describe('ProjectPage', () => {
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi().project.publishProject.mockClear();
   });
 
   afterEach(() => {
@@ -133,5 +135,49 @@ describe('ProjectPage', () => {
     await waitFor(() => {
       expect(asFragment()).toMatchSnapshot();
     });
+  });
+
+  it('publishes and unpublishes a project', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '' }
+    });
+    mockBiohubApi().project.publishProject.mockResolvedValue({ id: 1 });
+
+    const { getByTestId, findByText } = render(
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      </DialogContextProvider>
+    );
+
+    const publishButtonText1 = await findByText('Publish Project');
+    expect(publishButtonText1).toBeVisible();
+
+    //re-mock response to return the project with a non-null publish date
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
+    });
+
+    fireEvent.click(getByTestId('publish-project-button'));
+
+    const unpublishButtonText = await findByText('Unpublish Project');
+    expect(unpublishButtonText).toBeVisible();
+
+    //re-mock response to return the project with a null publish date
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '' }
+    });
+
+    fireEvent.click(getByTestId('publish-project-button'));
+
+    const publishButtonText2 = await findByText('Publish Project');
+    expect(publishButtonText2).toBeVisible();
   });
 });
