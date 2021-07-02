@@ -14,12 +14,32 @@ $$
 -- charlie.garrettjones@quartech.com
 --                  2021-05-13  initial release
 -- *******************************************************************
+declare
+  __project_start_date project.start_date%type;
+  __project_end_date project.end_date%type;
 begin
-  -- ensure end date is not before start date
-  if new.end_date is not null then
+  -- start and end date validation
+  if (new.end_date is not null) then
     if new.end_date < new.start_date then    
       raise exception 'The survey start date cannot be greater than the end date.';
     end if;
+  end if;
+
+  select start_date, end_date into strict __project_start_date, __project_end_date from project
+    where id = new.p_id;
+
+  if (new.start_date < __project_start_date) then
+    raise exception 'The survey start date cannot be less than the associated project start date.';
+  end if;
+
+  if (__project_end_date is not null) and (new.end_date is not null) then
+    if (new.end_date > __project_end_date) then
+      raise exception 'The survey end date cannot be greater than the associated project end date.';
+    end if;
+  end if;
+
+  if (__project_end_date is not null) and (new.end_date is null) then
+    new.end_date = __project_end_date;
   end if;
 
   return new;

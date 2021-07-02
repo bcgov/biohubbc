@@ -9,7 +9,14 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiClipboardCheckMultipleOutline, mdiTrashCanOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import {
+  mdiClipboardCheckMultipleOutline,
+  mdiTrashCanOutline,
+  mdiInformationOutline,
+  mdiPaperclip,
+  mdiToggleSwitch,
+  mdiToggleSwitchOffOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -128,6 +135,24 @@ const ProjectPage: React.FC = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
+  const publishProject = async (publish: boolean) => {
+    if (!projectWithDetails) {
+      return;
+    }
+
+    try {
+      const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
+
+      if (!response) {
+        return;
+      }
+
+      await getProject();
+    } catch (error) {
+      return error;
+    }
+  };
+
   const showDeleteProjectDialog = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
@@ -212,15 +237,38 @@ const ProjectPage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box ml={4} mt={4} mb={4}>
-              <Button
-                variant="outlined"
-                color="primary"
-                data-testid="delete-project-button"
-                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                onClick={showDeleteProjectDialog}>
-                Delete Project
-              </Button>
+            <Box>
+              <Box ml={4} mt={4} mb={4}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  data-testid="publish-project-button"
+                  startIcon={
+                    <Icon
+                      path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                      size={1}
+                    />
+                  }
+                  onClick={async () => {
+                    if (projectWithDetails.project.publish_date) {
+                      await publishProject(false);
+                    } else {
+                      await publishProject(true);
+                    }
+                  }}>
+                  {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+                </Button>
+              </Box>
+              <Box ml={4} mt={4} mb={4}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  data-testid="delete-project-button"
+                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                  onClick={showDeleteProjectDialog}>
+                  Delete Project
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Container>

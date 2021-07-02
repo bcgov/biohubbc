@@ -18,6 +18,7 @@ export class GetProjectData {
   end_date: string;
   comments: string;
   completion_status: string;
+  publish_date: string;
 
   constructor(projectData?: any, activityData?: any[]) {
     defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
@@ -31,6 +32,7 @@ export class GetProjectData {
     this.completion_status =
       (projectData && projectData.end_date && moment(projectData.end_date).isBefore(new Date()) && 'Completed') ||
       'Active';
+    this.publish_date = projectData?.publish_date || '';
   }
 }
 

@@ -8,7 +8,8 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     project_activities: [1],
-    completion_status: 'Active'
+    completion_status: 'Active',
+    publish_date: '2021-01-26'
   },
   permit: {
     permits: [

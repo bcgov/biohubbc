@@ -47,6 +47,7 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i project_audit_triggers.sql
 \i api_get_context_user_id.sql
 \i api_get_context_system_user_role_id.sql
+\i api_user_is_administrator.sql
 \i tr_journal_trigger.sql
 \i project_journal_triggers.sql
 \i tr_project_funding_source.sql
@@ -54,12 +55,16 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i tr_project.sql
 \i tr_survey.sql
 \i tr_permit.sql
+\i api_get_system_constant.sql
+\i vw_survey_status.sql
 
+\i api_delete_occurrence_submission.sql
+\i api_delete_survey.sql
 \i api_delete_project.sql
 
 -- populate look up tables
-set search_path = biohub;
 \set QUIET on
+\i populate_system_constants.sql
 \i populate_first_nations.sql
 \i populate_climate_change_initiatives.sql
 \i populate_management_action_type.sql
@@ -76,10 +81,6 @@ set search_path = biohub;
 \i populate_submission_status_type.sql
 \i populate_submission_message_type.sql
 
-\i secured_objects.sql
-
-\i indexes.sql
-
 -- temporary external interface tables
 \i populate_wldtaxonomic_units.sql
 \set QUIET off
@@ -88,11 +89,7 @@ set search_path = biohub;
 set search_path = biohub_dapi_v1;
 set role biohub_api;
 \i project_dapi_views.sql
-
--- create the views
-set search_path = biohub_dapi_v1;
-set role biohub_api;
-\i project_dapi_views.sql
+\i dapi_custom_views.sql
 
 set role postgres;
 set search_path = biohub;
