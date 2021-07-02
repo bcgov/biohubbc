@@ -32,6 +32,8 @@ declare
   __ss_id study_species.id%type;
   __os_id occurrence_submission.id%type;
   __subs_id submission_status.id%type;
+  __survey_status_query text := 'select project_id, survey_id, survey_status from survey_status';
+  __survey_rec survey_status%rowtype;
 begin
   set role biohub_api;
   set search_path to biohub_dapi_v1, biohub, public, topology;
@@ -138,7 +140,10 @@ begin
   assert __count = 1, 'FAIL occurrence';
   insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Submitted'), now()-interval '1 day') returning id into __subs_id;
   insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage submitted.');
-  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Published'), now()-interval '1 day') returning id into __subs_id;
+  -- transpose comments on next three lines to test deletion of published surveys by system administrator
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Awaiting Curration'), now()-interval '1 day') returning id into __subs_id;
+  --insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Published'), now()-interval '1 day') returning id into __subs_id;
+  --insert into system_user_role (su_id, sr_id) values (__system_user_id, (select id from system_role where name = 'System Administrator'));
   insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage published.');
 
   -- occurrence submission 2
@@ -150,12 +155,17 @@ begin
   assert __count = 2, 'FAIL occurrence';
   insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Submitted'), now()) returning id into __subs_id;
   insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage submitted.');
-  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Published'), now()) returning id into __subs_id;
+  insert into submission_status (os_id, sst_id, event_timestamp) values (__os_id, (select id from submission_status_type where name = 'Rejected'), now()) returning id into __subs_id;
   insert into submission_message (subs_id, smt_id, event_timestamp, message) values (__subs_id, (select id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage published.');
   select count(1) into __count from submission_status;
   assert __count = 4, 'FAIL submission_status';
   select count(1) into __count from submission_message;
   assert __count = 4, 'FAIL submission_message';  
+
+  raise notice 'survey status (project_id, survey_id, survey_status):';
+  for __survey_rec in execute __survey_status_query loop
+    raise notice 'survey status results are % % %', __survey_rec.project_id, __survey_rec.survey_id, __survey_rec.survey_status;
+  end loop;
 
   -- test ancillary data
   delete from webform_draft;
@@ -181,11 +191,12 @@ begin
 
   insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
---  -- delete project
---  delete from survey_publish_history;
---  delete from survey_occurrence;
---  call api_delete_project(__p_id);
+  -- delete project
+  call api_delete_project(__p_id);
+
+  raise notice 'smoketest_release: PASS';
 end
 $$;
 
---delete from administrative_activity;
+delete from administrative_activity;
+delete from permit;

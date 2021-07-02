@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Friday, June 18, 2021 14:30:41
+-- Date Created : Wednesday, June 30, 2021 11:27:02
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -609,7 +609,6 @@ CREATE TABLE occurrence(
     data                    json,
     geometry                geometry(geometry, 3005),
     geography               geography(geometry),
-    security_token          uuid,
     create_date             timestamptz(6)              DEFAULT now() NOT NULL,
     create_user             integer                     NOT NULL,
     update_date             timestamptz(6),
@@ -644,8 +643,6 @@ COMMENT ON COLUMN occurrence.data IS 'The json data associated with the record.'
 COMMENT ON COLUMN occurrence.geometry IS 'The containing geometry of the record.'
 ;
 COMMENT ON COLUMN occurrence.geography IS 'The containing geography of the record.'
-;
-COMMENT ON COLUMN occurrence.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN occurrence.create_date IS 'The datetime the record was created.'
 ;
@@ -795,9 +792,9 @@ CREATE TABLE project(
     coordinator_email_address     varchar(500)                NOT NULL,
     coordinator_agency_name       varchar(300)                NOT NULL,
     coordinator_public            boolean                     NOT NULL,
+    publish_timestamp             TIMESTAMPTZ,
     geometry                      geometry(geometry, 3005),
     geography                     geography(geometry),
-    security_token                uuid,
     create_date                   timestamptz(6)              DEFAULT now() NOT NULL,
     create_user                   integer                     NOT NULL,
     update_date                   timestamptz(6),
@@ -839,11 +836,11 @@ COMMENT ON COLUMN project.coordinator_agency_name IS 'Name of agency the project
 ;
 COMMENT ON COLUMN project.coordinator_public IS 'A flag that determines whether personal coordinator details are public. A value of "Y" provides that personal details are public.'
 ;
+COMMENT ON COLUMN project.publish_timestamp IS 'A timestamp that indicates that the project metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the project metadata is not yet public.'
+;
 COMMENT ON COLUMN project.geometry IS 'The containing geometry of the record.'
 ;
 COMMENT ON COLUMN project.geography IS 'The containing geography of the record.'
-;
-COMMENT ON COLUMN project.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN project.create_date IS 'The datetime the record was created.'
 ;
@@ -1369,88 +1366,6 @@ COMMENT ON TABLE proprietor_type IS 'Identifies the available reasons that subje
 ;
 
 -- 
--- TABLE: security 
---
-
-CREATE TABLE security(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    su_id             integer           NOT NULL,
-    secr_id           integer           NOT NULL,
-    security_token    uuid              NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK176" PRIMARY KEY (id)
-)
-;
-
-
-
-COMMENT ON COLUMN security.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN security.su_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN security.secr_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN security.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
-;
-COMMENT ON COLUMN security.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN security.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN security.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN security.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN security.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE security IS 'This is the security working table. This table does not need, journaling or audit trail as it is generated from the security rules. The tables contains references to the security rule, the security token of the secured object and the optional user id for when the rule applies to a specific user;'
-;
-
--- 
--- TABLE: security_rule 
---
-
-CREATE TABLE security_rule(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name               varchar(300),
-    rule_definition    varchar(10000)    NOT NULL,
-    target             varchar(200)      NOT NULL,
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK177" PRIMARY KEY (id)
-)
-;
-
-
-
-COMMENT ON COLUMN security_rule.id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN security_rule.name IS 'The name of the record.'
-;
-COMMENT ON COLUMN security_rule.rule_definition IS 'The definition of the rule suitable for application in code to apply the security rule.'
-;
-COMMENT ON COLUMN security_rule.target IS 'The target table that the rule applies to.'
-;
-COMMENT ON COLUMN security_rule.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN security_rule.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN security_rule.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN security_rule.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN security_rule.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE security_rule IS 'Security subsystem table to persist security rules.'
-;
-
--- 
 -- TABLE: stakeholder_partnership 
 --
 
@@ -1719,7 +1634,6 @@ CREATE TABLE survey(
     location_name           varchar(300)                NOT NULL,
     geometry                geometry(geometry, 3005),
     geography               geography(geometry),
-    security_token          uuid,
     create_date             timestamptz(6)              DEFAULT now() NOT NULL,
     create_user             integer                     NOT NULL,
     update_date             timestamptz(6),
@@ -1755,8 +1669,6 @@ COMMENT ON COLUMN survey.location_name IS 'The name of the survey location.'
 COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
 ;
 COMMENT ON COLUMN survey.geography IS 'The containing geography of the record.'
-;
-COMMENT ON COLUMN survey.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
 ;
 COMMENT ON COLUMN survey.create_date IS 'The datetime the record was created.'
 ;
@@ -2200,11 +2112,6 @@ CREATE TABLE wldtaxonomic_units(
     end_date                   date,
     note                       varchar(2000),
     element_subnational_id     numeric(10, 0),
-    create_date                timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                integer           NOT NULL,
-    update_date                timestamptz(6),
-    update_user                integer,
-    revision_count             integer           DEFAULT 0 NOT NULL,
     CONSTRAINT "PK160" PRIMARY KEY (id)
 )
 ;
@@ -2248,16 +2155,6 @@ COMMENT ON COLUMN wldtaxonomic_units.end_date IS 'The date a taxon becomes obsol
 COMMENT ON COLUMN wldtaxonomic_units.note IS 'Free form text about the taxon.'
 ;
 COMMENT ON COLUMN wldtaxonomic_units.element_subnational_id IS 'Identifier that can be used to link this record to the matching Biotics field.'
-;
-COMMENT ON COLUMN wldtaxonomic_units.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN wldtaxonomic_units.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN wldtaxonomic_units.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN wldtaxonomic_units.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN wldtaxonomic_units.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE wldtaxonomic_units IS 'A table to mimic a view into SPI taxonomic data, specifically CWI_TXN.WLDTAXONOMIC_UNITS, for development purposes. This table should be replaced by live views of the data in production systems.'
 ;
@@ -2579,18 +2476,6 @@ CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) whe
 --
 
 CREATE UNIQUE INDEX prt_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
-;
--- 
--- INDEX: "Ref78100" 
---
-
-CREATE INDEX "Ref78100" ON security(su_id)
-;
--- 
--- INDEX: "Ref177102" 
---
-
-CREATE INDEX "Ref177102" ON security(secr_id)
 ;
 -- 
 -- INDEX: sp_uk1 
@@ -2987,21 +2872,6 @@ ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34"
 ALTER TABLE project_region ADD CONSTRAINT "Refproject24" 
     FOREIGN KEY (p_id)
     REFERENCES project(id)
-;
-
-
--- 
--- TABLE: security 
---
-
-ALTER TABLE security ADD CONSTRAINT "Refsystem_user100" 
-    FOREIGN KEY (su_id)
-    REFERENCES system_user(id)
-;
-
-ALTER TABLE security ADD CONSTRAINT "Refsecurity_rule102" 
-    FOREIGN KEY (secr_id)
-    REFERENCES security_rule(id)
 ;
 
 
