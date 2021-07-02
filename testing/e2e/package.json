@@ -26,5 +26,8 @@
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript": "^1.0.1",
     "typescript": "~3.2.2"
+  },
+  "dependencies": {
+    "cypress-file-upload": "^5.0.8"
   }
 }
