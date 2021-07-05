@@ -16,6 +16,7 @@ export const postSurveyOccurrenceSQL = (surveyId: number, occurrence: PostSurvey
     return null;
   }
 
+  // TODO update to use new occurrence + occurrence_submission tables
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey_occurrence (
       s_id,

@@ -3,34 +3,33 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTP400 } from '../../errors/CustomError';
 import { getLogger } from '../../utils/logger';
-import { ICsvState } from '../../utils/media/csv/csv-file';
-import { DWCArchive } from '../../utils/media/csv/dwc/dwc-archive-file';
-import { isDWCArchiveValid } from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { ICsvState, XLSXCSV } from '../../utils/media/csv/csv-file';
+import { isSPITemplateValid } from '../../utils/media/csv/spi/spi-validator';
 import { IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
 
-const defaultLog = getLogger('paths/dwc/validate');
+const defaultLog = getLogger('paths/project');
 
-export const POST: Operation = [logRequest('paths/dwc/validate', 'POST'), prepDWCArchive(), validateDWCArchive()];
+export const POST: Operation = [logRequest('paths/spi/transform', 'POST'), prepSPITemplate(), validateSPITemplate()];
 
 POST.apiDoc = {
-  description: 'Validate a Darwin Core archive file.',
-  tags: ['dwc'],
+  description: 'Validate a SPI template into Darwin Core.',
+  tags: ['spi'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
     }
   ],
   requestBody: {
-    description: 'Darwin Core archive to validate.',
+    description: 'SPI excel template file(s) to validate into Darwin Core.',
     content: {
       'multipart/form-data': {
         schema: {
           type: 'object',
           properties: {
             media: {
-              description: 'A Darwin Core archive zip file.',
+              description: 'A SPI excel template',
               type: 'string',
               format: 'binary'
             }
@@ -41,7 +40,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Darwin Core Archive response object.',
+      description: 'SPI response object.',
       content: {
         'application/json': {
           schema: {
@@ -161,9 +160,15 @@ POST.apiDoc = {
   }
 };
 
-function prepDWCArchive(): RequestHandler {
+/**
+ * Prepare a raw SPI template for valdiation.
+ * Call the next step if no errors encountered, otherwise return errors.
+ *
+ * @return {*}  {RequestHandler}
+ */
+function prepSPITemplate(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'prepDWCArchive', message: 'files.length', files: req?.files?.length });
+    defaultLog.debug({ label: 'prepSPITemplate', message: 'prepSPITemplate' });
 
     if (!req.files || !req.files.length) {
       // no media objects included
@@ -182,41 +187,70 @@ function prepDWCArchive(): RequestHandler {
 
       const mediaFiles = parseUnknownMedia(rawMediaFile);
 
-      const dwcArchive = new DWCArchive(mediaFiles);
+      // mediaFiles[0].mediaValidation.
 
-      req['dwcArchive'] = dwcArchive;
+      if (!mediaFiles || !mediaFiles.length) {
+        const response: ICsvState[] = [
+          {
+            fileName: rawMediaFile.originalname,
+            fileErrors: ['Not a compatible Excel Workbook. Unable to parse file.'],
+            isValid: false
+          }
+        ];
+
+        return res.status(200).json(response);
+      }
+
+      if (mediaFiles.length > 1) {
+        const response: ICsvState[] = [
+          {
+            fileName: rawMediaFile.originalname,
+            fileErrors: ['Not a compatible Excel Workbook. Multiple files found when one expected.'],
+            isValid: false
+          }
+        ];
+
+        return res.status(200).json(response);
+      }
+
+      const mediaFile = mediaFiles[0];
+
+      const xlsxCSV = new XLSXCSV(mediaFile);
+
+      const mediaState: IMediaState[] = xlsxCSV.isValid();
+
+      if (mediaState.some((item) => !item.isValid)) {
+        return res.status(200).json(mediaState);
+      }
+
+      req['xlsxCSV'] = xlsxCSV;
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'prepDWCArchive', message: 'error', error });
+      defaultLog.debug({ label: 'prepSPITemplate', message: 'error', error });
       throw error;
     }
   };
 }
 
 /**
- * Validate a Darwin Core csv file.
+ * Validate a SPI excel file contains no errors.
+ * Call the next step if no errors found, otherwise return errors.
  *
  * @returns {RequestHandler}
  */
-function validateDWCArchive(): RequestHandler {
+function validateSPITemplate(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'validateDWCArchive', message: 'files.length', files: req?.files?.length });
+    defaultLog.debug({ label: 'validateSPITemplate', message: 'validateSPI' });
 
     try {
-      const dwcArchive: DWCArchive = req['dwcArchive'];
+      const xlsxCSV: XLSXCSV = req['xlsxCSV'];
 
-      const mediaState: IMediaState[] = dwcArchive.isValid();
+      const validationResults: ICsvState[] = isSPITemplateValid(xlsxCSV);
 
-      if (mediaState.some((item) => !item.isValid)) {
-        return res.status(200).json(mediaState);
-      }
-
-      const csvState: ICsvState[] = isDWCArchiveValid(dwcArchive);
-
-      return res.status(200).json(csvState);
+      return res.status(200).json(validationResults);
     } catch (error) {
-      defaultLog.debug({ label: 'validateDWCArchive', message: 'error', error });
+      defaultLog.debug({ label: 'validateSPITemplate', message: 'error', error });
       throw error;
     }
   };
