@@ -102,9 +102,7 @@ const Header: React.FC = () => {
       return <></>;
     }
 
-    const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}${
-      keycloakWrapper?.isSystemAdmin() ? ` (${SYSTEM_ROLE.SYSTEM_ADMIN})` : ''
-    }`.toUpperCase();
+    const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}`.toUpperCase();
 
     return (
       <Box display="flex" className={classes.usernameAndLogout} my="auto" alignItems="center">
