@@ -9,11 +9,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
   >
     <div
       id="root"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-2"
-      />
-    </div>
+    />
   </div>
   <div
     class="MuiDialog-root"
@@ -133,11 +129,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
   >
     <div
       id="root"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-1"
-      />
-    </div>
+    />
   </div>
   <div
     class="MuiDialog-root"
