@@ -19,7 +19,7 @@ DELETE.apiDoc = {
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN]
     }
   ],
   parameters: [

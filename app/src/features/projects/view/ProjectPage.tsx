@@ -32,6 +32,10 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
 import { useHistory } from 'react-router';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { DeleteProjectI18N } from 'constants/i18n';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -73,6 +77,8 @@ const ProjectPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
 
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
   useEffect(() => {
     const getCodes = async () => {
       const codesResponse = await biohubApi.codes.getAllCodeSets();
@@ -110,12 +116,24 @@ const ProjectPage: React.FC = () => {
   }, [isLoadingProject, projectWithDetails, getProject]);
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Project',
-    dialogText: 'Are you sure you want to delete this project, its attachments and associated surveys/observations?',
+    dialogTitle: DeleteProjectI18N.deleteTitle,
+    dialogText: DeleteProjectI18N.deleteText,
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
     onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const defaultErrorDialogProps = {
+    dialogTitle: DeleteProjectI18N.deleteErrorTitle,
+    dialogText: DeleteProjectI18N.deleteErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
   };
 
   const publishProject = async (publish: boolean) => {
@@ -147,6 +165,10 @@ const ProjectPage: React.FC = () => {
     });
   };
 
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
+
   const deleteProject = async () => {
     if (!projectWithDetails) {
       return;
@@ -156,11 +178,14 @@ const ProjectPage: React.FC = () => {
       const response = await biohubApi.project.deleteProject(projectWithDetails.id);
 
       if (!response) {
+        showErrorDialog({ open: true });
         return;
       }
 
       history.push(`/projects`);
     } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, open: true });
       return error;
     }
   };
@@ -224,16 +249,20 @@ const ProjectPage: React.FC = () => {
                   {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
                 </Button>
               </Box>
-              <Box ml={4} mt={4} mb={4}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  data-testid="delete-project-button"
-                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                  onClick={showDeleteProjectDialog}>
-                  Delete Project
-                </Button>
-              </Box>
+              {keycloakWrapper?.isSystemAdmin() && (
+                <>
+                  <Box ml={4} mt={4} mb={4}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      data-testid="delete-project-button"
+                      startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                      onClick={showDeleteProjectDialog}>
+                      Delete Project
+                    </Button>
+                  </Box>
+                </>
+              )}
             </Box>
           </Box>
         </Container>

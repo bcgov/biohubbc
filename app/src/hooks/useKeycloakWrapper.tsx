@@ -3,6 +3,7 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
+import { SYSTEM_ROLE } from 'constants/roles';
 
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
@@ -75,6 +76,7 @@ export interface IKeycloakWrapper {
   email: string | undefined;
   firstName: string | undefined;
   lastName: string | undefined;
+  isSystemAdmin: () => boolean;
   /**
    * Force this keycloak wrapper to refresh its data.
    *
@@ -258,6 +260,16 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     setShouldLoadAccessRequest(true);
   };
 
+  const isSystemAdmin = () => {
+    const userSystemRoles = getSystemRoles();
+
+    if (userSystemRoles.includes(SYSTEM_ROLE.SYSTEM_ADMIN)) {
+      return true;
+    }
+
+    return false;
+  };
+
   return {
     keycloak: keycloak,
     hasLoadedAllUserInfo,
@@ -271,6 +283,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     displayName: displayName(),
     firstName: firstName(),
     lastName: lastName(),
+    isSystemAdmin,
     refresh
   };
 }
