@@ -30,7 +30,10 @@ export class GetProjectData {
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
     this.completion_status =
-      (projectData && projectData.end_date && moment(projectData.end_date).endOf('day').isBefore(moment()) && 'Completed') ||
+      (projectData &&
+        projectData.end_date &&
+        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
+        'Completed') ||
       'Active';
     this.publish_date = projectData?.publish_date || '';
   }
