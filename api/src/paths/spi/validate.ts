@@ -187,8 +187,6 @@ function prepSPITemplate(): RequestHandler {
 
       const mediaFiles = parseUnknownMedia(rawMediaFile);
 
-      // mediaFiles[0].mediaValidation.
-
       if (!mediaFiles || !mediaFiles.length) {
         const response: ICsvState[] = [
           {
