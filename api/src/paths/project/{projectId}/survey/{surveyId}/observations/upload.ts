@@ -3,8 +3,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
-import { PostSurveyOccurrence } from '../../../../../../models/survey-occurrence';
-import { postSurveyOccurrenceSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
+import { PostOccurrence } from '../../../../../../models/occurrence-create';
+import {
+  postOccurrenceSQL,
+  postOccurrenceSubmissionSQL
+} from '../../../../../../queries/occurrence/occurrence-create-queries';
 import { getLogger } from '../../../../../../utils/logger';
 import { ICsvState } from '../../../../../../utils/media/csv/csv-file';
 import { DWCArchive } from '../../../../../../utils/media/csv/dwc/dwc-archive-file';
@@ -38,19 +41,16 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Darwin Core csv file(s) to validate.',
+    description: 'Darwin Core archive to upload.',
     content: {
       'multipart/form-data': {
         schema: {
           type: 'object',
           properties: {
             media: {
-              type: 'array',
-              description: 'An array of Darwin Core files to validate',
-              items: {
-                type: 'string',
-                format: 'binary'
-              }
+              description: 'A Darwin Core archive zip file.',
+              type: 'string',
+              format: 'binary'
             }
           }
         }
@@ -259,7 +259,21 @@ export function uploadDWCArchive(): RequestHandler {
     try {
       await connection.open();
 
-      await uploadDWCArchiveOccurrences(Number(req.params.surveyId), dwcArchive, connection);
+      const sqlStatement = postOccurrenceSubmissionSQL(Number(req.params.surveyId));
+
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL post statement');
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      if (!response || !response.rows || !response.rows.length) {
+        throw new HTTP400('Failed to insert occurrence submission data');
+      }
+
+      const occurrenceSubmissionId = response.rows[0].id;
+
+      await uploadDWCArchiveOccurrences(occurrenceSubmissionId, dwcArchive, connection);
 
       await connection.commit();
 
@@ -275,43 +289,74 @@ export function uploadDWCArchive(): RequestHandler {
 }
 
 // TODO needs improvement
-export const uploadDWCArchiveOccurrences = async (surveyId: number, file: DWCArchive, connection: IDBConnection) => {
+export const uploadDWCArchiveOccurrences = async (
+  occurrenceSubmissionId: number,
+  file: DWCArchive,
+  connection: IDBConnection
+) => {
   const eventHeaders = file.worksheets.event?.getHeaders();
   const eventRows = file.worksheets.event?.getRows();
 
   const eventEventIdHeader = eventHeaders?.indexOf('eventID') as number;
   const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
 
   const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
   const occurrenceRows = file.worksheets.occurrence?.getRows();
 
+  const taxonHeaders = file.worksheets.taxon?.getHeaders();
+  const taxonRows = file.worksheets.taxon?.getRows();
+  const taxonEventIdHeader = taxonHeaders?.indexOf('eventID') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
+
   const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
   const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
   const lifestageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
 
   return occurrenceRows?.map(async (row) => {
     const occurrenceEventId = row[occurrenceEventIdHeader];
     const associatedTaxa = row[associatedTaxaHeader];
     const lifestage = row[lifestageHeader];
+    const individualCount = row[individualCountHeader];
+    const organismQuantity = row[organismQuantityHeader];
+    const organismQuantityType = row[organismQuantityTypeHeader];
 
     const data = { headers: occurrenceHeaders, rows: row };
 
     let verbatimCoordinates;
+    let eventDate;
 
     eventRows?.forEach((row) => {
       if (row[eventEventIdHeader] === occurrenceEventId) {
+        eventDate = row[eventDateHeader];
         verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
       }
     });
 
-    const occurrence = new PostSurveyOccurrence({
-      associatedtaxa: associatedTaxa,
-      lifestage: lifestage,
-      data,
-      verbatimCoordinates: verbatimCoordinates
+    let vernacularName;
+
+    taxonRows?.forEach((row) => {
+      if (row[taxonEventIdHeader] === occurrenceEventId) {
+        vernacularName = row[vernacularNameHeader];
+      }
     });
 
-    const sqlStatement = postSurveyOccurrenceSQL(surveyId, occurrence);
+    const occurrence = new PostOccurrence({
+      associatedtaxa: associatedTaxa,
+      lifestage: lifestage,
+      individualCount: individualCount,
+      vernacularName: vernacularName,
+      data,
+      verbatimCoordinates: verbatimCoordinates,
+      organismQuantity: organismQuantity,
+      organismQuantityType: organismQuantityType,
+      eventDate: eventDate
+    });
+
+    const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, occurrence);
 
     if (!sqlStatement) {
       throw new HTTP400('Failed to build SQL post statement');
@@ -320,7 +365,7 @@ export const uploadDWCArchiveOccurrences = async (surveyId: number, file: DWCArc
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response || !response.rowCount) {
-      throw new HTTP400('Failed to insert survey occurrence data');
+      throw new HTTP400('Failed to insert occurrence data');
     }
   });
 };
