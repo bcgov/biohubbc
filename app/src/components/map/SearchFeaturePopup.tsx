@@ -3,9 +3,12 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Popup } from 'react-leaflet';
+import { useHistory } from 'react-router';
 
-export const SearchFeaturePopup: React.FC<{ featureData: any; history: any }> = (props) => {
-  const { featureData, history } = props;
+export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
+  const history = useHistory();
+
+  const { featureData } = props;
 
   return (
     <Popup key={featureData.id} keepInView={false} autoPan={false}>

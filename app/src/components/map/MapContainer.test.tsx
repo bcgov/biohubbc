@@ -6,6 +6,7 @@ import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SearchFeaturePopup } from './SearchFeaturePopup';
 import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -121,19 +122,20 @@ describe('MapContainer', () => {
               name: 'Name',
               objectives: 'Objectives'
             }}
-            history={history}
           />
         )
       }
     ];
 
     const { asFragment } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        geometryState={{ geometry, setGeometry }}
-        nonEditableGeometries={nonEditableGeometries}
-      />
+      <Router history={history}>
+        <MapContainer
+          mapId="myMap"
+          classes={classes}
+          geometryState={{ geometry, setGeometry }}
+          nonEditableGeometries={nonEditableGeometries}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();

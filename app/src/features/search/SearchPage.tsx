@@ -12,7 +12,6 @@ import centroid from '@turf/centroid';
 import Grid from '@material-ui/core/Grid';
 import { useEffect } from 'react';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
-import { useHistory } from 'react-router';
 
 /**
  * Page to search for and display a list of records spatially.
@@ -21,7 +20,6 @@ import { useHistory } from 'react-router';
  */
 const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
-  const history = useHistory();
 
   const [geometries, setGeometries] = useState<IClusteredPointGeometries[]>([]);
 
@@ -63,7 +61,7 @@ const SearchPage: React.FC = () => {
 
         clusteredPointGeometries.push({
           coordinates: centroid(feature as any).geometry.coordinates,
-          popupComponent: <SearchFeaturePopup featureData={result} history={history} />
+          popupComponent: <SearchFeaturePopup featureData={result} />
         });
       });
 
