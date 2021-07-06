@@ -32,5 +32,4 @@ export async function down(knex: Knex): Promise<void> {
   set search_path = ${DB_SCHEMA},public;
 
   `);
-
 }
