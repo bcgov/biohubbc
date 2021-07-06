@@ -32,6 +32,9 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
 import { useHistory } from 'react-router';
+import { ProjectStatusType } from 'constants/misc';
+import Chip from '@material-ui/core/Chip';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -49,6 +52,20 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: theme.palette.primary.main
       }
     }
+  },
+  chip: {
+    padding: '0px 8px',
+    borderRadius: '4px',
+    color: 'white'
+  },
+  chipActive: {
+    backgroundColor: theme.palette.warning.main
+  },
+  chipCompleted: {
+    backgroundColor: theme.palette.success.main
+  },
+  spacingRight: {
+    paddingRight: '1rem'
   }
 }));
 
@@ -165,6 +182,21 @@ const ProjectPage: React.FC = () => {
     }
   };
 
+  const getChipIcon = (status_name: string) => {
+    let chipLabel;
+    let chipStatusClass;
+
+    if (ProjectStatusType.ACTIVE === status_name) {
+      chipLabel = 'ACTIVE';
+      chipStatusClass = classes.chipActive;
+    } else if (ProjectStatusType.COMPLETED === status_name) {
+      chipLabel = 'COMPLETED';
+      chipStatusClass = classes.chipCompleted;
+    }
+
+    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
+
   if (!codes || !projectWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -175,8 +207,11 @@ const ProjectPage: React.FC = () => {
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between">
             <Box py={4}>
-              <Box mb={1}>
-                <Typography variant="h1">{projectWithDetails.project.project_name}</Typography>
+              <Box mb={1} display="flex">
+                <Typography className={classes.spacingRight} variant="h1">
+                  {projectWithDetails.project.project_name}
+                </Typography>
+                {getChipIcon(projectWithDetails.project.completion_status)}
               </Box>
               <Box>
                 <Typography variant="subtitle1" color="textSecondary">

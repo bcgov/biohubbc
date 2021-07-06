@@ -33,22 +33,31 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-26"
+        class="MuiBox-root MuiBox-root-41"
       >
         <div
-          class="MuiBox-root MuiBox-root-27"
+          class="MuiBox-root MuiBox-root-42"
         >
           <div
-            class="MuiBox-root MuiBox-root-28"
+            class="MuiBox-root MuiBox-root-43"
           >
             <h1
-              class="MuiTypography-root MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-40 MuiTypography-h1"
             >
               Test Project Name
             </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-37 makeStyles-chipActive-38"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-29"
+            class="MuiBox-root MuiBox-root-44"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -63,10 +72,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-45"
         >
           <div
-            class="MuiBox-root MuiBox-root-31"
+            class="MuiBox-root MuiBox-root-46"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -99,7 +108,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </button>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-32"
+            class="MuiBox-root MuiBox-root-47"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -139,17 +148,17 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-33"
+      class="MuiBox-root MuiBox-root-48"
     >
       <aside
-        class="MuiBox-root MuiBox-root-34"
+        class="MuiBox-root MuiBox-root-49"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-25 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-36 MuiList-padding"
             role="navigation"
           >
             <a
@@ -240,7 +249,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-50"
       />
     </div>
   </div>
@@ -256,22 +265,31 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-3"
+        class="MuiBox-root MuiBox-root-11"
       >
         <div
-          class="MuiBox-root MuiBox-root-4"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-5"
+            class="MuiBox-root MuiBox-root-13"
           >
             <h1
-              class="MuiTypography-root MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-10 MuiTypography-h1"
             >
               Test Project Name
             </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-6"
+            class="MuiBox-root MuiBox-root-14"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -283,10 +301,10 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-15"
         >
           <div
-            class="MuiBox-root MuiBox-root-8"
+            class="MuiBox-root MuiBox-root-16"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -319,7 +337,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
             </button>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-17"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -359,17 +377,17 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-10"
+      class="MuiBox-root MuiBox-root-18"
     >
       <aside
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-19"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-2 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-6 MuiList-padding"
             role="navigation"
           >
             <a
@@ -460,7 +478,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-12"
+        class="MuiBox-root MuiBox-root-20"
       />
     </div>
   </div>

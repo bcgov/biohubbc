@@ -176,7 +176,7 @@ export const AccessRequestPage: React.FC = () => {
   if (keycloakWrapper?.getIdentitySource()?.toLowerCase() === 'bceid') {
     initialValues = BCeIDRequestFormInitialValues;
     validationSchema = BCeIDRequestFormYupSchema;
-    requestForm = <BCeIDRequestForm codes={codes} />;
+    requestForm = <BCeIDRequestForm />;
   } else {
     initialValues = IDIRRequestFormInitialValues;
     validationSchema = IDIRRequestFormYupSchema;

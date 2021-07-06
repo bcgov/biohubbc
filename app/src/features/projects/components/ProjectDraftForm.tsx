@@ -1,4 +1,3 @@
-import Grid from '@material-ui/core/Grid';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -28,17 +27,13 @@ const ProjectDraftForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="draft_name"
-            label="Draft Name"
-            other={{
-              required: true
-            }}
-          />
-        </Grid>
-      </Grid>
+      <CustomTextField
+        name="draft_name"
+        label="Draft Name"
+        other={{
+          required: true
+        }}
+      />
     </form>
   );
 };
