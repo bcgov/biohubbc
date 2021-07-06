@@ -71,13 +71,19 @@ export class CSVWorksheet {
     }
 
     if (!this._headers.length) {
-      const range = xlsx.utils.decode_range(ref);
+      const originalRange = xlsx.utils.decode_range(ref);
 
-      for (let col = range.s.c; col <= range.e.c; col++) {
-        const cell: xlsx.CellObject = this.worksheet[xlsx.utils.encode_cell({ r: range.s.r, c: col })];
+      // Specify range to only include the 0th row (header row)
+      const customRange: xlsx.Range = { ...originalRange, e: { ...originalRange.e, r: 0 } };
 
-        this._headers.push(cell?.v as string);
-      }
+      const aoaHeaders: any[][] = xlsx.utils.sheet_to_json(this.worksheet, {
+        header: 1,
+        blankrows: false,
+        range: customRange
+      });
+
+      // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
+      this._headers = aoaHeaders[0];
     }
 
     return this._headers;
@@ -103,17 +109,12 @@ export class CSVWorksheet {
     }
 
     if (!this._rows.length) {
-      const range = xlsx.utils.decode_range(ref);
+      const originalRange = xlsx.utils.decode_range(ref);
 
-      for (let row = range.s.r + 1; row <= range.e.r; row++) {
-        this._rows.push([]);
+      // Specify range to not include the 0th row (header row)
+      const customRange: xlsx.Range = { ...originalRange, s: { ...originalRange.s, r: 1 } };
 
-        for (let col = range.s.c; col <= range.e.c; col++) {
-          const cell: xlsx.CellObject = this.worksheet[xlsx.utils.encode_cell({ r: row, c: col })];
-
-          this._rows[row - 1].push(cell?.v as string);
-        }
-      }
+      this._rows = xlsx.utils.sheet_to_json(this.worksheet, { header: 1, blankrows: false, range: customRange });
     }
 
     return this._rows;
