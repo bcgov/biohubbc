@@ -89,8 +89,8 @@ export async function up(knex: Knex): Promise<void> {
           return true;
       end if;
 
-    -- Is the user a sys/data admin?
-      select count(*)::integer into v_admin_count from ${DB_SCHEMA}.system_user_role where su_id = ${DB_SCHEMA}.api_get_context_user_id() and sr_id in (1,2);
+    -- Is the user a sys admin?
+      select count(*)::integer into v_admin_count from ${DB_SCHEMA}.system_user_role where su_id = ${DB_SCHEMA}.api_get_context_user_id() and sr_id in (1);
       if (v_admin_count > 0) then
           return true;
       end if;
@@ -100,7 +100,11 @@ export async function up(knex: Knex): Promise<void> {
         return true;
       end if;
 
-    -- Is the user part of the project?
+    -- Is the user a project admin?
+    select count(*)::integer into v_admin_count from ${DB_SCHEMA}.system_user_role where su_id = ${DB_SCHEMA}.api_get_context_user_id() and sr_id in (2);
+    if (v_admin_count > 0) then
+        return true;
+    end if;
 
     -- Has the user been given specific access to this record?
     select count(*)::integer into v_user_access from ${DB_SCHEMA}.security where su_id = ${DB_SCHEMA}.api_get_context_user_id() and security_token = __security_token;
@@ -150,14 +154,14 @@ export async function up(knex: Knex): Promise<void> {
       FOR v_target, v_rule_definition IN
             SELECT trim('"' FROM cast(data->'target' as text)), trim('"' FROM cast(data->'rule' as text))
         FROM ${DB_SCHEMA}.security_rule, json_array_elements(rule_definition) AS data
-        where id = __sec_rule_id and system_rule = false
+        where id = __sec_rule_id and system_rule = false and (end_date <= now() or end_date is NULL)
       LOOP
         -- Execute the query to find the records that need to be secured
         execute format('select ${DB_SCHEMA}.api_secure_record(id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __sec_rule_id, 'NULL', v_rule_definition);
 
         <<inner>>
         FOR v_su_id IN
-        SELECT user_data FROM ${DB_SCHEMA}.security_rule, json_array_elements(users) AS user_data where id =__sec_rule_id and su_id is NOT NULL and system_rule = false
+        SELECT user_data FROM ${DB_SCHEMA}.security_rule, json_array_elements(users) AS user_data where id =__sec_rule_id and users is NOT NULL and system_rule = false and (end_date <= now() or end_date is NULL)
         LOOP
           -- Execute the query to set the exception for identified users
           execute format('select ${DB_SCHEMA}.api_secure_record(id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __sec_rule_id, v_su_id, v_rule_definition);

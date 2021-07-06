@@ -9,9 +9,9 @@ export async function up(knex: Knex): Promise<void> {
   set search_path = ${DB_SCHEMA},public;
 
   -- Add system rules
-  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule) values ('New Project Attachment','{}', true); -- 1
-  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule) values ('New Survey Attachment','{}', true); -- 2
-  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule) values ('New Occurrence','{}', true); -- 3
+  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule, start_date) values ('New Project Attachment','{}', true, now()); -- 1
+  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule, start_date) values ('New Survey Attachment','{}', true, now()); -- 2
+  insert into  ${DB_SCHEMA}.security_rule (name, rule_definition, system_rule, start_date) values ('New Occurrence','{}', true, now()); -- 3
 
   `);
 }
