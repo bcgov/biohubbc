@@ -16,6 +16,7 @@ export enum DWC_CLASS {
   OCCURRENCE = 'occurrence',
   MEASUREMENTORFACT = 'measurementorfact',
   RESOURCERELATIONSHIP = 'resourcerelationship',
+  TAXON = 'taxon',
   META = 'meta'
 }
 
@@ -46,12 +47,16 @@ export const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
         'lifeStage',
         'individualCount',
         'occurrenceRemarks',
-        'identifiedBy'
+        'identifiedBy',
+        'organismQuantity',
+        'organismQuantityType'
       ];
     case DWC_CLASS.MEASUREMENTORFACT:
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
     case DWC_CLASS.RESOURCERELATIONSHIP:
       return ['resourceRelationshipID', 'resourceID', 'relatedResourceID', 'relationshipOfResource'];
+    case DWC_CLASS.TAXON:
+      return ['eventID', 'taxonID', 'vernacularName'];
     default:
       return [];
   }
@@ -89,6 +94,8 @@ export const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
     case DWC_CLASS.RESOURCERELATIONSHIP:
       return ['resourceRelationshipID', 'resourceID', 'relatedResourceID', 'relationshipOfResource'];
+    case DWC_CLASS.TAXON:
+      return ['eventID', 'taxonID'];
     default:
       return [];
   }
@@ -104,6 +111,8 @@ export const getRequiredFieldsByHeader = (dwcClass: DWC_CLASS): string[] => {
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
     case DWC_CLASS.RESOURCERELATIONSHIP:
       return ['resourceRelationshipID', 'resourceID', 'relatedResourceID', 'relationshipOfResource'];
+    case DWC_CLASS.TAXON:
+      return ['eventID', 'taxonID'];
     default:
       return [];
   }
@@ -141,6 +150,9 @@ export function isDWCArchiveValid(dwcArchive: DWCArchive): ICsvState[] {
         .validate(getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP))
         .getState()
     );
+
+  dwcArchive?.worksheets.taxon &&
+    responses.push(dwcArchive?.worksheets.taxon.validate(getDWCCSVValidators(DWC_CLASS.TAXON)).getState());
 
   return responses;
 }

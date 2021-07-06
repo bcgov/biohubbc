@@ -1,3 +1,4 @@
+import xlsx from 'xlsx';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
@@ -15,6 +16,7 @@ import { isDWCArchiveValid } from '../../../../../../utils/media/csv/dwc/dwc-arc
 import { IMediaState } from '../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../utils/media/media-utils';
 import { logRequest } from '../../../../../../utils/path-utils';
+import moment from 'moment';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/observations/upload');
 
@@ -237,7 +239,7 @@ function validateDWCArchive(): RequestHandler {
       const csvState: ICsvState[] = isDWCArchiveValid(dwcArchive);
 
       if (csvState.some((item) => !item.isValid)) {
-        return res.status(200).json(mediaState);
+        return res.status(200).json(csvState);
       }
 
       next();
@@ -294,6 +296,8 @@ export const uploadDWCArchiveOccurrences = async (
   file: DWCArchive,
   connection: IDBConnection
 ) => {
+  defaultLog.debug({ label: 'uploadDWCArchiveOccurrences', message: 'occurrenceSubmissionId', occurrenceSubmissionId });
+
   const eventHeaders = file.worksheets.event?.getHeaders();
   const eventRows = file.worksheets.event?.getRows();
 
@@ -316,7 +320,7 @@ export const uploadDWCArchiveOccurrences = async (
   const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
   const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
 
-  return occurrenceRows?.map(async (row) => {
+  const scrapedOccurrences = occurrenceRows?.map((row) => {
     const occurrenceEventId = row[occurrenceEventIdHeader];
     const associatedTaxa = row[associatedTaxaHeader];
     const lifestage = row[lifestageHeader];
@@ -331,7 +335,9 @@ export const uploadDWCArchiveOccurrences = async (
 
     eventRows?.forEach((row) => {
       if (row[eventEventIdHeader] === occurrenceEventId) {
-        eventDate = row[eventDateHeader];
+        const eventMoment = convertExcelDateToMoment(row[eventDateHeader] as number);
+        eventDate = eventMoment.toISOString();
+
         verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
       }
     });
@@ -344,7 +350,7 @@ export const uploadDWCArchiveOccurrences = async (
       }
     });
 
-    const occurrence = new PostOccurrence({
+    return new PostOccurrence({
       associatedtaxa: associatedTaxa,
       lifestage: lifestage,
       individualCount: individualCount,
@@ -355,17 +361,34 @@ export const uploadDWCArchiveOccurrences = async (
       organismQuantityType: organismQuantityType,
       eventDate: eventDate
     });
+  });
 
-    const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, occurrence);
+  return Promise.all(
+    scrapedOccurrences.map(async (scrapedOccurrence) => {
+      const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL post statement');
-    }
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL post statement');
+      }
 
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response.rowCount) {
-      throw new HTTP400('Failed to insert occurrence data');
-    }
+      if (!response || !response.rowCount) {
+        throw new HTTP400('Failed to insert occurrence data');
+      }
+    })
+  );
+};
+
+export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
+  const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
+
+  return moment({
+    year: ssfDate.y,
+    month: ssfDate.m,
+    day: ssfDate.d,
+    hour: ssfDate.H,
+    minute: ssfDate.M,
+    second: ssfDate.S
   });
 };

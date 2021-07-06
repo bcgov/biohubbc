@@ -66,6 +66,15 @@ export class DWCArchive implements IWorksheets {
         continue;
       }
 
+      if (/^taxon\.\w+$/.test(this.rawFiles[i].fileName)) {
+        this.worksheets.taxon = new CSVWorksheet(
+          this.rawFiles[i].fileName,
+          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
+        );
+
+        continue;
+      }
+
       if (/^meta\.\w+$/.test(this.rawFiles[i].fileName)) {
         this.extra.meta = this.rawFiles[i];
 
