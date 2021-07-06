@@ -53,13 +53,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: 'white'
   },
   chipActive: {
-    backgroundColor: theme.palette.warning.light
+    backgroundColor: theme.palette.warning.main
   },
   chipPublishedCompleted: {
-    backgroundColor: theme.palette.success.light
+    backgroundColor: theme.palette.success.main
   },
-  chipUnpublishedDraft: {
+  chipUnpublished: {
     backgroundColor: theme.palette.text.disabled
+  },
+  chipDraft: {
+    backgroundColor: theme.palette.info.main
   }
 }));
 
@@ -90,7 +93,7 @@ const ProjectsListPage: React.FC = () => {
 
     if (ProjectStatusType.UNPUBLISHED === status_name) {
       chipLabel = 'UNPUBLISHED';
-      chipStatusClass = classes.chipUnpublishedDraft;
+      chipStatusClass = classes.chipUnpublished;
     } else if (ProjectStatusType.PUBLISHED === status_name) {
       chipLabel = 'PUBLISHED';
       chipStatusClass = classes.chipPublishedCompleted;
@@ -102,7 +105,7 @@ const ProjectsListPage: React.FC = () => {
       chipStatusClass = classes.chipPublishedCompleted;
     } else if (ProjectStatusType.DRAFT === status_name) {
       chipLabel = 'DRAFT';
-      chipStatusClass = classes.chipUnpublishedDraft;
+      chipStatusClass = classes.chipDraft;
     }
 
     return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;

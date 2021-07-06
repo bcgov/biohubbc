@@ -4,54 +4,46 @@ exports[`Project Draft Form renders correctly with empty initial values 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <label
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+        data-shrink="false"
+        for="draft_name"
+        id="draft_name-label"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        Draft Name
+        <span
+          aria-hidden="true"
+          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            for="draft_name"
-            id="draft_name-label"
+           *
+        </span>
+      </label>
+      <div
+        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+      >
+        <input
+          aria-invalid="false"
+          class="MuiInputBase-input MuiOutlinedInput-input"
+          id="draft_name"
+          name="draft_name"
+          required=""
+          type="text"
+          value=""
+        />
+        <fieldset
+          aria-hidden="true"
+          class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+        >
+          <legend
+            class="PrivateNotchedOutline-legendLabelled-3"
           >
-            Draft Name
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
+            <span>
+              Draft Name *
             </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-          >
-            <input
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="draft_name"
-              name="draft_name"
-              required=""
-              type="text"
-              value=""
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
-              >
-                <span>
-                  Draft Name *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
+          </legend>
+        </fieldset>
       </div>
     </div>
   </form>
@@ -62,62 +54,54 @@ exports[`Project Draft Form renders correctly with errors 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <label
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+        data-shrink="true"
+        for="draft_name"
+        id="draft_name-label"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        Draft Name
+        <span
+          aria-hidden="true"
+          class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="draft_name"
-            id="draft_name-label"
+           *
+        </span>
+      </label>
+      <div
+        class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+      >
+        <input
+          aria-describedby="draft_name-helper-text"
+          aria-invalid="true"
+          class="MuiInputBase-input MuiOutlinedInput-input"
+          id="draft_name"
+          name="draft_name"
+          required=""
+          type="text"
+          value="draft test name"
+        />
+        <fieldset
+          aria-hidden="true"
+          class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+        >
+          <legend
+            class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
           >
-            Draft Name
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
-            >
-               *
+            <span>
+              Draft Name *
             </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
-          >
-            <input
-              aria-describedby="draft_name-helper-text"
-              aria-invalid="true"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="draft_name"
-              name="draft_name"
-              required=""
-              type="text"
-              value="draft test name"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
-              >
-                <span>
-                  Draft Name *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
-            id="draft_name-helper-text"
-          >
-            Error this is a required field
-          </p>
-        </div>
+          </legend>
+        </fieldset>
       </div>
+      <p
+        class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+        id="draft_name-helper-text"
+      >
+        Error this is a required field
+      </p>
     </div>
   </form>
 </DocumentFragment>
@@ -127,54 +111,46 @@ exports[`Project Draft Form renders correctly with populated initial values 1`] 
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      <label
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+        data-shrink="true"
+        for="draft_name"
+        id="draft_name-label"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        Draft Name
+        <span
+          aria-hidden="true"
+          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="draft_name"
-            id="draft_name-label"
+           *
+        </span>
+      </label>
+      <div
+        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+      >
+        <input
+          aria-invalid="false"
+          class="MuiInputBase-input MuiOutlinedInput-input"
+          id="draft_name"
+          name="draft_name"
+          required=""
+          type="text"
+          value="draft test name"
+        />
+        <fieldset
+          aria-hidden="true"
+          class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+        >
+          <legend
+            class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
           >
-            Draft Name
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
+            <span>
+              Draft Name *
             </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-          >
-            <input
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="draft_name"
-              name="draft_name"
-              required=""
-              type="text"
-              value="draft test name"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
-              >
-                <span>
-                  Draft Name *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
+          </legend>
+        </fieldset>
       </div>
     </div>
   </form>
