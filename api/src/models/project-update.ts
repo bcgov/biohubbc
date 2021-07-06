@@ -244,6 +244,7 @@ export class GetProjectData {
   start_date: string;
   end_date: string;
   revision_count: number;
+  publish_date: string;
 
   constructor(projectData?: any, activityData?: any[]) {
     defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
@@ -254,6 +255,7 @@ export class GetProjectData {
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.revision_count = projectData?.revision_count ?? null;
+    this.publish_date = projectData?.publish_date ?? '';
   }
 }
 

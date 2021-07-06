@@ -36,6 +36,8 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { Tooltip } from '@material-ui/core';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -194,6 +196,9 @@ const ProjectPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
+  const disableDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !!projectWithDetails.project.publish_date;
+
   return (
     <>
       <Paper elevation={2} square={true}>
@@ -249,18 +254,22 @@ const ProjectPage: React.FC = () => {
                   {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
                 </Button>
               </Box>
-              {keycloakWrapper?.isSystemAdmin() && (
+              {showDeleteProjectButton && (
                 <>
-                  <Box ml={4} mt={4} mb={4}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      data-testid="delete-project-button"
-                      startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                      onClick={showDeleteProjectDialog}>
-                      Delete Project
-                    </Button>
-                  </Box>
+                  <Tooltip arrow color="secondary" title={disableDeleteProjectButton ? "Cannot delete a published project" : ""}>
+                    <Box ml={4} mt={4} mb={4}>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        data-testid="delete-project-button"
+                        startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                        onClick={showDeleteProjectDialog}
+                        disabled={disableDeleteProjectButton}
+                        >
+                        Delete Project
+                      </Button>
+                    </Box>
+                  </Tooltip>
                 </>
               )}
             </Box>
