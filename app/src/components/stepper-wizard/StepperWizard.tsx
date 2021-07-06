@@ -1,10 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+//import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import ArrowForward from '@material-ui/icons/ArrowForward';
@@ -13,7 +15,7 @@ import Icon from '@mdi/react';
 import { Formik } from 'formik';
 import React, { ReactElement, useCallback } from 'react';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
@@ -21,7 +23,19 @@ const useStyles = makeStyles(() => ({
     }
   },
   stepTitle: {
-    marginBottom: '0.45rem'
+    marginBottom: 0
+  },
+  stepDescription: {
+    maxWidth: '90ch'
+  },
+  stepper: {
+    width: '280px',
+    background: 'transparent'
+  },
+  [theme.breakpoints.down('md')]: {
+    stepperContainer: {
+      display: 'none'
+    }
   }
 }));
 
@@ -134,50 +148,58 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
 
     return (
       <>
-        <Box mb={3}>
+        <Box mb={4}>
           <Typography variant="h2" className={classes.stepTitle}>
             {steps[activeStep].stepTitle}
           </Typography>
-          <Typography variant="subtitle1">{steps[activeStep].stepSubTitle}</Typography>
         </Box>
-        <Formik
-          key={steps[activeStep].stepTitle}
-          innerRef={innerRef}
-          enableReinitialize={true}
-          initialValues={steps[activeStep].stepInitialValues}
-          validationSchema={steps[activeStep].stepYupSchema}
-          validateOnBlur={true}
-          validateOnChange={false}
-          onSubmit={() => {
-            // do nothing
-          }}>
-          {steps[activeStep].stepContent}
-        </Formik>
+
+        <Typography color="textSecondary" className={classes.stepDescription}>
+          {steps[activeStep].stepSubTitle}
+        </Typography>
+
+        <Box>
+          <Box mt={6}>
+            <Formik
+              key={steps[activeStep].stepTitle}
+              innerRef={innerRef}
+              enableReinitialize={true}
+              initialValues={steps[activeStep].stepInitialValues}
+              validationSchema={steps[activeStep].stepYupSchema}
+              validateOnBlur={true}
+              validateOnChange={false}
+              onSubmit={() => {
+                // do nothing
+              }}>
+              {steps[activeStep].stepContent}
+            </Formik>
+          </Box>
+        </Box>
       </>
     );
-  }, [activeStep, innerRef, steps, classes.stepTitle]);
+  }, [activeStep, innerRef, steps, classes.stepTitle, classes.stepDescription]);
 
   return (
-    <Box display="flex">
-      <Box flex="0 1 30%">
-        <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-          {getStepperWizardLabels()}
-        </Stepper>
+    <Box display="flex" component={Paper}>
+      <Box className={classes.stepperContainer} display="flex">
+        <Box p={5} pb={7}>
+          <Stepper nonLinear orientation="vertical" activeStep={activeStep} className={classes.stepper}>
+            {getStepperWizardLabels()}
+          </Stepper>
+        </Box>
+
+        <Box>
+          <Divider orientation="vertical" />
+        </Box>
       </Box>
-      <Box>
-        <Divider orientation="vertical" />
-      </Box>
-      <Box flex="1 0 0">
-        <Box display="flex" flexDirection="column" height="100%">
-          <Box flex="1 0 auto" p={3}>
-            {getStepperWizardContent()}
-          </Box>
-          <Box py={1}>
-            <Divider orientation="horizontal" />
-          </Box>
-          <Box display="flex" justifyContent="space-between" p={3}>
-            {getStepperWizardControls()}
-          </Box>
+
+      <Box display="flex" flexDirection="column" flex="1 1 auto" p={5}>
+        <Box flex="1 1 auto">{getStepperWizardContent()}</Box>
+        <Box pt={7} pb={5}>
+          <Divider orientation="horizontal" />
+        </Box>
+        <Box display="flex" justifyContent="space-between">
+          {getStepperWizardControls()}
         </Box>
       </Box>
     </Box>

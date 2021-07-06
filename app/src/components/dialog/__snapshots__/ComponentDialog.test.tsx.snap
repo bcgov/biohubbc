@@ -9,11 +9,7 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
   >
     <div
       id="root"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-1"
-      />
-    </div>
+    />
   </div>
   <div
     class="MuiDialog-root"
@@ -55,17 +51,13 @@ exports[`ComponentDialog matches snapshot when open 1`] = `
           class="MuiDialogContent-root"
         >
           <div
-            class="MuiBox-root MuiBox-root-2"
+            class="MuiBox-root MuiBox-root-1"
           >
-            <div
-              class="MuiBox-root MuiBox-root-3"
+            <p
+              class="MuiTypography-root MuiTypography-body1"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                This is a test component
-              </p>
-            </div>
+              This is a test component
+            </p>
           </div>
         </div>
         <div
