@@ -32,6 +32,28 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
+const hasSystemRoleMock = jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false);
+
+const defaultAuthState = {
+  keycloakWrapper: {
+    keycloak: {
+      authenticated: true
+    },
+    hasLoadedAllUserInfo: true,
+    systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
+    getUserIdentifier: () => 'testuser',
+    hasAccessRequest: false,
+    hasSystemRole: hasSystemRoleMock,
+    getIdentitySource: () => 'idir',
+    username: 'testusername',
+    displayName: 'testdisplayname',
+    email: 'test@email.com',
+    firstName: 'testfirst',
+    lastName: 'testlast',
+    refresh: () => {}
+  }
+};
+
 describe('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -87,30 +109,8 @@ describe('ProjectPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
-    const hasSystemRoleMock = jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false);
-
-    const authState = {
-      keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
-        getUserIdentifier: () => 'testuser',
-        hasAccessRequest: false,
-        hasSystemRole: hasSystemRoleMock,
-        getIdentitySource: () => 'idir',
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
-      }
-    };
-
     const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={(defaultAuthState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -146,21 +146,9 @@ describe('ProjectPage', () => {
 
     const authState = {
       keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
+        ...defaultAuthState.keycloakWrapper,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        getUserIdentifier: () => 'testuser',
-        hasAccessRequest: false,
-        hasSystemRole: () => true,
-        getIdentitySource: () => 'idir',
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
+        hasSystemRole: () => true
       }
     };
 
@@ -192,21 +180,9 @@ describe('ProjectPage', () => {
 
     const authState = {
       keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
+        ...defaultAuthState.keycloakWrapper,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        getUserIdentifier: () => 'testuser',
-        hasAccessRequest: false,
-        hasSystemRole: () => true,
-        getIdentitySource: () => 'idir',
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
+        hasSystemRole: () => true
       }
     };
 
@@ -238,21 +214,9 @@ describe('ProjectPage', () => {
 
     const authState = {
       keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
+        ...defaultAuthState.keycloakWrapper,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        getUserIdentifier: () => 'testuser',
-        hasAccessRequest: false,
-        hasSystemRole: () => true,
-        getIdentitySource: () => 'idir',
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
+        hasSystemRole: () => true
       }
     };
 
@@ -281,21 +245,9 @@ describe('ProjectPage', () => {
 
     const authState = {
       keycloakWrapper: {
-        keycloak: {
-          authenticated: true
-        },
-        hasLoadedAllUserInfo: true,
+        ...defaultAuthState.keycloakWrapper,
         systemRoles: ['Non Admin User'] as string[],
-        getUserIdentifier: () => 'testuser',
-        hasAccessRequest: false,
-        hasSystemRole: () => false,
-        getIdentitySource: () => 'idir',
-        username: 'testusername',
-        displayName: 'testdisplayname',
-        email: 'test@email.com',
-        firstName: 'testfirst',
-        lastName: 'testlast',
-        refresh: () => {}
+        hasSystemRole: () => false
       }
     };
 

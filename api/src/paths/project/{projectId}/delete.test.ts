@@ -86,7 +86,7 @@ describe('deleteProject', () => {
     }
   });
 
-  it('should throw a 400 error user has insufficient role to delete', async () => {
+  it('should throw a 400 error when user has insufficient role to delete', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
