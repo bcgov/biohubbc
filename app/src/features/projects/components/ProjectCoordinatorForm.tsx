@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -104,29 +103,39 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             required={true}
           />
         </Grid>
-        <Grid item xs={12}>
-          <FormControl
-            required={true}
-            component="fieldset"
-            error={touched.share_contact_details && Boolean(errors.share_contact_details)}>
-            <FormLabel component="legend" className={classes.legend}>
-              Share Contact Details
-            </FormLabel>
-            <Typography>Do you want the project coordinator contact information visible to the public?</Typography>
-            <Box mt={2}>
-              <RadioGroup
-                name="share_contact_details"
-                aria-label="Share Contact Details"
-                value={values.share_contact_details}
-                onChange={handleChange}>
-                <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
-                <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
-                <FormHelperText>{errors.share_contact_details}</FormHelperText>
-              </RadioGroup>
-            </Box>
-          </FormControl>
-        </Grid>
       </Grid>
+      <Box mt={4}>
+        <FormControl
+          required={true}
+          component="fieldset"
+          error={touched.share_contact_details && Boolean(errors.share_contact_details)}>
+          <Box component="legend" className={classes.legend}>
+            Share Contact Details
+          </Box>
+          <Typography color="textSecondary">
+            Do you want the project coordinator contact information visible to the public?
+          </Typography>
+          <Box mt={2} pl={1}>
+            <RadioGroup
+              name="share_contact_details"
+              aria-label="Share Contact Details"
+              value={values.share_contact_details}
+              onChange={handleChange}>
+              <FormControlLabel
+                value="false"
+                control={<Radio required={true} color="primary" size="small" />}
+                label="No"
+              />
+              <FormControlLabel
+                value="true"
+                control={<Radio required={true} color="primary" size="small" />}
+                label="Yes"
+              />
+              <FormHelperText>{errors.share_contact_details}</FormHelperText>
+            </RadioGroup>
+          </Box>
+        </FormControl>
+      </Box>
     </form>
   );
 };

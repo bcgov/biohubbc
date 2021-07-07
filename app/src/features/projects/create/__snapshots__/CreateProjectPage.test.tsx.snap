@@ -3,13 +3,13 @@
 exports[`CreateProjectPage removes the extra project steps if all permits are marked as having not conducted sampling 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-50"
+    class="MuiBox-root MuiBox-root-57"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-51"
+        class="MuiBox-root MuiBox-root-58"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -22,11 +22,11 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-42 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-49 MuiTypography-colorPrimary"
               >
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-43 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                  class="MuiSvgIcon-root makeStyles-breadCrumbLinkIcon-50 MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -45,7 +45,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-52"
+        class="MuiBox-root MuiBox-root-59"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -53,7 +53,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
           Create Project
         </h1>
         <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-41 MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-48 MuiButton-outlinedPrimary"
           tabindex="0"
           type="button"
         >
@@ -68,10 +68,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </button>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-53"
+        class="MuiBox-root MuiBox-root-60"
       >
         <div
-          class="MuiBox-root MuiBox-root-54"
+          class="MuiBox-root MuiBox-root-61"
         >
           <span
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
@@ -81,16 +81,16 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiBox-root MuiBox-root-67 MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-57"
+          class="MuiBox-root MuiBox-root-68 makeStyles-stepperContainer-66"
         >
           <div
-            class="MuiBox-root MuiBox-root-58"
+            class="MuiBox-root MuiBox-root-69"
           >
             <div
-              class="MuiPaper-root MuiStepper-root MuiStepper-vertical MuiPaper-elevation0"
+              class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-65 MuiPaper-elevation0"
             >
               <div
                 class="MuiStep-root MuiStep-vertical"
@@ -182,38 +182,42 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-59"
+            class="MuiBox-root MuiBox-root-70"
           >
             <hr
               class="MuiDivider-root MuiDivider-vertical"
             />
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-71"
+        >
           <div
-            class="MuiBox-root MuiBox-root-60"
+            class="MuiBox-root MuiBox-root-72"
           >
             <div
-              class="MuiBox-root MuiBox-root-61"
+              class="MuiBox-root MuiBox-root-73"
+            >
+              <h2
+                class="MuiTypography-root makeStyles-stepTitle-63 MuiTypography-h2"
+              >
+                Permits
+              </h2>
+            </div>
+            <p
+              class="MuiTypography-root makeStyles-stepDescription-64 MuiTypography-body1 MuiTypography-colorTextSecondary"
+            >
+              Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).
+            </p>
+            <div
+              class="MuiBox-root MuiBox-root-74"
             >
               <div
-                class="MuiBox-root MuiBox-root-62"
+                class="MuiBox-root MuiBox-root-75"
               >
-                <div
-                  class="MuiBox-root MuiBox-root-63"
-                >
-                  <h2
-                    class="MuiTypography-root makeStyles-stepTitle-56 MuiTypography-h2"
-                  >
-                    Permits
-                  </h2>
-                  <h6
-                    class="MuiTypography-root MuiTypography-subtitle1"
-                  >
-                    Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).
-                  </h6>
-                </div>
                 <form>
                   <div
-                    class="MuiBox-root MuiBox-root-81"
+                    class="MuiBox-root MuiBox-root-95"
                   >
                     <div
                       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -222,10 +226,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root-83"
+                          class="MuiBox-root MuiBox-root-97"
                         >
                           <div
-                            class="MuiBox-root MuiBox-root-84"
+                            class="MuiBox-root MuiBox-root-98"
                           >
                             <div
                               class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -258,10 +262,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                 />
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-85 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-99 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-87 PrivateNotchedOutline-legendNotched-88"
+                                    class="PrivateNotchedOutline-legendLabelled-101 PrivateNotchedOutline-legendNotched-102"
                                   >
                                     <span>
                                       Permit Number *
@@ -272,7 +276,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-89"
+                            class="MuiBox-root MuiBox-root-103"
                           >
                             <div
                               class="MuiFormControl-root"
@@ -327,10 +331,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                 </svg>
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-85 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-99 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-87"
+                                    class="PrivateNotchedOutline-legendLabelled-101"
                                   >
                                     <span>
                                       Permit Type
@@ -344,7 +348,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-90"
+                            class="MuiBox-root MuiBox-root-104"
                           >
                             <div
                               class="MuiFormControl-root"
@@ -398,10 +402,10 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                                 </svg>
                                 <fieldset
                                   aria-hidden="true"
-                                  class="PrivateNotchedOutline-root-85 MuiOutlinedInput-notchedOutline"
+                                  class="PrivateNotchedOutline-root-99 MuiOutlinedInput-notchedOutline"
                                 >
                                   <legend
-                                    class="PrivateNotchedOutline-legendLabelled-87 PrivateNotchedOutline-legendNotched-88"
+                                    class="PrivateNotchedOutline-legendLabelled-101 PrivateNotchedOutline-legendNotched-102"
                                   >
                                     <span>
                                       Sampling Conducted
@@ -415,7 +419,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                             </div>
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root-91"
+                            class="MuiBox-root MuiBox-root-105"
                           >
                             <button
                               aria-label="remove permit"
@@ -447,7 +451,7 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                       </div>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root-82"
+                      class="MuiBox-root MuiBox-root-96"
                     >
                       <button
                         aria-label="add permit"
@@ -468,84 +472,84 @@ exports[`CreateProjectPage removes the extra project steps if all permits are ma
                   </div>
                 </form>
               </div>
-              <div
-                class="MuiBox-root MuiBox-root-77"
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-91"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-92"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-93"
+            >
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-62 MuiButton-outlinedPrimary"
+                data-testid="stepper_previous"
+                tabindex="0"
+                type="button"
               >
-                <hr
-                  class="MuiDivider-root"
+                <span
+                  class="MuiButton-label"
+                >
+                  <span
+                    class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                      />
+                    </svg>
+                  </span>
+                  Previous
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
                 />
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-78"
+              </button>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-94"
+            >
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-62 MuiButton-containedPrimary"
+                data-testid="stepper_submit"
+                tabindex="0"
+                type="submit"
               >
-                <div
-                  class="MuiBox-root MuiBox-root-79"
+                <span
+                  class="MuiButton-label"
                 >
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-55 MuiButton-outlinedPrimary"
-                    data-testid="stepper_previous"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      <span
-                        class="MuiButton-startIcon MuiButton-iconSizeMedium"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-                          />
-                        </svg>
-                      </span>
-                      Previous
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-                <div
-                  class="MuiBox-root MuiBox-root-80"
+                  Create project and Exit
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-62 MuiButton-outlinedPrimary"
+                data-testid="stepper_cancel"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiButton-label"
                 >
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-55 MuiButton-containedPrimary"
-                    data-testid="stepper_submit"
-                    tabindex="0"
-                    type="submit"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      Create project and Exit
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-55 MuiButton-outlinedPrimary"
-                    data-testid="stepper_cancel"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      Cancel
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-              </div>
+                  Cancel
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
             </div>
           </div>
         </div>
@@ -637,16 +641,16 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiBox-root MuiBox-root-20 MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-17"
+          class="MuiBox-root MuiBox-root-21 makeStyles-stepperContainer-19"
         >
           <div
-            class="MuiBox-root MuiBox-root-18"
+            class="MuiBox-root MuiBox-root-22"
           >
             <div
-              class="MuiPaper-root MuiStepper-root MuiStepper-vertical MuiPaper-elevation0"
+              class="MuiPaper-root MuiStepper-root MuiStepper-vertical makeStyles-stepper-18 MuiPaper-elevation0"
             >
               <div
                 class="MuiStep-root MuiStep-vertical"
@@ -1060,35 +1064,39 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-19"
+            class="MuiBox-root MuiBox-root-23"
           >
             <hr
               class="MuiDivider-root MuiDivider-vertical"
             />
           </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-24"
+        >
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="MuiBox-root MuiBox-root-25"
           >
             <div
-              class="MuiBox-root MuiBox-root-21"
+              class="MuiBox-root MuiBox-root-26"
+            >
+              <h2
+                class="MuiTypography-root makeStyles-stepTitle-16 MuiTypography-h2"
+              >
+                Project Coordinator
+              </h2>
+            </div>
+            <p
+              class="MuiTypography-root makeStyles-stepDescription-17 MuiTypography-body1 MuiTypography-colorTextSecondary"
+            >
+              Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.
+            </p>
+            <div
+              class="MuiBox-root MuiBox-root-27"
             >
               <div
-                class="MuiBox-root MuiBox-root-22"
+                class="MuiBox-root MuiBox-root-28"
               >
-                <div
-                  class="MuiBox-root MuiBox-root-23"
-                >
-                  <h2
-                    class="MuiTypography-root makeStyles-stepTitle-16 MuiTypography-h2"
-                  >
-                    Project Coordinator
-                  </h2>
-                  <h6
-                    class="MuiTypography-root MuiTypography-subtitle1"
-                  >
-                    Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.
-                  </h6>
-                </div>
                 <form>
                   <div
                     class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -1127,10 +1135,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                           />
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-27"
+                              class="PrivateNotchedOutline-legendLabelled-32"
                             >
                               <span>
                                 First Name *
@@ -1174,10 +1182,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                           />
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-27"
+                              class="PrivateNotchedOutline-legendLabelled-32"
                             >
                               <span>
                                 Last Name *
@@ -1221,10 +1229,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                           />
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-27"
+                              class="PrivateNotchedOutline-legendLabelled-32"
                             >
                               <span>
                                 Business Email Address *
@@ -1306,10 +1314,10 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                             </div>
                             <fieldset
                               aria-hidden="true"
-                              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                              class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
                             >
                               <legend
-                                class="PrivateNotchedOutline-legendLabelled-27"
+                                class="PrivateNotchedOutline-legendLabelled-32"
                               >
                                 <span>
                                   Coordinator Agency *
@@ -1320,228 +1328,222 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                         </div>
                       </div>
                     </div>
-                    <div
-                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  </div>
+                  <div
+                    class="MuiBox-root MuiBox-root-34"
+                  >
+                    <fieldset
+                      class="MuiFormControl-root"
                     >
-                      <fieldset
-                        class="MuiFormControl-root"
+                      <legend
+                        class="MuiBox-root MuiBox-root-35 makeStyles-legend-29"
                       >
-                        <legend
-                          class="MuiFormLabel-root makeStyles-legend-24 Mui-required"
-                        >
-                          Share Contact Details
-                          <span
-                            aria-hidden="true"
-                            class="MuiFormLabel-asterisk"
-                          >
-                             *
-                          </span>
-                        </legend>
-                        <p
-                          class="MuiTypography-root MuiTypography-body1"
-                        >
-                          Do you want the project coordinator contact information visible to the public?
-                        </p>
+                        Share Contact Details
+                      </legend>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                      >
+                        Do you want the project coordinator contact information visible to the public?
+                      </p>
+                      <div
+                        class="MuiBox-root MuiBox-root-36"
+                      >
                         <div
-                          class="MuiBox-root MuiBox-root-29"
+                          aria-label="Share Contact Details"
+                          class="MuiFormGroup-root"
+                          role="radiogroup"
                         >
-                          <div
-                            aria-label="Share Contact Details"
-                            class="MuiFormGroup-root"
-                            role="radiogroup"
+                          <label
+                            class="MuiFormControlLabel-root"
                           >
-                            <label
-                              class="MuiFormControlLabel-root"
+                            <span
+                              aria-disabled="false"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-37 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-38 Mui-checked MuiIconButton-colorPrimary"
                             >
                               <span
-                                aria-disabled="false"
-                                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-30 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-31 Mui-checked MuiIconButton-colorPrimary"
+                                class="MuiIconButton-label"
                               >
-                                <span
-                                  class="MuiIconButton-label"
-                                >
-                                  <input
-                                    checked=""
-                                    class="PrivateSwitchBase-input-33"
-                                    name="share_contact_details"
-                                    required=""
-                                    type="radio"
-                                    value="false"
-                                  />
-                                  <div
-                                    class="PrivateRadioButtonIcon-root-34 PrivateRadioButtonIcon-checked-36"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                      />
-                                    </svg>
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-35"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                      />
-                                    </svg>
-                                  </div>
-                                </span>
-                                <span
-                                  class="MuiTouchRipple-root"
+                                <input
+                                  checked=""
+                                  class="PrivateSwitchBase-input-40"
+                                  name="share_contact_details"
+                                  required=""
+                                  type="radio"
+                                  value="false"
                                 />
+                                <div
+                                  class="PrivateRadioButtonIcon-root-41 PrivateRadioButtonIcon-checked-43"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                    />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-42 MuiSvgIcon-fontSizeSmall"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                    />
+                                  </svg>
+                                </div>
                               </span>
                               <span
-                                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                              >
-                                No
-                              </span>
-                            </label>
-                            <label
-                              class="MuiFormControlLabel-root"
+                                class="MuiTouchRipple-root"
+                              />
+                            </span>
+                            <span
+                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                            >
+                              No
+                            </span>
+                          </label>
+                          <label
+                            class="MuiFormControlLabel-root"
+                          >
+                            <span
+                              aria-disabled="false"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-37 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                             >
                               <span
-                                aria-disabled="false"
-                                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-30 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                                class="MuiIconButton-label"
                               >
-                                <span
-                                  class="MuiIconButton-label"
-                                >
-                                  <input
-                                    class="PrivateSwitchBase-input-33"
-                                    name="share_contact_details"
-                                    required=""
-                                    type="radio"
-                                    value="true"
-                                  />
-                                  <div
-                                    class="PrivateRadioButtonIcon-root-34"
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                      />
-                                    </svg>
-                                    <svg
-                                      aria-hidden="true"
-                                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-35"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                      />
-                                    </svg>
-                                  </div>
-                                </span>
-                                <span
-                                  class="MuiTouchRipple-root"
+                                <input
+                                  class="PrivateSwitchBase-input-40"
+                                  name="share_contact_details"
+                                  required=""
+                                  type="radio"
+                                  value="true"
                                 />
+                                <div
+                                  class="PrivateRadioButtonIcon-root-41"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                    />
+                                  </svg>
+                                  <svg
+                                    aria-hidden="true"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-42 MuiSvgIcon-fontSizeSmall"
+                                    focusable="false"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                    />
+                                  </svg>
+                                </div>
                               </span>
                               <span
-                                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                              >
-                                Yes
-                              </span>
-                            </label>
-                            <p
-                              class="MuiFormHelperText-root Mui-required"
-                            />
-                          </div>
+                                class="MuiTouchRipple-root"
+                              />
+                            </span>
+                            <span
+                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                            >
+                              Yes
+                            </span>
+                          </label>
+                          <p
+                            class="MuiFormHelperText-root Mui-required"
+                          />
                         </div>
-                      </fieldset>
-                    </div>
+                      </div>
+                    </fieldset>
                   </div>
                 </form>
               </div>
-              <div
-                class="MuiBox-root MuiBox-root-37"
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-44"
+          >
+            <hr
+              class="MuiDivider-root"
+            />
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-45"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-46"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-47"
+            >
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
+                data-testid="stepper_next"
+                tabindex="0"
+                type="submit"
               >
-                <hr
-                  class="MuiDivider-root"
-                />
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-38"
-              >
-                <div
-                  class="MuiBox-root MuiBox-root-39"
-                />
-                <div
-                  class="MuiBox-root MuiBox-root-40"
+                <span
+                  class="MuiButton-label"
                 >
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
-                    data-testid="stepper_next"
-                    tabindex="0"
-                    type="submit"
+                  Next
+                  <span
+                    class="MuiButton-endIcon MuiButton-iconSizeMedium"
                   >
-                    <span
-                      class="MuiButton-label"
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
                     >
-                      Next
-                      <span
-                        class="MuiButton-endIcon MuiButton-iconSizeMedium"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
-                          />
-                        </svg>
-                      </span>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
-                    data-testid="stepper_submit"
-                    tabindex="0"
-                    type="submit"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      Create project and Exit
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-15 MuiButton-outlinedPrimary"
-                    data-testid="stepper_cancel"
-                    tabindex="0"
-                    type="button"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      Cancel
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-              </div>
+                      <path
+                        d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
+                      />
+                    </svg>
+                  </span>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-15 MuiButton-containedPrimary"
+                data-testid="stepper_submit"
+                tabindex="0"
+                type="submit"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  Create project and Exit
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-15 MuiButton-outlinedPrimary"
+                data-testid="stepper_cancel"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  Cancel
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
             </div>
           </div>
         </div>

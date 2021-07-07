@@ -3,13 +3,13 @@
 exports[`ProjectsListPage renders with a list of drafts 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-52"
+    class="MuiBox-root MuiBox-root-57"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-53"
+        class="MuiBox-root MuiBox-root-58"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -49,7 +49,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-54"
+          class="MuiBox-root MuiBox-root-59"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -163,7 +163,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   scope="row"
                 >
                   <button
-                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-46 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineAlways makeStyles-linkButton-50 MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
                     data-testid="Draft 1"
                   >
                     Draft 1
@@ -188,7 +188,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-48 makeStyles-chipUnpublishedDraft-51"
+                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipDraft-56"
                   >
                     <span
                       class="MuiChip-label"
@@ -201,7 +201,7 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-48 makeStyles-chipUnpublishedDraft-51"
+                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipUnpublished-55"
                   >
                     <span
                       class="MuiChip-label"
@@ -223,13 +223,13 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
 exports[`ProjectsListPage renders with a proper list of projects when published and completed 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-30"
+    class="MuiBox-root MuiBox-root-33"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-31"
+        class="MuiBox-root MuiBox-root-34"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -269,7 +269,7 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-35"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -414,7 +414,7 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-26 makeStyles-chipPublishedCompleted-28"
+                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30"
                   >
                     <span
                       class="MuiChip-label"
@@ -427,7 +427,7 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-26 makeStyles-chipPublishedCompleted-28"
+                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30"
                   >
                     <span
                       class="MuiChip-label"
@@ -449,13 +449,13 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
 exports[`ProjectsListPage renders with a proper list of projects when unpublished and active 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-41"
+    class="MuiBox-root MuiBox-root-45"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-42"
+        class="MuiBox-root MuiBox-root-46"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -495,7 +495,7 @@ exports[`ProjectsListPage renders with a proper list of projects when unpublishe
         class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-43"
+          class="MuiBox-root MuiBox-root-47"
         >
           <h3
             class="MuiTypography-root MuiTypography-h4"
@@ -640,7 +640,7 @@ exports[`ProjectsListPage renders with a proper list of projects when unpublishe
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-37 makeStyles-chipActive-38"
+                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipActive-41"
                   >
                     <span
                       class="MuiChip-label"
@@ -653,7 +653,7 @@ exports[`ProjectsListPage renders with a proper list of projects when unpublishe
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-37 makeStyles-chipUnpublishedDraft-40"
+                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipUnpublished-43"
                   >
                     <span
                       class="MuiChip-label"
