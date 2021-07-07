@@ -582,7 +582,7 @@ describe('updateSurveyDetailsData', () => {
       revision_count: 0
     },
     survey_proprietor: null
-  }
+  };
 
   it('should throw a 400 error when no revision count in data', async () => {
     try {
@@ -604,12 +604,7 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
 
     try {
-      await update.updateSurveyDetailsData(
-        projectId,
-        surveyId,
-        data,
-        dbConnectionObj
-      );
+      await update.updateSurveyDetailsData(projectId, surveyId, data, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -618,7 +613,7 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
-  it('should throw a 400 error when no rowCount produced for putSurveyDetailsSQL', async () => {
+  it('should throw a 409 error when no rowCount produced for putSurveyDetailsSQL', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: null });
@@ -626,16 +621,11 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
 
     try {
-      await update.updateSurveyDetailsData(
-        projectId,
-        surveyId,
-        data,
-        dbConnectionObj
-      );
+      await update.updateSurveyDetailsData(projectId, surveyId, data, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
+      expect(actualError.status).to.equal(409);
       expect(actualError.message).to.equal('Failed to update stale survey data');
     }
   });
