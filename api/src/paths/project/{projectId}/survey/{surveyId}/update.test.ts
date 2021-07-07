@@ -621,12 +621,50 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
 
     try {
-      await update.updateSurveyDetailsData(projectId, surveyId, data, dbConnectionObj);
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(409);
       expect(actualError.message).to.equal('Failed to update stale survey data');
+    }
+  });
+
+  it('should throw a 400 error when no sql produced for deleteFocalSpeciesSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(null);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+    }
+  });
+
+  it('should throw a 400 error when no sql produced for deleteAncillarySpeciesSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(null);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL delete statement');
     }
   });
 });
