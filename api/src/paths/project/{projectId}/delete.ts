@@ -10,6 +10,7 @@ import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 import { deleteProjectSQL } from '../../../queries/project/project-delete-queries';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getProjectSQL } from '../../../queries/project/project-view-queries';
+import * as auth_utils from '../../../security/auth-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/delete');
 
@@ -82,8 +83,6 @@ export function deleteProject(): RequestHandler {
 
       const projectData = await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
 
-      await connection.commit();
-
       const projectResult = (projectData && projectData.rows && projectData.rows[0]) || null;
 
       if (!projectResult || !projectResult.id) {
@@ -91,6 +90,13 @@ export function deleteProject(): RequestHandler {
       }
 
       if (req['system_user']['role_names'][0] === SYSTEM_ROLE.PROJECT_ADMIN && projectResult.publish_date) {
+        throw new HTTP400('Cannot delete a published project.');
+      }
+
+      if (
+        auth_utils.userHasValidSystemRoles([SYSTEM_ROLE.PROJECT_ADMIN], [req['system_user']['role_names']]) &&
+        projectResult.publish_date
+      ) {
         throw new HTTP400('Cannot delete a published project.');
       }
 
@@ -105,8 +111,6 @@ export function deleteProject(): RequestHandler {
       if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      //await connection.open();
 
       const getProjectAttachmentsResult = await connection.query(
         getProjectAttachmentSQLStatement.text,
