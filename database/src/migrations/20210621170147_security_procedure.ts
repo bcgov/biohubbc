@@ -154,14 +154,19 @@ export async function up(knex: Knex): Promise<void> {
       FOR v_target, v_rule_definition IN
             SELECT trim('"' FROM cast(data->'target' as text)), trim('"' FROM cast(data->'rule' as text))
         FROM ${DB_SCHEMA}.security_rule, json_array_elements(rule_definition) AS data
-        where id = __sec_rule_id and system_rule = false and (end_date <= now() or end_date is NULL)
+        where id = __sec_rule_id and system_rule = false and
+        (end_date <= now() or end_date is NULL) and
+        (start_date >= now())
       LOOP
         -- Execute the query to find the records that need to be secured
         execute format('select ${DB_SCHEMA}.api_secure_record(id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __sec_rule_id, 'NULL', v_rule_definition);
 
         <<inner>>
         FOR v_su_id IN
-        SELECT user_data FROM ${DB_SCHEMA}.security_rule, json_array_elements(users) AS user_data where id =__sec_rule_id and users is NOT NULL and system_rule = false and (end_date <= now() or end_date is NULL)
+        SELECT user_data FROM ${DB_SCHEMA}.security_rule, json_array_elements(users) AS user_data
+        where id =__sec_rule_id and users is NOT NULL and system_rule = false and
+        (end_date <= now() or end_date is NULL) and
+        (start_date >= now())
         LOOP
           -- Execute the query to set the exception for identified users
           execute format('select ${DB_SCHEMA}.api_secure_record(id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __sec_rule_id, v_su_id, v_rule_definition);
