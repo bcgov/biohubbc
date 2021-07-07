@@ -255,7 +255,7 @@ export class GetProjectData {
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.revision_count = projectData?.revision_count ?? null;
-    this.publish_date = projectData?.publish_date ?? '';
+    this.publish_date = projectData?.publish_date || '';
   }
 }
 

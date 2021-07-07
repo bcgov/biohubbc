@@ -116,7 +116,7 @@ describe('deleteProject', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Cannot delete a published project.');
+      expect(actualError.message).to.equal('Cannot delete a published project if you are not a system administrator.');
     }
   });
 

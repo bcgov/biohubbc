@@ -93,7 +93,7 @@ export function deleteProject(): RequestHandler {
         projectResult.publish_date &&
         userHasValidSystemRoles([SYSTEM_ROLE.PROJECT_ADMIN], req['system_user']['role_names'])
       ) {
-        throw new HTTP400('Cannot delete a published project.');
+        throw new HTTP400('Cannot delete a published project if you are not a system administrator.');
       }
 
       /**
