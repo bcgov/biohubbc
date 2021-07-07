@@ -11,7 +11,7 @@ import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project');
 
-export const POST: Operation = [logRequest('paths/spi/transform', 'POST'), prepSPITemplate(), validateSPITemplate()];
+export const POST: Operation = [logRequest('paths/spi/validate', 'POST'), prepSPITemplate(), validateSPITemplate()];
 
 POST.apiDoc = {
   description: 'Validate a SPI template into Darwin Core.',
