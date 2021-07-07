@@ -155,8 +155,8 @@ export async function up(knex: Knex): Promise<void> {
             SELECT trim('"' FROM cast(data->'target' as text)), trim('"' FROM cast(data->'rule' as text))
         FROM ${DB_SCHEMA}.security_rule, json_array_elements(rule_definition) AS data
         where id = __sec_rule_id and system_rule = false and
-        (end_date <= now() or end_date is NULL) and
-        (start_date >= now())
+        (end_date <= now()::date or end_date is NULL) and
+        (start_date >= now()::date)
       LOOP
         -- Execute the query to find the records that need to be secured
         execute format('select ${DB_SCHEMA}.api_secure_record(id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __sec_rule_id, 'NULL', v_rule_definition);
