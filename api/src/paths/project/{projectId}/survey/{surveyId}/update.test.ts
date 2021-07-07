@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as update from './update';
+import * as create from '../create';
 import * as db from '../../../../../database/db';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
@@ -579,7 +580,9 @@ describe('updateSurveyDetailsData', () => {
     survey_details: {
       id: 1,
       survey_name: 'survey name',
-      revision_count: 0
+      revision_count: 0,
+      focal_species: [1],
+      ancillary_species: [2]
     },
     survey_proprietor: null
   };
@@ -704,6 +707,26 @@ describe('updateSurveyDetailsData', () => {
       expect(actualError.status).to.equal(409);
       expect(actualError.message).to.equal('Failed to delete survey ancillary species data');
     }
+  });
+
+  it('should return true on success', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    sinon.stub(create, 'insertFocalSpecies').resolves(1);
+    sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+
+    const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    expect(result).to.equal(true);
   });
 });
 

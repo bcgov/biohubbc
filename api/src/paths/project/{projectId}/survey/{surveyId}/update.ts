@@ -335,7 +335,7 @@ export const updateSurveyDetailsData = async (
   surveyId: number,
   data: IUpdateSurvey,
   connection: IDBConnection
-): Promise<void> => {
+): Promise<boolean> => {
   const putDetailsData = new PutSurveyDetailsData(data);
 
   const revision_count = putDetailsData.revision_count ?? null;
@@ -397,6 +397,8 @@ export const updateSurveyDetailsData = async (
     ) || [];
 
   await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
+
+  return true;
 };
 
 export const updateSurveyProprietorData = async (
