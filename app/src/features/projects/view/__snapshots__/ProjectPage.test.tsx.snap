@@ -33,21 +33,21 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-41"
+        class="MuiBox-root MuiBox-root-99"
       >
         <div
-          class="MuiBox-root MuiBox-root-42"
+          class="MuiBox-root MuiBox-root-100"
         >
           <div
-            class="MuiBox-root MuiBox-root-43"
+            class="MuiBox-root MuiBox-root-101"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-40 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-98 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-37 makeStyles-chipActive-38"
+              class="MuiChip-root makeStyles-chip-95 makeStyles-chipActive-96"
             >
               <span
                 class="MuiChip-label"
@@ -57,7 +57,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-44"
+            class="MuiBox-root MuiBox-root-102"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -72,10 +72,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-45"
+          class="MuiBox-root MuiBox-root-103"
         >
           <div
-            class="MuiBox-root MuiBox-root-46"
+            class="MuiBox-root MuiBox-root-104"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -107,39 +107,6 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               />
             </button>
           </div>
-          <div
-            class="MuiBox-root MuiBox-root-47"
-          >
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-              data-testid="delete-project-button"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                <span
-                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
-                >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                Delete Project
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -148,17 +115,17 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-48"
+      class="MuiBox-root MuiBox-root-105"
     >
       <aside
-        class="MuiBox-root MuiBox-root-49"
+        class="MuiBox-root MuiBox-root-106"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-36 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-94 MuiList-padding"
             role="navigation"
           >
             <a
@@ -249,7 +216,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-50"
+        class="MuiBox-root MuiBox-root-107"
       />
     </div>
   </div>
@@ -336,39 +303,6 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
               />
             </button>
           </div>
-          <div
-            class="MuiBox-root MuiBox-root-17"
-          >
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-              data-testid="delete-project-button"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiButton-label"
-              >
-                <span
-                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
-                >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                Delete Project
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -377,10 +311,10 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-18"
+      class="MuiBox-root MuiBox-root-17"
     >
       <aside
-        class="MuiBox-root MuiBox-root-19"
+        class="MuiBox-root MuiBox-root-18"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
@@ -478,7 +412,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-20"
+        class="MuiBox-root MuiBox-root-19"
       />
     </div>
   </div>

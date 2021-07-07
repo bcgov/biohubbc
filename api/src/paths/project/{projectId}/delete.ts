@@ -9,6 +9,8 @@ import { getSurveyIdsSQL } from '../../../queries/survey/survey-view-queries';
 import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 import { deleteProjectSQL } from '../../../queries/project/project-delete-queries';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
+import { getProjectSQL } from '../../../queries/project/project-view-queries';
+import { userHasValidSystemRoles } from '../../../security/auth-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/delete');
 
@@ -58,7 +60,7 @@ export function deleteProject(): RequestHandler {
     defaultLog.debug({ label: 'Delete project', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
+      throw new HTTP400('Missing required path param: `projectId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -66,6 +68,36 @@ export function deleteProject(): RequestHandler {
     try {
       /**
        * PART 1
+       * Check that user is a system administrator - can delete a project (published or not)
+       * Check that user is a project administrator - can delete a project (unpublished only)
+       *
+       */
+
+      const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
+
+      if (!getProjectSQLStatement) {
+        throw new HTTP400('Failed to build SQL get statement');
+      }
+
+      await connection.open();
+
+      const projectData = await connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
+
+      const projectResult = (projectData && projectData.rows && projectData.rows[0]) || null;
+
+      if (!projectResult || !projectResult.id) {
+        throw new HTTP400('Failed to get the project');
+      }
+
+      if (
+        projectResult.publish_date &&
+        userHasValidSystemRoles([SYSTEM_ROLE.PROJECT_ADMIN], req['system_user']['role_names'])
+      ) {
+        throw new HTTP400('Cannot delete a published project if you are not a system administrator.');
+      }
+
+      /**
+       * PART 2
        * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
        * Used to delete them from S3 separately later
        */
@@ -75,8 +107,6 @@ export function deleteProject(): RequestHandler {
       if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const getProjectAttachmentsResult = await connection.query(
         getProjectAttachmentSQLStatement.text,
@@ -105,7 +135,7 @@ export function deleteProject(): RequestHandler {
       });
 
       /**
-       * PART 2
+       * PART 3
        * Delete the project and all associated records/resources from our DB
        */
       const deleteProjectSQLStatement = deleteProjectSQL(Number(req.params.projectId));
