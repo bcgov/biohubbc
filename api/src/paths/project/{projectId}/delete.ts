@@ -59,12 +59,13 @@ export function deleteProject(): RequestHandler {
     defaultLog.debug({ label: 'Delete project', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `projectId`');
+      throw new HTTP400('Missing required path param: `projectId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+
       /**
        * PART 1
        * Check that user is a system administrator - can delete a project (published or not)
