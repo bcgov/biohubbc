@@ -667,6 +667,44 @@ describe('updateSurveyDetailsData', () => {
       expect(actualError.message).to.equal('Failed to build SQL delete statement');
     }
   });
+
+  it('should throw a 400 error when fails to delete focal species data', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(null).onThirdCall().resolves(true);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to delete survey focal species data');
+    }
+  });
+
+  it('should throw a 400 error when fails to delete ancillary species data', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(null);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to delete survey ancillary species data');
+    }
+  });
 });
 
 describe('getSurveyDetailsData', () => {
