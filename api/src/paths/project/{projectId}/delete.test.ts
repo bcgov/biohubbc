@@ -4,16 +4,16 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
 import * as project_attachments_queries from '../../../queries/project/project-attachments-queries';
-import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
-import * as user_queries from '../../../queries/users/user-queries';
-import * as delete_project from './delete';
 import * as project_queries from '../../../queries/project/project-view-queries';
+import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
+import * as delete_project from './delete';
 
 chai.use(sinonChai);
 
-describe('deleteProject', () => {
+describe.only('deleteProject', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -44,7 +44,7 @@ describe('deleteProject', () => {
     params: {
       projectId: 1
     },
-    system_user: { role_names: ['SYSTEM_ADMINISTRATOR', 'role 2'] }
+    system_user: { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] }
   } as any;
 
   it('should throw an error when projectId is missing', async () => {
@@ -79,15 +79,44 @@ describe('deleteProject', () => {
       const result = delete_project.deleteProject();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL get statement');
+    }
+  });
+
+  it('should throw a 400 error user has insufficient role to delete', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: async () => {
+        return {
+          rowCount: 1,
+          rows: [
+            {
+              id: 1,
+              publish_date: 'some date'
+            }
+          ]
+        } as QueryResult<any>;
+      }
+    });
+
+    try {
+      const result = delete_project.deleteProject();
+
       await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: 1 } },
+        { ...sampleReq, system_user: { role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect(actualError.message).to.equal('Cannot delete a published project.');
     }
   });
 
@@ -102,10 +131,7 @@ describe('deleteProject', () => {
           rowCount: 1,
           rows: [
             {
-              id: 1,
-              user_identifier: 'identifier',
-              role_ids: [1],
-              role_names: ['SYSTEM_ADMINISTRATOR', 'role 2']
+              id: 1
             }
           ]
         } as QueryResult<any>;
@@ -114,7 +140,6 @@ describe('deleteProject', () => {
 
     sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`some nice query`);
     sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(null);
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
 
     try {
       const result = delete_project.deleteProject();
@@ -122,104 +147,87 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      console.log('actualError', actualError);
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build SQL get statement');
     }
   });
 
-  it('should throw a 400 error when missing request param projectId', async () => {
+  it('should throw a 400 error when failed to get result for project attachments', async () => {
+    const mockQuery = sinon.stub();
+
+    // mock project query
+    mockQuery.onCall(0).resolves({
+      rowCount: 1,
+      rows: [
+        {
+          id: 1
+        }
+      ]
+    });
+
+    // mock attachments query
+    mockQuery.onCall(1).resolves({ rows: null });
+
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
-      }
+      },
+      query: mockQuery
     });
 
     sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
 
     try {
       const result = delete_project.deleteProject();
 
-      await result(
-        { ...sampleReq, body: { ...sampleReq.body }, params: { projectId: undefined } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param: `projectId`');
+      expect(actualError.message).to.equal('Failed to get project attachments');
     }
   });
 
-  // it('should throw a 400 error when failed to get result for project attachments', async () => {
-  //   const mockQuery = sinon.stub();
+  it('should throw a 400 error when failed to get result for survey ids', async () => {
+    const mockQuery = sinon.stub();
 
-  //   mockQuery.onFirstCall().resolves({ rows: null });
+    // mock project query
+    mockQuery.onCall(0).resolves({
+      rowCount: 1,
+      rows: [
+        {
+          id: 1
+        }
+      ]
+    });
 
-  //   sinon.stub(db, 'getDBConnection').returns({
-  //     ...dbConnectionObj,
-  //     systemUserId: () => {
-  //       return 20;
-  //     },
-  //     query: async () => {
-  //       return {
-  //         rowCount: 1,
-  //         rows: [
-  //           {
-  //             id: 1,
-  //             user_identifier: 'identifier',
-  //             role_ids: [1],
-  //             role_names: ['SYSTEM_ADMINISTRATOR', 'role 2']
-  //           }
-  //         ]
-  //       } as QueryResult<any>;
-  //     }
-  //   });
+    // mock attachments query
+    mockQuery.onCall(1).resolves({ rows: [] });
 
-  //   sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-  //   sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-  //   sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+    // mock survey query
+    mockQuery.onCall(2).resolves({ rows: null });
 
-  //   try {
-  //     const result = delete_project.deleteProject();
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
 
-  //     await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-  //     expect.fail();
-  //   } catch (actualError) {
-  //     console.log('actualError', actualError);
-  //     expect(actualError.status).to.equal(undefined);
-  //     expect(actualError.message).to.equal('Failed to get project attachments');
-  //   }
-  // });
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
-  // it('should throw a 400 error when failed to get result for survey ids', async () => {
-  //   const mockQuery = sinon.stub();
+    try {
+      const result = delete_project.deleteProject();
 
-  //   mockQuery.onFirstCall().resolves({ rows: [] }).onSecondCall().resolves({ rows: null });
-
-  //   sinon.stub(db, 'getDBConnection').returns({
-  //     ...dbConnectionObj,
-  //     systemUserId: () => {
-  //       return 20;
-  //     },
-  //     query: mockQuery
-  //   });
-
-  //   sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-  //   sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-
-  //   try {
-  //     const result = delete_project.deleteProject();
-
-  //     await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-  //     expect.fail();
-  //   } catch (actualError) {
-  //     expect(actualError.status).to.equal(400);
-  //     expect(actualError.message).to.equal('Failed to get survey ids associated to project');
-  //   }
-  // });
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to get survey ids associated to project');
+    }
+  });
 });
