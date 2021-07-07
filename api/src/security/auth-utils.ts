@@ -174,6 +174,8 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
     throw new HTTP403('Access Denied');
   }
 
+  req.system_user = userObject;
+
   return true;
 };
 
