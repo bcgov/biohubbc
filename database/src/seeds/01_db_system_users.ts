@@ -14,17 +14,17 @@ const systemUsers = [
   { identifier: 'opieross', type: 'IDIR', roleId: 1 },
   { identifier: 'postman', type: 'IDIR', roleId: 2 },
   { identifier: 'robmunro', type: 'IDIR', roleId: 1 },
-  { identifier: 'rstens', type: 'IDIR', roleId: 1 },
+  { identifier: 'rstens', type: 'IDIR', roleId: 1 }, //13
   { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
   { identifier: 'sdevalap', type: 'IDIR', roleId: 1 },
-  { identifier: 'test1', type: 'BCEID', roleId: 1 },
-  { identifier: 'test2', type: 'BCEID', roleId: 1 },
-  { identifier: 'test3', type: 'IDIR', roleId: 1 },
-  { identifier: 'test4', type: 'IDIR', roleId: 1 },
-  { identifier: 'test5', type: 'IDIR', roleId: 1 },
-  { identifier: 'test6', type: 'IDIR', roleId: 1 },
-  { identifier: 'test7', type: 'IDIR', roleId: 1 },
-  { identifier: 'cypress', type: 'IDIR', roleId: 1 }
+  { identifier: 'test1', type: 'BCEID', roleId: 1 }, //16
+  { identifier: 'test2', type: 'BCEID', roleId: 4 }, //17
+  { identifier: 'test3', type: 'IDIR', roleId: 1 }, //18
+  { identifier: 'test4', type: 'IDIR', roleId: 2 }, //19
+  { identifier: 'test5', type: 'IDIR', roleId: 3 }, //20
+  { identifier: 'test6', type: 'IDIR', roleId: 4 }, //21
+  { identifier: 'test7', type: 'IDIR', roleId: 4 }, //22
+  { identifier: 'cypress', type: 'IDIR', roleId: 1 } //23
 ];
 
 /**

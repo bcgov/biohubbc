@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
@@ -714,19 +713,17 @@ const CreateProjectPage: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          <Paper>
-            <StepperWizard
-              activeStep={activeStep}
-              steps={stepForms.slice(0, numberOfSteps)}
-              innerRef={formikRef}
-              onChangeStep={handleSaveAndChangeStep}
-              onPrevious={handleSaveAndPrevious}
-              onNext={handleSaveAndNext}
-              onSubmit={handleSubmitProject}
-              onSubmitLabel={'Create project and Exit'}
-              onCancel={handleCancel}
-            />
-          </Paper>
+          <StepperWizard
+            activeStep={activeStep}
+            steps={stepForms.slice(0, numberOfSteps)}
+            innerRef={formikRef}
+            onChangeStep={handleSaveAndChangeStep}
+            onPrevious={handleSaveAndPrevious}
+            onNext={handleSaveAndNext}
+            onSubmit={handleSubmitProject}
+            onSubmitLabel={'Create project and Exit'}
+            onCancel={handleCancel}
+          />
         </Container>
       </Box>
     </>

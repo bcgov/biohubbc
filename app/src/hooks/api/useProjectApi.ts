@@ -4,13 +4,13 @@ import {
   ICreatePermitNoSamplingResponse,
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IGetProjectAttachmentsResponse,
+  IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
   IGetProjectsListResponse,
-  UPDATE_GET_ENTITIES,
-  IGetProjectForUpdateResponse,
+  IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
-  IGetProjectAttachmentsResponse,
-  IProjectAdvancedFilterRequest
+  UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
 
@@ -207,6 +207,18 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Publish/unpublish a project.
+   *
+   * @param {number} projectId the project id
+   * @param {boolean} publish set to `true` to publish the project, `false` to unpublish the project.
+   * @return {*}  {Promise<any>}
+   */
+  const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -220,7 +232,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProjectAttachment,
     deleteFundingSource,
     addFundingSource,
-    deleteProject
+    deleteProject,
+    publishProject
   };
 };
 

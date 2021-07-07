@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -20,16 +19,12 @@ export const BCeIDRequestFormYupSchema = yup.object().shape({
   request_reason: yup.string().max(300, 'Maximum 300 characters')
 });
 
-export interface IBCeIDRequestFormProps {
-  codes?: IGetAllCodeSetsResponse;
-}
-
 /**
  * Access Request - BCeID request fields
  *
  * @return {*}
  */
-const BCeIDRequestForm: React.FC<IBCeIDRequestFormProps> = (props) => {
+const BCeIDRequestForm = () => {
   return (
     <Box>
       <Grid container spacing={3}>
