@@ -9,7 +9,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectPage from './ProjectPage';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 
 const history = createMemoryHistory({ initialEntries: ['/projects/1'] });
 
@@ -87,21 +87,7 @@ describe('ProjectPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
-    const hasSystemRole = (validSystemRoles?: string[]) => {
-      if (!validSystemRoles || !validSystemRoles.length) {
-        return true;
-      }
-
-      const userSystemRoles = authState.keycloakWrapper.systemRoles;
-
-      for (const validRole of validSystemRoles) {
-        if (userSystemRoles.includes(validRole)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
+    const hasSystemRoleMock = jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false);
 
     const authState = {
       keycloakWrapper: {
@@ -112,7 +98,7 @@ describe('ProjectPage', () => {
         systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        hasSystemRole: hasSystemRole,
+        hasSystemRole: hasSystemRoleMock,
         getIdentitySource: () => 'idir',
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -124,7 +110,7 @@ describe('ProjectPage', () => {
     };
 
     const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={authState}>
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -158,22 +144,6 @@ describe('ProjectPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
-    const hasSystemRole = (validSystemRoles?: string[]) => {
-      if (!validSystemRoles || !validSystemRoles.length) {
-        return true;
-      }
-
-      const userSystemRoles = authState.keycloakWrapper.systemRoles;
-
-      for (const validRole of validSystemRoles) {
-        if (userSystemRoles.includes(validRole)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
-
     const authState = {
       keycloakWrapper: {
         keycloak: {
@@ -183,7 +153,7 @@ describe('ProjectPage', () => {
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        hasSystemRole: hasSystemRole,
+        hasSystemRole: () => true,
         getIdentitySource: () => 'idir',
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -194,8 +164,8 @@ describe('ProjectPage', () => {
       }
     };
 
-    const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={authState}>
+    const { getByTestId, findByText } = render(
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -220,22 +190,6 @@ describe('ProjectPage', () => {
     });
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
-    const hasSystemRole = (validSystemRoles?: string[]) => {
-      if (!validSystemRoles || !validSystemRoles.length) {
-        return true;
-      }
-
-      const userSystemRoles = authState.keycloakWrapper.systemRoles;
-
-      for (const validRole of validSystemRoles) {
-        if (userSystemRoles.includes(validRole)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
-
     const authState = {
       keycloakWrapper: {
         keycloak: {
@@ -245,7 +199,7 @@ describe('ProjectPage', () => {
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        hasSystemRole: hasSystemRole,
+        hasSystemRole: () => true,
         getIdentitySource: () => 'idir',
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -257,7 +211,7 @@ describe('ProjectPage', () => {
     };
 
     const { getByTestId, findByText } = render(
-      <AuthStateContext.Provider value={authState}>
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -272,28 +226,15 @@ describe('ProjectPage', () => {
     expect(getByTestId('delete-project-button')).toBeEnabled();
   });
 
-  it('does not see the delete button when accessing project as normal user', async () => {
+  it('sees delete project button as disabled when accessing a published project as a project administrator', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '2021-07-07' }
+    });
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
-
-    const hasSystemRole = (validSystemRoles?: string[]) => {
-      if (!validSystemRoles || !validSystemRoles.length) {
-        return true;
-      }
-
-      const userSystemRoles = authState.keycloakWrapper.systemRoles;
-
-      for (const validRole of validSystemRoles) {
-        if (userSystemRoles.includes(validRole)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
 
     const authState = {
       keycloakWrapper: {
@@ -301,10 +242,53 @@ describe('ProjectPage', () => {
           authenticated: true
         },
         hasLoadedAllUserInfo: true,
-        systemRoles: ['Normal User'] as string[],
+        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
-        hasSystemRole: hasSystemRole,
+        hasSystemRole: () => true,
+        getIdentitySource: () => 'idir',
+        username: 'testusername',
+        displayName: 'testdisplayname',
+        email: 'test@email.com',
+        firstName: 'testfirst',
+        lastName: 'testlast',
+        refresh: () => {}
+      }
+    };
+
+    const { getByTestId, findByText } = render(
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <ProjectPage />
+          </Router>
+        </DialogContextProvider>
+      </AuthStateContext.Provider>
+    );
+
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    expect(projectHeaderText).toBeVisible();
+
+    expect(getByTestId('delete-project-button')).toBeDisabled();
+  });
+
+  it('does not see the delete button when accessing project as non admin user', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+
+    const authState = {
+      keycloakWrapper: {
+        keycloak: {
+          authenticated: true
+        },
+        hasLoadedAllUserInfo: true,
+        systemRoles: ['Non Admin User'] as string[],
+        getUserIdentifier: () => 'testuser',
+        hasAccessRequest: false,
+        hasSystemRole: () => false,
         getIdentitySource: () => 'idir',
         username: 'testusername',
         displayName: 'testdisplayname',
@@ -316,7 +300,7 @@ describe('ProjectPage', () => {
     };
 
     const { queryByTestId, findByText } = render(
-      <AuthStateContext.Provider value={authState}>
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />

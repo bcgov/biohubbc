@@ -33,21 +33,21 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-84"
+        class="MuiBox-root MuiBox-root-99"
       >
         <div
-          class="MuiBox-root MuiBox-root-85"
+          class="MuiBox-root MuiBox-root-100"
         >
           <div
-            class="MuiBox-root MuiBox-root-86"
+            class="MuiBox-root MuiBox-root-101"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-83 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-98 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-80 makeStyles-chipActive-81"
+              class="MuiChip-root makeStyles-chip-95 makeStyles-chipActive-96"
             >
               <span
                 class="MuiChip-label"
@@ -57,7 +57,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-87"
+            class="MuiBox-root MuiBox-root-102"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -72,10 +72,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-88"
+          class="MuiBox-root MuiBox-root-103"
         >
           <div
-            class="MuiBox-root MuiBox-root-89"
+            class="MuiBox-root MuiBox-root-104"
           >
             <button
               class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -115,17 +115,17 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-90"
+      class="MuiBox-root MuiBox-root-105"
     >
       <aside
-        class="MuiBox-root MuiBox-root-91"
+        class="MuiBox-root MuiBox-root-106"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-79 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-94 MuiList-padding"
             role="navigation"
           >
             <a
@@ -216,7 +216,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-92"
+        class="MuiBox-root MuiBox-root-107"
       />
     </div>
   </div>
