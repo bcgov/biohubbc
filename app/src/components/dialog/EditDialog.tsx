@@ -1,4 +1,3 @@
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -83,40 +82,36 @@ export const EditDialog: React.FC<IEditDialogProps> = (props) => {
   }
 
   return (
-    <Box>
-      <Formik
-        initialValues={props.component.initialValues}
-        enableReinitialize={true}
-        validationSchema={props.component.validationSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={(values) => {
-          props.onSave(values);
-        }}>
-        {(formikProps) => (
-          <Dialog
-            fullScreen={fullScreen}
-            maxWidth="xl"
-            open={props.open}
-            aria-labelledby="edit-dialog-title"
-            aria-describedby="edit-dialog-description">
-            <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
-            <DialogContent>
-              <Box py={2}>{props.component.element}</Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                {props.dialogSaveButtonLabel || 'Save Changes'}
-              </Button>
-              <Button onClick={props.onCancel} color="primary" variant="outlined">
-                Cancel
-              </Button>
-            </DialogActions>
-            {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
-          </Dialog>
-        )}
-      </Formik>
-    </Box>
+    <Formik
+      initialValues={props.component.initialValues}
+      enableReinitialize={true}
+      validationSchema={props.component.validationSchema}
+      validateOnBlur={true}
+      validateOnChange={false}
+      onSubmit={(values) => {
+        props.onSave(values);
+      }}>
+      {(formikProps) => (
+        <Dialog
+          fullScreen={fullScreen}
+          maxWidth="xl"
+          open={props.open}
+          aria-labelledby="edit-dialog-title"
+          aria-describedby="edit-dialog-description">
+          <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
+          <DialogContent>{props.component.element}</DialogContent>
+          <DialogActions>
+            <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
+              {props.dialogSaveButtonLabel || 'Save Changes'}
+            </Button>
+            <Button onClick={props.onCancel} color="primary" variant="outlined">
+              Cancel
+            </Button>
+          </DialogActions>
+          {props.dialogError && <DialogContent>{props.dialogError}</DialogContent>}
+        </Dialog>
+      )}
+    </Formik>
   );
 };
 

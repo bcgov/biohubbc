@@ -9,7 +9,14 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiClipboardCheckMultipleOutline, mdiTrashCanOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import {
+  mdiClipboardCheckMultipleOutline,
+  mdiTrashCanOutline,
+  mdiInformationOutline,
+  mdiPaperclip,
+  mdiToggleSwitch,
+  mdiToggleSwitchOffOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
@@ -25,6 +32,9 @@ import { getFormattedDateRangeString } from 'utils/Utils';
 import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
 import { useHistory } from 'react-router';
+import { ProjectStatusType } from 'constants/misc';
+import Chip from '@material-ui/core/Chip';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -42,6 +52,20 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: theme.palette.primary.main
       }
     }
+  },
+  chip: {
+    padding: '0px 8px',
+    borderRadius: '4px',
+    color: 'white'
+  },
+  chipActive: {
+    backgroundColor: theme.palette.warning.main
+  },
+  chipCompleted: {
+    backgroundColor: theme.palette.success.main
+  },
+  spacingRight: {
+    paddingRight: '1rem'
   }
 }));
 
@@ -111,6 +135,24 @@ const ProjectPage: React.FC = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
+  const publishProject = async (publish: boolean) => {
+    if (!projectWithDetails) {
+      return;
+    }
+
+    try {
+      const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
+
+      if (!response) {
+        return;
+      }
+
+      await getProject();
+    } catch (error) {
+      return error;
+    }
+  };
+
   const showDeleteProjectDialog = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
@@ -140,6 +182,21 @@ const ProjectPage: React.FC = () => {
     }
   };
 
+  const getChipIcon = (status_name: string) => {
+    let chipLabel;
+    let chipStatusClass;
+
+    if (ProjectStatusType.ACTIVE === status_name) {
+      chipLabel = 'ACTIVE';
+      chipStatusClass = classes.chipActive;
+    } else if (ProjectStatusType.COMPLETED === status_name) {
+      chipLabel = 'COMPLETED';
+      chipStatusClass = classes.chipCompleted;
+    }
+
+    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
+
   if (!codes || !projectWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -150,8 +207,11 @@ const ProjectPage: React.FC = () => {
         <Container maxWidth="xl">
           <Box display="flex" justifyContent="space-between">
             <Box py={4}>
-              <Box mb={1}>
-                <Typography variant="h1">{projectWithDetails.project.project_name}</Typography>
+              <Box mb={1} display="flex">
+                <Typography className={classes.spacingRight} variant="h1">
+                  {projectWithDetails.project.project_name}
+                </Typography>
+                {getChipIcon(projectWithDetails.project.completion_status)}
               </Box>
               <Box>
                 <Typography variant="subtitle1" color="textSecondary">
@@ -177,15 +237,38 @@ const ProjectPage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box ml={4} mt={4} mb={4}>
-              <Button
-                variant="outlined"
-                color="primary"
-                data-testid="delete-project-button"
-                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                onClick={showDeleteProjectDialog}>
-                Delete Project
-              </Button>
+            <Box>
+              <Box ml={4} mt={4} mb={4}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  data-testid="publish-project-button"
+                  startIcon={
+                    <Icon
+                      path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                      size={1}
+                    />
+                  }
+                  onClick={async () => {
+                    if (projectWithDetails.project.publish_date) {
+                      await publishProject(false);
+                    } else {
+                      await publishProject(true);
+                    }
+                  }}>
+                  {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+                </Button>
+              </Box>
+              <Box ml={4} mt={4} mb={4}>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  data-testid="delete-project-button"
+                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                  onClick={showDeleteProjectDialog}>
+                  Delete Project
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Container>

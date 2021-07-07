@@ -110,7 +110,8 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
               <Link
                 component="button"
                 variant="body2"
-                onClick={() => {
+                onClick={(event: React.SyntheticEvent) => {
+                  event.preventDefault();
                   window.open(
                     'https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security'
                   );

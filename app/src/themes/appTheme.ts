@@ -11,7 +11,11 @@ const appTheme = createMuiTheme({
       xl: 1440
     }
   },
+
   palette: {
+    background: {
+      default: '#f7f8fa'
+    },
     // https://material-ui.com/customization/palette/
     primary: {
       light: '#5469a4',
@@ -38,7 +42,7 @@ const appTheme = createMuiTheme({
     MuiTypography: {
       // https://material-ui.com/api/typography/
       h1: {
-        letterSpacing: '-0.01rem',
+        letterSpacing: '-0.02rem',
         fontSize: '2rem',
         fontWeight: 700
       },
@@ -109,45 +113,57 @@ const appTheme = createMuiTheme({
         background: '#ffffff'
       }
     },
+    MuiStepper: {
+      root: {
+        padding: 0
+      }
+    },
+    MuiStep: {
+      root: {
+        cursor: 'pointer'
+      }
+    },
     MuiStepLabel: {
-      labelContainer: {
-        paddingLeft: '2rem'
-      },
-      iconContainer: {
-        width: '2.5rem',
-        height: '2.5rem',
-        paddingRight: 0,
-        borderRadius: '1.25rem'
+      active: {
+        color: '#003366 !important'
       }
     },
     MuiStepIcon: {
       root: {
-        width: '2.5rem',
-        height: '2.5rem',
+        marginLeft: '1rem',
+        marginRight: '1rem',
+        zIndex: 999,
+        color: '#999999',
+        fontSize: '33px',
+        borderRadius: '50%',
         '&$error': {
-          border: '4px solid #f44336',
-          borderRadius: '50%'
+          backgroundColor: '#ffffff',
+          border: '3px solid red',
+          color: 'red'
         }
       },
       text: {
-        color: '#003366',
-        fontSize: '40%',
-        fontWeight: 700
-      }
-    },
-    MuiStepContent: {
-      root: {
-        marginTop: 0,
-        marginLeft: '1.5rem',
-        paddingTop: '1rem',
-        paddingBottom: 0,
-        paddingLeft: '4.5rem'
+        fontWeight: 700,
+        fontSize: '0.35em'
+      },
+      active: {
+        borderColor: '#003366',
+        color: '#ffffff'
+      },
+      completed: {
+        backgroundColor: '#ffffff',
+        border: '3px solid #003366',
+        padding: '2px',
+        color: '#003366'
       }
     },
     MuiStepConnector: {
       vertical: {
-        marginLeft: '1.25rem',
-        padding: '0'
+        marginLeft: '32px',
+        paddingBottom: 0
+      },
+      lineVertical: {
+        borderLeftWidth: '2px'
       }
     },
     MuiTableCell: {
