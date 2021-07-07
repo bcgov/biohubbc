@@ -547,6 +547,52 @@ describe('updateSurvey', () => {
   });
 });
 
+describe('updateSurveyDetailsData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const projectId = 1;
+  const surveyId = 2;
+
+  it('should throw a 400 error when no revision count in data', async () => {
+    try {
+      await update.updateSurveyDetailsData(
+        projectId,
+        surveyId,
+        (null as unknown) as update.IUpdateSurvey,
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to parse request body');
+    }
+  });
+});
+
 describe('getSurveyDetailsData', () => {
   afterEach(() => {
     sinon.restore();
@@ -554,7 +600,7 @@ describe('getSurveyDetailsData', () => {
 
   const dbConnectionObj = {
     systemUserId: () => {
-      return null;
+      return 20;
     },
     open: async () => {
       // do nothing
@@ -576,13 +622,6 @@ describe('getSurveyDetailsData', () => {
   const surveyId = 1;
 
   it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
@@ -598,20 +637,12 @@ describe('getSurveyDetailsData', () => {
   it('should throw a 400 error when no result returned', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
+    mockQuery.resolves({ rows: null });
 
     sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`something`);
 
     try {
-      await update.getSurveyDetailsData(surveyId, dbConnectionObj);
+      await update.getSurveyDetailsData(surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
@@ -628,7 +659,7 @@ describe('getSurveyProprietorData', () => {
 
   const dbConnectionObj = {
     systemUserId: () => {
-      return null;
+      return 20;
     },
     open: async () => {
       // do nothing
@@ -650,13 +681,6 @@ describe('getSurveyProprietorData', () => {
   const surveyId = 1;
 
   it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
@@ -674,17 +698,9 @@ describe('getSurveyProprietorData', () => {
 
     mockQuery.resolves({ rows: [] });
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
 
-    const result = await update.getSurveyProprietorData(surveyId, dbConnectionObj);
+    const result = await update.getSurveyProprietorData(surveyId, { ...dbConnectionObj, query: mockQuery });
 
     expect(result).to.be.null;
   });
