@@ -575,6 +575,14 @@ describe('updateSurveyDetailsData', () => {
 
   const projectId = 1;
   const surveyId = 2;
+  const data: update.IUpdateSurvey = {
+    survey_details: {
+      id: 1,
+      survey_name: 'survey name',
+      revision_count: 0
+    },
+    survey_proprietor: null
+  }
 
   it('should throw a 400 error when no revision count in data', async () => {
     try {
@@ -589,6 +597,46 @@ describe('updateSurveyDetailsData', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to parse request body');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement produced for putSurveyDetailsSQL', async () => {
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
+
+    try {
+      await update.updateSurveyDetailsData(
+        projectId,
+        surveyId,
+        data,
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
+  it('should throw a 400 error when no rowCount produced for putSurveyDetailsSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: null });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(
+        projectId,
+        surveyId,
+        data,
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to update stale survey data');
     }
   });
 });
