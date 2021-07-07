@@ -102,7 +102,7 @@ describe('ProjectPage', () => {
     });
   });
 
-  it('deletes project works and takes user to the projects list page when user is a system administrator', async () => {
+  it('deletes project and takes user to the projects list page when user is a system administrator', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
