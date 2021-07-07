@@ -13,7 +13,7 @@ import * as delete_project from './delete';
 
 chai.use(sinonChai);
 
-describe.only('deleteProject', () => {
+describe('deleteProject', () => {
   afterEach(() => {
     sinon.restore();
   });
