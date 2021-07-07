@@ -197,7 +197,8 @@ const ProjectPage: React.FC = () => {
   }
 
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
-  const disableDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !!projectWithDetails.project.publish_date;
+  const disableDeleteProjectButton =
+    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !!projectWithDetails.project.publish_date;
 
   return (
     <>
@@ -256,7 +257,10 @@ const ProjectPage: React.FC = () => {
               </Box>
               {showDeleteProjectButton && (
                 <>
-                  <Tooltip arrow color="secondary" title={disableDeleteProjectButton ? "Cannot delete a published project" : ""}>
+                  <Tooltip
+                    arrow
+                    color="secondary"
+                    title={disableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
                     <Box ml={4} mt={4} mb={4}>
                       <Button
                         variant="outlined"
@@ -264,8 +268,7 @@ const ProjectPage: React.FC = () => {
                         data-testid="delete-project-button"
                         startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                         onClick={showDeleteProjectDialog}
-                        disabled={disableDeleteProjectButton}
-                        >
+                        disabled={disableDeleteProjectButton}>
                         Delete Project
                       </Button>
                     </Box>

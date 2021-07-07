@@ -65,7 +65,6 @@ export function deleteProject(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-
       /**
        * PART 1
        * Check that user is a system administrator - can delete a project (published or not)

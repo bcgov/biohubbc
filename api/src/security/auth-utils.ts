@@ -169,7 +169,6 @@ export const authorize = async function (req: any, scopes: string[]): Promise<tr
 
   const hasValidSystemRole = userHasValidSystemRoles(scopes, userObject.role_names);
 
-
   if (!hasValidSystemRole) {
     defaultLog.warn({ label: 'authorize', message: 'system user does not have any valid system roles' });
     throw new HTTP403('Access Denied');
