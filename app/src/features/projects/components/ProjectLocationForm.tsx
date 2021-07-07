@@ -63,7 +63,8 @@ const ProjectLocationForm: React.FC<IProjectLocationFormProps> = (props) => {
             <Link
               component="button"
               variant="body2"
-              onClick={() => {
+              onClick={(event: React.SyntheticEvent) => {
+                event.preventDefault();
                 window.open(
                   'https://www2.gov.bc.ca/gov/content/industry/forestry/managing-our-forest-resources/ministry-of-forests-lands-and-natural-resource-operations-region-district-contacts'
                 );

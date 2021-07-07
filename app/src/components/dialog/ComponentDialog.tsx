@@ -1,4 +1,3 @@
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -49,24 +48,20 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
   }
 
   return (
-    <Box>
-      <Dialog
-        fullScreen={fullScreen}
-        maxWidth="xl"
-        open={props.open}
-        aria-labelledby="component-dialog-title"
-        aria-describedby="component-dialog-description">
-        <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
-        <DialogContent>
-          <Box py={2}>{props.children}</Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+    <Dialog
+      fullScreen={fullScreen}
+      maxWidth="xl"
+      open={props.open}
+      aria-labelledby="component-dialog-title"
+      aria-describedby="component-dialog-description">
+      <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
+      <DialogContent>{props.children}</DialogContent>
+      <DialogActions>
+        <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -7,14 +7,17 @@ body {
 fieldset {
   border: none;
   padding: 0;
-  overflow: hidden;
   min-width: 0;
 }
 
+legend {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 legend.MuiFormLabel-root {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
   float: left;
-  color: #000000 !important;
   font-weight: 700;
   letter-spacing: -0.01rem;
 }

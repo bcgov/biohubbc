@@ -5,6 +5,8 @@ import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SearchFeaturePopup } from './SearchFeaturePopup';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router-dom';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -16,6 +18,8 @@ const mockUseBiohubApi = {
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
   mockUseBiohubApi
 );
+
+const history = createMemoryHistory();
 
 describe('MapContainer', () => {
   // To ignore: Deprecated use of _flat, please use L.LineUtil.isFlat instead
@@ -124,12 +128,14 @@ describe('MapContainer', () => {
     ];
 
     const { asFragment } = render(
-      <MapContainer
-        mapId="myMap"
-        classes={classes}
-        geometryState={{ geometry, setGeometry }}
-        nonEditableGeometries={nonEditableGeometries}
-      />
+      <Router history={history}>
+        <MapContainer
+          mapId="myMap"
+          classes={classes}
+          geometryState={{ geometry, setGeometry }}
+          nonEditableGeometries={nonEditableGeometries}
+        />
+      </Router>
     );
 
     expect(asFragment()).toMatchSnapshot();

@@ -4,13 +4,13 @@ exports[`ProjectStepComponents renders the project IUCN with the codes values 1`
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-30"
+      class="MuiBox-root MuiBox-root-32"
     >
       <div
         class="MuiGrid-root MuiGrid-container"
       />
       <div
-        class="MuiBox-root MuiBox-root-31"
+        class="MuiBox-root MuiBox-root-33"
       >
         <button
           aria-label="Add Another"
@@ -37,13 +37,13 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-34"
+      class="MuiBox-root MuiBox-root-36"
     >
       <div
         class="MuiGrid-root MuiGrid-container"
       />
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-37"
       >
         <button
           aria-label="Add Another"
@@ -299,148 +299,142 @@ exports[`ProjectStepComponents renders the project coordinator 1`] = `
           </div>
         </div>
       </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-6"
+    >
+      <fieldset
+        class="MuiFormControl-root"
       >
-        <fieldset
-          class="MuiFormControl-root"
+        <legend
+          class="MuiBox-root MuiBox-root-7 makeStyles-legend-1"
         >
-          <legend
-            class="MuiFormLabel-root makeStyles-legend-1 Mui-required"
-          >
-            Share Contact Details
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk"
-            >
-               *
-            </span>
-          </legend>
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Do you want the project coordinator contact information visible to the public?
-          </p>
+          Share Contact Details
+        </legend>
+        <p
+          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          Do you want the project coordinator contact information visible to the public?
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        >
           <div
-            class="MuiBox-root MuiBox-root-6"
+            aria-label="Share Contact Details"
+            class="MuiFormGroup-root"
+            role="radiogroup"
           >
-            <div
-              aria-label="Share Contact Details"
-              class="MuiFormGroup-root"
-              role="radiogroup"
+            <label
+              class="MuiFormControlLabel-root"
             >
-              <label
-                class="MuiFormControlLabel-root"
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-9 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-10 Mui-checked MuiIconButton-colorPrimary"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-8 Mui-checked MuiIconButton-colorPrimary"
+                  class="MuiIconButton-label"
                 >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <input
-                      checked=""
-                      class="PrivateSwitchBase-input-10"
-                      name="share_contact_details"
-                      required=""
-                      type="radio"
-                      value="false"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-11 PrivateRadioButtonIcon-checked-13"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
+                  <input
+                    checked=""
+                    class="PrivateSwitchBase-input-12"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="false"
                   />
+                  <div
+                    class="PrivateRadioButtonIcon-root-13 PrivateRadioButtonIcon-checked-15"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-14 MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                >
-                  No
-                </span>
-              </label>
-              <label
-                class="MuiFormControlLabel-root"
+                  class="MuiTouchRipple-root"
+                />
+              </span>
+              <span
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                No
+              </span>
+            </label>
+            <label
+              class="MuiFormControlLabel-root"
+            >
+              <span
+                aria-disabled="false"
+                class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-9 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
               >
                 <span
-                  aria-disabled="false"
-                  class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-7 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                  class="MuiIconButton-label"
                 >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <input
-                      class="PrivateSwitchBase-input-10"
-                      name="share_contact_details"
-                      required=""
-                      type="radio"
-                      value="true"
-                    />
-                    <div
-                      class="PrivateRadioButtonIcon-root-11"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                        />
-                      </svg>
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-12"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                        />
-                      </svg>
-                    </div>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
+                  <input
+                    class="PrivateSwitchBase-input-12"
+                    name="share_contact_details"
+                    required=""
+                    type="radio"
+                    value="true"
                   />
+                  <div
+                    class="PrivateRadioButtonIcon-root-13"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      />
+                    </svg>
+                    <svg
+                      aria-hidden="true"
+                      class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-14 MuiSvgIcon-fontSizeSmall"
+                      focusable="false"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                      />
+                    </svg>
+                  </div>
                 </span>
                 <span
-                  class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                >
-                  Yes
-                </span>
-              </label>
-              <p
-                class="MuiFormHelperText-root Mui-required"
-              />
-            </div>
+                  class="MuiTouchRipple-root"
+                />
+              </span>
+              <span
+                class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+              >
+                Yes
+              </span>
+            </label>
+            <p
+              class="MuiFormHelperText-root Mui-required"
+            />
           </div>
-        </fieldset>
-      </div>
+        </div>
+      </fieldset>
     </div>
   </form>
 </DocumentFragment>
@@ -486,10 +480,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-16"
+                class="PrivateNotchedOutline-legendLabelled-18"
               >
                 <span>
                   Project Name *
@@ -555,10 +549,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-16"
+                class="PrivateNotchedOutline-legendLabelled-18"
               >
                 <span>
                   Project Type
@@ -661,10 +655,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-16"
+                  class="PrivateNotchedOutline-legendLabelled-18"
                 >
                   <span>
                     Project Activities
@@ -715,10 +709,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                 >
                   <span>
                     Start Date *
@@ -758,10 +752,10 @@ exports[`ProjectStepComponents renders the project details with the codes values
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
                 >
                   <span>
                     End Date
@@ -817,10 +811,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-21"
+                class="PrivateNotchedOutline-legendLabelled-23"
               >
                 <span>
                   Project Name *
@@ -886,10 +880,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
             </svg>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-21"
+                class="PrivateNotchedOutline-legendLabelled-23"
               >
                 <span>
                   Project Type
@@ -992,10 +986,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-21"
+                  class="PrivateNotchedOutline-legendLabelled-23"
                 >
                   <span>
                     Project Activities
@@ -1046,10 +1040,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     Start Date *
@@ -1089,10 +1083,10 @@ exports[`ProjectStepComponents renders the project details without the codes val
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-19 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-21 PrivateNotchedOutline-legendNotched-22"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     End Date
@@ -1112,10 +1106,10 @@ exports[`ProjectStepComponents renders the project funding with the codes values
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-41"
+      class="MuiBox-root MuiBox-root-43"
     >
       <header
-        class="MuiBox-root MuiBox-root-42"
+        class="MuiBox-root MuiBox-root-44"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -1155,10 +1149,10 @@ exports[`ProjectStepComponents renders the project funding with the codes values
         </button>
       </header>
       <div
-        class="MuiBox-root MuiBox-root-43"
+        class="MuiBox-root MuiBox-root-45"
       >
         <div
-          class="MuiBox-root MuiBox-root-44"
+          class="MuiBox-root MuiBox-root-46"
         >
           <ul
             class="MuiList-root MuiList-dense"
@@ -1167,7 +1161,7 @@ exports[`ProjectStepComponents renders the project funding with the codes values
               class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
             >
               <div
-                class="MuiBox-root MuiBox-root-45"
+                class="MuiBox-root MuiBox-root-47"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle2"
@@ -1188,10 +1182,10 @@ exports[`ProjectStepComponents renders the project funding without the codes val
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-51"
+      class="MuiBox-root MuiBox-root-53"
     >
       <header
-        class="MuiBox-root MuiBox-root-52"
+        class="MuiBox-root MuiBox-root-54"
       >
         <h3
           class="MuiTypography-root MuiTypography-h3"
@@ -1231,10 +1225,10 @@ exports[`ProjectStepComponents renders the project funding without the codes val
         </button>
       </header>
       <div
-        class="MuiBox-root MuiBox-root-53"
+        class="MuiBox-root MuiBox-root-55"
       >
         <div
-          class="MuiBox-root MuiBox-root-54"
+          class="MuiBox-root MuiBox-root-56"
         >
           <ul
             class="MuiList-root MuiList-dense"
@@ -1243,7 +1237,7 @@ exports[`ProjectStepComponents renders the project funding without the codes val
               class="MuiPaper-root MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiPaper-elevation1 MuiPaper-rounded"
             >
               <div
-                class="MuiBox-root MuiBox-root-55"
+                class="MuiBox-root MuiBox-root-57"
               >
                 <h6
                   class="MuiTypography-root MuiTypography-subtitle2"
@@ -1363,10 +1357,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-69"
+                  class="PrivateNotchedOutline-legendLabelled-71"
                 >
                   <span>
                     Regions *
@@ -1377,7 +1371,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-71"
+          class="MuiBox-root MuiBox-root-73"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1412,10 +1406,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-67 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-69"
+                class="PrivateNotchedOutline-legendLabelled-71"
               >
                 <span>
                   Location Description
@@ -1429,12 +1423,12 @@ exports[`ProjectStepComponents renders the project location with the codes value
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-72 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-74 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-74"
+          class="MuiBox-root MuiBox-root-76"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -1443,11 +1437,11 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-77"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-75 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1468,7 +1462,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-75 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1490,10 +1484,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-76"
+          class="MuiBox-root MuiBox-root-78"
         />
         <div
-          class="MuiBox-root MuiBox-root-77"
+          class="MuiBox-root MuiBox-root-79"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1896,10 +1890,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-79 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-81 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-81"
+                  class="PrivateNotchedOutline-legendLabelled-83"
                 >
                   <span>
                     Regions *
@@ -1910,7 +1904,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-83"
+          class="MuiBox-root MuiBox-root-85"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1945,10 +1939,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-79 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-81 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-81"
+                class="PrivateNotchedOutline-legendLabelled-83"
               >
                 <span>
                   Location Description
@@ -1962,12 +1956,12 @@ exports[`ProjectStepComponents renders the project location without the codes va
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-84 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-86 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-86"
+          class="MuiBox-root MuiBox-root-88"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -1976,11 +1970,11 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-87"
+          class="MuiBox-root MuiBox-root-89"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-85 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-87 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -2001,7 +1995,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-85 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-87 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -2023,10 +2017,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-88"
+          class="MuiBox-root MuiBox-root-90"
         />
         <div
-          class="MuiBox-root MuiBox-root-89"
+          class="MuiBox-root MuiBox-root-91"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2365,10 +2359,10 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-26"
+                class="PrivateNotchedOutline-legendLabelled-28"
               >
                 <span>
                   Objectives *
@@ -2404,10 +2398,10 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-26"
+                class="PrivateNotchedOutline-legendLabelled-28"
               >
                 <span>
                   Caveats (Optional)
@@ -2518,10 +2512,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-57 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-59"
+                  class="PrivateNotchedOutline-legendLabelled-61"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2622,10 +2616,10 @@ exports[`ProjectStepComponents renders the project partnerships with the codes v
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-57 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-59 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-59"
+                  class="PrivateNotchedOutline-legendLabelled-61"
                 >
                   <span>
                     Other Partnerships
@@ -2737,10 +2731,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-64 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-64"
+                  class="PrivateNotchedOutline-legendLabelled-66"
                 >
                   <span>
                     Indigenous Partnerships
@@ -2841,10 +2835,10 @@ exports[`ProjectStepComponents renders the project partnerships without the code
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-64 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-64"
+                  class="PrivateNotchedOutline-legendLabelled-66"
                 >
                   <span>
                     Other Partnerships
