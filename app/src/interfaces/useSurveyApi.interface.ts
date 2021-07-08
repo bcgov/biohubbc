@@ -134,7 +134,8 @@ export interface IGetSurveysListResponse {
   species: string[];
   start_date: string;
   end_date: string;
-  status_name: string;
+  publish_status: string;
+  completion_status: string;
 }
 
 export enum UPDATE_GET_SURVEY_ENTITIES {

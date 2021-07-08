@@ -62,6 +62,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
       s.name,
       s.start_date,
       s.end_date,
+      s.publish_timestamp,
       CASE
         WHEN wtu.english_name IS NULL THEN wtu.unit_name2
         ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
