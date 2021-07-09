@@ -468,8 +468,6 @@ export const updateSurveyPermitNumber = async (survey_id: number, connection: ID
     throw new HTTP400('Failed to build SQL update statement');
   }
 
-  console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response) {

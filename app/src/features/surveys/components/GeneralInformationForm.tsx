@@ -80,8 +80,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   const [permitNumberOptions, setPermitNumberOptions] = useState<IAutocompleteFieldOption<string>[]>([]);
 
   useEffect(() => {
-    console.log(props.permit_numbers);
-    console.log(formikProps.values);
     const result = props.permit_numbers;
 
     if (formikProps.values.permit_number) {
@@ -92,8 +90,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
       setPermitNumberOptions(result);
     }
   }, [props.permit_numbers]);
-
-  console.log(formikProps.values.permit_number);
 
   return (
     <form>
@@ -154,7 +150,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
               label="Permit Number"
               options={permitNumberOptions}
               onChange={(event, option) => {
-                console.log(option);
                 if (!option) {
                   formikProps.setFieldValue('permit_number', '');
                 } else {

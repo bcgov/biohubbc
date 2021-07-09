@@ -97,8 +97,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       return;
     }
 
-    console.log('surveyDetailsResponseData', surveyDetailsResponseData);
-
     setPermitNumbers(surveyPermitNumbersResponseData);
     setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
