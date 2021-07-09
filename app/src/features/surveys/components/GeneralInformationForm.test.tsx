@@ -38,6 +38,11 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            permit_numbers={
+              [{ number: '123' }, { number: '456' }].map((item) => {
+                return { value: item.number, label: item.number };
+              }) || []
+            }
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -63,6 +68,11 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            permit_numbers={
+              [{ number: '123' }, { number: '456' }].map((item) => {
+                return { value: item.number, label: item.number };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -108,6 +118,11 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            permit_numbers={
+              [{ number: '123' }, { number: '456' }].map((item) => {
+                return { value: item.number, label: item.number };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}

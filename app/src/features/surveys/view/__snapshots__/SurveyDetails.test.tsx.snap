@@ -133,6 +133,20 @@ exports[`SurveyDetails renders correctly 1`] = `
                 ancillary species 1
               </dd>
             </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Permit Number
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                123
+              </dd>
+            </div>
           </div>
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"

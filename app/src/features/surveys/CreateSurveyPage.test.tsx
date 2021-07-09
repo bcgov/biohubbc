@@ -19,6 +19,9 @@ const mockUseBiohubApi = {
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+  },
+  survey: {
+    getSurveyPermitNumbers: jest.fn()
   }
 };
 
@@ -31,6 +34,7 @@ describe('CreateSurveyPage', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi().survey.getSurveyPermitNumbers.mockClear();
   });
 
   afterEach(() => {
@@ -56,6 +60,8 @@ describe('CreateSurveyPage', () => {
       species: [{ id: 1, name: 'species 1' }]
     } as any);
 
+    mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+
     const { asFragment, getAllByText } = render(
       <MemoryRouter initialEntries={['?id=1']}>
         <CreateSurveyPage />
@@ -75,6 +81,8 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         species: [{ id: 1, name: 'species 1' }]
       } as any);
+
+      mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
 
       history.push('/home');
       history.push('/projects/1/survey/create');
@@ -111,6 +119,8 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         species: [{ id: 1, name: 'species 1' }]
       } as any);
+
+      mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
 
       const { getAllByText, getByText, getAllByRole, getByTestId } = render(
         <DialogContextProvider>

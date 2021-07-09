@@ -544,6 +544,15 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
+                  <p
+                    class="MuiTypography-root MuiTypography-body2"
+                  >
+                    This survey will not have an associated permit number because you do not have any permits to select from. All permits have been used by surveys, please add another project permit or change an existing survey permit.
+                  </p>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                >
                   <div
                     class="MuiBox-root MuiBox-root-29"
                   >
