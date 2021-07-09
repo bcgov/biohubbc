@@ -883,7 +883,7 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
-  it('should return true on success with focal and ancillary species', async () => {
+  it('should return resolved promises on success with focal and ancillary species', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
@@ -894,13 +894,14 @@ describe('updateSurveyDetailsData', () => {
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+    sinon.stub(update, 'updateSurveyPermitNumber').resolves(true);
 
     const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
       ...dbConnectionObj,
       query: mockQuery
     });
 
-    expect(result).to.eql([1, 2]);
+    expect(result).to.eql([1, 2, true]);
   });
 });
 

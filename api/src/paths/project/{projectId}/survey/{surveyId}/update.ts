@@ -339,7 +339,7 @@ export const updateSurveyDetailsData = async (
   surveyId: number,
   data: IUpdateSurvey,
   connection: IDBConnection
-): Promise<number[]> => {
+): Promise<any[]> => {
   const putDetailsData = new PutSurveyDetailsData(data);
 
   const revision_count = putDetailsData.revision_count ?? null;
@@ -392,20 +392,12 @@ export const updateSurveyDetailsData = async (
 
   const promises: Promise<any>[] = [];
 
-  promises.push(
-    Promise.all(
-      putDetailsData.focal_species.map((focalSpeciesId: number) =>
-        insertFocalSpecies(focalSpeciesId, surveyId, connection)
-      )
-    )
+  putDetailsData.focal_species.map((focalSpeciesId: number) =>
+    promises.push(insertFocalSpecies(focalSpeciesId, surveyId, connection))
   );
 
-  promises.push(
-    Promise.all(
-      putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
-        insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
-      )
-    )
+  putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
+    promises.push(insertAncillarySpecies(ancillarySpeciesId, surveyId, connection))
   );
 
   promises.push(updateSurveyPermitNumber(surveyId, connection));
