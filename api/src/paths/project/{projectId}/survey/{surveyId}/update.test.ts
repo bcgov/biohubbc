@@ -892,7 +892,7 @@ describe('updateSurveyDetailsData', () => {
       query: mockQuery
     });
 
-    expect(result).to.equal(true);
+    expect(result).to.eql([1, 2]);
   });
 });
 
