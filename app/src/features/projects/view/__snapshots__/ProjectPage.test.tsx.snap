@@ -33,21 +33,21 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-99"
+        class="MuiBox-root MuiBox-root-97"
       >
         <div
-          class="MuiBox-root MuiBox-root-100"
+          class="MuiBox-root MuiBox-root-98"
         >
           <div
-            class="MuiBox-root MuiBox-root-101"
+            class="MuiBox-root MuiBox-root-99"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-98 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-95 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-95 makeStyles-chipActive-96"
+              class="MuiChip-root makeStyles-chip-92 makeStyles-chipActive-93"
             >
               <span
                 class="MuiChip-label"
@@ -57,7 +57,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-102"
+            class="MuiBox-root MuiBox-root-100"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -72,41 +72,37 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-103"
+          class="MuiBox-root MuiBox-root-101"
         >
-          <div
-            class="MuiBox-root MuiBox-root-104"
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-96 MuiButton-outlinedPrimary"
+            data-testid="publish-project-button"
+            tabindex="0"
+            type="button"
           >
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-              data-testid="publish-project-button"
-              tabindex="0"
-              type="button"
+            <span
+              class="MuiButton-label"
             >
               <span
-                class="MuiButton-label"
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                <span
-                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M17,15A3,3 0 0,1 14,12A3,3 0 0,1 17,9A3,3 0 0,1 20,12A3,3 0 0,1 17,15Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                Unpublish Project
+                  <path
+                    d="M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M17,15A3,3 0 0,1 14,12A3,3 0 0,1 17,9A3,3 0 0,1 20,12A3,3 0 0,1 17,15Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+              Unpublish Project
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -115,17 +111,17 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-105"
+      class="MuiBox-root MuiBox-root-102"
     >
       <aside
-        class="MuiBox-root MuiBox-root-106"
+        class="MuiBox-root MuiBox-root-103"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-94 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-91 MuiList-padding"
             role="navigation"
           >
             <a
@@ -216,7 +212,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-107"
+        class="MuiBox-root MuiBox-root-104"
       />
     </div>
   </div>
@@ -232,21 +228,21 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-13"
       >
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-14"
         >
           <div
-            class="MuiBox-root MuiBox-root-13"
+            class="MuiBox-root MuiBox-root-15"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-10 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-11 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8"
+              class="MuiChip-root makeStyles-chip-8 makeStyles-chipActive-9"
             >
               <span
                 class="MuiChip-label"
@@ -256,7 +252,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-14"
+            class="MuiBox-root MuiBox-root-16"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -268,41 +264,37 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-15"
+          class="MuiBox-root MuiBox-root-17"
         >
-          <div
-            class="MuiBox-root MuiBox-root-16"
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-12 MuiButton-outlinedPrimary"
+            data-testid="publish-project-button"
+            tabindex="0"
+            type="button"
           >
-            <button
-              class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-              data-testid="publish-project-button"
-              tabindex="0"
-              type="button"
+            <span
+              class="MuiButton-label"
             >
               <span
-                class="MuiButton-label"
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                <span
-                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    role="presentation"
-                    style="width: 1.5rem; height: 1.5rem;"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M17,15A3,3 0 0,1 14,12A3,3 0 0,1 17,9A3,3 0 0,1 20,12A3,3 0 0,1 17,15Z"
-                      style="fill: currentColor;"
-                    />
-                  </svg>
-                </span>
-                Unpublish Project
+                  <path
+                    d="M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M17,15A3,3 0 0,1 14,12A3,3 0 0,1 17,9A3,3 0 0,1 20,12A3,3 0 0,1 17,15Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
               </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+              Unpublish Project
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
         </div>
       </div>
     </div>
@@ -311,17 +303,17 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-17"
+      class="MuiBox-root MuiBox-root-18"
     >
       <aside
-        class="MuiBox-root MuiBox-root-18"
+        class="MuiBox-root MuiBox-root-19"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-6 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-7 MuiList-padding"
             role="navigation"
           >
             <a
@@ -412,7 +404,7 @@ exports[`ProjectPage renders project page when project is loaded 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-19"
+        class="MuiBox-root MuiBox-root-20"
       />
     </div>
   </div>
