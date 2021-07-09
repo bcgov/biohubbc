@@ -81,7 +81,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-38"
+        class="MuiBox-root MuiBox-root-58"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -94,7 +94,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-37 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-53 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -114,7 +114,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-37 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-53 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -142,22 +142,31 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-39"
+        class="MuiBox-root MuiBox-root-59"
       >
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiBox-root MuiBox-root-60"
         >
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-61"
           >
             <h1
-              class="MuiTypography-root MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-57 MuiTypography-h1"
             >
               survey name
             </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-54 makeStyles-chipActive-55"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-42"
+            class="MuiBox-root MuiBox-root-62"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -167,7 +176,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-43"
+          class="MuiBox-root MuiBox-root-63"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -206,17 +215,17 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-44"
+      class="MuiBox-root MuiBox-root-64"
     >
       <aside
-        class="MuiBox-root MuiBox-root-45"
+        class="MuiBox-root MuiBox-root-65"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Survey Navigation"
-            class="MuiList-root makeStyles-surveyNav-36 MuiList-padding"
+            class="MuiList-root makeStyles-surveyNav-52 MuiList-padding"
             role="navigation"
           >
             <a
@@ -307,7 +316,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-46"
+        class="MuiBox-root MuiBox-root-66"
       />
     </div>
   </div>
@@ -323,7 +332,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-27"
+        class="MuiBox-root MuiBox-root-43"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -336,7 +345,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-26 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-38 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -356,7 +365,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-26 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-38 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -384,22 +393,31 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-28"
+        class="MuiBox-root MuiBox-root-44"
       >
         <div
-          class="MuiBox-root MuiBox-root-29"
+          class="MuiBox-root MuiBox-root-45"
         >
           <div
-            class="MuiBox-root MuiBox-root-30"
+            class="MuiBox-root MuiBox-root-46"
           >
             <h1
-              class="MuiTypography-root MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-42 MuiTypography-h1"
             >
               survey name
             </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-39 makeStyles-chipActive-40"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-31"
+            class="MuiBox-root MuiBox-root-47"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -409,7 +427,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-48"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -448,17 +466,17 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-33"
+      class="MuiBox-root MuiBox-root-49"
     >
       <aside
-        class="MuiBox-root MuiBox-root-34"
+        class="MuiBox-root MuiBox-root-50"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Survey Navigation"
-            class="MuiList-root makeStyles-surveyNav-25 MuiList-padding"
+            class="MuiList-root makeStyles-surveyNav-37 MuiList-padding"
             role="navigation"
           >
             <a
@@ -549,7 +567,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-51"
       />
     </div>
   </div>

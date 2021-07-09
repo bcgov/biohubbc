@@ -32,6 +32,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       public.ST_asGeoJSON(s.geography) as geometry,
       s.revision_count,
+      s.publish_timestamp as publish_date,
       CASE
         WHEN ss.is_focal = TRUE THEN wtu.id
       END as focal_species,

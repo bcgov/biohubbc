@@ -27,6 +27,9 @@ import SurveyAttachments from './SurveyAttachments';
 import SurveyObservations from './SurveyObservations';
 import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
+import { SurveyStatusType } from 'constants/misc';
+import Chip from '@material-ui/core/Chip';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -49,6 +52,20 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer'
+  },
+  chip: {
+    padding: '0px 8px',
+    borderRadius: '4px',
+    color: 'white'
+  },
+  chipActive: {
+    backgroundColor: theme.palette.warning.main
+  },
+  chipCompleted: {
+    backgroundColor: theme.palette.success.main
+  },
+  spacingRight: {
+    paddingRight: '1rem'
   }
 }));
 
@@ -162,6 +179,21 @@ const SurveyPage: React.FC = () => {
     }
   };
 
+  const getChipIcon = (status_name: string) => {
+    let chipLabel;
+    let chipStatusClass;
+
+    if (SurveyStatusType.ACTIVE === status_name) {
+      chipLabel = 'ACTIVE';
+      chipStatusClass = classes.chipActive;
+    } else if (SurveyStatusType.COMPLETED === status_name) {
+      chipLabel = 'COMPLETED';
+      chipStatusClass = classes.chipCompleted;
+    }
+
+    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
+
   if (!projectWithDetails || !surveyWithDetails || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -192,8 +224,11 @@ const SurveyPage: React.FC = () => {
 
           <Box display="flex" justifyContent="space-between">
             <Box pb={4}>
-              <Box mb={1}>
-                <Typography variant="h1">{surveyWithDetails.survey_details.survey_name}</Typography>
+              <Box mb={1} display="flex">
+                <Typography className={classes.spacingRight} variant="h1">
+                  {surveyWithDetails.survey_details.survey_name}
+                </Typography>
+                {getChipIcon(surveyWithDetails.survey_details.completion_status)}
               </Box>
               <Box>
                 <Typography variant="subtitle1" color="textSecondary">

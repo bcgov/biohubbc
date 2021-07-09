@@ -64,7 +64,8 @@ describe('useSurveyApi', () => {
         species: ['species 1', 'species 2'],
         start_date: '2020/04/04',
         end_date: '2020/05/05',
-        status_name: 'status'
+        publish_status: 'Published',
+        completion_status: 'Completed'
       }
     ];
 
