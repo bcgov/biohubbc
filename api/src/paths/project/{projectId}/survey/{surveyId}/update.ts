@@ -339,7 +339,7 @@ export const updateSurveyDetailsData = async (
   surveyId: number,
   data: IUpdateSurvey,
   connection: IDBConnection
-): Promise<void> => {
+): Promise<number[]> => {
   const putDetailsData = new PutSurveyDetailsData(data);
 
   const revision_count = putDetailsData.revision_count ?? null;
@@ -414,7 +414,7 @@ export const updateSurveyDetailsData = async (
     promises.push(insertSurveyPermitNumber(putDetailsData.permit_number, surveyId, connection));
   }
 
-  await Promise.all(promises);
+  return Promise.all(promises);
 };
 
 export const updateSurveyProprietorData = async (

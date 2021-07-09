@@ -72,6 +72,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   spacingRight: {
     paddingRight: '1rem'
+  },
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
   }
 }));
 
@@ -268,47 +274,37 @@ const ProjectPage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box>
-              <Box ml={4} mt={4} mb={4}>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  data-testid="publish-project-button"
-                  startIcon={
-                    <Icon
-                      path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
-                      size={1}
-                    />
-                  }
-                  onClick={async () => {
-                    if (projectWithDetails.project.publish_date) {
-                      await publishProject(false);
-                    } else {
-                      await publishProject(true);
-                    }
-                  }}>
-                  {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-                </Button>
-              </Box>
+            <Box ml={4} mt={4} mb={4}>
+              <Button
+                variant="outlined"
+                className={classes.actionButton}
+                color="primary"
+                data-testid="publish-project-button"
+                startIcon={
+                  <Icon
+                    path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                    size={1}
+                  />
+                }
+                onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
+                {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+              </Button>
               {showDeleteProjectButton && (
-                <>
-                  <Tooltip
-                    arrow
-                    color="secondary"
-                    title={disableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
-                    <Box ml={4} mt={4} mb={4}>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        data-testid="delete-project-button"
-                        startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                        onClick={showDeleteProjectDialog}
-                        disabled={disableDeleteProjectButton}>
-                        Delete Project
-                      </Button>
-                    </Box>
-                  </Tooltip>
-                </>
+                <Tooltip
+                  arrow
+                  color="secondary"
+                  title={disableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    className={classes.actionButton}
+                    data-testid="delete-project-button"
+                    startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                    onClick={showDeleteProjectDialog}
+                    disabled={disableDeleteProjectButton}>
+                    Delete Project
+                  </Button>
+                </Tooltip>
               )}
             </Box>
           </Box>
