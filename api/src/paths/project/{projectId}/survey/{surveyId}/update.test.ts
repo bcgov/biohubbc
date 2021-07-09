@@ -154,7 +154,8 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        permit_number: ''
       },
       survey_proprietor: null
     });
@@ -229,7 +230,8 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        permit_number: ''
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,

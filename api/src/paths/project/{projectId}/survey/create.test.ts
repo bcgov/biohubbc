@@ -200,6 +200,7 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(null);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     try {
       const result = create.createSurvey();
@@ -226,6 +227,7 @@ describe('createSurvey', () => {
     });
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     const result = create.createSurvey();
 
@@ -256,6 +258,7 @@ describe('createSurvey', () => {
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(1);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     const result = create.createSurvey();
 
@@ -297,6 +300,7 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     const result = create.createSurvey();
 
@@ -326,6 +330,7 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     try {
       const result = create.createSurvey();
@@ -357,6 +362,7 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(create, 'insertSurveyPermitNumber').resolves(true);
 
     try {
       const result = create.createSurvey();

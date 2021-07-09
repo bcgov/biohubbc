@@ -152,7 +152,8 @@ describe('getSurveyForView', () => {
       biologist_last_name: survey_details.lead_last_name,
       survey_area_name: survey_details.location_name,
       revision_count: survey_details.revision_count,
-      geometry: survey_details.geometry
+      geometry: survey_details.geometry,
+      permit_number: ''
     });
     expect(actualResult.survey_proprietor).to.eql({
       id: survey_proprietor.id,

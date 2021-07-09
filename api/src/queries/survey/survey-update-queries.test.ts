@@ -16,6 +16,7 @@ describe('putSurveyDetailsSQL', () => {
     lead_last_name: 'last',
     revision_count: 1,
     location_name: 'location',
+    permit_number: '12',
     geometry: [
       {
         type: 'Feature',
