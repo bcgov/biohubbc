@@ -117,7 +117,8 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const mockQuery = sinon.stub();
@@ -154,7 +155,9 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: null
     });
@@ -173,7 +176,8 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const survey_proprietor = {
@@ -229,7 +233,9 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,

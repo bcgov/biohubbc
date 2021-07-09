@@ -109,7 +109,8 @@ describe('getSurveyForView', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const mockQuery = sinon.stub();
@@ -152,7 +153,9 @@ describe('getSurveyForView', () => {
       biologist_last_name: survey_details.lead_last_name,
       survey_area_name: survey_details.location_name,
       revision_count: survey_details.revision_count,
-      geometry: survey_details.geometry
+      geometry: survey_details.geometry,
+      completion_status: 'Completed',
+      publish_date: ''
     });
     expect(actualResult.survey_proprietor).to.eql({
       id: survey_proprietor.id,
