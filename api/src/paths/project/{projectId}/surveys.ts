@@ -133,7 +133,8 @@ export function _extractSurveys(rows: any[]): any[] {
       start_date: row.start_date,
       end_date: row.end_date,
       publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
-      completion_status: moment(row.end_date).isSameOrAfter(new Date()) ? 'Active' : 'Completed'
+      completion_status:
+        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && 'Completed') || 'Active'
     };
 
     surveys.push(survey);

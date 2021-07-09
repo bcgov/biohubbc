@@ -52,6 +52,8 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
+  completion_status: string;
+  publish_date: string;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
