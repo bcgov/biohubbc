@@ -154,3 +154,11 @@ export const ReviewAccessRequestI18N = {
   reviewErrorText:
     'An error has occurred while attempting to review this access request, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const DeleteProjectI18N = {
+  deleteTitle: 'Delete Project',
+  deleteText: 'Are you sure you want to delete this project, its attachments and associated surveys/observations?',
+  deleteErrorTitle: 'Error Deleting Project',
+  deleteErrorText:
+    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+};
