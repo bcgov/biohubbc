@@ -52,6 +52,8 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
+  completion_status: string;
+  publish_date: string;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -134,7 +136,8 @@ export interface IGetSurveysListResponse {
   species: string[];
   start_date: string;
   end_date: string;
-  status_name: string;
+  publish_status: string;
+  completion_status: string;
 }
 
 export enum UPDATE_GET_SURVEY_ENTITIES {

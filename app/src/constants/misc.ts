@@ -18,5 +18,7 @@ export enum ProjectStatusType {
 
 export enum SurveyStatusType {
   UNPUBLISHED = 'Unpublished',
-  PUBLISHED = 'Published'
+  PUBLISHED = 'Published',
+  COMPLETED = 'Completed',
+  ACTIVE = 'Active'
 }

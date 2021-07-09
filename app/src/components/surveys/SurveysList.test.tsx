@@ -16,7 +16,8 @@ describe('SurveysList', () => {
         species: ['Moose'],
         start_date: '2021-04-09 11:53:53',
         end_date: '2021-05-09 11:53:53',
-        status_name: 'Unpublished'
+        publish_status: 'Published',
+        completion_status: 'Completed'
       },
       {
         id: 2,
@@ -24,7 +25,8 @@ describe('SurveysList', () => {
         species: ['Moose'],
         start_date: '2021-04-09 11:53:53',
         end_date: '2021-06-10 11:53:53',
-        status_name: 'Published'
+        publish_status: 'Unpublished',
+        completion_status: 'Active'
       }
     ];
 
