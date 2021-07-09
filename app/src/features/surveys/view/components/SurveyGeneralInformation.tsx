@@ -14,7 +14,8 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyForViewResponse,
   IGetSurveyForUpdateResponseDetails,
-  UPDATE_GET_SURVEY_ENTITIES
+  UPDATE_GET_SURVEY_ENTITIES,
+  SurveyPermitNumbers
 } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
@@ -54,6 +55,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
+  const [permitNumbers, setPermitNumbers] = useState<SurveyPermitNumbers[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -73,17 +75,21 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const handleDialogEditOpen = async () => {
     let surveyDetailsResponseData;
+    let surveyPermitNumbersResponseData;
 
     try {
       const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_details
       ]);
 
-      if (!response?.survey_details) {
+      const permitNumbersResponse = await biohubApi.survey.getSurveyPermitNumbers(projectForViewData.id);
+
+      if (!response?.survey_details || !permitNumbersResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
+      surveyPermitNumbersResponseData = permitNumbersResponse;
       surveyDetailsResponseData = response.survey_details;
     } catch (error) {
       const apiError = error as APIError;
@@ -91,6 +97,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       return;
     }
 
+    console.log('surveyDetailsResponseData', surveyDetailsResponseData);
+
+    setPermitNumbers(surveyPermitNumbersResponseData);
     setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
       ...surveyDetailsResponseData,
@@ -99,6 +108,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     });
     setOpenEditDialog(true);
   };
+
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
     try {
       if (surveyDataForUpdate) {
@@ -136,6 +146,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               species={
                 codes?.species?.map((item) => {
                   return { value: item.id, label: item.name };
+                }) || []
+              }
+              permit_numbers={
+                permitNumbers?.map((item) => {
+                  return { value: item.number, label: item.number };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -268,6 +283,14 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   No Ancilliary Species
                 </Typography>
               )}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Permit Number
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {survey_details.permit_number || 'No Permit Number'}
+              </Typography>
             </Grid>
           </Grid>
           <Grid container spacing={2}>

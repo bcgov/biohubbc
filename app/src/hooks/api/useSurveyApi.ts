@@ -7,7 +7,8 @@ import {
   IUpdateSurveyRequest,
   IGetSurveyForUpdateResponse,
   UPDATE_GET_SURVEY_ENTITIES,
-  IGetSurveyAttachmentsResponse
+  IGetSurveyAttachmentsResponse,
+  SurveyPermitNumbers
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 
@@ -134,6 +135,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get permit numbers applicable to use for a survey based on project ID
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<SurveyPermitNumbers[]>}
+   */
+  const getSurveyPermitNumbers = async (projectId: number): Promise<SurveyPermitNumbers[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
+
+    return data;
+  };
+
+  /**
    * Delete survey attachment based on survey and attachment ID
    *
    * @param {number} projectId
@@ -190,7 +203,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
-    deleteSurvey
+    deleteSurvey,
+    getSurveyPermitNumbers
   };
 };
 

@@ -4,6 +4,44 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
+ * SQL query to get all permit numbers applicable for a survey
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyPermitNumbersSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyPermitNumbersSQL',
+    message: 'params',
+    projectId
+  });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      number
+    FROM
+      permit
+    WHERE
+      p_id = ${projectId}
+    AND
+      s_id IS NULL;
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyPermitNumbersSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get all survey ids for a given project.
  *
  * @param {number} projectId
@@ -118,6 +156,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.lead_last_name,
       s.location_name,
       public.ST_asGeoJSON(s.geography) as geometry,
+      per.number,
       s.revision_count,
       CASE
         WHEN wtu.english_name IS NULL and ss.is_focal = TRUE THEN wtu.unit_name2
@@ -137,6 +176,10 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       survey as s
     ON
       s.id = ss.s_id
+    LEFT OUTER JOIN
+      permit as per
+    ON
+      per.s_id = s.id
     WHERE
       s.id = ${surveyId};
   `;

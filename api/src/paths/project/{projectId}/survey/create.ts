@@ -11,6 +11,7 @@ import {
   postSurveyProprietorSQL,
   postSurveySQL
 } from '../../../../queries/survey/survey-create-queries';
+import { putNewSurveyPermitNumberSQL } from '../../../../queries/survey/survey-update-queries';
 import { getLogger } from '../../../../utils/logger';
 import { logRequest } from '../../../../utils/path-utils';
 
@@ -134,6 +135,9 @@ export function createSurvey(): RequestHandler {
           )
         );
 
+        // Handle inserting any permit associated to this survey
+        promises.push(insertSurveyPermitNumber(sanitizedPostSurveyData.permit_number, surveyId, connection));
+
         // Handle survey proprietor data
         sanitizedPostSurveyData.survey_proprietor &&
           promises.push(insertSurveyProprietor(sanitizedPostSurveyData.survey_proprietor, surveyId, connection));
@@ -217,4 +221,24 @@ export const insertSurveyProprietor = async (
   }
 
   return result.id;
+};
+
+export const insertSurveyPermitNumber = async (
+  permit_number: string,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<boolean> => {
+  const sqlStatement = putNewSurveyPermitNumberSQL(survey_id, permit_number);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to update survey permit number data');
+  }
+
+  return true;
 };

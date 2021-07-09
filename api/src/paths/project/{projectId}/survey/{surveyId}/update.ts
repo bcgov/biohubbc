@@ -14,7 +14,11 @@ import {
   getSurveyDetailsForUpdateSQL,
   getSurveyProprietorForUpdateSQL
 } from '../../../../../queries/survey/survey-view-update-queries';
-import { putSurveyDetailsSQL, putSurveyProprietorSQL } from '../../../../../queries/survey/survey-update-queries';
+import {
+  putOldSurveyPermitNumberSQL,
+  putSurveyDetailsSQL,
+  putSurveyProprietorSQL
+} from '../../../../../queries/survey/survey-update-queries';
 import {
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
@@ -22,7 +26,7 @@ import {
 } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
-import { insertAncillarySpecies, insertFocalSpecies } from '../create';
+import { insertAncillarySpecies, insertFocalSpecies, insertSurveyPermitNumber } from '../create';
 import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 
@@ -386,17 +390,31 @@ export const updateSurveyDetailsData = async (
     throw new HTTP409('Failed to delete survey ancillary species data');
   }
 
-  const insertFocalSpeciesPromises =
-    putDetailsData.focal_species.map((focalSpeciesId: number) =>
-      insertFocalSpecies(focalSpeciesId, surveyId, connection)
-    ) || [];
+  const promises: Promise<any>[] = [];
 
-  const insertAncillarySpeciesPromises =
-    putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
-      insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
-    ) || [];
+  promises.push(
+    Promise.all(
+      putDetailsData.focal_species.map((focalSpeciesId: number) =>
+        insertFocalSpecies(focalSpeciesId, surveyId, connection)
+      )
+    )
+  );
 
-  await Promise.all([...insertFocalSpeciesPromises, ...insertAncillarySpeciesPromises]);
+  promises.push(
+    Promise.all(
+      putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
+        insertAncillarySpecies(ancillarySpeciesId, surveyId, connection)
+      )
+    )
+  );
+
+  promises.push(updateSurveyPermitNumber(surveyId, connection));
+
+  if (putDetailsData.permit_number) {
+    promises.push(insertSurveyPermitNumber(putDetailsData.permit_number, surveyId, connection));
+  }
+
+  await Promise.all(promises);
 };
 
 export const updateSurveyProprietorData = async (
@@ -441,4 +459,22 @@ export const updateSurveyProprietorData = async (
   if (!result || !result.rowCount) {
     throw new HTTP409('Failed to update survey proprietor data');
   }
+};
+
+export const updateSurveyPermitNumber = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
+  const sqlStatement = putOldSurveyPermitNumberSQL(survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to update survey permit number data');
+  }
+
+  return true;
 };

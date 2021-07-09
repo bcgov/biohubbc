@@ -6,6 +6,78 @@ import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 const defaultLog = getLogger('queries/survey/survey-update-queries');
 
 /**
+ * SQL query to update a permit row based on an old survey association.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const putOldSurveyPermitNumberSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'putOldSurveyPermitNumberSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE permit
+    SET
+      s_id = ${null}
+    WHERE
+      s_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'putOldSurveyPermitNumberSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update a permit row based on a new survey association.
+ *
+ * @param {number} surveyId
+ * @param {string} permitNumber
+ * @returns {SQLStatement} sql query object
+ */
+export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: string): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'putNewSurveyPermitNumberSQL',
+    message: 'params',
+    surveyId,
+    permitNumber
+  });
+
+  if (!surveyId || !permitNumber) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE permit
+    SET
+      s_id = ${surveyId}
+    WHERE
+      number = ${permitNumber};
+  `;
+
+  defaultLog.debug({
+    label: 'putNewSurveyPermitNumberSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to update a survey row.
  *
  * @param {number} projectId

@@ -12,6 +12,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     biologist_first_name: 'first',
     biologist_last_name: 'last',
     survey_area_name: 'study area',
+    permit_number: '123',
     geometry: []
   },
   survey_proprietor: {

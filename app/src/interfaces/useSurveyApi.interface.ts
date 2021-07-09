@@ -28,6 +28,7 @@ export interface ICreateSurveyRequest {
   survey_name: string;
   survey_purpose: string;
   geometry: Feature[];
+  permit_number: string;
 }
 
 /**
@@ -51,6 +52,7 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_first_name: string;
   biologist_last_name: string;
   survey_area_name: string;
+  permit_number: string;
   geometry: Feature[];
 }
 
@@ -76,6 +78,7 @@ export interface IGetSurveyForUpdateResponseDetails {
   survey_area_name: string;
   geometry: Feature[];
   revision_count: number;
+  permit_number: string;
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
@@ -157,4 +160,8 @@ export interface IGetSurveyAttachment {
  */
 export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
+}
+
+export interface SurveyPermitNumbers {
+  number: string;
 }

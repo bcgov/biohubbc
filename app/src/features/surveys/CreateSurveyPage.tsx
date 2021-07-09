@@ -15,7 +15,7 @@ import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, SurveyPermitNumbers } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -111,6 +111,8 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const [isLoadingPermitNumbers, setIsLoadingPermitNumbers] = useState(false);
+  const [permitNumbers, setPermitNumbers] = useState<SurveyPermitNumbers[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -181,6 +183,24 @@ const CreateSurveyPage = () => {
     .concat(StudyAreaYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
+
+  useEffect(() => {
+    const getPermitNumbers = async (projectId: number) => {
+      const permitNumbersResponse = await biohubApi.survey.getSurveyPermitNumbers(projectId);
+
+      if (!permitNumbersResponse) {
+        // TODO error handling/messaging
+        return;
+      }
+
+      setPermitNumbers(permitNumbersResponse);
+    };
+
+    if (!isLoadingPermitNumbers && !permitNumbers.length && projectWithDetails) {
+      getPermitNumbers(projectWithDetails.id);
+      setIsLoadingPermitNumbers(true);
+    }
+  }, [biohubApi.survey, isLoadingPermitNumbers, permitNumbers, projectWithDetails]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -377,6 +397,11 @@ const CreateSurveyPage = () => {
                       species={
                         codes?.species?.map((item) => {
                           return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      permit_numbers={
+                        permitNumbers?.map((item) => {
+                          return { value: item.number, label: item.number };
                         }) || []
                       }
                       projectStartDate={projectWithDetails.project.start_date}

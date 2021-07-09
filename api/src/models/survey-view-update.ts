@@ -22,6 +22,7 @@ export class GetSurveyDetailsData {
   survey_area_name: string;
   geometry: Feature[];
   revision_count: number;
+  permit_number: string;
 
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({ label: 'GetSurveyDetailsData', message: 'params', surveyDetailsData });
@@ -54,6 +55,7 @@ export class GetSurveyDetailsData {
     this.biologist_last_name = surveyDataItem?.lead_last_name || '';
     this.survey_area_name = surveyDataItem?.location_name || '';
     this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
+    this.permit_number = surveyDataItem?.number || '';
     this.revision_count = surveyDataItem?.revision_count ?? null;
   }
 }

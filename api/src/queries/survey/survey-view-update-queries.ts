@@ -32,6 +32,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       public.ST_asGeoJSON(s.geography) as geometry,
       s.revision_count,
+      per.number,
       CASE
         WHEN ss.is_focal = TRUE THEN wtu.id
       END as focal_species,
@@ -48,6 +49,10 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       survey as s
     ON
       s.id = ss.s_id
+    LEFT OUTER JOIN
+      permit as per
+    ON
+      per.s_id = s.id
     WHERE
       s.id = ${surveyId};
   `;
