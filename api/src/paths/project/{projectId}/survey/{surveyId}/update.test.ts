@@ -117,7 +117,8 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const mockQuery = sinon.stub();
@@ -155,7 +156,9 @@ describe('getSurveyForUpdate', () => {
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
-        permit_number: ''
+        permit_number: '',
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: null
     });
@@ -174,7 +177,8 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const survey_proprietor = {
@@ -231,7 +235,9 @@ describe('getSurveyForUpdate', () => {
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
-        permit_number: ''
+        permit_number: '',
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,

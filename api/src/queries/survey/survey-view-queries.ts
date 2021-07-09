@@ -100,6 +100,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
       s.name,
       s.start_date,
       s.end_date,
+      s.publish_timestamp,
       CASE
         WHEN wtu.english_name IS NULL THEN wtu.unit_name2
         ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
@@ -158,6 +159,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       public.ST_asGeoJSON(s.geography) as geometry,
       per.number,
       s.revision_count,
+      s.publish_timestamp as publish_date,
       CASE
         WHEN wtu.english_name IS NULL and ss.is_focal = TRUE THEN wtu.unit_name2
         WHEN wtu.english_name IS NOT NULL and ss.is_focal = TRUE THEN CONCAT(wtu.english_name, ' - ', wtu.unit_name2)

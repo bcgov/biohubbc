@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import moment from 'moment';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-view-update');
@@ -23,6 +24,8 @@ export class GetSurveyDetailsData {
   geometry: Feature[];
   revision_count: number;
   permit_number: string;
+  completion_status: string;
+  publish_date: string;
 
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({ label: 'GetSurveyDetailsData', message: 'params', surveyDetailsData });
@@ -57,6 +60,13 @@ export class GetSurveyDetailsData {
     this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
     this.permit_number = surveyDataItem?.number || '';
     this.revision_count = surveyDataItem?.revision_count ?? null;
+    this.completion_status =
+      (surveyDataItem &&
+        surveyDataItem.end_date &&
+        moment(surveyDataItem.end_date).endOf('day').isBefore(moment()) &&
+        'Completed') ||
+      'Active';
+    this.publish_date = surveyDataItem?.publish_date || '';
   }
 }
 

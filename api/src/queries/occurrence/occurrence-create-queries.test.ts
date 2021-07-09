@@ -35,4 +35,10 @@ describe('postOccurrenceSQL', () => {
 
     expect(response).to.not.be.null;
   });
+
+  it('returns non null response when occurrence has verbatimCoordinates', () => {
+    const response = postOccurrenceSQL(1, new PostOccurrence({ verbatimCoordinates: '9N 300457 5884632' }));
+
+    expect(response).to.not.be.null;
+  });
 });

@@ -8,6 +8,7 @@ import { surveyIdResponseObject } from '../../../openapi/schemas/survey';
 import { getSurveyListSQL } from '../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
+import moment from 'moment';
 
 const defaultLog = getLogger('paths/project/{projectId}/surveys');
 
@@ -131,7 +132,9 @@ export function _extractSurveys(rows: any[]): any[] {
       species: row.species,
       start_date: row.start_date,
       end_date: row.end_date,
-      status_name: 'Unpublished'
+      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
+      completion_status:
+        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && 'Completed') || 'Active'
     };
 
     surveys.push(survey);
