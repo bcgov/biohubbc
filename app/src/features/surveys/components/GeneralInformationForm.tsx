@@ -31,6 +31,9 @@ const useStyles = makeStyles({
   },
   buttonPadding: {
     padding: 14
+  },
+  bottomSpacing: {
+    paddingBottom: 14
   }
 });
 
@@ -203,68 +206,66 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           )}
           {props.permit_numbers.length === 0 && !showAddPermitRow && (
             <>
-              <Typography variant="body2">
+              <Typography variant="body2" className={classes.bottomSpacing}>
                 You do not have any permits to select from for this survey, please add a new permit.
               </Typography>
-              <Box pt={2}>{addNewPermitButton()}</Box>
+              {addNewPermitButton()}
             </>
           )}
           {showAddPermitRow && (
-            <Box pt={2}>
-              <Grid item xs={12}>
-                <Box display="flex">
-                  <Box flexBasis="50%" pr={1}>
-                    <CustomTextField
-                      name="permit_number"
-                      label="Permit Number"
-                      other={{
-                        required: true,
-                        value: formikProps.values.permit_number,
-                        error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
-                        helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
-                      }}
-                    />
-                  </Box>
-                  <Box flexBasis="50%" pl={1}>
-                    <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
-                      <InputLabel id="permit_type">Permit Type</InputLabel>
-                      <Select
-                        id="permit_type"
-                        name="permit_type"
-                        labelId="permit_type"
-                        label="Permit Type"
-                        value={formikProps.values.permit_type}
-                        onChange={formikProps.handleChange}
-                        error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
-                        displayEmpty
-                        inputProps={{ 'aria-label': 'Permit Type' }}>
-                        <MenuItem key={1} value="Park Use Permit">
-                          Park Use Permit
-                        </MenuItem>
-                        <MenuItem key={2} value="Wildlife Permit - General">
-                          Wildlife Permit - General
-                        </MenuItem>
-                        <MenuItem key={3} value="Scientific Fish Collection Permit">
-                          Scientific Fish Collection Permit
-                        </MenuItem>
-                      </Select>
-                      <FormHelperText>
-                        {formikProps.touched.permit_type && formikProps.errors.permit_type}
-                      </FormHelperText>
-                    </FormControl>
-                  </Box>
-                  <Box pt={0.5} pl={1}>
-                    <IconButton
-                      color="primary"
-                      data-testid="delete-icon"
-                      aria-label="remove-permit"
-                      onClick={() => setShowAddPermitRow(false)}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </Box>
+            <Grid item xs={12}>
+              <Box display="flex">
+                <Box flexBasis="50%" pr={1}>
+                  <CustomTextField
+                    name="permit_number"
+                    label="Permit Number"
+                    other={{
+                      required: true,
+                      value: formikProps.values.permit_number,
+                      error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
+                      helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
+                    }}
+                  />
                 </Box>
-              </Grid>
-            </Box>
+                <Box flexBasis="50%" pl={1}>
+                  <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
+                    <InputLabel id="permit_type">Permit Type</InputLabel>
+                    <Select
+                      id="permit_type"
+                      name="permit_type"
+                      labelId="permit_type"
+                      label="Permit Type"
+                      value={formikProps.values.permit_type}
+                      onChange={formikProps.handleChange}
+                      error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
+                      displayEmpty
+                      inputProps={{ 'aria-label': 'Permit Type' }}>
+                      <MenuItem key={1} value="Park Use Permit">
+                        Park Use Permit
+                      </MenuItem>
+                      <MenuItem key={2} value="Wildlife Permit - General">
+                        Wildlife Permit - General
+                      </MenuItem>
+                      <MenuItem key={3} value="Scientific Fish Collection Permit">
+                        Scientific Fish Collection Permit
+                      </MenuItem>
+                    </Select>
+                    <FormHelperText>
+                      {formikProps.touched.permit_type && formikProps.errors.permit_type}
+                    </FormHelperText>
+                  </FormControl>
+                </Box>
+                <Box pt={0.5} pl={1}>
+                  <IconButton
+                    color="primary"
+                    data-testid="delete-icon"
+                    aria-label="remove-permit"
+                    onClick={() => setShowAddPermitRow(false)}>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Grid>
           )}
         </Grid>
         <Grid item xs={12}>
