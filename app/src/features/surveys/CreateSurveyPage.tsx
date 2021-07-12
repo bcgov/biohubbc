@@ -401,7 +401,7 @@ const CreateSurveyPage = () => {
                       }
                       permit_numbers={
                         permitNumbers?.map((item) => {
-                          return { value: item.number, label: item.number };
+                          return { value: item.number, label: `${item.number} - ${item.type}` };
                         }) || []
                       }
                       projectStartDate={projectWithDetails.project.start_date}

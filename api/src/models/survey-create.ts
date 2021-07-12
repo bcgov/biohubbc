@@ -23,6 +23,7 @@ export class PostSurveyObject {
   survey_purpose: string;
   geometry: Feature[];
   permit_number: string;
+  permit_type: string;
   survey_proprietor?: PostSurveyProprietorData;
 
   constructor(obj?: any) {
@@ -37,6 +38,7 @@ export class PostSurveyObject {
     this.start_date = obj?.start_date || null;
     this.survey_area_name = obj?.survey_area_name || null;
     this.permit_number = obj?.permit_number || null;
+    this.permit_type = obj?.permit_type || null;
     this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
     this.survey_name = obj?.survey_name || null;
     this.survey_purpose = obj?.survey_purpose || null;

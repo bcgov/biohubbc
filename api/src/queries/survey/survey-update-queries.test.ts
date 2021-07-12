@@ -22,6 +22,7 @@ describe('putSurveyDetailsSQL', () => {
     revision_count: 1,
     location_name: 'location',
     permit_number: '12',
+    permit_type: 'scientific',
     geometry: [
       {
         type: 'Feature',

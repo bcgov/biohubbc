@@ -120,7 +120,9 @@ describe('getSurveyForUpdate', () => {
       location_name: 'location',
       revision_count: 1,
       geometry: [],
-      publish_timestamp: null
+      publish_timestamp: null,
+      number: '123',
+      type: 'scientific'
     };
 
     const mockQuery = sinon.stub();
@@ -158,7 +160,8 @@ describe('getSurveyForUpdate', () => {
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
-        permit_number: '',
+        permit_number: survey_details.number,
+        permit_type: survey_details.type,
         completion_status: 'Completed',
         publish_date: ''
       },
@@ -293,6 +296,7 @@ describe('getSurveyForUpdate', () => {
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
         permit_number: '',
+        permit_type: '',
         completion_status: 'Completed',
         publish_date: ''
       },

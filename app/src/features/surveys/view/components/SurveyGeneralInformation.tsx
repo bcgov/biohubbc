@@ -97,7 +97,15 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       return;
     }
 
-    setPermitNumbers(surveyPermitNumbersResponseData);
+    if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
+      setPermitNumbers([
+        { number: surveyDetailsResponseData.permit_number, type: surveyDetailsResponseData.permit_type },
+        ...surveyPermitNumbersResponseData
+      ]);
+    } else {
+      setPermitNumbers(surveyPermitNumbersResponseData);
+    }
+
     setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
       ...surveyDetailsResponseData,
@@ -148,7 +156,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               }
               permit_numbers={
                 permitNumbers?.map((item) => {
-                  return { value: item.number, label: item.number };
+                  return { value: item.number, label: `${item.number} - ${item.type}` };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -284,10 +292,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Permit Number
+                Permit
               </Typography>
               <Typography component="dd" variant="body1">
-                {survey_details.permit_number || 'No Permit Number'}
+                {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) ||
+                  'No Permit'}
               </Typography>
             </Grid>
           </Grid>

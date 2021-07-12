@@ -22,7 +22,8 @@ export const getSurveyPermitNumbersSQL = (projectId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      number
+      number,
+      type
     FROM
       permit
     WHERE
@@ -158,6 +159,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.location_name,
       public.ST_asGeoJSON(s.geography) as geometry,
       per.number,
+      per.type,
       s.revision_count,
       s.publish_timestamp as publish_date,
       CASE

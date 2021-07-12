@@ -26,7 +26,7 @@ import {
 } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
-import { insertAncillarySpecies, insertFocalSpecies, insertSurveyPermitNumber } from '../create';
+import { insertAncillarySpecies, insertFocalSpecies, insertSurveyPermit } from '../create';
 import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 
@@ -403,7 +403,9 @@ export const updateSurveyDetailsData = async (
   promises.push(updateSurveyPermitNumber(surveyId, connection));
 
   if (putDetailsData.permit_number) {
-    promises.push(insertSurveyPermitNumber(putDetailsData.permit_number, surveyId, connection));
+    promises.push(
+      insertSurveyPermit(putDetailsData.permit_number, putDetailsData.permit_type, projectId, surveyId, connection)
+    );
   }
 
   return Promise.all(promises);

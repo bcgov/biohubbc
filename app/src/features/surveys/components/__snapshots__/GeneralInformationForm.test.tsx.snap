@@ -429,6 +429,19 @@ exports[`General Information Form renders correctly the empty component correctl
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
+          class="MuiBox-root MuiBox-root-7"
+        >
+          <p
+            class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
+          >
+            Permit
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
           data-testid="permit_number"
@@ -528,12 +541,31 @@ exports[`General Information Form renders correctly the empty component correctl
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root MuiBox-root-8"
+        >
+          <button
+            aria-label="add-permit"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Add New Permit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="MuiBox-root MuiBox-root-9"
         >
           <p
             class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
@@ -685,10 +717,10 @@ exports[`General Information Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
               >
                 <span>
                   Survey Name *
@@ -739,10 +771,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Start Date *
@@ -789,10 +821,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     End Date
@@ -906,10 +938,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
                     Focal Species *
@@ -1010,10 +1042,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
                     Ancillary Species
@@ -1059,10 +1091,10 @@ exports[`General Information Form renders correctly the filled component correct
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
               >
                 <span>
                   Purpose of Survey *
@@ -1070,6 +1102,19 @@ exports[`General Information Form renders correctly the filled component correct
               </legend>
             </fieldset>
           </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-16"
+        >
+          <p
+            class="MuiTypography-root makeStyles-bold-10 MuiTypography-body1"
+          >
+            Permit
+          </p>
         </div>
       </div>
       <div
@@ -1162,10 +1207,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
                     Permit Number
@@ -1175,15 +1220,34 @@ exports[`General Information Form renders correctly the filled component correct
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root MuiBox-root-17"
+        >
+          <button
+            aria-label="add-permit"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Add New Permit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-14"
+          class="MuiBox-root MuiBox-root-18"
         >
           <p
-            class="MuiTypography-root makeStyles-bold-8 MuiTypography-body1"
+            class="MuiTypography-root makeStyles-bold-10 MuiTypography-body1"
           >
             Lead biologist for this survey
           </p>
@@ -1226,10 +1290,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     First Name *
@@ -1273,10 +1337,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-11 PrivateNotchedOutline-legendNotched-12"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Last Name *
@@ -1333,10 +1397,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
               >
                 <span>
                   Survey Name *
@@ -1393,10 +1457,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                  class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
                 >
                   <span>
                     Start Date *
@@ -1443,10 +1507,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                  class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
                 >
                   <span>
                     End Date
@@ -1560,10 +1624,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18"
+                  class="PrivateNotchedOutline-legendLabelled-22"
                 >
                   <span>
                     Focal Species *
@@ -1664,10 +1728,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18"
+                  class="PrivateNotchedOutline-legendLabelled-22"
                 >
                   <span>
                     Ancillary Species
@@ -1714,10 +1778,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
               >
                 <span>
                   Purpose of Survey *
@@ -1730,6 +1794,19 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             id="survey_purpose-helper-text"
           >
             error on survey purpose field
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-25"
+        >
+          <p
+            class="MuiTypography-root makeStyles-bold-19 MuiTypography-body1"
+          >
+            Permit
           </p>
         </div>
       </div>
@@ -1823,10 +1900,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18"
+                  class="PrivateNotchedOutline-legendLabelled-22"
                 >
                   <span>
                     Permit Number
@@ -1836,15 +1913,34 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </div>
           </div>
         </div>
+        <div
+          class="MuiBox-root MuiBox-root-26"
+        >
+          <button
+            aria-label="add-permit"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Add New Permit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-27"
         >
           <p
-            class="MuiTypography-root makeStyles-bold-15 MuiTypography-body1"
+            class="MuiTypography-root makeStyles-bold-19 MuiTypography-body1"
           >
             Lead biologist for this survey
           </p>
@@ -1888,10 +1984,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                  class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
                 >
                   <span>
                     First Name *
@@ -1942,10 +2038,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+                  class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
                 >
                   <span>
                     Last Name *

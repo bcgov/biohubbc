@@ -124,12 +124,12 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Permit Number
+            Permit
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            123
+            123 - Scientific
           </dd>
         </div>
       </div>
@@ -291,12 +291,12 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Permit Number
+            Permit
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            123
+            123 - Scientific
           </dd>
         </div>
       </div>

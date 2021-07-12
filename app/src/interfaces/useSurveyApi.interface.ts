@@ -53,6 +53,7 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   permit_number: string;
+  permit_type: string;
   geometry: Feature[];
   completion_status: string;
   publish_date: string;
@@ -81,6 +82,7 @@ export interface IGetSurveyForUpdateResponseDetails {
   geometry: Feature[];
   revision_count: number;
   permit_number: string;
+  permit_type: string;
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
@@ -167,4 +169,5 @@ export interface IGetSurveyAttachmentsResponse {
 
 export interface SurveyPermitNumbers {
   number: string;
+  type: string;
 }
