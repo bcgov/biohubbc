@@ -250,9 +250,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                         Scientific Fish Collection Permit
                       </MenuItem>
                     </Select>
-                    <FormHelperText>
-                      {formikProps.touched.permit_type && formikProps.errors.permit_type}
-                    </FormHelperText>
+                    <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
                   </FormControl>
                 </Box>
                 <Box pt={0.5} pl={1}>
