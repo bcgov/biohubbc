@@ -25,6 +25,12 @@ import IconButton from '@material-ui/core/IconButton';
 const useStyles = makeStyles({
   bold: {
     fontWeight: 'bold'
+  },
+  center: {
+    alignSelf: 'center'
+  },
+  buttonPadding: {
+    padding: 14
   }
 });
 
@@ -90,6 +96,25 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
   const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
 
+  const addNewPermitButton = () => {
+    return (
+      <Button
+        className={classes.buttonPadding}
+        type="button"
+        variant="outlined"
+        color="primary"
+        aria-label="add-permit"
+        onClick={() => {
+          formikProps.setFieldValue('permit_number', '');
+          formikProps.setFieldValue('permit_type', '');
+
+          setShowAddPermitRow(true);
+        }}>
+        Add New Permit
+      </Button>
+    );
+  };
+
   return (
     <form>
       <Grid container spacing={3}>
@@ -148,24 +173,41 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <Grid item xs={12}>
           {props.permit_numbers.length > 0 && !showAddPermitRow && (
-            <AutocompleteField
-              id="permit_number"
-              name="permit_number"
-              label="Permit Number"
-              options={props.permit_numbers}
-              onChange={(event, option) => {
-                if (!option) {
-                  formikProps.setFieldValue('permit_number', '');
-                } else {
-                  formikProps.setFieldValue('permit_number', option.value);
-                }
-              }}
-            />
+            <Grid container direction="row">
+              <Grid item xs={12}>
+                <Box display="flex">
+                  <Box flexBasis="100%" pr={2}>
+                    <AutocompleteField
+                      id="permit_number"
+                      name="permit_number"
+                      label="Select Existing Permit"
+                      options={props.permit_numbers}
+                      onChange={(event, option) => {
+                        if (!option) {
+                          formikProps.setFieldValue('permit_number', '');
+                        } else {
+                          formikProps.setFieldValue('permit_number', option.value);
+                        }
+                      }}
+                    />
+                  </Box>
+                  <Typography className={classes.center} variant="body2">
+                    OR
+                  </Typography>
+                  <Box flexBasis="50%" pl={2} className={classes.center}>
+                    {addNewPermitButton()}
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
           )}
-          {props.permit_numbers.length === 0 && (
-            <Typography variant="body2">
-              You do not have any permits to select from for this survey, please add a new permit.
-            </Typography>
+          {props.permit_numbers.length === 0 && !showAddPermitRow && (
+            <>
+              <Typography variant="body2">
+                You do not have any permits to select from for this survey, please add a new permit.
+              </Typography>
+              <Box pt={2}>{addNewPermitButton()}</Box>
+            </>
           )}
           {showAddPermitRow && (
             <Box pt={2}>
@@ -222,23 +264,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                   </Box>
                 </Box>
               </Grid>
-            </Box>
-          )}
-          {!showAddPermitRow && (
-            <Box pt={2}>
-              <Button
-                type="button"
-                variant="outlined"
-                color="primary"
-                aria-label="add-permit"
-                onClick={() => {
-                  formikProps.setFieldValue('permit_number', '');
-                  formikProps.setFieldValue('permit_type', '');
-
-                  setShowAddPermitRow(true);
-                }}>
-                Add New Permit
-              </Button>
             </Box>
           )}
         </Grid>
