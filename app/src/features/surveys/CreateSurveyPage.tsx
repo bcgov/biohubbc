@@ -111,8 +111,7 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingPermits, setIsLoadingPermits] = useState(false);
-  const [permits, setPermits] = useState<SurveyPermits[]>([]);
+  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -185,24 +184,6 @@ const CreateSurveyPage = () => {
     .concat(AgreementsYupSchema);
 
   useEffect(() => {
-    const getPermits = async (projectId: number) => {
-      const permitsResponse = await biohubApi.survey.getSurveyPermits(projectId);
-
-      if (!permitsResponse) {
-        // TODO error handling/messaging
-        return;
-      }
-
-      setPermits(permitsResponse);
-    };
-
-    if (!isLoadingPermits && !permits.length && projectWithDetails) {
-      getPermits(projectWithDetails.id);
-      setIsLoadingPermits(true);
-    }
-  }, [biohubApi.survey, isLoadingPermits, permits, projectWithDetails]);
-
-  useEffect(() => {
     const getCodes = async () => {
       const codesResponse = await biohubApi.codes.getAllCodeSets();
 
@@ -228,8 +209,16 @@ const CreateSurveyPage = () => {
       return;
     }
 
+    const surveyPermitsResponse = await biohubApi.survey.getSurveyPermits(projectWithDetailsResponse.id);
+
+    if (!surveyPermitsResponse) {
+      // TODO error handling/messaging
+      return;
+    }
+
+    setSurveyPermits(surveyPermitsResponse);
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.project, biohubApi.survey, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {
@@ -400,7 +389,7 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                       permit_numbers={
-                        permits?.map((item) => {
+                        surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
                         }) || []
                       }
