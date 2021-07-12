@@ -136,9 +136,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
   /**
    * Get permits that have not already been assigned to a survey, by project ID
-   *
-   * Note: applicable permits are those not already assigned to a survey
-   * This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
+   * Note: This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
    *
    * @param {number} projectId
    * @returns {*} {Promise<SurveyPermits[]>}
