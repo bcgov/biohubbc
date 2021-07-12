@@ -15,7 +15,7 @@ import {
   IGetSurveyForViewResponse,
   IGetSurveyForUpdateResponseDetails,
   UPDATE_GET_SURVEY_ENTITIES,
-  SurveyPermitNumbers
+  SurveyPermits
 } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
@@ -55,7 +55,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
-  const [permitNumbers, setPermitNumbers] = useState<SurveyPermitNumbers[]>([]);
+  const [permits, setPermits] = useState<SurveyPermits[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -75,21 +75,21 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const handleDialogEditOpen = async () => {
     let surveyDetailsResponseData;
-    let surveyPermitNumbersResponseData;
+    let surveyPermitsResponseData;
 
     try {
       const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_details
       ]);
 
-      const permitNumbersResponse = await biohubApi.survey.getSurveyPermitNumbers(projectForViewData.id);
+      const permitsResponse = await biohubApi.survey.getSurveyPermits(projectForViewData.id);
 
-      if (!response?.survey_details || !permitNumbersResponse) {
+      if (!response?.survey_details || !permitsResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      surveyPermitNumbersResponseData = permitNumbersResponse;
+      surveyPermitsResponseData = permitsResponse;
       surveyDetailsResponseData = response.survey_details;
     } catch (error) {
       const apiError = error as APIError;
@@ -97,13 +97,17 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       return;
     }
 
+    /*
+      If a permit number/type already exists for the record we are updating, we need to include it in the
+      list of applicable permits for the survey to be associated with
+    */
     if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
-      setPermitNumbers([
+      setPermits([
         { number: surveyDetailsResponseData.permit_number, type: surveyDetailsResponseData.permit_type },
-        ...surveyPermitNumbersResponseData
+        ...surveyPermitsResponseData
       ]);
     } else {
-      setPermitNumbers(surveyPermitNumbersResponseData);
+      setPermits(surveyPermitsResponseData);
     }
 
     setSurveyDataForUpdate(surveyDetailsResponseData);
@@ -155,7 +159,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 }) || []
               }
               permit_numbers={
-                permitNumbers?.map((item) => {
+                permits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
                 }) || []
               }

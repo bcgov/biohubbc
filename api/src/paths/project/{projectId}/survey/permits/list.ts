@@ -65,17 +65,17 @@ export function getPermitNumbers(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyPermitNumbersSQLStatement = getAllAssignablePermitsForASurveySQL(Number(req.params.projectId));
+      const getSurveyPermitsSQLStatement = getAllAssignablePermitsForASurveySQL(Number(req.params.projectId));
 
-      if (!getSurveyPermitNumbersSQLStatement) {
+      if (!getSurveyPermitsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const permitNumbersData = await connection.query(
-        getSurveyPermitNumbersSQLStatement.text,
-        getSurveyPermitNumbersSQLStatement.values
+        getSurveyPermitsSQLStatement.text,
+        getSurveyPermitsSQLStatement.values
       );
 
       await connection.commit();

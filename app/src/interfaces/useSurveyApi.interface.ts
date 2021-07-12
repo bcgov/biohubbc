@@ -167,7 +167,7 @@ export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
 }
 
-export interface SurveyPermitNumbers {
+export interface SurveyPermits {
   number: string;
   type: string;
 }

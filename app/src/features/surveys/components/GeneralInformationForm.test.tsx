@@ -39,8 +39,11 @@ describe('General Information Form', () => {
               }) || []
             }
             permit_numbers={
-              [{ number: '123' }, { number: '456' }].map((item) => {
-                return { value: item.number, label: item.number };
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -71,8 +74,11 @@ describe('General Information Form', () => {
               }) || []
             }
             permit_numbers={
-              [{ number: '123' }, { number: '456' }].map((item) => {
-                return { value: item.number, label: item.number };
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -121,8 +127,11 @@ describe('General Information Form', () => {
               }) || []
             }
             permit_numbers={
-              [{ number: '123' }, { number: '456' }].map((item) => {
-                return { value: item.number, label: item.number };
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}

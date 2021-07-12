@@ -21,7 +21,7 @@ const mockUseBiohubApi = {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   survey: {
-    getSurveyPermitNumbers: jest.fn()
+    getSurveyPermits: jest.fn()
   }
 };
 
@@ -34,7 +34,7 @@ describe('CreateSurveyPage', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().survey.getSurveyPermitNumbers.mockClear();
+    mockBiohubApi().survey.getSurveyPermits.mockClear();
   });
 
   afterEach(() => {
@@ -60,7 +60,10 @@ describe('CreateSurveyPage', () => {
       species: [{ id: 1, name: 'species 1' }]
     } as any);
 
-    mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+      { number: '123', type: 'Scientific' },
+      { number: '456', type: 'Wildlife' }
+    ]);
 
     const { asFragment, getAllByText } = render(
       <MemoryRouter initialEntries={['?id=1']}>
@@ -82,7 +85,10 @@ describe('CreateSurveyPage', () => {
         species: [{ id: 1, name: 'species 1' }]
       } as any);
 
-      mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+        { number: '123', type: 'Scientific' },
+        { number: '456', type: 'Wildlife' }
+      ]);
 
       history.push('/home');
       history.push('/projects/1/survey/create');
@@ -120,7 +126,10 @@ describe('CreateSurveyPage', () => {
         species: [{ id: 1, name: 'species 1' }]
       } as any);
 
-      mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+      mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+        { number: '123', type: 'Scientific' },
+        { number: '456', type: 'Wildlife' }
+      ]);
 
       const { getAllByText, getByText, getAllByRole, getByTestId } = render(
         <DialogContextProvider>

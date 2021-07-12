@@ -11,7 +11,7 @@ const mockUseBiohubApi = {
   survey: {
     getSurveyForUpdate: jest.fn(),
     updateSurvey: jest.fn(),
-    getSurveyPermitNumbers: jest.fn()
+    getSurveyPermits: jest.fn()
   }
 };
 
@@ -37,7 +37,7 @@ describe('SurveyGeneralInformation', () => {
     // clear mocks before each test
     mockBiohubApi().survey.getSurveyForUpdate.mockClear();
     mockBiohubApi().survey.updateSurvey.mockClear();
-    mockBiohubApi().survey.getSurveyPermitNumbers.mockClear();
+    mockBiohubApi().survey.getSurveyPermits.mockClear();
   });
 
   afterEach(() => {
@@ -87,7 +87,10 @@ describe('SurveyGeneralInformation', () => {
         revision_count: 1
       }
     });
-    mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+      { number: '123', type: 'Scientific' },
+      { number: '456', type: 'Wildlife' }
+    ]);
 
     const { getByText, queryByText } = renderContainer();
 
@@ -205,7 +208,10 @@ describe('SurveyGeneralInformation', () => {
         revision_count: 1
       }
     });
-    mockBiohubApi().survey.getSurveyPermitNumbers.mockResolvedValue([{ number: '123' }, { number: '456' }]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+      { number: '123', type: 'Scientific' },
+      { number: '456', type: 'Wildlife' }
+    ]);
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = renderContainer();

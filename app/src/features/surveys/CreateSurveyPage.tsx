@@ -15,7 +15,7 @@ import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, SurveyPermitNumbers } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, SurveyPermits } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -111,8 +111,8 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingPermitNumbers, setIsLoadingPermitNumbers] = useState(false);
-  const [permitNumbers, setPermitNumbers] = useState<SurveyPermitNumbers[]>([]);
+  const [isLoadingPermits, setIsLoadingPermits] = useState(false);
+  const [permits, setPermits] = useState<SurveyPermits[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -185,22 +185,22 @@ const CreateSurveyPage = () => {
     .concat(AgreementsYupSchema);
 
   useEffect(() => {
-    const getPermitNumbers = async (projectId: number) => {
-      const permitNumbersResponse = await biohubApi.survey.getSurveyPermitNumbers(projectId);
+    const getPermits = async (projectId: number) => {
+      const permitsResponse = await biohubApi.survey.getSurveyPermits(projectId);
 
-      if (!permitNumbersResponse) {
+      if (!permitsResponse) {
         // TODO error handling/messaging
         return;
       }
 
-      setPermitNumbers(permitNumbersResponse);
+      setPermits(permitsResponse);
     };
 
-    if (!isLoadingPermitNumbers && !permitNumbers.length && projectWithDetails) {
-      getPermitNumbers(projectWithDetails.id);
-      setIsLoadingPermitNumbers(true);
+    if (!isLoadingPermits && !permits.length && projectWithDetails) {
+      getPermits(projectWithDetails.id);
+      setIsLoadingPermits(true);
     }
-  }, [biohubApi.survey, isLoadingPermitNumbers, permitNumbers, projectWithDetails]);
+  }, [biohubApi.survey, isLoadingPermits, permits, projectWithDetails]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -400,7 +400,7 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                       permit_numbers={
-                        permitNumbers?.map((item) => {
+                        permits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
                         }) || []
                       }

@@ -8,7 +8,7 @@ import {
   IGetSurveyForUpdateResponse,
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
-  SurveyPermitNumbers
+  SurveyPermits
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 
@@ -135,12 +135,15 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get permit numbers applicable to use for a survey based on project ID
+   * Get permits that have not already been assigned to a survey, by project ID
+   *
+   * Note: applicable permits are those not already assigned to a survey
+   * This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
    *
    * @param {number} projectId
-   * @returns {*} {Promise<SurveyPermitNumbers[]>}
+   * @returns {*} {Promise<SurveyPermits[]>}
    */
-  const getSurveyPermitNumbers = async (projectId: number): Promise<SurveyPermitNumbers[]> => {
+  const getSurveyPermits = async (projectId: number): Promise<SurveyPermits[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
 
     return data;
@@ -204,7 +207,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
-    getSurveyPermitNumbers
+    getSurveyPermits
   };
 };
 
