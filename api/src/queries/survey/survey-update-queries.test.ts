@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
 import {
   putNewSurveyPermitNumberSQL,
-  putOldSurveyPermitNumberSQL,
+  unassociatePermitFromSurveySQL,
   putSurveyDetailsSQL,
   putSurveyProprietorSQL
 } from './survey-update-queries';
@@ -76,15 +76,15 @@ describe('putSurveyDetailsSQL', () => {
   });
 });
 
-describe('putOldSurveyPermitNumberSQL', () => {
+describe('unassociatePermitFromSurveySQL', () => {
   it('returns null when no surveyId provided', () => {
-    const response = putOldSurveyPermitNumberSQL((null as unknown) as number);
+    const response = unassociatePermitFromSurveySQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns sql statement when valid params provided', () => {
-    const response = putOldSurveyPermitNumberSQL(1);
+    const response = unassociatePermitFromSurveySQL(1);
 
     expect(response).to.not.be.null;
   });

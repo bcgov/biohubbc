@@ -15,7 +15,7 @@ import {
   getSurveyProprietorForUpdateSQL
 } from '../../../../../queries/survey/survey-view-update-queries';
 import {
-  putOldSurveyPermitNumberSQL,
+  unassociatePermitFromSurveySQL,
   putSurveyDetailsSQL,
   putSurveyProprietorSQL
 } from '../../../../../queries/survey/survey-update-queries';
@@ -456,7 +456,7 @@ export const updateSurveyProprietorData = async (
 };
 
 export const updateSurveyPermitNumber = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
-  const sqlStatement = putOldSurveyPermitNumberSQL(survey_id);
+  const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

@@ -6,12 +6,15 @@ const defaultLog = getLogger('queries/survey/survey-view-queries');
 /**
  * SQL query to get all permit numbers applicable for a survey
  *
+ * These are permits that are associated to a project but have not been used by any
+ * other surveys under that project
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyPermitNumbersSQL = (projectId: number): SQLStatement | null => {
+export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getSurveyPermitNumbersSQL',
+    label: 'getAllAssignablePermitsForASurveySQL',
     message: 'params',
     projectId
   });
@@ -33,7 +36,7 @@ export const getSurveyPermitNumbersSQL = (projectId: number): SQLStatement | nul
   `;
 
   defaultLog.debug({
-    label: 'getSurveyPermitNumbersSQL',
+    label: 'getAllAssignablePermitsForASurveySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

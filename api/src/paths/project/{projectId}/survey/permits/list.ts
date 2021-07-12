@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
-import { getSurveyPermitNumbersSQL } from '../../../../../queries/survey/survey-view-queries';
+import { getAllAssignablePermitsForASurveySQL } from '../../../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/permits/list');
@@ -65,7 +65,7 @@ export function getPermitNumbers(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyPermitNumbersSQLStatement = getSurveyPermitNumbersSQL(Number(req.params.projectId));
+      const getSurveyPermitNumbersSQLStatement = getAllAssignablePermitsForASurveySQL(Number(req.params.projectId));
 
       if (!getSurveyPermitNumbersSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

@@ -7,13 +7,14 @@ const defaultLog = getLogger('queries/survey/survey-update-queries');
 
 /**
  * SQL query to update a permit row based on an old survey association.
+ * Unset the survey id column (remove the association of the permit to the survey)
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const putOldSurveyPermitNumberSQL = (surveyId: number): SQLStatement | null => {
+export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'putOldSurveyPermitNumberSQL',
+    label: 'unassociatePermitFromSurveySQL',
     message: 'params',
     surveyId
   });
@@ -31,7 +32,7 @@ export const putOldSurveyPermitNumberSQL = (surveyId: number): SQLStatement | nu
   `;
 
   defaultLog.debug({
-    label: 'putOldSurveyPermitNumberSQL',
+    label: 'unassociatePermitFromSurveySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
