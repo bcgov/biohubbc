@@ -202,16 +202,12 @@ const CreateSurveyPage = () => {
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+    const [projectWithDetailsResponse, surveyPermitsResponse] = await Promise.all([
+      biohubApi.project.getProjectForView(urlParams['id']),
+      biohubApi.survey.getSurveyPermits(urlParams['id'])
+    ]);
 
-    if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    const surveyPermitsResponse = await biohubApi.survey.getSurveyPermits(projectWithDetailsResponse.id);
-
-    if (!surveyPermitsResponse) {
+    if (!projectWithDetailsResponse || !surveyPermitsResponse) {
       // TODO error handling/messaging
       return;
     }
