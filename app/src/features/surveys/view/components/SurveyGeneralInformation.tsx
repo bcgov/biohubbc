@@ -55,7 +55,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
-  const [permits, setPermits] = useState<SurveyPermits[]>([]);
+  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -78,19 +78,20 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     let surveyPermitsResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      const [surveyForUpdateResponse, surveyPermitsResponse] = await Promise.all([
+        biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+          UPDATE_GET_SURVEY_ENTITIES.survey_details
+        ]),
+        biohubApi.survey.getSurveyPermits(projectForViewData.id)
       ]);
 
-      const permitsResponse = await biohubApi.survey.getSurveyPermits(projectForViewData.id);
-
-      if (!response?.survey_details || !permitsResponse) {
+      if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      surveyPermitsResponseData = permitsResponse;
-      surveyDetailsResponseData = response.survey_details;
+      surveyPermitsResponseData = surveyPermitsResponse;
+      surveyDetailsResponseData = surveyForUpdateResponse.survey_details;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
@@ -102,12 +103,12 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       list of applicable permits for the survey to be associated with
     */
     if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
-      setPermits([
+      setSurveyPermits([
         { number: surveyDetailsResponseData.permit_number, type: surveyDetailsResponseData.permit_type },
         ...surveyPermitsResponseData
       ]);
     } else {
-      setPermits(surveyPermitsResponseData);
+      setSurveyPermits(surveyPermitsResponseData);
     }
 
     setSurveyDataForUpdate(surveyDetailsResponseData);
@@ -159,7 +160,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 }) || []
               }
               permit_numbers={
-                permits?.map((item) => {
+                surveyPermits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
                 }) || []
               }
