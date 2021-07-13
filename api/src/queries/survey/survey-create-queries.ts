@@ -135,6 +135,58 @@ export const postSurveyProprietorSQL = (
 };
 
 /**
+ * SQL query to insert a survey permit row into the permit table.
+ *
+ * @param {number} projectId
+ * @param {number} surveyId
+ * @param {string} permitNumber
+ * @param {string} permitType
+ * @returns {SQLStatement} sql query object
+ */
+export const postNewSurveyPermitSQL = (
+  projectId: number,
+  surveyId: number,
+  permitNumber: string,
+  permitType: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postNewSurveyPermitSQL',
+    message: 'params',
+    projectId,
+    surveyId,
+    permitNumber,
+    permitType
+  });
+
+  if (!projectId || !surveyId || !permitNumber || !permitType) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO permit (
+      p_id,
+      s_id,
+      number,
+      type
+    ) VALUES (
+      ${projectId},
+      ${surveyId},
+      ${permitNumber},
+      ${permitType}
+    );
+  `;
+
+  defaultLog.debug({
+    label: 'postNewSurveyPermitSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a focal species row into the study_species table.
  *
  * @param {number} species id

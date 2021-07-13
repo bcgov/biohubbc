@@ -120,7 +120,9 @@ describe('getSurveyForUpdate', () => {
       location_name: 'location',
       revision_count: 1,
       geometry: [],
-      publish_timestamp: null
+      publish_timestamp: null,
+      number: '123',
+      type: 'scientific'
     };
 
     const mockQuery = sinon.stub();
@@ -158,6 +160,8 @@ describe('getSurveyForUpdate', () => {
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
+        permit_number: survey_details.number,
+        permit_type: survey_details.type,
         completion_status: 'Completed',
         publish_date: ''
       },
@@ -291,6 +295,8 @@ describe('getSurveyForUpdate', () => {
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
         geometry: survey_details.geometry,
+        permit_number: '',
+        permit_type: '',
         completion_status: 'Completed',
         publish_date: ''
       },
@@ -881,7 +887,7 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
-  it('should return true on success with focal and ancillary species', async () => {
+  it('should return resolved promises on success with focal and ancillary species', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
@@ -892,13 +898,14 @@ describe('updateSurveyDetailsData', () => {
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+    sinon.stub(update, 'updateSurveyPermitNumber').resolves(true);
 
     const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
       ...dbConnectionObj,
       query: mockQuery
     });
 
-    expect(result).to.eql([1, 2]);
+    expect(result).to.eql([1, 2, true]);
   });
 });
 

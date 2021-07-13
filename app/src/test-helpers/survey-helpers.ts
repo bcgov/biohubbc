@@ -12,6 +12,8 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     biologist_first_name: 'first',
     biologist_last_name: 'last',
     survey_area_name: 'study area',
+    permit_number: '123',
+    permit_type: 'Scientific',
     geometry: [],
     completion_status: 'Active',
     publish_date: (null as unknown) as string

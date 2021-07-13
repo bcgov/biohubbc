@@ -20,6 +20,8 @@ export class PutSurveyDetailsData {
   lead_last_name: string;
   location_name: string;
   geometry: Feature[];
+  permit_number: string;
+  permit_type: string;
   revision_count: number;
 
   constructor(obj?: any) {
@@ -36,6 +38,8 @@ export class PutSurveyDetailsData {
     this.lead_last_name = obj?.survey_details?.biologist_last_name || null;
     this.location_name = obj?.survey_details?.survey_area_name || null;
     this.geometry = obj?.survey_details?.geometry || null;
+    this.permit_number = obj?.survey_details.permit_number || null;
+    this.permit_type = obj?.survey_details.permit_type || null;
     this.revision_count = obj?.survey_details?.revision_count ?? null;
   }
 }

@@ -38,6 +38,14 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            permit_numbers={
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
+              }) || []
+            }
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -63,6 +71,14 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            permit_numbers={
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}
@@ -108,6 +124,14 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            permit_numbers={
+              [
+                { number: '123', type: 'Scientific' },
+                { number: '456', type: 'Wildlife' }
+              ].map((item) => {
+                return { value: item.number, label: `${item.number} - ${item.type}` };
               }) || []
             }
             projectStartDate={getProjectForViewResponse.project.start_date}

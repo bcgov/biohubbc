@@ -15,7 +15,7 @@ import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, SurveyPermits } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -111,6 +111,7 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -201,15 +202,19 @@ const CreateSurveyPage = () => {
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+    const [projectWithDetailsResponse, surveyPermitsResponse] = await Promise.all([
+      biohubApi.project.getProjectForView(urlParams['id']),
+      biohubApi.survey.getSurveyPermits(urlParams['id'])
+    ]);
 
-    if (!projectWithDetailsResponse) {
+    if (!projectWithDetailsResponse || !surveyPermitsResponse) {
       // TODO error handling/messaging
       return;
     }
 
+    setSurveyPermits(surveyPermitsResponse);
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.project, biohubApi.survey, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {
@@ -377,6 +382,11 @@ const CreateSurveyPage = () => {
                       species={
                         codes?.species?.map((item) => {
                           return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      permit_numbers={
+                        surveyPermits?.map((item) => {
+                          return { value: item.number, label: `${item.number} - ${item.type}` };
                         }) || []
                       }
                       projectStartDate={projectWithDetails.project.start_date}
