@@ -163,6 +163,11 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       public.ST_asGeoJSON(s.geography) as geometry,
       per.number,
       per.type,
+      sfs.pfs_id,
+      pfs.funding_amount::numeric::int,
+      pfs.funding_start_date,
+      pfs.funding_end_date,
+      fs.name as agency_name,
       s.revision_count,
       s.publish_timestamp as publish_date,
       CASE
@@ -187,6 +192,22 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       permit as per
     ON
       per.s_id = s.id
+    LEFT OUTER JOIN
+      survey_funding_source as sfs
+    ON
+      sfs.s_id = s.id
+    LEFT OUTER JOIN
+      project_funding_source as pfs
+    ON
+      pfs.id = sfs.pfs_id
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.iac_id = iac.id
+    LEFT OUTER JOIN
+      funding_source as fs
+    ON
+      iac.fs_id = fs.id
     WHERE
       s.id = ${surveyId};
   `;

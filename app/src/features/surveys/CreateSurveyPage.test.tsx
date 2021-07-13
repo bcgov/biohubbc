@@ -21,7 +21,8 @@ const mockUseBiohubApi = {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   survey: {
-    getSurveyPermits: jest.fn()
+    getSurveyPermits: jest.fn(),
+    getSurveyFundingSources: jest.fn()
   }
 };
 
@@ -35,6 +36,7 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
+    mockBiohubApi().survey.getSurveyFundingSources.mockClear();
   });
 
   afterEach(() => {
@@ -65,6 +67,10 @@ describe('CreateSurveyPage', () => {
       { number: '456', type: 'Wildlife' }
     ]);
 
+    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
+    ]);
+
     const { asFragment, getAllByText } = render(
       <MemoryRouter initialEntries={['?id=1']}>
         <CreateSurveyPage />
@@ -88,6 +94,16 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
         { number: '123', type: 'Scientific' },
         { number: '456', type: 'Wildlife' }
+      ]);
+
+      mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+        {
+          pfsId: 1,
+          amount: 100,
+          startDate: '2000-04-09 11:53:53',
+          endDate: '2000-05-10 11:53:53',
+          agencyName: 'agency'
+        }
       ]);
 
       history.push('/home');
@@ -129,6 +145,16 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
         { number: '123', type: 'Scientific' },
         { number: '456', type: 'Wildlife' }
+      ]);
+
+      mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+        {
+          pfsId: 1,
+          amount: 100,
+          startDate: '2000-04-09 11:53:53',
+          endDate: '2000-05-10 11:53:53',
+          agencyName: 'agency'
+        }
       ]);
 
       const { getAllByText, getByText, getAllByRole, getByTestId } = render(

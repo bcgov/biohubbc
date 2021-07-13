@@ -34,6 +34,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.revision_count,
       per.number,
       per.type,
+      sfs.pfs_id,
       s.publish_timestamp as publish_date,
       CASE
         WHEN ss.is_focal = TRUE THEN wtu.id
@@ -55,6 +56,10 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       permit as per
     ON
       per.s_id = s.id
+    LEFT OUTER JOIN
+      survey_funding_source as sfs
+    ON
+      sfs.s_id = s.id
     WHERE
       s.id = ${surveyId};
   `;

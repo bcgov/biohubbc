@@ -8,7 +8,8 @@ import {
   IGetSurveyForUpdateResponse,
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
-  SurveyPermits
+  SurveyPermits,
+  SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 
@@ -148,6 +149,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get funding sources for a survey by project ID
+   *
+   * @param {number} projectId
+   * @returns {*} {Promise<SurveyFundingSources[]>}
+   */
+  const getSurveyFundingSources = async (projectId: number): Promise<SurveyFundingSources[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
+
+    return data;
+  };
+
+  /**
    * Delete survey attachment based on survey and attachment ID
    *
    * @param {number} projectId
@@ -205,7 +218,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
     deleteSurvey,
-    getSurveyPermits
+    getSurveyPermits,
+    getSurveyFundingSources
   };
 };
 

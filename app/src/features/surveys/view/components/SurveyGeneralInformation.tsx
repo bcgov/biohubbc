@@ -15,10 +15,12 @@ import {
   IGetSurveyForViewResponse,
   IGetSurveyForUpdateResponseDetails,
   UPDATE_GET_SURVEY_ENTITIES,
-  SurveyPermits
+  SurveyPermits,
+  SurveyFundingSources,
+  ISurveyFundingSourceForView
 } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
-import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
@@ -56,6 +58,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     GeneralInformationInitialValues
   );
   const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<SurveyFundingSources[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -76,20 +79,23 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const handleDialogEditOpen = async () => {
     let surveyDetailsResponseData;
     let surveyPermitsResponseData;
+    let surveyFundingSourcesResponseData;
 
     try {
-      const [surveyForUpdateResponse, surveyPermitsResponse] = await Promise.all([
+      const [surveyForUpdateResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
         biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
           UPDATE_GET_SURVEY_ENTITIES.survey_details
         ]),
-        biohubApi.survey.getSurveyPermits(projectForViewData.id)
+        biohubApi.survey.getSurveyPermits(projectForViewData.id),
+        biohubApi.survey.getSurveyFundingSources(projectForViewData.id)
       ]);
 
-      if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse) {
+      if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
+      surveyFundingSourcesResponseData = surveyFundingSourcesResponse;
       surveyPermitsResponseData = surveyPermitsResponse;
       surveyDetailsResponseData = surveyForUpdateResponse.survey_details;
     } catch (error) {
@@ -111,6 +117,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       setSurveyPermits(surveyPermitsResponseData);
     }
 
+    setSurveyFundingSources(surveyFundingSourcesResponseData);
     setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
       ...surveyDetailsResponseData,
@@ -162,6 +169,18 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               permit_numbers={
                 surveyPermits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
+                }) || []
+              }
+              funding_sources={
+                surveyFundingSources?.map((item) => {
+                  return {
+                    value: item.pfsId,
+                    label: `${item.agencyName} | ${getFormattedAmount(item.amount)} | ${getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      item.startDate,
+                      item.endDate
+                    )}`
+                  };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -286,6 +305,28 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {ancillarySpecies}
+                  </Typography>
+                );
+              })}
+              {survey_details.ancillary_species.length <= 0 && (
+                <Typography component="dd" variant="body1">
+                  No Ancilliary Species
+                </Typography>
+              )}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Funding Sources
+              </Typography>
+              {survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+                return (
+                  <Typography component="dd" variant="body1" key={index}>
+                    {fundingSource.agency_name} | {getFormattedAmount(fundingSource.funding_amount)} |{' '}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat2,
+                      fundingSource.funding_start_date,
+                      fundingSource.funding_end_date
+                    )}
                   </Typography>
                 );
               })}

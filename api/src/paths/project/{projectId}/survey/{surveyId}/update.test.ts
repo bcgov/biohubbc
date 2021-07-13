@@ -122,7 +122,8 @@ describe('getSurveyForUpdate', () => {
       geometry: [],
       publish_timestamp: null,
       number: '123',
-      type: 'scientific'
+      type: 'scientific',
+      pfs_id: 1
     };
 
     const mockQuery = sinon.stub();
@@ -163,7 +164,8 @@ describe('getSurveyForUpdate', () => {
         permit_number: survey_details.number,
         permit_type: survey_details.type,
         completion_status: 'Completed',
-        publish_date: ''
+        publish_date: '',
+        funding_sources: [1]
       },
       survey_proprietor: null
     });
@@ -238,7 +240,8 @@ describe('getSurveyForUpdate', () => {
       location_name: 'location',
       revision_count: 1,
       geometry: [],
-      publish_timestamp: null
+      publish_timestamp: null,
+      pfs_id: 10
     };
 
     const survey_proprietor = {
@@ -298,7 +301,8 @@ describe('getSurveyForUpdate', () => {
         permit_number: '',
         permit_type: '',
         completion_status: 'Completed',
-        publish_date: ''
+        publish_date: '',
+        funding_sources: [10]
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
@@ -887,25 +891,35 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
-  it('should return resolved promises on success with focal and ancillary species', async () => {
+  it('should return resolved promises on success with focal and ancillary species and funding sources', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
+    mockQuery.onCall(0).resolves({ rowCount: 1 });
+    mockQuery.onCall(1).resolves(true);
+    mockQuery.onCall(2).resolves(true);
+    mockQuery.onCall(3).resolves(true);
 
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesSQL').returns(SQL`something`);
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+    sinon.stub(create, 'insertSurveyFundingSource').resolves(true);
     sinon.stub(update, 'updateSurveyPermitNumber').resolves(true);
 
-    const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
-      ...dbConnectionObj,
-      query: mockQuery
-    });
+    const result = await update.updateSurveyDetailsData(
+      projectId,
+      surveyId,
+      { ...data, survey_details: { ...data.survey_details, funding_sources: [12] } },
+      {
+        ...dbConnectionObj,
+        query: mockQuery
+      }
+    );
 
-    expect(result).to.eql([1, 2, true]);
+    expect(result).to.eql([1, 2, true, true]);
   });
 });
 
