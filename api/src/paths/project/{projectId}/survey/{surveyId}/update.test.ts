@@ -887,7 +887,7 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
-  it('should return resolved promises on success with focal and ancillary species', async () => {
+  it('should return resolved promises on success with focal and ancillary species but no permit number', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
@@ -906,6 +906,92 @@ describe('updateSurveyDetailsData', () => {
     });
 
     expect(result).to.eql([1, 2, true]);
+  });
+
+  it('should return resolved promises on success with focal and ancillary species and permit number', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    sinon.stub(create, 'insertFocalSpecies').resolves(1);
+    sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+    sinon.stub(update, 'unassociatePermitFromSurvey').resolves(true);
+    sinon.stub(create, 'insertSurveyPermit').resolves(true);
+
+    const result = await update.updateSurveyDetailsData(
+      projectId,
+      surveyId,
+      { ...data, survey_details: { ...data.survey_details, permit_number: '123' } },
+      {
+        ...dbConnectionObj,
+        query: mockQuery
+      }
+    );
+
+    expect(result).to.eql([1, 2, true, true]);
+  });
+});
+
+describe('unassociatePermitFromSurvey', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const surveyId = 1;
+
+  it('should throw a 400 error when no sql statement returned', async () => {
+    sinon.stub(survey_update_queries, 'unassociatePermitFromSurveySQL').returns(null);
+
+    try {
+      await update.unassociatePermitFromSurvey(surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
+  it('should throw a 400 error when no result returned', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(null);
+
+    sinon.stub(survey_update_queries, 'unassociatePermitFromSurveySQL').returns(SQL`something`);
+
+    try {
+      await update.unassociatePermitFromSurvey(surveyId, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to update survey permit number data');
+    }
   });
 });
 
