@@ -104,7 +104,8 @@ describe('getSurveyList', () => {
       name: 'name',
       species: 'species',
       start_date: '2020/04/04',
-      end_date: '2020/05/05'
+      end_date: '2020/05/05',
+      publish_timestamp: null
     };
 
     const mockQuery = sinon.stub();
@@ -127,9 +128,13 @@ describe('getSurveyList', () => {
 
     expect(actualResult).to.eql([
       {
-        ...survey,
-        species: [survey.species],
-        status_name: 'Unpublished'
+        id: 1,
+        name: 'name',
+        start_date: '2020/04/04',
+        end_date: '2020/05/05',
+        species: ['species'],
+        publish_status: 'Unpublished',
+        completion_status: 'Completed'
       }
     ]);
   });

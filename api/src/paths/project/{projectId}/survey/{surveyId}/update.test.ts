@@ -3,8 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as update from './update';
+import * as create from '../create';
 import * as db from '../../../../../database/db';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
+import * as survey_create_queries from '../../../../../queries/survey/survey-create-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
@@ -117,7 +119,10 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null,
+      number: '123',
+      type: 'scientific'
     };
 
     const mockQuery = sinon.stub();
@@ -154,9 +159,68 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        permit_number: survey_details.number,
+        permit_type: survey_details.type,
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: null
+    });
+  });
+
+  it('should return survey proprietor info when only survey proprietor entity is specified, on success', async () => {
+    const survey_proprietor = {
+      category_rationale: '',
+      data_sharing_agreement_required: 'false',
+      first_nations_id: null,
+      first_nations_name: '',
+      id: 1,
+      proprietary_data_category: null,
+      proprietary_data_category_name: '',
+      proprietor_name: '',
+      survey_data_proprietary: 'true',
+      revision_count: 1
+    };
+
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [survey_proprietor]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
+
+    const result = update.getSurveyForUpdate();
+
+    await result(
+      { ...sampleReq, query: { entity: ['survey_proprietor'] } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.eql({
+      survey_details: null,
+      survey_proprietor: {
+        category_rationale: survey_proprietor.category_rationale,
+        data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
+        first_nations_id: survey_proprietor.first_nations_id,
+        first_nations_name: survey_proprietor.first_nations_name,
+        id: survey_proprietor.id,
+        proprietary_data_category: survey_proprietor.proprietary_data_category,
+        proprietary_data_category_name: survey_proprietor.proprietary_data_category_name,
+        proprietor_name: survey_proprietor.proprietor_name,
+        survey_data_proprietary: survey_proprietor.survey_data_proprietary,
+        revision_count: survey_proprietor.revision_count
+      }
     });
   });
 
@@ -173,7 +237,8 @@ describe('getSurveyForUpdate', () => {
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
-      geometry: []
+      geometry: [],
+      publish_timestamp: null
     };
 
     const survey_proprietor = {
@@ -229,7 +294,11 @@ describe('getSurveyForUpdate', () => {
         biologist_last_name: survey_details.lead_last_name,
         survey_area_name: survey_details.location_name,
         revision_count: survey_details.revision_count,
-        geometry: survey_details.geometry
+        geometry: survey_details.geometry,
+        permit_number: '',
+        permit_type: '',
+        completion_status: 'Completed',
+        publish_date: ''
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
@@ -464,7 +533,7 @@ describe('updateSurvey', () => {
     expect(actualResult).to.equal(200);
   });
 
-  it('should send a valid HTTP response on success (when did not have proprietor data and still does not)', async () => {
+  it('should send a valid HTTP response on success (with only survey proprietor data)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1 });
@@ -482,7 +551,7 @@ describe('updateSurvey', () => {
     const result = update.updateSurvey();
 
     await result(
-      { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 0 } } },
+      { ...sampleReq, body: { survey_proprietor: { survey_data_proprietary: 'false', id: 0 } } },
       sampleRes as any,
       (null as unknown) as any
     );
@@ -508,7 +577,7 @@ describe('updateSurvey', () => {
     const result = update.updateSurvey();
 
     await result(
-      { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 1 } } },
+      { ...sampleReq, body: { ...sampleReq.body, survey_proprietor: { survey_data_proprietary: 'false', id: 0 } } },
       sampleRes as any,
       (null as unknown) as any
     );
@@ -547,6 +616,299 @@ describe('updateSurvey', () => {
   });
 });
 
+describe('updateSurveyProprietorData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const surveyId = 2;
+  const entities: update.IUpdateSurvey = {
+    survey_details: {
+      id: 1,
+      survey_name: 'survey name',
+      revision_count: 0,
+      focal_species: [1],
+      ancillary_species: [2]
+    },
+    survey_proprietor: {
+      id: 0,
+      survey_data_proprietary: 'true'
+    }
+  };
+
+  it('should throw a 400 error when fails to build sql statement in case 3', async () => {
+    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(null);
+
+    try {
+      await update.updateSurveyProprietorData(surveyId, entities, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement');
+    }
+  });
+
+  it('should throw a 400 error when no rowCount in result in case 3', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: null });
+
+    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`some`);
+
+    try {
+      await update.updateSurveyProprietorData(surveyId, entities, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to update survey proprietor data');
+    }
+  });
+
+  it('should throw a 400 error when fails to build sql statement in case 4', async () => {
+    sinon.stub(survey_update_queries, 'putSurveyProprietorSQL').returns(null);
+
+    try {
+      await update.updateSurveyProprietorData(
+        surveyId,
+        { ...entities, survey_proprietor: { ...entities.survey_proprietor, id: 1 } },
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement');
+    }
+  });
+
+  it('should throw a 400 error when no rowCount in result in case 4', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: null });
+
+    sinon.stub(survey_update_queries, 'putSurveyProprietorSQL').returns(SQL`some`);
+
+    try {
+      await update.updateSurveyProprietorData(
+        surveyId,
+        { ...entities, survey_proprietor: { ...entities.survey_proprietor, id: 1 } },
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to update survey proprietor data');
+    }
+  });
+});
+
+describe('updateSurveyDetailsData', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const projectId = 1;
+  const surveyId = 2;
+  const data: update.IUpdateSurvey = {
+    survey_details: {
+      id: 1,
+      survey_name: 'survey name',
+      revision_count: 0,
+      focal_species: [1],
+      ancillary_species: [2]
+    },
+    survey_proprietor: null
+  };
+
+  it('should throw a 400 error when no revision count in data', async () => {
+    try {
+      await update.updateSurveyDetailsData(
+        projectId,
+        surveyId,
+        (null as unknown) as update.IUpdateSurvey,
+        dbConnectionObj
+      );
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to parse request body');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement produced for putSurveyDetailsSQL', async () => {
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
+  it('should throw a 409 error when no rowCount produced for putSurveyDetailsSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: null });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to update stale survey data');
+    }
+  });
+
+  it('should throw a 400 error when no sql produced for deleteFocalSpeciesSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(null);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+    }
+  });
+
+  it('should throw a 400 error when no sql produced for deleteAncillarySpeciesSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1 });
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(null);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+    }
+  });
+
+  it('should throw a 400 error when fails to delete focal species data', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(null).onThirdCall().resolves(true);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to delete survey focal species data');
+    }
+  });
+
+  it('should throw a 400 error when fails to delete ancillary species data', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(null);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to delete survey ancillary species data');
+    }
+  });
+
+  it('should return resolved promises on success with focal and ancillary species', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(true);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+
+    sinon.stub(create, 'insertFocalSpecies').resolves(1);
+    sinon.stub(create, 'insertAncillarySpecies').resolves(2);
+    sinon.stub(update, 'updateSurveyPermitNumber').resolves(true);
+
+    const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    expect(result).to.eql([1, 2, true]);
+  });
+});
+
 describe('getSurveyDetailsData', () => {
   afterEach(() => {
     sinon.restore();
@@ -554,7 +916,7 @@ describe('getSurveyDetailsData', () => {
 
   const dbConnectionObj = {
     systemUserId: () => {
-      return null;
+      return 20;
     },
     open: async () => {
       // do nothing
@@ -576,13 +938,6 @@ describe('getSurveyDetailsData', () => {
   const surveyId = 1;
 
   it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
@@ -598,20 +953,12 @@ describe('getSurveyDetailsData', () => {
   it('should throw a 400 error when no result returned', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
+    mockQuery.resolves({ rows: null });
 
     sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`something`);
 
     try {
-      await update.getSurveyDetailsData(surveyId, dbConnectionObj);
+      await update.getSurveyDetailsData(surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
@@ -628,7 +975,7 @@ describe('getSurveyProprietorData', () => {
 
   const dbConnectionObj = {
     systemUserId: () => {
-      return null;
+      return 20;
     },
     open: async () => {
       // do nothing
@@ -650,13 +997,6 @@ describe('getSurveyProprietorData', () => {
   const surveyId = 1;
 
   it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
@@ -674,17 +1014,9 @@ describe('getSurveyProprietorData', () => {
 
     mockQuery.resolves({ rows: [] });
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
     sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
 
-    const result = await update.getSurveyProprietorData(surveyId, dbConnectionObj);
+    const result = await update.getSurveyProprietorData(surveyId, { ...dbConnectionObj, query: mockQuery });
 
     expect(result).to.be.null;
   });

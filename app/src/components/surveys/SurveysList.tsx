@@ -35,9 +35,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: 'white'
   },
   chipUnpublished: {
-    backgroundColor: theme.palette.text.secondary
+    backgroundColor: theme.palette.text.disabled
   },
-  chipPublished: {
+  chipActive: {
+    backgroundColor: theme.palette.warning.main
+  },
+  chipPublishedCompleted: {
     backgroundColor: theme.palette.success.main
   }
 }));
@@ -63,7 +66,13 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
       chipStatusClass = classes.chipUnpublished;
     } else if (SurveyStatusType.PUBLISHED === status_name) {
       chipLabel = 'PUBLISHED';
-      chipStatusClass = classes.chipPublished;
+      chipStatusClass = classes.chipPublishedCompleted;
+    } else if (SurveyStatusType.ACTIVE === status_name) {
+      chipLabel = 'ACTIVE';
+      chipStatusClass = classes.chipActive;
+    } else if (SurveyStatusType.COMPLETED === status_name) {
+      chipLabel = 'COMPLETED';
+      chipStatusClass = classes.chipPublishedCompleted;
     }
 
     return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
@@ -78,7 +87,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell className={classes.heading}>Name</TableCell>
               <TableCell className={classes.heading}>Species</TableCell>
               <TableCell className={classes.heading}>Timeline</TableCell>
-              <TableCell className={classes.heading}>Status</TableCell>
+              <TableCell>Completion Status</TableCell>
+              <TableCell>Publish Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -98,7 +108,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   <TableCell>
                     {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, row.start_date, row.end_date)}
                   </TableCell>
-                  <TableCell>{getChipIcon(row.status_name)}</TableCell>
+                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
+                  <TableCell>{getChipIcon(row.publish_status)}</TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

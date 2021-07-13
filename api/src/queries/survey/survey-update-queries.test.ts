@@ -1,7 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
-import { putSurveyDetailsSQL, putSurveyProprietorSQL } from './survey-update-queries';
+import {
+  putNewSurveyPermitNumberSQL,
+  unassociatePermitFromSurveySQL,
+  putSurveyDetailsSQL,
+  putSurveyProprietorSQL
+} from './survey-update-queries';
 import { getSurveyDetailsForUpdateSQL } from './survey-view-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
@@ -16,6 +21,8 @@ describe('putSurveyDetailsSQL', () => {
     lead_last_name: 'last',
     revision_count: 1,
     location_name: 'location',
+    permit_number: '12',
+    permit_type: 'scientific',
     geometry: [
       {
         type: 'Feature',
@@ -64,6 +71,40 @@ describe('putSurveyDetailsSQL', () => {
 
   it('returns non null response when valid params provided without geometry', () => {
     const response = putSurveyDetailsSQL(1, 2, { ...surveyData, geometry: null as any }, 1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('unassociatePermitFromSurveySQL', () => {
+  it('returns null when no surveyId provided', () => {
+    const response = unassociatePermitFromSurveySQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = unassociatePermitFromSurveySQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putNewSurveyPermitNumberSQL', () => {
+  it('returns null when no surveyId provided', () => {
+    const response = putNewSurveyPermitNumberSQL((null as unknown) as number, '123');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null when no permit number provided', () => {
+    const response = putNewSurveyPermitNumberSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = putNewSurveyPermitNumberSQL(1, '123');
 
     expect(response).to.not.be.null;
   });

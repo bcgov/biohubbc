@@ -118,6 +118,20 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
             ancillary species 1
           </dd>
         </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Permit
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            123 - Scientific
+          </dd>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -269,6 +283,20 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
             class="MuiTypography-root MuiTypography-body1"
           >
             ancillary species
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Permit
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            123 - Scientific
           </dd>
         </div>
       </div>

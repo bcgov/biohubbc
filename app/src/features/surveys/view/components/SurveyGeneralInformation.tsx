@@ -14,7 +14,8 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyForViewResponse,
   IGetSurveyForUpdateResponseDetails,
-  UPDATE_GET_SURVEY_ENTITIES
+  UPDATE_GET_SURVEY_ENTITIES,
+  SurveyPermits
 } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
@@ -54,6 +55,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
+  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -73,22 +75,40 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const handleDialogEditOpen = async () => {
     let surveyDetailsResponseData;
+    let surveyPermitsResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-        UPDATE_GET_SURVEY_ENTITIES.survey_details
+      const [surveyForUpdateResponse, surveyPermitsResponse] = await Promise.all([
+        biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
+          UPDATE_GET_SURVEY_ENTITIES.survey_details
+        ]),
+        biohubApi.survey.getSurveyPermits(projectForViewData.id)
       ]);
 
-      if (!response?.survey_details) {
+      if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      surveyDetailsResponseData = response.survey_details;
+      surveyPermitsResponseData = surveyPermitsResponse;
+      surveyDetailsResponseData = surveyForUpdateResponse.survey_details;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
+    }
+
+    /*
+      If a permit number/type already exists for the record we are updating, we need to include it in the
+      list of applicable permits for the survey to be associated with
+    */
+    if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
+      setSurveyPermits([
+        { number: surveyDetailsResponseData.permit_number, type: surveyDetailsResponseData.permit_type },
+        ...surveyPermitsResponseData
+      ]);
+    } else {
+      setSurveyPermits(surveyPermitsResponseData);
     }
 
     setSurveyDataForUpdate(surveyDetailsResponseData);
@@ -99,6 +119,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     });
     setOpenEditDialog(true);
   };
+
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
     try {
       if (surveyDataForUpdate) {
@@ -136,6 +157,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               species={
                 codes?.species?.map((item) => {
                   return { value: item.id, label: item.name };
+                }) || []
+              }
+              permit_numbers={
+                surveyPermits?.map((item) => {
+                  return { value: item.number, label: `${item.number} - ${item.type}` };
                 }) || []
               }
               projectStartDate={projectForViewData.project.start_date}
@@ -268,6 +294,15 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   No Ancilliary Species
                 </Typography>
               )}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Permit
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) ||
+                  'No Permit'}
+              </Typography>
             </Grid>
           </Grid>
           <Grid container spacing={2}>
