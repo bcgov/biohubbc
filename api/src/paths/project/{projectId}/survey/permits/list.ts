@@ -10,11 +10,11 @@ import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/permits/list');
 
-export const GET: Operation = [getPermitNumbers()];
+export const GET: Operation = [getSurveyPermits()];
 
 GET.apiDoc = {
-  description: 'Fetches a list of permit numbers for a survey based on a project.',
-  tags: ['permit_numbers'],
+  description: 'Fetches a list of permits for a survey based on a project.',
+  tags: ['permits'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -32,15 +32,24 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Permit numbers get response string array.',
+      description: 'Permits get response array.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              type: 'string'
+              title: 'Survey permit Get Response Object',
+              type: 'object',
+              properties: {
+                number: {
+                  type: 'string'
+                },
+                type: {
+                  type: 'string'
+                }
+              }
             },
-            description: 'Permit numbers applicable for the survey'
+            description: 'Permits applicable for the survey'
           }
         }
       }
@@ -54,9 +63,9 @@ GET.apiDoc = {
   }
 };
 
-export function getPermitNumbers(): RequestHandler {
+export function getSurveyPermits(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get permit numbers list', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Get survey permits list', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -73,18 +82,18 @@ export function getPermitNumbers(): RequestHandler {
 
       await connection.open();
 
-      const permitNumbersData = await connection.query(
+      const surveyPermitsData = await connection.query(
         getSurveyPermitsSQLStatement.text,
         getSurveyPermitsSQLStatement.values
       );
 
       await connection.commit();
 
-      const getPermitNumbersData = (permitNumbersData && permitNumbersData.rows) || null;
+      const getSurveyPermitsData = (surveyPermitsData && surveyPermitsData.rows) || null;
 
-      return res.status(200).json(getPermitNumbersData);
+      return res.status(200).json(getSurveyPermitsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getPermitNumbers', message: 'error', error });
+      defaultLog.debug({ label: 'getSurveyPermits', message: 'error', error });
       throw error;
     } finally {
       connection.release();
