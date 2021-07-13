@@ -112,7 +112,12 @@ describe('getSurveyForView', () => {
       geometry: [],
       publish_timestamp: null,
       number: '123',
-      type: 'scientific'
+      type: 'scientific',
+      pfs_id: 1,
+      agency_name: 'agency',
+      funding_start_date: '2020/04/04',
+      funding_end_date: '2020/05/05',
+      funding_amount: 100
     };
 
     const mockQuery = sinon.stub();
@@ -159,7 +164,16 @@ describe('getSurveyForView', () => {
       permit_number: survey_details.number,
       permit_type: survey_details.type,
       completion_status: 'Completed',
-      publish_date: ''
+      publish_date: '',
+      funding_sources: [
+        {
+          pfs_id: survey_details.pfs_id,
+          agency_name: survey_details.agency_name,
+          funding_start_date: survey_details.funding_start_date,
+          funding_end_date: survey_details.funding_end_date,
+          funding_amount: survey_details.funding_amount
+        }
+      ]
     });
     expect(actualResult.survey_proprietor).to.eql({
       id: survey_proprietor.id,

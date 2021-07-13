@@ -4,6 +4,40 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-delete-queries');
 
 /**
+ * SQL query to delete survey funding sources rows.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyFundingSourcesSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourcesSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_funding_source
+    WHERE
+      s_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourcesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete survey focal species rows.
  *
  * @param {number} surveyId

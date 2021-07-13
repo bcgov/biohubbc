@@ -14,6 +14,15 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     survey_area_name: 'study area',
     permit_number: '123',
     permit_type: 'Scientific',
+    funding_sources: [
+      {
+        pfs_id: 1,
+        funding_amount: 100,
+        funding_start_date: '2000-04-09 11:53:53',
+        funding_end_date: '2000-05-10 11:53:53',
+        agency_name: 'Funding Agency Blah'
+      }
+    ],
     geometry: [],
     completion_status: 'Active',
     publish_date: (null as unknown) as string

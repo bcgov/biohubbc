@@ -48,6 +48,7 @@ export interface IGeneralInformationForm {
   biologist_last_name: string;
   permit_number: string;
   permit_type: string;
+  funding_sources: number[];
 }
 
 export const GeneralInformationInitialValues: IGeneralInformationForm = {
@@ -60,7 +61,8 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   biologist_first_name: '',
   biologist_last_name: '',
   permit_number: '',
-  permit_type: ''
+  permit_type: '',
+  funding_sources: []
 };
 
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
@@ -83,6 +85,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
+  funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -167,6 +170,19 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             name="survey_purpose"
             label="Purpose of Survey"
             other={{ multiline: true, required: true, rows: 4 }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Box pt={2}>
+            <Typography className={classes.bold}>Funding Sources</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id="funding_sources"
+            label="Select Funding Sources"
+            options={props.funding_sources}
+            required={false}
           />
         </Grid>
         <Grid item xs={12}>

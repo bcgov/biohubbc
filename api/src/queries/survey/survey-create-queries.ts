@@ -135,6 +135,45 @@ export const postSurveyProprietorSQL = (
 };
 
 /**
+ * SQL query to insert a survey funding source row into the survey_funding_source table.
+ *
+ * @param {number} surveyId
+ * @param {number} fundingSourceId
+ * @returns {SQLStatement} sql query object
+ */
+export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveyFundingSourceSQL',
+    message: 'params',
+    surveyId,
+    fundingSourceId
+  });
+
+  if (!surveyId || !fundingSourceId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_funding_source (
+      s_id,
+      pfs_id
+    ) VALUES (
+      ${surveyId},
+      ${fundingSourceId}
+    );
+  `;
+
+  defaultLog.debug({
+    label: 'insertSurveyFundingSourceSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a survey permit row into the permit table.
  *
  * @param {number} projectId

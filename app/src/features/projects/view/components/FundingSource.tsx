@@ -240,7 +240,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                       Agency Project ID
                     </Typography>
                     <Typography component="dd" variant="body1">
-                      {item.agency_project_id}
+                      {item.agency_project_id || 'No Agency Project ID'}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} sm={6} md={4}>

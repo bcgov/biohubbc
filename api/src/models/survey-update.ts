@@ -1,7 +1,85 @@
 import { Feature } from 'geojson';
+import moment from 'moment';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-update');
+
+/**
+ * Pre-processes GET /project/{projectId}/survey/{surveyId} survey details data for update
+ *
+ * @export
+ * @class GetUpdateSurveyDetailsData
+ */
+export class GetUpdateSurveyDetailsData {
+  id: number;
+  survey_name: string;
+  survey_purpose: string;
+  focal_species: (string | number)[];
+  ancillary_species: (string | number)[];
+  start_date: string;
+  end_date: string;
+  biologist_first_name: string;
+  biologist_last_name: string;
+  survey_area_name: string;
+  geometry: Feature[];
+  revision_count: number;
+  permit_number: string;
+  permit_type: string;
+  funding_sources: number[];
+  completion_status: string;
+  publish_date: string;
+
+  constructor(surveyDetailsData?: any) {
+    defaultLog.debug({ label: 'GetUpdateSurveyDetailsData', message: 'params', surveyDetailsData });
+
+    const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
+
+    const focalSpeciesList =
+      (surveyDetailsData &&
+        surveyDetailsData.map((item: any) => {
+          return item.focal_species;
+        })) ||
+      [];
+
+    const ancillarySpeciesList =
+      (surveyDetailsData &&
+        surveyDetailsData.map((item: any) => {
+          return item.ancillary_species;
+        })) ||
+      [];
+
+    const fundingSourcesList =
+      (surveyDetailsData &&
+        surveyDetailsData.map((item: any) => {
+          return item.pfs_id;
+        })) ||
+      [];
+
+    this.id = surveyDataItem?.id ?? null;
+    this.survey_name = surveyDataItem?.name || '';
+    this.survey_purpose = surveyDataItem?.objectives || '';
+    this.focal_species = (focalSpeciesList.length && focalSpeciesList.filter((item: string | number) => !!item)) || [];
+    this.ancillary_species =
+      (ancillarySpeciesList.length && ancillarySpeciesList.filter((item: string | number) => !!item)) || [];
+    this.start_date = surveyDataItem?.start_date || '';
+    this.end_date = surveyDataItem?.end_date || '';
+    this.biologist_first_name = surveyDataItem?.lead_first_name || '';
+    this.biologist_last_name = surveyDataItem?.lead_last_name || '';
+    this.survey_area_name = surveyDataItem?.location_name || '';
+    this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
+    this.permit_number = surveyDataItem?.number || '';
+    this.permit_type = surveyDataItem?.type || '';
+    this.funding_sources = (fundingSourcesList.length && fundingSourcesList.filter((item: number) => !!item)) || [];
+    this.revision_count = surveyDataItem?.revision_count ?? null;
+    this.completion_status =
+      (surveyDataItem &&
+        surveyDataItem.end_date &&
+        moment(surveyDataItem.end_date).endOf('day').isBefore(moment()) &&
+        'Completed') ||
+      'Active';
+    this.publish_date = surveyDataItem?.publish_date || '';
+  }
+}
 
 /**
  * Pre-processes PUT /project/{projectId}/survey/{surveyId} survey data for update
@@ -22,6 +100,7 @@ export class PutSurveyDetailsData {
   geometry: Feature[];
   permit_number: string;
   permit_type: string;
+  funding_sources: number[];
   revision_count: number;
 
   constructor(obj?: any) {
@@ -40,6 +119,7 @@ export class PutSurveyDetailsData {
     this.geometry = obj?.survey_details?.geometry || null;
     this.permit_number = obj?.survey_details.permit_number || null;
     this.permit_type = obj?.survey_details.permit_type || null;
+    this.funding_sources = (obj?.survey_details?.funding_sources?.length && obj.survey_details?.funding_sources) || [];
     this.revision_count = obj?.survey_details?.revision_count ?? null;
   }
 }
