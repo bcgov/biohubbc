@@ -898,7 +898,7 @@ describe('updateSurveyDetailsData', () => {
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
-    sinon.stub(update, 'updateSurveyPermitNumber').resolves(true);
+    sinon.stub(update, 'unassociatePermitFromSurvey').resolves(true);
 
     const result = await update.updateSurveyDetailsData(projectId, surveyId, data, {
       ...dbConnectionObj,

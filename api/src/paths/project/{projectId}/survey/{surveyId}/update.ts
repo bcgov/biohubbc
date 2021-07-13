@@ -400,7 +400,14 @@ export const updateSurveyDetailsData = async (
     promises.push(insertAncillarySpecies(ancillarySpeciesId, surveyId, connection))
   );
 
-  promises.push(updateSurveyPermitNumber(surveyId, connection));
+  /*
+    To update a survey permit, we need to unassociate the old permit of the survey and then
+    insert the new survey - permit association
+
+    Note: this is done by either inserting a brand new record into the permit table with a survey id OR
+    updating an existing record of the permit table and setting the survey id column value
+  */
+  promises.push(unassociatePermitFromSurvey(surveyId, connection));
 
   if (putDetailsData.permit_number) {
     promises.push(
@@ -455,7 +462,7 @@ export const updateSurveyProprietorData = async (
   }
 };
 
-export const updateSurveyPermitNumber = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
+export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
   const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
