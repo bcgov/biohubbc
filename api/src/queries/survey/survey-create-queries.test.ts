@@ -6,7 +6,8 @@ import {
   postAncillarySpeciesSQL,
   postSurveyProprietorSQL,
   postSurveySQL,
-  postNewSurveyPermitSQL
+  postNewSurveyPermitSQL,
+  insertSurveyFundingSourceSQL
 } from './survey-create-queries';
 
 describe('postSurveySQL', () => {
@@ -175,6 +176,26 @@ describe('postNewSurveyPermitSQL', () => {
 
   it('returns sql statement when valid params provided', () => {
     const response = postNewSurveyPermitSQL(1, 2, '123', 'scientific');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveyFundingSourceSQL', () => {
+  it('returns null when null surveyId provided', () => {
+    const response = insertSurveyFundingSourceSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null when null fundingSourceId provided', () => {
+    const response = insertSurveyFundingSourceSQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns sql statement when valid params provided', () => {
+    const response = insertSurveyFundingSourceSQL(1, 2);
 
     expect(response).to.not.be.null;
   });

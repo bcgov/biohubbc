@@ -105,7 +105,11 @@ export function getSurveyFundingSources(): RequestHandler {
           new GetSurveyFundingSources(surveyFundingSourcesData.rows)) ||
         null;
 
-      return res.status(200).json(getSurveyFundingSourcesData?.fundingSources);
+      if (!getSurveyFundingSourcesData) {
+        return res.status(200).json(null);
+      }
+
+      return res.status(200).json(getSurveyFundingSourcesData.fundingSources);
     } catch (error) {
       defaultLog.debug({ label: 'getSurveyFundingSources', message: 'error', error });
       throw error;

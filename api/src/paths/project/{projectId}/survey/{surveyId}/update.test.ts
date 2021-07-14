@@ -891,6 +891,29 @@ describe('updateSurveyDetailsData', () => {
     }
   });
 
+  it('should throw a 400 error when fails to delete survey funding sources data', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onCall(0).resolves({ rowCount: 1 });
+    mockQuery.onCall(1).resolves(true);
+    mockQuery.onCall(2).resolves(true);
+    mockQuery.onCall(3).resolves(null);
+
+    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesSQL').returns(SQL`something`);
+
+    try {
+      await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(409);
+      expect(actualError.message).to.equal('Failed to delete survey funding sources data');
+    }
+  });
+
   it('should return resolved promises on success with focal and ancillary species and funding sources but no permit number', async () => {
     const mockQuery = sinon.stub();
 
