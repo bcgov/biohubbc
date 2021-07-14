@@ -32,9 +32,6 @@ export class GetViewSurveyDetailsData {
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({ label: 'GetViewSurveyDetailsData', message: 'params', surveyDetailsData });
 
-    console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-    console.log(surveyDetailsData);
-
     const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
 
     const focalSpeciesList: string[] = [];

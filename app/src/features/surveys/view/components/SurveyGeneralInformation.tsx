@@ -316,6 +316,15 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Permit
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) ||
+                  'No Permit'}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Funding Sources
               </Typography>
               {survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
@@ -330,20 +339,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   </Typography>
                 );
               })}
-              {survey_details.ancillary_species.length <= 0 && (
-                <Typography component="dd" variant="body1">
-                  No Ancilliary Species
-                </Typography>
-              )}
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Permit
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) ||
-                  'No Permit'}
-              </Typography>
             </Grid>
           </Grid>
           <Grid container spacing={2}>

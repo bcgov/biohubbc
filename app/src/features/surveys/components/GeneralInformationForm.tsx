@@ -78,7 +78,13 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
     end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateAfterStartDate('start_date'),
-    permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
+    permit_number: yup.string().max(100, 'Cannot exceed 100 characters'),
+    permit_type: yup
+      .string()
+      .when('permit_number', {
+        is: (permitNumber: string) => !!permitNumber,
+        then: yup.string().required('You must specify a permit type with your permit number')
+      })
   });
 };
 
@@ -174,19 +180,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <Grid item xs={12}>
           <Box pt={2}>
-            <Typography className={classes.bold}>Funding Sources</Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id="funding_sources"
-            label="Select Funding Sources"
-            options={props.funding_sources}
-            required={false}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Box pt={2}>
             <Typography className={classes.bold}>Permit</Typography>
           </Box>
         </Grid>
@@ -236,7 +229,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                     name="permit_number"
                     label="Permit Number"
                     other={{
-                      required: true,
+                      required: false,
                       value: formikProps.values.permit_number,
                       error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
                       helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
@@ -244,7 +237,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                   />
                 </Box>
                 <Box flexBasis="50%" pl={1}>
-                  <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
+                  <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
                     <InputLabel id="permit_type">Permit Type</InputLabel>
                     <Select
                       id="permit_type"
@@ -281,6 +274,19 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
               </Box>
             </Grid>
           )}
+        </Grid>
+        <Grid item xs={12}>
+          <Box pt={2}>
+            <Typography className={classes.bold}>Funding Sources</Typography>
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <MultiAutocompleteFieldVariableSize
+            id="funding_sources"
+            label="Select Funding Sources"
+            options={props.funding_sources}
+            required={false}
+          />
         </Grid>
         <Grid item xs={12}>
           <Box pt={2}>

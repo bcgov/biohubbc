@@ -34,26 +34,32 @@ export class GetUpdateSurveyDetailsData {
 
     const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
 
-    const focalSpeciesList =
-      (surveyDetailsData &&
-        surveyDetailsData.map((item: any) => {
-          return item.focal_species;
-        })) ||
-      [];
+    const focalSpeciesList: string[] = [];
+    const seenFocalSpecies: string[] = [];
 
-    const ancillarySpeciesList =
-      (surveyDetailsData &&
-        surveyDetailsData.map((item: any) => {
-          return item.ancillary_species;
-        })) ||
-      [];
+    const ancillarySpeciesList: string[] = [];
+    const seenAncillarySpecies: string[] = [];
 
-    const fundingSourcesList =
-      (surveyDetailsData &&
-        surveyDetailsData.map((item: any) => {
-          return item.pfs_id;
-        })) ||
-      [];
+    const fundingSourcesList: number[] = [];
+    const seenFundingSourceIds: number[] = [];
+
+    surveyDetailsData &&
+      surveyDetailsData.map((item: any) => {
+        if (!seenFundingSourceIds.includes(item.pfs_id)) {
+          fundingSourcesList.push(item.pfs_id);
+        }
+        seenFundingSourceIds.push(item.pfs_id);
+
+        if (!seenFocalSpecies.includes(item.focal_species)) {
+          focalSpeciesList.push(item.focal_species);
+        }
+        seenFocalSpecies.push(item.focal_species);
+
+        if (!seenAncillarySpecies.includes(item.ancillary_species)) {
+          ancillarySpeciesList.push(item.ancillary_species);
+        }
+        seenAncillarySpecies.push(item.ancillary_species);
+      });
 
     this.id = surveyDataItem?.id ?? null;
     this.survey_name = surveyDataItem?.name || '';

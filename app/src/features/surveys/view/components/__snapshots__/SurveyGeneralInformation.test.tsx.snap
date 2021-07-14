@@ -124,12 +124,12 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Funding Sources
+            Permit
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
+            123 - Scientific
           </dd>
         </div>
         <div
@@ -138,12 +138,12 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Permit
+            Funding Sources
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            123 - Scientific
+            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
           </dd>
         </div>
       </div>
@@ -305,12 +305,12 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Funding Sources
+            Permit
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
+            123 - Scientific
           </dd>
         </div>
         <div
@@ -319,12 +319,12 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Permit
+            Funding Sources
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            123 - Scientific
+            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
           </dd>
         </div>
       </div>
