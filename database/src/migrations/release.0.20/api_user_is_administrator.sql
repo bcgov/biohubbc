@@ -1,9 +1,10 @@
 -- api_user_is_administrator.sql
 drop function if exists api_user_is_administrator;
 
-create or replace function api_user_is_administrator(__system_user_id system_user.id%type default null) returns boolean
+create or replace function api_user_is_administrator(p_system_user_id system_user.system_user_id%type default null) returns boolean
 language plpgsql
 security definer
+stable
 as 
 $$
 -- *******************************************************************
@@ -17,17 +18,17 @@ $$
 --                  2021-06-21  initial release
 -- *******************************************************************
 declare
-  __id system_user.id%type;
+  _system_user_id system_user.system_user_id%type;
 begin
-  if (__system_user_id is null) then
-    select api_get_context_user_id() into __id;
+  if (p_system_user_id is null) then
+    select api_get_context_user_id() into _system_user_id;
   else
-    __id = __system_user_id;
+    _system_user_id = p_system_user_id;
   end if;
 
   return (select exists (select 1 from system_user_role sur, system_role sr
-    where sur.su_id = __id
-    and sur.sr_id = sr.id
+    where sur.system_user_id = _system_user_id
+    and sur.system_role_id = sr.system_role_id
     and sr.name = (select api_get_character_system_constant('SYSTEM_ROLES_SYSTEM_ADMINISTRATOR'))
     and sr.record_end_date is null));
 

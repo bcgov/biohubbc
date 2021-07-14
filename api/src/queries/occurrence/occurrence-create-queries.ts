@@ -20,14 +20,14 @@ export const postOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | nu
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence_submission (
-      s_id,
+      survey_id,
       source,
       event_timestamp
     ) VALUES (
       ${surveyId},
       ${source},
       now()
-    ) returning id;
+    ) returning occurrence_submission_id as id;
   `;
 
   defaultLog.debug({
@@ -54,7 +54,7 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence (
-      os_id,
+      occurrence_submission_id,
       associatedtaxa,
       lifestage,
       data,

@@ -29,7 +29,7 @@ export const postProjectSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project (
-      pt_id,
+      project_type_id,
       name,
       objectives,
       location_description,
@@ -82,7 +82,7 @@ export const postProjectSQL = (
   sqlStatement.append(SQL`
     )
     RETURNING
-      id;
+      project_id as id;
   `);
 
   defaultLog.debug({
@@ -110,14 +110,14 @@ export const postProjectRegionSQL = (region: string, projectId: number): SQLStat
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_region (
-        p_id,
+        project_id,
         name
       ) VALUES (
         ${projectId},
         ${region}
       )
       RETURNING
-        id;
+        project_region_id as id;
     `;
 
   defaultLog.debug({
@@ -148,8 +148,8 @@ export const postProjectFundingSourceSQL = (
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_funding_source (
-        p_id,
-        iac_id,
+        project_id,
+        investment_action_category_id,
         funding_source_project_id,
         funding_amount,
         funding_start_date,
@@ -163,7 +163,7 @@ export const postProjectFundingSourceSQL = (
         ${fundingSource.end_date}
       )
       RETURNING
-        id;
+        project_funding_source_id as id;
     `;
 
   defaultLog.debug({
@@ -200,14 +200,14 @@ export const postProjectStakeholderPartnershipSQL = (
   // TODO model is missing agency name
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO stakeholder_partnership (
-        p_id,
+        project_id,
         name
       ) VALUES (
         ${projectId},
         ${stakeholderPartnership}
       )
       RETURNING
-        id;
+        stakeholder_partnership_id as id;
     `;
 
   defaultLog.debug({
@@ -241,14 +241,14 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
   // TODO model is missing agency name
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_first_nation (
-        p_id,
-        fn_id
+        project_id,
+        first_nations_id
       ) VALUES (
         ${projectId},
         ${indigenousNationId}
       )
       RETURNING
-        id;
+        project_first_nation_id as id;
     `;
 
   defaultLog.debug({
@@ -288,7 +288,7 @@ export const postProjectPermitSQL = (
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO permit (
-        p_id,
+        project_id,
         number,
         type
       ) VALUES (
@@ -297,7 +297,7 @@ export const postProjectPermitSQL = (
         ${permit_type}
       )
       RETURNING
-        id;
+        permit_id as id;
     `;
 
   defaultLog.debug({
@@ -331,14 +331,14 @@ export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLSta
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_iucn_action_classification (
-        iucn3_id,
-        p_id
+        iucn_conservation_action_level_3_subclassification_id,
+        project_id
       ) VALUES (
         ${iucn3_id},
         ${project_id}
       )
       RETURNING
-        id;
+        project_iucn_action_classification_id as id;
     `;
 
   defaultLog.debug({
@@ -372,14 +372,14 @@ export const postProjectActivitySQL = (activityId: number, projectId: number): S
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_activity (
-        a_id,
-        p_id
+        activity_id,
+        project_id
       ) VALUES (
         ${activityId},
         ${projectId}
       )
       RETURNING
-        id;
+        project_activity_id as id;
     `;
 
   defaultLog.debug({
