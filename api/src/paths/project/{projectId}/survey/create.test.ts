@@ -200,7 +200,6 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(null);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
 
     try {
       const result = create.createSurvey();
@@ -213,7 +212,35 @@ describe('createSurvey', () => {
     }
   });
 
-  it('should return the survey id on success (no proprietary data)', async () => {
+  it('should return the survey id on success (no proprietary data and no permit number)', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ id: 23 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+
+    const result = create.createSurvey();
+
+    await result(
+      { ...sampleReq, body: { ...sampleReq.body, survey_data_proprietary: 'false' } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
+
+    expect(actualResult).to.eql({
+      id: 23
+    });
+  });
+
+  it('should return the survey id on success (no proprietary data and permit number and funding sources)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [{ id: 23 }] });
@@ -228,11 +255,15 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(create, 'insertSurveyPermit').resolves(true);
+    sinon.stub(create, 'insertSurveyFundingSource').resolves(true);
 
     const result = create.createSurvey();
 
     await result(
-      { ...sampleReq, body: { ...sampleReq.body, survey_data_proprietary: 'false' } },
+      {
+        ...sampleReq,
+        body: { ...sampleReq.body, survey_data_proprietary: 'false', permit_number: '123', funding_sources: [1, 2] }
+      },
       sampleRes as any,
       (null as unknown) as any
     );
@@ -258,7 +289,6 @@ describe('createSurvey', () => {
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(1);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
 
     const result = create.createSurvey();
 
@@ -300,7 +330,6 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
 
     const result = create.createSurvey();
 
@@ -330,7 +359,6 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
 
     try {
       const result = create.createSurvey();
@@ -362,7 +390,6 @@ describe('createSurvey', () => {
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
     sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
 
     try {
       const result = create.createSurvey();
