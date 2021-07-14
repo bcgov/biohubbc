@@ -81,18 +81,18 @@ const getSystemUserSQL = (userIdentifier: string) => `
  */
 const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
   INSERT INTO system_user (
-    uis_id,
+    user_identity_source_id,
     user_identifier,
     record_effective_date,
     create_date,
     create_user
   )
   SELECT
-    id,
+    user_identity_source_id,
     '${userIdentifier}',
     now(),
     now(),
-    (SELECT id from system_user where user_identifier = '${DB_ADMIN}')
+    (SELECT system_user_id from system_user where user_identifier = '${DB_ADMIN}')
   FROM
     user_identity_source
   WHERE
@@ -109,10 +109,10 @@ const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
  */
 const insertSystemUserRoleSQL = (userIdentifier: string, roleId: number) => `
  INSERT INTO system_user_role (
-   su_id,
-   sr_id
+   system_user_id,
+   system_role_id
  ) VALUES (
-   (SELECT id from system_user where user_identifier = '${userIdentifier}'),
+   (SELECT system_user_id from system_user where user_identifier = '${userIdentifier}'),
    ${roleId}
  );
 `;
