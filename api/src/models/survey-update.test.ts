@@ -148,7 +148,7 @@ describe('GetUpdateSurveyDetailsData', () => {
     });
   });
 
-  describe('all values provided with species as strings', () => {
+  describe('all values provided with species as numbers', () => {
     let data: GetUpdateSurveyDetailsData;
 
     const surveyData = [
