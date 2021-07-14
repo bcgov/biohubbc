@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as create from './create';
 import * as db from '../../../../database/db';
 import * as survey_create_queries from '../../../../queries/survey/survey-create-queries';
+import * as survey_update_queries from '../../../../queries/survey/survey-update-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -585,5 +586,198 @@ describe('insertAncillarySpecies', () => {
     });
 
     expect(res).to.equal(12);
+  });
+});
+
+describe('insertSurveyPermit', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const permitNumber = '123';
+  const projectId = 1;
+  const surveyId = 2;
+
+  it('should throw an error when cannot generate post sql statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(survey_create_queries, 'postNewSurveyPermitSQL').returns(null);
+
+    try {
+      await create.insertSurveyPermit(permitNumber, 'type', projectId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+    }
+  });
+
+  it('should throw an error when cannot generate put sql statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(null);
+
+    try {
+      await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to post survey permit data cause result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(null);
+
+    sinon.stub(survey_create_queries, 'postNewSurveyPermitSQL').returns(SQL`some`);
+
+    try {
+      await create.insertSurveyPermit(permitNumber, 'type', projectId, surveyId, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert survey permit number data');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to put survey permit data cause result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(null);
+
+    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(SQL`some`);
+
+    try {
+      await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert survey permit number data');
+    }
+  });
+
+  it('should return true on success', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(true);
+
+    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(SQL`some`);
+
+    const res = await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, {
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    expect(res).to.equal(true);
+  });
+});
+
+describe('insertSurveyFundingSource', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const fundingSourceId = 1;
+  const surveyId = 2;
+
+  it('should throw an error when cannot generate sql statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(null);
+
+    try {
+      await create.insertSurveyFundingSource(fundingSourceId, surveyId, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyFundingSource');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to post survey permit data cause result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(null);
+
+    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(SQL`something`);
+
+    try {
+      await create.insertSurveyFundingSource(fundingSourceId, surveyId, { ...dbConnectionObj, query: mockQuery });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert survey funding source data');
+    }
+  });
+
+  it('should return true on success', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves(true);
+
+    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(SQL`something`);
+
+    const res = await create.insertSurveyFundingSource(fundingSourceId, surveyId, {
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    expect(res).to.equal(true);
   });
 });
