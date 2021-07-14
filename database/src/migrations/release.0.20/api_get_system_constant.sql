@@ -1,7 +1,7 @@
 -- api_get_system_constant.sql
 drop function if exists api_get_character_system_constant;
 
-create or replace function api_get_character_system_constant(__constant_name system_constant.constant_name%type) returns system_constant.character_value%type
+create or replace function api_get_character_system_constant(_constant_name system_constant.constant_name%type) returns system_constant.character_value%type
 language plpgsql
 security definer
 stable
@@ -18,7 +18,7 @@ $$
 --                  2021-06-29  initial release
 -- *******************************************************************
 begin
-  return (select character_value from system_constant where constant_name = __constant_name);
+  return (select character_value from system_constant where constant_name = _constant_name);
 
 exception
   when others then
@@ -30,7 +30,7 @@ grant execute on function api_get_character_system_constant to biohub_api;
 
 drop function if exists api_get_numeric_system_constant;
 
-create or replace function api_get_numeric_system_constant(__constant_name system_constant.constant_name%type) returns system_constant.numeric_value%type
+create or replace function api_get_numeric_system_constant(_constant_name system_constant.constant_name%type) returns system_constant.numeric_value%type
 language plpgsql
 security definer
 stable
@@ -47,7 +47,7 @@ $$
 --                  2021-06-29  initial release
 -- *******************************************************************
 begin
-  return (select numeric_value from system_constant where constant_name = __constant_name);
+  return (select numeric_value from system_constant where constant_name = _constant_name);
 
 exception
   when others then

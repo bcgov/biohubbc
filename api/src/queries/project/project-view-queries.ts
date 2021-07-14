@@ -18,7 +18,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      project.id,
+      project.project_id as id,
       project_type.name as type,
       project.name,
       project.objectives,
@@ -43,9 +43,9 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       project
     left outer join
       project_type
-        on project.pt_id = project_type.id
+        on project.project_type_id = project_type.project_type_id
     where
-      project.id = ${projectId};
+      project.project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -69,7 +69,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      p.id,
+      p.project_id as id,
       p.name,
       p.start_date,
       p.end_date,
@@ -80,23 +80,23 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
     from
       project as p
     left outer join project_type as pt
-      on p.pt_id = pt.id
+      on p.project_type_id = pt.project_type_id
     left outer join permit as pp
-      on p.id = pp.p_id
+      on p.project_id = pp.project_id
     left outer join project_funding_source as pfs
-      on pfs.p_id = p.id
+      on pfs.project_id = p.project_id
     left outer join investment_action_category as iac
-      on pfs.iac_id = iac.id
+      on pfs.investment_action_category_id = iac.investment_action_category_id
     left outer join funding_source as fs
-      on iac.fs_id = fs.id
+      on iac.funding_source_id = fs.funding_source_id
     left outer join survey as s
-      on s.p_id = p.id
+      on s.project_id = p.project_id
     left outer join study_species as sp
-      on sp.s_id = s.id
+      on sp.survey_id = s.survey_id
     left outer join wldtaxonomic_units as wu
-      on wu.id = sp.id
+      on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
     left outer join project_region as r
-      on r.p_id = p.id
+      on r.project_id = p.project_id
     where 1 = 1
   `;
 
@@ -136,7 +136,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
     }
 
     if (filterFields.agency_id) {
-      sqlStatement.append(SQL` AND fs.id = ${filterFields.agency_id}`);
+      sqlStatement.append(SQL` AND fs.funding_source_id = ${filterFields.agency_id}`);
     }
 
     if (filterFields.regions && filterFields.regions.length) {
@@ -144,7 +144,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
     }
 
     if (filterFields.species && filterFields.species.length) {
-      sqlStatement.append(SQL` AND wu.id =${filterFields.species[0]}`);
+      sqlStatement.append(SQL` AND wu.wldtaxonomic_units_id =${filterFields.species[0]}`);
     }
 
     if (filterFields.keyword) {
@@ -158,7 +158,7 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
 
   sqlStatement.append(SQL`
     group by
-      p.id,
+      p.project_id,
       p.name,
       p.start_date,
       p.end_date,
@@ -200,17 +200,17 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     LEFT OUTER JOIN
       iucn_conservation_action_level_3_subclassification as ical3s
     ON
-      piac.iucn3_id = ical3s.id
+      piac.iucn_conservation_action_level_3_subclassification_id = ical3s.iucn_conservation_action_level_3_subclassification_id
     LEFT OUTER JOIN
       iucn_conservation_action_level_2_subclassification as ical2s
     ON
-      ical3s.iucn2_id = ical2s.id
+      ical3s.iucn_conservation_action_level_2_subclassification_id = ical2s.iucn_conservation_action_level_2_subclassification_id
     LEFT OUTER JOIN
       iucn_conservation_action_level_1_classification as ical1c
     ON
-      ical2s.iucn1_id = ical1c.id
+      ical2s.iucn_conservation_action_level_1_classification_id = ical1c.iucn_conservation_action_level_1_classification_id
     WHERE
-      piac.p_id = ${projectId}
+      piac.project_id = ${projectId}
     GROUP BY
       ical2s.name,
       ical1c.name,
@@ -247,9 +247,9 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     LEFT OUTER JOIN
       first_nations fn
     ON
-      pfn.fn_id = fn.id
+      pfn.first_nations_id = fn.first_nations_id
     WHERE
-      pfn.p_id = ${projectId}
+      pfn.project_id = ${projectId}
     GROUP BY
       fn.name;
   `;
@@ -284,7 +284,7 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
     FROM
       permit
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
   `;
 
   defaultLog.debug({

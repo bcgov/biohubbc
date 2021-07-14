@@ -22,13 +22,13 @@ export const getBlockObservationSQL = (observationId: number): SQLStatement | nu
 
   const sqlStatement = SQL`
     SELECT
-      id,
+      block_observation_id,
       data,
       revision_count
     FROM
       block_observation
     WHERE
-      id = ${observationId};
+      block_observation_id = ${observationId};
   `;
 
   defaultLog.debug({
@@ -70,7 +70,7 @@ export const updateBlockObservationSQL = (observationId: number, observationData
       observation_cnt = ${observationData.observation_count},
       data = ${observationData.observation_data}
     WHERE
-      id = ${observationId}
+      block_observation_id = ${observationId}
     AND
       revision_count = ${observationData.revision_count}
   `;

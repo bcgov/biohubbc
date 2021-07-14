@@ -27,9 +27,9 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
     LEFT OUTER JOIN
       project_region pr
     ON
-      p.id = pr.p_id
+      p.project_id = pr.project_id
     WHERE
-      p.id = ${projectId}
+      p.project_id = ${projectId}
     GROUP BY
       p.location_description,
       p.geography,
@@ -66,7 +66,7 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
     FROM
       stakeholder_partnership
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -95,10 +95,10 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      a_id
+      project_activity_id as a_id
     from
       project_activity
-    where p_id = ${projectId};
+    where project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -126,12 +126,12 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
 
   const sqlStatement = SQL`
     SELECT
-      pfs.id as id,
+      pfs.project_funding_source_id as id,
       fs.id as agency_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date as start_date,
       pfs.funding_end_date as end_date,
-      iac.id as investment_action_category,
+      iac.investment_action_category_id as investment_action_category,
       iac.name as investment_action_category_name,
       fs.name as agency_name,
       pfs.funding_source_project_id as agency_project_id,
@@ -141,21 +141,21 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
     LEFT OUTER JOIN
       investment_action_category as iac
     ON
-      pfs.iac_id = iac.id
+      pfs.investment_action_category_id = iac.investment_action_category_id
     LEFT OUTER JOIN
       funding_source as fs
     ON
-      iac.fs_id = fs.id
+      iac.funding_source_id = fs.funding_source_id
     WHERE
-      pfs.p_id = ${projectId}
+      pfs.project_id = ${projectId}
     GROUP BY
-      pfs.id,
-      fs.id,
+      pfs.project_funding_source_id,
+      fs.funding_source_id,
       pfs.funding_source_project_id,
       pfs.funding_amount,
       pfs.funding_start_date,
       pfs.funding_end_date,
-      iac.id,
+      iac.investment_action_category_id,
       iac.name,
       fs.name,
       pfs.revision_count

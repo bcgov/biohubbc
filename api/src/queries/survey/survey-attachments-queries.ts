@@ -18,7 +18,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      survey_attachment_id as id,
       file_name,
       update_date,
       create_date,
@@ -27,7 +27,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
     from
       survey_attachment
     where
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({
@@ -58,9 +58,9 @@ export const deleteSurveyAttachmentSQL = (surveyId: number, attachmentId: number
     DELETE
       from survey_attachment
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
-      id = ${attachmentId}
+      survey_attachment_id = ${attachmentId}
     RETURNING
       key;
   `;
@@ -95,9 +95,9 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
     FROM
       survey_attachment
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
-      id = ${attachmentId};
+      survey_attachment_id = ${attachmentId};
   `;
 
   defaultLog.debug({
@@ -140,7 +140,7 @@ export const postSurveyAttachmentSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey_attachment (
-      s_id,
+      survey_id,
       file_name,
       file_size,
       key
@@ -151,7 +151,7 @@ export const postSurveyAttachmentSQL = (
       ${projectId + '/' + surveyId + '/' + fileName}
     )
     RETURNING
-      id;
+      survey_attachment_id as id;
   `;
 
   defaultLog.debug({
@@ -180,7 +180,7 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      survey_attachment_id asid,
       file_name,
       update_date,
       create_date,
@@ -188,7 +188,7 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
     from
       survey_attachment
     where
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     and
       file_name = ${fileName};
   `;
@@ -225,7 +225,7 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string): SQLS
     WHERE
       file_name = ${fileName}
     AND
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({

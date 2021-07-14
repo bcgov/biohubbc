@@ -13,9 +13,9 @@ export async function up(knex: Knex): Promise<void> {
 --
 
 CREATE TABLE ${DB_SCHEMA}.block_observation(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    block_observation_id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     b_id              integer           NOT NULL,
-    s_id              integer           NOT NULL,
+    survey_id              integer           NOT NULL,
     start_datetime    timestamptz(6)    NOT NULL,
     end_datetime      timestamptz(6)    NOT NULL,
     observation_cnt   integer           NOT NULL,
@@ -25,12 +25,12 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     update_date       timestamptz(6),
     update_user       integer,
     revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK170" PRIMARY KEY (id)
+    CONSTRAINT "PK170" PRIMARY KEY (block_observation_id)
 )
 ;
 
 
-    COMMENT ON COLUMN block_observation.id IS 'System generated surrogate primary key identifier.'
+    COMMENT ON COLUMN block_observation.block_observation_id IS 'System generated surrogate primary key identifier.'
     ;
     COMMENT ON COLUMN block_observation.b_id IS 'System generated surrogate primary key identifier.'
     ;
@@ -57,8 +57,8 @@ CREATE TABLE ${DB_SCHEMA}.block_observation(
     -- add unique keys
 
     ALTER TABLE block_observation ADD CONSTRAINT "Refblock_observation100"
-        FOREIGN KEY (s_id)
-        REFERENCES survey(id)
+        FOREIGN KEY (survey_id)
+        REFERENCES survey(survey_id)
     ;
 
 

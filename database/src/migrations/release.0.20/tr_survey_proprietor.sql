@@ -15,23 +15,21 @@ $$
 --                  2021-01-03  initial release
 -- *******************************************************************
 declare
-  __is_first_nation proprietor_type.is_first_nation%type;
+  _is_first_nation proprietor_type.is_first_nation%type;
 begin
   -- ensure that survey proprietor records have correct type when associated with first nations
-  if new.fn_id is not null then    
-    select is_first_nation into __is_first_nation from proprietor_type
-      where id = new.prt_id;
+  if new.first_nations_id is not null then    
+    select is_first_nation into _is_first_nation from proprietor_type
+      where proprietor_type_id = new.proprietor_type_id;
 
-    if not __is_first_nation then
+    if not _is_first_nation then
       raise exception 'The proprietor type must be of type first nations if survey is associated with a first nations group.';
     end if;
-  end if;
+  else
+    select is_first_nation into _is_first_nation from proprietor_type
+      where proprietor_type_id = new.proprietor_type_id;
 
-  if new.fn_id is null then    
-    select is_first_nation into __is_first_nation from proprietor_type
-      where id = new.prt_id;
-
-    if __is_first_nation then
+    if _is_first_nation then
       raise exception 'The proprietor type must be associated with a first nations group if survey has first nations proprietor type.';
     end if;
 

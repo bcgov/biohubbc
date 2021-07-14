@@ -26,7 +26,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
-      p_id,
+      project_id,
       name,
       objectives,
       start_date,
@@ -69,7 +69,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
   sqlStatement.append(SQL`
     )
     RETURNING
-      id;
+      survey_id as id;
   `);
 
   defaultLog.debug({
@@ -106,9 +106,9 @@ export const postSurveyProprietorSQL = (
 
   const sqlStatement: SQLStatement = SQL`
   INSERT INTO survey_proprietor (
-    s_id,
-    prt_id,
-    fn_id,
+    survey_id,
+    proprietor_type_id,
+    first_nations_id,
     rationale,
     proprietor_name,
     disa_required
@@ -121,7 +121,7 @@ export const postSurveyProprietorSQL = (
     ${survey_proprietor.disa_required}
   )
   RETURNING
-    id;
+    survey_proprietor_id as id;
 `;
 
   defaultLog.debug({
@@ -164,8 +164,8 @@ export const postNewSurveyPermitSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO permit (
-      p_id,
-      s_id,
+      project_id,
+      survey_id,
       number,
       type
     ) VALUES (
@@ -189,8 +189,8 @@ export const postNewSurveyPermitSQL = (
 /**
  * SQL query to insert a focal species row into the study_species table.
  *
- * @param {number} species id
- * @param {number} survey id
+ * @param {number} speciesId
+ * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
 export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
@@ -202,14 +202,14 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO study_species (
-      wu_id,
+      wldtaxonomic_units_id,
       is_focal,
-      s_id
+      survey_id
     ) VALUES (
       ${speciesId},
       TRUE,
       ${surveyId}
-    ) RETURNING id;
+    ) RETURNING study_species_id as id;
   `;
 
   defaultLog.debug({
@@ -225,8 +225,8 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
 /**
  * SQL query to insert a ancillary species row into the study_species table.
  *
- * @param {number} species id
- * @param {number} survey id
+ * @param {number} speciesId
+ * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
 export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
@@ -238,14 +238,14 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO study_species (
-      wu_id,
+      wldtaxonomic_units_id,
       is_focal,
-      s_id
+      survey_id
     ) VALUES (
       ${speciesId},
       FALSE,
       ${surveyId}
-    ) RETURNING id;
+    ) RETURNING study_species_id as id;
   `;
 
   defaultLog.debug({

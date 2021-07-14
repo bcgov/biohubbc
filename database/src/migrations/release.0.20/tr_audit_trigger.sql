@@ -16,29 +16,29 @@ $$
 --                  2021-01-03  initial release
 -- *******************************************************************
 declare
-  v_user_id system_user.id%type;
-  v_user_identity_source_id user_identity_source.id%type;
+  _system_user_id system_user.system_user_id%type;
+  _user_identity_source_id user_identity_source.user_identity_source_id%type;
 begin
   -- api users will hopefully have created the temp table using an api helper function
   -- this create temp table statement is for database users
   create temp table if not exists biohub_context_temp (tag varchar(200), value varchar(200));
-  select value::integer into v_user_id from biohub_context_temp where tag = 'user_id';
+  select value::integer into _system_user_id from biohub_context_temp where tag = 'user_id';
 
-  if (v_user_id is null) THEN    
+  if (_system_user_id is null) THEN    
     -- look up the database user
-    select a.id into strict v_user_id from system_user a, user_identity_source b
-      where a.uis_id = b.id
+    select a.system_user_id into strict _system_user_id from system_user a, user_identity_source b
+      where a.user_identity_source_id = b.user_identity_source_id
       and b.name = 'DATABASE'
       and user_identifier = user;
       
     -- populate for subsequent calls
-    insert into biohub_context_temp (tag, value) values ('user_id', v_user_id::varchar(200));
+    insert into biohub_context_temp (tag, value) values ('user_id', _system_user_id::varchar(200));
   end if;
 
   if (TG_OP = 'INSERT') then
-    new.create_user = v_user_id;
+    new.create_user = _system_user_id;
   elsif (TG_OP = 'UPDATE') then
-    new.update_user = v_user_id;
+    new.update_user = _system_user_id;
     new.update_date = now();
     -- create audit fields are immutable
     new.create_user = old.create_user;

@@ -26,9 +26,9 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
   const sqlStatement = SQL`
     UPDATE permit
     SET
-      s_id = ${null}
+      survey_id = ${null}
     WHERE
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({
@@ -63,7 +63,7 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
   const sqlStatement = SQL`
     UPDATE permit
     SET
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     WHERE
       number = ${permitNumber};
   `;
@@ -144,9 +144,9 @@ export const putSurveyDetailsSQL = (
 
   sqlStatement.append(SQL`
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
     AND
-      id = ${surveyId}
+      survey_id = ${surveyId}
     AND
       revision_count = ${revision_count};
   `);
@@ -184,16 +184,16 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
   const sqlStatement = SQL`
     UPDATE survey_proprietor
     SET
-      prt_id = ${data.prt_id},
-      fn_id = ${data.fn_id},
+      proprietor_type_id = ${data.prt_id},
+      first_nations_id = ${data.fn_id},
       rationale = ${data.rationale},
       proprietor_name = ${data.proprietor_name},
       disa_required = ${data.disa_required},
       revision_count = ${data.revision_count}
     WHERE
-      id = ${data.id}
+      survey_proprietor_id = ${data.id}
     AND
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
   `;
 
   defaultLog.debug({
