@@ -486,7 +486,7 @@ export const updateSurveyProprietorData = async (
   }
 };
 
-export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
+export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<void> => {
   const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
@@ -498,6 +498,4 @@ export const unassociatePermitFromSurvey = async (survey_id: number, connection:
   if (!response) {
     throw new HTTP400('Failed to update survey permit number data');
   }
-
-  return true;
 };

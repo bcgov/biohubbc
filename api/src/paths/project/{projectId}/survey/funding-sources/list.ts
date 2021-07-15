@@ -112,6 +112,7 @@ export function getSurveyFundingSources(): RequestHandler {
       return res.status(200).json(getSurveyFundingSourcesData.fundingSources);
     } catch (error) {
       defaultLog.debug({ label: 'getSurveyFundingSources', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

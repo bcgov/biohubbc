@@ -255,8 +255,8 @@ describe('createSurvey', () => {
     });
 
     sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
-    sinon.stub(create, 'insertSurveyFundingSource').resolves(true);
+    sinon.stub(create, 'insertSurveyPermit').resolves();
+    sinon.stub(create, 'insertSurveyFundingSource').resolves();
 
     const result = create.createSurvey();
 
@@ -688,21 +688,6 @@ describe('insertSurveyPermit', () => {
       expect(actualError.message).to.equal('Failed to insert survey permit number data');
     }
   });
-
-  it('should return true on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves(true);
-
-    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(SQL`some`);
-
-    const res = await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, {
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    expect(res).to.equal(true);
-  });
 });
 
 describe('insertSurveyFundingSource', () => {
@@ -764,20 +749,5 @@ describe('insertSurveyFundingSource', () => {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to insert survey funding source data');
     }
-  });
-
-  it('should return true on success', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves(true);
-
-    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(SQL`something`);
-
-    const res = await create.insertSurveyFundingSource(fundingSourceId, surveyId, {
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    expect(res).to.equal(true);
   });
 });

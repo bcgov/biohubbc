@@ -251,7 +251,7 @@ export const insertSurveyPermit = async (
   project_id: number,
   survey_id: number,
   connection: IDBConnection
-): Promise<boolean> => {
+): Promise<void> => {
   let sqlStatement;
 
   if (!permit_type) {
@@ -269,15 +269,13 @@ export const insertSurveyPermit = async (
   if (!response) {
     throw new HTTP400('Failed to insert survey permit number data');
   }
-
-  return true;
 };
 
 export const insertSurveyFundingSource = async (
   funding_source_id: number,
   survey_id: number,
   connection: IDBConnection
-): Promise<boolean> => {
+): Promise<void> => {
   const sqlStatement = insertSurveyFundingSourceSQL(survey_id, funding_source_id);
 
   if (!sqlStatement) {
@@ -289,6 +287,4 @@ export const insertSurveyFundingSource = async (
   if (!response) {
     throw new HTTP400('Failed to insert survey funding source data');
   }
-
-  return true;
 };

@@ -929,8 +929,8 @@ describe('updateSurveyDetailsData', () => {
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
-    sinon.stub(create, 'insertSurveyFundingSource').resolves(true);
-    sinon.stub(update, 'unassociatePermitFromSurvey').resolves(true);
+    sinon.stub(create, 'insertSurveyFundingSource').resolves();
+    sinon.stub(update, 'unassociatePermitFromSurvey').resolves();
 
     const result = await update.updateSurveyDetailsData(
       projectId,
@@ -942,7 +942,7 @@ describe('updateSurveyDetailsData', () => {
       }
     );
 
-    expect(result).to.eql([1, 2, true, true]);
+    expect(result).to.eql([1, 2, undefined, undefined]);
   });
 
   it('should return resolved promises on success with focal and ancillary species and funding sources and permit number', async () => {
@@ -961,9 +961,9 @@ describe('updateSurveyDetailsData', () => {
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
-    sinon.stub(create, 'insertSurveyFundingSource').resolves(true);
-    sinon.stub(update, 'unassociatePermitFromSurvey').resolves(true);
-    sinon.stub(create, 'insertSurveyPermit').resolves(true);
+    sinon.stub(create, 'insertSurveyFundingSource').resolves();
+    sinon.stub(update, 'unassociatePermitFromSurvey').resolves();
+    sinon.stub(create, 'insertSurveyPermit').resolves();
 
     const result = await update.updateSurveyDetailsData(
       projectId,
@@ -975,7 +975,7 @@ describe('updateSurveyDetailsData', () => {
       }
     );
 
-    expect(result).to.eql([1, 2, true, true, true]);
+    expect(result).to.eql([1, 2, undefined, undefined, undefined]);
   });
 });
 
