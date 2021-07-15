@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, July 14, 2021 15:44:12
+-- Date Created : Thursday, July 15, 2021 11:04:24
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -706,7 +706,6 @@ COMMENT ON TABLE occurrence_submission IS 'Provides a historical listing of publ
 
 CREATE TABLE permit(
     permit_id                    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    system_user_id               integer           NOT NULL,
     survey_id                    integer,
     project_id                   integer,
     number                       varchar(100)      NOT NULL,
@@ -729,8 +728,6 @@ CREATE TABLE permit(
 
 
 COMMENT ON COLUMN permit.permit_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN permit.system_user_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN permit.survey_id IS 'System generated surrogate primary key identifier.'
 ;
@@ -2303,12 +2300,6 @@ CREATE INDEX "Ref45156" ON permit(project_id)
 CREATE INDEX "Ref153157" ON permit(survey_id)
 ;
 -- 
--- INDEX: "Ref78169" 
---
-
-CREATE INDEX "Ref78169" ON permit(system_user_id)
-;
--- 
 -- INDEX: "Ref128119" 
 --
 
@@ -2743,11 +2734,6 @@ ALTER TABLE permit ADD CONSTRAINT "Refproject156"
 ALTER TABLE permit ADD CONSTRAINT "Refsurvey157" 
     FOREIGN KEY (survey_id)
     REFERENCES survey(survey_id)
-;
-
-ALTER TABLE permit ADD CONSTRAINT "Refsystem_user169" 
-    FOREIGN KEY (system_user_id)
-    REFERENCES system_user(system_user_id)
 ;
 
 
