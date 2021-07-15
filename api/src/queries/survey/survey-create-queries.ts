@@ -155,8 +155,8 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey_funding_source (
-      s_id,
-      pfs_id
+      survey_id,
+      project_funding_source_id
     ) VALUES (
       ${surveyId},
       ${fundingSourceId}

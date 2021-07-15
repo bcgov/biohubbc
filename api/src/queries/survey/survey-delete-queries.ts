@@ -24,7 +24,7 @@ export const deleteSurveyFundingSourcesSQL = (surveyId: number): SQLStatement | 
     DELETE
       from survey_funding_source
     WHERE
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({
