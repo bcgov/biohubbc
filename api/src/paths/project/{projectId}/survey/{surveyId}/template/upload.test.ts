@@ -10,7 +10,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe.only('uploadMedia', () => {
+describe('uploadMedia', () => {
   afterEach(() => {
     sinon.restore();
   });
