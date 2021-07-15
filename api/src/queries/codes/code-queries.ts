@@ -5,7 +5,8 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  *
  * @returns {SQLStatement} sql query object
  */
-export const getManagementActionTypeSQL = (): SQLStatement => SQL`SELECT management_action_type_id as id, name from management_action_type;`;
+export const getManagementActionTypeSQL = (): SQLStatement =>
+  SQL`SELECT management_action_type_id as id, name from management_action_type;`;
 
 /**
  * SQL query to fetch first nation codes.
@@ -26,7 +27,8 @@ export const getFundingSourceSQL = (): SQLStatement => SQL`SELECT funding_source
  *
  * @returns {SQLStatement} sql query object
  */
-export const getProprietorTypeSQL = (): SQLStatement => SQL`SELECT proprietor_type_id as id, name from proprietor_type;`;
+export const getProprietorTypeSQL = (): SQLStatement =>
+  SQL`SELECT proprietor_type_id as id, name from proprietor_type;`;
 
 /**
  * SQL query to fetch activity codes.

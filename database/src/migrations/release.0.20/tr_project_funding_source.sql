@@ -20,7 +20,7 @@ begin
   -- query funding source to determine optionality of funding source project id
   if new.funding_source_project_id is null then    
     select project_id_optional into _project_id_optional from funding_source
-      where id = (select funding_source_id from investment_action_category where investment_action_category_id = new.investment_action_category_id);
+      where funding_source_id = (select funding_source_id from investment_action_category where investment_action_category_id = new.investment_action_category_id);
 
     if not _project_id_optional then
       raise exception 'The funding source project id is not optional for the selected funding source.';
