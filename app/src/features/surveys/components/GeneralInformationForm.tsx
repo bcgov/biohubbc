@@ -78,11 +78,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
     end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateAfterStartDate('start_date'),
-    permit_number: yup.string().max(100, 'Cannot exceed 100 characters'),
-    permit_type: yup.string().when('permit_number', {
-      is: (permitNumber: string) => !!permitNumber,
-      then: yup.string().required('You must specify a permit type with your permit number')
-    })
+    permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
   });
 };
 

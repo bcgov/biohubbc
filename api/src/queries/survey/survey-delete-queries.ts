@@ -58,7 +58,7 @@ export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => 
     DELETE
       from study_species
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
       is_focal;
   `;
@@ -94,7 +94,7 @@ export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null
     DELETE
       from study_species
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
       is_focal is FALSE;
   `;

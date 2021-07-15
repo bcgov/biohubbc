@@ -34,7 +34,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.revision_count,
       per.number,
       per.type,
-      sfs.project_funding_source_id,
+      sfs.project_funding_source_id as pfs_id,
       s.publish_timestamp as publish_date,
       CASE
         WHEN ss.is_focal = TRUE THEN wtu.wldtaxonomic_units_id

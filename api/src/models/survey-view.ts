@@ -45,7 +45,7 @@ export class GetViewSurveyDetailsData {
 
     surveyDetailsData &&
       surveyDetailsData.map((item: any) => {
-        if (!seenFundingSourceIds.includes(item.pfs_id)) {
+        if (!seenFundingSourceIds.includes(item.pfs_id) && item.pfs_id) {
           fundingSourcesList.push({
             agency_name: item.agency_name,
             pfs_id: item.pfs_id,

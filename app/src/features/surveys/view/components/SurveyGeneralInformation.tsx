@@ -121,6 +121,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     setSurveyDataForUpdate(surveyDetailsResponseData);
     setGeneralInformationFormData({
       ...surveyDetailsResponseData,
+      permit_type: '',
       start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.start_date),
       end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.end_date)
     });
@@ -327,18 +328,24 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Funding Sources
               </Typography>
-              {survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
-                return (
-                  <Typography component="dd" variant="body1" key={index}>
-                    {fundingSource.agency_name} | {getFormattedAmount(fundingSource.funding_amount)} |{' '}
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat2,
-                      fundingSource.funding_start_date,
-                      fundingSource.funding_end_date
-                    )}
-                  </Typography>
-                );
-              })}
+              {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
+                <Typography component="dd" variant="body1">
+                  No Funding Sources
+                </Typography>
+              )}
+              {survey_details.funding_sources &&
+                survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+                  return (
+                    <Typography component="dd" variant="body1" key={index}>
+                      {fundingSource.agency_name} | {getFormattedAmount(fundingSource.funding_amount)} |{' '}
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat2,
+                        fundingSource.funding_start_date,
+                        fundingSource.funding_end_date
+                      )}
+                    </Typography>
+                  );
+                })}
             </Grid>
           </Grid>
           <Grid container spacing={2}>
