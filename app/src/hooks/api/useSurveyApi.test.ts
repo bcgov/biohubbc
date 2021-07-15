@@ -88,6 +88,18 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(signedUrl);
   });
 
+  it('uploadTemplateObservations works as expected', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    });
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/template/upload`).reply(200, 'OK');
+
+    const result = await useSurveyApi(axios).uploadTemplateObservations(projectId, surveyId, file);
+
+    expect(result).toEqual('OK');
+  });
+
   it('getSurveyAttachments works as expected', async () => {
     const res = {
       attachmentsList: [
@@ -133,7 +145,9 @@ describe('useSurveyApi', () => {
         biologist_last_name: 'last',
         survey_area_name: 'area name',
         geometry: [],
-        revision_count: 1
+        revision_count: 1,
+        permit_number: '123',
+        permit_type: 'Scientific'
       },
       survey_proprietor: null
     };

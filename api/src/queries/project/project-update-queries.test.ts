@@ -286,7 +286,6 @@ describe('updateProjectPublishStatusSQL', () => {
   describe('with valid parameters', () => {
     it('returns a SQLStatement when there is a real date value', () => {
       const response = updateProjectPublishStatusSQL(1, true);
-      console.log('response', response);
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(1);
@@ -294,7 +293,6 @@ describe('updateProjectPublishStatusSQL', () => {
 
     it('returns a SQLStatement when the date value is null', () => {
       const response = updateProjectPublishStatusSQL(1, false);
-      console.log('response', response);
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(1);

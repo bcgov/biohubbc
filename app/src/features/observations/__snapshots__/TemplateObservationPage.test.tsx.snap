@@ -1,0 +1,263 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TemplateObservationPage renders a spinner if no project is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`TemplateObservationPage renders a spinner if no survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`TemplateObservationPage renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-23"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-24"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-21 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-21 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-21 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  survey name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                Add Template Observations
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-25"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+          data-testid="template-observation-heading"
+        >
+          Add Template Observations
+        </h1>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-26"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
+        </p>
+      </div>
+      <div
+        class="MuiPaper-root MuiBox-root MuiBox-root-27 MuiPaper-elevation1 MuiPaper-rounded"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-28"
+        >
+          <h2
+            class="MuiTypography-root MuiTypography-h2"
+          >
+            Upload Template File
+          </h2>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-29"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-31"
+          >
+            <div
+              class="MuiBox-root MuiBox-root-32 makeStyles-dropZone-30"
+            >
+              <section>
+                <div
+                  class="MuiBox-root MuiBox-root-35"
+                  tabindex="0"
+                >
+                  <input
+                    autocomplete="off"
+                    data-testid="drop-zone-input"
+                    multiple=""
+                    style="display: none;"
+                    tabindex="-1"
+                    type="file"
+                  />
+                  <div
+                    class="MuiBox-root MuiBox-root-36"
+                  >
+                    <svg
+                      class="makeStyles-textSpacing-33"
+                      role="presentation"
+                      style="width: 3rem; height: 3rem;"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
+                    <h3
+                      class="MuiTypography-root makeStyles-textSpacing-33 MuiTypography-h3"
+                    >
+                      Drag your files here, or 
+                      <a
+                        class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-34 MuiTypography-colorPrimary"
+                      >
+                        Browse Files
+                      </a>
+                    </h3>
+                    <span
+                      class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                    >
+                      Maximum file size: 50 MB
+                    </span>
+                    <span
+                      class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                    >
+                      Maximum file count: 1
+                    </span>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-37"
+            >
+              <ul
+                class="MuiList-root MuiList-padding"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-38"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-22 MuiButton-outlinedPrimary"
+            data-testid="back-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Back
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

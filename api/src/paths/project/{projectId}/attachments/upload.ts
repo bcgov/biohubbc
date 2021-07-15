@@ -6,7 +6,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { uploadFileToS3 } from '../../../../utils/file-utils';
+import { generateS3FileKey, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { upsertProjectAttachment } from '../../../project';
 
@@ -121,17 +121,19 @@ export function uploadMedia(): RequestHandler {
       const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
-        const key = req.params.projectId + '/' + file.originalname;
+        const key = generateS3FileKey({
+          projectId: Number(req.params.projectId),
+          fileName: file.originalname
+        });
 
         const metadata = {
-          filename: key,
           username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
           email: (req['auth_payload'] && req['auth_payload'].email) || ''
         };
 
         defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
 
-        s3UploadPromises.push(uploadFileToS3(file, metadata));
+        s3UploadPromises.push(uploadFileToS3(file, key, metadata));
       });
 
       const results = await Promise.all(s3UploadPromises);

@@ -5,6 +5,7 @@ import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -49,6 +50,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     [biohubApi.project, projectId, attachmentsList.length]
   );
 
+  const uploadAttachments = (): IUploadHandler => {
+    return (files, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.project.uploadProjectAttachments(projectId, files, cancelToken, handleFileUploadProgress);
+    };
+  };
+
   useEffect(() => {
     getAttachments(false);
     // eslint-disable-next-line
@@ -63,7 +70,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload projectId={projectId} />
+        <FileUpload uploadHandler={uploadAttachments()} />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">

@@ -1,38 +1,13 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import FileUploadItem, { IFileUploadItemProps } from './FileUploadItem';
-
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
-  project: {
-    uploadProjectAttachments: jest.fn<Promise<any>, []>()
-  },
-  survey: {
-    uploadSurveyAttachments: jest.fn<Promise<any>, []>()
-  }
-};
-
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
-);
-
-const projectId = 1;
-const surveyId = 2;
-const onCancel = jest.fn();
 
 const renderContainer = (props: IFileUploadItemProps) => {
   return render(<FileUploadItem {...props} />);
 };
 
 describe('FileUploadItem', () => {
-  beforeEach(() => {
-    // clear mocks before each test
-    mockBiohubApi().project.uploadProjectAttachments.mockClear();
-    mockBiohubApi().survey.uploadSurveyAttachments.mockClear();
-  });
-
   it('calls props.onCancel when the `X` button is clicked', async () => {
     let rejectRef: (value: unknown) => void;
 
@@ -40,24 +15,22 @@ describe('FileUploadItem', () => {
       rejectRef = reject;
     });
 
-    mockBiohubApi().project.uploadProjectAttachments.mockReturnValue(mockUploadPromise);
-
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
+    const mockUploadHandler = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnCancel = jest.fn();
+
     const { getByText, getByTitle } = renderContainer({
-      projectId,
+      uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
+      onSuccess: mockOnSuccess,
       file: testFile,
       error: '',
-      onCancel: () => onCancel()
+      onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
-        projectId,
-        [testFile],
-        expect.any(Object),
-        expect.any(Function)
-      );
+      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -75,35 +48,35 @@ describe('FileUploadItem', () => {
     rejectRef({ message: '' });
 
     await waitFor(() => {
-      expect(onCancel).toBeCalledTimes(1);
+      expect(mockOnSuccess).toHaveBeenCalledTimes(0);
+
+      expect(mockOnCancel).toBeCalledTimes(1);
     });
   });
 
-  it('handles file upload success for project attachment', async () => {
+  it('handles file upload success', async () => {
     let resolveRef: (value: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
       resolveRef = resolve;
     });
 
-    mockBiohubApi().project.uploadProjectAttachments.mockReturnValue(mockUploadPromise);
-
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
+    const mockUploadHandler = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnCancel = jest.fn();
+
     const { getByText } = renderContainer({
-      projectId,
+      uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
+      onSuccess: mockOnSuccess,
       file: testFile,
       error: '',
-      onCancel: () => onCancel()
+      onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
-        projectId,
-        [testFile],
-        expect.any(Object),
-        expect.any(Function)
-      );
+      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -116,76 +89,36 @@ describe('FileUploadItem', () => {
 
     await waitFor(() => {
       expect(getByText('Complete')).toBeVisible();
+
+      expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+
+      expect(mockOnCancel).toHaveBeenCalledTimes(0);
     });
   });
 
-  it('handles file upload success for survey attachment', async () => {
-    let resolveRef: (value: unknown) => void;
-
-    const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
-      resolveRef = resolve;
-    });
-
-    mockBiohubApi().survey.uploadSurveyAttachments.mockReturnValue(mockUploadPromise);
-
-    const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
-
-    const { getByText } = renderContainer({
-      projectId,
-      surveyId,
-      file: testFile,
-      error: '',
-      onCancel: () => onCancel()
-    });
-
-    await waitFor(() => {
-      expect(mockBiohubApi().survey.uploadSurveyAttachments).toHaveBeenCalledWith(
-        projectId,
-        surveyId,
-        [testFile],
-        expect.any(Object),
-        expect.any(Function)
-      );
-
-      expect(getByText('testpng.txt')).toBeVisible();
-
-      expect(getByText('Uploading')).toBeVisible();
-    });
-
-    // Manually trigger the upload resolve to simulate a successful upload
-    // @ts-ignore
-    resolveRef(null);
-
-    await waitFor(() => {
-      expect(getByText('Complete')).toBeVisible();
-    });
-  });
-
-  it('handles file upload API rejection', async () => {
+  it('handles file upload rejection', async () => {
     let rejectRef: (reason: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
       rejectRef = reject;
     });
 
-    mockBiohubApi().project.uploadProjectAttachments.mockReturnValue(mockUploadPromise);
-
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
+    const mockUploadHandler = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnCancel = jest.fn();
+
     const { getByText } = renderContainer({
-      projectId,
+      uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
+      onSuccess: mockOnSuccess,
       file: testFile,
       error: '',
-      onCancel: () => onCancel()
+      onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.uploadProjectAttachments).toHaveBeenCalledWith(
-        projectId,
-        [testFile],
-        expect.any(Object),
-        expect.any(Function)
-      );
+      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -198,17 +131,26 @@ describe('FileUploadItem', () => {
 
     await waitFor(() => {
       expect(getByText('api error message')).toBeVisible();
+
+      expect(mockOnSuccess).toHaveBeenCalledTimes(0);
+
+      expect(mockOnCancel).toHaveBeenCalledTimes(0);
     });
   });
 
   it('shows an error message if the component initially receives an error', async () => {
     const testFile = new File(['test png content'], 'testpng.txt', { type: 'text/plain' });
 
+    const mockUploadHandler = jest.fn();
+    const mockOnSuccess = jest.fn();
+    const mockOnCancel = jest.fn();
+
     const { getByText } = renderContainer({
-      projectId,
+      uploadHandler: mockUploadHandler,
+      onSuccess: mockOnSuccess,
       file: testFile,
       error: 'initial error message',
-      onCancel: () => onCancel()
+      onCancel: mockOnCancel
     });
 
     await waitFor(() => {
