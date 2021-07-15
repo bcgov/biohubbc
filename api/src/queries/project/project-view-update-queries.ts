@@ -127,7 +127,7 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
   const sqlStatement = SQL`
     SELECT
       pfs.project_funding_source_id as id,
-      fs.id as agency_id,
+      fs.funding_source_id as agency_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date as start_date,
       pfs.funding_end_date as end_date,
