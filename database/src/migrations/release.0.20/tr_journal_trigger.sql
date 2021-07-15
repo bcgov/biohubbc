@@ -15,11 +15,11 @@ $$
 --                  2021-01-03  initial release
 -- *******************************************************************
 declare
-  v_user_id system_user.id%type;
+  _system_user_id system_user.system_user_id%type;
   old_row json := null;
   new_row json := null;
 begin
-  select api_get_context_user_id() into strict v_user_id;
+  select api_get_context_user_id() into strict _system_user_id;
   
   if tg_op in ('UPDATE','DELETE') then
     old_row = row_to_json(old);    
@@ -33,7 +33,7 @@ begin
     operation,
     before_value,
     after_value) 
-  values (v_user_id,
+  values (_system_user_id,
     tg_table_schema || '.' || tg_table_name,
     tg_op,
     old_row,

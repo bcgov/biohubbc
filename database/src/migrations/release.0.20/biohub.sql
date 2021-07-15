@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, June 30, 2021 11:27:02
+-- Date Created : Thursday, July 15, 2021 11:04:24
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -11,7 +11,7 @@
 --
 
 CREATE TABLE activity(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    activity_id              integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(300),
     record_end_date          date,
     record_effective_date    date              NOT NULL,
@@ -21,13 +21,13 @@ CREATE TABLE activity(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_3_1 PRIMARY KEY (id)
+    CONSTRAINT activity_pk PRIMARY KEY (activity_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN activity.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN activity.activity_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN activity.name IS 'Name of the First Nation.'
 ;
@@ -55,35 +55,34 @@ COMMENT ON TABLE activity IS 'A list of project activities.'
 --
 
 CREATE TABLE administrative_activity(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    aat_id            integer           NOT NULL,
-    reported_su_id    integer           NOT NULL,
-    aast_id           integer           NOT NULL,
-    assigned_su_id    integer,
-    description       varchar(3000),
-    data              json,
-    notes             varchar(3000),
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK144" PRIMARY KEY (id)
+    administrative_activity_id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    administrative_activity_status_type_id    integer           NOT NULL,
+    administrative_activity_type_id           integer           NOT NULL,
+    reported_system_user_id                   integer           NOT NULL,
+    assigned_system_user_id                   integer,
+    description                               varchar(3000),
+    data                                      json,
+    notes                                     varchar(3000),
+    create_date                               timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                               integer           NOT NULL,
+    update_date                               timestamptz(6),
+    update_user                               integer,
+    revision_count                            integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT administrative_activity_pk PRIMARY KEY (administrative_activity_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN administrative_activity.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN administrative_activity.administrative_activity_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN administrative_activity.aat_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN administrative_activity.administrative_activity_status_type_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN administrative_activity.reported_su_id IS 'The system user id who reported the administrative activity.'
+COMMENT ON COLUMN administrative_activity.administrative_activity_type_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN administrative_activity.aast_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN administrative_activity.reported_system_user_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN administrative_activity.assigned_su_id IS 'The system user id assigned to the administrative activity.
-'
+COMMENT ON COLUMN administrative_activity.assigned_system_user_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN administrative_activity.description IS 'The description of the record.'
 ;
@@ -109,23 +108,23 @@ COMMENT ON TABLE administrative_activity IS 'Administrative activity is a list o
 --
 
 CREATE TABLE administrative_activity_status_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_4_1 PRIMARY KEY (id)
+    administrative_activity_status_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                                      varchar(50)       NOT NULL,
+    record_end_date                           date,
+    record_effective_date                     date              NOT NULL,
+    description                               varchar(250),
+    create_date                               timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                               integer           NOT NULL,
+    update_date                               timestamptz(6),
+    update_user                               integer,
+    revision_count                            integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT administrative_activity_status_type_pk PRIMARY KEY (administrative_activity_status_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN administrative_activity_status_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN administrative_activity_status_type.administrative_activity_status_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN administrative_activity_status_type.name IS 'The name of the record.'
 ;
@@ -153,23 +152,23 @@ COMMENT ON TABLE administrative_activity_status_type IS 'Administrative activity
 --
 
 CREATE TABLE administrative_activity_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_4 PRIMARY KEY (id)
+    administrative_activity_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                               varchar(50)       NOT NULL,
+    record_end_date                    date,
+    record_effective_date              date              NOT NULL,
+    description                        varchar(250),
+    create_date                        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                        integer           NOT NULL,
+    update_date                        timestamptz(6),
+    update_user                        integer,
+    revision_count                     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT administrative_activity_type_pk PRIMARY KEY (administrative_activity_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN administrative_activity_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN administrative_activity_type.administrative_activity_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN administrative_activity_type.name IS 'The name of the record.'
 ;
@@ -197,20 +196,20 @@ COMMENT ON TABLE administrative_activity_type IS 'Administrative activity type d
 --
 
 CREATE TABLE audit_log(
-    id                integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    audit_log_id      integer         GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     system_user_id    integer         NOT NULL,
     create_date       TIMESTAMPTZ     DEFAULT now() NOT NULL,
     table_name        varchar(200)    NOT NULL,
     operation         varchar(20)     NOT NULL,
     before_value      json,
     after_value       json,
-    CONSTRAINT pk103_1_1 PRIMARY KEY (id)
+    CONSTRAINT audit_log_pk PRIMARY KEY (audit_log_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN audit_log.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN audit_log.audit_log_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN audit_log.system_user_id IS 'The system user id affecting the data change.'
 ;
@@ -232,23 +231,23 @@ COMMENT ON TABLE audit_log IS 'Holds record level audit log data for the entire 
 --
 
 CREATE TABLE climate_change_initiative(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2 PRIMARY KEY (id)
+    climate_change_initiative_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                            varchar(50)       NOT NULL,
+    record_end_date                 date,
+    record_effective_date           date              NOT NULL,
+    description                     varchar(250),
+    create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                     integer           NOT NULL,
+    update_date                     timestamptz(6),
+    update_user                     integer,
+    revision_count                  integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT climate_change_initiative_pk PRIMARY KEY (climate_change_initiative_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN climate_change_initiative.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN climate_change_initiative.climate_change_initiative_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN climate_change_initiative.name IS 'The name of the record.'
 ;
@@ -276,7 +275,7 @@ COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change ini
 --
 
 CREATE TABLE first_nations(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    first_nations_id         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(300)      NOT NULL,
     record_effective_date    date              NOT NULL,
     record_end_date          date,
@@ -286,13 +285,13 @@ CREATE TABLE first_nations(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_3 PRIMARY KEY (id)
+    CONSTRAINT first_nations_pk PRIMARY KEY (first_nations_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN first_nations.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN first_nations.first_nations_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN first_nations.name IS 'Name of the First Nation.'
 ;
@@ -320,7 +319,7 @@ COMMENT ON TABLE first_nations IS 'A list of first nations.'
 --
 
 CREATE TABLE funding_source(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    funding_source_id        integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(100)      NOT NULL,
     record_end_date          date,
     record_effective_date    date              NOT NULL,
@@ -331,13 +330,13 @@ CREATE TABLE funding_source(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1 PRIMARY KEY (id)
+    CONSTRAINT funding_source_pk PRIMARY KEY (funding_source_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN funding_source.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN funding_source.funding_source_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN funding_source.name IS 'The name of the funding source.'
 ;
@@ -367,26 +366,26 @@ COMMENT ON TABLE funding_source IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE investment_action_category(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    fs_id                    integer           NOT NULL,
-    name                     varchar(300),
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK83" PRIMARY KEY (id)
+    investment_action_category_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    funding_source_id                integer           NOT NULL,
+    name                             varchar(300),
+    record_end_date                  date,
+    record_effective_date            date              NOT NULL,
+    description                      varchar(250),
+    create_date                      timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                      integer           NOT NULL,
+    update_date                      timestamptz(6),
+    update_user                      integer,
+    revision_count                   integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT investment_action_category_pk PRIMARY KEY (investment_action_category_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN investment_action_category.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN investment_action_category.investment_action_category_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN investment_action_category.fs_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN investment_action_category.funding_source_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN investment_action_category.name IS 'The name of the investment or action category.'
 ;
@@ -414,23 +413,23 @@ COMMENT ON TABLE investment_action_category IS 'The investment or action categor
 --
 
 CREATE TABLE iucn_conservation_action_level_1_classification(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(300),
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(3000),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_4 PRIMARY KEY (id)
+    iucn_conservation_action_level_1_classification_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                                                  varchar(300),
+    record_end_date                                       date,
+    record_effective_date                                 date              NOT NULL,
+    description                                           varchar(3000),
+    create_date                                           timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                                           integer           NOT NULL,
+    update_date                                           timestamptz(6),
+    update_user                                           integer,
+    revision_count                                        integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT iucn_conservation_action_level_1_classification_pk PRIMARY KEY (iucn_conservation_action_level_1_classification_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN iucn_conservation_action_level_1_classification.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_1_classification.iucn_conservation_action_level_1_classification_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN iucn_conservation_action_level_1_classification.name IS 'The name of the record.'
 ;
@@ -458,26 +457,26 @@ COMMENT ON TABLE iucn_conservation_action_level_1_classification IS 'List of IUC
 --
 
 CREATE TABLE iucn_conservation_action_level_2_subclassification(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn1_id                 integer           NOT NULL,
-    name                     varchar(300),
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(3000),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk83_1 PRIMARY KEY (id)
+    iucn_conservation_action_level_2_subclassification_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    iucn_conservation_action_level_1_classification_id       integer           NOT NULL,
+    name                                                     varchar(300),
+    record_end_date                                          date,
+    record_effective_date                                    date              NOT NULL,
+    description                                              varchar(3000),
+    create_date                                              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                                              integer           NOT NULL,
+    update_date                                              timestamptz(6),
+    update_user                                              integer,
+    revision_count                                           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT iucn_conservation_action_level_2_subclassification_pk PRIMARY KEY (iucn_conservation_action_level_2_subclassification_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.iucn_conservation_action_level_2_subclassification_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.iucn1_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.iucn_conservation_action_level_1_classification_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN iucn_conservation_action_level_2_subclassification.name IS 'The name of the record.'
 ;
@@ -505,26 +504,26 @@ COMMENT ON TABLE iucn_conservation_action_level_2_subclassification IS 'List of 
 --
 
 CREATE TABLE iucn_conservation_action_level_3_subclassification(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    iucn2_id                 integer           NOT NULL,
-    name                     varchar(300),
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(3000),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk83_1_1 PRIMARY KEY (id)
+    iucn_conservation_action_level_3_subclassification_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    iucn_conservation_action_level_2_subclassification_id    integer           NOT NULL,
+    name                                                     varchar(300),
+    record_end_date                                          date,
+    record_effective_date                                    date              NOT NULL,
+    description                                              varchar(3000),
+    create_date                                              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                                              integer           NOT NULL,
+    update_date                                              timestamptz(6),
+    update_user                                              integer,
+    revision_count                                           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT iucn_conservation_action_level_3_subclassification_pk PRIMARY KEY (iucn_conservation_action_level_3_subclassification_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.iucn_conservation_action_level_3_subclassification_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.iucn2_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.iucn_conservation_action_level_2_subclassification_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN iucn_conservation_action_level_3_subclassification.name IS 'The name of the IUCN action classification sublevel 2.
 '
@@ -553,23 +552,23 @@ COMMENT ON TABLE iucn_conservation_action_level_3_subclassification IS 'List of 
 --
 
 CREATE TABLE management_action_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_1 PRIMARY KEY (id)
+    management_action_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                         varchar(50)       NOT NULL,
+    record_end_date              date,
+    record_effective_date        date              NOT NULL,
+    description                  varchar(250),
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT management_action_type_pk PRIMARY KEY (management_action_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN management_action_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN management_action_type.management_action_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN management_action_type.name IS 'The name of the record.'
 ;
@@ -597,34 +596,34 @@ COMMENT ON TABLE management_action_type IS 'List of Management Actions.'
 --
 
 CREATE TABLE occurrence(
-    id                      integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    os_id                   integer                     NOT NULL,
-    associatedtaxa          varchar(3000),
-    lifestage               varchar(3000),
-    vernacularname          varchar(3000),
-    eventdate               TIMESTAMPTZ                 NOT NULL,
-    individualcount         varchar(3000),
-    organismquantity        varchar(3000),
-    organismquantitytype    varchar(3000),
-    data                    json,
-    geometry                geometry(geometry, 3005),
-    geography               geography(geometry),
-    create_date             timestamptz(6)              DEFAULT now() NOT NULL,
-    create_user             integer                     NOT NULL,
-    update_date             timestamptz(6),
-    update_user             integer,
-    revision_count          integer                     DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK169" PRIMARY KEY (id)
+    occurrence_id               integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    occurrence_submission_id    integer                     NOT NULL,
+    taxonid                     varchar(3000),
+    lifestage                   varchar(3000),
+    vernacularname              varchar(3000),
+    eventdate                   TIMESTAMPTZ                 NOT NULL,
+    individualcount             varchar(3000),
+    organismquantity            varchar(3000),
+    organismquantitytype        varchar(3000),
+    data                        json,
+    geometry                    geometry(geometry, 3005),
+    geography                   geography(geometry),
+    create_date                 timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user                 integer                     NOT NULL,
+    update_date                 timestamptz(6),
+    update_user                 integer,
+    revision_count              integer                     DEFAULT 0 NOT NULL,
+    CONSTRAINT occurrence_pk PRIMARY KEY (occurrence_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN occurrence.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN occurrence.occurrence_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN occurrence.os_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN occurrence.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN occurrence.associatedtaxa IS 'A string representation of the value provided for the given Darwin Core term.'
+COMMENT ON COLUMN occurrence.taxonid IS 'A string representation of the value provided for the given Darwin Core term.'
 ;
 COMMENT ON COLUMN occurrence.lifestage IS 'A string representation of the value provided for the given Darwin Core term.'
 ;
@@ -662,25 +661,25 @@ COMMENT ON TABLE occurrence IS 'Occurrence records that have been ingested from 
 --
 
 CREATE TABLE occurrence_submission(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    s_id               integer,
-    source             varchar(300)      NOT NULL,
-    event_timestamp    TIMESTAMPTZ       NOT NULL,
-    key                varchar(1000),
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK165" PRIMARY KEY (id)
+    occurrence_submission_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_id                   integer           NOT NULL,
+    source                      varchar(300)      NOT NULL,
+    event_timestamp             TIMESTAMPTZ       NOT NULL,
+    key                         varchar(1000),
+    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                 integer           NOT NULL,
+    update_date                 timestamptz(6),
+    update_user                 integer,
+    revision_count              integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT occurrence_submission_pk PRIMARY KEY (occurrence_submission_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN occurrence_submission.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN occurrence_submission.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN occurrence_submission.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN occurrence_submission.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN occurrence_submission.source IS 'The name of the source system that is supplying the data.'
 ;
@@ -706,9 +705,9 @@ COMMENT ON TABLE occurrence_submission IS 'Provides a historical listing of publ
 --
 
 CREATE TABLE permit(
-    id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                         integer,
-    s_id                         integer,
+    permit_id                    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_id                    integer,
+    project_id                   integer,
     number                       varchar(100)      NOT NULL,
     type                         varchar(300)      NOT NULL,
     coordinator_first_name       varchar(50),
@@ -722,17 +721,17 @@ CREATE TABLE permit(
     update_date                  timestamptz(6),
     update_user                  integer,
     revision_count               integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_2_1_1 PRIMARY KEY (id)
+    CONSTRAINT permit_pk PRIMARY KEY (permit_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN permit.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN permit.permit_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN permit.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN permit.survey_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN permit.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN permit.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN permit.number IS 'Permit number provided by FrontCounter BC.'
 ;
@@ -777,8 +776,8 @@ NOTE: there are conceptual problems with associating permits to projects early i
 --
 
 CREATE TABLE project(
-    id                            integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    pt_id                         integer                     NOT NULL,
+    project_id                    integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_type_id               integer                     NOT NULL,
     name                          varchar(50)                 NOT NULL,
     objectives                    varchar(3000)               NOT NULL,
     management_recovery_action    character(1),
@@ -800,15 +799,15 @@ CREATE TABLE project(
     update_date                   timestamptz(6),
     update_user                   integer,
     revision_count                integer                     DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK45" PRIMARY KEY (id)
+    CONSTRAINT project_pk PRIMARY KEY (project_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project.project_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project.pt_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project.project_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project.name IS 'Name given to a project.'
 ;
@@ -860,25 +859,25 @@ COMMENT ON TABLE project IS 'The top level organizational structure for project 
 --
 
 CREATE TABLE project_activity(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    a_id              integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_3_1_1 PRIMARY KEY (id)
+    project_activity_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id             integer           NOT NULL,
+    activity_id            integer           NOT NULL,
+    create_date            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user            integer           NOT NULL,
+    update_date            timestamptz(6),
+    update_user            integer,
+    revision_count         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_activity_pk PRIMARY KEY (project_activity_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_activity.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_activity.project_activity_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_activity.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_activity.project_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_activity.a_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_activity.activity_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_activity.create_date IS 'The datetime the record was created.'
 ;
@@ -898,28 +897,28 @@ COMMENT ON TABLE project_activity IS 'A associative entity that joins projects a
 --
 
 CREATE TABLE project_attachment(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    file_name         varchar(300),
-    title             varchar(300),
-    description       varchar(250),
-    key               varchar(1000)     NOT NULL,
-    file_size         integer,
-    security_token    uuid,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK141" PRIMARY KEY (id)
+    project_attachment_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id               integer           NOT NULL,
+    file_name                varchar(300),
+    title                    varchar(300),
+    description              varchar(250),
+    key                      varchar(1000)     NOT NULL,
+    file_size                integer,
+    security_token           uuid,
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_attachment_pk PRIMARY KEY (project_attachment_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_attachment.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_attachment.project_attachment_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_attachment.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_attachment.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_attachment.file_name IS 'The name of the file attachment.'
 ;
@@ -951,25 +950,25 @@ COMMENT ON TABLE project_attachment IS 'A list of project attachments.'
 --
 
 CREATE TABLE project_climate_initiative(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    cci_id            integer           NOT NULL,
-    p_id              integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_3 PRIMARY KEY (id)
+    project_climate_initiative_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    climate_change_initiative_id     integer           NOT NULL,
+    project_id                       integer           NOT NULL,
+    create_date                      timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                      integer           NOT NULL,
+    update_date                      timestamptz(6),
+    update_user                      integer,
+    revision_count                   integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_climate_initiative_pk PRIMARY KEY (project_climate_initiative_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_climate_initiative.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_climate_initiative.project_climate_initiative_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_climate_initiative.cci_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_climate_initiative.climate_change_initiative_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_climate_initiative.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_climate_initiative.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_climate_initiative.create_date IS 'The datetime the record was created.'
 ;
@@ -989,25 +988,25 @@ COMMENT ON TABLE project_climate_initiative IS 'A associative entity that joins 
 --
 
 CREATE TABLE project_first_nation(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    fn_id             integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_3_1 PRIMARY KEY (id)
+    project_first_nation_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    first_nations_id           integer           NOT NULL,
+    project_id                 integer           NOT NULL,
+    create_date                timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                integer           NOT NULL,
+    update_date                timestamptz(6),
+    update_user                integer,
+    revision_count             integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_first_nation_pk PRIMARY KEY (project_first_nation_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_first_nation.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_first_nation.project_first_nation_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_first_nation.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_first_nation.first_nations_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_first_nation.fn_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_first_nation.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_first_nation.create_date IS 'The datetime the record was created.'
 ;
@@ -1027,29 +1026,29 @@ COMMENT ON TABLE project_first_nation IS 'A associative entity that joins projec
 --
 
 CREATE TABLE project_funding_source(
-    id                           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                         integer           NOT NULL,
-    iac_id                       integer           NOT NULL,
-    funding_source_project_id    varchar(50),
-    funding_amount               money             NOT NULL,
-    funding_start_date           date              NOT NULL,
-    funding_end_date             date              NOT NULL,
-    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                  integer           NOT NULL,
-    update_date                  timestamptz(6),
-    update_user                  integer,
-    revision_count               integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_1 PRIMARY KEY (id)
+    project_funding_source_id        integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    investment_action_category_id    integer           NOT NULL,
+    project_id                       integer           NOT NULL,
+    funding_source_project_id        varchar(50),
+    funding_amount                   money             NOT NULL,
+    funding_start_date               date              NOT NULL,
+    funding_end_date                 date              NOT NULL,
+    create_date                      timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                      integer           NOT NULL,
+    update_date                      timestamptz(6),
+    update_user                      integer,
+    revision_count                   integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_funding_source_pk PRIMARY KEY (project_funding_source_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_funding_source.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_funding_source.project_funding_source_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_funding_source.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_funding_source.investment_action_category_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_funding_source.iac_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_funding_source.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_funding_source.funding_source_project_id IS 'Idenfification number used by funding source to reference the project'
 ;
@@ -1077,25 +1076,25 @@ COMMENT ON TABLE project_funding_source IS 'A associative entity that joins proj
 --
 
 CREATE TABLE project_iucn_action_classification(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    iucn3_id          integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_1_2 PRIMARY KEY (id)
+    project_iucn_action_classification_id                    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id                                               integer           NOT NULL,
+    iucn_conservation_action_level_3_subclassification_id    integer           NOT NULL,
+    create_date                                              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                                              integer           NOT NULL,
+    update_date                                              timestamptz(6),
+    update_user                                              integer,
+    revision_count                                           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_iucn_action_classification_pk PRIMARY KEY (project_iucn_action_classification_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_iucn_action_classification.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.project_iucn_action_classification_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_iucn_action_classification.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.project_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_iucn_action_classification.iucn3_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_iucn_action_classification.iucn_conservation_action_level_3_subclassification_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_iucn_action_classification.create_date IS 'The datetime the record was created.'
 ;
@@ -1115,25 +1114,25 @@ COMMENT ON TABLE project_iucn_action_classification IS 'An associative entity th
 --
 
 CREATE TABLE project_management_actions(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    mat_id            integer           NOT NULL,
-    p_id              integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_4 PRIMARY KEY (id)
+    project_management_actions_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    management_action_type_id        integer           NOT NULL,
+    project_id                       integer           NOT NULL,
+    create_date                      timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                      integer           NOT NULL,
+    update_date                      timestamptz(6),
+    update_user                      integer,
+    revision_count                   integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_management_actions_pk PRIMARY KEY (project_management_actions_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_management_actions.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_management_actions.project_management_actions_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_management_actions.mat_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_management_actions.management_action_type_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_management_actions.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_management_actions.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_management_actions.create_date IS 'The datetime the record was created.'
 ;
@@ -1153,28 +1152,28 @@ COMMENT ON TABLE project_management_actions IS 'A associative entity that joins 
 --
 
 CREATE TABLE project_participation(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    su_id             integer           NOT NULL,
-    pr_id             integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_2 PRIMARY KEY (id)
+    project_participation_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id                  integer           NOT NULL,
+    system_user_id              integer           NOT NULL,
+    project_role_id             integer           NOT NULL,
+    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                 integer           NOT NULL,
+    update_date                 timestamptz(6),
+    update_user                 integer,
+    revision_count              integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_participation_pk PRIMARY KEY (project_participation_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_participation.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_participation.project_participation_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_participation.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_participation.project_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_participation.su_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_participation.system_user_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_participation.pr_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_participation.project_role_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_participation.create_date IS 'The datetime the record was created.'
 ;
@@ -1194,23 +1193,23 @@ COMMENT ON TABLE project_participation IS 'A associative entity that joins proje
 --
 
 CREATE TABLE project_region(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id              integer           NOT NULL,
-    name              varchar(200)      NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK55" PRIMARY KEY (id)
+    project_region_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id           integer           NOT NULL,
+    name                 varchar(200)      NOT NULL,
+    create_date          timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user          integer           NOT NULL,
+    update_date          timestamptz(6),
+    update_user          integer,
+    revision_count       integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT project_region_pk PRIMARY KEY (project_region_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_region.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_region.project_region_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN project_region.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_region.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_region.name IS 'The region name.'
 ;
@@ -1232,7 +1231,7 @@ COMMENT ON TABLE project_region IS 'The region of a project.'
 --
 
 CREATE TABLE project_role(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_role_id          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
     record_effective_date    date              NOT NULL,
     record_end_date          date,
@@ -1243,13 +1242,13 @@ CREATE TABLE project_role(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_3 PRIMARY KEY (id)
+    CONSTRAINT project_role_pk PRIMARY KEY (project_role_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_role.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_role.project_role_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_role.name IS 'The name of the project role.'
 ;
@@ -1279,7 +1278,7 @@ COMMENT ON TABLE project_role IS 'Project participation roles.'
 --
 
 CREATE TABLE project_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_type_id          integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
     record_effective_date    date              NOT NULL,
     description              varchar(250),
@@ -1289,13 +1288,13 @@ CREATE TABLE project_type(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_3_1 PRIMARY KEY (id)
+    CONSTRAINT pk49_1_3_1 PRIMARY KEY (project_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN project_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN project_type.project_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_type.name IS 'The name of the project role.'
 ;
@@ -1323,7 +1322,7 @@ COMMENT ON TABLE project_type IS 'Broad classification for the project.'
 --
 
 CREATE TABLE proprietor_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    proprietor_type_id       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
     record_effective_date    date              NOT NULL,
     record_end_date          date,
@@ -1334,13 +1333,13 @@ CREATE TABLE proprietor_type(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_3_1_1 PRIMARY KEY (id)
+    CONSTRAINT proprietor_type_pk PRIMARY KEY (proprietor_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN proprietor_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN proprietor_type.proprietor_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN proprietor_type.name IS 'The name of the proprietary type.'
 ;
@@ -1370,25 +1369,25 @@ COMMENT ON TABLE proprietor_type IS 'Identifies the available reasons that subje
 --
 
 CREATE TABLE stakeholder_partnership(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name              varchar(300),
-    p_id              integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_2 PRIMARY KEY (id)
+    stakeholder_partnership_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id                    integer           NOT NULL,
+    name                          varchar(300),
+    create_date                   timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                   integer           NOT NULL,
+    update_date                   timestamptz(6),
+    update_user                   integer,
+    revision_count                integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT stakeholder_partnership_pk PRIMARY KEY (stakeholder_partnership_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN stakeholder_partnership.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN stakeholder_partnership.stakeholder_partnership_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN stakeholder_partnership.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN stakeholder_partnership.name IS 'The name of the stakeholder.'
-;
-COMMENT ON COLUMN stakeholder_partnership.p_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN stakeholder_partnership.create_date IS 'The datetime the record was created.'
 ;
@@ -1408,26 +1407,26 @@ COMMENT ON TABLE stakeholder_partnership IS 'Stakeholder partnerships associated
 --
 
 CREATE TABLE study_species(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    s_id              integer           NOT NULL,
-    wu_id             integer           NOT NULL,
-    is_focal          boolean           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk122_2 PRIMARY KEY (id)
+    study_species_id         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_id                integer           NOT NULL,
+    wldtaxonomic_units_id    integer           NOT NULL,
+    is_focal                 boolean           NOT NULL,
+    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user              integer           NOT NULL,
+    update_date              timestamptz(6),
+    update_user              integer,
+    revision_count           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT study_species_pk PRIMARY KEY (study_species_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN study_species.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN study_species.study_species_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN study_species.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN study_species.survey_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN study_species.wu_id IS 'System generated UID for a taxon.'
+COMMENT ON COLUMN study_species.wldtaxonomic_units_id IS 'System generated UID for a taxon.'
 ;
 COMMENT ON COLUMN study_species.is_focal IS 'Define whether the species association is focal or not. A true value defines the association as focal.'
 ;
@@ -1449,27 +1448,27 @@ COMMENT ON TABLE study_species IS 'The study species for the survey.'
 --
 
 CREATE TABLE submission_message(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    smt_id             integer           NOT NULL,
-    subs_id            integer           NOT NULL,
-    event_timestamp    TIMESTAMPTZ       NOT NULL,
-    message            varchar(3000),
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK179" PRIMARY KEY (id)
+    submission_message_id         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    submission_message_type_id    integer           NOT NULL,
+    submission_status_id          integer           NOT NULL,
+    event_timestamp               TIMESTAMPTZ       NOT NULL,
+    message                       varchar(3000),
+    create_date                   timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                   integer           NOT NULL,
+    update_date                   timestamptz(6),
+    update_user                   integer,
+    revision_count                integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT submission_message_pk PRIMARY KEY (submission_message_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN submission_message.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_message.submission_message_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN submission_message.smt_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_message.submission_message_type_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN submission_message.subs_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_message.submission_status_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN submission_message.event_timestamp IS 'The timestamp of the associated event.'
 ;
@@ -1493,23 +1492,23 @@ COMMENT ON TABLE submission_message IS 'Intersection table to track submission m
 --
 
 CREATE TABLE submission_message_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_1_1 PRIMARY KEY (id)
+    submission_message_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                          varchar(50)       NOT NULL,
+    record_end_date               date,
+    record_effective_date         date              NOT NULL,
+    description                   varchar(250),
+    create_date                   timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                   integer           NOT NULL,
+    update_date                   timestamptz(6),
+    update_user                   integer,
+    revision_count                integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT submission_message_type_pk PRIMARY KEY (submission_message_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN submission_message_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_message_type.submission_message_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN submission_message_type.name IS 'The name of the record.'
 ;
@@ -1537,26 +1536,26 @@ COMMENT ON TABLE submission_message_type IS 'The types of submission messages av
 --
 
 CREATE TABLE submission_status(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    os_id              integer           NOT NULL,
-    sst_id             integer           NOT NULL,
-    event_timestamp    TIMESTAMPTZ       NOT NULL,
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK184" PRIMARY KEY (id)
+    submission_status_id         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    occurrence_submission_id     integer           NOT NULL,
+    submission_status_type_id    integer           NOT NULL,
+    event_timestamp              TIMESTAMPTZ       NOT NULL,
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT submission_status_pk PRIMARY KEY (submission_status_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN submission_status.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_status.submission_status_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN submission_status.os_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_status.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN submission_status.sst_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_status.submission_status_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN submission_status.event_timestamp IS 'The timestamp of the associated event.'
 ;
@@ -1578,23 +1577,23 @@ COMMENT ON TABLE submission_status IS 'Provides a history of submission statuses
 --
 
 CREATE TABLE submission_status_type(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_end_date          date,
-    record_effective_date    date              NOT NULL,
-    description              varchar(250),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_2_1_1_1 PRIMARY KEY (id)
+    submission_status_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                         varchar(50)       NOT NULL,
+    record_end_date              date,
+    record_effective_date        date              NOT NULL,
+    description                  varchar(250),
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT submission_status_type_pk PRIMARY KEY (submission_status_type_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN submission_status_type.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN submission_status_type.submission_status_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN submission_status_type.name IS 'The name of the record.'
 ;
@@ -1622,8 +1621,8 @@ COMMENT ON TABLE submission_status_type IS 'The status types of submissions. Typ
 --
 
 CREATE TABLE survey(
-    id                      integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    p_id                    integer                     NOT NULL,
+    survey_id               integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id              integer                     NOT NULL,
     name                    varchar(300),
     objectives              varchar(3000)               NOT NULL,
     start_date              date                        NOT NULL,
@@ -1632,6 +1631,7 @@ CREATE TABLE survey(
     end_date                date,
     location_description    varchar(3000),
     location_name           varchar(300)                NOT NULL,
+    publish_timestamp       TIMESTAMPTZ,
     geometry                geometry(geometry, 3005),
     geography               geography(geometry),
     create_date             timestamptz(6)              DEFAULT now() NOT NULL,
@@ -1639,15 +1639,15 @@ CREATE TABLE survey(
     update_date             timestamptz(6),
     update_user             integer,
     revision_count          integer                     DEFAULT 0 NOT NULL,
-    CONSTRAINT pk45_1 PRIMARY KEY (id)
+    CONSTRAINT survey_pk PRIMARY KEY (survey_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN survey.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey.survey_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey.p_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey.name IS 'Name given to a survey.'
 ;
@@ -1665,6 +1665,8 @@ COMMENT ON COLUMN survey.end_date IS 'The end date of the survey.'
 COMMENT ON COLUMN survey.location_description IS 'The location description.'
 ;
 COMMENT ON COLUMN survey.location_name IS 'The name of the survey location.'
+;
+COMMENT ON COLUMN survey.publish_timestamp IS 'A timestamp that indicates that the survey metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the survey metadata is not yet public.'
 ;
 COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
 ;
@@ -1688,28 +1690,28 @@ COMMENT ON TABLE survey IS 'The top level organizational structure for survey da
 --
 
 CREATE TABLE survey_attachment(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    s_id              integer           NOT NULL,
-    file_name         varchar(300),
-    title             varchar(300),
-    description       varchar(250),
-    key               varchar(1000)     NOT NULL,
-    file_size         integer,
-    security_token    uuid,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk141_1 PRIMARY KEY (id)
+    survey_attachment_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_id               integer           NOT NULL,
+    file_name               varchar(300),
+    title                   varchar(300),
+    description             varchar(250),
+    key                     varchar(1000)     NOT NULL,
+    file_size               integer,
+    security_token          uuid,
+    create_date             timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user             integer           NOT NULL,
+    update_date             timestamptz(6),
+    update_user             integer,
+    revision_count          integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT survey_attachment_pk PRIMARY KEY (survey_attachment_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN survey_attachment.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_attachment.survey_attachment_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_attachment.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_attachment.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_attachment.file_name IS 'The name of the file attachment.'
 ;
@@ -1741,25 +1743,25 @@ COMMENT ON TABLE survey_attachment IS 'A list of survey attachments.'
 --
 
 CREATE TABLE survey_funding_source(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    pfs_id            integer           NOT NULL,
-    s_id              integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK162" PRIMARY KEY (id)
+    survey_funding_source_id     integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_funding_source_id    integer           NOT NULL,
+    survey_id                    integer           NOT NULL,
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT survey_funding_source_pk PRIMARY KEY (survey_funding_source_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN survey_funding_source.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_funding_source.survey_funding_source_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_funding_source.pfs_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_funding_source.project_funding_source_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_funding_source.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_funding_source.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_funding_source.create_date IS 'The datetime the record was created.'
 ;
@@ -1779,31 +1781,31 @@ COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surve
 --
 
 CREATE TABLE survey_proprietor(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    prt_id             integer           NOT NULL,
-    s_id               integer           NOT NULL,
-    fn_id              integer,
-    rationale          varchar(3000)     NOT NULL,
-    proprietor_name    varchar(300),
-    disa_required      boolean           NOT NULL,
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK154" PRIMARY KEY (id)
+    survey_proprietor_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    first_nations_id        integer,
+    proprietor_type_id      integer           NOT NULL,
+    survey_id               integer           NOT NULL,
+    rationale               varchar(3000)     NOT NULL,
+    proprietor_name         varchar(300),
+    disa_required           boolean           NOT NULL,
+    create_date             timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user             integer           NOT NULL,
+    update_date             timestamptz(6),
+    update_user             integer,
+    revision_count          integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT survey_proprietor_pk PRIMARY KEY (survey_proprietor_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN survey_proprietor.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_proprietor.survey_proprietor_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_proprietor.prt_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_proprietor.first_nations_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_proprietor.s_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_proprietor.proprietor_type_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_proprietor.fn_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN survey_proprietor.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_proprietor.rationale IS 'Justification for identifying data as proprietary.'
 ;
@@ -1829,23 +1831,23 @@ COMMENT ON TABLE survey_proprietor IS 'Intersection table associating surveys to
 --
 
 CREATE TABLE system_constant(
-    id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    constant_name      varchar(50)       NOT NULL,
-    character_value    varchar(300),
-    numeric_value      numeric(10, 0),
-    description        varchar(250),
-    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user        integer           NOT NULL,
-    update_date        timestamptz(6),
-    update_user        integer,
-    revision_count     integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK142" PRIMARY KEY (id)
+    system_constant_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    constant_name         varchar(50)       NOT NULL,
+    character_value       varchar(300),
+    numeric_value         numeric(10, 0),
+    description           varchar(250),
+    create_date           timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user           integer           NOT NULL,
+    update_date           timestamptz(6),
+    update_user           integer,
+    revision_count        integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT system_constant_pk PRIMARY KEY (system_constant_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN system_constant.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_constant.system_constant_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN system_constant.constant_name IS 'The lookup name of the constant.'
 ;
@@ -1873,7 +1875,7 @@ COMMENT ON TABLE system_constant IS 'A list of system constants necessary for sy
 --
 
 CREATE TABLE system_role(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    system_role_id           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                     varchar(50)       NOT NULL,
     record_effective_date    date              NOT NULL,
     record_end_date          date,
@@ -1884,13 +1886,13 @@ CREATE TABLE system_role(
     update_date              timestamptz(6),
     update_user              integer,
     revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_2 PRIMARY KEY (id)
+    CONSTRAINT system_role_pk PRIMARY KEY (system_role_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN system_role.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_role.system_role_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN system_role.name IS 'The name of the record.'
 ;
@@ -1920,25 +1922,25 @@ COMMENT ON TABLE system_role IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE system_user(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    uis_id                   integer           NOT NULL,
-    user_identifier          varchar(200)      NOT NULL,
-    record_effective_date    date              NOT NULL,
-    record_end_date          date,
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_1 PRIMARY KEY (id)
+    system_user_id             integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    user_identity_source_id    integer           NOT NULL,
+    user_identifier            varchar(200)      NOT NULL,
+    record_effective_date      date              NOT NULL,
+    record_end_date            date,
+    create_date                timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                integer           NOT NULL,
+    update_date                timestamptz(6),
+    update_user                integer,
+    revision_count             integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT system_user_pk PRIMARY KEY (system_user_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN system_user.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_user.system_user_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN system_user.uis_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_user.user_identity_source_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN system_user.user_identifier IS 'The identifier of the user.'
 ;
@@ -1964,25 +1966,25 @@ COMMENT ON TABLE system_user IS 'Agency or Ministry funding the project.'
 --
 
 CREATE TABLE system_user_role(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    su_id             integer           NOT NULL,
-    sr_id             integer           NOT NULL,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk55_1_1 PRIMARY KEY (id)
+    system_user_role_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    system_user_id         integer           NOT NULL,
+    system_role_id         integer           NOT NULL,
+    create_date            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user            integer           NOT NULL,
+    update_date            timestamptz(6),
+    update_user            integer,
+    revision_count         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT system_user_role_pk PRIMARY KEY (system_user_role_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN system_user_role.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_user_role.system_user_role_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN system_user_role.su_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_user_role.system_user_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN system_user_role.sr_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN system_user_role.system_role_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN system_user_role.create_date IS 'The datetime the record was created.'
 ;
@@ -2002,24 +2004,24 @@ COMMENT ON TABLE system_user_role IS 'A associative entity that joins system use
 --
 
 CREATE TABLE user_identity_source(
-    id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                     varchar(50)       NOT NULL,
-    record_effective_date    date              NOT NULL,
-    record_end_date          date,
-    description              varchar(250),
-    notes                    varchar(3000),
-    create_date              timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user              integer           NOT NULL,
-    update_date              timestamptz(6),
-    update_user              integer,
-    revision_count           integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT pk49_1_2_1 PRIMARY KEY (id)
+    user_identity_source_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                       varchar(50)       NOT NULL,
+    record_effective_date      date              NOT NULL,
+    record_end_date            date,
+    description                varchar(250),
+    notes                      varchar(3000),
+    create_date                timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                integer           NOT NULL,
+    update_date                timestamptz(6),
+    update_user                integer,
+    revision_count             integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT user_identity_source_pk PRIMARY KEY (user_identity_source_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN user_identity_source.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN user_identity_source.user_identity_source_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN user_identity_source.name IS 'The name of the record.'
 ;
@@ -2049,25 +2051,25 @@ COMMENT ON TABLE user_identity_source IS 'The source of the user identifier. Thi
 --
 
 CREATE TABLE webform_draft(
-    id                integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    su_id             integer           NOT NULL,
-    name              varchar(300)      NOT NULL,
-    data              json              NOT NULL,
-    security_token    uuid,
-    create_date       timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user       integer           NOT NULL,
-    update_date       timestamptz(6),
-    update_user       integer,
-    revision_count    integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK143" PRIMARY KEY (id)
+    webform_draft_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    system_user_id      integer           NOT NULL,
+    name                varchar(300)      NOT NULL,
+    data                json              NOT NULL,
+    security_token      uuid,
+    create_date         timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user         integer           NOT NULL,
+    update_date         timestamptz(6),
+    update_user         integer,
+    revision_count      integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT webform_draft_pk PRIMARY KEY (webform_draft_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN webform_draft.id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN webform_draft.webform_draft_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN webform_draft.su_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN webform_draft.system_user_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN webform_draft.name IS 'The name of the draft record.'
 ;
@@ -2093,7 +2095,7 @@ COMMENT ON TABLE webform_draft IS 'A persistent store for draft webform data. Fo
 --
 
 CREATE TABLE wldtaxonomic_units(
-    id                         integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    wldtaxonomic_units_id      integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     unit_name1                 varchar(50)       NOT NULL,
     unit_name2                 varchar(50),
     unit_name3                 varchar(50),
@@ -2112,13 +2114,13 @@ CREATE TABLE wldtaxonomic_units(
     end_date                   date,
     note                       varchar(2000),
     element_subnational_id     numeric(10, 0),
-    CONSTRAINT "PK160" PRIMARY KEY (id)
+    CONSTRAINT wldtaxonomic_units_pk PRIMARY KEY (wldtaxonomic_units_id)
 )
 ;
 
 
 
-COMMENT ON COLUMN wldtaxonomic_units.id IS 'System generated UID for a taxon.'
+COMMENT ON COLUMN wldtaxonomic_units.wldtaxonomic_units_id IS 'System generated UID for a taxon.'
 ;
 COMMENT ON COLUMN wldtaxonomic_units.unit_name1 IS 'The first part of a species or taxon  name.'
 ;
@@ -2160,513 +2162,513 @@ COMMENT ON TABLE wldtaxonomic_units IS 'A table to mimic a view into SPI taxonom
 ;
 
 -- 
--- INDEX: a_nuk1 
+-- INDEX: activity_nuk1 
 --
 
-CREATE UNIQUE INDEX a_nuk1 ON activity(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX activity_nuk1 ON activity(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref14877" 
+-- INDEX: "Ref78143" 
 --
 
-CREATE INDEX "Ref14877" ON administrative_activity(aat_id)
+CREATE INDEX "Ref78143" ON administrative_activity(assigned_system_user_id)
 ;
 -- 
--- INDEX: "Ref7878" 
+-- INDEX: "Ref78144" 
 --
 
-CREATE INDEX "Ref7878" ON administrative_activity(reported_su_id)
+CREATE INDEX "Ref78144" ON administrative_activity(reported_system_user_id)
 ;
 -- 
--- INDEX: "Ref7879" 
+-- INDEX: "Ref148145" 
 --
 
-CREATE INDEX "Ref7879" ON administrative_activity(assigned_su_id)
+CREATE INDEX "Ref148145" ON administrative_activity(administrative_activity_type_id)
 ;
 -- 
--- INDEX: "Ref15280" 
+-- INDEX: "Ref152146" 
 --
 
-CREATE INDEX "Ref15280" ON administrative_activity(aast_id)
+CREATE INDEX "Ref152146" ON administrative_activity(administrative_activity_status_type_id)
 ;
 -- 
--- INDEX: aast_nuk1 
+-- INDEX: administrative_activity_status_type_nuk1 
 --
 
-CREATE UNIQUE INDEX aast_nuk1 ON administrative_activity_status_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX administrative_activity_status_type_nuk1 ON administrative_activity_status_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: aat_nuk1 
+-- INDEX: administrative_activity_type_nuk1 
 --
 
-CREATE UNIQUE INDEX aat_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX administrative_activity_type_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: cci_nuk1 
+-- INDEX: climate_change_initiative_nuk1 
 --
 
-CREATE UNIQUE INDEX cci_nuk1 ON climate_change_initiative(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX climate_change_initiative_nuk1 ON climate_change_initiative(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: cci_nuk1_1 
+-- INDEX: first_nations_nuk1 
 --
 
-CREATE UNIQUE INDEX cci_nuk1_1 ON first_nations(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX first_nations_nuk1 ON first_nations(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: fs_nuk2 
+-- INDEX: funding_source_nuk1 
 --
 
-CREATE UNIQUE INDEX fs_nuk2 ON funding_source(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX funding_source_nuk1 ON funding_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: iac_nuk1 
+-- INDEX: investment_action_category_nuk1 
 --
 
-CREATE UNIQUE INDEX iac_nuk1 ON investment_action_category(fs_id, name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX investment_action_category_nuk1 ON investment_action_category(name, record_end_date, funding_source_id)
 ;
 -- 
--- INDEX: "Ref7345" 
+-- INDEX: "Ref73136" 
 --
 
-CREATE INDEX "Ref7345" ON investment_action_category(fs_id)
+CREATE INDEX "Ref73136" ON investment_action_category(funding_source_id)
 ;
 -- 
--- INDEX: iucn_nuk1 
+-- INDEX: iucn_conservation_action_level_1_classification_nuk1 
 --
 
-CREATE UNIQUE INDEX iucn_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX iucn_conservation_action_level_1_classification_nuk1 ON iucn_conservation_action_level_1_classification(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: iucn2_nuk1 
+-- INDEX: iucn_conservation_action_level_2_subclassification_nuk1 
 --
 
-CREATE UNIQUE INDEX iucn2_nuk1 ON iucn_conservation_action_level_2_subclassification(name, record_end_date, iucn1_id)
+CREATE UNIQUE INDEX iucn_conservation_action_level_2_subclassification_nuk1 ON iucn_conservation_action_level_2_subclassification(name, record_end_date, iucn_conservation_action_level_1_classification_id)
 ;
 -- 
--- INDEX: "Ref13773" 
+-- INDEX: "Ref137121" 
 --
 
-CREATE INDEX "Ref13773" ON iucn_conservation_action_level_2_subclassification(iucn1_id)
+CREATE INDEX "Ref137121" ON iucn_conservation_action_level_2_subclassification(iucn_conservation_action_level_1_classification_id)
 ;
 -- 
--- INDEX: iucn3_nuk1 
+-- INDEX: iucn_conservation_action_level_3_subclassification_nuk1 
 --
 
-CREATE UNIQUE INDEX iucn3_nuk1 ON iucn_conservation_action_level_3_subclassification(name, iucn2_id, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX iucn_conservation_action_level_3_subclassification_nuk1 ON iucn_conservation_action_level_3_subclassification(name, record_end_date, iucn_conservation_action_level_2_subclassification_id)
 ;
 -- 
--- INDEX: "Ref13974" 
+-- INDEX: "Ref139122" 
 --
 
-CREATE INDEX "Ref13974" ON iucn_conservation_action_level_3_subclassification(iucn2_id)
+CREATE INDEX "Ref139122" ON iucn_conservation_action_level_3_subclassification(iucn_conservation_action_level_2_subclassification_id)
 ;
 -- 
--- INDEX: mat_nuk1 
+-- INDEX: management_action_type_nuk1 
 --
 
-CREATE UNIQUE INDEX mat_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX management_action_type_nuk1 ON management_action_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref165117" 
+-- INDEX: "Ref165161" 
 --
 
-CREATE INDEX "Ref165117" ON occurrence(os_id)
+CREATE INDEX "Ref165161" ON occurrence(occurrence_submission_id)
 ;
 -- 
--- INDEX: "Ref153110" 
+-- INDEX: "Ref153160" 
 --
 
-CREATE INDEX "Ref153110" ON occurrence_submission(s_id)
+CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
 ;
 -- 
--- INDEX: prm_uk1 
+-- INDEX: permit_uk1 
 --
 
-CREATE UNIQUE INDEX prm_uk1 ON permit(number)
+CREATE UNIQUE INDEX permit_uk1 ON permit(number)
 ;
 -- 
--- INDEX: "Ref4593" 
+-- INDEX: "Ref45156" 
 --
 
-CREATE INDEX "Ref4593" ON permit(p_id)
+CREATE INDEX "Ref45156" ON permit(project_id)
 ;
 -- 
--- INDEX: "Ref15394" 
+-- INDEX: "Ref153157" 
 --
 
-CREATE INDEX "Ref15394" ON permit(s_id)
+CREATE INDEX "Ref153157" ON permit(survey_id)
 ;
 -- 
--- INDEX: "Ref12852" 
+-- INDEX: "Ref128119" 
 --
 
-CREATE INDEX "Ref12852" ON project(pt_id)
+CREATE INDEX "Ref128119" ON project(project_type_id)
 ;
 -- 
--- INDEX: pa_uk1 
+-- INDEX: project_activity_uk1 
 --
 
-CREATE UNIQUE INDEX pa_uk1 ON project_activity(p_id, a_id)
+CREATE UNIQUE INDEX project_activity_uk1 ON project_activity(project_id, activity_id)
 ;
 -- 
--- INDEX: "Ref4556" 
+-- INDEX: "Ref45127" 
 --
 
-CREATE INDEX "Ref4556" ON project_activity(p_id)
+CREATE INDEX "Ref45127" ON project_activity(project_id)
 ;
 -- 
--- INDEX: "Ref13658" 
+-- INDEX: "Ref136128" 
 --
 
-CREATE INDEX "Ref13658" ON project_activity(a_id)
+CREATE INDEX "Ref136128" ON project_activity(activity_id)
 ;
 -- 
--- INDEX: pat_uk1 
+-- INDEX: project_attachment_uk1 
 --
 
-CREATE UNIQUE INDEX pat_uk1 ON project_attachment(p_id, file_name)
+CREATE UNIQUE INDEX project_attachment_uk1 ON project_attachment(file_name, project_id)
 ;
 -- 
--- INDEX: "Ref4568" 
+-- INDEX: "Ref45125" 
 --
 
-CREATE INDEX "Ref4568" ON project_attachment(p_id)
+CREATE INDEX "Ref45125" ON project_attachment(project_id)
 ;
 -- 
--- INDEX: pci_uk1 
+-- INDEX: project_climate_initiative_uk1 
 --
 
-CREATE UNIQUE INDEX pci_uk1 ON project_climate_initiative(cci_id, p_id)
+CREATE UNIQUE INDEX project_climate_initiative_uk1 ON project_climate_initiative(climate_change_initiative_id, project_id)
 ;
 -- 
--- INDEX: "Ref9536" 
+-- INDEX: "Ref95129" 
 --
 
-CREATE INDEX "Ref9536" ON project_climate_initiative(cci_id)
+CREATE INDEX "Ref95129" ON project_climate_initiative(climate_change_initiative_id)
 ;
 -- 
--- INDEX: "Ref4537" 
+-- INDEX: "Ref45130" 
 --
 
-CREATE INDEX "Ref4537" ON project_climate_initiative(p_id)
+CREATE INDEX "Ref45130" ON project_climate_initiative(project_id)
 ;
 -- 
--- INDEX: pfn_uk1 
+-- INDEX: project_first_nation_uk1 
 --
 
-CREATE UNIQUE INDEX pfn_uk1 ON project_first_nation(p_id, fn_id)
+CREATE UNIQUE INDEX project_first_nation_uk1 ON project_first_nation(first_nations_id, project_id)
 ;
 -- 
--- INDEX: "Ref4549" 
+-- INDEX: "Ref127132" 
 --
 
-CREATE INDEX "Ref4549" ON project_first_nation(p_id)
+CREATE INDEX "Ref127132" ON project_first_nation(first_nations_id)
 ;
 -- 
--- INDEX: "Ref12750" 
+-- INDEX: "Ref45133" 
 --
 
-CREATE INDEX "Ref12750" ON project_first_nation(fn_id)
+CREATE INDEX "Ref45133" ON project_first_nation(project_id)
 ;
 -- 
--- INDEX: pfs_uk1 
+-- INDEX: project_funding_source_uk1 
 --
 
-CREATE UNIQUE INDEX pfs_uk1 ON project_funding_source(p_id, funding_source_project_id, iac_id)
+CREATE UNIQUE INDEX project_funding_source_uk1 ON project_funding_source(funding_source_project_id, investment_action_category_id, project_id)
 ;
 -- 
--- INDEX: "Ref4520" 
+-- INDEX: "Ref83137" 
 --
 
-CREATE INDEX "Ref4520" ON project_funding_source(p_id)
+CREATE INDEX "Ref83137" ON project_funding_source(investment_action_category_id)
 ;
 -- 
--- INDEX: "Ref8351" 
+-- INDEX: "Ref45138" 
 --
 
-CREATE INDEX "Ref8351" ON project_funding_source(iac_id)
+CREATE INDEX "Ref45138" ON project_funding_source(project_id)
 ;
 -- 
--- INDEX: piucn_uk1 
+-- INDEX: project_iucn_action_classification_uk1 
 --
 
-CREATE UNIQUE INDEX piucn_uk1 ON project_iucn_action_classification(p_id, iucn3_id)
+CREATE UNIQUE INDEX project_iucn_action_classification_uk1 ON project_iucn_action_classification(project_id, iucn_conservation_action_level_3_subclassification_id)
 ;
 -- 
--- INDEX: "Ref4567" 
+-- INDEX: "Ref45123" 
 --
 
-CREATE INDEX "Ref4567" ON project_iucn_action_classification(p_id)
+CREATE INDEX "Ref45123" ON project_iucn_action_classification(project_id)
 ;
 -- 
--- INDEX: "Ref14075" 
+-- INDEX: "Ref140124" 
 --
 
-CREATE INDEX "Ref14075" ON project_iucn_action_classification(iucn3_id)
+CREATE INDEX "Ref140124" ON project_iucn_action_classification(iucn_conservation_action_level_3_subclassification_id)
 ;
 -- 
--- INDEX: pma_uk1 
+-- INDEX: project_management_actions_uk1 
 --
 
-CREATE UNIQUE INDEX pma_uk1 ON project_management_actions(mat_id, p_id)
+CREATE UNIQUE INDEX project_management_actions_uk1 ON project_management_actions(project_id, management_action_type_id)
 ;
 -- 
--- INDEX: "Ref9732" 
+-- INDEX: "Ref97134" 
 --
 
-CREATE INDEX "Ref9732" ON project_management_actions(mat_id)
+CREATE INDEX "Ref97134" ON project_management_actions(management_action_type_id)
 ;
 -- 
--- INDEX: "Ref4533" 
+-- INDEX: "Ref45135" 
 --
 
-CREATE INDEX "Ref4533" ON project_management_actions(p_id)
+CREATE INDEX "Ref45135" ON project_management_actions(project_id)
 ;
 -- 
--- INDEX: pp_uk1 
+-- INDEX: project_participation_uk1 
 --
 
-CREATE UNIQUE INDEX pp_uk1 ON project_participation(p_id, su_id, pr_id)
+CREATE UNIQUE INDEX project_participation_uk1 ON project_participation(project_id, system_user_id, project_role_id)
 ;
 -- 
--- INDEX: "Ref4528" 
+-- INDEX: "Ref45148" 
 --
 
-CREATE INDEX "Ref4528" ON project_participation(p_id)
+CREATE INDEX "Ref45148" ON project_participation(project_id)
 ;
 -- 
--- INDEX: "Ref7829" 
+-- INDEX: "Ref78149" 
 --
 
-CREATE INDEX "Ref7829" ON project_participation(su_id)
+CREATE INDEX "Ref78149" ON project_participation(system_user_id)
 ;
 -- 
--- INDEX: "Ref10034" 
+-- INDEX: "Ref100150" 
 --
 
-CREATE INDEX "Ref10034" ON project_participation(pr_id)
+CREATE INDEX "Ref100150" ON project_participation(project_role_id)
 ;
 -- 
--- INDEX: prr_uk1 
+-- INDEX: project_region_uk1 
 --
 
-CREATE UNIQUE INDEX prr_uk1 ON project_region(p_id, name)
+CREATE UNIQUE INDEX project_region_uk1 ON project_region(name, project_id)
 ;
 -- 
--- INDEX: "Ref4524" 
+-- INDEX: "Ref45131" 
 --
 
-CREATE INDEX "Ref4524" ON project_region(p_id)
+CREATE INDEX "Ref45131" ON project_region(project_id)
 ;
 -- 
--- INDEX: pr_nuk1 
+-- INDEX: project_role_nuk1 
 --
 
-CREATE UNIQUE INDEX pr_nuk1 ON project_role(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX project_role_nuk1 ON project_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: pt_nuk1 
+-- INDEX: project_type_nuk1 
 --
 
-CREATE UNIQUE INDEX pt_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX project_type_nuk1 ON project_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: prt_nuk1 
+-- INDEX: proprietor_type_nuk1 
 --
 
-CREATE UNIQUE INDEX prt_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX proprietor_type_nuk1 ON proprietor_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: sp_uk1 
+-- INDEX: stakeholder_partnership_uk1 
 --
 
-CREATE UNIQUE INDEX sp_uk1 ON stakeholder_partnership(name, p_id)
+CREATE UNIQUE INDEX stakeholder_partnership_uk1 ON stakeholder_partnership(name, project_id)
 ;
 -- 
--- INDEX: "Ref4539" 
+-- INDEX: "Ref45126" 
 --
 
-CREATE INDEX "Ref4539" ON stakeholder_partnership(p_id)
+CREATE INDEX "Ref45126" ON stakeholder_partnership(project_id)
 ;
 -- 
--- INDEX: ss_uk2 
+-- INDEX: study_species_uk1 
 --
 
-CREATE UNIQUE INDEX ss_uk2 ON study_species(s_id, wu_id)
+CREATE UNIQUE INDEX study_species_uk1 ON study_species(survey_id, wldtaxonomic_units_id)
 ;
 -- 
--- INDEX: "Ref15390" 
+-- INDEX: "Ref153158" 
 --
 
-CREATE INDEX "Ref15390" ON study_species(s_id)
+CREATE INDEX "Ref153158" ON study_species(survey_id)
 ;
 -- 
--- INDEX: "Ref16091" 
+-- INDEX: "Ref160159" 
 --
 
-CREATE INDEX "Ref16091" ON study_species(wu_id)
+CREATE INDEX "Ref160159" ON study_species(wldtaxonomic_units_id)
 ;
 -- 
--- INDEX: "Ref182113" 
+-- INDEX: "Ref184166" 
 --
 
-CREATE INDEX "Ref182113" ON submission_message(smt_id)
+CREATE INDEX "Ref184166" ON submission_message(submission_status_id)
 ;
 -- 
--- INDEX: "Ref184118" 
+-- INDEX: "Ref182167" 
 --
 
-CREATE INDEX "Ref184118" ON submission_message(subs_id)
+CREATE INDEX "Ref182167" ON submission_message(submission_message_type_id)
 ;
 -- 
--- INDEX: smt_nuk1 
+-- INDEX: submission_message_type_nuk1 
 --
 
-CREATE UNIQUE INDEX smt_nuk1 ON submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX submission_message_type_nuk1 ON submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref165114" 
+-- INDEX: "Ref165163" 
 --
 
-CREATE INDEX "Ref165114" ON submission_status(os_id)
+CREATE INDEX "Ref165163" ON submission_status(occurrence_submission_id)
 ;
 -- 
--- INDEX: "Ref183115" 
+-- INDEX: "Ref183164" 
 --
 
-CREATE INDEX "Ref183115" ON submission_status(sst_id)
+CREATE INDEX "Ref183164" ON submission_status(submission_status_type_id)
 ;
 -- 
--- INDEX: sst_nuk1 
+-- INDEX: submission_status_type_nuk1 
 --
 
-CREATE UNIQUE INDEX sst_nuk1 ON submission_status_type(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX submission_status_type_nuk1 ON submission_status_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref4581" 
+-- INDEX: "Ref45147" 
 --
 
-CREATE INDEX "Ref4581" ON survey(p_id)
+CREATE INDEX "Ref45147" ON survey(project_id)
 ;
 -- 
--- INDEX: "Ref15386" 
+-- INDEX: "Ref153168" 
 --
 
-CREATE INDEX "Ref15386" ON survey_attachment(s_id)
+CREATE INDEX "Ref153168" ON survey_attachment(survey_id)
 ;
 -- 
--- INDEX: sfs_nuk1 
+-- INDEX: survey_funding_source_uk1 
 --
 
-CREATE UNIQUE INDEX sfs_nuk1 ON survey_funding_source(pfs_id, s_id)
+CREATE UNIQUE INDEX survey_funding_source_uk1 ON survey_funding_source(project_funding_source_id, survey_id)
 ;
 -- 
--- INDEX: "Ref7487" 
+-- INDEX: "Ref74151" 
 --
 
-CREATE INDEX "Ref7487" ON survey_funding_source(pfs_id)
+CREATE INDEX "Ref74151" ON survey_funding_source(project_funding_source_id)
 ;
 -- 
--- INDEX: "Ref15388" 
+-- INDEX: "Ref153152" 
 --
 
-CREATE INDEX "Ref15388" ON survey_funding_source(s_id)
+CREATE INDEX "Ref153152" ON survey_funding_source(survey_id)
 ;
 -- 
--- INDEX: "Ref15983" 
+-- INDEX: "Ref159153" 
 --
 
-CREATE INDEX "Ref15983" ON survey_proprietor(prt_id)
+CREATE INDEX "Ref159153" ON survey_proprietor(proprietor_type_id)
 ;
 -- 
--- INDEX: "Ref15384" 
+-- INDEX: "Ref153154" 
 --
 
-CREATE INDEX "Ref15384" ON survey_proprietor(s_id)
+CREATE INDEX "Ref153154" ON survey_proprietor(survey_id)
 ;
 -- 
--- INDEX: "Ref12785" 
+-- INDEX: "Ref127155" 
 --
 
-CREATE INDEX "Ref12785" ON survey_proprietor(fn_id)
+CREATE INDEX "Ref127155" ON survey_proprietor(first_nations_id)
 ;
 -- 
--- INDEX: sc_uk1 
+-- INDEX: system_constant_uk1 
 --
 
-CREATE UNIQUE INDEX sc_uk1 ON system_constant(constant_name)
+CREATE UNIQUE INDEX system_constant_uk1 ON system_constant(constant_name)
 ;
 -- 
--- INDEX: sr_nuk1 
+-- INDEX: system_role_nuk1 
 --
 
-CREATE UNIQUE INDEX sr_nuk1 ON system_role(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX system_role_nuk1 ON system_role(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: su_nuk1 
+-- INDEX: system_user_nuk1 
 --
 
-CREATE UNIQUE INDEX su_nuk1 ON system_user(user_identifier, uis_id, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX system_user_nuk1 ON system_user(user_identifier, record_end_date, user_identity_source_id)
 ;
 -- 
--- INDEX: "Ref12041" 
+-- INDEX: "Ref120120" 
 --
 
-CREATE INDEX "Ref12041" ON system_user(uis_id)
+CREATE INDEX "Ref120120" ON system_user(user_identity_source_id)
 ;
 -- 
--- INDEX: sur_uk1 
+-- INDEX: system_user_role_uk1 
 --
 
-CREATE UNIQUE INDEX sur_uk1 ON system_user_role(su_id, sr_id)
+CREATE UNIQUE INDEX system_user_role_uk1 ON system_user_role(system_user_id, system_role_id)
 ;
 -- 
--- INDEX: "Ref7821" 
+-- INDEX: "Ref78139" 
 --
 
-CREATE INDEX "Ref7821" ON system_user_role(su_id)
+CREATE INDEX "Ref78139" ON system_user_role(system_user_id)
 ;
 -- 
--- INDEX: "Ref7922" 
+-- INDEX: "Ref79140" 
 --
 
-CREATE INDEX "Ref7922" ON system_user_role(sr_id)
+CREATE INDEX "Ref79140" ON system_user_role(system_role_id)
 ;
 -- 
--- INDEX: uis_nuk1 
+-- INDEX: user_identity_source_nuk1 
 --
 
-CREATE UNIQUE INDEX uis_nuk1 ON user_identity_source(name, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX user_identity_source_nuk1 ON user_identity_source(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: "Ref7876" 
+-- INDEX: "Ref78141" 
 --
 
-CREATE INDEX "Ref7876" ON webform_draft(su_id)
+CREATE INDEX "Ref78141" ON webform_draft(system_user_id)
 ;
 -- 
 -- TABLE: administrative_activity 
 --
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type77" 
-    FOREIGN KEY (aat_id)
-    REFERENCES administrative_activity_type(id)
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user143" 
+    FOREIGN KEY (assigned_system_user_id)
+    REFERENCES system_user(system_user_id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user78" 
-    FOREIGN KEY (reported_su_id)
-    REFERENCES system_user(id)
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user144" 
+    FOREIGN KEY (reported_system_user_id)
+    REFERENCES system_user(system_user_id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refsystem_user79" 
-    FOREIGN KEY (assigned_su_id)
-    REFERENCES system_user(id)
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_type145" 
+    FOREIGN KEY (administrative_activity_type_id)
+    REFERENCES administrative_activity_type(administrative_activity_type_id)
 ;
 
-ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type80" 
-    FOREIGN KEY (aast_id)
-    REFERENCES administrative_activity_status_type(id)
+ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type146" 
+    FOREIGN KEY (administrative_activity_status_type_id)
+    REFERENCES administrative_activity_status_type(administrative_activity_status_type_id)
 ;
 
 
@@ -2674,9 +2676,9 @@ ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_s
 -- TABLE: investment_action_category 
 --
 
-ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source45" 
-    FOREIGN KEY (fs_id)
-    REFERENCES funding_source(id)
+ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source136" 
+    FOREIGN KEY (funding_source_id)
+    REFERENCES funding_source(funding_source_id)
 ;
 
 
@@ -2684,9 +2686,9 @@ ALTER TABLE investment_action_category ADD CONSTRAINT "Reffunding_source45"
 -- TABLE: iucn_conservation_action_level_2_subclassification 
 --
 
-ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification73" 
-    FOREIGN KEY (iucn1_id)
-    REFERENCES iucn_conservation_action_level_1_classification(id)
+ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_1_classification121" 
+    FOREIGN KEY (iucn_conservation_action_level_1_classification_id)
+    REFERENCES iucn_conservation_action_level_1_classification(iucn_conservation_action_level_1_classification_id)
 ;
 
 
@@ -2694,9 +2696,9 @@ ALTER TABLE iucn_conservation_action_level_2_subclassification ADD CONSTRAINT "R
 -- TABLE: iucn_conservation_action_level_3_subclassification 
 --
 
-ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification74" 
-    FOREIGN KEY (iucn2_id)
-    REFERENCES iucn_conservation_action_level_2_subclassification(id)
+ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "Refiucn_conservation_action_level_2_subclassification122" 
+    FOREIGN KEY (iucn_conservation_action_level_2_subclassification_id)
+    REFERENCES iucn_conservation_action_level_2_subclassification(iucn_conservation_action_level_2_subclassification_id)
 ;
 
 
@@ -2704,9 +2706,9 @@ ALTER TABLE iucn_conservation_action_level_3_subclassification ADD CONSTRAINT "R
 -- TABLE: occurrence 
 --
 
-ALTER TABLE occurrence ADD CONSTRAINT "Refoccurrence_submission117" 
-    FOREIGN KEY (os_id)
-    REFERENCES occurrence_submission(id)
+ALTER TABLE occurrence ADD CONSTRAINT "Refoccurrence_submission161" 
+    FOREIGN KEY (occurrence_submission_id)
+    REFERENCES occurrence_submission(occurrence_submission_id)
 ;
 
 
@@ -2714,9 +2716,9 @@ ALTER TABLE occurrence ADD CONSTRAINT "Refoccurrence_submission117"
 -- TABLE: occurrence_submission 
 --
 
-ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey110" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
 
@@ -2724,14 +2726,14 @@ ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey110"
 -- TABLE: permit 
 --
 
-ALTER TABLE permit ADD CONSTRAINT "Refproject93" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE permit ADD CONSTRAINT "Refproject156" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
-ALTER TABLE permit ADD CONSTRAINT "Refsurvey94" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE permit ADD CONSTRAINT "Refsurvey157" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
 
@@ -2739,9 +2741,9 @@ ALTER TABLE permit ADD CONSTRAINT "Refsurvey94"
 -- TABLE: project 
 --
 
-ALTER TABLE project ADD CONSTRAINT "Refproject_type52" 
-    FOREIGN KEY (pt_id)
-    REFERENCES project_type(id)
+ALTER TABLE project ADD CONSTRAINT "Refproject_type119" 
+    FOREIGN KEY (project_type_id)
+    REFERENCES project_type(project_type_id)
 ;
 
 
@@ -2749,14 +2751,14 @@ ALTER TABLE project ADD CONSTRAINT "Refproject_type52"
 -- TABLE: project_activity 
 --
 
-ALTER TABLE project_activity ADD CONSTRAINT "Refproject56" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_activity ADD CONSTRAINT "Refproject127" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
-ALTER TABLE project_activity ADD CONSTRAINT "Refactivity58" 
-    FOREIGN KEY (a_id)
-    REFERENCES activity(id)
+ALTER TABLE project_activity ADD CONSTRAINT "Refactivity128" 
+    FOREIGN KEY (activity_id)
+    REFERENCES activity(activity_id)
 ;
 
 
@@ -2764,9 +2766,9 @@ ALTER TABLE project_activity ADD CONSTRAINT "Refactivity58"
 -- TABLE: project_attachment 
 --
 
-ALTER TABLE project_attachment ADD CONSTRAINT "Refproject68" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_attachment ADD CONSTRAINT "Refproject125" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2774,14 +2776,14 @@ ALTER TABLE project_attachment ADD CONSTRAINT "Refproject68"
 -- TABLE: project_climate_initiative 
 --
 
-ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refclimate_change_initiative36" 
-    FOREIGN KEY (cci_id)
-    REFERENCES climate_change_initiative(id)
+ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refclimate_change_initiative129" 
+    FOREIGN KEY (climate_change_initiative_id)
+    REFERENCES climate_change_initiative(climate_change_initiative_id)
 ;
 
-ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refproject37" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refproject130" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2789,14 +2791,14 @@ ALTER TABLE project_climate_initiative ADD CONSTRAINT "Refproject37"
 -- TABLE: project_first_nation 
 --
 
-ALTER TABLE project_first_nation ADD CONSTRAINT "Refproject49" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations132" 
+    FOREIGN KEY (first_nations_id)
+    REFERENCES first_nations(first_nations_id)
 ;
 
-ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50" 
-    FOREIGN KEY (fn_id)
-    REFERENCES first_nations(id)
+ALTER TABLE project_first_nation ADD CONSTRAINT "Refproject133" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2804,14 +2806,14 @@ ALTER TABLE project_first_nation ADD CONSTRAINT "Reffirst_nations50"
 -- TABLE: project_funding_source 
 --
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject20" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category137" 
+    FOREIGN KEY (investment_action_category_id)
+    REFERENCES investment_action_category(investment_action_category_id)
 ;
 
-ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category51" 
-    FOREIGN KEY (iac_id)
-    REFERENCES investment_action_category(id)
+ALTER TABLE project_funding_source ADD CONSTRAINT "Refproject138" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2819,14 +2821,14 @@ ALTER TABLE project_funding_source ADD CONSTRAINT "Refinvestment_action_category
 -- TABLE: project_iucn_action_classification 
 --
 
-ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refproject67" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refproject123" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
-ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification75" 
-    FOREIGN KEY (iucn3_id)
-    REFERENCES iucn_conservation_action_level_3_subclassification(id)
+ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservation_action_level_3_subclassification124" 
+    FOREIGN KEY (iucn_conservation_action_level_3_subclassification_id)
+    REFERENCES iucn_conservation_action_level_3_subclassification(iucn_conservation_action_level_3_subclassification_id)
 ;
 
 
@@ -2834,14 +2836,14 @@ ALTER TABLE project_iucn_action_classification ADD CONSTRAINT "Refiucn_conservat
 -- TABLE: project_management_actions 
 --
 
-ALTER TABLE project_management_actions ADD CONSTRAINT "Refmanagement_action_type32" 
-    FOREIGN KEY (mat_id)
-    REFERENCES management_action_type(id)
+ALTER TABLE project_management_actions ADD CONSTRAINT "Refmanagement_action_type134" 
+    FOREIGN KEY (management_action_type_id)
+    REFERENCES management_action_type(management_action_type_id)
 ;
 
-ALTER TABLE project_management_actions ADD CONSTRAINT "Refproject33" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_management_actions ADD CONSTRAINT "Refproject135" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2849,19 +2851,19 @@ ALTER TABLE project_management_actions ADD CONSTRAINT "Refproject33"
 -- TABLE: project_participation 
 --
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refproject28" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_participation ADD CONSTRAINT "Refproject148" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user29" 
-    FOREIGN KEY (su_id)
-    REFERENCES system_user(id)
+ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user149" 
+    FOREIGN KEY (system_user_id)
+    REFERENCES system_user(system_user_id)
 ;
 
-ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34" 
-    FOREIGN KEY (pr_id)
-    REFERENCES project_role(id)
+ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role150" 
+    FOREIGN KEY (project_role_id)
+    REFERENCES project_role(project_role_id)
 ;
 
 
@@ -2869,9 +2871,9 @@ ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role34"
 -- TABLE: project_region 
 --
 
-ALTER TABLE project_region ADD CONSTRAINT "Refproject24" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE project_region ADD CONSTRAINT "Refproject131" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2879,9 +2881,9 @@ ALTER TABLE project_region ADD CONSTRAINT "Refproject24"
 -- TABLE: stakeholder_partnership 
 --
 
-ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject126" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2889,14 +2891,14 @@ ALTER TABLE stakeholder_partnership ADD CONSTRAINT "Refproject39"
 -- TABLE: study_species 
 --
 
-ALTER TABLE study_species ADD CONSTRAINT "Refsurvey90" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE study_species ADD CONSTRAINT "Refsurvey158" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
-ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91" 
-    FOREIGN KEY (wu_id)
-    REFERENCES wldtaxonomic_units(id)
+ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units159" 
+    FOREIGN KEY (wldtaxonomic_units_id)
+    REFERENCES wldtaxonomic_units(wldtaxonomic_units_id)
 ;
 
 
@@ -2904,14 +2906,14 @@ ALTER TABLE study_species ADD CONSTRAINT "Refwldtaxonomic_units91"
 -- TABLE: submission_message 
 --
 
-ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_message_type113" 
-    FOREIGN KEY (smt_id)
-    REFERENCES submission_message_type(id)
+ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_status166" 
+    FOREIGN KEY (submission_status_id)
+    REFERENCES submission_status(submission_status_id)
 ;
 
-ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_status118" 
-    FOREIGN KEY (subs_id)
-    REFERENCES submission_status(id)
+ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_message_type167" 
+    FOREIGN KEY (submission_message_type_id)
+    REFERENCES submission_message_type(submission_message_type_id)
 ;
 
 
@@ -2919,14 +2921,14 @@ ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_status118"
 -- TABLE: submission_status 
 --
 
-ALTER TABLE submission_status ADD CONSTRAINT "Refoccurrence_submission114" 
-    FOREIGN KEY (os_id)
-    REFERENCES occurrence_submission(id)
+ALTER TABLE submission_status ADD CONSTRAINT "Refoccurrence_submission163" 
+    FOREIGN KEY (occurrence_submission_id)
+    REFERENCES occurrence_submission(occurrence_submission_id)
 ;
 
-ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type115" 
-    FOREIGN KEY (sst_id)
-    REFERENCES submission_status_type(id)
+ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type164" 
+    FOREIGN KEY (submission_status_type_id)
+    REFERENCES submission_status_type(submission_status_type_id)
 ;
 
 
@@ -2934,9 +2936,9 @@ ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type115"
 -- TABLE: survey 
 --
 
-ALTER TABLE survey ADD CONSTRAINT "Refproject81" 
-    FOREIGN KEY (p_id)
-    REFERENCES project(id)
+ALTER TABLE survey ADD CONSTRAINT "Refproject147" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -2944,9 +2946,9 @@ ALTER TABLE survey ADD CONSTRAINT "Refproject81"
 -- TABLE: survey_attachment 
 --
 
-ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey86" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey168" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
 
@@ -2954,14 +2956,14 @@ ALTER TABLE survey_attachment ADD CONSTRAINT "Refsurvey86"
 -- TABLE: survey_funding_source 
 --
 
-ALTER TABLE survey_funding_source ADD CONSTRAINT "Refproject_funding_source87" 
-    FOREIGN KEY (pfs_id)
-    REFERENCES project_funding_source(id)
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refproject_funding_source151" 
+    FOREIGN KEY (project_funding_source_id)
+    REFERENCES project_funding_source(project_funding_source_id)
 ;
 
-ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey152" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
 
@@ -2969,19 +2971,19 @@ ALTER TABLE survey_funding_source ADD CONSTRAINT "Refsurvey88"
 -- TABLE: survey_proprietor 
 --
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Refproprietor_type83" 
-    FOREIGN KEY (prt_id)
-    REFERENCES proprietor_type(id)
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refproprietor_type153" 
+    FOREIGN KEY (proprietor_type_id)
+    REFERENCES proprietor_type(proprietor_type_id)
 ;
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey84" 
-    FOREIGN KEY (s_id)
-    REFERENCES survey(id)
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Refsurvey154" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
-ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85" 
-    FOREIGN KEY (fn_id)
-    REFERENCES first_nations(id)
+ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations155" 
+    FOREIGN KEY (first_nations_id)
+    REFERENCES first_nations(first_nations_id)
 ;
 
 
@@ -2989,9 +2991,9 @@ ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations85"
 -- TABLE: system_user 
 --
 
-ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source41" 
-    FOREIGN KEY (uis_id)
-    REFERENCES user_identity_source(id)
+ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source120" 
+    FOREIGN KEY (user_identity_source_id)
+    REFERENCES user_identity_source(user_identity_source_id)
 ;
 
 
@@ -2999,14 +3001,14 @@ ALTER TABLE system_user ADD CONSTRAINT "Refuser_identity_source41"
 -- TABLE: system_user_role 
 --
 
-ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user21" 
-    FOREIGN KEY (su_id)
-    REFERENCES system_user(id)
+ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user139" 
+    FOREIGN KEY (system_user_id)
+    REFERENCES system_user(system_user_id)
 ;
 
-ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role22" 
-    FOREIGN KEY (sr_id)
-    REFERENCES system_role(id)
+ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role140" 
+    FOREIGN KEY (system_role_id)
+    REFERENCES system_role(system_role_id)
 ;
 
 
@@ -3014,9 +3016,9 @@ ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role22"
 -- TABLE: webform_draft 
 --
 
-ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user76" 
-    FOREIGN KEY (su_id)
-    REFERENCES system_user(id)
+ALTER TABLE webform_draft ADD CONSTRAINT "Refsystem_user141" 
+    FOREIGN KEY (system_user_id)
+    REFERENCES system_user(system_user_id)
 ;
 
 

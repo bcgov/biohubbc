@@ -20,7 +20,7 @@ export const postDraftSQL = (systemUserId: number, name: string, data: unknown):
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO webform_draft (
-      su_id,
+      system_user_id,
       name,
       data
     ) VALUES (
@@ -29,7 +29,7 @@ export const postDraftSQL = (systemUserId: number, name: string, data: unknown):
       ${data}
     )
     RETURNING
-      id,
+      webform_draft_id as id,
       create_date::timestamptz,
       update_date::timestamptz;
   `;
@@ -66,9 +66,9 @@ export const putDraftSQL = (id: number, name: string, data: unknown): SQLStateme
       name = ${name},
       data = ${data}
     WHERE
-      id = ${id}
+      webform_draft_id = ${id}
     RETURNING
-      id,
+      webform_draft_id as id,
       create_date::timestamptz,
       update_date::timestamptz;
   `;
@@ -98,12 +98,12 @@ export const getDraftsSQL = (systemUserId: number): SQLStatement | null => {
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      webform_draft_id as id,
       name
     FROM
       webform_draft
     WHERE
-      su_id = ${systemUserId};
+      system_user_id = ${systemUserId};
   `;
 
   defaultLog.debug({
@@ -131,13 +131,13 @@ export const getDraftSQL = (draftId: number): SQLStatement | null => {
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      webform_draft_id as id,
       name,
       data
     FROM
       webform_draft
     WHERE
-      id = ${draftId};
+      webform_draft_id = ${draftId};
   `;
 
   defaultLog.debug({
@@ -165,7 +165,7 @@ export const deleteDraftSQL = (draftId: number): SQLStatement | null => {
 
   const sqlStatement: SQLStatement = SQL`
     DELETE from webform_draft
-    WHERE id = ${draftId};
+    WHERE webform_draft_id = ${draftId};
   `;
 
   defaultLog.debug({

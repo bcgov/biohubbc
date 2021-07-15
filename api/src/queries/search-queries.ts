@@ -14,7 +14,7 @@ export const getSpatialSearchResultsSQL = (): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      p.id,
+      p.project_id as id,
       p.name,
       p.objectives,
       public.ST_asGeoJSON(p.geography) as geometry

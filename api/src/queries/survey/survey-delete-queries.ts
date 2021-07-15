@@ -132,9 +132,9 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
     DELETE
       from survey_proprietor
     WHERE
-      id = ${surveyProprietorId}
+      survey_proprietor_id = ${surveyProprietorId}
     AND
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
   `;
 
   defaultLog.debug({
