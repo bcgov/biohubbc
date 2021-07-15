@@ -41,7 +41,7 @@ export const postPermitNoSamplingSQL = (
         ${noSamplePermit.coordinator_agency}
       )
       RETURNING
-        id;
+        permit_id as id;
     `;
 
   defaultLog.debug({

@@ -26,29 +26,29 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 
   const sqlStatement = SQL`
     SELECT
-      ical1c.id as classification,
-      ical2s.id as subClassification1,
-      ical3s.id as subClassification2
+      ical1c.iucn_conservation_action_level_1_classification_id as classification,
+      ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
+      ical3s.iucn_conservation_action_level_3_subclassification_id as subClassification2
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
       iucn_conservation_action_level_3_subclassification as ical3s
     ON
-      piac.iucn3_id = ical3s.id
+      piac.iucn_conservation_action_level_3_subclassification_id = ical3s.iucn_conservation_action_level_3_subclassification_id
     LEFT OUTER JOIN
       iucn_conservation_action_level_2_subclassification as ical2s
     ON
-      ical3s.iucn2_id = ical2s.id
+      ical3s.iucn_conservation_action_level_2_subclassification_id = ical2s.iucn_conservation_action_level_2_subclassification_id
     LEFT OUTER JOIN
       iucn_conservation_action_level_1_classification as ical1c
     ON
-      ical2s.iucn1_id = ical1c.id
+      ical2s.iucn_conservation_action_level_1_classification_id = ical1c.iucn_conservation_action_level_1_classification_id
     WHERE
-      piac.p_id = ${projectId}
+      piac.project_id = ${projectId}
     GROUP BY
-      ical2s.id,
-      ical1c.id,
-      ical3s.id;
+      ical1c.iucn_conservation_action_level_1_classification_id,
+      ical2s.iucn_conservation_action_level_2_subclassification_id,
+      ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
 
   defaultLog.debug({
@@ -75,17 +75,13 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   const sqlStatement = SQL`
     SELECT
-      fn.id
+      project_first_nation_id as id
     FROM
       project_first_nation pfn
-    LEFT OUTER JOIN
-      first_nations fn
-    ON
-      pfn.fn_id = fn.id
     WHERE
-      pfn.p_id = ${projectId}
+      pfn.project_id = ${projectId}
     GROUP BY
-      fn.id;
+      project_first_nation_id;
   `;
 
   defaultLog.debug({
@@ -117,7 +113,7 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
     FROM
       permit
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -153,7 +149,7 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
     FROM
       project
     WHERE
-      id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -182,14 +178,14 @@ export const getProjectByProjectSQL = (projectId: number): SQLStatement | null =
   const sqlStatement = SQL`
     SELECT
       name,
-      pt_id,
+      project_type_id as pt_id,
       start_date,
       end_date,
       revision_count
     FROM
       project
     WHERE
-      id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -241,7 +237,7 @@ export const putProjectSQL = (
   const sqlSetStatements: SQLStatement[] = [];
 
   if (project) {
-    sqlSetStatements.push(SQL`pt_id = ${project.type}`);
+    sqlSetStatements.push(SQL`project_type_id = ${project.type}`);
     sqlSetStatements.push(SQL`name = ${project.name}`);
     sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
     sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
@@ -295,7 +291,7 @@ export const putProjectSQL = (
 
   sqlStatement.append(SQL`
     WHERE
-      id = ${projectId}
+      project_id = ${projectId}
     AND
       revision_count = ${revision_count};
   `);
@@ -331,7 +327,7 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
     FROM
       project
     WHERE
-      id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -345,7 +341,7 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
 };
 
 /**
- * SQL query to put (insert) a project funding source row with incremented revision count.
+ * SQL query to put (insert) a project funding source row.
  *
  * @param {PutFundingSource} fundingSource
  * @returns {SQLStatement} sql query object
@@ -362,24 +358,22 @@ export const putProjectFundingSourceSQL = (
 
   const sqlStatement: SQLStatement = SQL`
       INSERT INTO project_funding_source (
-        p_id,
-        iac_id,
+        project_id,
+        investment_action_category_id,
         funding_source_project_id,
         funding_amount,
         funding_start_date,
-        funding_end_date,
-        revision_count
+        funding_end_date
       ) VALUES (
         ${projectId},
         ${fundingSource.investment_action_category},
         ${fundingSource.agency_project_id},
         ${fundingSource.funding_amount},
         ${fundingSource.start_date},
-        ${fundingSource.end_date},
-        ${fundingSource.revision_count + 1}
+        ${fundingSource.end_date}
       )
       RETURNING
-        id;
+        project_funding_source_id as id;
     `;
 
   defaultLog.debug({
@@ -410,14 +404,14 @@ export const updateProjectPublishStatusSQL = (projectId: number, publish: boolea
 
   if (publish === true) {
     sqlStatement.append(SQL`
-    now() WHERE publish_timestamp IS NULL AND id = ${projectId}
+    now() WHERE publish_timestamp IS NULL AND project_id = ${projectId}
     `);
   } else {
     sqlStatement.append(SQL`
-      null WHERE id = ${projectId}
+      null WHERE project_id = ${projectId}
     `);
   }
-  sqlStatement.append(SQL` RETURNING id;`);
+  sqlStatement.append(SQL` RETURNING project_id as id;`);
 
   defaultLog.debug({
     label: 'updateProjectPublishStatusSQL',

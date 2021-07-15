@@ -22,7 +22,7 @@ export const getBlockObservationListSQL = (surveyId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      id,
+      block_observation_id,
       b_id,
       observation_cnt,
       start_datetime,
@@ -30,7 +30,7 @@ export const getBlockObservationListSQL = (surveyId: number): SQLStatement | nul
     FROM
       block_observation
     WHERE
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({

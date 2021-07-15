@@ -270,7 +270,6 @@ describe('putProjectFundingSourceSQL', () => {
       expect(response?.values).to.deep.include(10000);
       expect(response?.values).to.deep.include('2020-02-02');
       expect(response?.values).to.deep.include('2020-03-02');
-      expect(response?.values).to.deep.include(12);
     });
   });
 });

@@ -18,24 +18,24 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
 
   const sqlStatement = SQL`
     SELECT
-      su.id,
+      su.system_user_id as id,
       su.user_identifier,
-      array_remove(array_agg(sr.id), NULL) AS role_ids,
+      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN
       system_user_role sur
     ON
-      su.id = sur.su_id
+      su.system_user_id = sur.system_user_id
     LEFT JOIN
       system_role sr
     ON
-      sur.sr_id = sr.id
+      sur.system_role_id = sr.system_role_id
     WHERE
       su.user_identifier = ${userIdentifier}
     GROUP BY
-      su.id,
+      su.system_user_id,
       su.user_identifier;
   `;
 
@@ -64,24 +64,24 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      su.id,
+      su.system_user_id as id,
       su.user_identifier,
-      array_remove(array_agg(sr.id), NULL) AS role_ids,
+      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN
       system_user_role sur
     ON
-      su.id = sur.su_id
+      su.system_user_id = sur.system_user_id
     LEFT JOIN
       system_role sr
     ON
-      sur.sr_id = sr.id
+      sur.system_role_id = sr.system_role_id
     WHERE
-      su.id = ${userId}
+      su.system_user_id = ${userId}
     GROUP BY
-      su.id,
+      su.system_user_id,
       su.user_identifier;
   `;
 
@@ -105,22 +105,22 @@ export const getUserListSQL = (): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      su.id,
+      su.system_user_id as id,
       su.user_identifier,
-      array_remove(array_agg(sr.id), NULL) AS role_ids,
+      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
       system_user su
     LEFT JOIN
       system_user_role sur
     ON
-      su.id = sur.su_id
+      su.system_user_id = sur.system_user_id
     LEFT JOIN
       system_role sr
     ON
-      sur.sr_id = sr.id
+      sur.system_role_id = sr.system_role_id
     GROUP BY
-      su.id,
+      su.system_user_id,
       su.user_identifier;
   `;
 
@@ -161,19 +161,19 @@ export const addSystemUserSQL = (
 
   const sqlStatement = SQL`
     INSERT INTO system_user (
-      uis_id,
+      user_identity_source_id,
       user_identifier,
       record_effective_date,
       create_user
     ) VALUES (
-      (Select id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
+      (Select user_identity_source_id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
       ${userIdentifier},
       now(),
       ${systemUserId}
     )
     RETURNING
-      id,
-      uis_id,
+      system_user_id as id,
+      user_identity_source_id,
       user_identifier,
       record_effective_date;
   `;

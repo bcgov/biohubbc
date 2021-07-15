@@ -18,12 +18,7 @@ const systemUsers = [
   { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
   { identifier: 'sdevalap', type: 'IDIR', roleId: 1 },
   { identifier: 'test1', type: 'BCEID', roleId: 1 }, //16
-  { identifier: 'test2', type: 'BCEID', roleId: 4 }, //17
   { identifier: 'test3', type: 'IDIR', roleId: 1 }, //18
-  { identifier: 'test4', type: 'IDIR', roleId: 2 }, //19
-  { identifier: 'test5', type: 'IDIR', roleId: 3 }, //20
-  { identifier: 'test6', type: 'IDIR', roleId: 4 }, //21
-  { identifier: 'test7', type: 'IDIR', roleId: 4 }, //22
   { identifier: 'cypress', type: 'IDIR', roleId: 1 } //23
 ];
 
@@ -81,18 +76,18 @@ const getSystemUserSQL = (userIdentifier: string) => `
  */
 const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
   INSERT INTO system_user (
-    uis_id,
+    user_identity_source_id,
     user_identifier,
     record_effective_date,
     create_date,
     create_user
   )
   SELECT
-    id,
+    user_identity_source_id,
     '${userIdentifier}',
     now(),
     now(),
-    (SELECT id from system_user where user_identifier = '${DB_ADMIN}')
+    (SELECT system_user_id from system_user where user_identifier = '${DB_ADMIN}')
   FROM
     user_identity_source
   WHERE
@@ -109,10 +104,10 @@ const insertSystemUserSQL = (userIdentifier: string, userType: string) => `
  */
 const insertSystemUserRoleSQL = (userIdentifier: string, roleId: number) => `
  INSERT INTO system_user_role (
-   su_id,
-   sr_id
+   system_user_id,
+   system_role_id
  ) VALUES (
-   (SELECT id from system_user where user_identifier = '${userIdentifier}'),
+   (SELECT system_user_id from system_user where user_identifier = '${userIdentifier}'),
    ${roleId}
  );
 `;

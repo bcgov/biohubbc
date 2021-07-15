@@ -1,11 +1,10 @@
 -- api_get_context_system_user_role_id.sql
 
-CREATE OR REPLACE FUNCTION api_get_context_system_user_role_id(
-	)
+CREATE OR REPLACE FUNCTION api_get_context_system_user_role_id()
     RETURNS integer
     LANGUAGE 'plpgsql'
     COST 100
-    VOLATILE PARALLEL UNSAFE
+    stable
 AS $$
 -- *******************************************************************
 -- Procedure: api_get_context_system_user_role_id
@@ -19,10 +18,10 @@ AS $$
 --                  2021-06-03  initial release
 -- *******************************************************************
 declare
-  v_system_role_id system_user_role.sr_id%type;
+  _system_role_id system_user_role.system_role_id%type;
 begin
-  select value::integer into v_system_role_id from biohub_context_temp where tag = 'system_user_role_id';
+  select value::integer into _system_role_id from biohub_context_temp where tag = 'system_user_role_id';
 
-  return v_system_role_id;
+  return _system_role_id;
 end;
 $$;
