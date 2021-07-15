@@ -28,7 +28,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     SELECT
       ical1c.iucn_conservation_action_level_1_classification_id as classification,
       ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
-      ical3s.iucn_conservation_action_level_2_subclassification_id as subClassification2
+      ical3s.iucn_conservation_action_level_3_subclassification_id as subClassification2
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
@@ -48,7 +48,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     GROUP BY
       ical1c.iucn_conservation_action_level_1_classification_id,
       ical2s.iucn_conservation_action_level_2_subclassification_id,
-      ical3s.iucn_conservation_action_level_2_subclassification_id;
+      ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
 
   defaultLog.debug({
@@ -75,13 +75,13 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   const sqlStatement = SQL`
     SELECT
-      fn.first_nations_id as id
+      project_first_nation_id as id
     FROM
       project_first_nation pfn
     WHERE
       pfn.project_id = ${projectId}
     GROUP BY
-      fn.first_nations_id;
+      project_first_nation_id;
   `;
 
   defaultLog.debug({

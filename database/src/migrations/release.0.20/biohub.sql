@@ -1782,7 +1782,7 @@ COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surve
 
 CREATE TABLE survey_proprietor(
     survey_proprietor_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    first_nations_id        integer           NOT NULL,
+    first_nations_id        integer,
     proprietor_type_id      integer           NOT NULL,
     survey_id               integer           NOT NULL,
     rationale               varchar(3000)     NOT NULL,
