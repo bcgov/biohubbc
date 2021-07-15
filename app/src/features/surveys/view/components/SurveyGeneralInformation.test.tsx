@@ -86,6 +86,16 @@ describe('SurveyGeneralInformation', () => {
         biologist_first_name: 'firstttt',
         biologist_last_name: 'lastttt',
         survey_area_name: 'study area is this',
+        geometry: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        },
         revision_count: 1
       }
     });
@@ -143,7 +153,18 @@ describe('SurveyGeneralInformation', () => {
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
           survey_area_name: 'study area is this',
-          revision_count: 1
+          revision_count: 1,
+          geometry: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          },
+          permit_type: ''
         }
       });
 
