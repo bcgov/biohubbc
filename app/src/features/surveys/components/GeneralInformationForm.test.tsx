@@ -7,8 +7,6 @@ import GeneralInformationForm, {
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getFormattedAmount, getFormattedDateRangeString } from 'utils/Utils';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 
 const handleSaveAndNext = jest.fn();
 
@@ -40,32 +38,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
             funding_sources={[
               {
-                pfsId: 1,
-                amount: 100,
-                startDate: '2000-04-09 11:53:53',
-                endDate: '2000-05-10 11:53:53',
-                agencyName: 'agency'
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
-            ].map((item) => {
-              return {
-                value: item.pfsId,
-                label: `${item.agencyName} | ${getFormattedAmount(item.amount)} | ${getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  item.startDate,
-                  item.endDate
-                )}`
-              };
-            })}
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -93,32 +75,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
             funding_sources={[
               {
-                pfsId: 1,
-                amount: 100,
-                startDate: '2000-04-09 11:53:53',
-                endDate: '2000-05-10 11:53:53',
-                agencyName: 'agency'
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
-            ].map((item) => {
-              return {
-                value: item.pfsId,
-                label: `${item.agencyName} | ${getFormattedAmount(item.amount)} | ${getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  item.startDate,
-                  item.endDate
-                )}`
-              };
-            })}
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -164,32 +130,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
             funding_sources={[
               {
-                pfsId: 1,
-                amount: 100,
-                startDate: '2000-04-09 11:53:53',
-                endDate: '2000-05-10 11:53:53',
-                agencyName: 'agency'
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
               }
-            ].map((item) => {
-              return {
-                value: item.pfsId,
-                label: `${item.agencyName} | ${getFormattedAmount(item.amount)} | ${getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  item.startDate,
-                  item.endDate
-                )}`
-              };
-            })}
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
