@@ -443,8 +443,8 @@ jobs:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
-    needs:
-      - cypress-run
+    # needs:
+    #   - cypress-run
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -514,58 +514,58 @@ jobs:
           oc project af2668-tools
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
 
-  cypress-run:
-    runs-on: ubuntu-latest
-    env:
-      CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
-      CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
-      CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_BASE_URL: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
-      CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
-    needs:
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
-      - deployAPP
-    steps:
-      # Checkout the PR branch
-      - name: Checkout Target Branch
-        uses: actions/checkout@v2
+  # cypress-run:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
+  #     CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
+  #     CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+  #     CYPRESS_BASE_URL: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
+  #     CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
+  #   needs:
+  #     - deployDatabase
+  #     - deployDatabaseSetup
+  #     - deployAPI
+  #     - deployAPP
+  #   steps:
+  #     # Checkout the PR branch
+  #     - name: Checkout Target Branch
+  #       uses: actions/checkout@v2
 
-      - name: Wait for application response
-        uses: nev7n/wait_for_response@v1.0.1
-        with:
-          url: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
-          responseCode: 200
-          timeout: 120000
-          interval: 500
+  #     - name: Wait for application response
+  #       uses: nev7n/wait_for_response@v1.0.1
+  #       with:
+  #         url: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
+  #         responseCode: 200
+  #         timeout: 120000
+  #         interval: 500
 
-      - name: E2E Smoke tests
-        uses: cypress-io/github-action@v2
-        # let's give this action an ID so we can refer
-        # to its output values later
-        id: smoke
-        continue-on-error: false
-        with:
-          wait-on: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
-          wait-on-timeout: 120
-          record: true
-          working-directory: testing/e2e
+  #     - name: E2E Smoke tests
+  #       uses: cypress-io/github-action@v2
+  #       # let's give this action an ID so we can refer
+  #       # to its output values later
+  #       id: smoke
+  #       continue-on-error: false
+  #       with:
+  #         wait-on: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/'
+  #         wait-on-timeout: 120
+  #         record: true
+  #         working-directory: testing/e2e
 
-      - name: Print Env Vars
-        run: |
-          echo Git Base Ref: ${{ github.base_ref }}
-          echo Git Change ID: ${{ github.event.number }}
-          echo Cypress Record Key: $CYPRESS_RECORD_KEY
-          echo Cypress BaseUrl: $CYPRESS_BASE_URL
-          echo Cypress Host: $CYPRESS_ENVIRONMENT
+  #     - name: Print Env Vars
+  #       run: |
+  #         echo Git Base Ref: ${{ github.base_ref }}
+  #         echo Git Change ID: ${{ github.event.number }}
+  #         echo Cypress Record Key: $CYPRESS_RECORD_KEY
+  #         echo Cypress BaseUrl: $CYPRESS_BASE_URL
+  #         echo Cypress Host: $CYPRESS_ENVIRONMENT
 
   notify:
     name: Discord Notification
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }} && always()
-    needs: # make sure the notification is sent AFTER the jobs you want included have completed
-      - cypress-run
+    # needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      # - cypress-run
     steps:
       - name: Notify
         uses: nobrayner/discord-webhook@v1
