@@ -443,8 +443,8 @@ jobs:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
-    needs:
-      - cypress-run
+    # needs:
+    #   - cypress-run
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
