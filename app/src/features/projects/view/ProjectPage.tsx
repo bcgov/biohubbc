@@ -294,16 +294,18 @@ const ProjectPage: React.FC = () => {
                   arrow
                   color="secondary"
                   title={disableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    className={classes.actionButton}
-                    data-testid="delete-project-button"
-                    startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                    onClick={showDeleteProjectDialog}
-                    disabled={disableDeleteProjectButton}>
-                    Delete Project
-                  </Button>
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      className={classes.actionButton}
+                      data-testid="delete-project-button"
+                      startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                      onClick={showDeleteProjectDialog}
+                      disabled={disableDeleteProjectButton}>
+                      Delete Project
+                    </Button>
+                  </>
                 </Tooltip>
               )}
             </Box>

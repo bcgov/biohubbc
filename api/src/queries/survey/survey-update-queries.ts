@@ -65,7 +65,9 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
     SET
       survey_id = ${surveyId}
     WHERE
-      number = ${permitNumber};
+      number = ${permitNumber}
+    AND
+      survey_id IS NULL;
   `;
 
   defaultLog.debug({
