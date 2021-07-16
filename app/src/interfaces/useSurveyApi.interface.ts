@@ -41,6 +41,14 @@ export interface ICreateSurveyResponse {
   id: number;
 }
 
+export interface ISurveyFundingSourceForView {
+  pfs_id: number;
+  funding_amount: number;
+  funding_start_date: string;
+  funding_end_date: string;
+  agency_name: string;
+}
+
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
@@ -54,6 +62,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_area_name: string;
   permit_number: string;
   permit_type: string;
+  funding_sources: ISurveyFundingSourceForView[];
   geometry: Feature[];
   completion_status: string;
   publish_date: string;
@@ -83,6 +92,7 @@ export interface IGetSurveyForUpdateResponseDetails {
   revision_count: number;
   permit_number: string;
   permit_type: string;
+  funding_sources: number[];
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
@@ -170,4 +180,12 @@ export interface IGetSurveyAttachmentsResponse {
 export interface SurveyPermits {
   number: string;
   type: string;
+}
+
+export interface SurveyFundingSources {
+  pfsId: number;
+  amount: number;
+  startDate: string;
+  endDate: string;
+  agencyName: string;
 }

@@ -38,14 +38,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
+            funding_sources={[
+              {
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
+              }
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -73,14 +75,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
+            funding_sources={[
+              {
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
+              }
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />
@@ -126,14 +130,16 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
-            permit_numbers={
-              [
-                { number: '123', type: 'Scientific' },
-                { number: '456', type: 'Wildlife' }
-              ].map((item) => {
-                return { value: item.number, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
+            permit_numbers={[
+              { value: '123', label: '123 - Scientific' },
+              { value: '456', label: '123 - Wildlife' }
+            ]}
+            funding_sources={[
+              {
+                value: 1,
+                label: 'agency | $ 100 | 2000/04/09 - 2000/05/10'
+              }
+            ]}
             projectStartDate={getProjectForViewResponse.project.start_date}
             projectEndDate={getProjectForViewResponse.project.end_date}
           />

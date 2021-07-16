@@ -3,8 +3,12 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
-import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../../../../models/survey-update';
-import { GetSurveyDetailsData, GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import {
+  PutSurveyDetailsData,
+  PutSurveyProprietorData,
+  GetUpdateSurveyDetailsData
+} from '../../../../../models/survey-update';
+import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import {
   surveyIdResponseObject,
   surveyUpdateGetResponseObject,
@@ -22,11 +26,12 @@ import {
 import {
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
-  deleteSurveyProprietorSQL
+  deleteSurveyProprietorSQL,
+  deleteSurveyFundingSourcesSQL
 } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
-import { insertAncillarySpecies, insertFocalSpecies, insertSurveyPermit } from '../create';
+import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
 import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 
@@ -183,7 +188,7 @@ PUT.apiDoc = {
 };
 
 export interface IGetSurveyForUpdate {
-  survey_details: GetSurveyDetailsData | null;
+  survey_details: GetUpdateSurveyDetailsData | null;
   survey_proprietor: GetSurveyProprietorData | null;
 }
 
@@ -247,7 +252,7 @@ export function getSurveyForUpdate(): RequestHandler {
 export const getSurveyDetailsData = async (
   surveyId: number,
   connection: IDBConnection
-): Promise<GetSurveyDetailsData> => {
+): Promise<GetUpdateSurveyDetailsData> => {
   const sqlStatement = getSurveyDetailsForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
@@ -256,7 +261,7 @@ export const getSurveyDetailsData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && new GetSurveyDetailsData(response.rows)) || null;
+  const result = (response && response.rows && new GetUpdateSurveyDetailsData(response.rows)) || null;
 
   if (!result) {
     throw new HTTP400('Failed to get project survey details data');
@@ -362,8 +367,13 @@ export const updateSurveyDetailsData = async (
 
   const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
   const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
+  const sqlDeleteSurveyFundingSourcesStatement = deleteSurveyFundingSourcesSQL(surveyId);
 
-  if (!sqlDeleteFocalSpeciesStatement || !sqlDeleteAncillarySpeciesStatement) {
+  if (
+    !sqlDeleteFocalSpeciesStatement ||
+    !sqlDeleteAncillarySpeciesStatement ||
+    !sqlDeleteSurveyFundingSourcesStatement
+  ) {
     throw new HTTP400('Failed to build SQL delete statement');
   }
 
@@ -377,9 +387,15 @@ export const updateSurveyDetailsData = async (
     sqlDeleteAncillarySpeciesStatement.values
   );
 
-  const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult] = await Promise.all([
+  const deleteSurveyFundingSourcesPromises = connection.query(
+    sqlDeleteSurveyFundingSourcesStatement.text,
+    sqlDeleteSurveyFundingSourcesStatement.values
+  );
+
+  const [deleteFocalSpeciesResult, deleteAncillarySpeciesResult, deleteSurveyFundingSourcesResult] = await Promise.all([
     deleteFocalSpeciesPromises,
-    deleteAncillarySpeciesPromises
+    deleteAncillarySpeciesPromises,
+    deleteSurveyFundingSourcesPromises
   ]);
 
   if (!deleteFocalSpeciesResult) {
@@ -390,6 +406,10 @@ export const updateSurveyDetailsData = async (
     throw new HTTP409('Failed to delete survey ancillary species data');
   }
 
+  if (!deleteSurveyFundingSourcesResult) {
+    throw new HTTP409('Failed to delete survey funding sources data');
+  }
+
   const promises: Promise<any>[] = [];
 
   putDetailsData.focal_species.map((focalSpeciesId: number) =>
@@ -398,6 +418,10 @@ export const updateSurveyDetailsData = async (
 
   putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
     promises.push(insertAncillarySpecies(ancillarySpeciesId, surveyId, connection))
+  );
+
+  putDetailsData.funding_sources.map((fsId: number) =>
+    promises.push(insertSurveyFundingSource(fsId, surveyId, connection))
   );
 
   /*
@@ -462,7 +486,7 @@ export const updateSurveyProprietorData = async (
   }
 };
 
-export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<boolean> => {
+export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<void> => {
   const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
@@ -474,6 +498,4 @@ export const unassociatePermitFromSurvey = async (survey_id: number, connection:
   if (!response) {
     throw new HTTP400('Failed to update survey permit number data');
   }
-
-  return true;
 };
