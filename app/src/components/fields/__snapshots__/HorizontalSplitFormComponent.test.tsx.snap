@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Create Survey Section renders correctly 1`] = `
+exports[`HorizontalSplitFormComponent renders correctly 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
