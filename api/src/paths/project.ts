@@ -290,12 +290,14 @@ export const insertStakeholderPartnership = async (
 };
 
 export const insertPermitNumber = async (
-  permit_number: string,
-  permit_type: string,
-  project_id: number,
+  permitNumber: string,
+  permitType: string,
+  projectId: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id);
+  const systemUserId = connection.systemUserId();
+
+  const sqlStatement = postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

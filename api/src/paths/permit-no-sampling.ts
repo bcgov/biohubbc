@@ -108,7 +108,9 @@ export const insertNoSamplePermit = async (
   coordinator: PostCoordinatorData | PutCoordinatorData,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator });
+  const systemUserId = connection.systemUserId();
+
+  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
 
   if (!sqlStatement) {
     throw {

@@ -9,18 +9,21 @@ const defaultLog = getLogger('queries/permit-no-sampling/permit-no-sampling-quer
  * SQL query to insert a no sample permit row.
  *
  * @param {(IPostPermit & PostCoordinatorData)} noSamplePermit
+ * @param {number} systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postPermitNoSamplingSQL = (
-  noSamplePermit: IPostPermitNoSampling & PostCoordinatorData
+  noSamplePermit: IPostPermitNoSampling & PostCoordinatorData,
+  systemUserId: number | null
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postPermitNoSamplingSQL',
     message: 'params',
-    noSamplePermit
+    noSamplePermit,
+    systemUserId
   });
 
-  if (!noSamplePermit) {
+  if (!noSamplePermit || !systemUserId) {
     return null;
   }
 
@@ -31,14 +34,16 @@ export const postPermitNoSamplingSQL = (
         coordinator_first_name,
         coordinator_last_name,
         coordinator_email_address,
-        coordinator_agency_name
+        coordinator_agency_name,
+        system_user_id
       ) VALUES (
         ${noSamplePermit.permit_number},
         ${noSamplePermit.permit_type},
         ${noSamplePermit.first_name},
         ${noSamplePermit.last_name},
         ${noSamplePermit.email_address},
-        ${noSamplePermit.coordinator_agency}
+        ${noSamplePermit.coordinator_agency},
+        ${systemUserId}
       )
       RETURNING
         permit_id as id;

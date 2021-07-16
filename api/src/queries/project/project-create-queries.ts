@@ -264,25 +264,28 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
 /**
  * SQL query to insert a permit row for permit associated to a project.
  *
- * @param permit_number
- * @param permit_type
+ * @param permitNumber
+ * @param permitType
  * @param projectId
+ * @param systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postProjectPermitSQL = (
-  permit_number: string,
-  permit_type: string,
-  projectId: number
+  permitNumber: string,
+  permitType: string,
+  projectId: number,
+  systemUserId: number | null
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectPermitSQL',
     message: 'params',
-    permit_number,
-    permit_type,
-    projectId
+    permitNumber,
+    permitType,
+    projectId,
+    systemUserId
   });
 
-  if (!permit_number || !permit_type || !projectId) {
+  if (!permitNumber || !permitType || !projectId || !systemUserId) {
     return null;
   }
 
@@ -290,11 +293,13 @@ export const postProjectPermitSQL = (
       INSERT INTO permit (
         project_id,
         number,
-        type
+        type,
+        system_user_id
       ) VALUES (
         ${projectId},
-        ${permit_number},
-        ${permit_type}
+        ${permitNumber},
+        ${permitType},
+        ${systemUserId}
       )
       RETURNING
         permit_id as id;
