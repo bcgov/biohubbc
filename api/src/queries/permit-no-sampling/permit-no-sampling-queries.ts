@@ -9,7 +9,7 @@ const defaultLog = getLogger('queries/permit-no-sampling/permit-no-sampling-quer
  * SQL query to insert a no sample permit row.
  *
  * @param {(IPostPermit & PostCoordinatorData)} noSamplePermit
- * @param {number} systemUserId
+ * @param {number | null} systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postPermitNoSamplingSQL = (

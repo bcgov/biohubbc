@@ -264,10 +264,10 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
 /**
  * SQL query to insert a permit row for permit associated to a project.
  *
- * @param permitNumber
- * @param permitType
- * @param projectId
- * @param systemUserId
+ * @param {string} permitNumber
+ * @param {string} permitType
+ * @param {number} projectId
+ * @param {number | null} systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postProjectPermitSQL = (

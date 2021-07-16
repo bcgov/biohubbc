@@ -176,7 +176,7 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
 /**
  * SQL query to insert a survey permit row into the permit table.
  *
- * @param {number} systemUserId
+ * @param {number | null} systemUserId
  * @param {number} projectId
  * @param {number} surveyId
  * @param {string} permitNumber
