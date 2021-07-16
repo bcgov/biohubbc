@@ -14,6 +14,14 @@ export const CreateSurveyI18N = {
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreatePermitsI18N = {
+  cancelTitle: 'Cancel Create Permits',
+  cancelText: 'Are you sure you want to cancel?',
+  createErrorTitle: 'Error Creating Permits',
+  createErrorText:
+    'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const AddBlockObservationI18N = {
   cancelTitle: 'Cancel Add Block Observation',
   cancelText: 'Are you sure you want to cancel?',
