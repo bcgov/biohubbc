@@ -443,8 +443,10 @@ jobs:
     name: Clean Build/Deployment Artifacts
     runs-on: ubuntu-16.04
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }}
-    # needs:
-    #   - cypress-run
+    needs:
+      - deployAPP
+      - deployAPI
+      - deployDatabaseSetup
     env:
       BUILD_ID: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
@@ -564,8 +566,10 @@ jobs:
     name: Discord Notification
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false }} && always()
-    # needs: # make sure the notification is sent AFTER the jobs you want included have completed
-      # - cypress-run
+    needs: # make sure the notification is sent AFTER the jobs you want included have completed
+      - deployAPP
+      - deployAPI
+      - deployDatabaseSetup
     steps:
       - name: Notify
         uses: nobrayner/discord-webhook@v1
