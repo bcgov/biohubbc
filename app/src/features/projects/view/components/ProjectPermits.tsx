@@ -171,7 +171,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
                 <TableRow>
                   <TableCell className={classes.heading}>Permit Number</TableCell>
                   <TableCell className={classes.heading}>Permit Type</TableCell>
-                  <TableCell className={classes.heading}>Sampling Conducted</TableCell>
                 </TableRow>
               </TableHead>
               {permit.permits.map((item: any) => (
@@ -183,7 +182,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
                     <TableCell component="th" scope="row">
                       {item.permit_type}
                     </TableCell>
-                    <TableCell>{item.sampling_conducted ? 'Yes' : 'No'}</TableCell>
                   </TableRow>
                 </TableBody>
               ))}

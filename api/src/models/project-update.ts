@@ -286,7 +286,6 @@ export class PutFundingSource {
 export interface IPutPermit {
   permit_number: string;
   permit_type: string;
-  sampling_conducted: boolean;
 }
 
 /**
@@ -310,8 +309,7 @@ export class PutPermitData {
         obj.permits.map((item: any) => {
           return {
             permit_number: item.permit_number,
-            permit_type: item.permit_type,
-            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+            permit_type: item.permit_type
           };
         })) ||
       [];

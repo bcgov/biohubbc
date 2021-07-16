@@ -22,7 +22,6 @@ import {
 } from '../queries/project/project-create-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
-import { insertNoSamplePermit } from './permit-no-sampling';
 
 const defaultLog = getLogger('paths/project');
 
@@ -156,15 +155,11 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle project and no sampling permits
+        // Handle project permits
         promises.push(
           Promise.all(
             sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) => {
-              if (permit.sampling_conducted) {
-                return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
-              }
-
-              return insertNoSamplePermit(permit, sanitizedProjectPostData.coordinator, connection);
+              return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
             })
           )
         );

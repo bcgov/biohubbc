@@ -45,7 +45,6 @@ import {
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
 import ProjectPermitForm, {
-  IProjectPermitForm,
   ProjectPermitFormInitialValues,
   ProjectPermitFormYupSchema
 } from 'features/projects/components/ProjectPermitForm';
@@ -55,7 +54,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreatePermitNoSamplingRequest, ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
@@ -100,7 +99,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   stepperContent: {}
 }));
 
-const NUM_PARTIAL_PROJECT_STEPS = 2;
 const NUM_ALL_PROJECT_STEPS = 8;
 
 /**
@@ -125,8 +123,8 @@ const CreateProjectPage: React.FC = () => {
   // Tracks the active step #
   const [activeStep, setActiveStep] = useState(0);
 
-  // The number of steps listed in the UI based on the current state of the component/forms
-  const [numberOfSteps, setNumberOfSteps] = useState<number>(NUM_ALL_PROJECT_STEPS);
+  // The number of steps listed in the project creation UI
+  const numberOfSteps = NUM_ALL_PROJECT_STEPS;
 
   // All possible step forms, and their current state
   const [stepForms, setStepForms] = useState<IStepperWizardStep[]>([]);
@@ -248,17 +246,7 @@ const CreateProjectPage: React.FC = () => {
         stepTitle: 'Permits',
         stepSubTitle:
           'Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).',
-        stepContent: (
-          <ProjectPermitForm
-            onValuesChange={(values) => {
-              if (isSamplingConducted(values)) {
-                setNumberOfSteps(NUM_ALL_PROJECT_STEPS);
-              } else {
-                setNumberOfSteps(NUM_PARTIAL_PROJECT_STEPS);
-              }
-            }}
-          />
-        ),
+        stepContent: <ProjectPermitForm />,
         stepInitialValues: initialProjectFieldData.permit,
         stepYupSchema: ProjectPermitFormYupSchema,
         isValid: true,
@@ -326,20 +314,6 @@ const CreateProjectPage: React.FC = () => {
   }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData]);
 
   /**
-   * Return true if the user has indicated that sampling has been conducted, false otherwise.
-   *
-   * @param {IProjectPermitForm} permitFormValues
-   * @return {boolean} {boolean}
-   */
-  const isSamplingConducted = (permitFormValues: IProjectPermitForm): boolean => {
-    if (!permitFormValues?.permits?.length) {
-      return true;
-    }
-
-    return permitFormValues?.permits?.some((permitItem) => permitItem.sampling_conducted === 'true');
-  };
-
-  /**
    * Return true if the step form fields are valid, false otherwise.
    *
    * @return {*} {Promise<boolean>}
@@ -378,14 +352,10 @@ const CreateProjectPage: React.FC = () => {
 
     const invalidStepIndex = getFirstInvalidFormStep();
 
-    const isFullProject = isSamplingConducted(stepForms[1].stepInitialValues);
+    // Check if any step is invalid in project workflow
+    const projectInvalid = invalidStepIndex >= 0;
 
-    // If full project, check if any step is invalid
-    const fullProjectInvalid = isFullProject && invalidStepIndex >= 0;
-    // If a permit no sampling project, only check if the first 2 steps are invalid
-    const permitNoSamplingProjectInvalid = !isFullProject && [0, 1].includes(invalidStepIndex);
-
-    if (fullProjectInvalid || permitNoSamplingProjectInvalid) {
+    if (projectInvalid) {
       // Automatically change to the invalid step
       setActiveStep(invalidStepIndex);
       // Indicate that the invalid step show run its field validation, to highlight the invalid fields
@@ -393,7 +363,7 @@ const CreateProjectPage: React.FC = () => {
       return;
     }
 
-    await createFullOrPartialProject();
+    await handleProjectCreation();
   };
 
   useEffect(() => {
@@ -522,29 +492,20 @@ const CreateProjectPage: React.FC = () => {
   };
 
   /**
-   * Handle creation full or partial projects.
+   * Handle project creation.
    */
-  const createFullOrPartialProject = async () => {
-    const isFullProject = isSamplingConducted(stepForms[1].stepInitialValues);
-
+  const handleProjectCreation = async () => {
     try {
-      if (!isFullProject) {
-        await createPermitNoSampling({
-          coordinator: stepForms[0].stepInitialValues,
-          permit: stepForms[1].stepInitialValues
-        });
-      } else {
-        await createProject({
-          coordinator: stepForms[0].stepInitialValues,
-          permit: stepForms[1].stepInitialValues,
-          project: stepForms[2].stepInitialValues,
-          objectives: stepForms[3].stepInitialValues,
-          location: stepForms[4].stepInitialValues,
-          iucn: stepForms[5].stepInitialValues,
-          funding: stepForms[6].stepInitialValues,
-          partnerships: stepForms[7].stepInitialValues
-        });
-      }
+      await createProject({
+        coordinator: stepForms[0].stepInitialValues,
+        permit: stepForms[1].stepInitialValues,
+        project: stepForms[2].stepInitialValues,
+        objectives: stepForms[3].stepInitialValues,
+        location: stepForms[4].stepInitialValues,
+        iucn: stepForms[5].stepInitialValues,
+        funding: stepForms[6].stepInitialValues,
+        partnerships: stepForms[7].stepInitialValues
+      });
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: 'Error Creating Project',
@@ -572,27 +533,6 @@ const CreateProjectPage: React.FC = () => {
     } catch (error) {
       return error;
     }
-  };
-
-  /**
-   * Creates a new project record in which no sampling was conducted
-   *
-   * @param {ICreatePermitNoSamplingRequest} projectNoSamplingPostObject
-   * @return {*}
-   */
-  const createPermitNoSampling = async (projectNoSamplingPostObject: ICreatePermitNoSamplingRequest) => {
-    const response = await biohubApi.project.createPermitNoSampling(projectNoSamplingPostObject);
-
-    if (!response?.ids?.length) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a permit ID' });
-      return;
-    }
-
-    await deleteDraft();
-
-    setEnableCancelCheck(false);
-
-    history.push(`/projects`);
   };
 
   /**

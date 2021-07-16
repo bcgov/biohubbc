@@ -62,7 +62,6 @@ import {
   insertStakeholderPartnership,
   insertPermitNumber
 } from '../../project';
-import { insertNoSamplePermit } from '../../permit-no-sampling';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -539,7 +538,6 @@ export const updateProjectPermitData = async (
   connection: IDBConnection
 ): Promise<void> => {
   const putPermitData = new PutPermitData(entities.permit);
-  const putCoordinatorData = new PutCoordinatorData(entities.coordinator);
 
   if (!putPermitData.permits || !putPermitData.permits.length) {
     throw new HTTP400('Missing request body entity `permit`');
@@ -559,11 +557,7 @@ export const updateProjectPermitData = async (
 
   const insertPermitPromises =
     putPermitData?.permits?.map((permit: IPutPermit) => {
-      if (permit.sampling_conducted) {
-        return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
-      }
-
-      insertNoSamplePermit(permit, putCoordinatorData, connection);
+      return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
     }) || [];
 
   await Promise.all(insertPermitPromises);

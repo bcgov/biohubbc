@@ -148,7 +148,6 @@ export interface IGetProjectForUpdateResponseDetails {
 interface IGetProjectForUpdateResponsePermitArrayItem {
   permit_number: string;
   permit_type: string;
-  sampling_conducted: string;
 }
 
 export interface IGetProjectForUpdateResponsePermit {

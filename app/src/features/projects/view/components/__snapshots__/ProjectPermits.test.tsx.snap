@@ -130,12 +130,6 @@ exports[`ProjectPermits renders correctly with sampling conducted false 1`] = `
             >
               Permit Type
             </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
-              scope="col"
-            >
-              Sampling Conducted
-            </th>
           </tr>
         </thead>
         <tbody
@@ -158,11 +152,6 @@ exports[`ProjectPermits renders correctly with sampling conducted false 1`] = `
             >
               Scientific Fish Collection Permit
             </th>
-            <td
-              class="MuiTableCell-root MuiTableCell-body"
-            >
-              No
-            </td>
           </tr>
         </tbody>
       </table>
@@ -240,12 +229,6 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
             >
               Permit Type
             </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
-              scope="col"
-            >
-              Sampling Conducted
-            </th>
           </tr>
         </thead>
         <tbody
@@ -268,11 +251,6 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
             >
               Permit type
             </th>
-            <td
-              class="MuiTableCell-root MuiTableCell-body"
-            >
-              Yes
-            </td>
           </tr>
         </tbody>
       </table>

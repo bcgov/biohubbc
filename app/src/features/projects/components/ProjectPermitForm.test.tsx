@@ -28,13 +28,11 @@ describe('ProjectPermitForm', () => {
       permits: [
         {
           permit_number: '123',
-          permit_type: 'Park Use Permit',
-          sampling_conducted: 'true'
+          permit_type: 'Park Use Permit'
         },
         {
           permit_number: '3213123123',
-          permit_type: 'Scientific Fish Collection Permit',
-          sampling_conducted: 'false'
+          permit_type: 'Scientific Fish Collection Permit'
         }
       ]
     };
@@ -58,8 +56,7 @@ describe('ProjectPermitForm', () => {
       permits: [
         {
           permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit',
-          sampling_conducted: 'true'
+          permit_type: 'Scientific Fish Collection Permit'
         }
       ]
     };
@@ -71,9 +68,7 @@ describe('ProjectPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         initialErrors={{
-          permits: [
-            { permit_number: 'Error here', permit_type: 'Error here as well', sampling_conducted: 'Error here too' }
-          ]
+          permits: [{ permit_number: 'Error here', permit_type: 'Error here as well' }]
         }}
         initialTouched={{
           permits: [{ permit_number: true, permit_type: true, sampling_conducted: true }]
@@ -91,13 +86,11 @@ describe('ProjectPermitForm', () => {
       permits: [
         {
           permit_number: '123',
-          permit_type: 'Park Use Permit',
-          sampling_conducted: 'true'
+          permit_type: 'Park Use Permit'
         },
         {
           permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit',
-          sampling_conducted: 'true'
+          permit_type: 'Scientific Fish Collection Permit'
         }
       ]
     };
@@ -122,8 +115,7 @@ describe('ProjectPermitForm', () => {
       permits: [
         {
           permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit',
-          sampling_conducted: 'true'
+          permit_type: 'Scientific Fish Collection Permit'
         }
       ]
     };
