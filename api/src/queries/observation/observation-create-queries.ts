@@ -38,7 +38,7 @@ export const postBlockObservationSQL = (
       ${observationPostData.observation_data}
     )
     RETURNING
-      block_observation_id
+      block_observation_id as id;
   `;
 
   defaultLog.debug({
