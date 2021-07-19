@@ -4,7 +4,7 @@ drop procedure if exists api_delete_survey;
 create or replace procedure api_delete_survey(p_survey_id survey.survey_id%type)
 language plpgsql
 security definer
-as 
+as
 $$
 -- *******************************************************************
 -- Procedure: api_delete_survey
@@ -29,11 +29,12 @@ begin
   delete from survey_attachment where survey_id = p_survey_id;
   delete from study_species where survey_id = p_survey_id;
   delete from survey_funding_source where survey_id = p_survey_id;
+  delete from block_observation where survey_id = p_survey_id;
 
   update permit set survey_id = null where survey_id = p_survey_id;
 
 exception
   when others THEN
-    raise;    
+    raise;
 end;
 $$;
