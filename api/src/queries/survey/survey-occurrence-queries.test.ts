@@ -21,7 +21,7 @@ describe('postSurveyOccurrenceSubmissionSQL', () => {
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid surveyId and attachmentId provided', () => {
+  it('returns non null response when valid params provided', () => {
     const response = postSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey');
 
     expect(response).to.not.be.null;

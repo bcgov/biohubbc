@@ -4,13 +4,12 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 
 /**
- * SQL query to insert a survey attachment row.
+ * SQL query to insert a survey occurrence submission row.
  *
- * @param fileName
- * @param fileSize
- * @param projectId
- * @param surveyId
- * @returns {SQLStatement} sql query object
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @return {*}  {(SQLStatement | null)}
  */
 export const postSurveyOccurrenceSubmissionSQL = (
   surveyId: number,

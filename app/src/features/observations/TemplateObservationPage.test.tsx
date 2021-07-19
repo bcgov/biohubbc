@@ -9,7 +9,7 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import TemplateObservationPage from './TemplateObservationPage';
 
-const history = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1/observations/create'] });
+const history = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1/observations/template'] });
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {

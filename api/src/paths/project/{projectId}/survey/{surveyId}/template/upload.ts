@@ -16,6 +16,7 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/template/upload', 'POST'),
   uploadMedia()
 ];
+
 POST.apiDoc = {
   description: 'Upload survey template observations file.',
   tags: ['attachments'],

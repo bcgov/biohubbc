@@ -109,7 +109,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             </Box>
             <Box mr={1}>
               <Button variant="contained" color="primary" onClick={addNewTemplateObservation}>
-                {`New Template Survey`}
+                New Template Survey
               </Button>
             </Box>
             <Button variant="contained" color="primary">
