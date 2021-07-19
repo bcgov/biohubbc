@@ -78,13 +78,6 @@ services:
     depends_on:
       - api
 
-  # Build the clamav docker image
-  clamav:
-    image: mkodockx/docker-clamav:latest
-    container_name: ${DOCKER_PROJECT_NAME}-clamav-${DOCKER_NAMESPACE}-container
-    ports:
-      - 3310:3310
-
   ## Build the app docker image
   app:
     image: ${DOCKER_PROJECT_NAME}-app-${DOCKER_NAMESPACE}-img

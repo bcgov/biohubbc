@@ -80,6 +80,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
   };
 
+  const addNewTemplateObservation = () => {
+    history.push(
+      `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/template`
+    );
+  };
+
   const editObservation = async (observationId: number) => {
     if (surveyType === 'Block') {
       history.push(
@@ -99,6 +105,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             <Box mr={1}>
               <Button variant="contained" color="primary" onClick={addNewObservation}>
                 {`New ${surveyType} Survey`}
+              </Button>
+            </Box>
+            <Box mr={1}>
+              <Button variant="contained" color="primary" onClick={addNewTemplateObservation}>
+                New Template Survey
               </Button>
             </Box>
             <Button variant="contained" color="primary">
