@@ -18,9 +18,7 @@ import {
   IGetPutIUCN,
   GetLocationData,
   PutFundingSource,
-  GetPermitData,
-  IPutPermit,
-  PutPermitData
+  GetPermitData
 } from '../../../models/project-update';
 import { GetFundingData } from '../../../models/project-view-update';
 import {
@@ -60,8 +58,9 @@ import {
   insertRegion,
   insertProjectActivity,
   insertStakeholderPartnership,
-  insertPermitNumber
+  insertPermit
 } from '../../project';
+import { IPostPermit, PostPermitData } from '../../../models/project-create';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -537,7 +536,7 @@ export const updateProjectPermitData = async (
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putPermitData = new PutPermitData(entities.permit);
+  const putPermitData = new PostPermitData(entities.permit);
 
   if (!putPermitData.permits || !putPermitData.permits.length) {
     throw new HTTP400('Missing request body entity `permit`');
@@ -556,8 +555,8 @@ export const updateProjectPermitData = async (
   }
 
   const insertPermitPromises =
-    putPermitData?.permits?.map((permit: IPutPermit) => {
-      return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
+    putPermitData?.permits?.map((permit: IPostPermit) => {
+      return insertPermit(permit.permit_number, permit.permit_type, projectId, connection);
     }) || [];
 
   await Promise.all(insertPermitPromises);

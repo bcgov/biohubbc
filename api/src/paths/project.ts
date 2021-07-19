@@ -158,9 +158,9 @@ function createProject(): RequestHandler {
         // Handle project permits
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) => {
-              return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
-            })
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
+              insertPermit(permit.permit_number, permit.permit_type, projectId, connection)
+            )
           )
         );
 
@@ -284,7 +284,7 @@ export const insertStakeholderPartnership = async (
   return result.id;
 };
 
-export const insertPermitNumber = async (
+export const insertPermit = async (
   permitNumber: string,
   permitType: string,
   projectId: number,

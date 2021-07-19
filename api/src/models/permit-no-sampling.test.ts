@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostPermitNoSamplingData, PostPermitNoSamplingObject } from './permit-no-sampling';
+import { PostPermitNoSamplingObject } from './permit-no-sampling';
+import { PostPermitData } from './project-create';
 
 describe('postPermitNoSamplingObject', () => {
   describe('No values provided', () => {
@@ -77,10 +78,10 @@ describe('postPermitNoSamplingObject', () => {
 
 describe('PostPermitNoSamplingData', () => {
   describe('No values provided', () => {
-    let postPermitNoSamplingData: PostPermitNoSamplingData;
+    let postPermitNoSamplingData: PostPermitData;
 
     before(() => {
-      postPermitNoSamplingData = new PostPermitNoSamplingData(null);
+      postPermitNoSamplingData = new PostPermitData(null);
     });
 
     it('sets permit to default values', function () {
@@ -89,12 +90,12 @@ describe('PostPermitNoSamplingData', () => {
   });
 
   describe('All values provided where permits has no length', () => {
-    let postPermitNoSamplingData: PostPermitNoSamplingData;
+    let postPermitNoSamplingData: PostPermitData;
 
     const obj = { permits: [] };
 
     before(() => {
-      postPermitNoSamplingData = new PostPermitNoSamplingData(obj);
+      postPermitNoSamplingData = new PostPermitData(obj);
     });
 
     it('sets permits', function () {
@@ -103,12 +104,12 @@ describe('PostPermitNoSamplingData', () => {
   });
 
   describe('All values provided where permits is null', () => {
-    let postPermitNoSamplingData: PostPermitNoSamplingData;
+    let postPermitNoSamplingData: PostPermitData;
 
     const obj = { permits: null };
 
     before(() => {
-      postPermitNoSamplingData = new PostPermitNoSamplingData(obj);
+      postPermitNoSamplingData = new PostPermitData(obj);
     });
 
     it('sets permits', function () {
@@ -117,12 +118,12 @@ describe('PostPermitNoSamplingData', () => {
   });
 
   describe('All values provided where permits is a valid array', () => {
-    let postPermitNoSamplingData: PostPermitNoSamplingData;
+    let postPermitNoSamplingData: PostPermitData;
 
     const obj = { permits: [{ permit_number: 1, permit_type: 'type' }] };
 
     before(() => {
-      postPermitNoSamplingData = new PostPermitNoSamplingData(obj);
+      postPermitNoSamplingData = new PostPermitData(obj);
     });
 
     it('sets permits', function () {

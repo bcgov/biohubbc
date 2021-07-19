@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as permit_no_sampling from './permit-no-sampling';
-import * as db from '../database/db';
+import * as create_no_sampling from './create-no-sampling';
+import * as db from '../../database/db';
 
 chai.use(sinonChai);
 
-describe('permit-no-sampling', () => {
+describe('create-no-sampling', () => {
   const dbConnectionObj = {
     systemUserId: () => {
       return null;
@@ -73,7 +73,7 @@ describe('permit-no-sampling', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       try {
-        const result = permit_no_sampling.createNoSamplePermits();
+        const result = create_no_sampling.createNoSamplePermits();
 
         await result(
           { ...sampleReq, body: { ...sampleReq.body, permit: null } },
@@ -91,7 +91,7 @@ describe('permit-no-sampling', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       try {
-        const result = permit_no_sampling.createNoSamplePermits();
+        const result = create_no_sampling.createNoSamplePermits();
 
         await result(
           { ...sampleReq, body: { ...sampleReq.body, coordinator: null } },
@@ -107,9 +107,9 @@ describe('permit-no-sampling', () => {
 
     it('should return the inserted ids on success', async () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-      sinon.stub(permit_no_sampling, 'insertNoSamplePermit').resolves(20);
+      sinon.stub(create_no_sampling, 'insertNoSamplePermit').resolves(20);
 
-      const result = permit_no_sampling.createNoSamplePermits();
+      const result = create_no_sampling.createNoSamplePermits();
 
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -120,10 +120,10 @@ describe('permit-no-sampling', () => {
       const expectedError = new Error('cannot process request');
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-      sinon.stub(permit_no_sampling, 'insertNoSamplePermit').rejects(expectedError);
+      sinon.stub(create_no_sampling, 'insertNoSamplePermit').rejects(expectedError);
 
       try {
-        const result = permit_no_sampling.createNoSamplePermits();
+        const result = create_no_sampling.createNoSamplePermits();
 
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();

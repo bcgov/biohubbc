@@ -14,7 +14,6 @@ import {
   GetIUCNClassificationData,
   PutLocationData,
   PutFundingSource,
-  PutPermitData,
   GetPermitData
 } from './project-update';
 
@@ -472,101 +471,6 @@ describe('GetPermitData', () => {
 
     before(() => {
       projectPermitData = new GetPermitData(permits);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type',
-          sampling_conducted: 'true'
-        }
-      ]);
-    });
-  });
-});
-
-describe('PutPermitData', () => {
-  describe('No values provided', () => {
-    let projectPermitData: PutPermitData;
-
-    before(() => {
-      projectPermitData = new PutPermitData(null);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are null', () => {
-    let projectPermitData: PutPermitData;
-
-    before(() => {
-      projectPermitData = new PutPermitData({
-        permits: null
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are empty arrays', () => {
-    let projectPermitData: PutPermitData;
-
-    before(() => {
-      projectPermitData = new PutPermitData({
-        permits: []
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as true', () => {
-    let projectPermitData: PutPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PutPermitData(obj);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as false', () => {
-    let projectPermitData: PutPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PutPermitData(obj);
     });
 
     it('sets permits', function () {

@@ -283,43 +283,9 @@ export class PutFundingSource {
   }
 }
 
-export interface IPutPermit {
-  permit_number: string;
-  permit_type: string;
-}
-
-/**
- * Pre-processes PUT /projects/{projectId}/update permit data
- *
- * @export
- * @class PutPermitData
- */
-export class PutPermitData {
-  permits: IPutPermit[];
-
-  constructor(obj?: any) {
-    defaultLog.debug({
-      label: 'PutPermitData',
-      message: 'params',
-      obj
-    });
-
-    this.permits =
-      (obj?.permits?.length &&
-        obj.permits.map((item: any) => {
-          return {
-            permit_number: item.permit_number,
-            permit_type: item.permit_type
-          };
-        })) ||
-      [];
-  }
-}
-
 interface IGetPermit {
   permit_number: string;
   permit_type: string;
-  sampling_conducted: string;
 }
 
 /**
@@ -343,8 +309,7 @@ export class GetPermitData {
         permitData.map((item: any) => {
           return {
             permit_number: item.number,
-            permit_type: item.type,
-            sampling_conducted: 'true' // any permit associated with project has sampling conducted true
+            permit_type: item.type
           };
         })) ||
       [];

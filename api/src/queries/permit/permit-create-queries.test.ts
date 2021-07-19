@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { IPostPermitNoSampling } from '../../models/permit-no-sampling';
 import { PostCoordinatorData } from '../../models/project-create';
-import { postPermitNoSamplingSQL } from './permit-no-sampling-queries';
+import { postPermitNoSamplingSQL } from './permit-create-queries';
 
 describe('postPermitNoSamplingSQL', () => {
   describe('with invalid parameters', () => {

@@ -3,7 +3,7 @@ import { IPostPermitNoSampling } from '../../models/permit-no-sampling';
 import { PostCoordinatorData } from '../../models/project-create';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/permit-no-sampling/permit-no-sampling-queries');
+const defaultLog = getLogger('queries/permit/permit-create-queries');
 
 /**
  * SQL query to insert a no sample permit row.

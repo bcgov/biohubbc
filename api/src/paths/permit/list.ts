@@ -1,0 +1,97 @@
+'use strict';
+
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/CustomError';
+import { getAllPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { getLogger } from '../../utils/logger';
+
+const defaultLog = getLogger('/api/permits/list');
+
+export const GET: Operation = [getAllPermits()];
+
+GET.apiDoc = {
+  description: 'Fetches a list of all permits by system user id.',
+  tags: ['permits'],
+  security: [
+    {
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+    }
+  ],
+  responses: {
+    200: {
+      description: 'Permits get response array.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'array',
+            items: {
+              title: 'Permit Get Response Object',
+              type: 'object',
+              properties: {
+                number: {
+                  type: 'string'
+                },
+                type: {
+                  type: 'string'
+                },
+                coordinator_agency: {
+                  type: 'string'
+                },
+                project_name: {
+                  type: 'string'
+                }
+              }
+            },
+            description: 'All permits in the permits table for the appropriate system user'
+          }
+        }
+      }
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+export function getAllPermits(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'Get permits list', message: 'params', req_params: req.params });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+
+      const getPermitsSQLStatement = getAllPermitsSQL(systemUserId);
+
+      if (!getPermitsSQLStatement) {
+        throw new HTTP400('Failed to build SQL get statement');
+      }
+
+      const permitsData = await connection.query(getPermitsSQLStatement.text, getPermitsSQLStatement.values);
+
+      await connection.commit();
+
+      console.log('PERRRRRRRRRRRRRRRRRRRRR');
+      console.log(permitsData);
+
+      const getPermitsData = (permitsData && permitsData.rows) || null;
+
+      return res.status(200).json(getPermitsData);
+    } catch (error) {
+      defaultLog.debug({ label: 'getAllPermits', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
