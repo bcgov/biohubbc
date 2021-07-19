@@ -9,7 +9,6 @@ import { mdiCheck, mdiWindowClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -65,9 +64,15 @@ export interface IUploadFile {
   error?: string;
 }
 
+export type IUploadHandler = (
+  files: File[],
+  cancelToken: CancelTokenSource,
+  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+) => Promise<any>;
+
 export interface IFileUploadItemProps {
-  projectId: number;
-  surveyId?: number;
+  uploadHandler: IUploadHandler;
+  onSuccess?: (response: any) => void;
   file: File;
   error?: string;
   onCancel: () => void;
@@ -75,10 +80,9 @@ export interface IFileUploadItemProps {
 
 const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const isMounted = useIsMounted();
-
   const classes = useStyles();
 
-  const biohubApi = useBiohubApi();
+  const { uploadHandler, onSuccess } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
@@ -120,7 +124,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       }
     };
 
-    const handleFileUploadSuccess = () => {
+    const handleFileUploadSuccess = (response?: any) => {
       if (!isMounted()) {
         // component is unmounted, don't perform any state changes when the upload request resolves
         return;
@@ -131,33 +135,16 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
       // the upload request has finished and its safe to call the onCancel prop
       setIsSafeToCancel(true);
+
+      onSuccess?.(response);
     };
 
-    if (props.surveyId) {
-      biohubApi.survey
-        .uploadSurveyAttachments(props.projectId, props.surveyId, [file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    } else {
-      biohubApi.project
-        .uploadProjectAttachments(props.projectId, [file], cancelToken, handleFileUploadProgress)
-        .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
-        .catch();
-    }
+    uploadHandler([file], cancelToken, handleFileUploadProgress)
+      .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+      .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [
-    file,
-    biohubApi,
-    status,
-    cancelToken,
-    props.projectId,
-    props.surveyId,
-    isMounted,
-    initiateCancel,
-    error,
-    handleFileUploadError
-  ]);
+  }, [file, status, cancelToken, uploadHandler, onSuccess, isMounted, initiateCancel, error, handleFileUploadError]);
 
   useEffect(() => {
     if (!isMounted()) {

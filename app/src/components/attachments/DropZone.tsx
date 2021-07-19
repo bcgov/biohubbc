@@ -21,15 +21,18 @@ const MAX_FILE_SIZE_BYTES = Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) |
 
 const BYTES_PER_MEGABYTE = 1048576;
 
-export interface IFileUploadProps {
+export interface IDropZoneProps {
   /**
    * Function called when files are accepted/rejected (via either drag/drop or browsing).
    *
    * Note: Files may be rejected due of file size limits or file number limits
    *
-   * @memberof IFileUploadProps
+   * @memberof IDropZoneProps
    */
   onFiles: (acceptedFiles: File[], rejectedFiles: FileRejection[]) => void;
+}
+
+export interface IDropZoneConfigProps {
   /**
    * Maximum file size allowed (in bytes).
    *
@@ -37,7 +40,7 @@ export interface IFileUploadProps {
    * Note: Set to `Infinity` if no size limit is needed.
    *
    * @type {number}
-   * @memberof IFileUploadProps
+   * @memberof IDropZoneProps
    */
   maxFileSize?: number;
   /**
@@ -47,12 +50,12 @@ export interface IFileUploadProps {
    * Note: Set to `0` if no file number limit is needed.
    *
    * @type {number}
-   * @memberof IFileUploadProps
+   * @memberof IDropZoneProps
    */
   maxNumFiles?: number;
 }
 
-export const DropZone: React.FC<IFileUploadProps> = (props) => {
+export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
   const classes = useStyles();
 
   const maxNumFiles = props.maxNumFiles || MAX_NUM_FILES;
