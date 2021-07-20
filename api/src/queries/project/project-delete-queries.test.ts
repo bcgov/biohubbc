@@ -6,7 +6,7 @@ import {
   deleteIUCNSQL,
   deleteRegionsSQL,
   deleteStakeholderPartnershipsSQL,
-  deleteFundingSourceSQL,
+  deleteProjectFundingSourceSQL,
   deletePermitSQL,
   deleteProjectSQL
 } from './project-delete-queries';
@@ -109,15 +109,15 @@ describe('deleteProjectSQL', () => {
   });
 });
 
-describe('deleteFundingSourceSQL', () => {
+describe('deleteProjectFundingSourceSQL', () => {
   it('returns null response when null pfsId (project funding source) provided', () => {
-    const response = deleteFundingSourceSQL((null as unknown) as number, (null as unknown) as number);
+    const response = deleteProjectFundingSourceSQL((null as unknown) as number, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = deleteFundingSourceSQL(1, 1);
+    const response = deleteProjectFundingSourceSQL(1, 1);
 
     expect(response).to.not.be.null;
   });

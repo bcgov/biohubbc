@@ -14,6 +14,14 @@ export const CreateSurveyI18N = {
     'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreatePermitsI18N = {
+  cancelTitle: 'Cancel Create Permits',
+  cancelText: 'Are you sure you want to cancel?',
+  createErrorTitle: 'Error Creating Permits',
+  createErrorText:
+    'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const AddBlockObservationI18N = {
   cancelTitle: 'Cancel Add Block Observation',
   cancelText: 'Are you sure you want to cancel?',
@@ -127,9 +135,10 @@ export const EditFundingI18N = {
     'An error has occurred while attempting to edit your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const DeleteFundingI18N = {
+export const DeleteProjectFundingI18N = {
   deleteTitle: 'Remove Funding Source',
-  deleteText: 'Are you sure you want to remove this funding source?',
+  deleteText:
+    'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.',
   deleteErrorTitle: 'Error Removing Funding Source',
   deleteErrorText:
     'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'

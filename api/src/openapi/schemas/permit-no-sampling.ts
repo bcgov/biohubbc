@@ -2,12 +2,12 @@
  * Permit no sampling endpoint post body openapi schema.
  */
 export const permitNoSamplingPostBody = {
-  title: 'Project Post Object',
+  title: 'Non-Sampling Permit Post Object',
   type: 'object',
   required: ['coordinator', 'permit'],
   properties: {
     coordinator: {
-      title: 'Project coordinator',
+      title: 'Coordinator',
       type: 'object',
       required: ['first_name', 'last_name', 'email_address', 'coordinator_agency'],
       properties: {
@@ -30,14 +30,14 @@ export const permitNoSamplingPostBody = {
       }
     },
     permit: {
-      title: 'Project permits',
+      title: 'Non-sampling permits',
       type: 'object',
       required: ['permits'],
       properties: {
         permits: {
           type: 'array',
           items: {
-            title: 'Project permit',
+            title: 'Non-sampling permit',
             type: 'object',
             required: ['permit_number'],
             additionalProperties: true,

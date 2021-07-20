@@ -4,7 +4,7 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
- * SQL query to get all permit numbers applicable for a survey
+ * SQL query to get all permits applicable for a survey
  *
  * These are permits that are associated to a project but have not been used by any
  * other surveys under that project

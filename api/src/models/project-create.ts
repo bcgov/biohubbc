@@ -60,7 +60,10 @@ export class PostCoordinatorData {
 export interface IPostPermit {
   permit_number: string;
   permit_type: string;
-  sampling_conducted: boolean;
+}
+
+export interface IPostExistingPermit {
+  permit_id: number;
 }
 
 /**
@@ -71,6 +74,7 @@ export interface IPostPermit {
  */
 export class PostPermitData {
   permits: IPostPermit[];
+  existing_permits: IPostExistingPermit[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostPermitData', message: 'params', obj });
@@ -80,8 +84,16 @@ export class PostPermitData {
         obj.permits.map((item: any) => {
           return {
             permit_number: item.permit_number,
-            permit_type: item.permit_type,
-            sampling_conducted: (item.sampling_conducted === 'true' && true) || false
+            permit_type: item.permit_type
+          };
+        })) ||
+      [];
+
+    this.existing_permits =
+      (obj?.existing_permits?.length &&
+        obj.existing_permits.map((item: any) => {
+          return {
+            permit_id: item
           };
         })) ||
       [];
