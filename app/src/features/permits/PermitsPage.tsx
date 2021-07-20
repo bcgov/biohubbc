@@ -87,7 +87,7 @@ const PermitsPage: React.FC = () => {
                 <TableCell>Associated Project</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody data-testid="project-table">
+            <TableBody data-testid="permit-table">
               {permits?.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
