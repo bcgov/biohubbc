@@ -63,26 +63,4 @@ describe('TemplateObservationPage', () => {
       expect(asFragment()).toMatchSnapshot();
     });
   });
-
-  it('renders correctly', async () => {
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(getSurveyForViewResponse);
-
-    const updatedHistory = createMemoryHistory({ initialEntries: ['/projects/1/surveys/1/observations/template'] });
-
-    const { asFragment, getByTestId } = render(
-      <Router history={updatedHistory}>
-        <Route path="/projects/:id/surveys/:survey_id/observations/template">
-          <TemplateObservationPage />
-        </Route>
-      </Router>
-    );
-
-    await waitFor(() => {
-      expect(getByTestId('template-observation-heading')).toBeInTheDocument();
-      expect(getByTestId('back-button')).toBeInTheDocument();
-    });
-
-    expect(asFragment()).toMatchSnapshot();
-  });
 });

@@ -8,6 +8,7 @@ import {
   IGetSurveyForUpdateResponse,
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
+  IGetTemplateObservationsResponse,
   SurveyPermits,
   SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
@@ -165,6 +166,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get observation template based on survey ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetSurveyAttachmentsResponse>}
+   */
+  const getTemplateObservations = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetTemplateObservationsResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/templates/list`);
+
+    return data;
+  };
+
+  /**
    * Get permits that have not already been assigned to a survey, by project ID
    * Note: This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
    *
@@ -249,7 +266,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyPermits,
     uploadTemplateObservations,
-    getSurveyFundingSources
+    getSurveyFundingSources,
+    getTemplateObservations
   };
 };
 
