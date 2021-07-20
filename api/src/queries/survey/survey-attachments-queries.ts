@@ -117,7 +117,7 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
  * @param fileSize
  * @param projectId
  * @param surveyId
- * @param key key to use in s3
+ * @param {string} key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postSurveyAttachmentSQL = (
