@@ -2,7 +2,7 @@ import AdmZip from 'adm-zip';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { MediaFile } from './media-file';
-import { parseUnknownFile, parseUnknownMedia, parseUnknownZipFile } from './media-utils';
+import { parseMulterFile, parseUnknownMedia, parseUnknownZipFile } from './media-utils';
 
 describe('parseUnknownMedia', () => {
   it('returns an array of MediaFile elements', () => {
@@ -44,7 +44,7 @@ describe('parseUnknownZipFile', () => {
 
     const multerFile = ({ originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown) as Express.Multer.File;
 
-    const response = parseUnknownZipFile(multerFile);
+    const response = parseUnknownZipFile(multerFile.buffer);
 
     expect(response.length).to.equal(2);
     expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
@@ -58,20 +58,20 @@ describe('parseUnknownZipFile', () => {
 
     const multerFile = ({ originalname: 'zipFile.zip', buffer: zipFile.toBuffer() } as unknown) as Express.Multer.File;
 
-    const response = parseUnknownZipFile(multerFile);
+    const response = parseUnknownZipFile(multerFile.buffer);
 
     expect(response.length).to.equal(0);
   });
 });
 
-describe('parseUnknownFile', () => {
+describe('parseMulterFile', () => {
   it('returns a MediaFile item', () => {
     const multerFile = ({
       originalname: 'file1.csv',
       buffer: Buffer.from('file1data')
     } as unknown) as Express.Multer.File;
 
-    const response = parseUnknownFile(multerFile);
+    const response = parseMulterFile(multerFile);
 
     expect(response).to.eql(new MediaFile('file1.csv', 'text/csv', Buffer.from('file1data')));
   });
@@ -82,7 +82,7 @@ describe('parseUnknownFile', () => {
       buffer: Buffer.from('file1data')
     } as unknown) as Express.Multer.File;
 
-    const response = parseUnknownFile(multerFile);
+    const response = parseMulterFile(multerFile);
 
     expect(response).to.eql(new MediaFile('file1.notAKnownMimeTypecsv', '', Buffer.from('file1data')));
   });
@@ -93,7 +93,7 @@ describe('parseUnknownFile', () => {
       buffer: null
     } as unknown) as Express.Multer.File;
 
-    const response = parseUnknownFile(multerFile);
+    const response = parseMulterFile(multerFile);
 
     expect(response).to.eql(new MediaFile('file1.notAKnownMimeTypecsv', '', (null as unknown) as Buffer));
   });

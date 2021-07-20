@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
 import { PostOccurrence } from '../../../../../../models/occurrence-create';
 import {
   postOccurrenceSQL,
@@ -283,7 +283,7 @@ export function uploadDWCArchive(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadDWCArchive', message: 'error', error });
       await connection.rollback();
-      throw new HTTP400('Upload was not successful');
+      throw ensureCustomError(error);
     } finally {
       connection.release();
     }
@@ -315,7 +315,7 @@ export const uploadDWCArchiveOccurrences = async (
 
   const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
   const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
-  const lifestageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
   const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
   const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
   const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
@@ -323,7 +323,7 @@ export const uploadDWCArchiveOccurrences = async (
   const scrapedOccurrences = occurrenceRows?.map((row) => {
     const occurrenceEventId = row[occurrenceEventIdHeader];
     const associatedTaxa = row[associatedTaxaHeader];
-    const lifestage = row[lifestageHeader];
+    const lifeStage = row[lifeStageHeader];
     const individualCount = row[individualCountHeader];
     const organismQuantity = row[organismQuantityHeader];
     const organismQuantityType = row[organismQuantityTypeHeader];
@@ -351,8 +351,8 @@ export const uploadDWCArchiveOccurrences = async (
     });
 
     return new PostOccurrence({
-      associatedtaxa: associatedTaxa,
-      lifestage: lifestage,
+      associatedTaxa: associatedTaxa,
+      lifeStage: lifeStage,
       individualCount: individualCount,
       vernacularName: vernacularName,
       data,

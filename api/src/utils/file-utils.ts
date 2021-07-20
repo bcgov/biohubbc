@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { ManagedUpload, Metadata, DeleteObjectOutput } from 'aws-sdk/clients/s3';
+import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
@@ -55,6 +55,22 @@ export async function uploadFileToS3(
     Key: key,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
+  }).promise();
+}
+
+/**
+ * Fetch a file from S3.
+ *
+ * @export
+ * @param {string} key the S3 key of the file to fetch
+ * @param {string} [versionId] the S3 version id  of the file to fetch (optional)
+ * @return {*}  {Promise<GetObjectOutput>}
+ */
+export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
+  return S3.getObject({
+    Bucket: OBJECT_STORE_BUCKET_NAME,
+    Key: key,
+    VersionId: versionId
   }).promise();
 }
 

@@ -55,7 +55,7 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence (
       occurrence_submission_id,
-      associatedtaxa,
+      taxonid,
       lifestage,
       data,
       vernacularname,
@@ -66,8 +66,8 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
       geography
     ) VALUES (
       ${occurrenceSubmissionId},
-      ${occurrence.associatedtaxa},
-      ${occurrence.lifestage},
+      ${occurrence.associatedTaxa},
+      ${occurrence.lifeStage},
       ${occurrence.data},
       ${occurrence.vernacularName},
       ${occurrence.eventDate},

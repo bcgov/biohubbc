@@ -105,8 +105,8 @@ export function _extractResults(rows: any[]): any[] {
       id: row.id,
       name: row.name,
       objectives: row.objectives,
-      lifestage: row.lifestage,
-      associatedtaxa: row.associatedtaxa,
+      lifeStage: row.lifeStage,
+      associatedTaxa: row.associatedTaxa,
       geometry: row.geometry && [JSON.parse(row.geometry)]
     };
 

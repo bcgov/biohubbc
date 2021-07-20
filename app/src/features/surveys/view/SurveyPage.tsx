@@ -6,9 +6,17 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiClipboardCheckMultipleOutline, mdiTrashCanOutline, mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import {
+  mdiClipboardCheckMultipleOutline,
+  mdiTrashCanOutline,
+  mdiInformationOutline,
+  mdiPaperclip,
+  mdiToggleSwitch,
+  mdiToggleSwitchOffOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useCallback, useState, useEffect } from 'react';
@@ -30,6 +38,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyStatusType } from 'constants/misc';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { SYSTEM_ROLE } from 'constants/roles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -66,6 +76,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   spacingRight: {
     paddingRight: '1rem'
+  },
+  actionButton: {
+    minWidth: '6rem',
+    '& + button': {
+      marginLeft: '0.5rem'
+    }
   }
 }));
 
@@ -90,6 +106,8 @@ const SurveyPage: React.FC = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -150,6 +168,20 @@ const SurveyPage: React.FC = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
+  const publishSurvey = async (publish: boolean) => {
+    try {
+      const response = await biohubApi.survey.publishSurvey(urlParams['id'], urlParams['survey_id'], publish);
+
+      if (!response) {
+        return;
+      }
+
+      await getSurvey();
+    } catch (error) {
+      return error;
+    }
+  };
+
   const showDeleteSurveyDialog = () => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
@@ -198,6 +230,13 @@ const SurveyPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  // Show delete button if you are a system admin or a project admin
+  const showDeleteSurveyButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
+  // Enable delete button if you a system admin OR a project admin and the survey is not published
+  const enableDeleteSurveyButton =
+    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
+    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !surveyWithDetails.survey_details.publish_date);
+
   return (
     <>
       <Paper elevation={2} square={true}>
@@ -243,12 +282,37 @@ const SurveyPage: React.FC = () => {
             <Box ml={4} mb={4}>
               <Button
                 variant="outlined"
+                className={classes.actionButton}
                 color="primary"
-                data-testid="delete-survey-button"
-                startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                onClick={showDeleteSurveyDialog}>
-                Delete Survey
+                data-testid="publish-survey-button"
+                startIcon={
+                  <Icon
+                    path={surveyWithDetails.survey_details.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                    size={1}
+                  />
+                }
+                onClick={async () => await publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
+                {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
               </Button>
+              {showDeleteSurveyButton && (
+                <Tooltip
+                  arrow
+                  color="secondary"
+                  title={!enableDeleteSurveyButton ? 'Cannot delete a published survey' : ''}>
+                  <>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      className={classes.actionButton}
+                      data-testid="delete-survey-button"
+                      startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                      onClick={showDeleteSurveyDialog}
+                      disabled={!enableDeleteSurveyButton}>
+                      Delete Survey
+                    </Button>
+                  </>
+                </Tooltip>
+              )}
             </Box>
           </Box>
         </Container>

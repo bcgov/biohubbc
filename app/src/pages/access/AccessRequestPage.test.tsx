@@ -46,7 +46,7 @@ const renderContainer = () => {
   };
 
   return render(
-    <AuthStateContext.Provider value={authState}>
+    <AuthStateContext.Provider value={authState as any}>
       <DialogContextProvider>
         <Router history={history}>
           <AccessRequestPage />
@@ -111,7 +111,7 @@ describe('AccessRequestPage', () => {
       };
 
       const { getByText } = render(
-        <AuthStateContext.Provider value={authState}>
+        <AuthStateContext.Provider value={authState as any}>
           <Router history={history}>
             <AccessRequestPage />
           </Router>
@@ -204,7 +204,7 @@ describe('AccessRequestPage', () => {
     };
 
     render(
-      <AuthStateContext.Provider value={authState}>
+      <AuthStateContext.Provider value={authState as any}>
         <Router history={history}>
           <AccessRequestPage />
         </Router>
