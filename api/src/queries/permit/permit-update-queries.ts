@@ -25,7 +25,11 @@ export const associatePermitToProjectSQL = (permitId: number, projectId: number)
   const sqlStatement = SQL`
     UPDATE permit
     SET
-      project_id = ${projectId}
+      project_id = ${projectId},
+      coordinator_first_name = ${null},
+      coordinator_last_name = ${null},
+      coordinator_email_address = ${null},
+      coordinator_agency_name = ${null}
     WHERE
       permit_id = ${permitId};
   `;
