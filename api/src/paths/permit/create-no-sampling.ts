@@ -113,10 +113,7 @@ export const insertNoSamplePermit = async (
   const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
 
   if (!sqlStatement) {
-    throw {
-      status: 400,
-      message: 'Failed to build SQL statement'
-    };
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -124,10 +121,7 @@ export const insertNoSamplePermit = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw {
-      status: 400,
-      message: 'Failed to insert no-sampling permit data'
-    };
+    throw new HTTP400('Failed to insert non-sampling permit data');
   }
 
   return result.id;

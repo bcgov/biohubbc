@@ -3,7 +3,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as create_no_sampling from './create-no-sampling';
+import * as permit_create_queries from '../../queries/permit/permit-create-queries';
 import * as db from '../../database/db';
+import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -131,5 +133,115 @@ describe('create-no-sampling', () => {
         expect(actualError.message).to.equal(expectedError.message);
       }
     });
+  });
+});
+
+describe('insertNoSamplePermit', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = {
+    systemUserId: () => {
+      return 20;
+    },
+    open: async () => {
+      // do nothing
+    },
+    release: () => {
+      // do nothing
+    },
+    commit: async () => {
+      // do nothing
+    },
+    rollback: async () => {
+      // do nothing
+    },
+    query: async () => {
+      // do nothing
+    }
+  };
+
+  const permitData = {
+    permit_number: 'number',
+    permit_type: 'type'
+  };
+
+  const coordinatorData = {
+    first_name: 'first',
+    last_name: 'last',
+    email_address: 'email@example.com',
+    coordinator_agency: 'agency',
+    share_contact_details: true
+  };
+
+  it('should throw an error when cannot generate post sql statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(permit_create_queries, 'postPermitNoSamplingSQL').returns(null);
+
+    try {
+      await create_no_sampling.insertNoSamplePermit(permitData, coordinatorData, dbConnectionObj);
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to insert non-sampling permits cause result is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [null] });
+
+    sinon.stub(permit_create_queries, 'postPermitNoSamplingSQL').returns(SQL`some`);
+
+    try {
+      await create_no_sampling.insertNoSamplePermit(permitData, coordinatorData, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert non-sampling permit data');
+    }
+  });
+
+  it('should throw a HTTP 400 error when failed to insert non-sampling permits cause result id is null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ id: null }] });
+
+    sinon.stub(permit_create_queries, 'postPermitNoSamplingSQL').returns(SQL`some`);
+
+    try {
+      await create_no_sampling.insertNoSamplePermit(permitData, coordinatorData, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to insert non-sampling permit data');
+    }
+  });
+
+  it('should return the result id on success', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ id: 12 }] });
+
+    sinon.stub(permit_create_queries, 'postPermitNoSamplingSQL').returns(SQL`some`);
+
+    const res = await create_no_sampling.insertNoSamplePermit(permitData, coordinatorData, {
+      ...dbConnectionObj,
+      query: mockQuery
+    });
+
+    expect(res).to.equal(12);
   });
 });
