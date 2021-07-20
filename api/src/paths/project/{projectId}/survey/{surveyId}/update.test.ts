@@ -902,7 +902,7 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
@@ -925,7 +925,7 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
@@ -957,7 +957,7 @@ describe('updateSurveyDetailsData', () => {
     sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
     sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);

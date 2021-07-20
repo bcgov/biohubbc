@@ -5,7 +5,7 @@ import {
   deleteAncillarySpeciesSQL,
   deleteSurveyProprietorSQL,
   deleteSurveySQL,
-  deleteSurveyFundingSourcesSQL
+  deleteSurveyFundingSourcesBySurveyIdSQL
 } from './survey-delete-queries';
 
 describe('deleteFocalSpeciesSQL', () => {
@@ -70,15 +70,15 @@ describe('deleteSurveySQL', () => {
   });
 });
 
-describe('deleteSurveyFundingSourcesSQL', () => {
+describe('deleteSurveyFundingSourcesBySurveyIdSQL', () => {
   it('returns null when surveyId is null', () => {
-    const response = deleteSurveyFundingSourcesSQL((null as unknown) as number);
+    const response = deleteSurveyFundingSourcesBySurveyIdSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns a non null response when valid params passed in', () => {
-    const response = deleteSurveyFundingSourcesSQL(1);
+    const response = deleteSurveyFundingSourcesBySurveyIdSQL(1);
 
     expect(response).to.not.be.null;
   });

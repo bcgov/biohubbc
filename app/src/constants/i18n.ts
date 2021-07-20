@@ -135,9 +135,10 @@ export const EditFundingI18N = {
     'An error has occurred while attempting to edit your funding source details, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const DeleteFundingI18N = {
+export const DeleteProjectFundingI18N = {
   deleteTitle: 'Remove Funding Source',
-  deleteText: 'Are you sure you want to remove this funding source?',
+  deleteText:
+    'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.',
   deleteErrorTitle: 'Error Removing Funding Source',
   deleteErrorText:
     'An error has occurred while attempting to delete your funding source details, please try again. If the error persists, please contact your system administrator.'

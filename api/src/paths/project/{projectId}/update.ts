@@ -42,7 +42,7 @@ import {
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteRegionsSQL,
-  deleteFundingSourceSQL,
+  deleteProjectFundingSourceSQL,
   deletePermitSQL
 } from '../../../queries/project/project-delete-queries';
 import {
@@ -62,6 +62,7 @@ import {
   associateExistingPermitToProject
 } from '../../project';
 import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
+import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../queries/survey/survey-delete-queries';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -741,15 +742,28 @@ export const updateProjectFundingData = async (
 ): Promise<void> => {
   const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
-  const sqlDeleteStatement = deleteFundingSourceSQL(projectId, putFundingSource?.id);
+  const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(putFundingSource?.id);
+  const projectFundingSourceDeleteStatement = deleteProjectFundingSourceSQL(projectId, putFundingSource?.id);
 
-  if (!sqlDeleteStatement) {
+  if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
   }
 
-  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+  const surveyFundingSourceDeleteResult = await connection.query(
+    surveyFundingSourceDeleteStatement.text,
+    surveyFundingSourceDeleteStatement.values
+  );
 
-  if (!deleteResult) {
+  if (!surveyFundingSourceDeleteResult) {
+    throw new HTTP409('Failed to delete survey funding source');
+  }
+
+  const projectFundingSourceDeleteResult = await connection.query(
+    projectFundingSourceDeleteStatement.text,
+    projectFundingSourceDeleteStatement.values
+  );
+
+  if (!projectFundingSourceDeleteResult) {
     throw new HTTP409('Failed to delete project funding source');
   }
 
