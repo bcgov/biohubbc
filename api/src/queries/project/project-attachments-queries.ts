@@ -116,7 +116,7 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
  * @param fileName
  * @param fileSize
  * @param projectId
- * @param key key to use in s3
+ * @param {string} key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postProjectAttachmentSQL = (
