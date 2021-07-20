@@ -41,9 +41,6 @@ export const projectCreatePostRequestObject = {
             properties: {
               permit_number: {
                 type: 'string'
-              },
-              sampling_conducted: {
-                type: 'string'
               }
             }
           }

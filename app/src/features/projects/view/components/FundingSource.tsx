@@ -9,7 +9,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { AddFundingI18N, DeleteFundingI18N, EditFundingI18N } from 'constants/i18n';
+import { AddFundingI18N, DeleteProjectFundingI18N, EditFundingI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectFundingItemForm, {
   IProjectFundingFormArrayItem,
@@ -61,8 +61,8 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   };
 
   const defaultYesNoDialogProps = {
-    dialogTitle: DeleteFundingI18N.deleteTitle,
-    dialogText: DeleteFundingI18N.deleteText,
+    dialogTitle: DeleteProjectFundingI18N.deleteTitle,
+    dialogText: DeleteProjectFundingI18N.deleteText,
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -151,7 +151,11 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       showYesNoDialog({ open: false });
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogTitle: DeleteFundingI18N.deleteErrorTitle, dialogText: apiError.message, open: true });
+      showErrorDialog({
+        dialogTitle: DeleteProjectFundingI18N.deleteErrorTitle,
+        dialogText: apiError.message,
+        open: true
+      });
       return;
     }
 

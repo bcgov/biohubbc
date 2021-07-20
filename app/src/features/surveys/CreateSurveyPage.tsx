@@ -29,7 +29,7 @@ import ProprietaryDataForm, {
   ProprietaryDataYupSchema
 } from './components/ProprietaryDataForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import CreateSurveySection from './CreateSurveySection';
+import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
@@ -377,7 +377,7 @@ const CreateSurveyPage = () => {
               validateOnChange={false}
               onSubmit={() => {}}>
               <>
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="General Information"
                   summary="General Information Summary (to be completed)"
                   component={
@@ -409,16 +409,18 @@ const CreateSurveyPage = () => {
                       projectStartDate={projectWithDetails.project.start_date}
                       projectEndDate={projectWithDetails.project.end_date}
                     />
-                  }></CreateSurveySection>
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Study Area"
                   summary="Study Area Summary (to be completed)"
-                  component={<StudyAreaForm park={park} management_unit={management_unit} />}></CreateSurveySection>
+                  component={
+                    <StudyAreaForm park={park} management_unit={management_unit} />
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Proprietary Data"
                   summary="Proprietary Data Summary (to be completed)"
                   component={
@@ -434,13 +436,13 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                     />
-                  }></CreateSurveySection>
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Agreements"
                   summary="Agreements Summary (to be completed)"
-                  component={<AgreementsForm />}></CreateSurveySection>
+                  component={<AgreementsForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
               </>
             </Formik>

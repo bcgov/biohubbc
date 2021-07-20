@@ -7,7 +7,7 @@ export const coordinator_agency = [
   { id: 6, name: 'Alaska Department of Fish and Game' },
   { id: 7, name: 'Alces Environmental Ltd.' },
   { id: 8, name: 'Allnorth Consultants Limited' },
-  { id: 9, name: 'Allouette River Mnagement Society' },
+  { id: 9, name: 'Allouette River Management Society' },
   { id: 10, name: 'AMEC Earth and Environmental' },
   { id: 11, name: 'Applied Aquatic Research Ltd.' },
   { id: 12, name: 'Applied Ecological Solutions Corp.' },

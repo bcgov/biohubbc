@@ -42,8 +42,7 @@ describe('updateProjectPermitData', () => {
       permits: [
         {
           permit_number: 1,
-          permit_type: 'type',
-          sampling_conducted: 'true'
+          permit_type: 'type'
         }
       ]
     },
@@ -66,11 +65,7 @@ describe('updateProjectPermitData', () => {
     });
 
     try {
-      await update.updateProjectPermitData(
-        projectId,
-        { ...entities, permit: { ...entities.permit, permits: [] } },
-        dbConnectionObj
-      );
+      await update.updateProjectPermitData(projectId, { ...entities, permit: null }, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {

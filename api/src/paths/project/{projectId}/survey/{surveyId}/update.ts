@@ -27,7 +27,7 @@ import {
   deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
   deleteSurveyProprietorSQL,
-  deleteSurveyFundingSourcesSQL
+  deleteSurveyFundingSourcesBySurveyIdSQL
 } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { logRequest } from '../../../../../utils/path-utils';
@@ -367,7 +367,7 @@ export const updateSurveyDetailsData = async (
 
   const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
   const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
-  const sqlDeleteSurveyFundingSourcesStatement = deleteSurveyFundingSourcesSQL(surveyId);
+  const sqlDeleteSurveyFundingSourcesStatement = deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
 
   if (
     !sqlDeleteFocalSpeciesStatement ||

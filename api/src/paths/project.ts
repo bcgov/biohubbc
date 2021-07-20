@@ -3,8 +3,16 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
-import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
+import {
+  IPostExistingPermit,
+  IPostIUCN,
+  IPostPermit,
+  PostFundingSource,
+  PostProjectObject
+} from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
+import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
+import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
 import {
   getProjectAttachmentByFileNameSQL,
   postProjectAttachmentSQL,
@@ -15,7 +23,6 @@ import {
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
-  postProjectPermitSQL,
   postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
@@ -23,7 +30,6 @@ import {
 import { generateS3FileKey } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
-import { insertNoSamplePermit } from './permit-no-sampling';
 
 const defaultLog = getLogger('paths/project');
 
@@ -157,16 +163,21 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle project and no sampling permits
+        // Handle new project permits
         promises.push(
           Promise.all(
-            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) => {
-              if (permit.sampling_conducted) {
-                return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
-              }
+            sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
+              insertPermit(permit.permit_number, permit.permit_type, projectId, connection)
+            )
+          )
+        );
 
-              return insertNoSamplePermit(permit, sanitizedProjectPostData.coordinator, connection);
-            })
+        // Handle existing non-sampling permits which are now being associated to a project
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.permit.existing_permits.map((existing_permit: IPostExistingPermit) =>
+              associateExistingPermitToProject(existing_permit.permit_id, projectId, connection)
+            )
           )
         );
 
@@ -290,13 +301,15 @@ export const insertStakeholderPartnership = async (
   return result.id;
 };
 
-export const insertPermitNumber = async (
-  permit_number: string,
-  permit_type: string,
-  project_id: number,
+export const insertPermit = async (
+  permitNumber: string,
+  permitType: string,
+  projectId: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectPermitSQL(permit_number, permit_type, project_id);
+  const systemUserId = connection.systemUserId();
+
+  const sqlStatement = postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -311,6 +324,26 @@ export const insertPermitNumber = async (
   }
 
   return result.id;
+};
+
+export const associateExistingPermitToProject = async (
+  permitId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = associatePermitToProjectSQL(permitId, projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement for associatePermitToProjectSQL');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rowCount) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to associate existing permit to project');
+  }
 };
 
 export const insertClassificationDetail = async (
