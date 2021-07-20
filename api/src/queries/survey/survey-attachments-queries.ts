@@ -117,13 +117,15 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
  * @param fileSize
  * @param projectId
  * @param surveyId
+ * @param key key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postSurveyAttachmentSQL = (
   fileName: string,
   fileSize: number,
   projectId: number,
-  surveyId: number
+  surveyId: number,
+  key: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postSurveyAttachmentSQL',
@@ -131,10 +133,11 @@ export const postSurveyAttachmentSQL = (
     fileName,
     fileSize,
     projectId,
-    surveyId
+    surveyId,
+    key
   });
 
-  if (!fileName || !fileSize || !projectId || !surveyId) {
+  if (!fileName || !fileSize || !projectId || !surveyId || !key) {
     return null;
   }
 
@@ -148,7 +151,7 @@ export const postSurveyAttachmentSQL = (
       ${surveyId},
       ${fileName},
       ${fileSize},
-      ${projectId + '/' + surveyId + '/' + fileName}
+      ${key}
     )
     RETURNING
       survey_attachment_id as id;

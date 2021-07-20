@@ -116,22 +116,25 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
  * @param fileName
  * @param fileSize
  * @param projectId
+ * @param key key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postProjectAttachmentSQL = (
   fileName: string,
   fileSize: number,
-  projectId: number
+  projectId: number,
+  key: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectAttachmentSQL',
     message: 'params',
     fileName,
     fileSize,
-    projectId
+    projectId,
+    key
   });
 
-  if (!fileName || !fileSize || !projectId) {
+  if (!fileName || !fileSize || !projectId || !key) {
     return null;
   }
 
@@ -145,7 +148,7 @@ export const postProjectAttachmentSQL = (
       ${projectId},
       ${fileName},
       ${fileSize},
-      ${projectId + '/' + fileName}
+      ${key}
     )
     RETURNING
       project_attachment_id as id;

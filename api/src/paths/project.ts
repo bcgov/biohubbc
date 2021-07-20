@@ -20,6 +20,7 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
+import { generateS3FileKey } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { insertNoSamplePermit } from './permit-no-sampling';
@@ -386,7 +387,9 @@ export const upsertProjectAttachment = async (
     return updateResult;
   }
 
-  const insertSqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId);
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+
+  const insertSqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
