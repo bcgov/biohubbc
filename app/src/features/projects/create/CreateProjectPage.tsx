@@ -526,7 +526,6 @@ const CreateProjectPage: React.FC = () => {
    * Handle project creation.
    */
   const handleProjectCreation = async () => {
-    console.log(stepForms);
     try {
       await createProject({
         coordinator: stepForms[0].stepInitialValues,
