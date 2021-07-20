@@ -7,10 +7,114 @@ exports[`ProjectPermitForm renders correctly with default empty values 1`] = `
       class="MuiBox-root MuiBox-root-1"
     >
       <div
+        aria-expanded="false"
+        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+        data-testid="existing_permits"
+        role="combobox"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
+            for="existing_permits"
+            id="existing_permits-label"
+          >
+            Select Existing Permits
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-invalid="false"
+              autocapitalize="none"
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+              id="existing_permits"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="MuiAutocomplete-endAdornment"
+            >
+              <button
+                aria-label="Clear"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                tabindex="-1"
+                title="Clear"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                aria-label="Open"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                tabindex="-1"
+                title="Open"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-3 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-5"
+              >
+                <span>
+                  Select Existing Permits
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-7"
+    >
+      <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
       />
       <div
-        class="MuiBox-root MuiBox-root-2"
+        class="MuiBox-root MuiBox-root-8"
       >
         <button
           aria-label="add permit"
@@ -21,7 +125,7 @@ exports[`ProjectPermitForm renders correctly with default empty values 1`] = `
           <span
             class="MuiButton-label"
           >
-            Add Permit
+            Add New Permit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -37,7 +141,111 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-27"
+      class="MuiBox-root MuiBox-root-37"
+    >
+      <div
+        aria-expanded="false"
+        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+        data-testid="existing_permits"
+        role="combobox"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
+            for="existing_permits"
+            id="existing_permits-label"
+          >
+            Select Existing Permits
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-invalid="false"
+              autocapitalize="none"
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+              id="existing_permits"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="MuiAutocomplete-endAdornment"
+            >
+              <button
+                aria-label="Clear"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                tabindex="-1"
+                title="Clear"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                aria-label="Open"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                tabindex="-1"
+                title="Open"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-41"
+              >
+                <span>
+                  Select Existing Permits
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-43"
     >
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -46,10 +254,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-28"
+            class="MuiBox-root MuiBox-root-44"
           >
             <div
-              class="MuiBox-root MuiBox-root-29"
+              class="MuiBox-root MuiBox-root-45"
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -82,10 +290,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                      class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                     >
                       <span>
                         Permit Number *
@@ -96,7 +304,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-34"
+              class="MuiBox-root MuiBox-root-46"
             >
               <div
                 class="MuiFormControl-root"
@@ -149,10 +357,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
                   </svg>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                      class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                     >
                       <span>
                         Permit Type
@@ -166,7 +374,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-35"
+              class="MuiBox-root MuiBox-root-47"
             >
               <button
                 aria-label="remove permit"
@@ -200,10 +408,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-36"
+            class="MuiBox-root MuiBox-root-48"
           >
             <div
-              class="MuiBox-root MuiBox-root-37"
+              class="MuiBox-root MuiBox-root-49"
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -236,10 +444,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                      class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                     >
                       <span>
                         Permit Number *
@@ -250,7 +458,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-38"
+              class="MuiBox-root MuiBox-root-50"
             >
               <div
                 class="MuiFormControl-root"
@@ -303,10 +511,10 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
                   </svg>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-39 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
+                      class="PrivateNotchedOutline-legendLabelled-41 PrivateNotchedOutline-legendNotched-42"
                     >
                       <span>
                         Permit Type
@@ -320,7 +528,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-39"
+              class="MuiBox-root MuiBox-root-51"
             >
               <button
                 aria-label="remove permit"
@@ -352,7 +560,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-40"
+        class="MuiBox-root MuiBox-root-52"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -362,7 +570,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
         </p>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-41"
+        class="MuiBox-root MuiBox-root-53"
       >
         <button
           aria-label="add permit"
@@ -373,7 +581,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
           <span
             class="MuiButton-label"
           >
-            Add Permit
+            Add New Permit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -385,11 +593,115 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
 </DocumentFragment>
 `;
 
-exports[`ProjectPermitForm renders correctly with errors on the permit_number, permit_type and sampling_conducted fields 1`] = `
+exports[`ProjectPermitForm renders correctly with errors on the permit_number and permit_type fields 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-17"
+      class="MuiBox-root MuiBox-root-25"
+    >
+      <div
+        aria-expanded="false"
+        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+        data-testid="existing_permits"
+        role="combobox"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
+            for="existing_permits"
+            id="existing_permits-label"
+          >
+            Select Existing Permits
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-invalid="false"
+              autocapitalize="none"
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+              id="existing_permits"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="MuiAutocomplete-endAdornment"
+            >
+              <button
+                aria-label="Clear"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                tabindex="-1"
+                title="Clear"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                aria-label="Open"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                tabindex="-1"
+                title="Open"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-29"
+              >
+                <span>
+                  Select Existing Permits
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-31"
     >
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -398,10 +710,10 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-18"
+            class="MuiBox-root MuiBox-root-32"
           >
             <div
-              class="MuiBox-root MuiBox-root-19"
+              class="MuiBox-root MuiBox-root-33"
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -435,10 +747,10 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
+                      class="PrivateNotchedOutline-legendLabelled-29 PrivateNotchedOutline-legendNotched-30"
                     >
                       <span>
                         Permit Number *
@@ -455,7 +767,7 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-24"
+              class="MuiBox-root MuiBox-root-34"
             >
               <div
                 class="MuiFormControl-root"
@@ -508,10 +820,10 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
                   </svg>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
+                      class="PrivateNotchedOutline-legendLabelled-29 PrivateNotchedOutline-legendNotched-30"
                     >
                       <span>
                         Permit Type
@@ -527,7 +839,7 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-25"
+              class="MuiBox-root MuiBox-root-35"
             >
               <button
                 aria-label="remove permit"
@@ -559,7 +871,7 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-26"
+        class="MuiBox-root MuiBox-root-36"
       >
         <button
           aria-label="add permit"
@@ -570,7 +882,7 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number, p
           <span
             class="MuiButton-label"
           >
-            Add Permit
+            Add New Permit
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -586,7 +898,111 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiBox-root MuiBox-root-9"
+    >
+      <div
+        aria-expanded="false"
+        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+        data-testid="existing_permits"
+        role="combobox"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            data-shrink="false"
+            for="existing_permits"
+            id="existing_permits-label"
+          >
+            Select Existing Permits
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+          >
+            <input
+              aria-autocomplete="list"
+              aria-invalid="false"
+              autocapitalize="none"
+              autocomplete="off"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+              id="existing_permits"
+              spellcheck="false"
+              type="text"
+              value=""
+            />
+            <div
+              class="MuiAutocomplete-endAdornment"
+            >
+              <button
+                aria-label="Clear"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                tabindex="-1"
+                title="Clear"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+              <button
+                aria-label="Open"
+                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                tabindex="-1"
+                title="Open"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+            <fieldset
+              aria-hidden="true"
+              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="PrivateNotchedOutline-legendLabelled-13"
+              >
+                <span>
+                  Select Existing Permits
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-15"
     >
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -595,10 +1011,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-4"
+            class="MuiBox-root MuiBox-root-16"
           >
             <div
-              class="MuiBox-root MuiBox-root-5"
+              class="MuiBox-root MuiBox-root-17"
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -631,10 +1047,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                      class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                     >
                       <span>
                         Permit Number *
@@ -645,7 +1061,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-10"
+              class="MuiBox-root MuiBox-root-18"
             >
               <div
                 class="MuiFormControl-root"
@@ -698,10 +1114,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   </svg>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                      class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                     >
                       <span>
                         Permit Type
@@ -715,7 +1131,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-11"
+              class="MuiBox-root MuiBox-root-19"
             >
               <button
                 aria-label="remove permit"
@@ -749,10 +1165,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
           <div
-            class="MuiBox-root MuiBox-root-12"
+            class="MuiBox-root MuiBox-root-20"
           >
             <div
-              class="MuiBox-root MuiBox-root-13"
+              class="MuiBox-root MuiBox-root-21"
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -785,10 +1201,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   />
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                      class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                     >
                       <span>
                         Permit Number *
@@ -799,7 +1215,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-14"
+              class="MuiBox-root MuiBox-root-22"
             >
               <div
                 class="MuiFormControl-root"
@@ -852,10 +1268,10 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
                   </svg>
                   <fieldset
                     aria-hidden="true"
-                    class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
+                    class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
                   >
                     <legend
-                      class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                      class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                     >
                       <span>
                         Permit Type
@@ -869,7 +1285,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-15"
+              class="MuiBox-root MuiBox-root-23"
             >
               <button
                 aria-label="remove permit"
@@ -901,7 +1317,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-16"
+        class="MuiBox-root MuiBox-root-24"
       >
         <button
           aria-label="add permit"
@@ -912,7 +1328,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
           <span
             class="MuiButton-label"
           >
-            Add Permit
+            Add New Permit
           </span>
           <span
             class="MuiTouchRipple-root"

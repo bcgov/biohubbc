@@ -12,7 +12,6 @@ import {
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
-  postProjectPermitSQL,
   postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
@@ -249,43 +248,6 @@ describe('postProjectIndigenousNationSQL', () => {
   it('Valid parameters', () => {
     const response = postProjectIndigenousNationSQL(1, 1);
     expect(response).to.not.be.null;
-  });
-});
-
-describe('postProjectPermitSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when no permit number', () => {
-      const response = postProjectPermitSQL((null as unknown) as string, 'type', 1, 1);
-
-      expect(response).to.be.null;
-    });
-
-    it('returns null when no permit type', () => {
-      const response = postProjectPermitSQL('123', (null as unknown) as string, 1, 1);
-
-      expect(response).to.be.null;
-    });
-
-    it('returns null when no project id', () => {
-      const response = postProjectPermitSQL('123', 'type', (null as unknown) as number, 1);
-
-      expect(response).to.be.null;
-    });
-
-    it('returns null when no system user id', () => {
-      const response = postProjectPermitSQL('123', 'type', 1, null);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when all fields are passed in as expected', () => {
-      const response = postProjectPermitSQL('123', 'type', 123, 2);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include('123');
-    });
   });
 });
 

@@ -58,9 +58,10 @@ import {
   insertRegion,
   insertProjectActivity,
   insertStakeholderPartnership,
-  insertPermit
+  insertPermit,
+  associateExistingPermitToProject
 } from '../../project';
-import { IPostPermit, PostPermitData } from '../../../models/project-create';
+import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -536,11 +537,11 @@ export const updateProjectPermitData = async (
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putPermitData = new PostPermitData(entities.permit);
-
-  if (!putPermitData.permits || !putPermitData.permits.length) {
+  if (!entities.permit) {
     throw new HTTP400('Missing request body entity `permit`');
   }
+
+  const putPermitData = new PostPermitData(entities.permit);
 
   const sqlDeleteStatement = deletePermitSQL(projectId);
 
@@ -559,7 +560,13 @@ export const updateProjectPermitData = async (
       return insertPermit(permit.permit_number, permit.permit_type, projectId, connection);
     }) || [];
 
-  await Promise.all(insertPermitPromises);
+  // Handle existing non-sampling permits which are now being associated to a project
+  const updateExistingPermitPromises =
+    putPermitData?.existing_permits?.map((existing_permit: IPostExistingPermit) => {
+      return associateExistingPermitToProject(existing_permit.permit_id, projectId, connection);
+    }) || [];
+
+  await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
 };
 
 export const updateProjectRegionsData = async (

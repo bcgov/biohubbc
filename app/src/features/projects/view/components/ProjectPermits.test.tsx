@@ -12,6 +12,9 @@ const mockUseBiohubApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
+  },
+  permit: {
+    getNonSamplingPermits: jest.fn<Promise<object>, []>()
   }
 };
 
@@ -34,6 +37,7 @@ describe('ProjectPermits', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
     mockBiohubApi().project.updateProject.mockClear();
+    mockBiohubApi().permit.getNonSamplingPermits.mockClear();
   });
 
   afterEach(() => {
@@ -42,26 +46,6 @@ describe('ProjectPermits', () => {
 
   it('renders correctly with sampling conducted true', () => {
     const { asFragment } = renderContainer();
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders correctly with sampling conducted false', () => {
-    const { asFragment } = render(
-      <ProjectPermits
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          permit: {
-            ...getProjectForViewResponse.permit,
-            permits: [
-              { permit_number: '123', permit_type: 'Scientific Fish Collection Permit', sampling_conducted: false }
-            ]
-          }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
-    );
 
     expect(asFragment()).toMatchSnapshot();
   });
@@ -89,8 +73,7 @@ describe('ProjectPermits', () => {
         permits: [
           {
             permit_number: '123',
-            permit_type: 'Scientific Fish Collection Permit',
-            sampling_conducted: 'true'
+            permit_type: 'Scientific Fish Collection Permit'
           }
         ]
       },
@@ -103,11 +86,12 @@ describe('ProjectPermits', () => {
         revision_count: 1
       }
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -144,8 +128,7 @@ describe('ProjectPermits', () => {
           permits: [
             {
               permit_number: '123',
-              permit_type: 'Scientific Fish Collection Permit',
-              sampling_conducted: 'true'
+              permit_type: 'Scientific Fish Collection Permit'
             }
           ]
         },
@@ -167,11 +150,12 @@ describe('ProjectPermits', () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       permit: null
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -189,11 +173,12 @@ describe('ProjectPermits', () => {
 
   it('shows error dialog with API error message when getting permit data for update fails', async () => {
     mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -215,8 +200,7 @@ describe('ProjectPermits', () => {
         permits: [
           {
             permit_number: '123',
-            permit_type: 'Scientific Fish Collection Permit',
-            sampling_conducted: 'true'
+            permit_type: 'Scientific Fish Collection Permit'
           }
         ]
       },
@@ -229,12 +213,13 @@ describe('ProjectPermits', () => {
         revision_count: 1
       }
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));

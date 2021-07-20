@@ -41,7 +41,8 @@ describe('postPermitNoSamplingObject', () => {
             permit_number: '456',
             permit_type: 'type 2'
           }
-        ]
+        ],
+        existing_permits: [1, 2]
       }
     };
 
@@ -69,6 +70,14 @@ describe('postPermitNoSamplingObject', () => {
           {
             permit_number: '456',
             permit_type: 'type 2'
+          }
+        ],
+        existing_permits: [
+          {
+            permit_id: 1
+          },
+          {
+            permit_id: 2
           }
         ]
       });

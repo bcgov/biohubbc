@@ -68,8 +68,7 @@ describe('PostProjectObject', () => {
       permit: {
         permits: [
           {
-            permit_number: 1,
-            sampling_conducted: 'true'
+            permit_number: 1
           }
         ]
       },

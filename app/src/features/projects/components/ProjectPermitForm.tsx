@@ -11,6 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -20,8 +23,13 @@ export interface IProjectPermitFormArrayItem {
   permit_type: string;
 }
 
+export interface IProjectExistingPermitFormArrayItem {
+  permit_id: number;
+}
+
 export interface IProjectPermitForm {
   permits: IProjectPermitFormArrayItem[];
+  existing_permits?: IProjectExistingPermitFormArrayItem[];
 }
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
@@ -30,7 +38,8 @@ export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayIte
 };
 
 export const ProjectPermitFormInitialValues: IProjectPermitForm = {
-  permits: []
+  permits: [],
+  existing_permits: []
 };
 
 export const ProjectPermitFormYupSchema = yup.object().shape({
@@ -57,16 +66,30 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
     .isUniquePermitNumber('Permit numbers must be unique')
 });
 
+export interface IProjectPermitFormProps {
+  non_sampling_permits?: IMultiAutocompleteFieldOption[];
+}
+
 /**
  * Create project - Permit section
  *
  * @return {*}
  */
-const ProjectPermitForm = () => {
+const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
   return (
     <form onSubmit={handleSubmit}>
+      {props.non_sampling_permits && props.non_sampling_permits.length > 0 && (
+        <Box pb={4}>
+          <MultiAutocompleteFieldVariableSize
+            id="existing_permits"
+            label="Select Existing Permits"
+            options={props.non_sampling_permits}
+            required={false}
+          />
+        </Box>
+      )}
       <FieldArray
         name="permits"
         render={(arrayHelpers) => (
@@ -143,7 +166,7 @@ const ProjectPermitForm = () => {
                 color="primary"
                 aria-label="add permit"
                 onClick={() => arrayHelpers.push(ProjectPermitFormArrayItemInitialValues)}>
-                Add Permit
+                Add New Permit
               </Button>
             </Box>
           </Box>

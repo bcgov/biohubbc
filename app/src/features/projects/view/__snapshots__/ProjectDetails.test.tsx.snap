@@ -323,7 +323,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3"
           >
-            Permits
+            Project Permits
           </h3>
           <button
             aria-label="Edit Permits"

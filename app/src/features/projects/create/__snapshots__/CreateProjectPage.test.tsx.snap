@@ -183,7 +183,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       <p
                         class="MuiTypography-root MuiTypography-body2"
                       >
-                        Permits
+                        Project Permits
                       </p>
                     </span>
                   </span>

@@ -1,6 +1,10 @@
 import { AxiosInstance } from 'axios';
-import { ICreatePermitsForm } from 'features/permits/CreatePermitPage';
-import { ICreatePermitsResponse, IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
+import {
+  ICreatePermitsRequest,
+  ICreatePermitsResponse,
+  IGetNonSamplingPermit,
+  IGetPermitsListResponse
+} from 'interfaces/usePermitApi.interface';
 
 /**
  * Returns a set of supported api methods for working with permits as their own entities.
@@ -10,13 +14,25 @@ import { ICreatePermitsResponse, IGetPermitsListResponse } from 'interfaces/useP
  */
 const usePermitApi = (axios: AxiosInstance) => {
   /**
-   * Get a list of permits
+   * Get a list of all permits
    *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<IGetPermitsListResponse[]>}
    */
   const getPermitsList = async (): Promise<IGetPermitsListResponse[]> => {
-    const { data } = await axios.get(`/api/permits/list`);
+    const { data } = await axios.get(`/api/permit/list`);
+
+    return data;
+  };
+
+  /**
+   * Get a list of non-sampling permits
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<IGetNonSamplingPermit[]>}
+   */
+  const getNonSamplingPermits = async (): Promise<IGetNonSamplingPermit[]> => {
+    const { data } = await axios.get(`/api/permit/get-no-sampling`);
 
     return data;
   };
@@ -24,18 +40,19 @@ const usePermitApi = (axios: AxiosInstance) => {
   /**
    * Create permits (non-sampling).
    *
-   * @param {ICreatePermitsForm} permitsData
+   * @param {ICreatePermitsRequest} permitsData
    * @return {*}  {Promise<ICreatePermitsResponse[]>}
    */
-  const createPermits = async (permitsData: ICreatePermitsForm): Promise<ICreatePermitsResponse[]> => {
-    const { data } = await axios.post('/api/permits/create', permitsData);
+  const createPermits = async (permitsData: ICreatePermitsRequest): Promise<ICreatePermitsResponse[]> => {
+    const { data } = await axios.post('/api/permit/create-no-sampling', permitsData);
 
     return data;
   };
 
   return {
     getPermitsList,
-    createPermits
+    createPermits,
+    getNonSamplingPermits
   };
 };
 

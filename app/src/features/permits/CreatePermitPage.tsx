@@ -22,6 +22,7 @@ import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import { APIError } from 'hooks/api/useAxios';
 import * as History from 'history';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { ICreatePermitsRequest } from 'interfaces/usePermitApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -184,10 +185,10 @@ const CreatePermitPage = () => {
   /**
    * Creates new permit records
    *
-   * @param {ICreatePermitsForm} permitsPostObject
+   * @param {ICreatePermitsRequest} permitsPostObject
    * @return {*}
    */
-  const createPermits = async (permitsPostObject: ICreatePermitsForm) => {
+  const createPermits = async (permitsPostObject: ICreatePermitsRequest) => {
     const response = await biohubApi.permit.createPermits(permitsPostObject);
 
     if (!response) {
@@ -224,7 +225,9 @@ const CreatePermitPage = () => {
     }
 
     try {
-      const response = await createPermits(formikRef.current?.values);
+      const { permits, ...coordinator } = formikRef.current?.values;
+
+      const response = await createPermits({ coordinator, permit: { permits } });
 
       if (!response) {
         return;

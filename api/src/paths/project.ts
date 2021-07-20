@@ -3,8 +3,16 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
-import { IPostIUCN, IPostPermit, PostFundingSource, PostProjectObject } from '../models/project-create';
+import {
+  IPostExistingPermit,
+  IPostIUCN,
+  IPostPermit,
+  PostFundingSource,
+  PostProjectObject
+} from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
+import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
+import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
 import {
   getProjectAttachmentByFileNameSQL,
   postProjectAttachmentSQL,
@@ -15,7 +23,6 @@ import {
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
-  postProjectPermitSQL,
   postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
@@ -155,11 +162,20 @@ function createProject(): RequestHandler {
           )
         );
 
-        // Handle project permits
+        // Handle new project permits
         promises.push(
           Promise.all(
             sanitizedProjectPostData.permit.permits.map((permit: IPostPermit) =>
               insertPermit(permit.permit_number, permit.permit_type, projectId, connection)
+            )
+          )
+        );
+
+        // Handle existing non-sampling permits which are now being associated to a project
+        promises.push(
+          Promise.all(
+            sanitizedProjectPostData.permit.existing_permits.map((existing_permit: IPostExistingPermit) =>
+              associateExistingPermitToProject(existing_permit.permit_id, projectId, connection)
             )
           )
         );
@@ -307,6 +323,26 @@ export const insertPermit = async (
   }
 
   return result.id;
+};
+
+export const associateExistingPermitToProject = async (
+  permitId: number,
+  projectId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = associatePermitToProjectSQL(permitId, projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement for associatePermitToProjectSQL');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rowCount) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to associate existing permit to project');
+  }
 };
 
 export const insertClassificationDetail = async (

@@ -54,6 +54,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -116,8 +117,9 @@ const CreateProjectPage: React.FC = () => {
   const queryParams = useQuery();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-
+  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>((null as unknown) as []);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
+  const [isLoadingNonSamplingPermits, setIsLoadingNonSamplingPermits] = useState(false);
   const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
   // Tracks the active step #
@@ -180,6 +182,27 @@ const CreateProjectPage: React.FC = () => {
     partnerships: ProjectPartnershipsFormInitialValues
   });
 
+  // Get non-sampling permits that already exist in system
+  useEffect(() => {
+    const getNonSamplingPermits = async () => {
+      const response = await biohubApi.permit.getNonSamplingPermits();
+
+      if (!response) {
+        return;
+      }
+
+      setNonSamplingPermits(() => {
+        setIsLoadingNonSamplingPermits(false);
+        return response;
+      });
+    };
+
+    if (!isLoadingNonSamplingPermits && !nonSamplingPermits) {
+      getNonSamplingPermits();
+      setIsLoadingNonSamplingPermits(true);
+    }
+  }, [biohubApi, isLoadingNonSamplingPermits, nonSamplingPermits]);
+
   // Get draft project fields if draft id exists
   useEffect(() => {
     const getDraftProjectFields = async () => {
@@ -223,7 +246,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Initialize the forms for each step of the workflow
   useEffect(() => {
-    if (!codes || !hasLoadedDraftData) {
+    if (!codes || !hasLoadedDraftData || !nonSamplingPermits) {
       return;
     }
 
@@ -243,10 +266,18 @@ const CreateProjectPage: React.FC = () => {
         isTouched: false
       },
       {
-        stepTitle: 'Permits',
+        stepTitle: 'Project Permits',
         stepSubTitle:
           'Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).',
-        stepContent: <ProjectPermitForm />,
+        stepContent: (
+          <ProjectPermitForm
+            non_sampling_permits={
+              nonSamplingPermits?.map((item: IGetNonSamplingPermit) => {
+                return { value: item.permit_id, label: `${item.number} - ${item.type}` };
+              }) || []
+            }
+          />
+        ),
         stepInitialValues: initialProjectFieldData.permit,
         stepYupSchema: ProjectPermitFormYupSchema,
         isValid: true,
@@ -495,6 +526,7 @@ const CreateProjectPage: React.FC = () => {
    * Handle project creation.
    */
   const handleProjectCreation = async () => {
+    console.log(stepForms);
     try {
       await createProject({
         coordinator: stepForms[0].stepInitialValues,

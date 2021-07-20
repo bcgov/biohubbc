@@ -16,7 +16,7 @@ describe('ProjectPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm />}
+        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
       </Formik>
     );
 
@@ -44,14 +44,14 @@ describe('ProjectPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm />}
+        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
       </Formik>
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly with errors on the permit_number, permit_type and sampling_conducted fields', () => {
+  it('renders correctly with errors on the permit_number and permit_type fields', () => {
     const existingFormValues: IProjectPermitForm = {
       permits: [
         {
@@ -71,10 +71,10 @@ describe('ProjectPermitForm', () => {
           permits: [{ permit_number: 'Error here', permit_type: 'Error here as well' }]
         }}
         initialTouched={{
-          permits: [{ permit_number: true, permit_type: true, sampling_conducted: true }]
+          permits: [{ permit_number: true, permit_type: true }]
         }}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm />}
+        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
       </Formik>
     );
 
@@ -103,7 +103,7 @@ describe('ProjectPermitForm', () => {
         validateOnChange={false}
         initialErrors={{ permits: 'Error is here' }}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm />}
+        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
       </Formik>
     );
 
@@ -127,7 +127,7 @@ describe('ProjectPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm />}
+        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
       </Formik>
     );
 

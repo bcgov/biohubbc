@@ -5,16 +5,16 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
-import { getAllPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { getNonSamplingPermitsSQL } from '../../queries/permit/permit-view-queries';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('/api/permits/list');
+const defaultLog = getLogger('/api/permit/get-no-sampling');
 
-export const GET: Operation = [getAllPermits()];
+export const GET: Operation = [getNonSamplingPermits()];
 
 GET.apiDoc = {
-  description: 'Fetches a list of all permits by system user id.',
-  tags: ['permits'],
+  description: 'Fetches a list of non-sampling permits.',
+  tags: ['non-sampling-permits'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -22,30 +22,27 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Permits get response array.',
+      description: 'Non-sampling permits get response array.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              title: 'Permit Get Response Object',
+              title: 'Non-sampling permit Get Response Object',
               type: 'object',
               properties: {
+                id: {
+                  type: 'number'
+                },
                 number: {
                   type: 'string'
                 },
                 type: {
                   type: 'string'
-                },
-                coordinator_agency: {
-                  type: 'string'
-                },
-                project_name: {
-                  type: 'string'
                 }
               }
             },
-            description: 'All permits in the permits table for the appropriate system user'
+            description: 'Non-sampling permits'
           }
         }
       }
@@ -59,9 +56,9 @@ GET.apiDoc = {
   }
 };
 
-export function getAllPermits(): RequestHandler {
+export function getNonSamplingPermits(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get permits list', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Get non-sampling permits list', message: 'params', req_params: req.params });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -70,21 +67,24 @@ export function getAllPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getPermitsSQLStatement = getAllPermitsSQL(systemUserId);
+      const getNonSamplingPermitsSQLStatement = getNonSamplingPermitsSQL(systemUserId);
 
-      if (!getPermitsSQLStatement) {
+      if (!getNonSamplingPermitsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
-      const permitsData = await connection.query(getPermitsSQLStatement.text, getPermitsSQLStatement.values);
+      const nonSamplingPermitsData = await connection.query(
+        getNonSamplingPermitsSQLStatement.text,
+        getNonSamplingPermitsSQLStatement.values
+      );
 
       await connection.commit();
 
-      const getPermitsData = (permitsData && permitsData.rows) || null;
+      const getNonSamplingPermitsData = (nonSamplingPermitsData && nonSamplingPermitsData.rows) || null;
 
-      return res.status(200).json(getPermitsData);
+      return res.status(200).json(getNonSamplingPermitsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getAllPermits', message: 'error', error });
+      defaultLog.debug({ label: 'getNonSamplingPermits', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
