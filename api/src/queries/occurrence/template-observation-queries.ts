@@ -1,10 +1,10 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/survey/survey-attachments-queries');
+const defaultLog = getLogger('queries/occurrence/template-observation-queries');
 
 /**
- * SQL query to get attachments for a single survey.
+ * SQL query to get template observations for a single survey.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object

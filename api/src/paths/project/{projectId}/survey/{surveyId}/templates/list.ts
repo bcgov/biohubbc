@@ -9,7 +9,7 @@ import { GetTemplateObservationsData } from '../../../../../../models/template-o
 import { getTemplateObservationsSQL } from '../../../../../../queries/occurrence/template-observation-queries';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/templates/list');
 
 export const GET: Operation = [getTemplateObservations()];
 

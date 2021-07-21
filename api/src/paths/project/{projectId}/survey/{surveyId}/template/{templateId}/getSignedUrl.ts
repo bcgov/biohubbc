@@ -11,11 +11,11 @@ import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-do
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/template/{templateId}/getSignedUrl');
 
-export const GET: Operation = [getSingleAttachmentURL()];
+export const GET: Operation = [getSingleTemplateURL()];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
-    'Retrieves the signed url of template observations in a survey by its file name.',
+    'Retrieves the signed url of template observation in a survey by its template id.',
     'GET response containing the signed url of a template.'
   ),
   parameters: [
@@ -46,7 +46,7 @@ GET.apiDoc = {
   ]
 };
 
-export function getSingleAttachmentURL(): RequestHandler {
+export function getSingleTemplateURL(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get single template url', message: 'params', req_params: req.params });
 

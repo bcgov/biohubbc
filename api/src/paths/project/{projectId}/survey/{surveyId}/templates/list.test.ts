@@ -9,7 +9,7 @@ import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('lists the survey template occurrences', () => {
+describe('getTemplateObservations', () => {
   const dbConnectionObj = {
     systemUserId: () => {
       return null;

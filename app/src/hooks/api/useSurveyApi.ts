@@ -170,7 +170,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {*} {Promise<IGetSurveyAttachmentsResponse>}
+   * @returns {*} {Promise<IGetTemplateObservationsResponse>}
    */
   const getTemplateObservations = async (
     projectId: number,
@@ -254,7 +254,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get survey attachment S3 url based on survey and attachment ID
+   * Get template observations S3 url based on survey and template ID
    *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
