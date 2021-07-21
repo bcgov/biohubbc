@@ -241,6 +241,8 @@ export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean)
         null
       WHERE
         survey_id = ${surveyId}
+      AND
+        publish_timestamp IS NOT NULL
     `);
   }
 
