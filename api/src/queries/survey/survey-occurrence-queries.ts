@@ -72,8 +72,6 @@ export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number):
     FROM
       occurrence_submission
     WHERE
-      survey_id = ${surveyId}
-    AND
       occurrence_submission_id = ${templateId};
   `;
 
