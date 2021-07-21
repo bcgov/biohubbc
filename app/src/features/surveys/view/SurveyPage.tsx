@@ -170,11 +170,7 @@ const SurveyPage: React.FC = () => {
 
   const publishSurvey = async (publish: boolean) => {
     try {
-      const response = await biohubApi.survey.publishSurvey(urlParams['id'], urlParams['survey_id'], publish);
-
-      if (!response) {
-        return;
-      }
+      await biohubApi.survey.publishSurvey(urlParams['id'], urlParams['survey_id'], publish);
 
       await getSurvey();
     } catch (error) {
