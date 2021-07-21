@@ -270,7 +270,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     return data;
   };
-  
+
   /**
    * Publish/unpublish a survey.
    *
@@ -284,7 +284,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     return data;
   };
-  
+
   return {
     createSurvey,
     getSurveyForView,
