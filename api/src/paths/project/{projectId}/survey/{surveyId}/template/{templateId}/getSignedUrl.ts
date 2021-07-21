@@ -89,7 +89,7 @@ export function getSingleTemplateURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.debug({ label: 'getSingleAttachmentURL', message: 'error', error });
+      defaultLog.debug({ label: 'getSingleTemplateURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
