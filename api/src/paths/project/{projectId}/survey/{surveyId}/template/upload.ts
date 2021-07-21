@@ -113,6 +113,7 @@ export function uploadMedia(): RequestHandler {
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
+        folder: 'template',
         fileName: rawMediaFile.originalname
       });
 

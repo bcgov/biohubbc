@@ -151,3 +151,36 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get S3 key of a template for a single survey.
+ *
+ * @param {number} surveyId
+ * @param {number} templateId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyTemplateS3KeySQL', message: 'params', surveyId });
+
+  if (!surveyId || !templateId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      key
+    FROM
+      occurrence_submission
+    WHERE
+      occurrence_submission_id = ${templateId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyTemplateS3KeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
