@@ -87,27 +87,6 @@ export interface ICreateProjectResponse {
   id: number;
 }
 
-/**
- * Create project post body when no sampling was conducted.
- *
- * @export
- * @interface ICreatePermitNoSamplingRequest
- */
-export interface ICreatePermitNoSamplingRequest {
-  permit: IProjectPermitForm;
-  coordinator: IProjectCoordinatorForm;
-}
-
-/**
- * Create project response object in which no sampling was conducted.
- *
- * @export
- * @interface ICreatePermitNoSamplingResponse
- */
-export interface ICreatePermitNoSamplingResponse {
-  ids: number[];
-}
-
 export enum UPDATE_GET_ENTITIES {
   coordinator = 'coordinator',
   permit = 'permit',
