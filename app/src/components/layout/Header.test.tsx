@@ -8,13 +8,15 @@ import Header from './Header';
 
 const history = createMemoryHistory();
 
-describe('NotFoundPage', () => {
+describe('Header', () => {
   it('renders correctly with project admin role', () => {
     const mockHasSystemRole = jest.fn();
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(false); // Return false when the `Manage Users` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
+      .mockReturnValueOnce(false) // Return false when the `Manage Users` secure link is parsed
+      .mockReturnValueOnce(true); // Return true when the `Search` secure link is parsed
 
     const authState = {
       keycloakWrapper: {
@@ -45,6 +47,8 @@ describe('NotFoundPage', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
+    expect(getByText('Permits')).toBeVisible();
+    expect(getByText('Search')).toBeVisible();
     expect(queryByText('Manage Users')).not.toBeInTheDocument();
   });
 
@@ -53,7 +57,9 @@ describe('NotFoundPage', () => {
 
     mockHasSystemRole
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
-      .mockReturnValueOnce(true); // Return true when the `Manage Users` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
+      .mockReturnValueOnce(true); // Return true when the `Search` secure link is parsed
 
     const authState = {
       keycloakWrapper: {
@@ -84,6 +90,8 @@ describe('NotFoundPage', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
+    expect(getByText('Permits')).toBeVisible();
+    expect(getByText('Search')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
   });
 

@@ -191,7 +191,9 @@ export const upsertSurveyAttachment = async (
     return updateResult;
   }
 
-  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId);
+  const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
+
+  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

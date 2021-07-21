@@ -9,6 +9,7 @@ import useProjectApi from './api/useProjectApi';
 import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
+import usePermitApi from './api/usePermitApi';
 
 /**
  * Returns a set of supported api methods.
@@ -19,6 +20,8 @@ export const useBiohubApi = () => {
   const customAxios = useAxios();
 
   const project = useProjectApi(customAxios);
+
+  const permit = usePermitApi(customAxios);
 
   const search = useSearchApi(customAxios);
 
@@ -38,6 +41,7 @@ export const useBiohubApi = () => {
 
   return {
     project,
+    permit,
     search,
     survey,
     codes,

@@ -214,12 +214,12 @@ export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
  * @param {pfsId} pfsId
  * @returns {SQLStatement} sql query object
  */
-export const deleteFundingSourceSQL = (
+export const deleteProjectFundingSourceSQL = (
   projectId: number | undefined,
   pfsId: number | undefined
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'deleteFundingSourceSQL',
+    label: 'deleteProjectFundingSourceSQL',
     message: 'params',
     projectId,
     pfsId
@@ -239,7 +239,7 @@ export const deleteFundingSourceSQL = (
   `;
 
   defaultLog.debug({
-    label: 'deleteFundingSourceSQL',
+    label: 'deleteProjectFundingSourceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -135,7 +135,11 @@ describe('FundingSource', () => {
     fireEvent.click(getByTestId('delete-funding-source'));
 
     await waitFor(() => {
-      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+      expect(
+        getByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeVisible();
     });
 
     fireEvent.click(getByText('Yes'));
@@ -160,19 +164,31 @@ describe('FundingSource', () => {
     fireEvent.click(getByTestId('delete-funding-source'));
 
     await waitFor(() => {
-      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+      expect(
+        getByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeVisible();
     });
 
     fireEvent.click(getByText('No'));
 
     await waitFor(() => {
-      expect(queryByText('Are you sure you want to remove this funding source?')).toBeNull();
+      expect(
+        queryByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeNull();
     });
 
     fireEvent.click(getByTestId('delete-funding-source'));
 
     await waitFor(() => {
-      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+      expect(
+        getByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeVisible();
     });
 
     // Get the backdrop, then get the firstChild because this is where the event listener is attached
@@ -180,7 +196,11 @@ describe('FundingSource', () => {
     fireEvent.click(getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() => {
-      expect(queryByText('Are you sure you want to remove this funding source?')).toBeNull();
+      expect(
+        queryByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeNull();
     });
   });
 
@@ -200,7 +220,11 @@ describe('FundingSource', () => {
     fireEvent.click(getByTestId('delete-funding-source'));
 
     await waitFor(() => {
-      expect(getByText('Are you sure you want to remove this funding source?')).toBeVisible();
+      expect(
+        getByText(
+          'Are you sure you want to remove this project funding source? It will also remove the associated survey funding source.'
+        )
+      ).toBeVisible();
     });
 
     fireEvent.click(getByText('Yes'));

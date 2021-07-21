@@ -3,15 +3,15 @@
 exports[`ProjectPermits renders correctly with no permits 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-14"
+    class="MuiBox-root MuiBox-root-9"
   >
     <div
-      class="MuiBox-root MuiBox-root-15"
+      class="MuiBox-root MuiBox-root-10"
     >
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Permits
+        Project Permits
       </h3>
       <button
         aria-label="Edit Permits"
@@ -45,10 +45,10 @@ exports[`ProjectPermits renders correctly with no permits 1`] = `
       </button>
     </div>
     <ul
-      class="MuiBox-root MuiBox-root-16 listNoBullets"
+      class="MuiBox-root MuiBox-root-11 listNoBullets"
     >
       <li
-        class="MuiBox-root MuiBox-root-17"
+        class="MuiBox-root MuiBox-root-12"
       >
         <dd
           class="MuiTypography-root MuiTypography-body1"
@@ -57,116 +57,6 @@ exports[`ProjectPermits renders correctly with no permits 1`] = `
         </dd>
       </li>
     </ul>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`ProjectPermits renders correctly with sampling conducted false 1`] = `
-<DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-9"
-  >
-    <div
-      class="MuiBox-root MuiBox-root-10"
-    >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Permits
-      </h3>
-      <button
-        aria-label="Edit Permits"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Permits"
-        type="button"
-      >
-        <span
-          class="MuiButton-label"
-        >
-          <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
-          >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
-          </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <div
-      class="MuiTableContainer-root"
-    >
-      <table
-        aria-label="permits-list-table"
-        class="MuiTable-root makeStyles-table-6"
-      >
-        <thead
-          class="MuiTableHead-root"
-        >
-          <tr
-            class="MuiTableRow-root MuiTableRow-head"
-          >
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
-              scope="col"
-            >
-              Permit Number
-            </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
-              scope="col"
-            >
-              Permit Type
-            </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-7"
-              scope="col"
-            >
-              Sampling Conducted
-            </th>
-          </tr>
-        </thead>
-        <tbody
-          class="MuiTableBody-root"
-        >
-          <tr
-            class="MuiTableRow-root"
-          >
-            <th
-              class="MuiTableCell-root MuiTableCell-body"
-              role="cell"
-              scope="row"
-            >
-              123
-            </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-body"
-              role="cell"
-              scope="row"
-            >
-              Scientific Fish Collection Permit
-            </th>
-            <td
-              class="MuiTableCell-root MuiTableCell-body"
-            >
-              No
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </DocumentFragment>
 `;
@@ -182,7 +72,7 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Permits
+        Project Permits
       </h3>
       <button
         aria-label="Edit Permits"
@@ -240,12 +130,6 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
             >
               Permit Type
             </th>
-            <th
-              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
-              scope="col"
-            >
-              Sampling Conducted
-            </th>
           </tr>
         </thead>
         <tbody
@@ -268,11 +152,6 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
             >
               Permit type
             </th>
-            <td
-              class="MuiTableCell-root MuiTableCell-body"
-            >
-              Yes
-            </td>
           </tr>
         </tbody>
       </table>

@@ -176,6 +176,7 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
 /**
  * SQL query to insert a survey permit row into the permit table.
  *
+ * @param {number | null} systemUserId
  * @param {number} projectId
  * @param {number} surveyId
  * @param {string} permitNumber
@@ -183,6 +184,7 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
  * @returns {SQLStatement} sql query object
  */
 export const postNewSurveyPermitSQL = (
+  systemUserId: number | null,
   projectId: number,
   surveyId: number,
   permitNumber: string,
@@ -191,23 +193,26 @@ export const postNewSurveyPermitSQL = (
   defaultLog.debug({
     label: 'postNewSurveyPermitSQL',
     message: 'params',
+    systemUserId,
     projectId,
     surveyId,
     permitNumber,
     permitType
   });
 
-  if (!projectId || !surveyId || !permitNumber || !permitType) {
+  if (!systemUserId || !projectId || !surveyId || !permitNumber || !permitType) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO permit (
+      system_user_id,
       project_id,
       survey_id,
       number,
       type
     ) VALUES (
+      ${systemUserId},
       ${projectId},
       ${surveyId},
       ${permitNumber},

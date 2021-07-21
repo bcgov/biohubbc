@@ -246,18 +246,20 @@ export const insertSurveyProprietor = async (
 };
 
 export const insertSurveyPermit = async (
-  permit_number: string,
-  permit_type: string | null,
-  project_id: number,
-  survey_id: number,
+  permitNumber: string,
+  permitType: string | null,
+  projectId: number,
+  surveyId: number,
   connection: IDBConnection
 ): Promise<void> => {
   let sqlStatement;
 
-  if (!permit_type) {
-    sqlStatement = putNewSurveyPermitNumberSQL(survey_id, permit_number);
+  if (!permitType) {
+    sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);
   } else {
-    sqlStatement = postNewSurveyPermitSQL(project_id, survey_id, permit_number, permit_type);
+    const systemUserId = connection.systemUserId();
+
+    sqlStatement = postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
   }
 
   if (!sqlStatement) {

@@ -4,7 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as deleteFundingSource from './delete';
 import * as db from '../../../../../database/db';
-import * as deleteFundingSource_queries from '../../../../../queries/project/project-delete-queries';
+import * as project_delete_queries from '../../../../../queries/project/project-delete-queries';
+import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -90,7 +91,7 @@ describe('delete a funding source', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for deleteFundingSourceSQL', async () => {
+  it('should throw a 400 error when no sql statement returned for deleteSurveyFundingSourceByProjectFundingSourceIdSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -98,7 +99,30 @@ describe('delete a funding source', () => {
       }
     });
 
-    sinon.stub(deleteFundingSource_queries, 'deleteFundingSourceSQL').returns(null);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(null);
+    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some`);
+
+    try {
+      const result = deleteFundingSource.deleteFundingSource();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement returned for deleteProjectFundingSourceSQL', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(null);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();
@@ -124,7 +148,8 @@ describe('delete a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(deleteFundingSource_queries, 'deleteFundingSourceSQL').returns(SQL`something`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`something`);
 
     const result = deleteFundingSource.deleteFundingSource();
 
@@ -133,7 +158,7 @@ describe('delete a funding source', () => {
     expect(actualResult).to.eql(1);
   });
 
-  it('throws a 400 error when delete fundingSource fails, because the response has no rows', async () => {
+  it('throws a 400 error when delete survey fundingSource fails, because the response has no rows', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [], rowCount: 0 });
@@ -146,7 +171,35 @@ describe('delete a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(deleteFundingSource_queries, 'deleteFundingSourceSQL').returns(SQL`some query`);
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
+
+    try {
+      const result = deleteFundingSource.deleteFundingSource();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to delete survey funding source');
+    }
+  });
+
+  it('throws a 400 error when delete project fundingSource fails, because the response has no rows', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rows: [], rowCount: 1 }).onSecondCall().resolves({ rows: [], rowCount: 0 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();

@@ -1,19 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../models/permit-no-sampling';
-import { PostCoordinatorData } from '../models/project-create';
-import { PutCoordinatorData } from '../models/project-update';
-import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../openapi/schemas/permit-no-sampling';
-import { postPermitNoSamplingSQL } from '../queries/permit-no-sampling/permit-no-sampling-queries';
-import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/CustomError';
+import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../../models/permit-no-sampling';
+import { PostCoordinatorData } from '../../models/project-create';
+import { PutCoordinatorData } from '../../models/project-update';
+import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../../openapi/schemas/permit-no-sampling';
+import { postPermitNoSamplingSQL } from '../../queries/permit/permit-create-queries';
+import { getLogger } from '../../utils/logger';
+import { logRequest } from '../../utils/path-utils';
 
-const defaultLog = getLogger('paths/permit-no-sampling');
+const defaultLog = getLogger('/api/permit/create-no-sampling');
 
-export const POST: Operation = [logRequest('paths/permit-no-sampling', 'POST'), createNoSamplePermits()];
+export const POST: Operation = [logRequest('/api/permit/create-no-sampling', 'POST'), createNoSamplePermits()];
 
 POST.apiDoc = {
   description: 'Creates new no sample permit records.',
@@ -108,13 +108,12 @@ export const insertNoSamplePermit = async (
   coordinator: PostCoordinatorData | PutCoordinatorData,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator });
+  const systemUserId = connection.systemUserId();
+
+  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
 
   if (!sqlStatement) {
-    throw {
-      status: 400,
-      message: 'Failed to build SQL statement'
-    };
+    throw new HTTP400('Failed to build SQL insert statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -122,10 +121,7 @@ export const insertNoSamplePermit = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result || !result.id) {
-    throw {
-      status: 400,
-      message: 'Failed to insert no-sampling permit data'
-    };
+    throw new HTTP400('Failed to insert non-sampling permit data');
   }
 
   return result.id;

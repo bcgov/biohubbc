@@ -76,7 +76,7 @@ begin
   insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary education'));
   insert into project_attachment (project_id, file_name, title, key, file_size) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000);
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
-  insert into permit (project_id, number, type, issue_date, end_date) values (_project_id, '8377262', 'permit type', now(), now()+interval '1 day');
+  insert into permit (system_user_id, project_id, number, type, issue_date, end_date) values (_system_user_id, _project_id, '8377262', 'permit type', now(), now()+interval '1 day');
 
   select count(1) into _count from stakeholder_partnership;
   assert _count = 1, 'FAIL stakeholder_partnership';
@@ -174,7 +174,7 @@ begin
   select count(1) into _count from administrative_activity;
   assert _count = 1, 'FAIL administrative_activity';
 
-  insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
+  insert into permit (system_user_id, number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values (_system_user_id, '8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
   -- delete project
   call api_delete_project(_project_id);

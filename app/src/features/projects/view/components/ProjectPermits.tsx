@@ -29,6 +29,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
 import { EditPermitI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 
 const useStyles = makeStyles({
   table: {
@@ -84,24 +85,27 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   const [coordinatorData, setCoordinatorData] = useState<IGetProjectForUpdateResponseCoordinator>(
     (null as unknown) as IGetProjectForUpdateResponseCoordinator
   );
+  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>((null as unknown) as []);
 
   const handleDialogEditOpen = async () => {
     let permitResponseData;
     let coordinatorResponseData;
+    let existingPermitsResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [
-        UPDATE_GET_ENTITIES.permit,
-        UPDATE_GET_ENTITIES.coordinator
+      const [projectForUpdateResponse, existingPermitsResponse] = await Promise.all([
+        biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.permit, UPDATE_GET_ENTITIES.coordinator]),
+        biohubApi.permit.getNonSamplingPermits()
       ]);
 
-      if (!response?.permit || !response?.coordinator) {
+      if (!projectForUpdateResponse?.permit || !projectForUpdateResponse?.coordinator || !existingPermitsResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      permitResponseData = response.permit;
-      coordinatorResponseData = response.coordinator;
+      permitResponseData = projectForUpdateResponse.permit;
+      coordinatorResponseData = projectForUpdateResponse.coordinator;
+      existingPermitsResponseData = existingPermitsResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
@@ -112,6 +116,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       permits: permitResponseData.permits
     });
     setCoordinatorData(coordinatorResponseData);
+    setNonSamplingPermits(existingPermitsResponseData);
 
     setOpenEditDialog(true);
   };
@@ -140,7 +145,15 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         dialogTitle={EditPermitI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <ProjectPermitForm />,
+          element: (
+            <ProjectPermitForm
+              non_sampling_permits={
+                nonSamplingPermits?.map((item: IGetNonSamplingPermit) => {
+                  return { value: item.permit_id, label: `${item.number} - ${item.type}` };
+                }) || []
+              }
+            />
+          ),
           initialValues: permitFormData?.permits?.length
             ? permitFormData
             : { permits: [ProjectPermitFormArrayItemInitialValues] },
@@ -151,7 +164,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
       />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Permits</Typography>
+          <Typography variant="h3">Project Permits</Typography>
           <Button
             variant="text"
             color="primary"
@@ -171,7 +184,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
                 <TableRow>
                   <TableCell className={classes.heading}>Permit Number</TableCell>
                   <TableCell className={classes.heading}>Permit Type</TableCell>
-                  <TableCell className={classes.heading}>Sampling Conducted</TableCell>
                 </TableRow>
               </TableHead>
               {permit.permits.map((item: any) => (
@@ -183,7 +195,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
                     <TableCell component="th" scope="row">
                       {item.permit_type}
                     </TableCell>
-                    <TableCell>{item.sampling_conducted ? 'Yes' : 'No'}</TableCell>
                   </TableRow>
                 </TableBody>
               ))}

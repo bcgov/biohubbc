@@ -4,14 +4,14 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-delete-queries');
 
 /**
- * SQL query to delete survey funding sources rows.
+ * SQL query to delete survey funding sources rows based on survey id.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyFundingSourcesSQL = (surveyId: number): SQLStatement | null => {
+export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'deleteSurveyFundingSourcesSQL',
+    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
     message: 'params',
     surveyId
   });
@@ -28,7 +28,43 @@ export const deleteSurveyFundingSourcesSQL = (surveyId: number): SQLStatement | 
   `;
 
   defaultLog.debug({
-    label: 'deleteSurveyFundingSourcesSQL',
+    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete survey funding sources rows based on project funding source id.
+ *
+ * @param {number | undefined} projectFundingSourceId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
+  projectFundingSourceId: number | undefined
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
+    message: 'params',
+    projectFundingSourceId
+  });
+
+  if (!projectFundingSourceId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_funding_source
+    WHERE
+      project_funding_source_id = ${projectFundingSourceId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
