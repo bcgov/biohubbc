@@ -30,4 +30,16 @@ describe('generateS3FileKey', () => {
 
     expect(result).to.equal('projects/1/surveys/2/testFileName');
   });
+
+  it('returns project folder file path', async () => {
+    const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
+
+    expect(result).to.equal('projects/1/folder/testFileName');
+  });
+
+  it('returns survey folder file path', async () => {
+    const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
+
+    expect(result).to.equal('projects/1/surveys/2/folder/testFileName');
+  });
 });
