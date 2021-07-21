@@ -181,8 +181,7 @@ describe('useProjectApi', () => {
         permits: [
           {
             permit_number: 'number',
-            permit_type: 'type',
-            sampling_conducted: 'true'
+            permit_type: 'type'
           }
         ]
       },

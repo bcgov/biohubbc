@@ -32,6 +32,9 @@ const mockUseBiohubApi = {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
     getDraft: jest.fn()
+  },
+  permit: {
+    getNonSamplingPermits: jest.fn<Promise<object>, []>()
   }
 };
 
@@ -56,6 +59,7 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().draft.createDraft.mockClear();
     mockBiohubApi().draft.updateDraft.mockClear();
     mockBiohubApi().draft.getDraft.mockClear();
+    mockBiohubApi().permit.getNonSamplingPermits.mockClear();
   });
 
   afterEach(() => {
@@ -66,13 +70,14 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, getAllByText, asFragment } = renderContainer();
 
     await waitFor(() => {
       expect(getAllByText('Project Coordinator').length).toEqual(2);
 
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
@@ -85,94 +90,6 @@ describe('CreateProjectPage', () => {
       expect(getByText('Funding')).toBeVisible();
 
       expect(getByText('Partnerships')).toBeVisible();
-
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  it('removes the extra project steps if all permits are marked as having not conducted sampling', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    });
-    const {
-      findByText,
-      asFragment,
-      queryByText,
-      getByText,
-      getAllByText,
-      getByTestId,
-      getByLabelText
-    } = renderContainer();
-
-    // wait for initial page to load
-    await waitFor(() => {
-      expect(getAllByText('Project Coordinator').length).toEqual(2);
-
-      expect(getByText('Permits')).toBeVisible();
-
-      expect(getByText('General Information')).toBeVisible();
-
-      expect(getByText('Objectives')).toBeVisible();
-
-      expect(getByText('Locations')).toBeVisible();
-
-      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
-
-      expect(getByText('Funding')).toBeVisible();
-
-      expect(getByText('Partnerships')).toBeVisible();
-    });
-
-    // populate coordinator form
-    fireEvent.change(getByLabelText('First Name *'), { target: { value: 'first name' } });
-    fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'last name' } });
-    fireEvent.change(getByLabelText('Business Email Address *'), { target: { value: 'email@email.com' } });
-
-    const autocomplete = getByTestId('coordinator_agency');
-    autocomplete.focus();
-
-    // assign value to input field
-    fireEvent.change(getByLabelText('Coordinator Agency *'), { target: { value: 'Rocha' } });
-
-    await waitFor(() => {});
-
-    // navigate to the first item in the autocomplete box
-    fireEvent.keyDown(autocomplete, { key: 'ArrowDown' });
-
-    await waitFor(() => {});
-
-    // select the first item
-    fireEvent.keyDown(autocomplete, { key: 'Enter' });
-
-    // go to next step
-    fireEvent.click(getByText('Next'));
-
-    // wait for permit form to load
-    expect(await findByText('Add Permit')).toBeVisible();
-
-    fireEvent.click(getByText('Add Permit'));
-
-    // add a permit, but mark sampling conducted as false
-    fireEvent.change(getByLabelText('Permit Number *'), { target: { value: 12345 } });
-    fireEvent.change(getByTestId('sampling_conducted'), { target: { value: 'false' } });
-
-    // wait for forms to load
-    await waitFor(() => {
-      expect(getByText('Project Coordinator')).toBeVisible();
-
-      expect(getAllByText('Permits').length).toEqual(2);
-
-      expect(queryByText('General Information')).toBeNull();
-
-      expect(queryByText('Objectives')).toBeNull();
-
-      expect(queryByText('Locations')).toBeNull();
-
-      expect(queryByText('IUCN Conservation Actions Classification')).toBeNull();
-
-      expect(queryByText('Funding')).toBeNull();
-
-      expect(queryByText('Partnerships')).toBeNull();
 
       expect(asFragment()).toMatchSnapshot();
     });
@@ -182,6 +99,8 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
 
@@ -192,13 +111,15 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
+    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+
     const { getByText, getAllByText, queryByLabelText } = renderContainer();
 
     // wait for initial page to load
     await waitFor(() => {
       expect(getAllByText('Project Coordinator').length).toEqual(2);
 
-      expect(getByText('Permits')).toBeVisible();
+      expect(getByText('Project Permits')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
@@ -219,8 +140,11 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
+      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+
       history.push('/home');
       history.push('/projects/create');
+
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
@@ -238,8 +162,11 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
+      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+
       history.push('/home');
       history.push('/projects/create');
+
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
@@ -255,8 +182,11 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
+      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+
       history.push('/home');
       history.push('/projects/create');
+
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
 
@@ -274,6 +204,7 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
+      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
     });
 
     it('preloads draft data and populates on form fields', async () => {

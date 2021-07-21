@@ -262,55 +262,6 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
 };
 
 /**
- * SQL query to insert a permit row for permit associated to a project.
- *
- * @param permit_number
- * @param permit_type
- * @param projectId
- * @returns {SQLStatement} sql query object
- */
-export const postProjectPermitSQL = (
-  permit_number: string,
-  permit_type: string,
-  projectId: number
-): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectPermitSQL',
-    message: 'params',
-    permit_number,
-    permit_type,
-    projectId
-  });
-
-  if (!permit_number || !permit_type || !projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-      INSERT INTO permit (
-        project_id,
-        number,
-        type
-      ) VALUES (
-        ${projectId},
-        ${permit_number},
-        ${permit_type}
-      )
-      RETURNING
-        permit_id as id;
-    `;
-
-  defaultLog.debug({
-    label: 'postProjectPermitSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to insert a project IUCN row.
  *
  * @param iucn3_id

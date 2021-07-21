@@ -96,17 +96,6 @@ declare module 'yup' {
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
 
     /**
-     * Determine if the array of permits has at least one permit with sampling conducted
-     *
-     * @param {string} message='Permit numbers must be unique and you must have at least one permit with sampling conducted' - error message if this check fails
-     * @return {*} {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
-     * @memberof ArraySchema
-     */
-    isUniquePermitsAndAtLeastOneSamplingConducted(
-      message: string
-    ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
-
-    /**
      * Determine if the array of classification details has duplicates
      *
      * @param {string} message='IUCN Classifications must be unique' - error message if this check fails

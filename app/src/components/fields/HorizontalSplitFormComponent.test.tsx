@@ -1,13 +1,13 @@
 import { render } from '@testing-library/react';
-import CreateSurveySection from './CreateSurveySection';
+import HorizontalSplitFormComponent from './HorizontalSplitFormComponent';
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
-describe('Create Survey Section', () => {
+describe('HorizontalSplitFormComponent', () => {
   it('renders correctly', () => {
     const { asFragment } = render(
-      <CreateSurveySection
+      <HorizontalSplitFormComponent
         title="Section title"
         summary="Section summary"
         component={

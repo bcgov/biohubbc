@@ -159,6 +159,12 @@ const Header: React.FC = () => {
               id="menu_projects"
             />
             <SecureLink
+              to="/permits"
+              label="Permits"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+              id="menu_permits"
+            />
+            <SecureLink
               to="/admin/users"
               label="Manage Users"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}

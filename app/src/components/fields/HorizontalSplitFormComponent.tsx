@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
-export interface ICreateSurveySectionProps {
+export interface IHorizontalSplitFormComponentProps {
   title: string;
   summary: string;
   component: any;
@@ -13,7 +13,7 @@ export interface ICreateSurveySectionProps {
  *
  * @return {*}
  */
-const CreateSurveySection: React.FC<ICreateSurveySectionProps> = (props) => {
+const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps> = (props) => {
   const { title, summary, component } = props;
 
   return (
@@ -35,4 +35,4 @@ const CreateSurveySection: React.FC<ICreateSurveySectionProps> = (props) => {
   );
 };
 
-export default CreateSurveySection;
+export default HorizontalSplitFormComponent;
