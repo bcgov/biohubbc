@@ -19,6 +19,32 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
+  it('getTemplateObservationsSignedURL works as expected', async () => {
+    const templateId = 4;
+
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`)
+      .reply(200, 'www.signedurl.com');
+
+    const result = await useSurveyApi(axios).getTemplateObservationsSignedURL(projectId, surveyId, templateId);
+
+    expect(result).toEqual('www.signedurl.com');
+  });
+
+  it('getSurveyPermits works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/permits/list`).reply(200, [
+      {
+        number: '123',
+        type: 'wildlife'
+      }
+    ]);
+
+    const result = await useSurveyApi(axios).getSurveyPermits(projectId);
+
+    expect(result[0].number).toEqual('123');
+    expect(result[0].type).toEqual('wildlife');
+  });
+
   it('getSurveyFundingSources works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
       {
