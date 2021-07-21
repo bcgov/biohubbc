@@ -58,4 +58,32 @@ describe('usePermitApi', () => {
 
     expect(result).toEqual(res);
   });
+
+  it('createPermits works as expected', async () => {
+    const permitData = {
+      permit: {
+        permits: [
+          {
+            permit_number: 'number',
+            permit_type: 'type'
+          }
+        ]
+      },
+      coordinator: {
+        first_name: 'first',
+        last_name: 'last',
+        email_address: 'email@example.com',
+        coordinator_agency: 'agency',
+        share_contact_details: 'true'
+      }
+    };
+
+    mock.onPost('/api/permit/create-no-sampling').reply(200, {
+      ids: [1]
+    });
+
+    const result = await usePermitApi(axios).createPermits(permitData);
+
+    expect(result).toEqual({ ids: [1] });
+  });
 });
