@@ -53,7 +53,7 @@ export const insertSurveyOccurrenceSubmissionSQL = (
 };
 
 /**
- * SQL query to get all occurrence submissions for a survey.
+ * SQL query to get latest occurrence submission for a survey.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
