@@ -1,6 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { insertSurveyOccurrenceSubmissionSQL } from './survey-occurrence-queries';
+import {
+  deleteSurveyOccurrencesSQL,
+  getLatestSurveyOccurrenceSubmission,
+  insertSurveyOccurrenceSubmissionSQL
+} from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
   it('returns null response when null surveyId provided', () => {
@@ -23,6 +27,34 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getLatestSurveyOccurrenceSubmission', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getLatestSurveyOccurrenceSubmission((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getLatestSurveyOccurrenceSubmission(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteSurveyOccurrencesSQL', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
+    const response = deleteSurveyOccurrencesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = deleteSurveyOccurrencesSQL(1);
 
     expect(response).to.not.be.null;
   });
