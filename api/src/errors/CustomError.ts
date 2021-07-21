@@ -48,7 +48,7 @@ export class HTTP500 extends CustomError {
  * If `error` is not a `CustomError`, wrap it into an `HTTP500` error.
  *
  * @param {Error} error
- * @param {strign} [message]
+ * @param {string} [message]
  * @return {*}
  */
 export const ensureCustomError = (error: Error) => {
