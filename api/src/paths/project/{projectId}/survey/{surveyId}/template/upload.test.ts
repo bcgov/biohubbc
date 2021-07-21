@@ -129,7 +129,7 @@ describe('uploadMedia', () => {
   it('should throw a 400 error when no sql statement returned', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_occurrence_queries, 'postSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(null);
 
     const result = upload.uploadMedia();
 
@@ -138,7 +138,7 @@ describe('uploadMedia', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Upload was not successful');
+      expect(actualError.message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -155,7 +155,7 @@ describe('uploadMedia', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'postSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     const result = upload.uploadMedia();
 
@@ -164,7 +164,7 @@ describe('uploadMedia', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Upload was not successful');
+      expect(actualError.message).to.equal('Failed to insert survey occurrence submission record');
     }
   });
 
@@ -181,9 +181,9 @@ describe('uploadMedia', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'postSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
-    sinon.stub(file_utils, 'uploadFileToS3').rejects();
+    sinon.stub(file_utils, 'uploadFileToS3').rejects('Upload was not successful');
 
     const result = upload.uploadMedia();
 
@@ -191,7 +191,7 @@ describe('uploadMedia', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
+      expect(actualError.status).to.equal(500);
       expect(actualError.message).to.equal('Upload was not successful');
     }
   });
@@ -209,7 +209,7 @@ describe('uploadMedia', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'postSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 

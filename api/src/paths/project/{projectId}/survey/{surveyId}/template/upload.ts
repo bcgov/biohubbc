@@ -4,8 +4,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import { postSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
+import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
+import { insertSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -122,6 +122,7 @@ export function uploadMedia(): RequestHandler {
       await insertSurveyOccurrenceSubmission(Number(req.params.surveyId), 'BioHub', key, connection);
 
       const metadata = {
+        filename: rawMediaFile.originalname,
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
@@ -134,7 +135,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw new HTTP400('Upload was not successful');
+      throw ensureCustomError(error);
     } finally {
       connection.release();
     }
@@ -156,7 +157,7 @@ export const insertSurveyOccurrenceSubmission = async (
   key: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const insertSqlStatement = postSurveyOccurrenceSubmissionSQL(surveyId, source, key);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

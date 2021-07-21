@@ -1,28 +1,60 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { postSurveyOccurrenceSubmissionSQL } from './survey-occurrence-queries';
+import {
+  deleteSurveyOccurrencesSQL,
+  getLatestSurveyOccurrenceSubmission,
+  insertSurveyOccurrenceSubmissionSQL
+} from './survey-occurrence-queries';
 
-describe('postSurveyOccurrenceSubmissionSQL', () => {
+describe('insertSurveyOccurrenceSubmissionSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = postSurveyOccurrenceSubmissionSQL((null as unknown) as number, 'fileSource', 'fileKey');
+    const response = insertSurveyOccurrenceSubmissionSQL((null as unknown) as number, 'fileSource', 'fileKey');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null source provided', () => {
-    const response = postSurveyOccurrenceSubmissionSQL(1, (null as unknown) as string, 'fileKey');
+    const response = insertSurveyOccurrenceSubmissionSQL(1, (null as unknown) as string, 'fileKey');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null key provided', () => {
-    const response = postSurveyOccurrenceSubmissionSQL(1, 'fileSource', (null as unknown) as string);
+    const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = postSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey');
+    const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getLatestSurveyOccurrenceSubmission', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getLatestSurveyOccurrenceSubmission((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getLatestSurveyOccurrenceSubmission(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteSurveyOccurrencesSQL', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
+    const response = deleteSurveyOccurrencesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = deleteSurveyOccurrencesSQL(1);
 
     expect(response).to.not.be.null;
   });

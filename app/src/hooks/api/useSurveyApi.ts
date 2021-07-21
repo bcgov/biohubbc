@@ -270,7 +270,21 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     return data;
   };
+  
+  /**
+   * Publish/unpublish a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
+   * @return {*}  {Promise<any>}
+   */
+  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
 
+    return data;
+  };
+  
   return {
     createSurvey,
     getSurveyForView,
@@ -286,7 +300,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyPermits,
     uploadTemplateObservations,
     getSurveyFundingSources,
-    getTemplateObservations
+    getTemplateObservations,
+    publishSurvey
   };
 };
 

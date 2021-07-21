@@ -234,9 +234,12 @@ const ProjectPage: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  // Show delete button if you are a system admin or a project admin
   const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
-  const disableDeleteProjectButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !!projectWithDetails.project.publish_date;
+  // Enable delete button if you a system admin OR a project admin and the project is not published
+  const enableDeleteProjectButton =
+    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
+    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !projectWithDetails.project.publish_date);
 
   return (
     <>
@@ -293,7 +296,7 @@ const ProjectPage: React.FC = () => {
                 <Tooltip
                   arrow
                   color="secondary"
-                  title={disableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
+                  title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
                   <>
                     <Button
                       variant="outlined"
@@ -302,7 +305,7 @@ const ProjectPage: React.FC = () => {
                       data-testid="delete-project-button"
                       startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                       onClick={showDeleteProjectDialog}
-                      disabled={disableDeleteProjectButton}>
+                      disabled={!enableDeleteProjectButton}>
                       Delete Project
                     </Button>
                   </>
