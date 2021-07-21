@@ -118,6 +118,10 @@ export const getLogOutUrl = (config: IConfig): string | undefined => {
 };
 
 export const getFormattedFileSize = (fileSize: number) => {
+  if (!fileSize) {
+    return `0 KB`;
+  }
+
   // kilobyte size
   if (fileSize < 1000000) {
     return `${(fileSize / 1000).toFixed(1)} KB`;

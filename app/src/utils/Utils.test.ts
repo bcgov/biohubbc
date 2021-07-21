@@ -5,6 +5,7 @@ import {
   getFormattedAmount,
   getFormattedDate,
   getFormattedDateRangeString,
+  getFormattedFileSize,
   getLogOutUrl
 } from './Utils';
 
@@ -191,5 +192,27 @@ describe('getLogOutUrl', () => {
     expect(getLogOutUrl(config)).toEqual(
       'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/login&retnow=1'
     );
+  });
+});
+
+describe('getFormattedFileSize', () => {
+  it('returns `NaN GB` if no file size exists', async () => {
+    const formattedFileSize = getFormattedFileSize(null as unknown);
+    expect(formattedFileSize).toEqual('0 KB');
+  });
+
+  it('returns answer in KB if fileSize < 1000000', async () => {
+    const formattedFileSize = getFormattedFileSize(20000);
+    expect(formattedFileSize).toEqual('20.0 KB');
+  });
+
+  it('returns answer in MB if fileSize < 1000000000', async () => {
+    const formattedFileSize = getFormattedFileSize(200000000);
+    expect(formattedFileSize).toEqual('200.0 MB');
+  });
+
+  it('returns answer in GB if fileSize >= 1000000000', async () => {
+    const formattedFileSize = getFormattedFileSize(1000000000);
+    expect(formattedFileSize).toEqual('1.0 GB');
   });
 });
