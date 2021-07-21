@@ -18,7 +18,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
-import { getFormattedDate } from 'utils/Utils';
+import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 
 const useStyles = makeStyles({
   table: {
@@ -110,21 +110,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     } catch (error) {
       return error;
     }
-  };
-
-  const getFormattedFileSize = (fileSize: number) => {
-    // kilobyte size
-    if (fileSize < 1000000) {
-      return `${(fileSize / 1000).toFixed(1)} KB`;
-    }
-
-    // megabyte size
-    if (fileSize < 1000000000) {
-      return `${(fileSize / 1000000).toFixed(1)} MB`;
-    }
-
-    // gigabyte size
-    return `${(fileSize / 1000000000).toFixed(1)} GB`;
   };
 
   return (
