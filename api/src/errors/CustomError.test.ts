@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { HTTP400, HTTP401, HTTP403, HTTP409, HTTP500 } from './CustomError';
+import { CustomError, ensureCustomError, HTTP400, HTTP401, HTTP403, HTTP409, HTTP500 } from './CustomError';
 
 describe('CustomError', () => {
   describe('No error value provided', () => {
@@ -29,5 +29,28 @@ describe('CustomError', () => {
     it('sets status code 500', function () {
       expect(new HTTP500(message).status).to.equal(500);
     });
+  });
+});
+
+describe('ensureCustomError', () => {
+  it('returns the original CustomError when a CustomError provided', function () {
+    const customError = new HTTP400('a custom error');
+
+    const ensuredError = ensureCustomError(customError);
+
+    expect(ensuredError).to.be.instanceof(CustomError);
+
+    expect(ensuredError).to.deep.equal(customError);
+  });
+
+  it('returns a CustomError when a non custom Error provided', function () {
+    const nonCustomError = new Error('a non custom error');
+
+    const ensuredError = ensureCustomError(nonCustomError);
+
+    expect(ensuredError).to.be.instanceof(CustomError);
+
+    expect(ensuredError.status).to.equal(500);
+    expect(ensuredError.message).to.equal('a non custom error');
   });
 });

@@ -56,5 +56,5 @@ export const ensureCustomError = (error: Error) => {
     return error;
   }
 
-  return new HTTP500(error.name, [error.stack || '']);
+  return new HTTP500(error.message || error.name, [error.stack || '']);
 };
