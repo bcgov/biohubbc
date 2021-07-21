@@ -6,7 +6,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { postSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
 
@@ -110,11 +110,14 @@ export function uploadMedia(): RequestHandler {
 
       const rawMediaFile = rawMediaArray[0];
 
-      const key = generateS3FileKey({
-        projectId: Number(req.params.projectId),
-        surveyId: Number(req.params.surveyId),
-        fileName: rawMediaFile.originalname
-      });
+      // const key = generateS3FileKey({
+      //   projectId: Number(req.params.projectId),
+      //   surveyId: Number(req.params.surveyId),
+      //   fileName: rawMediaFile.originalname
+      // });
+
+      // temporary generation of template observation key (to differentiate from survey attachments)
+      const key = `projects/${req.params.projectId}/surveys/${req.params.surveyId}/template/${rawMediaFile.originalname}`;
 
       await connection.open();
 

@@ -17,15 +17,24 @@ export const getTemplateObservationsSQL = (surveyId: number): SQLStatement | nul
   }
 
   const sqlStatement: SQLStatement = SQL`
-    SELECT
-      occurrence_submission_id as id,
-      update_date,
-      create_date,
-      key
-    from
-      occurrence_submission
-    where
-      survey_id = ${surveyId};
+  SELECT
+    os.occurrence_submission_id as id,
+    os.update_date,
+    os.create_date,
+    os.key,
+    os_uniq.occurrence_submission_id as id2
+  from
+    occurrence_submission os
+  left outer join (
+    select key, max(occurrence_submission_id) as occurrence_submission_id from occurrence_submission
+    group by key
+    ) os_uniq
+    on os.key = os_uniq.key
+    and os.occurrence_submission_id = os_uniq.occurrence_submission_id
+  where
+    os_uniq.occurrence_submission_id is not null
+  and
+    os.survey_id = ${surveyId};
   `;
 
   defaultLog.debug({

@@ -253,6 +253,24 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey attachment S3 url based on survey and attachment ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getTemplateObservationsSignedURL = async (
+    projectId: number,
+    surveyId: number,
+    templateId: number
+  ): Promise<string> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -263,6 +281,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
+    getTemplateObservationsSignedURL,
     deleteSurvey,
     getSurveyPermits,
     uploadTemplateObservations,
