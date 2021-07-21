@@ -19,6 +19,22 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
+  it('getSurveyFundingSources works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
+      {
+        pfsId: 1,
+        amount: 100,
+        startDate: '2020/04/04',
+        endDate: '2020/05/05',
+        agencyName: 'agency'
+      }
+    ]);
+
+    const result = await useSurveyApi(axios).getSurveyFundingSources(projectId);
+
+    expect(result[0].pfsId).toEqual(1);
+  });
+
   it('createSurvey works as expected', async () => {
     mock.onPost(`api/project/${projectId}/survey/create`).reply(200, {
       id: 1
