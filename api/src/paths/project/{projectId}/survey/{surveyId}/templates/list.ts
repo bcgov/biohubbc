@@ -49,6 +49,9 @@ GET.apiDoc = {
             items: {
               type: 'object',
               properties: {
+                id: {
+                  type: 'number'
+                },
                 fileName: {
                   description: 'The file name of the attachment',
                   type: 'string'
@@ -56,6 +59,9 @@ GET.apiDoc = {
                 lastModified: {
                   description: 'The date the object was last modified',
                   type: 'string'
+                },
+                size: {
+                  type: 'number'
                 }
               }
             }
