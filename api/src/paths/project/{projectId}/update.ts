@@ -18,9 +18,7 @@ import {
   IGetPutIUCN,
   GetLocationData,
   PutFundingSource,
-  GetPermitData,
-  IPutPermit,
-  PutPermitData
+  GetPermitData
 } from '../../../models/project-update';
 import { GetFundingData } from '../../../models/project-view-update';
 import {
@@ -44,7 +42,7 @@ import {
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteRegionsSQL,
-  deleteFundingSourceSQL,
+  deleteProjectFundingSourceSQL,
   deletePermitSQL
 } from '../../../queries/project/project-delete-queries';
 import {
@@ -60,9 +58,11 @@ import {
   insertRegion,
   insertProjectActivity,
   insertStakeholderPartnership,
-  insertPermitNumber
+  insertPermit,
+  associateExistingPermitToProject
 } from '../../project';
-import { insertNoSamplePermit } from '../../permit-no-sampling';
+import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
+import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../queries/survey/survey-delete-queries';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -538,12 +538,11 @@ export const updateProjectPermitData = async (
   entities: IUpdateProject,
   connection: IDBConnection
 ): Promise<void> => {
-  const putPermitData = new PutPermitData(entities.permit);
-  const putCoordinatorData = new PutCoordinatorData(entities.coordinator);
-
-  if (!putPermitData.permits || !putPermitData.permits.length) {
+  if (!entities.permit) {
     throw new HTTP400('Missing request body entity `permit`');
   }
+
+  const putPermitData = new PostPermitData(entities.permit);
 
   const sqlDeleteStatement = deletePermitSQL(projectId);
 
@@ -558,15 +557,17 @@ export const updateProjectPermitData = async (
   }
 
   const insertPermitPromises =
-    putPermitData?.permits?.map((permit: IPutPermit) => {
-      if (permit.sampling_conducted) {
-        return insertPermitNumber(permit.permit_number, permit.permit_type, projectId, connection);
-      }
-
-      insertNoSamplePermit(permit, putCoordinatorData, connection);
+    putPermitData?.permits?.map((permit: IPostPermit) => {
+      return insertPermit(permit.permit_number, permit.permit_type, projectId, connection);
     }) || [];
 
-  await Promise.all(insertPermitPromises);
+  // Handle existing non-sampling permits which are now being associated to a project
+  const updateExistingPermitPromises =
+    putPermitData?.existing_permits?.map((existing_permit: IPostExistingPermit) => {
+      return associateExistingPermitToProject(existing_permit.permit_id, projectId, connection);
+    }) || [];
+
+  await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
 };
 
 export const updateProjectRegionsData = async (
@@ -741,15 +742,28 @@ export const updateProjectFundingData = async (
 ): Promise<void> => {
   const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
-  const sqlDeleteStatement = deleteFundingSourceSQL(projectId, putFundingSource?.id);
+  const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(putFundingSource?.id);
+  const projectFundingSourceDeleteStatement = deleteProjectFundingSourceSQL(projectId, putFundingSource?.id);
 
-  if (!sqlDeleteStatement) {
+  if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
   }
 
-  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
+  const surveyFundingSourceDeleteResult = await connection.query(
+    surveyFundingSourceDeleteStatement.text,
+    surveyFundingSourceDeleteStatement.values
+  );
 
-  if (!deleteResult) {
+  if (!surveyFundingSourceDeleteResult) {
+    throw new HTTP409('Failed to delete survey funding source');
+  }
+
+  const projectFundingSourceDeleteResult = await connection.query(
+    projectFundingSourceDeleteStatement.text,
+    projectFundingSourceDeleteStatement.values
+  );
+
+  if (!projectFundingSourceDeleteResult) {
     throw new HTTP409('Failed to delete project funding source');
   }
 

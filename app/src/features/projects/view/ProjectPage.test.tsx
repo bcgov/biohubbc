@@ -32,8 +32,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const hasSystemRoleMock = jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false);
-
 const defaultAuthState = {
   keycloakWrapper: {
     keycloak: {
@@ -43,7 +41,7 @@ const defaultAuthState = {
     systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
     getUserIdentifier: () => 'testuser',
     hasAccessRequest: false,
-    hasSystemRole: hasSystemRoleMock,
+    hasSystemRole: () => true,
     getIdentitySource: () => 'idir',
     username: 'testusername',
     displayName: 'testdisplayname',
@@ -109,8 +107,16 @@ describe('ProjectPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
+    const authState = {
+      keycloakWrapper: {
+        ...defaultAuthState.keycloakWrapper,
+        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
+        hasSystemRole: () => true
+      }
+    };
+
     const { getByTestId, findByText, getByText } = render(
-      <AuthStateContext.Provider value={(defaultAuthState as unknown) as IAuthState}>
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
         <DialogContextProvider>
           <Router history={history}>
             <ProjectPage />
@@ -137,37 +143,6 @@ describe('ProjectPage', () => {
     });
   });
 
-  it('sees delete project button as disabled when accessing a published project as a project administrator', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      activity: [{ id: 1, name: 'activity 1' }]
-    } as any);
-    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject.mockResolvedValue(true);
-
-    const authState = {
-      keycloakWrapper: {
-        ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        hasSystemRole: () => true
-      }
-    };
-
-    const { getByTestId, findByText } = render(
-      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
-        <DialogContextProvider>
-          <Router history={history}>
-            <ProjectPage />
-          </Router>
-        </DialogContextProvider>
-      </AuthStateContext.Provider>
-    );
-
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
-    expect(projectHeaderText).toBeVisible();
-
-    expect(getByTestId('delete-project-button')).toBeDisabled();
-  });
-
   it('sees delete project button as enabled when accessing an unpublished project as a project administrator', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
@@ -182,7 +157,7 @@ describe('ProjectPage', () => {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        hasSystemRole: () => true
+        hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
       }
     };
 
@@ -216,7 +191,7 @@ describe('ProjectPage', () => {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
         systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
-        hasSystemRole: () => true
+        hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
       }
     };
 
@@ -241,7 +216,6 @@ describe('ProjectPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockBiohubApi().project.deleteProject.mockResolvedValue(true);
 
     const authState = {
       keycloakWrapper: {

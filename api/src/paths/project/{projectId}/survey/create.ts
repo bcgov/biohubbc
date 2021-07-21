@@ -6,6 +6,7 @@ import { HTTP400 } from '../../../../errors/CustomError';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
 import {
+  insertSurveyFundingSourceSQL,
   postAncillarySpeciesSQL,
   postFocalSpeciesSQL,
   postNewSurveyPermitSQL,
@@ -138,13 +139,24 @@ export function createSurvey(): RequestHandler {
         );
 
         // Handle inserting any permit associated to this survey
+        if (sanitizedPostSurveyData.permit_number) {
+          promises.push(
+            insertSurveyPermit(
+              sanitizedPostSurveyData.permit_number,
+              sanitizedPostSurveyData.permit_type,
+              projectId,
+              surveyId,
+              connection
+            )
+          );
+        }
+
+        // Handle inserting any funding sources associated to this survey
         promises.push(
-          insertSurveyPermit(
-            sanitizedPostSurveyData.permit_number,
-            sanitizedPostSurveyData.permit_type,
-            projectId,
-            surveyId,
-            connection
+          Promise.all(
+            sanitizedPostSurveyData.funding_sources.map((fsId: number) =>
+              insertSurveyFundingSource(fsId, surveyId, connection)
+            )
           )
         );
 
@@ -234,18 +246,20 @@ export const insertSurveyProprietor = async (
 };
 
 export const insertSurveyPermit = async (
-  permit_number: string,
-  permit_type: string | null,
-  project_id: number,
-  survey_id: number,
+  permitNumber: string,
+  permitType: string | null,
+  projectId: number,
+  surveyId: number,
   connection: IDBConnection
-): Promise<boolean> => {
+): Promise<void> => {
   let sqlStatement;
 
-  if (!permit_type) {
-    sqlStatement = putNewSurveyPermitNumberSQL(survey_id, permit_number);
+  if (!permitType) {
+    sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);
   } else {
-    sqlStatement = postNewSurveyPermitSQL(project_id, survey_id, permit_number, permit_type);
+    const systemUserId = connection.systemUserId();
+
+    sqlStatement = postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
   }
 
   if (!sqlStatement) {
@@ -257,6 +271,22 @@ export const insertSurveyPermit = async (
   if (!response) {
     throw new HTTP400('Failed to insert survey permit number data');
   }
+};
 
-  return true;
+export const insertSurveyFundingSource = async (
+  funding_source_id: number,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertSurveyFundingSourceSQL(survey_id, funding_source_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL statement for insertSurveyFundingSource');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to insert survey funding source data');
+  }
 };

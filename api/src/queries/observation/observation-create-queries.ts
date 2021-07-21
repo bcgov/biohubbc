@@ -24,7 +24,7 @@ export const postBlockObservationSQL = (
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO block_observation (
       b_id,
-      s_id,
+      survey_id,
       start_datetime,
       end_datetime,
       observation_cnt,
@@ -38,7 +38,7 @@ export const postBlockObservationSQL = (
       ${observationPostData.observation_data}
     )
     RETURNING
-      id
+      block_observation_id as id;
   `;
 
   defaultLog.debug({

@@ -132,6 +132,20 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
             123 - Scientific
           </dd>
         </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Funding Sources
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
+          </dd>
+        </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -297,6 +311,20 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
             class="MuiTypography-root MuiTypography-body1"
           >
             123 - Scientific
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Funding Sources
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Funding Agency Blah | $ 100 | April 09, 2000 - May 10, 2000
           </dd>
         </div>
       </div>

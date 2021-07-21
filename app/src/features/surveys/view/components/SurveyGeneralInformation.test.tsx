@@ -11,7 +11,8 @@ const mockUseBiohubApi = {
   survey: {
     getSurveyForUpdate: jest.fn(),
     updateSurvey: jest.fn(),
-    getSurveyPermits: jest.fn()
+    getSurveyPermits: jest.fn(),
+    getSurveyFundingSources: jest.fn()
   }
 };
 
@@ -38,6 +39,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockClear();
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
+    mockBiohubApi().survey.getSurveyFundingSources.mockClear();
   });
 
   afterEach(() => {
@@ -84,12 +86,25 @@ describe('SurveyGeneralInformation', () => {
         biologist_first_name: 'firstttt',
         biologist_last_name: 'lastttt',
         survey_area_name: 'study area is this',
+        geometry: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [125.6, 10.1]
+          },
+          properties: {
+            name: 'Dinagat Islands'
+          }
+        },
         revision_count: 1
       }
     });
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
       { number: '123', type: 'Scientific' },
       { number: '456', type: 'Wildlife' }
+    ]);
+    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
     ]);
 
     const { getByText, queryByText } = renderContainer();
@@ -138,7 +153,18 @@ describe('SurveyGeneralInformation', () => {
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
           survey_area_name: 'study area is this',
-          revision_count: 1
+          revision_count: 1,
+          geometry: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          },
+          permit_type: ''
         }
       });
 
@@ -211,6 +237,9 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
       { number: '123', type: 'Scientific' },
       { number: '456', type: 'Wildlife' }
+    ]);
+    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
     ]);
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 

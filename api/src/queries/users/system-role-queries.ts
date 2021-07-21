@@ -19,8 +19,8 @@ export const postSystemRolesSQL = (userId: number, roleIds: number[]): SQLStatem
 
   const sqlStatement = SQL`
     INSERT INTO system_user_role (
-      su_id,
-      sr_id
+      system_user_id,
+      system_role_id
     ) VALUES `;
 
   roleIds.forEach((roleId, index) => {
@@ -63,9 +63,9 @@ export const deleteSystemRolesSQL = (userId: number, roleIds: number[]): SQLStat
     DELETE FROM
       system_user_role
     WHERE
-      su_id = ${userId}
+      system_user_id = ${userId}
     AND
-      sr_id IN (`;
+      system_role_id IN (`;
 
   // Add first element
   sqlStatement.append(SQL`${roleIds[0]}`);

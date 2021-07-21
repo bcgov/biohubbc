@@ -444,8 +444,7 @@ describe('GetPermitData', () => {
       expect(projectPermitData.permits).to.eql([
         {
           permit_number: '1',
-          permit_type: 'permit type',
-          sampling_conducted: true
+          permit_type: 'permit type'
         }
       ]);
     });

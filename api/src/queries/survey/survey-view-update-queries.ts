@@ -22,7 +22,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
 
   const sqlStatement = SQL`
     SELECT
-      s.id,
+      s.survey_id as id,
       s.name,
       s.objectives,
       s.start_date,
@@ -34,29 +34,34 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.revision_count,
       per.number,
       per.type,
+      sfs.project_funding_source_id as pfs_id,
       s.publish_timestamp as publish_date,
       CASE
-        WHEN ss.is_focal = TRUE THEN wtu.id
+        WHEN ss.is_focal = TRUE THEN wtu.wldtaxonomic_units_id
       END as focal_species,
       CASE
-        WHEN ss.is_focal = FALSE THEN wtu.id
+        WHEN ss.is_focal = FALSE THEN wtu.wldtaxonomic_units_id
       END as ancillary_species
     FROM
       wldtaxonomic_units as wtu
     LEFT OUTER JOIN
       study_species as ss
     ON
-      ss.wu_id = wtu.id
+      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
     LEFT OUTER JOIN
       survey as s
     ON
-      s.id = ss.s_id
+      s.survey_id = ss.survey_id
     LEFT OUTER JOIN
       permit as per
     ON
-      per.s_id = s.id
+      per.survey_id = s.survey_id
+    LEFT OUTER JOIN
+      survey_funding_source as sfs
+    ON
+      sfs.survey_id = s.survey_id
     WHERE
-      s.id = ${surveyId};
+      s.survey_id = ${surveyId};
   `;
 
   defaultLog.debug({
@@ -88,27 +93,27 @@ export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement 
 
   const sqlStatement = SQL`
     SELECT
-      sp.id,
+      sp.survey_proprietor_id as id,
       prt.name as proprietor_type_name,
-      prt.id as proprietor_type_id,
+      prt.proprietor_type_id,
       fn.name as first_nations_name,
-      fn.id as first_nations_id,
+      fn.first_nations_id,
       sp.rationale as category_rationale,
       CASE
         WHEN sp.proprietor_name is not null THEN sp.proprietor_name
-        WHEN fn.id is not null THEN fn.name
+        WHEN fn.first_nations_id is not null THEN fn.name
       END as proprietor_name,
       sp.disa_required,
       sp.revision_count
     from
       survey_proprietor as sp
     left outer join proprietor_type as prt
-      on sp.prt_id = prt.id
+      on sp.proprietor_type_id = prt.proprietor_type_id
     left outer join first_nations as fn
-      on sp.fn_id is not null
-      and sp.fn_id = fn.id
+      on sp.first_nations_id is not null
+      and sp.first_nations_id = fn.first_nations_id
     where
-      s_id = ${surveyId};
+      survey_id = ${surveyId};
   `;
 
   defaultLog.debug({

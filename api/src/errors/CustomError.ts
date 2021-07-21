@@ -41,3 +41,20 @@ export class HTTP500 extends CustomError {
     super('Internal Server Error', 500, message, errors);
   }
 }
+
+/**
+ * Ensures that the error is a `CustomError`.
+ * If `error` is a `CustomError`, then change nothing and return it.
+ * If `error` is not a `CustomError`, wrap it into an `HTTP500` error.
+ *
+ * @param {Error} error
+ * @param {string} [message]
+ * @return {*}
+ */
+export const ensureCustomError = (error: Error) => {
+  if (error instanceof CustomError) {
+    return error;
+  }
+
+  return new HTTP500(error.message || error.name, [error.stack || '']);
+};

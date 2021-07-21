@@ -44,8 +44,6 @@ export function add_permits(navloc, permit_nr, permit_type, sampling) {
   cy.get('body').click()
   cy.get('#permits\\.\\[0\\]\\.permit_type').focus().type('{enter}')
   cy.get('[data-value="Wildlife Permit - General"]').click()
-  cy.get('#permits\\.\\[0\\]\\.sampling_conducted').focus().type('{enter}')
-  cy.get('[data-value="'+ (sampling || 'true') +'"]').click()
 }
 
 

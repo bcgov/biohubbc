@@ -4,7 +4,7 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
- * SQL query to get all permit numbers applicable for a survey
+ * SQL query to get all permits applicable for a survey
  *
  * These are permits that are associated to a project but have not been used by any
  * other surveys under that project
@@ -30,9 +30,9 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
     FROM
       permit
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
     AND
-      s_id IS NULL;
+      survey_id IS NULL;
   `;
 
   defaultLog.debug({
@@ -64,11 +64,11 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      id
+      survey_id as id
     FROM
       survey
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -100,7 +100,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      s.id,
+      s.survey_id as id,
       s.name,
       s.start_date,
       s.end_date,
@@ -114,13 +114,13 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
     LEFT OUTER JOIN
       study_species as ss
     ON
-      ss.wu_id = wtu.id
+      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
     LEFT OUTER JOIN
       survey as s
     ON
-      s.id = ss.s_id
+      s.survey_id = ss.survey_id
     WHERE
-      s.p_id = ${projectId};
+      s.project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -152,7 +152,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      s.id,
+      s.survey_id as id,
       s.name,
       s.objectives,
       s.start_date,
@@ -163,6 +163,11 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       public.ST_asGeoJSON(s.geography) as geometry,
       per.number,
       per.type,
+      sfs.project_funding_source_id as pfs_id,
+      pfs.funding_amount::numeric::int,
+      pfs.funding_start_date,
+      pfs.funding_end_date,
+      fs.name as agency_name,
       s.revision_count,
       s.publish_timestamp as publish_date,
       CASE
@@ -178,17 +183,33 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
     LEFT OUTER JOIN
       study_species as ss
     ON
-      ss.wu_id = wtu.id
+      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
     LEFT OUTER JOIN
       survey as s
     ON
-      s.id = ss.s_id
+      s.survey_id = ss.survey_id
     LEFT OUTER JOIN
       permit as per
     ON
-      per.s_id = s.id
+      per.survey_id = s.survey_id
+    LEFT OUTER JOIN
+      survey_funding_source as sfs
+    ON
+      sfs.survey_id = s.survey_id
+    LEFT OUTER JOIN
+      project_funding_source as pfs
+    ON
+      pfs.project_funding_source_id = sfs.project_funding_source_id
+    LEFT OUTER JOIN
+      investment_action_category as iac
+    ON
+      pfs.investment_action_category_id = iac.investment_action_category_id
+    LEFT OUTER JOIN
+      funding_source as fs
+    ON
+      iac.funding_source_id = fs.funding_source_id
     WHERE
-      s.id = ${surveyId};
+      s.survey_id = ${surveyId};
   `;
 
   defaultLog.debug({

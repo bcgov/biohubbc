@@ -175,35 +175,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual(['result 1', 'result 2']);
   });
 
-  it('createPermitNoSampling works as expected', async () => {
-    const permitData = {
-      permit: {
-        permits: [
-          {
-            permit_number: 'number',
-            permit_type: 'type',
-            sampling_conducted: 'true'
-          }
-        ]
-      },
-      coordinator: {
-        first_name: 'first',
-        last_name: 'last',
-        email_address: 'email@example.com',
-        coordinator_agency: 'agency',
-        share_contact_details: 'true'
-      }
-    };
-
-    mock.onPost('/api/permit-no-sampling').reply(200, {
-      ids: [1, 2, 3]
-    });
-
-    const result = await useProjectApi(axios).createPermitNoSampling(permitData);
-
-    expect(result).toEqual({ ids: [1, 2, 3] });
-  });
-
   it('createProject works as expected', async () => {
     const projectData = {
       coordinator: (null as unknown) as IProjectCoordinatorForm,

@@ -11,28 +11,35 @@ import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
-import React, { useEffect } from 'react';
+import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectPermitFormArrayItem {
   permit_number: string;
   permit_type: string;
-  sampling_conducted: string;
+}
+
+export interface IProjectExistingPermitFormArrayItem {
+  permit_id: number;
 }
 
 export interface IProjectPermitForm {
   permits: IProjectPermitFormArrayItem[];
+  existing_permits?: IProjectExistingPermitFormArrayItem[];
 }
 
 export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
   permit_number: '',
-  permit_type: '',
-  sampling_conducted: 'true'
+  permit_type: ''
 };
 
 export const ProjectPermitFormInitialValues: IProjectPermitForm = {
-  permits: []
+  permits: [],
+  existing_permits: []
 };
 
 export const ProjectPermitFormYupSchema = yup.object().shape({
@@ -41,8 +48,7 @@ export const ProjectPermitFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
-        permit_type: yup.string().required('Required'),
-        sampling_conducted: yup.string().required('Required')
+        permit_type: yup.string().required('Required')
       })
     )
     .isUniquePermitNumber('Permit numbers must be unique')
@@ -54,20 +60,14 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
     .of(
       yup.object().shape({
         permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
-        permit_type: yup.string().required('Required'),
-        sampling_conducted: yup.string().required('Required')
+        permit_type: yup.string().required('Required')
       })
     )
-    .isUniquePermitsAndAtLeastOneSamplingConducted(
-      'Permit numbers must be unique and you must have at least one permit with sampling conducted'
-    )
+    .isUniquePermitNumber('Permit numbers must be unique')
 });
 
 export interface IProjectPermitFormProps {
-  /**
-   * Emits every time a form value changes.
-   */
-  onValuesChange?: (values: IProjectPermitForm) => void;
+  non_sampling_permits?: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -78,12 +78,18 @@ export interface IProjectPermitFormProps {
 const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
 
-  useEffect(() => {
-    props?.onValuesChange?.(values);
-  }, [values, props]);
-
   return (
     <form onSubmit={handleSubmit}>
+      {props.non_sampling_permits && props.non_sampling_permits.length > 0 && (
+        <Box pb={4}>
+          <MultiAutocompleteFieldVariableSize
+            id="existing_permits"
+            label="Select Existing Permits"
+            options={props.non_sampling_permits}
+            required={false}
+          />
+        </Box>
+      )}
       <FieldArray
         name="permits"
         render={(arrayHelpers) => (
@@ -92,11 +98,11 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
               {values.permits?.map((permit, index) => {
                 const permitNumberMeta = getFieldMeta(`permits.[${index}].permit_number`);
                 const permitTypeMeta = getFieldMeta(`permits.[${index}].permit_type`);
-                const samplingConductedMeta = getFieldMeta(`permits.[${index}].sampling_conducted`);
+
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
-                      <Box flexBasis="30%" pr={1}>
+                      <Box flexBasis="45%" pr={1}>
                         <CustomTextField
                           name={`permits.[${index}].permit_number`}
                           label="Permit Number"
@@ -108,7 +114,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                           }}
                         />
                       </Box>
-                      <Box flexBasis="40%" pl={1}>
+                      <Box flexBasis="55%" pl={1}>
                         <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
                           <InputLabel id="permit_type">Permit Type</InputLabel>
                           <Select
@@ -132,29 +138,6 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                             </MenuItem>
                           </Select>
                           <FormHelperText>{permitTypeMeta.touched && permitTypeMeta.error}</FormHelperText>
-                        </FormControl>
-                      </Box>
-                      <Box flexBasis="30%" pl={1}>
-                        <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="sampling_conducted">Sampling Conducted</InputLabel>
-                          <Select
-                            id={`permits.[${index}].sampling_conducted`}
-                            name={`permits.[${index}].sampling_conducted`}
-                            labelId="sampling_conducted"
-                            label="Sampling Conducted"
-                            value={permit.sampling_conducted}
-                            onChange={handleChange}
-                            error={samplingConductedMeta.touched && Boolean(samplingConductedMeta.error)}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'sampling conducted', 'data-testid': 'sampling_conducted' }}>
-                            <MenuItem key={1} value="false">
-                              No
-                            </MenuItem>
-                            <MenuItem key={2} value="true">
-                              Yes
-                            </MenuItem>
-                          </Select>
-                          <FormHelperText>{samplingConductedMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
                       <Box pt={0.5} pl={1}>
@@ -183,7 +166,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                 color="primary"
                 aria-label="add permit"
                 onClick={() => arrayHelpers.push(ProjectPermitFormArrayItemInitialValues)}>
-                Add Permit
+                Add New Permit
               </Button>
             </Box>
           </Box>

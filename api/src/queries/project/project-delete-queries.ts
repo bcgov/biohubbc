@@ -24,7 +24,7 @@ export const deleteRegionsSQL = (projectId: number): SQLStatement | null => {
     DELETE
       from project_region
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -58,7 +58,7 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
     DELETE
       from project_first_nation
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -92,7 +92,7 @@ export const deletePermitSQL = (projectId: number): SQLStatement | null => {
     DELETE
       from permit
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -126,7 +126,7 @@ export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatemen
     DELETE
       from stakeholder_partnership
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -160,7 +160,7 @@ export const deleteIUCNSQL = (projectId: number): SQLStatement | null => {
     DELETE
       from project_iucn_action_classification
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -194,7 +194,7 @@ export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
     DELETE FROM
       project_activity
     WHERE
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -214,12 +214,12 @@ export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
  * @param {pfsId} pfsId
  * @returns {SQLStatement} sql query object
  */
-export const deleteFundingSourceSQL = (
+export const deleteProjectFundingSourceSQL = (
   projectId: number | undefined,
   pfsId: number | undefined
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'deleteFundingSourceSQL',
+    label: 'deleteProjectFundingSourceSQL',
     message: 'params',
     projectId,
     pfsId
@@ -233,13 +233,13 @@ export const deleteFundingSourceSQL = (
     DELETE
       from project_funding_source
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
     AND
-      id = ${pfsId};
+      project_funding_source_id = ${pfsId};
   `;
 
   defaultLog.debug({
-    label: 'deleteFundingSourceSQL',
+    label: 'deleteProjectFundingSourceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

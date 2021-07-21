@@ -15,7 +15,7 @@ import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, SurveyPermits } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, SurveyFundingSources, SurveyPermits } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
@@ -29,7 +29,7 @@ import ProprietaryDataForm, {
   ProprietaryDataYupSchema
 } from './components/ProprietaryDataForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import CreateSurveySection from './CreateSurveySection';
+import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
@@ -37,7 +37,7 @@ import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocomple
 import yup from 'utils/YupSchema';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
-import { getFormattedDate } from 'utils/Utils';
+import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -112,6 +112,7 @@ const CreateSurveyPage = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<SurveyFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -202,17 +203,19 @@ const CreateSurveyPage = () => {
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const [projectWithDetailsResponse, surveyPermitsResponse] = await Promise.all([
+    const [projectWithDetailsResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
       biohubApi.project.getProjectForView(urlParams['id']),
-      biohubApi.survey.getSurveyPermits(urlParams['id'])
+      biohubApi.survey.getSurveyPermits(urlParams['id']),
+      biohubApi.survey.getSurveyFundingSources(urlParams['id'])
     ]);
 
-    if (!projectWithDetailsResponse || !surveyPermitsResponse) {
+    if (!projectWithDetailsResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
       // TODO error handling/messaging
       return;
     }
 
     setSurveyPermits(surveyPermitsResponse);
+    setSurveyFundingSources(surveyFundingSourcesResponse);
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, biohubApi.survey, urlParams]);
 
@@ -374,7 +377,7 @@ const CreateSurveyPage = () => {
               validateOnChange={false}
               onSubmit={() => {}}>
               <>
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="General Information"
                   summary="General Information Summary (to be completed)"
                   component={
@@ -389,19 +392,35 @@ const CreateSurveyPage = () => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
                         }) || []
                       }
+                      funding_sources={
+                        surveyFundingSources?.map((item) => {
+                          return {
+                            value: item.pfsId,
+                            label: `${item.agencyName} | ${getFormattedAmount(
+                              item.amount
+                            )} | ${getFormattedDateRangeString(
+                              DATE_FORMAT.ShortMediumDateFormat,
+                              item.startDate,
+                              item.endDate
+                            )}`
+                          };
+                        }) || []
+                      }
                       projectStartDate={projectWithDetails.project.start_date}
                       projectEndDate={projectWithDetails.project.end_date}
                     />
-                  }></CreateSurveySection>
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Study Area"
                   summary="Study Area Summary (to be completed)"
-                  component={<StudyAreaForm park={park} management_unit={management_unit} />}></CreateSurveySection>
+                  component={
+                    <StudyAreaForm park={park} management_unit={management_unit} />
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Proprietary Data"
                   summary="Proprietary Data Summary (to be completed)"
                   component={
@@ -417,13 +436,13 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                     />
-                  }></CreateSurveySection>
+                  }></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
-                <CreateSurveySection
+                <HorizontalSplitFormComponent
                   title="Agreements"
                   summary="Agreements Summary (to be completed)"
-                  component={<AgreementsForm />}></CreateSurveySection>
+                  component={<AgreementsForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
               </>
             </Formik>

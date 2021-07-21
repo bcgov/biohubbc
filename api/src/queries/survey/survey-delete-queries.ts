@@ -4,6 +4,76 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-delete-queries');
 
 /**
+ * SQL query to delete survey funding sources rows based on survey id.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_funding_source
+    WHERE
+      survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete survey funding sources rows based on project funding source id.
+ *
+ * @param {number | undefined} projectFundingSourceId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
+  projectFundingSourceId: number | undefined
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
+    message: 'params',
+    projectFundingSourceId
+  });
+
+  if (!projectFundingSourceId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_funding_source
+    WHERE
+      project_funding_source_id = ${projectFundingSourceId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete survey focal species rows.
  *
  * @param {number} surveyId
@@ -24,7 +94,7 @@ export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => 
     DELETE
       from study_species
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
       is_focal;
   `;
@@ -60,7 +130,7 @@ export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null
     DELETE
       from study_species
     WHERE
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
     AND
       is_focal is FALSE;
   `;
@@ -98,9 +168,9 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
     DELETE
       from survey_proprietor
     WHERE
-      id = ${surveyProprietorId}
+      survey_proprietor_id = ${surveyProprietorId}
     AND
-      s_id = ${surveyId}
+      survey_id = ${surveyId}
   `;
 
   defaultLog.debug({

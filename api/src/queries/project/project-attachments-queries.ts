@@ -18,7 +18,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      project_attachment_id as id,
       file_name,
       update_date,
       create_date,
@@ -27,7 +27,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
     from
       project_attachment
     where
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({
@@ -58,9 +58,9 @@ export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: numb
     DELETE
       from project_attachment
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
     AND
-      id = ${attachmentId}
+      project_attachment_id = ${attachmentId}
     RETURNING
       key;
   `;
@@ -95,9 +95,9 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
     FROM
       project_attachment
     WHERE
-      p_id = ${projectId}
+      project_id = ${projectId}
     AND
-      id = ${attachmentId};
+      project_attachment_id = ${attachmentId};
   `;
 
   defaultLog.debug({
@@ -116,28 +116,31 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
  * @param fileName
  * @param fileSize
  * @param projectId
+ * @param {string} key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postProjectAttachmentSQL = (
   fileName: string,
   fileSize: number,
-  projectId: number
+  projectId: number,
+  key: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectAttachmentSQL',
     message: 'params',
     fileName,
     fileSize,
-    projectId
+    projectId,
+    key
   });
 
-  if (!fileName || !fileSize || !projectId) {
+  if (!fileName || !fileSize || !projectId || !key) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project_attachment (
-      p_id,
+      project_id,
       file_name,
       file_size,
       key
@@ -145,10 +148,10 @@ export const postProjectAttachmentSQL = (
       ${projectId},
       ${fileName},
       ${fileSize},
-      ${projectId + '/' + fileName}
+      ${key}
     )
     RETURNING
-      id;
+      project_attachment_id as id;
   `;
 
   defaultLog.debug({
@@ -177,7 +180,7 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      id,
+      project_attachment_id as id,
       file_name,
       update_date,
       create_date,
@@ -185,7 +188,7 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
     from
       project_attachment
     where
-      p_id = ${projectId}
+      project_id = ${projectId}
     and
       file_name = ${fileName};
   `;
@@ -222,7 +225,7 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string): SQ
     WHERE
       file_name = ${fileName}
     AND
-      p_id = ${projectId};
+      project_id = ${projectId};
   `;
 
   defaultLog.debug({

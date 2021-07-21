@@ -3,7 +3,8 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
-import { GetSurveyDetailsData, GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
 import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
 import { getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
@@ -98,7 +99,7 @@ export function getSurveyForView(): RequestHandler {
 
       await connection.commit();
 
-      const getSurveyData = (surveyData && surveyData.rows && new GetSurveyDetailsData(surveyData.rows)) || null;
+      const getSurveyData = (surveyData && surveyData.rows && new GetViewSurveyDetailsData(surveyData.rows)) || null;
 
       const getSurveyProprietorData =
         (surveyProprietorData &&

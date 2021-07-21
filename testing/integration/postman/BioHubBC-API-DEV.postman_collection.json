@@ -1,120 +1,107 @@
 {
 	"info": {
-		"_postman_id": "ef2fe398-c57a-46e0-ba72-7c12b6db38ee",
-		"name": "BioHubBC-API-DEV",
+		"_postman_id": "34faa9c4-14df-4879-9524-c9ba6765abdb",
+		"name": "BioHubBC-API-DEV Copy",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "project",
+			"name": "draft",
 			"item": [
 				{
-					"name": "{projectId}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Successful POST request\", function () {\r",
-									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": null
 					},
+					"response": []
+				},
+				{
+					"name": "get",
 					"request": {
 						"method": "GET",
-						"header": [
-							{
-								"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-								"key": "Authorization",
-								"value": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{BASEURL}}/project/{{PROJECT_ID}}",
-							"host": [
-								"{{BASEURL}}"
-							],
-							"path": [
-								"project",
-								"{{PROJECT_ID}}"
-							]
-						},
-						"description": "Get a single project by its ID."
+						"header": [],
+						"url": null
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "projects",
+			"name": "dwc",
+			"item": [
+				{
+					"name": "validate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "permit",
+			"item": [
+				{
+					"name": "create-no-sampling",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "get-no-sampling",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "project",
 			"item": [
 				{
 					"name": "{projectId}",
 					"item": [
 						{
-							"name": "artifacts",
+							"name": "attachments",
 							"item": [
 								{
-									"name": "{fileName}",
+									"name": "{attachmentId}",
 									"item": [
 										{
-											"name": "download",
-											"event": [
-												{
-													"listen": "test",
-													"script": {
-														"exec": [
-															"pm.test(\"Successful GET request\", function () {",
-															"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
-															"});",
-															"",
-															"pm.test(\"Response time is less than 2000ms\", function () {",
-															"    pm.expect(pm.response.responseTime).to.be.below(2000);",
-															"});",
-															"",
-															"pm.test(\"response body is an object\", function () {",
-															"    pm.expect(pm.response.json()).to.be.an('object');",
-															"});"
-														],
-														"type": "text/javascript"
-													}
-												}
-											],
+											"name": "delete",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										},
+										{
+											"name": "getSignedUrl",
 											"request": {
 												"method": "GET",
 												"header": [],
-												"url": {
-													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/multi_red_dot4.png/download",
-													"host": [
-														"{{BASEURL}}"
-													],
-													"path": [
-														"projects",
-														"{{PROJECT_ID}}",
-														"artifacts",
-														"multi_red_dot4.png",
-														"download"
-													]
-												}
+												"url": null
 											},
 											"response": []
 										}
@@ -163,159 +150,386 @@
 								},
 								{
 									"name": "upload",
-									"event": [
-										{
-											"listen": "test",
-											"script": {
-												"exec": [
-													"pm.test(\"Successful POST request\", function () {",
-													"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
-													"});",
-													"",
-													"pm.test(\"Response time is less than 2000ms\", function () {",
-													"    pm.expect(pm.response.responseTime).to.be.below(2000);",
-													"});"
-												],
-												"type": "text/javascript"
-											}
-										}
-									],
 									"request": {
 										"method": "POST",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/x-www-form-urlencoded",
-												"type": "text"
-											}
-										],
-										"body": {
-											"mode": "formdata",
-											"formdata": [
-												{
-													"key": "media",
-													"type": "file",
-													"src": "/Users/anissa/Desktop/BioHub docs/Upload_files/CSV_sample_11kb.csv"
-												}
-											],
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
-											"host": [
-												"{{BASEURL}}"
-											],
-											"path": [
-												"projects",
-												"{{PROJECT_ID}}",
-												"artifacts",
-												"upload"
-											]
-										}
+										"header": [],
+										"url": null
 									},
-									"response": [
-										{
-											"name": "multiple files",
-											"originalRequest": {
-												"method": "POST",
-												"header": [
-													{
-														"key": "Content-Type",
-														"value": "application/x-www-form-urlencoded",
-														"type": "text"
-													}
-												],
-												"body": {
-													"mode": "formdata",
-													"formdata": [
-														{
-															"key": "media",
-															"type": "file",
-															"src": [
-																"/C:/Users/Nick/Desktop/c4611_sample_explain.pdf",
-																"/C:/Users/Nick/Desktop/small_image.jpg"
-															]
-														}
-													],
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
-													"host": [
-														"{{BASEURL}}"
-													],
-													"path": [
-														"projects",
-														"{{PROJECT_ID}}",
-														"artifacts",
-														"upload"
-													]
-												}
-											},
-											"_postman_previewlanguage": null,
-											"header": null,
-											"cookie": [],
-											"body": null
-										},
-										{
-											"name": "single file",
-											"originalRequest": {
-												"method": "POST",
-												"header": [
-													{
-														"key": "Content-Type",
-														"value": "application/x-www-form-urlencoded",
-														"type": "text"
-													}
-												],
-												"body": {
-													"mode": "formdata",
-													"formdata": [
-														{
-															"key": "media",
-															"type": "file",
-															"src": "/Users/anissa/Desktop/BioHub docs/Upload_files/CSV_sample_11kb.csv"
-														}
-													],
-													"options": {
-														"raw": {
-															"language": "json"
-														}
-													}
-												},
-												"url": {
-													"raw": "{{BASEURL}}/projects/{{PROJECT_ID}}/artifacts/upload",
-													"host": [
-														"{{BASEURL}}"
-													],
-													"path": [
-														"projects",
-														"{{PROJECT_ID}}",
-														"artifacts",
-														"upload"
-													]
-												}
-											},
-											"_postman_previewlanguage": null,
-											"header": null,
-											"cookie": [],
-											"body": null
-										}
-									]
+									"response": []
 								}
 							]
+						},
+						{
+							"name": "funding-sources",
+							"item": [
+								{
+									"name": "{pfsid}",
+									"item": [
+										{
+											"name": "delete",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "add",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": null
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "survey",
+							"item": [
+								{
+									"name": "{surveyId}",
+									"item": [
+										{
+											"name": "attachments",
+											"item": [
+												{
+													"name": "{attachmentId}",
+													"item": [
+														{
+															"name": "delete",
+															"request": {
+																"method": "DELETE",
+																"header": [],
+																"url": null
+															},
+															"response": []
+														},
+														{
+															"name": "getSignedUrl",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": null
+															},
+															"response": []
+														}
+													]
+												},
+												{
+													"name": "list",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												},
+												{
+													"name": "upload",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "observations",
+											"item": [
+												{
+													"name": "{observationId}",
+													"item": [
+														{
+															"name": "update",
+															"request": {
+																"method": "PUT",
+																"header": [],
+																"url": null
+															},
+															"response": []
+														}
+													]
+												},
+												{
+													"name": "create",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												},
+												{
+													"name": "list",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												},
+												{
+													"name": "upload",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "template",
+											"item": [
+												{
+													"name": "{templateId}",
+													"item": [
+														{
+															"name": "getSignedUrl",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": null
+															},
+															"response": []
+														}
+													]
+												},
+												{
+													"name": "upload",
+													"request": {
+														"method": "POST",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "templates",
+											"item": [
+												{
+													"name": "list",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": null
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "delete",
+											"request": {
+												"method": "DELETE",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										},
+										{
+											"name": "publish",
+											"request": {
+												"method": "PUT",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										},
+										{
+											"name": "update",
+											"request": {
+												"method": "PUT",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										},
+										{
+											"name": "view",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "funding-sources",
+									"item": [
+										{
+											"name": "list",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "permits",
+									"item": [
+										{
+											"name": "list",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": null
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "create",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": null
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						},
+						{
+							"name": "publish",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						},
+						{
+							"name": "surveys",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						},
+						{
+							"name": "view",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": null
+							},
+							"response": []
 						}
 					]
 				}
 			]
+		},
+		{
+			"name": "spi",
+			"item": [
+				{
+					"name": "validate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "{userId}",
+					"item": [
+						{
+							"name": "system-roles",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": null
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "self",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "access-request",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "administrative-activities",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "administrative-activity",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "administrative-activity",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
 		},
 		{
 			"name": "codes",
@@ -372,66 +586,53 @@
 			"response": []
 		},
 		{
-			"name": "permit-no-sampling",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Successful POST request\", function () {\r",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Response time is less than 1000ms\", function () {\r",
-							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"// Generate random 5 digit number\r",
-							"pm.globals.set('randomNumber', Math.floor(Math.random() * 100000));"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
+			"name": "draft",
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"description": "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.\nThe 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`\n",
-						"key": "Authorization",
-						"value": ""
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"coordinator\": {\r\n        \"first_name\": \"first name\",\r\n        \"last_name\": \"last name\",\r\n        \"email_address\": \"email@email.com\",\r\n        \"coordinator_agency\": \"coordinator agency\",\r\n        \"share_contact_details\": \"false\"\r\n    },\r\n    \"permit\": {\r\n        \"permits\": [\r\n            {\r\n                \"permit_number\": \"{{randomNumber}}\"\r\n            }\r\n        ]\r\n    }\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+				"header": [],
 				"url": {
-					"raw": "{{BASEURL}}/permit-no-sampling",
+					"raw": "{{BASEURL}}/draft",
 					"host": [
 						"{{BASEURL}}"
 					],
 					"path": [
-						"permit-no-sampling"
+						"draft"
 					]
-				},
-				"description": "Create a new project."
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "draft",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{BASEURL}}/draft",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"draft"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "drafts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASEURL}}/draft",
+					"host": [
+						"{{BASEURL}}"
+					],
+					"path": [
+						"draft"
+					]
+				}
 			},
 			"response": []
 		},
@@ -552,6 +753,33 @@
 					]
 				},
 				"description": "Get all projects."
+			},
+			"response": []
+		},
+		{
+			"name": "search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		},
+		{
+			"name": "users",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
 			},
 			"response": []
 		},

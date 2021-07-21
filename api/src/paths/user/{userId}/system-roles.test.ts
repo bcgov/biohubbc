@@ -391,7 +391,7 @@ describe('removeSystemRoles', () => {
     }
   });
 
-  it('should throw a 400 error when no result or rowCount', async () => {
+  it('should throw a 500 error when no result or rowCount', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: null });

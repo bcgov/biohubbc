@@ -5,13 +5,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentByFileNameSQL,
   postSurveyAttachmentSQL,
   putSurveyAttachmentSQL
 } from '../../../../../../queries/survey/survey-attachments-queries';
-import { uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
@@ -129,17 +129,19 @@ export function uploadMedia(): RequestHandler {
       const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
 
       rawMediaArray.forEach((file: Express.Multer.File) => {
-        const key = req.params.projectId + '/' + req.params.surveyId + '/' + file.originalname;
+        const key = generateS3FileKey({
+          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
+          fileName: file.originalname
+        });
 
         const metadata = {
-          filename: key,
+          filename: file.originalname,
           username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
           email: (req['auth_payload'] && req['auth_payload'].email) || ''
         };
 
-        defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
-
-        s3UploadPromises.push(uploadFileToS3(file, metadata));
+        s3UploadPromises.push(uploadFileToS3(file, key, metadata));
       });
 
       const results = await Promise.all(s3UploadPromises);
@@ -151,7 +153,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw new HTTP400('Upload was not successful');
+      throw ensureCustomError(error);
     } finally {
       connection.release();
     }
@@ -189,7 +191,9 @@ export const upsertSurveyAttachment = async (
     return updateResult;
   }
 
-  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId);
+  const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
+
+  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

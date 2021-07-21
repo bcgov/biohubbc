@@ -4,7 +4,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
-import { deleteFundingSourceSQL } from '../../../../../queries/project/project-delete-queries';
+import { deleteProjectFundingSourceSQL } from '../../../../../queries/project/project-delete-queries';
+import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteFundingSourceApiDocObject } from '../../../../../utils/shared-api-docs';
 
@@ -34,27 +35,39 @@ export function deleteFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      const deleteFundingSourceSQLStatement = deleteFundingSourceSQL(
+      const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
+        Number(req.params.pfsId)
+      );
+      const deleteProjectFundingSourceSQLStatement = deleteProjectFundingSourceSQL(
         Number(req.params.projectId),
         Number(req.params.pfsId)
       );
 
-      if (!deleteFundingSourceSQLStatement) {
+      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceDeleteStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const response = await connection.query(
-        deleteFundingSourceSQLStatement.text,
-        deleteFundingSourceSQLStatement.values
+      const surveyFundingSourceDeleteResponse = await connection.query(
+        surveyFundingSourceDeleteStatement.text,
+        surveyFundingSourceDeleteStatement.values
       );
 
-      if (!response || !response.rowCount) {
+      if (!surveyFundingSourceDeleteResponse || !surveyFundingSourceDeleteResponse.rowCount) {
+        throw new HTTP400('Failed to delete survey funding source');
+      }
+
+      const projectFundingSourceDeleteResponse = await connection.query(
+        deleteProjectFundingSourceSQLStatement.text,
+        deleteProjectFundingSourceSQLStatement.values
+      );
+
+      if (!projectFundingSourceDeleteResponse || !projectFundingSourceDeleteResponse.rowCount) {
         throw new HTTP400('Failed to delete project funding source');
       }
 
       await connection.commit();
 
-      return res.status(200).json(response && response.rowCount);
+      return res.status(200).json(projectFundingSourceDeleteResponse && projectFundingSourceDeleteResponse.rowCount);
     } catch (error) {
       defaultLog.error({ label: 'deleteFundingSource', message: 'error', error });
       await connection.rollback();

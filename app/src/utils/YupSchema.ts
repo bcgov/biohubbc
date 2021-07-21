@@ -22,27 +22,6 @@ yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
   });
 });
 
-yup.addMethod(yup.array, 'isUniquePermitsAndAtLeastOneSamplingConducted', function (message: string) {
-  return this.test('is-unique-permits-and-at-least-one-sampling-conducted', message, (values) => {
-    if (!values || !values.length) {
-      return true;
-    }
-
-    let seen = new Set();
-    const hasDuplicates = values.some((permit) => {
-      return seen.size === seen.add(permit.permit_number).size;
-    });
-
-    if (hasDuplicates) {
-      return false;
-    }
-
-    return values.some((permit) => {
-      return permit.sampling_conducted === 'true';
-    });
-  });
-});
-
 yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
   return this.test('is-unique-iucn-classification-detail', message, (values) => {
     if (!values || !values.length) {

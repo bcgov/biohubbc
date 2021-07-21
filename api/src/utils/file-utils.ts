@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk';
-import { ManagedUpload, Metadata, DeleteObjectOutput } from 'aws-sdk/clients/s3';
+import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aws-sdk/clients/s3';
 import { S3_ROLE } from '../constants/roles';
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
@@ -39,20 +39,38 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput 
  *
  * @export
  * @param {Express.Multer.File} file an object containing information about a single piece of media
+ * @param {string} key the path where S3 will store the file
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
  */
 export async function uploadFileToS3(
   file: Express.Multer.File,
+  key: string,
   metadata: Metadata = {}
 ): Promise<ManagedUpload.SendData> {
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Body: file.buffer,
     ContentType: file.mimetype,
-    Key: metadata.filename,
+    Key: key,
     ACL: S3_ROLE.AUTH_READ,
     Metadata: metadata
+  }).promise();
+}
+
+/**
+ * Fetch a file from S3.
+ *
+ * @export
+ * @param {string} key the S3 key of the file to fetch
+ * @param {string} [versionId] the S3 version id  of the file to fetch (optional)
+ * @return {*}  {Promise<GetObjectOutput>}
+ */
+export async function getFileFromS3(key: string, versionId?: string): Promise<GetObjectOutput> {
+  return S3.getObject({
+    Bucket: OBJECT_STORE_BUCKET_NAME,
+    Key: key,
+    VersionId: versionId
   }).promise();
 }
 
@@ -72,4 +90,35 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
     Key: key,
     Expires: 300000 // 5 minutes
   });
+}
+
+export interface IS3FileKey {
+  projectId: number;
+  surveyId?: number;
+  folder?: string;
+  fileName: string;
+}
+
+export function generateS3FileKey(options: IS3FileKey): string {
+  const keyParts: (string | number)[] = [];
+
+  if (options.projectId) {
+    keyParts.push('projects');
+    keyParts.push(options.projectId);
+  }
+
+  if (options.surveyId) {
+    keyParts.push('surveys');
+    keyParts.push(options.surveyId);
+  }
+
+  if (options.folder) {
+    keyParts.push(options.folder);
+  }
+
+  if (options.fileName) {
+    keyParts.push(options.fileName);
+  }
+
+  return keyParts.join('/');
 }

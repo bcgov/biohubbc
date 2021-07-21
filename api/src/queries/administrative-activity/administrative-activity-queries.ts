@@ -22,10 +22,10 @@ export const getAdministrativeActivitiesSQL = (
 
   const sqlStatement = SQL`
     SELECT
-      aa.id as id,
-      aat.id as type,
+      aa.administrative_activity_id as id,
+      aat.administrative_activity_type_id as type,
       aat.name as type_name,
-      aast.id as status,
+      aast.administrative_activity_status_type_id as status,
       aast.name as status_name,
       aa.description,
       aa.data,
@@ -36,11 +36,11 @@ export const getAdministrativeActivitiesSQL = (
     LEFT OUTER JOIN
       administrative_activity_status_type aast
     ON
-      aa.aast_id = aast.id
+      aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
     LEFT OUTER JOIN
       administrative_activity_type aat
     ON
-      aa.aat_id = aat.id
+      aa.administrative_activity_type_id = aat.administrative_activity_type_id
     WHERE
       1 = 1
   `;
@@ -102,9 +102,9 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO administrative_activity (
-      reported_su_id,
-      aat_id,
-      aast_id,
+      reported_system_user_id,
+      administrative_activity_type_id,
+      administrative_activity_status_type_id,
       data
     ) VALUES (
       ${systemUserId},
@@ -113,7 +113,7 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
       ${data}
     )
     RETURNING
-      id,
+      administrative_activity_id as id,
       create_date::timestamptz
   `;
 
@@ -147,7 +147,7 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
     LEFT OUTER JOIN
       administrative_activity_status_type aast
     ON
-      aa.aast_id = aast.id
+      aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
       WHERE
       (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
     AND aast.name = 'Pending';
@@ -189,11 +189,11 @@ export const putAdministrativeActivitySQL = (
     UPDATE
       administrative_activity
     SET
-      aast_id = ${administrativeActivityStatusTypeId}
+      administrative_activity_status_type_id = ${administrativeActivityStatusTypeId}
     WHERE
-      id = ${administrativeActivityId}
+      administrative_activity_id = ${administrativeActivityId}
     RETURNING
-      id;
+      administrative_activity_id as id;
   `;
 
   defaultLog.debug({

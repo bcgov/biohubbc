@@ -19,6 +19,48 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
+  it('getTemplateObservationsSignedURL works as expected', async () => {
+    const templateId = 4;
+
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`)
+      .reply(200, 'www.signedurl.com');
+
+    const result = await useSurveyApi(axios).getTemplateObservationsSignedURL(projectId, surveyId, templateId);
+
+    expect(result).toEqual('www.signedurl.com');
+  });
+
+  it('getSurveyPermits works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/permits/list`).reply(200, [
+      {
+        number: '123',
+        type: 'wildlife'
+      }
+    ]);
+
+    const result = await useSurveyApi(axios).getSurveyPermits(projectId);
+
+    expect(result[0].number).toEqual('123');
+    expect(result[0].type).toEqual('wildlife');
+  });
+
+  it('getSurveyFundingSources works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
+      {
+        pfsId: 1,
+        amount: 100,
+        startDate: '2020/04/04',
+        endDate: '2020/05/05',
+        agencyName: 'agency'
+      }
+    ]);
+
+    const result = await useSurveyApi(axios).getSurveyFundingSources(projectId);
+
+    expect(result[0].pfsId).toEqual(1);
+  });
+
   it('createSurvey works as expected', async () => {
     mock.onPost(`api/project/${projectId}/survey/create`).reply(200, {
       id: 1
@@ -88,6 +130,18 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(signedUrl);
   });
 
+  it('uploadTemplateObservations works as expected', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    });
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/template/upload`).reply(200, 'OK');
+
+    const result = await useSurveyApi(axios).uploadTemplateObservations(projectId, surveyId, file);
+
+    expect(result).toEqual('OK');
+  });
+
   it('getSurveyAttachments works as expected', async () => {
     const res = {
       attachmentsList: [
@@ -133,14 +187,16 @@ describe('useSurveyApi', () => {
         biologist_last_name: 'last',
         survey_area_name: 'area name',
         geometry: [],
-        revision_count: 1
+        revision_count: 1,
+        permit_number: '123',
+        permit_type: 'Scientific'
       },
       survey_proprietor: null
     };
 
     mock.onPut(`api/project/${projectId}/survey/${surveyId}/update`).reply(200, true);
 
-    const result = await useSurveyApi(axios).updateSurvey(projectId, surveyId, request);
+    const result = await useSurveyApi(axios).updateSurvey(projectId, surveyId, request as any);
 
     expect(result).toEqual(true);
   });
@@ -171,5 +227,13 @@ describe('useSurveyApi', () => {
     ]);
 
     expect(result).toEqual(data);
+  });
+
+  it('publishSurvey works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, 'OK');
+
+    const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
+
+    expect(result).toEqual('OK');
   });
 });

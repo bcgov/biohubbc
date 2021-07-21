@@ -323,7 +323,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3"
           >
-            Permits
+            Project Permits
           </h3>
           <button
             aria-label="Edit Permits"
@@ -381,12 +381,6 @@ exports[`ProjectDetails renders correctly 1`] = `
                 >
                   Permit Type
                 </th>
-                <th
-                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-22"
-                  scope="col"
-                >
-                  Sampling Conducted
-                </th>
               </tr>
             </thead>
             <tbody
@@ -409,11 +403,6 @@ exports[`ProjectDetails renders correctly 1`] = `
                 >
                   Permit type
                 </th>
-                <td
-                  class="MuiTableCell-root MuiTableCell-body"
-                >
-                  Yes
-                </td>
               </tr>
             </tbody>
           </table>

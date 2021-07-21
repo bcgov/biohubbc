@@ -111,7 +111,7 @@ describe('uploadMedia', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Upload was not successful');
+      expect(actualError.message).to.equal('Failed to build SQL get statement');
     }
   });
 
