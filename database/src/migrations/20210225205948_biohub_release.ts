@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.20';
+const DB_RELEASE = 'release.0.21';
 
 /**
  * Apply biohub release changes.
@@ -46,7 +46,7 @@ export async function up(knex: Knex): Promise<void> {
   const api_delete_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_survey.sql'));
   const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
 
-  const populate_system_constants = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_system_constants.sql'));
+  const populate_system_constants = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_system_constant.sql'));
   const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
   const populate_climate_change_initiatives = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_climate_change_initiatives.sql')
@@ -78,6 +78,9 @@ export async function up(knex: Knex): Promise<void> {
   );
   const populate_submission_message_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
+  );
+  const populate_system_metadata_constant = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_system_metadata_constant.sql')
   );
 
   const populate_wldtaxonomic_units = fs.readFileSync(
@@ -155,6 +158,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_proprietor_type}
     ${populate_submission_status_type}
     ${populate_submission_message_type}
+    ${populate_system_metadata_constant}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}

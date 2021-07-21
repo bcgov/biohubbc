@@ -14,12 +14,12 @@ with not_published as (select os.survey_id, max(ss.submission_status_id) as subm
 		and sst.name = api_get_character_system_constant('SURVEY_STATE_PUBLISHED')
     and sst.record_end_date is null
 		group by os.survey_id)
-select s.project_id project_id, np.survey_id survey_id, sst.name survey_status from not_published np, submission_status ss3, submission_status_type sst, survey s
+select s.project_id project_id, np.survey_id survey_id, sst.name survey_status, ss3.event_timestamp status_event_timestamp from not_published np, submission_status ss3, submission_status_type sst, survey s
 	where ss3.submission_status_id = np.submission_status_id
 	and sst.submission_status_type_id = ss3.submission_status_type_id
 	and s.survey_id = np.survey_id
 union 
-select s.project_id project_id, p.survey_id survey_id, sst.name survey_status from published p, submission_status ss3, submission_status_type sst, survey s
+select s.project_id project_id, p.survey_id survey_id, sst.name survey_status, ss3.event_timestamp status_event_timestamp from published p, submission_status ss3, submission_status_type sst, survey s
 	where ss3.submission_status_id = p.submission_status_id
 	and sst.submission_status_type_id = ss3.submission_status_type_id
 	and s.survey_id = p.survey_id
