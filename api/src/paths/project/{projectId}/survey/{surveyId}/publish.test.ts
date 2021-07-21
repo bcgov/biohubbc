@@ -58,7 +58,7 @@ const sampleRes = {
 
 const sampleNext = {} as any;
 
-describe('project/{projectId}/survey/{surveyId}/publish', () => {
+describe('publishSurveyAndOccurrences', () => {
   afterEach(() => {
     sinon.restore();
   });
