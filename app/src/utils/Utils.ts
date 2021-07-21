@@ -116,3 +116,18 @@ export const getLogOutUrl = (config: IConfig): string | undefined => {
 
   return `${config.SITEMINDER_LOGOUT_URL}?returl=${keycloakLogoutRedirectURL}&retnow=1`;
 };
+
+export const getFormattedFileSize = (fileSize: number) => {
+  // kilobyte size
+  if (fileSize < 1000000) {
+    return `${(fileSize / 1000).toFixed(1)} KB`;
+  }
+
+  // megabyte size
+  if (fileSize < 1000000000) {
+    return `${(fileSize / 1000000).toFixed(1)} MB`;
+  }
+
+  // gigabyte size
+  return `${(fileSize / 1000000000).toFixed(1)} GB`;
+};
