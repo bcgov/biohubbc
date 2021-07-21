@@ -170,9 +170,14 @@ export const generateValidGeometryCollection = (geometry: any, id?: string) => {
     type: 'FeatureCollection',
     features: geometryCollection
   };
-  const bboxCoords = bbox(allGeosFeatureCollection);
 
-  bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
+  if (geometry[0]?.type !== 'Point') {
+    const bboxCoords = bbox(allGeosFeatureCollection);
 
-  return { geometryCollection, bounds };
+    bounds.push([bboxCoords[1], bboxCoords[0]], [bboxCoords[3], bboxCoords[2]]);
+
+    return { geometryCollection, bounds };
+  }
+
+  return { geometryCollection };
 };
