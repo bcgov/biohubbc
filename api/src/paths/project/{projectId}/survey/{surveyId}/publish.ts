@@ -195,11 +195,20 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response || !response.rowCount) {
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result) {
     throw new HTTP500('Failed to update survey publish status');
   }
 };
 
+/**
+ * Get the latest survey occurrence submission.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*}
+ */
 export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
   const sqlStatement = getLatestSurveyOccurrenceSubmission(surveyId);
 
