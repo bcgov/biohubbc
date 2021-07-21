@@ -20,7 +20,7 @@ describe('isObject', () => {
   });
 
   it('identifies if object is valid when an array', () => {
-    expect(isObject([])).to.be.false;
+    expect(isObject([])).to.be.true;
   });
 
   it('identifies if object is valid when 0', () => {

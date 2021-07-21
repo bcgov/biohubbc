@@ -20,7 +20,7 @@ export interface ILoggerMessage extends winston.Logform.TransformableInfo {
  * @returns {boolean} True if the value is an object, false otherwise.
  */
 export const isObject = (item: any): boolean => {
-  return !!(item && typeof item === 'object' && item.constructor.name === 'Object');
+  return !!(item && typeof item === 'object');
 };
 
 /**

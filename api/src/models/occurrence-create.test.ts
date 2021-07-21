@@ -10,12 +10,12 @@ describe('PostOccurrence', () => {
       data = new PostOccurrence(null);
     });
 
-    it('sets associatedtaxa', () => {
-      expect(data.associatedtaxa).to.equal(null);
+    it('sets associatedTaxa', () => {
+      expect(data.associatedTaxa).to.equal(null);
     });
 
-    it('sets lifestage', () => {
-      expect(data.lifestage).to.equal(null);
+    it('sets lifeStage', () => {
+      expect(data.lifeStage).to.equal(null);
     });
 
     it('sets data', () => {
@@ -52,8 +52,8 @@ describe('PostOccurrence', () => {
 
     before(() => {
       data = new PostOccurrence({
-        associatedtaxa: 'associatedtaxa',
-        lifestage: 'lifestage',
+        associatedTaxa: 'associatedTaxa',
+        lifeStage: 'lifeStage',
         data: 'data',
         verbatimCoordinates: 'verbatimCoordinates',
         individualCount: 'individualCount',
@@ -64,12 +64,12 @@ describe('PostOccurrence', () => {
       });
     });
 
-    it('sets associatedtaxa', () => {
-      expect(data.associatedtaxa).to.equal('associatedtaxa');
+    it('sets associatedTaxa', () => {
+      expect(data.associatedTaxa).to.equal('associatedTaxa');
     });
 
-    it('sets lifestage', () => {
-      expect(data.lifestage).to.equal('lifestage');
+    it('sets lifeStage', () => {
+      expect(data.lifeStage).to.equal('lifeStage');
     });
 
     it('sets data', () => {

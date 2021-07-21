@@ -207,3 +207,54 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to update the publish status of a survey.
+ *
+ * @param {number} surveyId
+ * @param {boolean} publish
+ * @returns {SQLStatement} sql query object
+ */
+export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean): SQLStatement | null => {
+  defaultLog.debug({ label: 'updateSurveyPublishStatusSQL', message: 'params', surveyId, publish });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE
+      survey
+    SET
+      publish_timestamp = `;
+
+  if (publish) {
+    sqlStatement.append(SQL`
+        now()
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        publish_timestamp IS NULL
+    `);
+  } else {
+    sqlStatement.append(SQL`
+        null
+      WHERE
+        survey_id = ${surveyId}
+    `);
+  }
+
+  sqlStatement.append(SQL`
+    RETURNING
+      survey_id as id;
+  `);
+
+  defaultLog.debug({
+    label: 'updateSurveyPublishStatusSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

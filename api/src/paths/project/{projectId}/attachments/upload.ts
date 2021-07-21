@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { ensureCustomError, HTTP400 } from '../../../../errors/CustomError';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { upsertProjectAttachment } from '../../../project';
@@ -127,11 +127,10 @@ export function uploadMedia(): RequestHandler {
         });
 
         const metadata = {
+          filename: file.originalname,
           username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
           email: (req['auth_payload'] && req['auth_payload'].email) || ''
         };
-
-        defaultLog.debug({ label: 'uploadMedia', message: 'metadata', metadata });
 
         s3UploadPromises.push(uploadFileToS3(file, key, metadata));
       });
@@ -145,7 +144,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw new HTTP400('Upload was not successful');
+      throw ensureCustomError(error);
     } finally {
       connection.release();
     }

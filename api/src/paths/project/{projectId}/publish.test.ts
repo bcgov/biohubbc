@@ -45,8 +45,6 @@ let actualResult = {
   id: null
 };
 
-//let actualStatus: number = (null as unknown) as number;
-
 const sampleRes = {
   status: () => {
     return {
@@ -55,10 +53,6 @@ const sampleRes = {
       }
     };
   }
-  // ,
-  // send: (status: number) => {
-  //   actualStatus = status;
-  // }
 };
 
 describe('project/{projectId}/publish', () => {
@@ -155,7 +149,7 @@ describe('project/{projectId}/publish', () => {
     }
   });
 
-  it('should throw a 400 error when no result', async () => {
+  it('should throw a 500 error when no result', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
