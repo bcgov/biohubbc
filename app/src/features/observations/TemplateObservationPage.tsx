@@ -193,8 +193,8 @@ const TemplateObservationPage: React.FC<ITemplateObservationProps> = () => {
               <TemplateObservationsList
                 projectId={projectId}
                 surveyId={surveyId}
-                attachmentsList={templateObservationsList}
-                getAttachments={getTemplateObservations}
+                templateObservationsList={templateObservationsList}
+                getTemplateObservations={getTemplateObservations}
               />
             </Box>
             <Box mt={2} pb={3} display="flex" justifyContent="flex-end">

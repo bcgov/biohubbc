@@ -10,7 +10,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetTemplateObservations } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
@@ -30,8 +30,8 @@ const useStyles = makeStyles({
 export interface ITemplateObservationsListProps {
   projectId: number;
   surveyId?: number;
-  attachmentsList: IGetProjectAttachment[];
-  getAttachments: (forceFetch: boolean) => void;
+  templateObservationsList: IGetTemplateObservations[];
+  getTemplateObservations: (forceFetch: boolean) => void;
 }
 
 const TemplateObservationsList: React.FC<ITemplateObservationsListProps> = (props) => {
@@ -77,33 +77,39 @@ const TemplateObservationsList: React.FC<ITemplateObservationsListProps> = (prop
               </TableRow>
             </TableHead>
             <TableBody>
-              {props.attachmentsList.length > 0 &&
-                props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
-                        {row.fileName}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, row.lastModified)}</TableCell>
-                    <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                  </TableRow>
-                ))}
-              {!props.attachmentsList.length && (
+              {props.templateObservationsList.length > 0 &&
+                props.templateObservationsList
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        <Link
+                          underline="always"
+                          component="button"
+                          variant="body2"
+                          onClick={() => viewFileContents(row)}>
+                          {row.fileName}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, row.lastModified)}</TableCell>
+                      <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                    </TableRow>
+                  ))}
+              {!props.templateObservationsList.length && (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
-                    No template observations
+                    No Template Observations
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </TableContainer>
-        {props.attachmentsList.length > 0 && (
+        {props.templateObservationsList.length > 0 && (
           <TablePagination
             rowsPerPageOptions={[5, 10, 15, 20]}
             component="div"
-            count={props.attachmentsList.length}
+            count={props.templateObservationsList.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
