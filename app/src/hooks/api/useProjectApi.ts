@@ -1,7 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
-  ICreatePermitNoSamplingRequest,
-  ICreatePermitNoSamplingResponse,
   ICreateProjectRequest,
   ICreateProjectResponse,
   IGetProjectAttachmentsResponse,
@@ -142,20 +140,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Create a new project in which no sampling was conducted.
-   *
-   * @param {ICreatePermitNoSamplingRequest} project
-   * @return {*}  {Promise<ICreatePermitNoSamplingResponse>}
-   */
-  const createPermitNoSampling = async (
-    project: ICreatePermitNoSamplingRequest
-  ): Promise<ICreatePermitNoSamplingResponse> => {
-    const { data } = await axios.post('/api/permit-no-sampling', project);
-
-    return data;
-  };
-
-  /**
    * Upload project attachments.
    *
    * @param {number} projectId
@@ -222,7 +206,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   return {
     getProjectsList,
     createProject,
-    createPermitNoSampling,
     getProjectForView,
     uploadProjectAttachments,
     getProjectForUpdate,

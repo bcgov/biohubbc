@@ -32,6 +32,26 @@ describe('useObservationApi', () => {
     }
   };
 
+  it('getObservationForUpdate works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`).reply(200, {
+      id: 2,
+      data: {
+        metaData: {
+          block_name: 11,
+          block_size: 12
+        },
+        tableData: {
+          data: [['1'], ['2']]
+        }
+      },
+      revision_count: 1
+    });
+
+    const result = await useObservationApi(axios).getObservationForUpdate(projectId, surveyId, observationId, 'block');
+
+    expect(result.id).toEqual(2);
+  });
+
   it('getObservationsList works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/${surveyId}/observations/list`).reply(200, {
       blocks: [
