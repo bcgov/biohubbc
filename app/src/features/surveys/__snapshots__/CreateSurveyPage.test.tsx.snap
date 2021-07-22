@@ -225,7 +225,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
                         id="start_date-helper-text"
                       >
-                        Start date must be after project start date Oct 10, 1998
+                        Start date must be on or after project start date Oct 10, 1998
                       </p>
                     </div>
                   </div>
@@ -275,7 +275,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         class="MuiFormHelperText-root MuiFormHelperText-contained"
                         id="end_date-helper-text"
                       >
-                        End date must be before project end date Feb 26, 2021
+                        End date must be on or before project end date Feb 26, 2021
                       </p>
                     </div>
                   </div>
