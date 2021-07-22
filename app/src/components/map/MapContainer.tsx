@@ -88,6 +88,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
+    console.log('yoooo');
+    console.log(preDefinedGeometry);
+    console.log(geometryState?.geometry);
     if (!preDefinedGeometry) {
       return;
     }
@@ -163,25 +166,28 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           <>
             <LayersControl.Overlay name="Wildlife Management Units">
               <WFSFeatureGroup
-                name={'Wildlife Management Units'}
-                typeName={'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'}
+                name="Wildlife Management Units"
+                typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
                 minZoom={8}
+                existingGeometry={geometryState?.geometry}
                 onSelectGeometry={setPreDefinedGeometry}
               />
             </LayersControl.Overlay>
             <LayersControl.Overlay name="Parks - Section">
               <WFSFeatureGroup
-                name={'Parks - Section'}
-                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP'}
+                name="Parks - Section"
+                typeName="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP"
                 minZoom={7}
+                existingGeometry={geometryState?.geometry}
                 onSelectGeometry={setPreDefinedGeometry}
               />
             </LayersControl.Overlay>
             <LayersControl.Overlay name="Parks - Regional">
               <WFSFeatureGroup
-                name={'Parks - Regional'}
-                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP'}
+                name="Parks - Regional"
+                typeName="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP"
                 minZoom={7}
+                existingGeometry={geometryState?.geometry}
                 onSelectGeometry={setPreDefinedGeometry}
               />
             </LayersControl.Overlay>

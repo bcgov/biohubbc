@@ -5,8 +5,8 @@ import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import throttle from 'lodash-es/throttle';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FeatureGroup, GeoJSON, Popup, useMap, useMapEvents } from 'react-leaflet';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FeatureGroup, GeoJSON, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -40,6 +40,7 @@ export interface IWFSFeatureGroupProps {
   typeName: string;
   minZoom?: number;
   wfsParams?: IWFSParams;
+  existingGeometry?: Feature[];
   onSelectGeometry?: (geometry: Feature) => void;
 }
 
@@ -58,35 +59,99 @@ export const buildWFSURL = (typeName: string, bbox: string, wfsParams: IWFSParam
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}&bbox=${bbox},${params.bboxSrsName}`;
 };
 
-const FeaturePopup: React.FC<{ feature: Feature; onSelectGeometry?: (geometry: Feature) => void }> = (props) => {
-  const { feature, onSelectGeometry } = props;
+const FeaturePopup: React.FC<{
+  layerName: string;
+  feature: Feature;
+  existingGeometry?: Feature[];
+  onSelectGeometry?: (geometry: Feature) => void;
+}> = (props) => {
+  const { layerName, feature, existingGeometry, onSelectGeometry } = props;
 
   const classes = useStyles();
+  const popupRef = useRef(null);
 
   const popupItems: JSX.Element[] = [];
 
-  Object.entries(feature.properties as object).forEach(([key, value], index) => {
-    popupItems.push(<div key={`popup-${feature?.properties?.OBJECTID}-${index}`}>{`${key}: ${value}`}</div>);
-  });
+  let regionName: string = '';
+
+  if (feature && feature.properties) {
+    if (layerName === 'Parks - Regional') {
+      regionName = feature.properties.REGION_NAME;
+
+      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(
+        <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+          0
+        )} ha`}</div>
+      );
+    }
+
+    if (layerName === 'Wildlife Management Units') {
+      regionName = feature.properties.REGION_RESPONSIBLE_NAME;
+
+      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(
+        <div key={`${feature.id}-zone`}>{`Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
+      );
+      popupItems.push(
+        <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+          0
+        )} ha`}</div>
+      );
+    }
+
+    if (layerName === 'Parks - Section') {
+      regionName = feature.properties.REGION_NAME;
+
+      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(<div key={`${feature.id}-section`}>{`Section Name: ${feature.properties.SECTION_NAME}`}</div>);
+      popupItems.push(
+        <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+          0
+        )} ha`}</div>
+      );
+    }
+  }
+
+  const closePopupDialog = () => {
+    //@ts-ignore
+    popupRef.current._closeButton.click();
+  };
 
   return (
-    <Popup key={`popup-${feature?.properties?.OBJECTID}`} keepInView={false} autoPan={false}>
-      <Box p={1}>
-        {popupItems}
-        <Box mt={1}>
+    <>
+      <Tooltip direction="top">{`Region: ${regionName}`}</Tooltip>
+      <Popup ref={popupRef} key={`popup-${feature?.properties?.OBJECTID}`} keepInView={false} autoPan={false}>
+        <Box p={1}>
+          <Box pb={2}>{popupItems}</Box>
           {onSelectGeometry && (
-            <Button
-              color="primary"
-              variant="contained"
-              className={classes.actionButton}
-              onClick={() => onSelectGeometry?.(feature)}
-              data-testid="add_boundary">
-              Add Boundary
-            </Button>
+            <Box mt={1}>
+              <Button
+                color="primary"
+                variant="contained"
+                className={classes.actionButton}
+                onClick={() => {
+                  if (
+                    existingGeometry &&
+                    existingGeometry.filter(
+                      (geo: Feature) => geo?.properties?.OBJECTID === feature?.properties?.OBJECTID
+                    ).length === 0
+                  ) {
+                    onSelectGeometry?.(feature);
+                    closePopupDialog();
+                  }
+                }}
+                data-testid="add_boundary">
+                Add Boundary
+              </Button>
+              <Button color="primary" variant="outlined" className={classes.actionButton} onClick={closePopupDialog}>
+                Cancel
+              </Button>
+            </Box>
           )}
         </Box>
-      </Box>
-    </Popup>
+      </Popup>
+    </>
   );
 };
 
@@ -238,7 +303,12 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
         features?.map((feature) => {
           return (
             <GeoJSON data={feature} key={`feature-${feature?.properties?.OBJECTID}`}>
-              <FeaturePopup feature={feature} onSelectGeometry={props.onSelectGeometry} />
+              <FeaturePopup
+                layerName={props.name}
+                feature={feature}
+                existingGeometry={props.existingGeometry}
+                onSelectGeometry={props.onSelectGeometry}
+              />
             </GeoJSON>
           );
         })}
