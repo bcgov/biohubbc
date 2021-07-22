@@ -186,5 +186,5 @@ begin
 end
 $$;
 
--delete from administrative_activity;
+delete from administrative_activity;
 delete from permit;
