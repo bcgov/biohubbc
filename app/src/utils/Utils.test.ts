@@ -196,7 +196,7 @@ describe('getLogOutUrl', () => {
 });
 
 describe('getFormattedFileSize', () => {
-  it('returns `NaN GB` if no file size exists', async () => {
+  it('returns `0 KB` if no file size exists', async () => {
     const formattedFileSize = getFormattedFileSize(null as unknown);
     expect(formattedFileSize).toEqual('0 KB');
   });
