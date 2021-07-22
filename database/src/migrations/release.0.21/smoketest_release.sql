@@ -5,13 +5,15 @@
 do $$
 declare
   _count integer = 0;
+  _system_user_id system_user.system_user_id%type;
 begin
   set role postgres;
   set search_path=biohub;
 
   delete from system_user where user_identifier = 'myIDIR';
 
-  insert into system_user (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now());
+  insert into system_user (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now()) returning system_user_id into _system_user_id;
+  insert into system_role (system_user_id, system_role_id) values (_system_user_id, (select system_role_id from system_role where name =  'System Administrator'));
 
   select count(1) into _count from system_user;
   assert _count > 1, 'FAIL system_user';
