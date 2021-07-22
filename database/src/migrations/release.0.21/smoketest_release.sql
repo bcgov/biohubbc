@@ -180,11 +180,11 @@ begin
   insert into permit (system_user_id, number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values (_system_user_id, '8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
 
   -- delete project
-  --call api_delete_project(_project_id);
+  call api_delete_project(_project_id);
 
   raise notice 'smoketest_release: PASS';
 end
 $$;
 
---delete from administrative_activity;
---delete from permit;
+-delete from administrative_activity;
+delete from permit;
