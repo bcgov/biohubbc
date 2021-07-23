@@ -192,7 +192,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
-            hideOverlayLayers={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
           />
