@@ -4,7 +4,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
-import { Route, Router } from 'react-router';
+import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import TemplateObservationPage from './TemplateObservationPage';
