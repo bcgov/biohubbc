@@ -1544,22 +1544,6 @@ exports[`ProjectStepComponents renders the project location with the codes value
               </div>
             </div>
           </div>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-75 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Hide Layer
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-79"
@@ -2122,22 +2106,6 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
             </div>
           </div>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-88 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Hide Layer
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-92"

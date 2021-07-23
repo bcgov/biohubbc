@@ -386,22 +386,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
               </div>
             </div>
           </div>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Hide Layer
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-11"
@@ -1104,22 +1088,6 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
             </div>
           </div>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Hide Layer
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-23"
@@ -1858,22 +1826,6 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
             </div>
           </div>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Hide Layer
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
         </div>
         <div
           class="MuiBox-root MuiBox-root-35"

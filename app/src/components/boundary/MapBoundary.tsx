@@ -135,16 +135,18 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             </Select>
           </FormControl>
         </Box>
-        <Button
-          variant="outlined"
-          component="label"
-          size="medium"
-          color="primary"
-          onClick={() => setSelectedLayer('')}
-          className={classes.uploadButton}
-          style={{ marginLeft: '1rem' }}>
-          Hide Layer
-        </Button>
+        {selectedLayer && (
+          <Button
+            variant="outlined"
+            component="label"
+            size="medium"
+            color="primary"
+            onClick={() => setSelectedLayer('')}
+            className={classes.uploadButton}
+            style={{ marginLeft: '1rem' }}>
+            Hide Layer
+          </Button>
+        )}
       </Box>
       <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
       <Box mt={5} height={500}>
