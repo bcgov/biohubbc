@@ -61,12 +61,12 @@ describe('WFSFeatureGroup', () => {
     const { asFragment } = render(
       <MapContainer id={'test-map'} style={{ height: '100%' }} center={[55, -128]} zoom={10} scrollWheelZoom={false}>
         <MapBounds bounds={initialBounds} />
-          <WFSFeatureGroup
-            name="Wildlife Management Units"
-            typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
-            onSelectGeometry={onSelectGeometry}
-            existingGeometry={[]}
-          />
+        <WFSFeatureGroup
+          name="Wildlife Management Units"
+          typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
+          onSelectGeometry={onSelectGeometry}
+          existingGeometry={[]}
+        />
       </MapContainer>
     );
 
