@@ -126,7 +126,7 @@ const BlockObservationPage = () => {
       revision_count: observationWithDetailsResponse.revision_count
     });
     setTableData(observationWithDetailsResponse.data.tableData.data);
-  }, [biohubApi.observation, observationId, projectId, surveyId]);
+  }, [biohubApi.observation, urlParams, observationId, projectId, surveyId]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
