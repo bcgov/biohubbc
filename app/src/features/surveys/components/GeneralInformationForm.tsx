@@ -137,13 +137,13 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           formikProps={formikProps}
           startRequired={true}
           endRequired={false}
-          startDateHelperText={`Start date must be after project start date ${getFormattedDate(
+          startDateHelperText={`Start date must be on or after project start date ${getFormattedDate(
             DATE_FORMAT.ShortMediumDateFormat,
             props.projectStartDate
           )}`}
           endDateHelperText={
             props.projectEndDate &&
-            `End date must be before project end date ${getFormattedDate(
+            `End date must be on or before project end date ${getFormattedDate(
               DATE_FORMAT.ShortMediumDateFormat,
               props.projectEndDate
             )}`

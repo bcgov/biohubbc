@@ -280,7 +280,7 @@ const BlockObservationPage = () => {
 
   const dateHelperText = surveyWithDetails.survey_details.end_date
     ? `Observation date must be between ${formattedSurveyStartDate} and ${formattedSurveyEndDate}.`
-    : `Observation date must be after ${formattedSurveyStartDate}.`;
+    : `Observation date must be on or after ${formattedSurveyStartDate}.`;
 
   return (
     <>
