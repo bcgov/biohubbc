@@ -5,13 +5,15 @@
 do $$
 declare
   _count integer = 0;
+  _system_user_id biohub.system_user.system_user_id%type;
 begin
   set role postgres;
   set search_path=biohub;
 
   delete from system_user where user_identifier = 'myIDIR';
 
-  insert into system_user (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now());
+  insert into system_user (user_identity_source_id, user_identifier, record_effective_date) values ((select user_identity_source_id from user_identity_source where name = 'IDIR' and record_end_date is null), 'myIDIR', now()) returning system_user_id into _system_user_id;
+  insert into system_user_role (system_user_id, system_role_id) values (_system_user_id, (select system_role_id from system_role where name =  'System Administrator'));
 
   select count(1) into _count from system_user;
   assert _count > 1, 'FAIL system_user';
@@ -20,6 +22,8 @@ begin
 
   -- drop security context for subsequent roles to instantiate
   drop table biohub_context_temp;
+
+  raise notice 'smoketest_release(1): PASS';
 end
 $$;
 
@@ -34,6 +38,7 @@ declare
   _submission_status_id submission_status.submission_status_id%type;
   _survey_status_query text := 'select project_id, survey_id, survey_status from survey_status';
   _survey_status_rec survey_status%rowtype;
+  _geography project.geography%type;
 begin
   set role biohub_api;
   set search_path to biohub_dapi_v1, biohub, public, topology;
@@ -41,6 +46,8 @@ begin
   -- set security context
   select api_set_context('myIDIR', 'IDIR') into _system_user_id;
   --select api_set_context('biohub_api', 'DATABASE') into _system_user_id;
+
+  select st_GeomFromEWKT('SRID=4326;POLYGON((-123.920288 48.592142,-123.667603 48.645205,-123.539886 48.536204,-123.583832 48.46978,-123.728027 48.460674,-123.868103 48.467959,-123.940887 48.5262,-123.920288 48.592142))') into _geography;
 
   insert into project (project_type_id
     , name
@@ -52,7 +59,7 @@ begin
     , coordinator_email_address
     , coordinator_agency_name
     , coordinator_public
-    , geometry
+    , geography
     ) values ((select project_type_id from project_type where name = 'Wildlife')
     , 'project 10'
     , 'my objectives'
@@ -63,7 +70,7 @@ begin
     , 'coordinator_email_address'
     , 'coordinator_agency_name'
     , TRUE
-    , ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)
+    , _geography
     ) returning project_id into _project_id;
 
   insert into stakeholder_partnership (project_id, name) values (_project_id, 'test');
@@ -100,8 +107,8 @@ begin
   assert _count = 1, 'FAIL permit';
 
   -- surveys
-  insert into survey (project_id, name, objectives, location_name, location_description, start_date, lead_first_name, lead_last_name, geometry)
-    values (_project_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', now(), 'lead first', 'lead last', ST_Transform(ST_GeomFromKML('<Polygon><outerBoundaryIs><LinearRing><coordinates>-124.320874799971,48.9077923120772 -124.322396203914,48.9065111298094 -124.324678309828,48.905390095325 -124.327360785201,48.9057904647837 -124.32844178274,48.9074319795644 -124.328962263036,48.9093937899119 -124.32912241082,48.9102746027211 -124.326880341851,48.9101544918834 -124.32359731229,48.9088733096156 -124.320874799971,48.9077923120772</coordinates></LinearRing></outerBoundaryIs></Polygon>'), 3005)) returning survey_id into _survey_id;
+  insert into survey (project_id, name, objectives, location_name, location_description, start_date, lead_first_name, lead_last_name, geography)
+    values (_project_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', now(), 'lead first', 'lead last', _geography) returning survey_id into _survey_id;
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
@@ -179,7 +186,7 @@ begin
   -- delete project
   call api_delete_project(_project_id);
 
-  raise notice 'smoketest_release: PASS';
+  raise notice 'smoketest_release(2): PASS';
 end
 $$;
 

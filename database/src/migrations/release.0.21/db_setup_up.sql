@@ -64,7 +64,7 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 
 -- populate look up tables
 \set QUIET on
-\i populate_system_constants.sql
+\i populate_system_constant.sql
 \i populate_first_nations.sql
 \i populate_climate_change_initiatives.sql
 \i populate_management_action_type.sql
@@ -80,6 +80,7 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i populate_proprietor_type.sql
 \i populate_submission_status_type.sql
 \i populate_submission_message_type.sql
+\i populate_system_metadata_constant.sql
 
 -- temporary external interface tables
 \i populate_wldtaxonomic_units.sql
