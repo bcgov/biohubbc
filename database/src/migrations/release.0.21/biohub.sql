@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Friday, July 16, 2021 11:04:24
+-- Date Created : Wednesday, July 21, 2021 15:25:27
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -268,6 +268,41 @@ COMMENT ON COLUMN climate_change_initiative.update_user IS 'The id of the user w
 COMMENT ON COLUMN climate_change_initiative.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change initiative for the project.'
+;
+
+-- 
+-- TABLE: data_package 
+--
+
+CREATE TABLE data_package(
+    data_package_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    uuid               uuid              DEFAULT public.gen_random_uuid(),
+    create_date        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user        integer           NOT NULL,
+    update_date        timestamptz(6),
+    update_user        integer,
+    revision_count     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT data_package_pk PRIMARY KEY (data_package_id)
+)
+;
+
+
+
+COMMENT ON COLUMN data_package.data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN data_package.uuid IS 'System generated UUID data package identifier.'
+;
+COMMENT ON COLUMN data_package.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN data_package.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN data_package.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN data_package.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN data_package.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE data_package IS 'Holds identifiers for data packages.'
 ;
 
 -- 
@@ -662,7 +697,7 @@ COMMENT ON TABLE occurrence IS 'Occurrence records that have been ingested from 
 
 CREATE TABLE occurrence_submission(
     occurrence_submission_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    survey_id                   integer           NOT NULL,
+    survey_id                   integer,
     source                      varchar(300)      NOT NULL,
     event_timestamp             TIMESTAMPTZ       NOT NULL,
     key                         varchar(1000),
@@ -698,6 +733,44 @@ COMMENT ON COLUMN occurrence_submission.update_user IS 'The id of the user who u
 COMMENT ON COLUMN occurrence_submission.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE occurrence_submission IS 'Provides a historical listing of published dates and pointers to raw data versions for occurrence submissions.'
+;
+
+-- 
+-- TABLE: occurrence_submission_data_package 
+--
+
+CREATE TABLE occurrence_submission_data_package(
+    occurrence_submission_data_package_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    occurrence_submission_id                 integer           NOT NULL,
+    data_package_id                          integer           NOT NULL,
+    create_date                              timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                              integer           NOT NULL,
+    update_date                              timestamptz(6),
+    update_user                              integer,
+    revision_count                           integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT occurrence_submission_data_package_pk PRIMARY KEY (occurrence_submission_data_package_id)
+)
+;
+
+
+
+COMMENT ON COLUMN occurrence_submission_data_package.occurrence_submission_data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE occurrence_submission_data_package IS 'An associative entity that joins data package identifiers and occurrence submissions.'
 ;
 
 -- 
@@ -1776,7 +1849,7 @@ COMMENT ON COLUMN survey_funding_source.update_user IS 'The id of the user who u
 ;
 COMMENT ON COLUMN survey_funding_source.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE survey_funding_source IS 'A associative entity that joins surveys and funding source details.'
+COMMENT ON TABLE survey_funding_source IS 'An associative entity that joins surveys and funding source details.'
 ;
 
 -- 
@@ -1870,7 +1943,51 @@ COMMENT ON COLUMN system_constant.update_user IS 'The id of the user who updated
 ;
 COMMENT ON COLUMN system_constant.revision_count IS 'Revision count used for concurrency control.'
 ;
-COMMENT ON TABLE system_constant IS 'A list of system constants necessary for system functionality.'
+COMMENT ON TABLE system_constant IS 'A list of system constants necessary for system functionality. Such constants are not editable by system administrators as they are used by internal logic.'
+;
+
+-- 
+-- TABLE: system_metadata_constant 
+--
+
+CREATE TABLE system_metadata_constant(
+    system_metadata_constant_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    constant_name                  varchar(50)       NOT NULL,
+    character_value                varchar(300),
+    numeric_value                  numeric(10, 0),
+    description                    varchar(250),
+    create_date                    timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                    integer           NOT NULL,
+    update_date                    timestamptz(6),
+    update_user                    integer,
+    revision_count                 integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT system_metadata_constant_id_pk PRIMARY KEY (system_metadata_constant_id)
+)
+;
+
+
+
+COMMENT ON COLUMN system_metadata_constant.system_metadata_constant_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN system_metadata_constant.constant_name IS 'The lookup name of the constant.'
+;
+COMMENT ON COLUMN system_metadata_constant.character_value IS 'The string value of the constant.'
+;
+COMMENT ON COLUMN system_metadata_constant.numeric_value IS 'The numeric value of the constant.'
+;
+COMMENT ON COLUMN system_metadata_constant.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN system_metadata_constant.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN system_metadata_constant.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN system_metadata_constant.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN system_metadata_constant.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN system_metadata_constant.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE system_metadata_constant IS 'A list of system metadata constants associated with the business. Such constants are editable by system administrators and are used when publishing data.'
 ;
 
 -- 
@@ -2285,6 +2402,18 @@ CREATE INDEX "Ref165161" ON occurrence(occurrence_submission_id)
 CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
 ;
 -- 
+-- INDEX: "Ref165169" 
+--
+
+CREATE INDEX "Ref165169" ON occurrence_submission_data_package(occurrence_submission_id)
+;
+-- 
+-- INDEX: "Ref185170" 
+--
+
+CREATE INDEX "Ref185170" ON occurrence_submission_data_package(data_package_id)
+;
+-- 
 -- INDEX: permit_uk1 
 --
 
@@ -2303,10 +2432,10 @@ CREATE INDEX "Ref45156" ON permit(project_id)
 CREATE INDEX "Ref153157" ON permit(survey_id)
 ;
 -- 
--- INDEX: "Ref78169" 
+-- INDEX: "Ref78171" 
 --
 
-CREATE INDEX "Ref78169" ON permit(system_user_id)
+CREATE INDEX "Ref78171" ON permit(system_user_id)
 ;
 -- 
 -- INDEX: "Ref128119" 
@@ -2609,6 +2738,12 @@ CREATE INDEX "Ref127155" ON survey_proprietor(first_nations_id)
 CREATE UNIQUE INDEX system_constant_uk1 ON system_constant(constant_name)
 ;
 -- 
+-- INDEX: system_metadata_constant_id_uk1 
+--
+
+CREATE UNIQUE INDEX system_metadata_constant_id_uk1 ON system_metadata_constant(constant_name)
+;
+-- 
 -- INDEX: system_role_nuk1 
 --
 
@@ -2732,6 +2867,21 @@ ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160"
 
 
 -- 
+-- TABLE: occurrence_submission_data_package 
+--
+
+ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refoccurrence_submission169" 
+    FOREIGN KEY (occurrence_submission_id)
+    REFERENCES occurrence_submission(occurrence_submission_id)
+;
+
+ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refdata_package170" 
+    FOREIGN KEY (data_package_id)
+    REFERENCES data_package(data_package_id)
+;
+
+
+-- 
 -- TABLE: permit 
 --
 
@@ -2745,7 +2895,7 @@ ALTER TABLE permit ADD CONSTRAINT "Refsurvey157"
     REFERENCES survey(survey_id)
 ;
 
-ALTER TABLE permit ADD CONSTRAINT "Refsystem_user169" 
+ALTER TABLE permit ADD CONSTRAINT "Refsystem_user171" 
     FOREIGN KEY (system_user_id)
     REFERENCES system_user(system_user_id)
 ;
