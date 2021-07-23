@@ -342,7 +342,7 @@ const CreateProjectPage: React.FC = () => {
         isTouched: false
       }
     ]);
-  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData]);
+  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData, nonSamplingPermits]);
 
   /**
    * Return true if the step form fields are valid, false otherwise.
