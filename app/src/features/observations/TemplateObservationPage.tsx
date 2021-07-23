@@ -64,7 +64,7 @@ const TemplateObservationPage: React.FC<ITemplateObservationProps> = () => {
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.project, projectId]);
 
   const getSurvey = useCallback(async () => {
     const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(projectId, surveyId);
@@ -74,7 +74,7 @@ const TemplateObservationPage: React.FC<ITemplateObservationProps> = () => {
     }
 
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.survey, urlParams]);
+  }, [biohubApi.survey, projectId, surveyId]);
 
   const getTemplateObservations = useCallback(
     async (forceFetch: boolean) => {

@@ -98,7 +98,7 @@ const BlockObservationPage = () => {
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.project, projectId]);
 
   const getSurvey = useCallback(async () => {
     const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(projectId, surveyId);
@@ -107,7 +107,7 @@ const BlockObservationPage = () => {
       return;
     }
     setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.survey, urlParams]);
+  }, [biohubApi.survey, projectId, surveyId]);
 
   const getObservation = useCallback(async () => {
     const observationWithDetailsResponse = await biohubApi.observation.getObservationForUpdate(
@@ -126,7 +126,7 @@ const BlockObservationPage = () => {
       revision_count: observationWithDetailsResponse.revision_count
     });
     setTableData(observationWithDetailsResponse.data.tableData.data);
-  }, [biohubApi.observation, urlParams]);
+  }, [biohubApi.observation, observationId, projectId, surveyId]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
