@@ -1,14 +1,19 @@
+//@ts-nocheck
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { v4 as uuidv4 } from 'uuid';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { handleKMLUpload, handleShapefileUpload } from 'utils/mapBoundaryUploadHelpers';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles({
   bold: {
@@ -54,13 +59,17 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
     errors
   } = props;
 
+  const [selectedLayer, setSelectedLayer] = useState('');
+
   return (
     <Grid item xs={12}>
       <Typography className={classes.bold}>{title}</Typography>
       <Box mt={2}>
         <Typography variant="body2">
-          You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be
-          configured with a valid projection.
+          You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted.
+          The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing
+          layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done,
+          press the hide layer button.
         </Typography>
       </Box>
       <Box display="flex" mt={3}>
@@ -103,6 +112,40 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             Upload Shapefile
           </Button>
         </Tooltip>
+        <Box flexBasis="35%" pl={2}>
+          <FormControl variant="outlined" style={{ width: '100%' }}>
+            <InputLabel id="layer">Select Layer</InputLabel>
+            <Select
+              id="layer"
+              name="layer"
+              labelId="layer"
+              label="Select Layer"
+              value={selectedLayer}
+              onChange={(event) => setSelectedLayer(event.target.value as string)}
+              displayEmpty
+              inputProps={{ 'aria-label': 'Layer' }}>
+              <MenuItem key={1} value="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW">
+                Wildlife Management Units
+              </MenuItem>
+              <MenuItem key={2} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP">
+                Parks - Section
+              </MenuItem>
+              <MenuItem key={3} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP">
+                Parks - Regional
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+        <Button
+          variant="outlined"
+          component="label"
+          size="medium"
+          color="primary"
+          onClick={() => setSelectedLayer('')}
+          className={classes.uploadButton}
+          style={{ marginLeft: '1rem' }}>
+          Hide Layer
+        </Button>
       </Box>
       <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
       <Box mt={5} height={500}>
@@ -114,6 +157,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
           }}
           bounds={bounds}
+          selectedLayer={selectedLayer}
         />
       </Box>
       {errors && errors.geometry && (

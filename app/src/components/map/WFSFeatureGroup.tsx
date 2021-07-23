@@ -72,13 +72,13 @@ const FeaturePopup: React.FC<{
 
   const popupItems: JSX.Element[] = [];
 
-  let regionName: string = '';
+  let tooltipText: string = '';
 
   if (feature && feature.properties) {
     if (layerName === 'Parks - Regional') {
-      regionName = feature.properties.REGION_NAME;
+      tooltipText = feature.properties.REGION_NAME;
 
-      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>);
       popupItems.push(
         <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
           0
@@ -87,9 +87,11 @@ const FeaturePopup: React.FC<{
     }
 
     if (layerName === 'Wildlife Management Units') {
-      regionName = feature.properties.REGION_RESPONSIBLE_NAME;
+      tooltipText = `${feature.properties.REGION_RESPONSIBLE_NAME} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
 
-      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(
+        <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_RESPONSIBLE_NAME}`}</div>
+      );
       popupItems.push(
         <div key={`${feature.id}-zone`}>{`Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
       );
@@ -101,9 +103,9 @@ const FeaturePopup: React.FC<{
     }
 
     if (layerName === 'Parks - Section') {
-      regionName = feature.properties.REGION_NAME;
+      tooltipText = `${feature.properties.REGION_NAME} - ${feature.properties.SECTION_NAME}`;
 
-      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${regionName}`}</div>);
+      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>);
       popupItems.push(<div key={`${feature.id}-section`}>{`Section Name: ${feature.properties.SECTION_NAME}`}</div>);
       popupItems.push(
         <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
@@ -120,7 +122,7 @@ const FeaturePopup: React.FC<{
 
   return (
     <>
-      <Tooltip direction="top">{`Region: ${regionName}`}</Tooltip>
+      <Tooltip direction="top">{tooltipText}</Tooltip>
       <Popup ref={popupRef} key={`popup-${feature?.properties?.OBJECTID}`} keepInView={false} autoPan={false}>
         <Box p={1}>
           <Box pb={2}>{popupItems}</Box>
@@ -167,12 +169,9 @@ const FeaturePopup: React.FC<{
  */
 const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const map = useMap();
-
   const biohubApi = useBiohubApi();
-
   const isMounted = useIsMounted();
 
-  const [isEnabled, setIsEnabled] = useState<boolean>(false);
   const [features, setFeatures] = useState<Feature[]>();
   const [bounds, setBounds] = useState<any>(null);
 
@@ -188,52 +187,15 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   );
 
   useMapEvents({
-    overlayadd: (event) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      if (event.name !== props.name) {
-        return;
-      }
-
-      if (!isEnabled) {
-        setIsEnabled(true);
-      }
-
-      throttledSetBounds(map.getBounds());
-    },
-    overlayremove: (event) => {
-      if (!isMounted()) {
-        return;
-      }
-
-      if (event.name !== props.name) {
-        return;
-      }
-
-      if (isEnabled) {
-        setIsEnabled(false);
-      }
-
-      setFeatures([]);
-    },
     moveend: () => {
       if (!isMounted()) {
         return;
       }
 
-      if (!isEnabled) {
-        return;
-      }
       throttledSetBounds(map.getBounds());
     },
     zoomend: () => {
       if (!isMounted()) {
-        return;
-      }
-
-      if (!isEnabled) {
         return;
       }
 
@@ -257,10 +219,6 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
       return;
     }
 
-    if (!isEnabled) {
-      return;
-    }
-
     const zoom = map.getZoom();
 
     if (props?.minZoom && zoom < props?.minZoom) {
@@ -268,34 +226,28 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
       return;
     }
 
-    if (!bounds) {
+    const myBounds = bounds || map.getBounds();
+
+    if (!myBounds) {
       return;
     }
 
     const newFeatures = await throttledGetFeatures(
       props.typeName,
-      bounds.toBBoxString(),
+      myBounds.toBBoxString(),
       props.wfsParams
     )?.catch(/* catch and ignore errors */);
 
     setFeatures(newFeatures);
-  }, [map, throttledGetFeatures, bounds, isMounted, props, isEnabled]);
+  }, [map, throttledGetFeatures, bounds, isMounted, props]);
 
   useEffect(() => {
     if (!isMounted()) {
       return;
     }
 
-    if (!isEnabled) {
-      return;
-    }
-
-    if (!bounds) {
-      return;
-    }
-
     updateFeatures();
-  }, [bounds, updateFeatures, isMounted, isEnabled]);
+  }, [updateFeatures, isMounted]);
 
   return (
     <FeatureGroup>

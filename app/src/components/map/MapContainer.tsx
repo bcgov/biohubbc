@@ -67,7 +67,7 @@ export interface IMapContainerProps {
   bounds?: any[];
   zoom?: number;
   hideDrawControls?: boolean;
-  hideOverlayLayers?: boolean;
+  selectedLayer?: string;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -80,17 +80,20 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     bounds,
     zoom,
     hideDrawControls,
-    hideOverlayLayers,
-    scrollWheelZoom
+    scrollWheelZoom,
+    selectedLayer
   } = props;
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
+  const layerMappings = {
+    'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'Wildlife Management Units',
+    'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP': 'Parks - Section',
+    'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP': 'Parks - Regional'
+  };
+
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
-    console.log('yoooo');
-    console.log(preDefinedGeometry);
-    console.log(geometryState?.geometry);
     if (!preDefinedGeometry) {
       return;
     }
@@ -152,6 +155,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </GeoJSON>
       ))}
 
+      {selectedLayer && (
+        <WFSFeatureGroup
+          name={layerMappings[selectedLayer]}
+          typeName={selectedLayer}
+          minZoom={8}
+          existingGeometry={geometryState?.geometry}
+          onSelectGeometry={setPreDefinedGeometry}
+        />
+      )}
+
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
           <TileLayer
@@ -162,37 +175,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.BaseLayer name="BC Government">
           <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
-        {!hideOverlayLayers && (
-          <>
-            <LayersControl.Overlay name="Wildlife Management Units">
-              <WFSFeatureGroup
-                name="Wildlife Management Units"
-                typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
-                minZoom={8}
-                existingGeometry={geometryState?.geometry}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-            <LayersControl.Overlay name="Parks - Section">
-              <WFSFeatureGroup
-                name="Parks - Section"
-                typeName="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP"
-                minZoom={7}
-                existingGeometry={geometryState?.geometry}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-            <LayersControl.Overlay name="Parks - Regional">
-              <WFSFeatureGroup
-                name="Parks - Regional"
-                typeName="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP"
-                minZoom={7}
-                existingGeometry={geometryState?.geometry}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-          </>
-        )}
       </LayersControl>
     </LeafletMapContainer>
   );
