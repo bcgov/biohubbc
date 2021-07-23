@@ -1,10 +1,55 @@
-import { render, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
 import { MapBounds } from './MapContainer';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
+jest.mock('../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  external: {
+    get: jest.fn()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
+
 describe('WFSFeatureGroup', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().external.get.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  const feature = {
+    type: 'Feature',
+    geometry: {
+      type: 'Polygon',
+      coordinates: [
+        [
+          [-124.044265, 48.482268],
+          [-124.044265, 49.140633],
+          [-122.748143, 49.140633],
+          [-122.748143, 48.482268],
+          [-124.044265, 48.482268]
+        ]
+      ]
+    },
+    properties: {
+      OBJECTID: 332,
+      REGION_RESPONSIBLE_NAME: 'region'
+    }
+  };
+
+  mockBiohubApi().external.get.mockResolvedValue({
+    features: [feature]
+  });
+
   test('matches the snapshot with wildlife management units layer showing', async () => {
     const initialBounds: any[] = [
       [48.25443233, -123.88613849],

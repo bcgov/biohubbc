@@ -1,4 +1,3 @@
-//@ts-nocheck
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
