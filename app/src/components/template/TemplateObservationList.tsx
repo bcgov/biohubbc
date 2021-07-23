@@ -95,7 +95,7 @@ const TemplateObservationsList: React.FC<ITemplateObservationsListProps> = (prop
                       <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     </TableRow>
                   ))}
-              {!props.templateObservationsList.length && (
+              {props.templateObservationsList.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={3} align="center">
                     No Template Observations
