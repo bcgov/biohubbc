@@ -126,11 +126,11 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               <MenuItem key={1} value="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW">
                 Wildlife Management Units
               </MenuItem>
-              <MenuItem key={2} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP">
-                Parks - Section
+              <MenuItem key={2} value="pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW">
+                Parks and EcoRegions
               </MenuItem>
-              <MenuItem key={3} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP">
-                Parks - Regional
+              <MenuItem key={3} value="pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG">
+                NRM Regional Boundaries
               </MenuItem>
             </Select>
           </FormControl>

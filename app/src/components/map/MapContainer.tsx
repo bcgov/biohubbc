@@ -88,8 +88,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const layerMappings = {
     'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'Wildlife Management Units',
-    'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP': 'Parks - Section',
-    'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP': 'Parks - Regional'
+    'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'Parks and EcoRegions',
+    'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'NRM Regional Boundaries'
   };
 
   // Add a geometry defined from an existing overlay feature (via its popup)
@@ -159,7 +159,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <WFSFeatureGroup
           name={layerMappings[selectedLayer]}
           typeName={selectedLayer}
-          minZoom={8}
+          minZoom={7}
           existingGeometry={geometryState?.geometry}
           onSelectGeometry={setPreDefinedGeometry}
         />

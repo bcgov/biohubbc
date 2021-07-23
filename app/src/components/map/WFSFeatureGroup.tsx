@@ -75,10 +75,16 @@ const FeaturePopup: React.FC<{
   let tooltipText: string = '';
 
   if (feature && feature.properties) {
-    if (layerName === 'Parks - Regional') {
-      tooltipText = feature.properties.REGION_NAME;
+    if (layerName === 'Parks and EcoRegions') {
+      tooltipText = `${feature.properties.PROTECTED_LANDS_NAME} - ${feature.properties.PROTECTED_LANDS_DESIGNATION}`;
 
-      popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>);
+      popupItems.push(
+        <div key={`${feature.id}-lands-name`}>{`Lands Name: ${feature.properties.PROTECTED_LANDS_NAME}`}</div>
+      );
+      popupItems.push(
+        <div
+          key={`${feature.id}-lands-designation`}>{`Lands Designation: ${feature.properties.PROTECTED_LANDS_DESIGNATION}`}</div>
+      );
       popupItems.push(
         <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
           0
@@ -102,11 +108,10 @@ const FeaturePopup: React.FC<{
       );
     }
 
-    if (layerName === 'Parks - Section') {
-      tooltipText = `${feature.properties.REGION_NAME} - ${feature.properties.SECTION_NAME}`;
+    if (layerName === 'NRM Regional Boundaries') {
+      tooltipText = feature.properties.REGION_NAME;
 
       popupItems.push(<div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>);
-      popupItems.push(<div key={`${feature.id}-section`}>{`Section Name: ${feature.properties.SECTION_NAME}`}</div>);
       popupItems.push(
         <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
           0
@@ -221,9 +226,14 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
 
     const zoom = map.getZoom();
 
-    if (props?.minZoom && zoom < props?.minZoom) {
-      // Don't load features when zoomed too far out, as it may load too many features to handle
-      return;
+    /*
+      When zoomed too far out, as it may load too many features to handle so auto-adjust zoom level
+
+      Only do this on initial load before any features have been loaded on map, because after that we want
+      other zoom levels to work as well
+    */
+    if (props?.minZoom && zoom < props?.minZoom && !features) {
+      map.setZoom(props.minZoom);
     }
 
     const myBounds = bounds || map.getBounds();
