@@ -468,6 +468,15 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -1185,6 +1194,15 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -1319,7 +1337,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -1331,7 +1349,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -1923,6 +1941,15 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -2057,7 +2084,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -2069,7 +2096,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
