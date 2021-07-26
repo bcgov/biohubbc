@@ -39,7 +39,8 @@ export const insertSurveyOccurrenceSubmissionSQL = (
       ${source},
       now(),
       ${key}
-    );
+    )
+    RETURNING occurrence_submission_id as id;
   `;
 
   defaultLog.debug({
@@ -167,8 +168,7 @@ export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number):
   }
 
   const sqlStatement: SQLStatement = SQL`
-    SELECT
-      key
+    SELECT *
     FROM
       occurrence_submission
     WHERE

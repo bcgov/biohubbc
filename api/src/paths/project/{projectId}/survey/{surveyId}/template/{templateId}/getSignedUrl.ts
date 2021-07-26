@@ -6,7 +6,7 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../../database/db';
 import { getSurveyTemplateS3KeySQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
-import { getS3SignedURL } from '../../../../../../../utils/file-utils';
+import { getS3SignedURL, generateS3FileKey } from '../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/template/{templateId}/getSignedUrl');
@@ -77,11 +77,25 @@ export function getSingleTemplateURL(): RequestHandler {
         getSurveyTemplateS3KeySQLStatement.values
       );
 
+      console.log('result is: ', result);
+
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0].key;
+      let s3SignedUrl;
 
-      const s3SignedUrl = await getS3SignedURL(s3Key);
+      if (result && result.rows.length) {
+        const originalName = result.rows[0].key;
+        const templateId = result.rows[0].occurrence_submission_id;
+
+        const s3Key = generateS3FileKey({
+          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
+          folder: `submissions/${templateId}`,
+          fileName: originalName
+        });
+
+        s3SignedUrl = await getS3SignedURL(s3Key);
+      }
 
       if (!s3SignedUrl) {
         return res.status(200).json(null);

@@ -110,16 +110,29 @@ export function uploadMedia(): RequestHandler {
 
       const rawMediaFile = rawMediaArray[0];
 
+      await connection.open();
+
+      const response = await insertSurveyOccurrenceSubmission(
+        Number(req.params.surveyId),
+        'BioHub',
+        rawMediaFile.originalname,
+        connection
+      );
+
+      if (!response || !response.rows || !response.rows.length) {
+        throw new HTTP400('Failed to insert occurrence submission data');
+      }
+
+      const submissionId = response.rows[0].id;
+
+      await connection.commit();
+
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
-        folder: 'template',
+        folder: `submissions/${submissionId}`,
         fileName: rawMediaFile.originalname
       });
-
-      await connection.open();
-
-      await insertSurveyOccurrenceSubmission(Number(req.params.surveyId), 'BioHub', key, connection);
 
       const metadata = {
         filename: rawMediaFile.originalname,
@@ -128,8 +141,6 @@ export function uploadMedia(): RequestHandler {
       };
 
       await uploadFileToS3(rawMediaFile, key, metadata);
-
-      await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
@@ -156,7 +167,7 @@ export const insertSurveyOccurrenceSubmission = async (
   source: string,
   key: string,
   connection: IDBConnection
-): Promise<void> => {
+): Promise<void | any> => {
   const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, key);
 
   if (!insertSqlStatement) {
@@ -168,4 +179,6 @@ export const insertSurveyOccurrenceSubmission = async (
   if (!insertResponse || !insertResponse.rowCount) {
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
+
+  return insertResponse;
 };
