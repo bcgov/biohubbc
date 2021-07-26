@@ -1626,6 +1626,15 @@ exports[`ProjectStepComponents renders the project location with the codes value
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -2188,6 +2197,15 @@ exports[`ProjectStepComponents renders the project location without the codes va
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -2322,7 +2340,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_68"
                             type="radio"
                           />
                           <span>
@@ -2334,7 +2352,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_66"
+                            name="leaflet-base-layers_68"
                             type="radio"
                           />
                           <span>

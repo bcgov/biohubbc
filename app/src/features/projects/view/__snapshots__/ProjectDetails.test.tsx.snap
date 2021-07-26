@@ -585,6 +585,15 @@ exports[`ProjectDetails renders correctly 1`] = `
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"

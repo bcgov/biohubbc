@@ -179,6 +179,15 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                 −
               </a>
             </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
           </div>
           <div
             class="leaflet-top leaflet-right"
@@ -213,7 +222,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_123"
+                        name="leaflet-base-layers_129"
                         type="radio"
                       />
                       <span>
@@ -225,7 +234,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_123"
+                        name="leaflet-base-layers_129"
                         type="radio"
                       />
                       <span>
@@ -458,6 +467,15 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                 −
               </a>
             </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
           </div>
           <div
             class="leaflet-top leaflet-right"
@@ -492,7 +510,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_105"
+                        name="leaflet-base-layers_110"
                         type="radio"
                       />
                       <span>
@@ -504,7 +522,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_105"
+                        name="leaflet-base-layers_110"
                         type="radio"
                       />
                       <span>
@@ -725,6 +743,15 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 −
               </a>
             </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
           </div>
           <div
             class="leaflet-top leaflet-right"
@@ -759,7 +786,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_84"
+                        name="leaflet-base-layers_88"
                         type="radio"
                       />
                       <span>
@@ -771,7 +798,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_84"
+                        name="leaflet-base-layers_88"
                         type="radio"
                       />
                       <span>
@@ -992,6 +1019,15 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 −
               </a>
             </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
           </div>
           <div
             class="leaflet-top leaflet-right"
@@ -1026,7 +1062,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_66"
+                        name="leaflet-base-layers_69"
                         type="radio"
                       />
                       <span>
@@ -1038,7 +1074,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_66"
+                        name="leaflet-base-layers_69"
                         type="radio"
                       />
                       <span>
@@ -1236,6 +1272,15 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                 −
               </a>
             </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
           </div>
           <div
             class="leaflet-top leaflet-right"
@@ -1270,7 +1315,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_48"
+                        name="leaflet-base-layers_50"
                         type="radio"
                       />
                       <span>
@@ -1282,7 +1327,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_48"
+                        name="leaflet-base-layers_50"
                         type="radio"
                       />
                       <span>
@@ -1479,6 +1524,15 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
               >
                 −
               </a>
+            </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
             </div>
           </div>
           <div

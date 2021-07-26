@@ -19,6 +19,8 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 
 /*
   Get leaflet icons working
@@ -126,7 +128,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={zoom || 5}
       maxZoom={17}
-      scrollWheelZoom={scrollWheelZoom || false}>
+      scrollWheelZoom={scrollWheelZoom || false}
+      whenCreated={(map: any) => {
+        //@ts-ignore
+        new L.Control.Fullscreen({ position: 'topleft' }).addTo(map);
+      }}>
       <MapBounds bounds={bounds} />
 
       <FeatureGroup>
