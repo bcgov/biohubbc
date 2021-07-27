@@ -217,7 +217,7 @@ describe('ProjectStepComponents', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders the project location with the codes values', () => {
+  it('renders the project location', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
@@ -226,23 +226,6 @@ describe('ProjectStepComponents', () => {
         validateOnChange={false}
         onSubmit={async () => {}}>
         {() => <ProjectStepComponents component="ProjectLocation" codes={codes} />}
-      </Formik>
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('renders the project location without the codes values', () => {
-    const { asFragment } = render(
-      <Formik
-        initialValues={ProjectLocationFormInitialValues}
-        validationSchema={ProjectLocationFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        onSubmit={async () => {}}>
-        {() => (
-          <ProjectStepComponents component="ProjectLocation" codes={{ ...codes, region: (null as unknown) as any }} />
-        )}
       </Formik>
     );
 

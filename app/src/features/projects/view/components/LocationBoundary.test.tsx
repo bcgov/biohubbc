@@ -209,7 +209,6 @@ describe('LocationBoundary', () => {
   test('editing the location boundary works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
-        regions: ['region 1', 'region 2'],
         location_description: 'description',
         geometry: sharedGeometry,
         revision_count: 1
@@ -254,7 +253,6 @@ describe('LocationBoundary', () => {
       expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         location: {
-          regions: ['region 1', 'region 2'],
           location_description: 'description',
           geometry: sharedGeometry,
           revision_count: 1
@@ -322,7 +320,6 @@ describe('LocationBoundary', () => {
   it('shows error dialog with API error message when updating location data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
-        regions: ['region 1', 'region 2'],
         location_description: 'description',
         geometry: sharedGeometry,
         revision_count: 1

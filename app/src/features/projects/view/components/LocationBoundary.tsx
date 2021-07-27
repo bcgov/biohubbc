@@ -89,7 +89,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setLocationDataForUpdate(locationResponseData);
 
     setLocationFormData({
-      regions: locationResponseData.regions,
       location_description: locationResponseData.location_description,
       geometry: generateValidGeometryCollection(locationResponseData.geometry).geometryCollection
     });
@@ -149,14 +148,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         </Box>
         <dl>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Region(s)
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {location.regions.join(', ')}
-              </Typography>
-            </Grid>
             <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Location Description

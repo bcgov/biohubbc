@@ -18,7 +18,6 @@
  create trigger journal_project_attachment after insert or update or delete on biohub.project_attachment for each row execute procedure tr_journal_trigger();
  create trigger journal_project_first_nation after insert or update or delete on biohub.project_first_nation for each row execute procedure tr_journal_trigger();
  create trigger journal_project_funding_source after insert or update or delete on biohub.project_funding_source for each row execute procedure tr_journal_trigger();
- create trigger journal_project_region after insert or update or delete on biohub.project_region for each row execute procedure tr_journal_trigger();
  create trigger journal_submission_message_type after insert or update or delete on biohub.submission_message_type for each row execute procedure tr_journal_trigger();
  create trigger journal_project_iucn_action_classification after insert or update or delete on biohub.project_iucn_action_classification for each row execute procedure tr_journal_trigger();
  create trigger journal_project_management_actions after insert or update or delete on biohub.project_management_actions for each row execute procedure tr_journal_trigger();

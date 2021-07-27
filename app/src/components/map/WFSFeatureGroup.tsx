@@ -56,6 +56,8 @@ export interface IWFSFeatureGroupProps {
 export const buildWFSURL = (typeName: string, bbox: string, wfsParams: IWFSParams = defaultWFSParams) => {
   const params = { ...defaultWFSParams, ...wfsParams };
 
+  console.log(bbox);
+
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}&bbox=${bbox},${params.bboxSrsName}`;
 };
 
@@ -237,6 +239,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     }
 
     const myBounds = bounds || map.getBounds();
+    console.log(myBounds)
 
     if (!myBounds) {
       return;

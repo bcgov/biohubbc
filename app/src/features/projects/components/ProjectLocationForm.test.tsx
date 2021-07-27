@@ -13,17 +13,6 @@ jest.mock('@tmcw/togeojson', () => ({
   kml: jest.fn()
 }));
 
-const region: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'region 1'
-  },
-  {
-    value: 2,
-    label: 'region 2'
-  }
-];
-
 describe('ProjectLocationForm', () => {
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
@@ -33,7 +22,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
@@ -42,7 +31,6 @@ describe('ProjectLocationForm', () => {
 
   it('renders correctly with existing location values', () => {
     const existingFormValues: IProjectLocationForm = {
-      regions: ['region 1', 'region 2'],
       location_description: 'a location description',
       geometry: [
         {
@@ -65,7 +53,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
@@ -74,7 +62,6 @@ describe('ProjectLocationForm', () => {
 
   it('renders correctly with errors on fields', () => {
     const existingFormValues: IProjectLocationForm = {
-      regions: ['region 1', 'region 2'],
       location_description: 'a location description',
       geometry: [
         {
@@ -99,7 +86,7 @@ describe('ProjectLocationForm', () => {
         initialErrors={{ location_description: 'error is here' }}
         initialTouched={{ location_description: true }}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
@@ -119,7 +106,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
@@ -188,7 +175,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 

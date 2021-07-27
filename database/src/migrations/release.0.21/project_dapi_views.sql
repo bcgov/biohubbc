@@ -24,7 +24,6 @@
  create or replace view project_iucn_action_classification as select * from biohub.project_iucn_action_classification;
  create or replace view project_management_actions as select * from biohub.project_management_actions;
  create or replace view project_participation as select * from biohub.project_participation;
- create or replace view project_region as select * from biohub.project_region;
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
  create or replace view proprietor_type as select * from biohub.proprietor_type;

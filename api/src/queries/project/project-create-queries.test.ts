@@ -12,7 +12,6 @@ import {
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
-  postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from './project-create-queries';
@@ -48,8 +47,7 @@ describe('postProjectSQL', () => {
     };
 
     const locationData = {
-      location_description: 'a location description',
-      regions: ['Valid Region']
+      location_description: 'a location description'
     };
 
     const objectivesData = {
@@ -272,43 +270,6 @@ describe('postProjectIUCNSQL', () => {
 
       expect(response).to.not.be.null;
       expect(response?.values).to.deep.include(123);
-    });
-  });
-});
-
-describe('postProjectRegionSQL', () => {
-  describe('with invalid parameters', () => {
-    it('Null region provided', () => {
-      // force the function to accept a null project region object
-      const projectId = 1;
-      const response = postProjectRegionSQL((null as unknown) as string, projectId);
-
-      expect(response).to.be.null;
-    });
-
-    it('Null region and null projectId provided - should return null', () => {
-      // force the function to accept a null value
-      const response = postProjectRegionSQL((null as unknown) as string, (null as unknown) as number);
-
-      expect(response).to.be.null;
-    });
-
-    it('Valid region with null projectId - should return null', () => {
-      // force the function to accept a null value
-      const response = postProjectRegionSQL('Valid Region', (null as unknown) as number);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('valid parameters', () => {
-    it('Valid project region params provided - returns a SQLStatement', () => {
-      const projectId = 1;
-      const regionName = 'Kootenays';
-
-      const response = postProjectRegionSQL(regionName, projectId);
-
-      expect(response).to.not.be.null;
     });
   });
 });
