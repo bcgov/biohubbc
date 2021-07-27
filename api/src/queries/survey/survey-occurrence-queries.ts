@@ -98,9 +98,9 @@ export const updateSurveyOccurrenceSubmissionWithKeySQL = (submissionId: number,
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatement | null => {
+export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmission',
+    label: 'getLatestSurveyOccurrenceSubmissionSQL',
     message: 'params',
     surveyId
   });
@@ -111,11 +111,12 @@ export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatem
 
   const sqlStatement = SQL`
     SELECT
-      os.occurrence_submission_id,
+      os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
       os.event_timestamp,
       os.key,
+      os.file_name,
       ss.submission_status_id,
       ss.submission_status_type_id,
       sst.name as submission_status_type_name,
@@ -145,7 +146,8 @@ export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatem
       os.survey_id = ${surveyId}
     ORDER BY
       os.event_timestamp DESC
-    LIMIT 1;
+    LIMIT 1
+    ;
   `;
 
   defaultLog.debug({
@@ -193,14 +195,14 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
 };
 
 /**
- * SQL query to get S3 key of a template for a single survey.
+ * SQL query to get the record for a single occurrence.
  *
  * @param {number} surveyId
  * @param {number} templateId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyTemplateS3KeySQL', message: 'params', surveyId });
+export const getSurveyTemplateOccurrenceSQL = (surveyId: number, templateId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyTemplateOccurrenceSQL', message: 'params', surveyId });
 
   if (!surveyId || !templateId) {
     return null;
@@ -215,7 +217,7 @@ export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number):
   `;
 
   defaultLog.debug({
-    label: 'getSurveyTemplateS3KeySQL',
+    label: 'getSurveyTemplateOccurrenceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

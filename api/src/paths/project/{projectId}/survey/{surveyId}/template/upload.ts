@@ -178,7 +178,7 @@ export const insertSurveyOccurrenceSubmission = async (
   source: string,
   file_name: string,
   connection: IDBConnection
-): Promise<void | any> => {
+): Promise<any> => {
   const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
@@ -207,7 +207,7 @@ export const updateSurveyOccurrenceSubmissionWithKey = async (
   submissionId: number,
   key: string,
   connection: IDBConnection
-): Promise<void | any> => {
+): Promise<any> => {
   const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, key);
 
   if (!updateSqlStatement) {

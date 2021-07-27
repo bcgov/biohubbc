@@ -5,8 +5,8 @@ import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../../database/db';
-import { getSurveyTemplateS3KeySQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
-import { getS3SignedURL, generateS3FileKey } from '../../../../../../../utils/file-utils';
+import { getSurveyTemplateOccurrenceSQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { getS3SignedURL } from '../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/template/{templateId}/getSignedUrl');
@@ -61,41 +61,28 @@ export function getSingleTemplateURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyTemplateS3KeySQLStatement = getSurveyTemplateS3KeySQL(
+      const getSurveyTemplateOccurrenceSQLStatement = getSurveyTemplateOccurrenceSQL(
         Number(req.params.surveyId),
         Number(req.params.templateId)
       );
 
-      if (!getSurveyTemplateS3KeySQLStatement) {
+      if (!getSurveyTemplateOccurrenceSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const result = await connection.query(
-        getSurveyTemplateS3KeySQLStatement.text,
-        getSurveyTemplateS3KeySQLStatement.values
+        getSurveyTemplateOccurrenceSQLStatement.text,
+        getSurveyTemplateOccurrenceSQLStatement.values
       );
 
-      console.log('result is: ', result);
+      console.log('result in', result);
 
       await connection.commit();
 
-      let s3SignedUrl;
-
-      if (result && result.rows.length) {
-        const originalName = result.rows[0].file_name;
-        const templateId = result.rows[0].occurrence_submission_id;
-
-        const s3Key = generateS3FileKey({
-          projectId: Number(req.params.projectId),
-          surveyId: Number(req.params.surveyId),
-          folder: `submissions/${templateId}`,
-          fileName: originalName
-        });
-
-        s3SignedUrl = await getS3SignedURL(s3Key);
-      }
+      const s3Key = result && result.rows.length && result.rows[0].key;
+      const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {
         return res.status(200).json(null);

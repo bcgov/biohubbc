@@ -42,5 +42,11 @@ export async function down(knex: Knex): Promise<void> {
 
     ALTER TABLE occurrence_submission DROP COLUMN file_name;
 
+    set role biohub_api;
+
+    drop view if exists occurrence_submission;
+
+    set role postgres;
+
   `);
 }

@@ -85,6 +85,8 @@ const TemplateObservationPage: React.FC<ITemplateObservationProps> = () => {
       try {
         const response = await biohubApi.survey.getTemplateObservations(projectId, surveyId);
 
+        console.log('response for getTemplate observations in the page', response);
+
         if (!response?.templateObservationsList) {
           return;
         }

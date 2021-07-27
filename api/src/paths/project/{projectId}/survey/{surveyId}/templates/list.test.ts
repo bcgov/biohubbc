@@ -73,7 +73,7 @@ describe('getTemplateObservations', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getTemplateObservationsSQL', async () => {
+  it('should throw a 400 error when no sql statement returned for getLatestSurveyOccurrenceSubmission', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -81,7 +81,7 @@ describe('getTemplateObservations', () => {
       }
     });
 
-    sinon.stub(template_observations_queries, 'getTemplateObservationsSQL').returns(null);
+    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(null);
 
     try {
       const result = templateObservations.getTemplateObservations();
@@ -111,7 +111,7 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getTemplateObservationsSQL').returns(SQL`something`);
+    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 
@@ -147,7 +147,7 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getTemplateObservationsSQL').returns(SQL`something`);
+    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 
@@ -173,7 +173,7 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getTemplateObservationsSQL').returns(SQL`something`);
+    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 

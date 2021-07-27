@@ -179,6 +179,7 @@ export interface IGetSurveyAttachmentsResponse {
 
 export interface IGetTemplateObservations {
   id: number;
+  //key: string;
   fileName: string;
   lastModified: string;
   size: number;
