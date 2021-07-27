@@ -476,6 +476,18 @@ exports[`ProjectDetails renders correctly 1`] = `
                 Location description
               </dd>
             </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
           </div>
         </dl>
         <div

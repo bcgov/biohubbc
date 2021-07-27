@@ -8,8 +8,6 @@ const handleSaveAndNext = jest.fn();
 
 const studyAreaFilledValues = {
   survey_area_name: 'Study area name',
-  park: ['Park name 1'],
-  management_unit: ['Management unit 2'],
   geometry: [
     {
       type: 'Feature',
@@ -24,28 +22,6 @@ const studyAreaFilledValues = {
   ]
 };
 
-const park: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 'Park name 1',
-    label: 'Park name 1'
-  },
-  {
-    value: 'Park name 2',
-    label: 'Park name 2'
-  }
-];
-
-const management_unit: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 'Management unit 1',
-    label: 'Management unit 1'
-  },
-  {
-    value: 'Management unit 2',
-    label: 'Management unit 2'
-  }
-];
-
 describe('Study Area Form', () => {
   it('renders correctly the empty component correctly', () => {
     const { asFragment } = render(
@@ -57,7 +33,7 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => <StudyAreaForm />}
       </Formik>
     );
 
@@ -74,7 +50,7 @@ describe('Study Area Form', () => {
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => <StudyAreaForm />}
       </Formik>
     );
 
@@ -87,21 +63,17 @@ describe('Study Area Form', () => {
         initialValues={studyAreaFilledValues}
         validationSchema={StudyAreaYupSchema}
         initialErrors={{
-          survey_area_name: 'error on survey area name field',
-          park: 'error on park field',
-          management_unit: 'error on management unit field'
+          survey_area_name: 'error on survey area name field'
         }}
         initialTouched={{
-          survey_area_name: true,
-          park: true,
-          management_unit: true
+          survey_area_name: true
         }}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async (values) => {
           handleSaveAndNext(values);
         }}>
-        {() => <StudyAreaForm park={park} management_unit={management_unit} />}
+        {() => <StudyAreaForm />}
       </Formik>
     );
 

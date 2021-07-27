@@ -15,8 +15,6 @@ export interface ICreateSurveyRequest {
   end_date: string;
   first_nations_id: number;
   foippa_requirements_accepted: boolean;
-  management_unit: string[];
-  park: string[];
   proprietary_data_category: string;
   proprietor_name: string;
   sedis_procedures_accepted: boolean;
