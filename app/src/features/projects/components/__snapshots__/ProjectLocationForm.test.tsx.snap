@@ -395,6 +395,15 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -529,7 +538,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_135"
+                            name="leaflet-base-layers_140"
                             type="radio"
                           />
                           <span>
@@ -541,7 +550,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_135"
+                            name="leaflet-base-layers_140"
                             type="radio"
                           />
                           <span>
@@ -956,6 +965,15 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1543,6 +1561,15 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -1677,7 +1704,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -1689,7 +1716,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_93"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -2122,6 +2149,15 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                     −
                   </a>
                 </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
+                </div>
               </div>
               <div
                 class="leaflet-top leaflet-right"
@@ -2256,7 +2292,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -2268,7 +2304,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
