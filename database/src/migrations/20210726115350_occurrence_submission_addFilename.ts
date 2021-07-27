@@ -18,11 +18,18 @@ ALTER TABLE ${DB_SCHEMA}.occurrence_submission ADD file_name varchar(300)
 COMMENT ON COLUMN occurrence_submission.file_name IS 'The name of the file submitted.'
 ;
 
+set search_path = biohub_dapi_v1;
+set role biohub_api;
+
+create or replace view occurrence_submission as select * from biohub.occurrence_submission;
+
+set role postgres;
+
   `);
 }
 
 /**
- * Drop the `block_observation` table.
+ * Drop the `file_name` column in the `occurrence_submission` table.
  *
  * @export
  * @param {Knex} knex

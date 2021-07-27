@@ -32,11 +32,13 @@ export const insertSurveyOccurrenceSubmissionSQL = (
     INSERT INTO occurrence_submission (
       survey_id,
       source,
+      file_name,
       event_timestamp,
       key
     ) VALUES (
       ${surveyId},
       ${source},
+      ${key},
       now(),
       ${key}
     )
