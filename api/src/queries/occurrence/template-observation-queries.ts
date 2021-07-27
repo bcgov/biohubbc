@@ -35,7 +35,10 @@ export const getTemplateObservationsSQL = (surveyId: number): SQLStatement | nul
   where
     os_uniq.occurrence_submission_id is not null
   and
-    os.survey_id = ${surveyId};
+    os.survey_id = ${surveyId}
+  ORDER BY
+    os.event_timestamp DESC
+  LIMIT 1;
   `;
 
   defaultLog.debug({
