@@ -14,17 +14,17 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 export const insertSurveyOccurrenceSubmissionSQL = (
   surveyId: number,
   source: string,
-  key: string
+  file_name: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
     message: 'params',
     surveyId,
     source,
-    key
+    file_name
   });
 
-  if (!surveyId || !source || !key) {
+  if (!surveyId || !source || !file_name) {
     return null;
   }
 
@@ -33,20 +33,57 @@ export const insertSurveyOccurrenceSubmissionSQL = (
       survey_id,
       source,
       file_name,
-      event_timestamp,
-      key
+      event_timestamp
     ) VALUES (
       ${surveyId},
       ${source},
-      ${key},
-      now(),
-      ${key}
+      ${file_name},
+      now()
     )
     RETURNING occurrence_submission_id as id;
   `;
 
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a survey occurrence submission row.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const updateSurveyOccurrenceSubmissionWithKeySQL = (submissionId: number, key: string): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'uodateSurveyOccurrenceSubmissionWithKeySQL',
+    message: 'params',
+    submissionId,
+    key
+  });
+
+  if (!submissionId || !key) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE occurrence_submission
+    SET
+      key=  ${key}
+    WHERE
+      occurrence_submission_id = ${submissionId}
+    RETURNING occurrence_submission_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'updateSurveyOccurrenceSubmissionWithKeySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

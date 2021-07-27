@@ -5,7 +5,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
-import { insertSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
+import {
+  insertSurveyOccurrenceSubmissionSQL,
+  updateSurveyOccurrenceSubmissionWithKeySQL
+} from '../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -134,6 +137,14 @@ export function uploadMedia(): RequestHandler {
         fileName: rawMediaFile.originalname
       });
 
+      //query to update the record with the key before uploading the file
+
+      const update_response = await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
+
+      if (!update_response || !update_response.rows || !update_response.rows.length) {
+        throw new HTTP400('Failed to update occurrence submission data with key');
+      }
+
       const metadata = {
         filename: rawMediaFile.originalname,
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
@@ -165,10 +176,10 @@ export function uploadMedia(): RequestHandler {
 export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
   source: string,
-  key: string,
+  file_name: string,
   connection: IDBConnection
 ): Promise<void | any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, key);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -181,4 +192,33 @@ export const insertSurveyOccurrenceSubmission = async (
   }
 
   return insertResponse;
+};
+
+/**
+ * Update existing `occurrence_submission` record with key.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const updateSurveyOccurrenceSubmissionWithKey = async (
+  submissionId: number,
+  key: string,
+  connection: IDBConnection
+): Promise<void | any> => {
+  const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, key);
+
+  if (!updateSqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+  if (!updateResponse || !updateResponse.rowCount) {
+    throw new HTTP400('Failed to update survey occurrence submission record');
+  }
+
+  return updateResponse;
 };
