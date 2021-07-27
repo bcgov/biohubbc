@@ -22,6 +22,7 @@ export const getTemplateObservationsSQL = (surveyId: number): SQLStatement | nul
     os.update_date,
     os.create_date,
     os.key,
+    os.file_name,
     os_uniq.occurrence_submission_id as id2
   from
     occurrence_submission os

@@ -19,7 +19,7 @@ export class GetTemplateObservationsData {
         templateObservationsData.map((item: any) => {
           return {
             id: item.id,
-            fileName: item.key,
+            fileName: item.file_name,
             lastModified: item.update_date || item.create_date,
             size: item.file_size
           };

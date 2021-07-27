@@ -84,7 +84,7 @@ export function getSingleTemplateURL(): RequestHandler {
       let s3SignedUrl;
 
       if (result && result.rows.length) {
-        const originalName = result.rows[0].key;
+        const originalName = result.rows[0].file_name;
         const templateId = result.rows[0].occurrence_submission_id;
 
         const s3Key = generateS3FileKey({
