@@ -175,7 +175,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         wmu: wmuInfo
       };
 
-      console.log(inferredLayersInfo)
+      console.log(inferredLayersInfo);
 
       setInferredLayersInfo(inferredLayersInfo);
     }, 300),

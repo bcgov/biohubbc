@@ -239,7 +239,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     }
 
     const myBounds = bounds || map.getBounds();
-    console.log(myBounds)
+    console.log(myBounds);
 
     if (!myBounds) {
       return;

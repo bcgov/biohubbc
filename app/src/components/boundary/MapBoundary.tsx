@@ -61,7 +61,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const [selectedLayer, setSelectedLayer] = useState('');
   const [inferredLayersInfo, setInferredLayersInfo] = useState({});
 
-  console.log(inferredLayersInfo)
+  console.log(inferredLayersInfo);
 
   return (
     <Grid item xs={12}>
