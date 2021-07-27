@@ -119,7 +119,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [preDefinedGeometry]);
 
   useEffect(() => {
-    if (!bounds.length) {
+    if (!bounds || !bounds.length) {
       return;
     }
 
@@ -137,8 +137,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       if (!data || !data.features || !data.features.length || !setInferredLayersInfo) {
         return;
       }
-
-      // console.log(data.features);
 
       let inferredLayersInfo;
       const parksInfo: string[] = []; // Parks and Eco-Reserves
@@ -174,8 +172,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         env: envInfo,
         wmu: wmuInfo
       };
-
-      console.log(inferredLayersInfo);
 
       setInferredLayersInfo(inferredLayersInfo);
     }, 300),

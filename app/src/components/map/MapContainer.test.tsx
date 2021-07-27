@@ -66,6 +66,10 @@ describe('MapContainer', () => {
   ];
   const setGeometry = jest.fn();
 
+  mockBiohubApi().external.get.mockResolvedValue({
+    features: []
+  });
+
   test('matches the snapshot with geometries being passed in', () => {
     const { asFragment } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />

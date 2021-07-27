@@ -54,20 +54,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
             Location Description
           </dt>
           <dd
@@ -324,20 +310,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
@@ -618,20 +590,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
             Location Description
           </dt>
           <dd
@@ -888,20 +846,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >
@@ -1170,20 +1114,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
             Location Description
           </dt>
           <dd
@@ -1417,20 +1347,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Region(s)
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Region 1, Region 2
-          </dd>
-        </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
         >

@@ -468,20 +468,6 @@ exports[`ProjectDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Region(s)
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Region 1, Region 2
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
                 Location Description
               </dt>
               <dd

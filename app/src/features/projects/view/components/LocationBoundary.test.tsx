@@ -13,6 +13,9 @@ const mockUseBiohubApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
+  },
+  external: {
+    get: jest.fn()
   }
 };
 
@@ -27,6 +30,7 @@ describe('LocationBoundary', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
     mockBiohubApi().project.updateProject.mockClear();
+    mockBiohubApi().external.get.mockClear();
   });
 
   afterEach(() => {
@@ -54,6 +58,10 @@ describe('LocationBoundary', () => {
       }
     }
   ];
+
+  mockBiohubApi().external.get.mockResolvedValue({
+    features: []
+  });
 
   test('matches the snapshot when there is no location description', () => {
     const { asFragment } = render(
