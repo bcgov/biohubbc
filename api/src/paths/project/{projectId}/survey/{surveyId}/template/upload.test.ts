@@ -10,7 +10,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe('uploadMedia', () => {
+describe('uploadSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -59,10 +59,9 @@ describe('uploadMedia', () => {
   const mockRes = {
     status: (status: number) => {
       actualStatus = status;
-
       return {
         send: () => {
-          // do nothing
+          //do nothing
         }
       };
     }
@@ -199,7 +198,7 @@ describe('uploadMedia', () => {
   it('should return 200 on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rowCount: 1 });
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -210,13 +209,13 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
 
-    sinon.stub(file_utils, 'uploadFileToS3').resolves();
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
     const result = upload.uploadMedia();
 
     await result(mockReq, mockRes, mockNext);
-
     expect(actualStatus).to.equal(200);
   });
 });

@@ -153,6 +153,10 @@ export function uploadMedia(): RequestHandler {
 
       await uploadFileToS3(rawMediaFile, key, metadata);
 
+      console.log("should say it's a fuction", res.status);
+
+      console.log('should be an object with a send', res.status(200));
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });

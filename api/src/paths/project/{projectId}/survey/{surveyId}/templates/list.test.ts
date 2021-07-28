@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as templateObservations from './list';
 import * as db from '../../../../../../database/db';
-import * as template_observations_queries from '../../../../../../queries/occurrence/template-observation-queries';
+import * as survey_occurrence_queries from '../../../../../../queries/survey/survey-occurrence-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -81,7 +81,7 @@ describe('getTemplateObservations', () => {
       }
     });
 
-    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = templateObservations.getTemplateObservations();
@@ -99,7 +99,13 @@ describe('getTemplateObservations', () => {
 
     mockQuery.resolves({
       rows: [
-        { id: 13, key: 'projects/1/surveys/1/filename.txt', create_date: '2020-01-01', update_date: '', file_size: 50 }
+        {
+          id: 13,
+          file_name: 'filename.txt',
+          create_date: '2020-01-01',
+          update_date: '',
+          file_size: 0
+        }
       ]
     });
 
@@ -111,16 +117,14 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      templateObservationsList: [
-        { fileName: 'projects/1/surveys/1/filename.txt', id: 13, lastModified: '2020-01-01', size: 50 }
-      ]
+      templateObservationsList: [{ id: 13, fileName: 'filename.txt', lastModified: '2020-01-01', size: 0 }]
     });
   });
 
@@ -131,7 +135,7 @@ describe('getTemplateObservations', () => {
       rows: [
         {
           id: 13,
-          key: 'projects/1/surveys/1/filename.txt',
+          file_name: 'projects/1/surveys/1/filename.txt',
           create_date: '2020-01-01',
           update_date: '2020-01-02',
           file_size: 50
@@ -147,7 +151,7 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 
@@ -173,7 +177,7 @@ describe('getTemplateObservations', () => {
       query: mockQuery
     });
 
-    sinon.stub(template_observations_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = templateObservations.getTemplateObservations();
 

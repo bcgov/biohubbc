@@ -44,7 +44,7 @@ export async function down(knex: Knex): Promise<void> {
 
     set role biohub_api;
 
-    drop view if exists occurrence_submission;
+    create or replace view occurrence_submission as select * from biohub.occurrence_submission;
 
     set role postgres;
 
