@@ -77,8 +77,6 @@ export function getSingleTemplateURL(): RequestHandler {
         getSurveyTemplateOccurrenceSQLStatement.values
       );
 
-      console.log('result in', result);
-
       await connection.commit();
 
       const s3Key = result && result.rows.length && result.rows[0].key;
