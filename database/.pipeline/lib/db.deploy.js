@@ -31,6 +31,7 @@ module.exports = (settings) => {
         IMAGE_STREAM_NAME: name,
         IMAGE_STREAM_VERSION: phases.build.tag,
         POSTGRESQL_DATABASE: 'biohubbc',
+        TZ: phases[phase].tz,
         IMAGE_STREAM_NAMESPACE: phases.build.namespace,
         VOLUME_CAPACITY:
           `${name}-postgresql${phases[phase].suffix}` === `${name}-postgresql-dev-deploy` ? '20Gi' : '3Gi'
