@@ -167,10 +167,10 @@ describe('uploadSubmission', () => {
     }
   });
 
-  it('should throw a 400 error when it fails to insert a record in S3', async () => {
+  it('should throw a 400 error when it fails to get the update SQL', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rowCount: 1 });
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -181,6 +181,62 @@ describe('uploadSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(null);
+
+    const result = upload.uploadMedia();
+
+    try {
+      await result(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL update statement');
+    }
+  });
+
+  it('should throw a 400 error when it fails to get the update the record in the database', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+    mockQuery.onCall(1).resolves({ rowCount: 0 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    const result = upload.uploadMedia();
+
+    try {
+      await result(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to update survey occurrence submission record');
+    }
+  });
+
+  it('should throw a 400 error when it fails to insert a record in S3', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
@@ -190,7 +246,7 @@ describe('uploadSubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
+      expect(actualError.status).to.equal(500);
       expect(actualError.message).to.equal('Failed to insert occurrence submission data');
     }
   });

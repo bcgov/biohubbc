@@ -122,13 +122,7 @@ export function uploadMedia(): RequestHandler {
         connection
       );
 
-      if (!response || !response.rows || !response.rows.length) {
-        throw new HTTP400('Failed to insert occurrence submission data');
-      }
-
       const submissionId = response.rows[0].id;
-
-      await connection.commit();
 
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
@@ -139,11 +133,9 @@ export function uploadMedia(): RequestHandler {
 
       //query to update the record with the key before uploading the file
 
-      const update_response = await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
+      await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
 
-      if (!update_response || !update_response.rows || !update_response.rows.length) {
-        throw new HTTP400('Failed to update occurrence submission data with key');
-      }
+      await connection.commit();
 
       const metadata = {
         filename: rawMediaFile.originalname,
