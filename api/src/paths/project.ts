@@ -87,7 +87,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createProject(): RequestHandler {
+export function createProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
