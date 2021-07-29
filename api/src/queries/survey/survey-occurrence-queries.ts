@@ -14,17 +14,17 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 export const insertSurveyOccurrenceSubmissionSQL = (
   surveyId: number,
   source: string,
-  key: string
+  file_name: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
     message: 'params',
     surveyId,
     source,
-    key
+    file_name
   });
 
-  if (!surveyId || !source || !key) {
+  if (!surveyId || !source || !file_name) {
     return null;
   }
 
@@ -32,18 +32,58 @@ export const insertSurveyOccurrenceSubmissionSQL = (
     INSERT INTO occurrence_submission (
       survey_id,
       source,
-      event_timestamp,
-      key
+      file_name,
+      event_timestamp
     ) VALUES (
       ${surveyId},
       ${source},
-      now(),
-      ${key}
-    );
+      ${file_name},
+      now()
+    )
+    RETURNING occurrence_submission_id as id;
   `;
 
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a survey occurrence submission row.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const updateSurveyOccurrenceSubmissionWithKeySQL = (submissionId: number, key: string): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'uodateSurveyOccurrenceSubmissionWithKeySQL',
+    message: 'params',
+    submissionId,
+    key
+  });
+
+  if (!submissionId || !key) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE occurrence_submission
+    SET
+      key=  ${key}
+    WHERE
+      occurrence_submission_id = ${submissionId}
+    RETURNING occurrence_submission_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'updateSurveyOccurrenceSubmissionWithKeySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -58,9 +98,9 @@ export const insertSurveyOccurrenceSubmissionSQL = (
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatement | null => {
+export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmission',
+    label: 'getLatestSurveyOccurrenceSubmissionSQL',
     message: 'params',
     surveyId
   });
@@ -71,11 +111,12 @@ export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatem
 
   const sqlStatement = SQL`
     SELECT
-      os.occurrence_submission_id,
+      os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
       os.event_timestamp,
       os.key,
+      os.file_name,
       ss.submission_status_id,
       ss.submission_status_type_id,
       sst.name as submission_status_type_name,
@@ -105,7 +146,8 @@ export const getLatestSurveyOccurrenceSubmission = (surveyId: number): SQLStatem
       os.survey_id = ${surveyId}
     ORDER BY
       os.event_timestamp DESC
-    LIMIT 1;
+    LIMIT 1
+    ;
   `;
 
   defaultLog.debug({
@@ -153,22 +195,21 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
 };
 
 /**
- * SQL query to get S3 key of a template for a single survey.
+ * SQL query to get the record for a single occurrence.
  *
  * @param {number} surveyId
  * @param {number} templateId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyTemplateS3KeySQL', message: 'params', surveyId });
+export const getSurveyTemplateOccurrenceSQL = (surveyId: number, templateId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyTemplateOccurrenceSQL', message: 'params', surveyId });
 
   if (!surveyId || !templateId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-    SELECT
-      key
+    SELECT *
     FROM
       occurrence_submission
     WHERE
@@ -176,7 +217,7 @@ export const getSurveyTemplateS3KeySQL = (surveyId: number, templateId: number):
   `;
 
   defaultLog.debug({
-    label: 'getSurveyTemplateS3KeySQL',
+    label: 'getSurveyTemplateOccurrenceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
