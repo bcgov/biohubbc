@@ -24,8 +24,28 @@ const useExternalApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Generic `POST` for a given `url`.
+   *
+   * @template T type of the response (optional)
+   * @param {string} url url to make a `POST` request to
+   * @param {any} filterData data to pass
+   * @param {CancelTokenSource} [cancelTokenSource] Cancel token to manually cancel the request (optional)
+   * @return {Promise<T=any>} A promise that resolves with the response data
+   */
+  const post = async <T = any>(url: string, filterData: any, cancelTokenSource?: CancelTokenSource): Promise<T> => {
+    const params = new URLSearchParams();
+
+    params.append('CQL_FILTER', filterData);
+
+    const { data } = await axios.post(url, params, { cancelToken: cancelTokenSource?.token });
+
+    return data;
+  };
+
   return {
-    get
+    get,
+    post
   };
 };
 

@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   FeatureGroup,
   GeoJSON,
@@ -12,7 +12,7 @@ import {
   useMap
 } from 'react-leaflet';
 import MapEditControls from 'utils/MapEditControls';
-import WFSFeatureGroup, { buildWFSURL, IWFSParams } from './WFSFeatureGroup';
+import WFSFeatureGroup, { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
 import { v4 as uuidv4 } from 'uuid';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
@@ -22,6 +22,8 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
+//@ts-ignore
+import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 
 /*
@@ -61,6 +63,27 @@ export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   return null;
 };
 
+const layerGeoFilterTypeMappings = {
+  'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'SHAPE',
+  'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
+  'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW': 'GEOMETRY',
+  'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'GEOMETRY'
+};
+
+/**
+ * Construct a WFS url to fetch layer information.
+ *
+ * @param {string} typeName layer name
+ * @param {IWFSParams} [wfsParams=defaultWFSParams] wfs url parameters. Will use defaults specified in
+ * `defaultWFSParams` for any properties not provided.
+ * @return {*}
+ */
+const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams) => {
+  const params = { ...defaultWFSParams, ...wfsParams };
+
+  return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
+};
+
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
@@ -94,7 +117,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
-  const layerMappings = {
+  const layerNameMappings = {
     'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'Wildlife Management Units',
     'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'Parks and EcoRegions',
     'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'NRM Regional Boundaries'
@@ -119,64 +142,24 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [preDefinedGeometry]);
 
   useEffect(() => {
+    if (!geometryState?.geometry.length) {
+      setInferredLayersInfo &&
+        setInferredLayersInfo({
+          parks: [],
+          nrm: [],
+          env: [],
+          wmu: []
+        });
+    }
+  }, [geometryState?.geometry]);
+
+  useEffect(() => {
     if (!bounds || !bounds.length) {
       return;
     }
 
-    const boundsString = `${bounds[0][1]},${bounds[0][0]},${bounds[1][1]},${bounds[1][0]}`;
-
-    throttledGetFeatureDetails(layersToInfer.join(','), boundsString);
+    throttledGetFeatureDetails(layersToInfer);
   }, [bounds]);
-
-  const throttledGetFeatureDetails = useCallback(
-    throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
-      const url = buildWFSURL(typeName, bbox, wfsParams);
-
-      const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
-
-      if (!data || !data.features || !data.features.length || !setInferredLayersInfo) {
-        return;
-      }
-
-      let inferredLayersInfo;
-      const parksInfo: string[] = []; // Parks and Eco-Reserves
-      const nrmInfo: string[] = []; // NRM Regions
-      const envInfo: string[] = []; // ENV Regions
-      const wmuInfo: string[] = []; // Wildlife Management Units
-
-      data.features.forEach((feature: Feature) => {
-        const featureId = feature.id as string;
-
-        if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
-          parksInfo.push(feature.properties?.PROTECTED_LANDS_NAME);
-        }
-
-        if (featureId.includes('ADM_NR_REGIONS_SPG')) {
-          nrmInfo.push(feature.properties?.REGION_NAME);
-        }
-
-        if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-          envInfo.push(feature.properties?.REGION_NUMBER_NAME);
-        }
-
-        if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-          wmuInfo.push(
-            `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-          );
-        }
-      });
-
-      inferredLayersInfo = {
-        parks: parksInfo,
-        nrm: nrmInfo,
-        env: envInfo,
-        wmu: wmuInfo
-      };
-
-      setInferredLayersInfo(inferredLayersInfo);
-    }, 300),
-    []
-  );
 
   let shownDrawControls: any = {};
   let showEditControls: any = {};
@@ -192,6 +175,120 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     showEditControls.edit = false;
     showEditControls.remove = false;
   }
+
+  const throttledGetFeatureDetails = useCallback(
+    throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
+      let inferredLayersInfo;
+      const parksInfo: string[] = []; // Parks and Eco-Reserves
+      const nrmInfo: string[] = []; // NRM Regions
+      const envInfo: string[] = []; // ENV Regions
+      const wmuInfo: string[] = []; // Wildlife Management Units
+
+      const projector = new ReProjector();
+      const projectorPromises: Promise<any>[] = [];
+
+      let drawnGeometries: any[] = [];
+      if (geometryState?.geometry.length) {
+        drawnGeometries = geometryState?.geometry;
+      } else if (nonEditableGeometries) {
+        drawnGeometries = nonEditableGeometries.map((geo: INonEditableGeometries) => geo.feature);
+      }
+
+      // Convert all geometries to BC Albers projection
+      drawnGeometries.forEach((geo: Feature) => {
+        projectorPromises.push(projector.feature(geo).from('EPSG:4326').to('EPSG:3005').project());
+      });
+
+      const projectionResult = await Promise.all(projectorPromises);
+      const wfsPromises: Promise<any>[] = [];
+
+      projectionResult.forEach((projectedGeo) => {
+        let filterCriteria = '';
+        let coordinatesString = '';
+
+        projectedGeo.geometry.coordinates[0].forEach((coordinatePoint: any[], index: number) => {
+          coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
+
+          if (index !== projectedGeo.geometry.coordinates[0].length - 1) {
+            coordinatesString += ',';
+          }
+        });
+
+        filterCriteria = `${projectedGeo.geometry.type}((${coordinatesString}))`;
+
+        let equivalentType = '';
+        const geoId = projectedGeo.id as string;
+
+        if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
+          equivalentType = 'TA_PARK_ECORES_PA_SVW';
+          parksInfo.push(projectedGeo.properties?.PROTECTED_LANDS_NAME);
+        }
+
+        if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
+          equivalentType = 'ADM_NR_REGIONS_SPG';
+          nrmInfo.push(projectedGeo.properties?.REGION_NAME);
+        }
+
+        if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
+          equivalentType = 'EADM_WLAP_REGION_BND_AREA_SVW';
+          envInfo.push(projectedGeo.properties?.REGION_NUMBER_NAME);
+        }
+
+        if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
+          equivalentType = 'WAA_WILDLIFE_MGMT_UNITS_SVW';
+          wmuInfo.push(
+            `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
+          );
+        }
+
+        typeNames.forEach((typeName: string) => {
+          if (!equivalentType || !typeName.includes(equivalentType)) {
+            const url = buildWFSURL(typeName, wfsParams);
+            const geoFilterType = layerGeoFilterTypeMappings[typeName];
+            const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
+
+            wfsPromises.push(biohubApi.external.post(url, filterData).catch(/* catch and ignore errors */));
+          }
+        });
+      });
+
+      const wfsResult = await Promise.all(wfsPromises);
+
+      wfsResult.forEach((item: any) => {
+        item.features.forEach((feature: Feature) => {
+          const featureId = feature.id as string;
+
+          if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
+            parksInfo.push(feature.properties?.PROTECTED_LANDS_NAME);
+          }
+
+          if (featureId.includes('ADM_NR_REGIONS_SPG')) {
+            nrmInfo.push(feature.properties?.REGION_NAME);
+          }
+
+          if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
+            envInfo.push(feature.properties?.REGION_NUMBER_NAME);
+          }
+
+          if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
+            wmuInfo.push(
+              `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
+            );
+          }
+        });
+      });
+
+      inferredLayersInfo = {
+        parks: parksInfo,
+        nrm: nrmInfo,
+        env: envInfo,
+        wmu: wmuInfo
+      };
+
+      setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
+    }, 300),
+    [geometryState?.geometry, nonEditableGeometries]
+  );
 
   return (
     <LeafletMapContainer
@@ -236,7 +333,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       {selectedLayer && (
         <WFSFeatureGroup
-          name={layerMappings[selectedLayer]}
+          name={layerNameMappings[selectedLayer]}
           typeName={selectedLayer}
           minZoom={7}
           existingGeometry={geometryState?.geometry}

@@ -45,7 +45,7 @@ export interface IWFSFeatureGroupProps {
 }
 
 /**
- * Construct a WFS url to fetch layer information.
+ * Construct a WFS url to fetch layer information based on a bounding box.
  *
  * @param {string} typeName layer name
  * @param {string} bbox bounding box string
@@ -53,7 +53,7 @@ export interface IWFSFeatureGroupProps {
  * `defaultWFSParams` for any properties not provided.
  * @return {*}
  */
-export const buildWFSURL = (typeName: string, bbox: string, wfsParams: IWFSParams = defaultWFSParams) => {
+export const buildWFSURLByBoundingBox = (typeName: string, bbox: string, wfsParams: IWFSParams = defaultWFSParams) => {
   const params = { ...defaultWFSParams, ...wfsParams };
 
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}&bbox=${bbox},${params.bboxSrsName}`;
@@ -210,7 +210,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
 
   const throttledGetFeatures = useCallback(
     throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
-      const url = buildWFSURL(typeName, bbox, wfsParams);
+      const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
 
       const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
 

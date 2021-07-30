@@ -42,6 +42,7 @@
     "@tmcw/togeojson": "~4.2.0",
     "@turf/bbox": "~6.3.0",
     "@turf/boolean-equal": "~6.3.0",
+    "reproj-helper": "~1.2.8",
     "@turf/centroid": "~6.4.0",
     "axios": "~0.21.1",
     "clsx": "~1.1.1",

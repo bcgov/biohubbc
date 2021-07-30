@@ -15,7 +15,8 @@ const mockUseBiohubApi = {
     updateProject: jest.fn()
   },
   external: {
-    get: jest.fn()
+    get: jest.fn(),
+    post: jest.fn()
   }
 };
 
@@ -31,6 +32,7 @@ describe('LocationBoundary', () => {
     mockBiohubApi().project.getProjectForUpdate.mockClear();
     mockBiohubApi().project.updateProject.mockClear();
     mockBiohubApi().external.get.mockClear();
+    mockBiohubApi().external.post.mockClear();
   });
 
   afterEach(() => {
@@ -60,6 +62,9 @@ describe('LocationBoundary', () => {
   ];
 
   mockBiohubApi().external.get.mockResolvedValue({
+    features: []
+  });
+  mockBiohubApi().external.post.mockResolvedValue({
     features: []
   });
 
