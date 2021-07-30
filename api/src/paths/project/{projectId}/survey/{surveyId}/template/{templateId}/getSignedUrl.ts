@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../../database/db';
-import { getSurveyTemplateS3KeySQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { getSurveyTemplateOccurrenceSQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { getS3SignedURL } from '../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 
@@ -61,26 +61,25 @@ export function getSingleTemplateURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyTemplateS3KeySQLStatement = getSurveyTemplateS3KeySQL(
+      const getSurveyTemplateOccurrenceSQLStatement = getSurveyTemplateOccurrenceSQL(
         Number(req.params.surveyId),
         Number(req.params.templateId)
       );
 
-      if (!getSurveyTemplateS3KeySQLStatement) {
+      if (!getSurveyTemplateOccurrenceSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const result = await connection.query(
-        getSurveyTemplateS3KeySQLStatement.text,
-        getSurveyTemplateS3KeySQLStatement.values
+        getSurveyTemplateOccurrenceSQLStatement.text,
+        getSurveyTemplateOccurrenceSQLStatement.values
       );
 
       await connection.commit();
 
       const s3Key = result && result.rows.length && result.rows[0].key;
-
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {
