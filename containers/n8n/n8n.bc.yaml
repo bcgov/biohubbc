@@ -7,7 +7,6 @@ labels:
   template: "${NAME}-bc-template"
 metadata:
   name: "${NAME}"
-  namespace: "${N8N_IMAGE_NAMESPACE}"
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -82,7 +81,3 @@ parameters:
     description: The version tag of the built image
     required: true
     value: latest
-  - name: N8N_IMAGE_NAMESPACE
-    description: Target namespace reference (i.e. '9f0fbe-dev') for the N8N image
-    displayName: Namespace
-    required: true
