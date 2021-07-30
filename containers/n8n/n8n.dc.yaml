@@ -1,0 +1,605 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  app: "${NAME}"
+  template: "${NAME}-dc-template"
+metadata:
+  name: "${NAME}"
+objects:
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+        template.openshift.io/expose-username: "{.data[username]}"
+        template.openshift.io/expose-password: "{.data[password]}"
+        template.openshift.io/expose-encryption_key: "{.data[encryption-key]}"
+      labels:
+        template: "${NAME}-template"
+        app.kubernetes.io/part-of: "${NAME}-app"
+      name: "${NAME}"
+      namespace: "${NAMESPACE}"
+    stringData:
+      username: "${N8N_USER}"
+      password: "${N8N_PASSWORD}"
+      encryption-key: "${N8N_ENCRYPTION_KEY}"
+    type: Opaque
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+        template.openshift.io/expose-database_name: '{.data[''database-name'']}'
+        template.openshift.io/expose-password: '{.data[''database-password'']}'
+        template.openshift.io/expose-username: '{.data[''database-user'']}'
+      labels:
+        template: "${NAME}-template"
+        app.kubernetes.io/part-of: n8n-app
+      app: "${NAME}"
+      name: "postgresql-${NAME}"
+      namespace: "${NAMESPACE}"
+    stringData:
+      database-name: "${NAME}"
+      database-password: "${DATABASE_PASSWORD}"
+      database-user: "${NAME}"
+    type: Opaque
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+        template.openshift.io/expose-password: '{.data[''database-password'']}'
+      labels:
+        template: "${NAME}-template"
+        app.kubernetes.io/part-of: n8n-app
+      name: "redis-${NAME}"
+      namespace: "${NAMESPACE}"
+    stringData:
+      database-password: "${REDIS_DATABASE_PASSWORD}"
+    type: Opaque
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: "${NAME}"
+        app.kubernetes.io/component: "${NAME}"
+        app.kubernetes.io/instance: "${NAME}"
+        app.kubernetes.io/part-of: "${NAME}-app"
+      name: "${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      ports:
+      - name: 5678-tcp
+        port: 5678
+        protocol: TCP
+        targetPort: 5678
+      selector:
+        name: "${NAME}"
+      sessionAffinity: None
+      type: ClusterIP
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: "${NAME}"
+        app.kubernetes.io/part-of: "${NAME}-app"
+      name: "postgresql-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      ports:
+        - name: postgresql
+          port: 5432
+          protocol: TCP
+          targetPort: 5432
+      selector:
+        name: "postgresql-${NAME}"
+      sessionAffinity: None
+      type: ClusterIP
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: "${NAME}"
+        app.kubernetes.io/part-of: "${NAME}-app"
+      name: "redis-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      ports:
+      - name: "redis-${NAME}"
+        port: 6379
+        protocol: TCP
+        targetPort: 6379
+      selector:
+        name: "redis-${NAME}"
+      sessionAffinity: None
+      type: ClusterIP
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+    spec:
+      host: "${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca"
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      path: "/"
+      to:
+        kind: Service
+        name: "${NAME}"
+      port:
+        targetPort: 5678-tcp
+      wildcardPolicy: None
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      annotations:
+        volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+      name: "${NAME}-data"
+      namespace: "${NAMESPACE}"
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: 2Gi
+      storageClassName: netapp-file-standard
+      volumeMode: Filesystem
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      annotations:
+        volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+      name: "redis-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: netapp-file-standard
+      volumeMode: Filesystem
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      annotations:
+        volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
+        volume.beta.kubernetes.io/storage-class: netapp-file-standard
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+      name: "postgresql-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      accessModes:
+      - ReadWriteMany
+      resources:
+        requests:
+          storage: "${PVC_SIZE}"
+      storageClassName: netapp-file-standard
+      volumeMode: Filesystem
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: "true"
+      labels:
+        app.kubernetes.io/part-of: "${NAME}-app"
+        template: "${NAME}-template"
+      name: "redis-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: "redis-${NAME}"
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources: {}
+        type: Recreate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            name: "redis-${NAME}"
+        spec:
+          containers:
+          - env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: "redis-${NAME}"
+            imagePullPolicy: IfNotPresent
+            image: image-registry.openshift-image-registry.svc:5000/openshift/redis:latest
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              successThreshold: 1
+              tcpSocket:
+                port: 6379
+              timeoutSeconds: 1
+            name: "redis-${NAME}"
+            ports:
+            - containerPort: 6379
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - /bin/sh
+                - -i
+                - -c
+                - test "$(redis-cli -h 127.0.0.1 -a $REDIS_PASSWORD ping)" == "PONG"
+              failureThreshold: 3
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            resources:
+              limits:
+                memory: 512Mi
+            securityContext:
+              capabilities: {}
+              privileged: false
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /var/lib/redis/data
+              name: "redis-${NAME}-data"
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: "redis-${NAME}-data"
+            persistentVolumeClaim:
+              claimName: "redis-${NAME}"
+      test: false
+      triggers:
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+          - "redis-${NAME}"
+          from:
+            kind: ImageStreamTag
+            name: redis:latest
+            namespace: openshift
+      - type: ConfigChange
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: "true"
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+        template: "${NAME}-template"
+      name: "postgresql-${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: "postgresql-${NAME}"
+      strategy:
+        activeDeadlineSeconds: 21600
+        recreateParams:
+          timeoutSeconds: 600
+        resources: {}
+        type: Recreate
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            name: "postgresql-${NAME}"
+        spec:
+          containers:
+          - env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: "postgresql-${NAME}"
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: "postgresql-${NAME}"
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: "postgresql-${NAME}"
+            imagePullPolicy: IfNotPresent
+            image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:latest
+            livenessProbe:
+              exec:
+                command:
+                - /usr/libexec/check-container
+                - --live
+              failureThreshold: 3
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 10
+            name: "postgresql-${NAME}"
+            ports:
+            - containerPort: 5432
+              protocol: TCP
+            readinessProbe:
+              exec:
+                command:
+                - /usr/libexec/check-container
+              failureThreshold: 3
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            resources:
+              limits:
+                memory: 512Mi
+            securityContext:
+              capabilities: {}
+              privileged: false
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /var/lib/pgsql/data
+              name: "postgresql-${NAME}-data"
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: "postgresql-${NAME}-data"
+            persistentVolumeClaim:
+              claimName: "postgresql-${NAME}"
+      test: false
+      triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+          - "postgresql-${NAME}"
+          from:
+            kind: ImageStreamTag
+            name: postgresql:latest
+            namespace: openshift
+        type: ImageChange
+      - type: ConfigChange
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: "true"
+      labels:
+        app.kubernetes.io/part-of: n8n-app
+        template: "${NAME}-template"
+      name: "${NAME}"
+      namespace: "${NAMESPACE}"
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        name: "${NAME}"
+      strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
+        type: Rolling
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            name: "${NAME}"
+        spec:
+          containers:
+          - env:
+            - name: DB_TYPE
+              value: postgresdb
+            - name: DB_POSTGRESDB_HOST
+              value: "postgresql-${NAME}"
+            - name: DB_POSTGRESDB_USER
+              valueFrom:
+                secretKeyRef:
+                  key: database-user
+                  name: "postgresql-${NAME}"
+            - name: DB_POSTGRESDB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: "postgresql-${NAME}"
+            - name: DB_POSTGRESDB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: "postgresql-${NAME}"
+            - name: DB_POSTGRESDB_PORT
+              value: "5432"
+            - name: DB_POSTGRESDB_SCHEMA
+              value: public
+            - name: N8N_BASIC_AUTH_ACTIVE
+              value: "true"
+            - name: N8N_BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: "${NAME}"
+            - name: N8N_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: "${NAME}"
+            - name: NODE_ENV
+              value: production
+            - name: N8N_PORT
+              value: "5678"
+            - name: QUEUE_BULL_REDIS_HOST
+              value: "redis-${NAME}"
+            - name: QUEUE_BULL_REDIS_PORT
+              value: "6379"
+            - name: QUEUE_BULL_REDIS_TIMEOUT_THRESHOLD
+              value: "20"
+            - name: QUEUE_RECOVERY_INTERVAL
+              value: "10"
+            - name: QUEUE_BULL_REDIS_DB
+              value: "0"
+            - name: QUEUE_BULL_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-password
+                  name: "redis-${NAME}"
+            - name: N8N_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: encryption-key
+                  name: n8n
+            image: "image-registry.openshift-image-registry.svc:5000/${N8N_IMAGE_NAMESPACE}/n8n:latest"
+            imagePullPolicy: IfNotPresent
+            livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /healthz
+                port: 5678
+                scheme: HTTP
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            name: n8n
+            readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /healthz
+                port: 5678
+                scheme: HTTP
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            resources: {}
+            startupProbe:
+              failureThreshold: 5
+              httpGet:
+                path: /healthz
+                port: 5678
+                scheme: HTTP
+              initialDelaySeconds: 120
+              periodSeconds: 10
+              successThreshold: 1
+              timeoutSeconds: 1
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /data
+              name: "${NAME}-data"
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: "${NAME}-data"
+            persistentVolumeClaim:
+              claimName: "${NAME}-data"
+          - emptyDir: {}
+            name: "${NAME}"
+      test: false
+      triggers:
+      - imageChangeParams:
+          automatic: true
+          containerNames:
+          - "${NAME}"
+          from:
+            kind: ImageStreamTag
+            name: n8n:latest
+            namespace: "${N8N_IMAGE_NAMESPACE}"
+        type: ImageChange
+      - type: ConfigChange
+
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: n8n
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. '9f0fbe-dev')
+    displayName: Namespace
+    required: true
+    value: af2668-test
+  - name: N8N_IMAGE_NAMESPACE
+    description: Target namespace reference (i.e. '9f0fbe-dev') for the N8N image
+    displayName: Namespace
+    required: true
+    value: af2668-tools
+  - name: CPU_REQUEST
+    description: Minimal CPU needed to run
+    displayName: CPU Request
+    value: 100m
+  - name: CPU_LIMIT
+    description: Maximum CPU allowed to use
+    displayName: CPU Limit
+    value: 500m
+  - name: MEMORY_REQUEST
+    description: Minimal amount of memory needed to run
+    displayName: Memory Request
+    value: 768Mi
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory allowed to use
+    displayName: Memory Limit
+    value: 1.0Gi
+  - name: PVC_SIZE
+    description: Amount of disk space needed for persistence
+    displayName: PVC Size
+    required: true
+    value: 2Gi
+  - name: N8N_USER
+    displayName: N8N User name
+    description: The name associated with the n8n basic user
+    required: true
+    value: n8n
+  - name: N8N_PASSWORD
+    displayName: N8N Password
+    description:
+      The password for the n8n basic user. Requires 2 upper, 2 lower,
+      1 special, 1 numeric chars and minimum 8 char length
+    generate: expression
+    from: "[a-zA-Z0-9]{8}!@#$%^&_[a-zA-Z0-9]{8}"
+    required: true
+  - name: N8N_ENCRYPTION_KEY
+    displayName: N8N Encryption Key
+    description:
+      The encryption key for n8n.
+    generate: expression
+    from: "[a-zA-Z0-9]{8}!@#$%^&_[a-zA-Z0-9]{8}"
+    required: true
+  - name: DATABASE_PASSWORD
+    displayName: Database Password
+    description:
+      A minimum 16 character password that is generated in the target database,
+      and then copied over into this field.
+    generate: expression
+    from: "[a-zA-Z0-9]{16}"
+    required: true
+  - name: REDIS_DATABASE_PASSWORD
+    displayName: Database Password
+    description:
+      A minimum 16 character password that is generated in the target database,
+      and then copied over into this field.
+    generate: expression
+    from: "[a-zA-Z0-9]{16}"
+    required: true
