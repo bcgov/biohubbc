@@ -6,7 +6,7 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { GetTemplateObservationsData } from '../../../../../../models/template-observations';
-import { getTemplateObservationsSQL } from '../../../../../../queries/occurrence/template-observation-queries';
+import { getLatestSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/templates/list');
@@ -98,7 +98,7 @@ export function getTemplateObservations(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getTemplateObservationsSQLStatement = getTemplateObservationsSQL(Number(req.params.surveyId));
+      const getTemplateObservationsSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
 
       if (!getTemplateObservationsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
