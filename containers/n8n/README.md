@@ -9,11 +9,14 @@ You are supposed to build your n8n image in your <..>-tools namespace and then w
 While N8N does provide a Docker image [here](https://hub.docker.com/r/n8nio/n8n), it is not compatible with OpenShift due to the image assuming it has root privileges. Instead, we build a simple NodeJS image based off Redhat's ubi8/nodejs-12 image where the N8N application can execute without needing privilege escalation. In order to build a N8N image in your project, process and create the build config template using the following command (replace anything in angle brackets with the correct value):
 
 ```sh
+oc process -n $NAMESPACE -f n8n.bc.yaml -p N8N_VERSION=$N8N_VERSION N8N_IMAGE_NAMESPACE=$N8N_IMAGE_NAMESPACE -o yaml | oc apply -n $NAMESPACE -f -
+
 export NAMESPACE=af2668-test
 export N8N_IMAGE_NAMESPACE=af2668-tools
 export N8N_VERSION=0.131.0
 
 oc process -n $NAMESPACE -f n8n.bc.yaml -p N8N_VERSION=$N8N_VERSION -p N8N_IMAGE_NAMESPACE=$N8N_IMAGE_NAMESPACE -o yaml | oc apply -n $NAMESPACE -f -
+
 ```
 
 This will create an ImageStream called `n8n`. This image is built on top of ubi8/nodejs-12, and will have N8N installed on it.
