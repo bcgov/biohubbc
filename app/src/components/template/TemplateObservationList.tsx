@@ -44,7 +44,6 @@ const TemplateObservationsList: React.FC<ITemplateObservationsListProps> = (prop
   const viewFileContents = async (attachment: any) => {
     try {
       let response;
-
       if (props.surveyId) {
         response = await biohubApi.survey.getTemplateObservationsSignedURL(
           props.projectId,
