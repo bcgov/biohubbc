@@ -34,7 +34,7 @@ defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig }
 // This Can lead to unexpected behaviour when the original psql `DATE` value was intentionally omitting time/zone information.
 // PSQL date types: https://www.postgresql.org/docs/12/datatype-datetime.html
 // node-postgres type handling (see bottom of page): https://node-postgres.com/features/types
-pg.types.setTypeParser(1082, (stringValue: string) => {
+pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 
