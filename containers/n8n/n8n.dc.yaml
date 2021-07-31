@@ -33,7 +33,7 @@ objects:
         template.openshift.io/expose-username: '{.data[''database-user'']}'
       labels:
         template: "${NAME}-template"
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
       app: "${NAME}"
       name: "postgresql-${NAME}"
       namespace: "${NAMESPACE}"
@@ -49,7 +49,7 @@ objects:
         template.openshift.io/expose-password: '{.data[''database-password'']}'
       labels:
         template: "${NAME}-template"
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
       name: "redis-${NAME}"
       namespace: "${NAMESPACE}"
     stringData:
@@ -116,7 +116,7 @@ objects:
     metadata:
       name: "${NAME}"
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
     spec:
       host: "${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca"
       tls:
@@ -136,7 +136,7 @@ objects:
         volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
         volume.beta.kubernetes.io/storage-class: netapp-file-standard
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
       name: "${NAME}-data"
       namespace: "${NAMESPACE}"
     spec:
@@ -154,7 +154,7 @@ objects:
         volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
         volume.beta.kubernetes.io/storage-class: netapp-file-standard
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
       name: "redis-${NAME}"
       namespace: "${NAMESPACE}"
     spec:
@@ -172,7 +172,7 @@ objects:
         volume.beta.kubernetes.io/storage-provisioner: csi.trident.netapp.io
         volume.beta.kubernetes.io/storage-class: netapp-file-standard
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
       name: "postgresql-${NAME}"
       namespace: "${NAMESPACE}"
     spec:
@@ -191,6 +191,7 @@ objects:
       labels:
         app.kubernetes.io/part-of: "${NAME}-app"
         template: "${NAME}-template"
+        role: db
       name: "redis-${NAME}"
       namespace: "${NAMESPACE}"
     spec:
@@ -281,8 +282,9 @@ objects:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
         template: "${NAME}-template"
+        role: db
       name: "postgresql-${NAME}"
       namespace: "${NAMESPACE}"
     spec:
@@ -382,8 +384,9 @@ objects:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
       labels:
-        app.kubernetes.io/part-of: n8n-app
+        app.kubernetes.io/part-of: "${NAME}-app"
         template: "${NAME}-template"
+        role: api
       name: "${NAME}"
       namespace: "${NAMESPACE}"
     spec:
@@ -467,40 +470,13 @@ objects:
               valueFrom:
                 secretKeyRef:
                   key: encryption-key
-                  name: n8n
-            image: "image-registry.openshift-image-registry.svc:5000/${N8N_IMAGE_NAMESPACE}/n8n:latest"
+                  name: "${NAME}"
+            - name: WEBHOOK_TUNNEL_URL
+              value: "https://${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca/"
+            image: "image-registry.openshift-image-registry.svc:5000/${N8N_IMAGE_NAMESPACE}/${NAME}:latest"
             imagePullPolicy: IfNotPresent
-            livenessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: /healthz
-                port: 5678
-                scheme: HTTP
-              initialDelaySeconds: 20
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
             name: n8n
-            readinessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: /healthz
-                port: 5678
-                scheme: HTTP
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
             resources: {}
-            startupProbe:
-              failureThreshold: 5
-              httpGet:
-                path: /healthz
-                port: 5678
-                scheme: HTTP
-              initialDelaySeconds: 120
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
             terminationMessagePath: /dev/termination-log
             terminationMessagePolicy: File
             volumeMounts:
@@ -515,8 +491,6 @@ objects:
           - name: "${NAME}-data"
             persistentVolumeClaim:
               claimName: "${NAME}-data"
-          - emptyDir: {}
-            name: "${NAME}"
       test: false
       triggers:
       - imageChangeParams:
@@ -525,7 +499,7 @@ objects:
           - "${NAME}"
           from:
             kind: ImageStreamTag
-            name: n8n:latest
+            name: "${NAME}:latest"
             namespace: "${N8N_IMAGE_NAMESPACE}"
         type: ImageChange
       - type: ConfigChange
@@ -578,7 +552,7 @@ parameters:
       The password for the n8n basic user. Requires 2 upper, 2 lower,
       1 special, 1 numeric chars and minimum 8 char length
     generate: expression
-    from: "[a-zA-Z0-9]{8}!@#$%^&_[a-zA-Z0-9]{8}"
+    from: "[a-zA-Z0-9]{16}"
     required: true
   - name: N8N_ENCRYPTION_KEY
     displayName: N8N Encryption Key
