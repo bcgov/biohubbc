@@ -26,7 +26,7 @@ This will create an ImageStream called `n8n`. This image is built on top of ubi8
 Once your N8N image has been successfully built, you can then deploy it in your project by using the following command (replace anything in angle brackets with the correct value):
 
 ```sh
-export NAMESPACE=af2668-test
+export NAMESPACE=af2668-dev
 export N8N_IMAGE_NAMESPACE=af2668-tools
 oc process -n $NAMESPACE -f n8n.dc.yaml NAMESPACE=$NAMESPACE -o yaml | oc apply -n $NAMESPACE -f -
 ```
