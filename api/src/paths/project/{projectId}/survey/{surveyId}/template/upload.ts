@@ -5,7 +5,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
-import { insertSurveyOccurrenceSubmissionSQL } from '../../../../../../queries/survey/survey-occurrence-queries';
+import {
+  insertSurveyOccurrenceSubmissionSQL,
+  updateSurveyOccurrenceSubmissionWithKeySQL
+} from '../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
@@ -110,16 +113,29 @@ export function uploadMedia(): RequestHandler {
 
       const rawMediaFile = rawMediaArray[0];
 
+      await connection.open();
+
+      const response = await insertSurveyOccurrenceSubmission(
+        Number(req.params.surveyId),
+        'BioHub',
+        rawMediaFile.originalname,
+        connection
+      );
+
+      const submissionId = response.rows[0].id;
+
       const key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
-        folder: 'template',
+        folder: `submissions/${submissionId}`,
         fileName: rawMediaFile.originalname
       });
 
-      await connection.open();
+      //query to update the record with the key before uploading the file
 
-      await insertSurveyOccurrenceSubmission(Number(req.params.surveyId), 'BioHub', key, connection);
+      await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
+
+      await connection.commit();
 
       const metadata = {
         filename: rawMediaFile.originalname,
@@ -128,8 +144,6 @@ export function uploadMedia(): RequestHandler {
       };
 
       await uploadFileToS3(rawMediaFile, key, metadata);
-
-      await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
@@ -154,10 +168,10 @@ export function uploadMedia(): RequestHandler {
 export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
   source: string,
-  key: string,
+  file_name: string,
   connection: IDBConnection
-): Promise<void> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, key);
+): Promise<any> => {
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -168,4 +182,35 @@ export const insertSurveyOccurrenceSubmission = async (
   if (!insertResponse || !insertResponse.rowCount) {
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
+
+  return insertResponse;
+};
+
+/**
+ * Update existing `occurrence_submission` record with key.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const updateSurveyOccurrenceSubmissionWithKey = async (
+  submissionId: number,
+  key: string,
+  connection: IDBConnection
+): Promise<any> => {
+  const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, key);
+
+  if (!updateSqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+  if (!updateResponse || !updateResponse.rowCount) {
+    throw new HTTP400('Failed to update survey occurrence submission record');
+  }
+
+  return updateResponse;
 };
