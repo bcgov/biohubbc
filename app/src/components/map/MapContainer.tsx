@@ -213,6 +213,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           wmu: []
         });
     }
+
+    const isAllPointGeometries = geometryState?.geometry.every((geo: Feature) => geo.geometry.type === 'Point');
+
+    if (isAllPointGeometries) {
+      throttledGetFeatureDetails(layersToInfer);
+    }
   }, [geometryState?.geometry]);
 
   useEffect(() => {
@@ -250,6 +256,57 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return geos.map((geo) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project());
   };
 
+  /**
+   * Generate the coordinates string for the reprojected geometries based on geometry type
+   *
+   * @param {Feature} projectedGeometry
+   * @returns {string} formatted coordinates string
+   *
+   */
+  const generateCoordinatesString = (projectedGeometry: any) => {
+    const coordinatesArray = projectedGeometry.coordinates;
+    const geometryType = projectedGeometry.type;
+    let coordinatesString = '';
+
+    if (geometryType === 'MultiPolygon') {
+      coordinatesString += '(((';
+
+      coordinatesArray.forEach((coordinateArray: any[], arrayIndex: number) => {
+        coordinateArray[0].forEach((coordinatePoint: any[], index: number) => {
+          coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
+
+          if (index !== coordinateArray[0].length - 1) {
+            coordinatesString += ',';
+          } else if (arrayIndex !== coordinatesArray.length - 1) {
+            coordinatesString += ')),';
+          }
+        });
+
+        if (arrayIndex !== coordinatesArray.length - 1) {
+          coordinatesString += '((';
+        }
+      });
+
+      coordinatesString += ')))';
+    } else if (geometryType === 'Polygon') {
+      coordinatesString += '((';
+
+      coordinatesArray[0].forEach((coordinatePoint: any[], index: number) => {
+        coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
+
+        if (index !== coordinatesArray[0].length - 1) {
+          coordinatesString += ',';
+        } else {
+          coordinatesString += '))';
+        }
+      });
+    } else if (geometryType === 'Point') {
+      coordinatesString += `(${coordinatesArray[0]} ${coordinatesArray[1]})`;
+    }
+
+    return coordinatesString;
+  };
+
   // TODO break this into smaller functions
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
@@ -274,17 +331,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       reprojectedGeometries.forEach((projectedGeo) => {
         let filterCriteria = '';
-        let coordinatesString = '';
+        const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
-        projectedGeo.geometry.coordinates[0].forEach((coordinatePoint: any[], index: number) => {
-          coordinatesString += `${coordinatePoint[0]} ${coordinatePoint[1]}`;
-
-          if (index !== projectedGeo.geometry.coordinates[0].length - 1) {
-            coordinatesString += ',';
-          }
-        });
-
-        filterCriteria = `${projectedGeo.geometry.type}((${coordinatesString}))`;
+        filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
 
         let equivalentType = '';
         const geoId = projectedGeo.id as string;
@@ -320,7 +369,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             const requestBody = new URLSearchParams();
             requestBody.append('CQL_FILTER', filterData);
 
-            // TODO this request seems to always fail on MultiPolygons
             wfsPromises.push(
               biohubApi.external.post(url, requestBody).catch(() => {
                 /* catch and ignore errors */
