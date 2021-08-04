@@ -4,7 +4,7 @@ drop procedure if exists api_delete_project;
 create or replace procedure api_delete_project(p_project_id project.project_id%type)
 language plpgsql
 security definer
-as 
+as
 $$
 -- *******************************************************************
 -- Procedure: api_delete_project
@@ -29,6 +29,7 @@ begin
   delete from stakeholder_partnership where project_id = p_project_id;
   delete from project_activity where project_id = p_project_id;
   delete from project_climate_initiative where project_id = p_project_id;
+  delete from project_region where project_id = p_project_id;
   delete from project_management_actions where project_id = p_project_id;
   delete from project_funding_source where project_id = p_project_id;
   delete from project_iucn_action_classification where project_id = p_project_id;
@@ -39,6 +40,6 @@ begin
 
 exception
   when others THEN
-    raise;    
+    raise;
 end;
 $$;

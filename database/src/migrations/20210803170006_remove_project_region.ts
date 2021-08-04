@@ -2,19 +2,21 @@ import * as Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
+//create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
+
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    set search_path = biohub_dapi_v1;
-    set role biohub_api;
-    drop view if exists project_region;
+    DROP VIEW if exists biohub_dapi_v1.project_region;
 
     set role postgres;
-    set search_path = ${DB_SCHEMA},public;
 
+    DROP TRIGGER if exists audit_project_region on project_region;
+    DROP TRIGGER if exists journal_project_region on project_region;
     DROP TABLE if exists project_region;
+
   `);
 }
 
@@ -22,6 +24,7 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
+
 
     CREATE TABLE project_region(
       project_region_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
@@ -54,17 +57,17 @@ export async function down(knex: Knex): Promise<void> {
     COMMENT ON TABLE project_region IS 'The region of a project.'
     ;
 
-    ALTER TABLE project_region ADD CONSTRAINT "Refproject131" 
+    ALTER TABLE project_region ADD CONSTRAINT "Refproject131"
       FOREIGN KEY (project_id)
       REFERENCES project(project_id)
     ;
 
-    create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
-    create trigger journal_project_region after insert or update or delete on biohub.project_region for each row execute procedure tr_journal_trigger();
+    create trigger audit_project_region before insert or update or delete on project_region for each row execute procedure tr_audit_trigger();
+    create trigger journal_project_region after insert or update or delete on project_region for each row execute procedure tr_journal_trigger();
 
     set search_path = ${DB_SCHEMA}_dapi_v1;
     set role ${DB_SCHEMA}_api;
-    create or replace view project_region as select * from biohub.project_region;
+    create or replace view project_region as select * from ${DB_SCHEMA}.project_region;
 
     set role postgres;
     set search_path = ${DB_SCHEMA},public;

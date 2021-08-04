@@ -18,6 +18,7 @@
  create trigger audit_project_attachment before insert or update or delete on biohub.project_attachment for each row execute procedure tr_audit_trigger();
  create trigger audit_project_first_nation before insert or update or delete on biohub.project_first_nation for each row execute procedure tr_audit_trigger();
  create trigger audit_project_funding_source before insert or update or delete on biohub.project_funding_source for each row execute procedure tr_audit_trigger();
+ create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
  create trigger audit_submission_message_type before insert or update or delete on biohub.submission_message_type for each row execute procedure tr_audit_trigger();
  create trigger audit_project_iucn_action_classification before insert or update or delete on biohub.project_iucn_action_classification for each row execute procedure tr_audit_trigger();
  create trigger audit_project_management_actions before insert or update or delete on biohub.project_management_actions for each row execute procedure tr_audit_trigger();
