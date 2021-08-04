@@ -8,6 +8,10 @@
     "prod": "prod"
   },
   "version": "1.0.0",
+  "timezone": {
+    "db": "America/Vancouver",
+    "api": "America/Vancouver"
+  },
   "module": {
     "db": "biohubbc-db",
     "api": "biohubbc-api",

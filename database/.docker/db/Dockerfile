@@ -1,8 +1,10 @@
 FROM postgres:12.5
 
-# set variables
+# read env variables
+ARG TZ=America/Vancouver
+
+# set env variables
 ENV POSTGISV 3
-ENV TZ America/Vancouver
 ENV PORT 5432
 
 # install postgis packages

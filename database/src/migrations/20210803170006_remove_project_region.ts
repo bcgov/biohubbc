@@ -2,8 +2,6 @@ import * as Knex from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-//create trigger audit_project_region before insert or update or delete on biohub.project_region for each row execute procedure tr_audit_trigger();
-
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';

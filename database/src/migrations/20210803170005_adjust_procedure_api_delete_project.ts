@@ -7,7 +7,6 @@ export async function up(knex: Knex): Promise<void> {
 
   set schema '${DB_SCHEMA}';
   set search_path = ${DB_SCHEMA},public;
-  set role postgres;
 
   drop procedure if exists api_delete_project;
 
