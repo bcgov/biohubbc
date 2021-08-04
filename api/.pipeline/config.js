@@ -58,7 +58,6 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
-    tz: config.timezone.api,
     branch: branch,
     logLevel: 'debug'
   },
@@ -76,7 +75,6 @@ const phases = {
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
       `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
-    tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,
     replicas: 1,
     maxReplicas: 2,
@@ -94,7 +92,6 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
     env: 'test',
-    tz: config.timezone.api,
     certificateURL: config.certificateURL.test,
     replicas: 3,
     maxReplicas: 5,
@@ -112,7 +109,6 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
     env: 'prod',
-    tz: config.timezone.api,
     certificateURL: config.certificateURL.prod,
     replicas: 3,
     maxReplicas: 6,

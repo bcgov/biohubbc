@@ -51,10 +51,6 @@ parameters:
     name: POSTGRESQL_DATABASE
     required: true
     value: 'biohubbc'
-  - name: TZ
-    description: Database timezone
-    required: false
-    value: 'America/Vancouver'
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
@@ -186,8 +182,6 @@ objects:
                   value: 'N'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
-                - name: PGTZ
-                  value: '${TZ}'
               image: ' '
               imagePullPolicy: IfNotPresent
               livenessProbe:

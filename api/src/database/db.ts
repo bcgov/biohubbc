@@ -1,4 +1,4 @@
-import * as pg from 'pg';
+import { Pool, PoolClient, PoolConfig, QueryResult } from 'pg';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import { setSystemUserContextSQL } from '../queries/user-context-queries';
 import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
@@ -16,7 +16,7 @@ const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
 const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
-const poolConfig: pg.PoolConfig = {
+const poolConfig: PoolConfig = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_DATABASE,
@@ -29,19 +29,10 @@ const poolConfig: pg.PoolConfig = {
 
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
 
-// Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
-// Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
-// This Can lead to unexpected behaviour when the original psql `DATE` value was intentionally omitting time/zone information.
-// PSQL date types: https://www.postgresql.org/docs/12/datatype-datetime.html
-// node-postgres type handling (see bottom of page): https://node-postgres.com/features/types
-pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
-  return stringValue; // 1082 for `DATE` type
-});
-
-let pool: pg.Pool;
+let pool: Pool;
 
 try {
-  pool = new pg.Pool(poolConfig);
+  pool = new Pool(poolConfig);
 } catch (error) {
   defaultLog.error({ label: 'create db pool', message: 'failed to create pool', error, poolConfig });
   process.exit(1);
@@ -88,7 +79,7 @@ export interface IDBConnection {
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
-  query: (text: string, values?: any[]) => Promise<pg.QueryResult<any> | void>;
+  query: (text: string, values?: any[]) => Promise<QueryResult<any> | void>;
   /**
    * Get the ID of the system user in context.
    *
@@ -120,7 +111,7 @@ export interface IDBConnection {
  * @return {*} {IDBConnection}
  */
 export const getDBConnection = function (keycloakToken: object): IDBConnection {
-  let _client: pg.PoolClient;
+  let _client: PoolClient;
 
   let _isOpen = false;
   let _isReleased = false;
@@ -198,7 +189,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @param {any[]} [values] SQL values array (optional)
    * @return {*}  {(Promise<QueryResult<any> | void>)}
    */
-  const _query = async (text: string, values?: any[]): Promise<pg.QueryResult<any> | void> => {
+  const _query = async (text: string, values?: any[]): Promise<QueryResult<any> | void> => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
