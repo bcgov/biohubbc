@@ -177,7 +177,6 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       <Box mt={5} height={500}>
         <MapContainer
           mapId={mapId}
-          //@ts-ignore
           geometryState={{
             geometry: values.geometry,
             setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)

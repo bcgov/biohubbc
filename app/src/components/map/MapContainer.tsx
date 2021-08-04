@@ -22,7 +22,6 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
-//@ts-ignore
 import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 
@@ -68,6 +67,75 @@ const layerGeoFilterTypeMappings = {
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW': 'GEOMETRY',
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'GEOMETRY'
+};
+
+const layerContentHandlers = {
+  'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': {
+    featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
+    popupContentHandler: (feature: Feature) => {
+      if (!feature || !feature.properties) {
+        return { tooltip: 'Unparsable Feature', content: [] };
+      }
+
+      const tooltip = `${feature.properties.REGION_RESPONSIBLE_NAME} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
+
+      const content = (
+        <>
+          <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_RESPONSIBLE_NAME}`}</div>
+          <div key={`${feature.id}-zone`}>{`Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
+          <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+            0
+          )} ha`}</div>
+        </>
+      );
+
+      return { tooltip, content };
+    }
+  },
+  'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': {
+    featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
+    popupContentHandler: (feature: Feature) => {
+      if (!feature || !feature.properties) {
+        return { tooltip: 'Unparsable Feature', content: [] };
+      }
+
+      const tooltip = `${feature.properties.PROTECTED_LANDS_NAME} - ${feature.properties.PROTECTED_LANDS_DESIGNATION}`;
+
+      const content = (
+        <>
+          <div key={`${feature.id}-lands-name`}>{`Lands Name: ${feature.properties.PROTECTED_LANDS_NAME}`}</div>
+          <div
+            key={`${feature.id}-lands-designation`}>{`Lands Designation: ${feature.properties.PROTECTED_LANDS_DESIGNATION}`}</div>
+          <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+            0
+          )} ha`}</div>
+        </>
+      );
+
+      return { tooltip, content };
+    }
+  },
+  'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': {
+    featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
+    popupContentHandler: (feature: Feature) => {
+      if (!feature || !feature.properties) {
+        return { tooltip: 'Unparsable Feature', content: [] };
+      }
+
+      const tooltip = feature.properties.REGION_NAME;
+
+      const content = (
+        <>
+          <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_NAME}`}</div>
+          <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
+            0
+          )} ha`}</div>
+        </>
+      );
+
+      return { tooltip, content };
+    }
+  }
 };
 
 /**
@@ -116,12 +184,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const biohubApi = useBiohubApi();
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
-
-  const layerNameMappings = {
-    'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'Wildlife Management Units',
-    'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'Parks and EcoRegions',
-    'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'NRM Regional Boundaries'
-  };
 
   const layersToInfer = [
     'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
@@ -176,18 +238,29 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     showEditControls.remove = false;
   }
 
+  /**
+   * Alter the projection of an array of features, from EPSG:4326 to EPSG:3005 (BC Albers).
+   *
+   * @param {Feature[]} geos
+   * @return {*}  {Promise<any>[]}
+   */
+  const changeProjections = (geos: Feature[]): Promise<any>[] => {
+    const reprojector = new ReProjector();
+
+    return geos.map((geo) => reprojector.feature(geo).from('EPSG:4326').to('EPSG:3005').project());
+  };
+
+  // TODO break this into smaller functions
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
       let inferredLayersInfo;
-      const parksInfo: string[] = []; // Parks and Eco-Reserves
-      const nrmInfo: string[] = []; // NRM Regions
-      const envInfo: string[] = []; // ENV Regions
-      const wmuInfo: string[] = []; // Wildlife Management Units
-
-      const projector = new ReProjector();
-      const projectorPromises: Promise<any>[] = [];
+      const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
+      const nrmInfo: Set<string> = new Set(); // NRM Regions
+      const envInfo: Set<string> = new Set(); // ENV Regions
+      const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
 
       let drawnGeometries: any[] = [];
+
       if (geometryState?.geometry.length) {
         drawnGeometries = geometryState?.geometry;
       } else if (nonEditableGeometries) {
@@ -195,14 +268,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       }
 
       // Convert all geometries to BC Albers projection
-      drawnGeometries.forEach((geo: Feature) => {
-        projectorPromises.push(projector.feature(geo).from('EPSG:4326').to('EPSG:3005').project());
-      });
+      const reprojectedGeometries = await Promise.all(changeProjections(drawnGeometries));
 
-      const projectionResult = await Promise.all(projectorPromises);
       const wfsPromises: Promise<any>[] = [];
 
-      projectionResult.forEach((projectedGeo) => {
+      reprojectedGeometries.forEach((projectedGeo) => {
         let filterCriteria = '';
         let coordinatesString = '';
 
@@ -221,22 +291,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
         if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
           equivalentType = 'TA_PARK_ECORES_PA_SVW';
-          parksInfo.push(projectedGeo.properties?.PROTECTED_LANDS_NAME);
+          parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
         }
 
         if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
           equivalentType = 'ADM_NR_REGIONS_SPG';
-          nrmInfo.push(projectedGeo.properties?.REGION_NAME);
+          nrmInfo.add(projectedGeo.properties?.REGION_NAME);
         }
 
         if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
           equivalentType = 'EADM_WLAP_REGION_BND_AREA_SVW';
-          envInfo.push(projectedGeo.properties?.REGION_NUMBER_NAME);
+          envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
         }
 
         if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
           equivalentType = 'WAA_WILDLIFE_MGMT_UNITS_SVW';
-          wmuInfo.push(
+          wmuInfo.add(
             `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
           );
         }
@@ -247,7 +317,15 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             const geoFilterType = layerGeoFilterTypeMappings[typeName];
             const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
 
-            wfsPromises.push(biohubApi.external.post(url, filterData).catch(/* catch and ignore errors */));
+            const requestBody = new URLSearchParams();
+            requestBody.append('CQL_FILTER', filterData);
+
+            // TODO this request seems to always fail on MultiPolygons
+            wfsPromises.push(
+              biohubApi.external.post(url, requestBody).catch(() => {
+                /* catch and ignore errors */
+              })
+            );
           }
         });
       });
@@ -255,23 +333,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       const wfsResult = await Promise.all(wfsPromises);
 
       wfsResult.forEach((item: any) => {
-        item.features.forEach((feature: Feature) => {
+        item?.features?.forEach((feature: Feature) => {
           const featureId = feature.id as string;
 
           if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
-            parksInfo.push(feature.properties?.PROTECTED_LANDS_NAME);
+            parksInfo.add(feature.properties?.PROTECTED_LANDS_NAME);
           }
 
           if (featureId.includes('ADM_NR_REGIONS_SPG')) {
-            nrmInfo.push(feature.properties?.REGION_NAME);
+            nrmInfo.add(feature.properties?.REGION_NAME);
           }
 
           if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-            envInfo.push(feature.properties?.REGION_NUMBER_NAME);
+            envInfo.add(feature.properties?.REGION_NUMBER_NAME);
           }
 
           if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-            wmuInfo.push(
+            wmuInfo.add(
               `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
             );
           }
@@ -279,10 +357,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       });
 
       inferredLayersInfo = {
-        parks: parksInfo,
-        nrm: nrmInfo,
-        env: envInfo,
-        wmu: wmuInfo
+        parks: Array.from(parksInfo),
+        nrm: Array.from(nrmInfo),
+        env: Array.from(envInfo),
+        wmu: Array.from(wmuInfo)
       };
 
       setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
@@ -333,9 +411,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       {selectedLayer && (
         <WFSFeatureGroup
-          name={layerNameMappings[selectedLayer]}
           typeName={selectedLayer}
           minZoom={7}
+          featureKeyHandler={layerContentHandlers[selectedLayer].featureKeyHandler}
+          popupContentHandler={layerContentHandlers[selectedLayer].popupContentHandler}
           existingGeometry={geometryState?.geometry}
           onSelectGeometry={setPreDefinedGeometry}
         />
