@@ -66,7 +66,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
     setBounds(geometryCollectionResult.bounds);
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, []);
+  }, [survey_details?.geometry]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,

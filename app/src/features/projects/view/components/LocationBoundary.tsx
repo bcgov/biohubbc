@@ -132,7 +132,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
     setBounds(geometryCollectionResult.bounds);
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, []);
+  }, [location.geometry]);
 
   return (
     <>
