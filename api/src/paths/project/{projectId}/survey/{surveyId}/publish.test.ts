@@ -132,7 +132,7 @@ describe('publishSurveyAndOccurrences', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmission').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -157,7 +157,7 @@ describe('publishSurveyAndOccurrences', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmission').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     try {
       const result = publish.publishSurveyAndOccurrences();

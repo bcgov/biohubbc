@@ -2,8 +2,10 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmission,
-  insertSurveyOccurrenceSubmissionSQL
+  getLatestSurveyOccurrenceSubmissionSQL,
+  insertSurveyOccurrenceSubmissionSQL,
+  updateSurveyOccurrenceSubmissionWithKeySQL,
+  getSurveyTemplateOccurrenceSQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
@@ -34,13 +36,13 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
 
 describe('getLatestSurveyOccurrenceSubmission', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getLatestSurveyOccurrenceSubmission((null as unknown) as number);
+    const response = getLatestSurveyOccurrenceSubmissionSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getLatestSurveyOccurrenceSubmission(1);
+    const response = getLatestSurveyOccurrenceSubmissionSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -55,6 +57,46 @@ describe('deleteSurveyOccurrencesSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = deleteSurveyOccurrencesSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = updateSurveyOccurrenceSubmissionWithKeySQL((null as unknown) as number, 'fileKey');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null key provided', () => {
+    const response = updateSurveyOccurrenceSubmissionWithKeySQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = updateSurveyOccurrenceSubmissionWithKeySQL(1, 'fileKey');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyTemplateOccurrenceSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyTemplateOccurrenceSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null key provided', () => {
+    const response = getSurveyTemplateOccurrenceSQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getSurveyTemplateOccurrenceSQL(1, 1);
 
     expect(response).to.not.be.null;
   });
