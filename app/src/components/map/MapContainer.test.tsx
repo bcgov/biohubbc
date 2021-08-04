@@ -30,6 +30,8 @@ describe('MapContainer', () => {
     // clear mocks before each test
     mockBiohubApi().external.get.mockClear();
     mockBiohubApi().external.post.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

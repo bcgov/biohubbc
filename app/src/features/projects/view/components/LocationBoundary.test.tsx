@@ -33,6 +33,8 @@ describe('LocationBoundary', () => {
     mockBiohubApi().project.updateProject.mockClear();
     mockBiohubApi().external.get.mockClear();
     mockBiohubApi().external.post.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -68,7 +70,7 @@ describe('LocationBoundary', () => {
     features: []
   });
 
-  test('matches the snapshot when there is no location description', () => {
+  test('matches the snapshot when there is no location description', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -80,10 +82,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when there is no geometry', () => {
+  test('matches the snapshot when there is no geometry', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -95,10 +99,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', () => {
+  test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -110,10 +116,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when the geometry is a single polygon in invalid GeoJSON format', () => {
+  test('matches the snapshot when the geometry is a single polygon in invalid GeoJSON format', async () => {
     const geometry: any[] = [
       {
         type: 'Polygon',
@@ -140,10 +148,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when the geometry is a multipolygon', () => {
+  test('matches the snapshot when the geometry is a multipolygon', async () => {
     const geometry: any[] = [
       {
         type: 'MultiPolygon',
@@ -181,10 +191,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when the geometry is a geometry collection', () => {
+  test('matches the snapshot when the geometry is a geometry collection', async () => {
     const geometry: any[] = [
       {
         type: 'GeometryCollection',
@@ -216,7 +228,9 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   test('editing the location boundary works in the dialog', async () => {

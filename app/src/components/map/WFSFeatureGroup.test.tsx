@@ -20,6 +20,8 @@ describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().external.get.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

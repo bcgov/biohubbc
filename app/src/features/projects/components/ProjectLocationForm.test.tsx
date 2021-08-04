@@ -1,5 +1,4 @@
 import { getByTestId, render, fireEvent, waitFor, getByText, queryByText } from '@testing-library/react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectLocationForm, {
@@ -13,8 +12,10 @@ jest.mock('@tmcw/togeojson', () => ({
   kml: jest.fn()
 }));
 
+jest.spyOn(console, 'debug').mockImplementation(() => {});
+
 describe('ProjectLocationForm', () => {
-  it('renders correctly with default empty values', () => {
+  it('renders correctly with default empty values', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
@@ -26,10 +27,12 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly with existing location values', () => {
+  it('renders correctly with existing location values', async () => {
     const existingFormValues: IProjectLocationForm = {
       location_description: 'a location description',
       geometry: [
@@ -57,10 +60,12 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly with errors on fields', () => {
+  it('renders correctly with errors on fields', async () => {
     const existingFormValues: IProjectLocationForm = {
       location_description: 'a location description',
       geometry: [
@@ -90,7 +95,9 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('displays an error when the spatial upload is attempted with an incorrect file type', async () => {

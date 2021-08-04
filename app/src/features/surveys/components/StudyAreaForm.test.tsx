@@ -1,8 +1,7 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { Formik } from 'formik';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from 'features/surveys/components/StudyAreaForm';
 import React from 'react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 
 const handleSaveAndNext = jest.fn();
 
@@ -22,8 +21,10 @@ const studyAreaFilledValues = {
   ]
 };
 
+jest.spyOn(console, 'debug').mockImplementation(() => {});
+
 describe('Study Area Form', () => {
-  it('renders correctly the empty component correctly', () => {
+  it('renders correctly the empty component correctly', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={StudyAreaInitialValues}
@@ -37,10 +38,12 @@ describe('Study Area Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly the filled component correctly', () => {
+  it('renders correctly the filled component correctly', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={studyAreaFilledValues}
@@ -54,10 +57,12 @@ describe('Study Area Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly when errors exist', () => {
+  it('renders correctly when errors exist', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={studyAreaFilledValues}
@@ -77,6 +82,8 @@ describe('Study Area Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 });

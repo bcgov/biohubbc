@@ -304,8 +304,7 @@ const CreateProjectPage: React.FC = () => {
       },
       {
         stepTitle: 'Locations',
-        stepSubTitle:
-          'Specify FLNRO region, location description and spatial boundary information for the overall project area.',
+        stepSubTitle: 'Specify a location description and spatial boundary information for the overall project area.',
         stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
         stepInitialValues: initialProjectFieldData.location,
         stepYupSchema: ProjectLocationFormYupSchema,

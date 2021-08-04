@@ -17,6 +17,8 @@ describe('ProjectDetails', () => {
     }
   });
 
+  jest.spyOn(console, 'debug').mockImplementation(() => {});
+
   const component = <ProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} refresh={jest.fn()} />;
 
   it('renders correctly', () => {

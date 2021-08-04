@@ -60,6 +60,8 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().draft.updateDraft.mockClear();
     mockBiohubApi().draft.getDraft.mockClear();
     mockBiohubApi().permit.getNonSamplingPermits.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
