@@ -37,6 +37,7 @@ export async function up(knex: Knex): Promise<void> {
   const tr_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_project.sql'));
   const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
   const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
+  const tr_occurrence_submission = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_occurrence_submission.sql'));
   const api_get_system_constant = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_system_constant.sql'));
   const api_get_system_metadata_constant = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'api_get_system_metadata_constant.sql')
@@ -138,6 +139,7 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_project}
     ${tr_survey}
     ${tr_permit}
+    ${tr_occurrence_submission}
     ${api_get_system_constant}
     ${api_get_system_metadata_constant}
     ${vw_survey_status}
