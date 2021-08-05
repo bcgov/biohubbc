@@ -26,6 +26,10 @@ parameters:
     description: Application Environment type variable
     required: true
     value: 'dev'
+  - name: TZ
+    description: Application timezone
+    required: false
+    value: 'America/Vancouver'
   - name: CERTIFICATE_URL
     description: Authentication certificate urls
     required: true
@@ -135,6 +139,8 @@ objects:
                   value: ${CHANGE_ID}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: TZ
+                  value: ${TZ}
                 - name: VERSION
                   value: ${VERSION}
                 - name: OBJECT_STORE_URL

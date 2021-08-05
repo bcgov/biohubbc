@@ -42,7 +42,8 @@ function getVersionInformation(): RequestHandler {
   return (req, res) => {
     const versionInfo = {
       version: process.env.VERSION,
-      environment: process.env.NODE_ENV
+      environment: process.env.NODE_ENV,
+      timezone: process.env.TZ
     };
 
     res.status(200).json(versionInfo);

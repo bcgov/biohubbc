@@ -275,7 +275,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
@@ -324,12 +324,74 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-10"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-3"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-11"
         />
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -405,6 +467,15 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -563,44 +634,11 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -669,10 +707,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
               >
                 <span>
                   Survey Area Name *
@@ -794,10 +832,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
                 >
                   <span>
                     Park
@@ -920,10 +958,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
                 >
                   <span>
                     Management Unit
@@ -938,25 +976,25 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-17 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-20"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-21"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-18 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -977,7 +1015,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-18 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -997,12 +1035,74 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-22"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-15"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-23"
         />
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-24"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1093,6 +1193,15 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1228,7 +1337,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -1240,7 +1349,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -1251,44 +1360,11 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -1358,10 +1434,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
+                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
               >
                 <span>
                   Survey Area Name *
@@ -1490,10 +1566,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
+                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
                 >
                   <span>
                     Park
@@ -1623,10 +1699,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
+                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
                 >
                   <span>
                     Management Unit
@@ -1647,25 +1723,25 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-28 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-30 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-32"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-31"
+          class="MuiBox-root MuiBox-root-33"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1686,7 +1762,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1706,12 +1782,74 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-34"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-27"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-35"
         />
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiBox-root MuiBox-root-36"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1802,6 +1940,15 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1937,7 +2084,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_99"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -1949,7 +2096,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_99"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -1960,44 +2107,11 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div

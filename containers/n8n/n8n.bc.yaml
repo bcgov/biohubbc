@@ -1,0 +1,83 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  app: n8n
+  build: "${NAME}"
+  template: "${NAME}-bc-template"
+metadata:
+  name: "${NAME}"
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: "${NAME}"
+      labels:
+        buildconfig: "${NAME}"
+    spec:
+      completionDeadlineSeconds: 600
+      failedBuildsHistoryLimit: 3
+      successfulBuildsHistoryLimit: 3
+      output:
+        to:
+          kind: ImageStreamTag
+          name: "${NAME}:${VERSION}"
+      postCommit: {}
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+      runPolicy: SerialLatestOnly
+      source:
+        dockerfile: |
+          FROM BuildConfig
+          ARG N8N_VERSION
+          ENV HOME=/opt/app-root/src \
+              TZ=America/Vancouver
+          RUN mkdir -p $HOME
+          WORKDIR $HOME
+          RUN npm install -g n8n@${N8N_VERSION}
+          ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+          VOLUME ${HOME}
+          VOLUME [ "/data" ]
+          WORKDIR /data
+          EXPOSE 5678/tcp
+          CMD ["n8n"]
+        type: Dockerfile
+      strategy:
+        dockerStrategy:
+          buildArgs:
+            - name: N8N_VERSION
+              value: "${N8N_VERSION}"
+          from:
+            kind: DockerImage
+            name: registry.access.redhat.com/ubi8/nodejs-14:latest
+        type: Docker
+      triggers:
+        - type: ConfigChange
+parameters:
+  - name: NAME
+    displayName: Name
+    description: The name assigned to all of the objects defined in this template.
+    required: true
+    value: n8n
+  - name: N8N_VERSION
+    displayName: N8N Version
+    description: Version of N8N to use
+    required: true
+    value: 0.131.0
+  - name: VERSION
+    displayName: Image version tag
+    description: The version tag of the built image
+    required: true
+    value: latest

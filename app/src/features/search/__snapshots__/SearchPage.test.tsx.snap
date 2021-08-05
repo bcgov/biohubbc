@@ -104,6 +104,15 @@ exports[`SearchPage matches the snapshot 1`] = `
                         −
                       </a>
                     </div>
+                    <div
+                      class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-fullscreen-button leaflet-bar-part"
+                        href="#"
+                        title="View Fullscreen"
+                      />
+                    </div>
                   </div>
                   <div
                     class="leaflet-top leaflet-right"
@@ -161,44 +170,11 @@ exports[`SearchPage matches the snapshot 1`] = `
                         </div>
                         <div
                           class="leaflet-control-layers-separator"
+                          style="display: none;"
                         />
                         <div
                           class="leaflet-control-layers-overlays"
-                        >
-                          <label>
-                            <div>
-                              <input
-                                class="leaflet-control-layers-selector"
-                                type="checkbox"
-                              />
-                              <span>
-                                 Wildlife Management Units
-                              </span>
-                            </div>
-                          </label>
-                          <label>
-                            <div>
-                              <input
-                                class="leaflet-control-layers-selector"
-                                type="checkbox"
-                              />
-                              <span>
-                                 Parks - Section
-                              </span>
-                            </div>
-                          </label>
-                          <label>
-                            <div>
-                              <input
-                                class="leaflet-control-layers-selector"
-                                type="checkbox"
-                              />
-                              <span>
-                                 Parks - Regional
-                              </span>
-                            </div>
-                          </label>
-                        </div>
+                        />
                       </section>
                     </div>
                     <div

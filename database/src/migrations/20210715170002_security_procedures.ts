@@ -40,10 +40,9 @@ begin
     and record_end_date is null;
 
   select b.system_user_id, c.system_role_id into _system_user_id, _system_role_id from system_user b, system_user_role c
-    where b.user_identity_source_id = (select a.user_identity_source_id from user_identity_source a
-          where a.name = p_user_identity_source_name and a.record_end_date is null)
-    and b.user_identifier = p_system_user_identifier and
-    c.system_user_id = b.system_user_id;
+    where b.user_identity_source_id = _user_identity_source_id
+    and b.user_identifier = p_system_user_identifier 
+    and c.system_user_id = b.system_user_id;
 
   create temp table if not exists biohub_context_temp (tag varchar(200), value varchar(200));
   delete from biohub_context_temp where tag in ('user_id','system_user_role_id');

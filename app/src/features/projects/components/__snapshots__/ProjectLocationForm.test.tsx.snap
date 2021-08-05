@@ -103,10 +103,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-52"
+                  class="PrivateNotchedOutline-legendLabelled-56"
                 >
                   <span>
                     Regions *
@@ -117,7 +117,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-54"
+          class="MuiBox-root MuiBox-root-58"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -152,10 +152,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-50 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-52"
+                class="PrivateNotchedOutline-legendLabelled-56"
               >
                 <span>
                   Location Description
@@ -169,25 +169,25 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-55 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-59 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-57"
+          class="MuiBox-root MuiBox-root-61"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-58"
+          class="MuiBox-root MuiBox-root-62"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-56 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-60 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -208,7 +208,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-56 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-60 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -228,12 +228,74 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-63"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-56"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-59"
+          class="MuiBox-root MuiBox-root-64"
         />
         <div
-          class="MuiBox-root MuiBox-root-60"
+          class="MuiBox-root MuiBox-root-65"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -332,6 +394,15 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -467,7 +538,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_147"
+                            name="leaflet-base-layers_140"
                             type="radio"
                           />
                           <span>
@@ -479,7 +550,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_147"
+                            name="leaflet-base-layers_140"
                             type="radio"
                           />
                           <span>
@@ -490,44 +561,11 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -735,7 +773,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
@@ -784,12 +822,74 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-11"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-4"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-13"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -865,6 +965,15 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1023,44 +1132,11 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -1192,10 +1268,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-28"
+                  class="PrivateNotchedOutline-legendLabelled-30"
                 >
                   <span>
                     Regions *
@@ -1206,7 +1282,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-32"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1244,10 +1320,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
+                class="PrivateNotchedOutline-legendLabelled-30 PrivateNotchedOutline-legendNotched-31"
               >
                 <span>
                   Location Description
@@ -1267,25 +1343,25 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-31 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-33 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiBox-root MuiBox-root-35"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-34"
+          class="MuiBox-root MuiBox-root-36"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-32 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-34 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1306,7 +1382,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-32 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-34 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1326,12 +1402,74 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-37"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-30"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-38"
         />
         <div
-          class="MuiBox-root MuiBox-root-36"
+          class="MuiBox-root MuiBox-root-39"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1422,6 +1560,15 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1557,7 +1704,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_99"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -1569,7 +1716,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_99"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
@@ -1580,44 +1727,11 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -1749,10 +1863,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-16"
+                  class="PrivateNotchedOutline-legendLabelled-17"
                 >
                   <span>
                     Regions *
@@ -1763,7 +1877,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-19"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1800,10 +1914,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
               >
                 <span>
                   Location Description
@@ -1817,25 +1931,25 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-19 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-22"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-23"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-20 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1856,7 +1970,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-20 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1876,12 +1990,74 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-24"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-17"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-25"
         />
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-26"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1972,6 +2148,15 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -2107,7 +2292,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -2119,7 +2304,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_72"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
@@ -2130,44 +2315,11 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div

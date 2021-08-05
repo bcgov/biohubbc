@@ -147,62 +147,6 @@ describe('MapContainer', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  test('updates the geometry when a pre-defined feature is returned by an overlay layer', async () => {
-    const feature = {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-124.044265, 48.482268],
-            [-124.044265, 49.140633],
-            [-122.748143, 49.140633],
-            [-122.748143, 48.482268],
-            [-124.044265, 48.482268]
-          ]
-        ]
-      },
-      properties: {
-        OBJECTID: 332
-      }
-    };
-
-    mockBiohubApi().external.get.mockResolvedValue({
-      features: [feature]
-    });
-
-    const setGeometry = jest.fn();
-
-    const { getByText, getByTestId, container } = render(
-      <MapContainer mapId="myMap" zoom={10} classes={classes} geometryState={{ geometry: [], setGeometry }} />
-    );
-
-    fireEvent.click(getByText('Wildlife Management Units'));
-
-    await waitFor(() => {
-      expect(mockBiohubApi().external.get).toHaveBeenCalledWith(
-        expect.stringContaining('pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW')
-      );
-    });
-
-    // Get the child element from the overlay pane (which should be our single feature element)
-    const overlayFeatureElement = container.querySelector('.leaflet-overlay-pane .leaflet-interactive');
-
-    if (!overlayFeatureElement) {
-      fail();
-    }
-
-    fireEvent.click(overlayFeatureElement);
-
-    await waitFor(() => {
-      expect(getByTestId('add_boundary')).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId('add_boundary'));
-
-    expect(setGeometry).toHaveBeenCalledWith([feature]);
-  });
-
   test('draws a marker successfully on the map and updates the geometry', () => {
     const { getByText, getByRole } = render(
       <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />

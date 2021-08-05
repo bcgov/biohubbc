@@ -6,7 +6,7 @@ import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/Custo
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import {
   deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmission
+  getLatestSurveyOccurrenceSubmissionSQL
 } from '../../../../../queries/survey/survey-occurrence-queries';
 import { updateSurveyPublishStatusSQL } from '../../../../../queries/survey/survey-update-queries';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
@@ -210,7 +210,7 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
  * @return {*}
  */
 export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = getLatestSurveyOccurrenceSubmission(surveyId);
+  const sqlStatement = getLatestSurveyOccurrenceSubmissionSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build get survey occurrence submission SQL statement');

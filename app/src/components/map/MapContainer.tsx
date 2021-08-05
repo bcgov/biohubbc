@@ -19,6 +19,8 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 
 /*
   Get leaflet icons working
@@ -67,7 +69,7 @@ export interface IMapContainerProps {
   bounds?: any[];
   zoom?: number;
   hideDrawControls?: boolean;
-  hideOverlayLayers?: boolean;
+  selectedLayer?: string;
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -80,11 +82,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     bounds,
     zoom,
     hideDrawControls,
-    hideOverlayLayers,
-    scrollWheelZoom
+    scrollWheelZoom,
+    selectedLayer
   } = props;
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
+
+  const layerMappings = {
+    'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'Wildlife Management Units',
+    'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'Parks and EcoRegions',
+    'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'NRM Regional Boundaries'
+  };
 
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
@@ -119,7 +127,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       id={mapId}
       center={[55, -128]}
       zoom={zoom || 5}
-      scrollWheelZoom={scrollWheelZoom || false}>
+      maxZoom={17}
+      scrollWheelZoom={scrollWheelZoom || false}
+      whenCreated={(map: any) => {
+        //@ts-ignore
+        new L.Control.Fullscreen({ position: 'topleft' }).addTo(map);
+      }}>
       <MapBounds bounds={bounds} />
 
       <FeatureGroup>
@@ -148,6 +161,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         </GeoJSON>
       ))}
 
+      {selectedLayer && (
+        <WFSFeatureGroup
+          name={layerMappings[selectedLayer]}
+          typeName={selectedLayer}
+          minZoom={7}
+          existingGeometry={geometryState?.geometry}
+          onSelectGeometry={setPreDefinedGeometry}
+        />
+      )}
+
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="Esri Imagery">
           <TileLayer
@@ -158,34 +181,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         <LayersControl.BaseLayer name="BC Government">
           <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
-        {!hideOverlayLayers && (
-          <>
-            <LayersControl.Overlay name="Wildlife Management Units">
-              <WFSFeatureGroup
-                name={'Wildlife Management Units'}
-                typeName={'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'}
-                minZoom={8}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-            <LayersControl.Overlay name="Parks - Section">
-              <WFSFeatureGroup
-                name={'Parks - Section'}
-                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_SECTIONS_SP'}
-                minZoom={7}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-            <LayersControl.Overlay name="Parks - Regional">
-              <WFSFeatureGroup
-                name={'Parks - Regional'}
-                typeName={'pub:WHSE_ADMIN_BOUNDARIES.ADM_BC_PARKS_REGIONS_SP'}
-                minZoom={7}
-                onSelectGeometry={setPreDefinedGeometry}
-              />
-            </LayersControl.Overlay>
-          </>
-        )}
       </LayersControl>
     </LeafletMapContainer>
   );

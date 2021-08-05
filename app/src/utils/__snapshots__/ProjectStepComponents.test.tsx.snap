@@ -1433,7 +1433,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
@@ -1482,12 +1482,74 @@ exports[`ProjectStepComponents renders the project location with the codes value
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-78"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-71"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-79"
         />
         <div
-          class="MuiBox-root MuiBox-root-79"
+          class="MuiBox-root MuiBox-root-80"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1563,6 +1625,15 @@ exports[`ProjectStepComponents renders the project location with the codes value
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -1721,44 +1792,11 @@ exports[`ProjectStepComponents renders the project location with the codes value
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div
@@ -1890,10 +1928,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-81 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-83"
+                  class="PrivateNotchedOutline-legendLabelled-84"
                 >
                   <span>
                     Regions *
@@ -1904,7 +1942,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-85"
+          class="MuiBox-root MuiBox-root-86"
         >
           <button
             class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
@@ -1939,10 +1977,10 @@ exports[`ProjectStepComponents renders the project location without the codes va
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-81 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-83"
+                class="PrivateNotchedOutline-legendLabelled-84"
               >
                 <span>
                   Location Description
@@ -1956,25 +1994,25 @@ exports[`ProjectStepComponents renders the project location without the codes va
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-86 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-87 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-88"
+          class="MuiBox-root MuiBox-root-89"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            You may upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection.
+            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-89"
+          class="MuiBox-root MuiBox-root-90"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-87 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-88 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1995,7 +2033,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-87 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-88 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -2015,12 +2053,74 @@ exports[`ProjectStepComponents renders the project location without the codes va
               class="MuiTouchRipple-root"
             />
           </label>
+          <div
+            class="MuiBox-root MuiBox-root-91"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-84"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-90"
+          class="MuiBox-root MuiBox-root-92"
         />
         <div
-          class="MuiBox-root MuiBox-root-91"
+          class="MuiBox-root MuiBox-root-93"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2096,6 +2196,15 @@ exports[`ProjectStepComponents renders the project location without the codes va
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
@@ -2231,7 +2340,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_68"
                             type="radio"
                           />
                           <span>
@@ -2243,7 +2352,7 @@ exports[`ProjectStepComponents renders the project location without the codes va
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_69"
+                            name="leaflet-base-layers_68"
                             type="radio"
                           />
                           <span>
@@ -2254,44 +2363,11 @@ exports[`ProjectStepComponents renders the project location without the codes va
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
+                      style="display: none;"
                     />
                     <div
                       class="leaflet-control-layers-overlays"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Wildlife Management Units
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Section
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            type="checkbox"
-                          />
-                          <span>
-                             Parks - Regional
-                          </span>
-                        </div>
-                      </label>
-                    </div>
+                    />
                   </section>
                 </div>
                 <div

@@ -520,8 +520,8 @@ exports[`ProjectDetails renders correctly 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/18/123679/222531"
-                      style="width: 256px; height: 256px; left: -33px; top: -4px;"
+                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/17/61839/111265"
+                      style="width: 256px; height: 256px; left: -144px; top: -130px;"
                     />
                   </div>
                 </div>
@@ -546,7 +546,7 @@ exports[`ProjectDetails renders correctly 1`] = `
                   alt=""
                   class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
                   src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; z-index: 0; left: 0px; top: 0px; z-index: 0; z-index: 0;"
+                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 0px; top: 0px; z-index: 0;"
                   tabindex="0"
                 />
               </div>
@@ -584,6 +584,15 @@ exports[`ProjectDetails renders correctly 1`] = `
                   >
                     −
                   </a>
+                </div>
+                <div
+                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                >
+                  <a
+                    class="leaflet-control-fullscreen-button leaflet-bar-part"
+                    href="#"
+                    title="View Fullscreen"
+                  />
                 </div>
               </div>
               <div
