@@ -214,20 +214,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
     }
 
-    const isAllPointGeometries = geometryState?.geometry.every((geo: Feature) => geo.geometry.type === 'Point');
-
-    if (isAllPointGeometries) {
-      throttledGetFeatureDetails(layersToInfer);
-    }
-  }, [geometryState?.geometry, nonEditableGeometries]);
-
-  useEffect(() => {
-    if (!bounds || !bounds.length) {
-      return;
-    }
-
     throttledGetFeatureDetails(layersToInfer);
-  }, [bounds]);
+  }, [geometryState?.geometry, nonEditableGeometries]);
 
   let shownDrawControls: any = {};
   let showEditControls: any = {};
