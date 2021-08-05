@@ -468,20 +468,6 @@ exports[`ProjectDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Region(s)
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Region 1, Region 2
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
                 Location Description
               </dt>
               <dd
@@ -490,6 +476,18 @@ exports[`ProjectDetails renders correctly 1`] = `
                 Location description
               </dd>
             </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            />
           </div>
         </dl>
         <div
@@ -598,6 +596,9 @@ exports[`ProjectDetails renders correctly 1`] = `
               <div
                 class="leaflet-top leaflet-right"
               >
+                <div
+                  class="leaflet-draw leaflet-control"
+                />
                 <div
                   class="leaflet-draw leaflet-control"
                 />

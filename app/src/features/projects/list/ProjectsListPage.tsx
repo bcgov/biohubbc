@@ -361,11 +361,6 @@ const ProjectsListPage: React.FC = () => {
                         return item.name;
                       }) || []
                     }
-                    region={
-                      codes?.region?.map((item) => {
-                        return { value: item.name, label: item.name };
-                      }) || []
-                    }
                     species={
                       codes?.species?.map((item) => {
                         return { value: item.id, label: item.name };

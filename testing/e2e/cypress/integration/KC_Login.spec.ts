@@ -51,10 +51,6 @@ it('CreateProject', function () {
 
   // Locations
   cy.get("span.MuiStepLabel-iconContainer").eq(4).click() // Click on the Navigation bar
-  cy.get('#regions').click();
-  cy.get('#regions-option-0').click();
-  cy.get('#regions-option-' + faker.random.number({ 'min': 1, 'max': 7 })).click();
-  cy.get('body').click();
   cy.get('.MuiGrid-container > :nth-child(2)').click({ force: true });
   cy.get('#location_description').click({ force: true });
   cy.get('#location_description').type(faker.lorem.paragraph());

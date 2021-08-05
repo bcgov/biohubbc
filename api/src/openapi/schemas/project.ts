@@ -80,14 +80,6 @@ export const projectCreatePostRequestObject = {
         location_description: {
           type: 'string',
           description: 'Location description'
-        },
-        regions: {
-          type: 'array',
-          description: 'Array of region names',
-          items: {
-            type: 'string',
-            description: 'Region name'
-          }
         }
       }
     },

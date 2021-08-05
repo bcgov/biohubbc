@@ -50,15 +50,7 @@ const ProjectStepComponents: React.FC<IProjectStepComponentsProps> = (props) => 
 
       {component === 'ProjectObjectives' && <ProjectObjectivesForm />}
 
-      {component === 'ProjectLocation' && (
-        <ProjectLocationForm
-          region={
-            codes?.region?.map((item) => {
-              return { value: item.name, label: item.name };
-            }) || []
-          }
-        />
-      )}
+      {component === 'ProjectLocation' && <ProjectLocationForm />}
 
       {component === 'ProjectIUCN' && (
         <ProjectIUCNForm

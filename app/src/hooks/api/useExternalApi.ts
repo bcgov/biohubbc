@@ -24,8 +24,24 @@ const useExternalApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Generic `POST` for a given `url`.
+   *
+   * @template T type of the response (optional)
+   * @param {string} url url to make a `POST` request to
+   * @param {any} body request body
+   * @param {CancelTokenSource} [cancelTokenSource] Cancel token to manually cancel the request (optional)
+   * @return {Promise<T=any>} A promise that resolves with the response data
+   */
+  const post = async <T = any>(url: string, body: any, cancelTokenSource?: CancelTokenSource): Promise<T> => {
+    const { data } = await axios.post(url, body, { cancelToken: cancelTokenSource?.token });
+
+    return data;
+  };
+
   return {
-    get
+    get,
+    post
   };
 };
 

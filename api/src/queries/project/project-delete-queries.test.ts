@@ -4,7 +4,6 @@ import {
   deleteActivitiesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteIUCNSQL,
-  deleteRegionsSQL,
   deleteStakeholderPartnershipsSQL,
   deleteProjectFundingSourceSQL,
   deletePermitSQL,
@@ -34,20 +33,6 @@ describe('deletePermitSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = deletePermitSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('deleteRegionsSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = deleteRegionsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid projectId provided', () => {
-    const response = deleteRegionsSQL(1);
 
     expect(response).to.not.be.null;
   });

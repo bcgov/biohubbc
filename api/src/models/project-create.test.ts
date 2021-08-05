@@ -85,7 +85,6 @@ describe('PostProjectObject', () => {
         caveats: 'these are some interesting caveats'
       },
       location: {
-        regions: ['Northeast'],
         location_description: 'a location description',
         geometry: [
           {
@@ -574,10 +573,6 @@ describe('PostLocationData', () => {
       projectLocationData = new PostLocationData(null);
     });
 
-    it('sets region_name', function () {
-      expect(projectLocationData.regions).to.eql([]);
-    });
-
     it('sets location_description', function () {
       expect(projectLocationData.location_description).to.equal(null);
     });
@@ -591,7 +586,6 @@ describe('PostLocationData', () => {
     let projectLocationData: PostLocationData;
 
     const obj = {
-      regions: ['Northeast'],
       location_description: 'a location description',
       geometry: [
         {
@@ -614,10 +608,6 @@ describe('PostLocationData', () => {
 
     before(() => {
       projectLocationData = new PostLocationData(obj);
-    });
-
-    it('sets region_name', function () {
-      expect(projectLocationData.regions).to.eql(['Northeast']);
     });
 
     it('sets location_description', function () {

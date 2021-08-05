@@ -116,7 +116,8 @@ export class GetSurveyListData {
             name: survey.name,
             start_date: survey.start_date,
             end_date: survey.end_date,
-            species: [survey.species]
+            species: [survey.species],
+            publish_timestamp: survey.publish_timestamp
           });
         } else {
           const index = surveysList.findIndex((item) => item.id === survey.id);

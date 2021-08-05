@@ -37,6 +37,8 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
     mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
