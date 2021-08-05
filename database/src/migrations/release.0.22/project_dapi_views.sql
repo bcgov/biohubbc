@@ -12,6 +12,7 @@
  create or replace view iucn_conservation_action_level_3_subclassification as select * from biohub.iucn_conservation_action_level_3_subclassification;
  create or replace view management_action_type as select * from biohub.management_action_type;
  create or replace view occurrence as select * from biohub.occurrence;
+ create or replace view occurrence_data_package as select * from biohub.occurrence_data_package;
  create or replace view occurrence_submission as select * from biohub.occurrence_submission;
  create or replace view occurrence_submission_data_package as select * from biohub.occurrence_submission_data_package;
  create or replace view permit as select * from biohub.permit;
@@ -24,7 +25,6 @@
  create or replace view project_iucn_action_classification as select * from biohub.project_iucn_action_classification;
  create or replace view project_management_actions as select * from biohub.project_management_actions;
  create or replace view project_participation as select * from biohub.project_participation;
- create or replace view project_region as select * from biohub.project_region;
  create or replace view project_role as select * from biohub.project_role;
  create or replace view project_type as select * from biohub.project_type;
  create or replace view proprietor_type as select * from biohub.proprietor_type;

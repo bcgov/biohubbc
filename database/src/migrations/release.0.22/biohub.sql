@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, July 21, 2021 15:25:27
+-- Date Created : Thursday, August 05, 2021 14:02:54
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -290,7 +290,7 @@ CREATE TABLE data_package(
 
 COMMENT ON COLUMN data_package.data_package_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN data_package.uuid IS 'System generated UUID data package identifier.'
+COMMENT ON COLUMN data_package.uuid IS 'The universally unique identifier for the record.'
 ;
 COMMENT ON COLUMN data_package.create_date IS 'The datetime the record was created.'
 ;
@@ -692,6 +692,44 @@ COMMENT ON TABLE occurrence IS 'Occurrence records that have been ingested from 
 ;
 
 -- 
+-- TABLE: occurrence_data_package 
+--
+
+CREATE TABLE occurrence_data_package(
+    occurrence_data_package_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    data_package_id               integer           NOT NULL,
+    occurrence_id                 integer           NOT NULL,
+    create_date                   timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                   integer           NOT NULL,
+    update_date                   timestamptz(6),
+    update_user                   integer,
+    revision_count                integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT occurrence_data_package_pk PRIMARY KEY (occurrence_data_package_id)
+)
+;
+
+
+
+COMMENT ON COLUMN occurrence_data_package.occurrence_data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_data_package.data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_data_package.occurrence_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_data_package.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN occurrence_data_package.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_data_package.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN occurrence_data_package.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN occurrence_data_package.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE occurrence_data_package IS 'An associative entity that joins data package identifiers and occurrences.'
+;
+
+-- 
 -- TABLE: occurrence_submission 
 --
 
@@ -701,6 +739,7 @@ CREATE TABLE occurrence_submission(
     source                      varchar(300)      NOT NULL,
     event_timestamp             TIMESTAMPTZ       NOT NULL,
     key                         varchar(1000),
+    file_name                   varchar(300),
     create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                 integer           NOT NULL,
     update_date                 timestamptz(6),
@@ -722,6 +761,8 @@ COMMENT ON COLUMN occurrence_submission.event_timestamp IS 'The timestamp of the
 ;
 COMMENT ON COLUMN occurrence_submission.key IS 'The identifying key to the file in the storage system.'
 ;
+COMMENT ON COLUMN occurrence_submission.file_name IS 'The name of the file submitted.'
+;
 COMMENT ON COLUMN occurrence_submission.create_date IS 'The datetime the record was created.'
 ;
 COMMENT ON COLUMN occurrence_submission.create_user IS 'The id of the user who created the record as identified in the system user table.'
@@ -741,8 +782,8 @@ COMMENT ON TABLE occurrence_submission IS 'Provides a historical listing of publ
 
 CREATE TABLE occurrence_submission_data_package(
     occurrence_submission_data_package_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    occurrence_submission_id                 integer           NOT NULL,
     data_package_id                          integer           NOT NULL,
+    occurrence_submission_id                 integer           NOT NULL,
     create_date                              timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                              integer           NOT NULL,
     update_date                              timestamptz(6),
@@ -756,9 +797,9 @@ CREATE TABLE occurrence_submission_data_package(
 
 COMMENT ON COLUMN occurrence_submission_data_package.occurrence_submission_data_package_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN occurrence_submission_data_package.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
-;
 COMMENT ON COLUMN occurrence_submission_data_package.data_package_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN occurrence_submission_data_package.occurrence_submission_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN occurrence_submission_data_package.create_date IS 'The datetime the record was created.'
 ;
@@ -852,29 +893,29 @@ NOTE: there are conceptual problems with associating permits to projects early i
 --
 
 CREATE TABLE project(
-    project_id                    integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    project_type_id               integer                     NOT NULL,
-    name                          varchar(50)                 NOT NULL,
-    objectives                    varchar(3000)               NOT NULL,
-    management_recovery_action    character(1),
-    location_description          varchar(3000),
-    start_date                    date                        NOT NULL,
-    end_date                      date,
-    caveats                       varchar(3000),
-    comments                      varchar(3000),
-    coordinator_first_name        varchar(50)                 NOT NULL,
-    coordinator_last_name         varchar(50)                 NOT NULL,
-    coordinator_email_address     varchar(500)                NOT NULL,
-    coordinator_agency_name       varchar(300)                NOT NULL,
-    coordinator_public            boolean                     NOT NULL,
-    publish_timestamp             TIMESTAMPTZ,
-    geometry                      geometry(geometry, 3005),
-    geography                     geography(geometry),
-    create_date                   timestamptz(6)              DEFAULT now() NOT NULL,
-    create_user                   integer                     NOT NULL,
-    update_date                   timestamptz(6),
-    update_user                   integer,
-    revision_count                integer                     DEFAULT 0 NOT NULL,
+    project_id                   integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_type_id              integer                     NOT NULL,
+    uuid                         uuid                        DEFAULT public.gen_random_uuid(),
+    name                         varchar(50)                 NOT NULL,
+    objectives                   varchar(3000)               NOT NULL,
+    location_description         varchar(3000),
+    start_date                   date                        NOT NULL,
+    end_date                     date,
+    caveats                      varchar(3000),
+    comments                     varchar(3000),
+    coordinator_first_name       varchar(50)                 NOT NULL,
+    coordinator_last_name        varchar(50)                 NOT NULL,
+    coordinator_email_address    varchar(500)                NOT NULL,
+    coordinator_agency_name      varchar(300)                NOT NULL,
+    coordinator_public           boolean                     NOT NULL,
+    publish_timestamp            TIMESTAMPTZ,
+    geometry                     geometry(geometry, 3005),
+    geography                    geography(geometry),
+    create_date                  timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user                  integer                     NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer                     DEFAULT 0 NOT NULL,
     CONSTRAINT project_pk PRIMARY KEY (project_id)
 )
 ;
@@ -885,11 +926,11 @@ COMMENT ON COLUMN project.project_id IS 'System generated surrogate primary key 
 ;
 COMMENT ON COLUMN project.project_type_id IS 'System generated surrogate primary key identifier.'
 ;
+COMMENT ON COLUMN project.uuid IS 'The universally unique identifier for the record.'
+;
 COMMENT ON COLUMN project.name IS 'Name given to a project.'
 ;
 COMMENT ON COLUMN project.objectives IS 'The objectives for the project.'
-;
-COMMENT ON COLUMN project.management_recovery_action IS 'Identifies if the project addresses a management or recovery action.'
 ;
 COMMENT ON COLUMN project.location_description IS 'The location description.'
 ;
@@ -1262,44 +1303,6 @@ COMMENT ON COLUMN project_participation.update_user IS 'The id of the user who u
 COMMENT ON COLUMN project_participation.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE project_participation IS 'A associative entity that joins projects, system users and project role types.'
-;
-
--- 
--- TABLE: project_region 
---
-
-CREATE TABLE project_region(
-    project_region_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    project_id           integer           NOT NULL,
-    name                 varchar(200)      NOT NULL,
-    create_date          timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user          integer           NOT NULL,
-    update_date          timestamptz(6),
-    update_user          integer,
-    revision_count       integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT project_region_pk PRIMARY KEY (project_region_id)
-)
-;
-
-
-
-COMMENT ON COLUMN project_region.project_region_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN project_region.project_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN project_region.name IS 'The region name.'
-;
-COMMENT ON COLUMN project_region.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN project_region.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN project_region.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN project_region.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN project_region.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE project_region IS 'The region of a project.'
 ;
 
 -- 
@@ -1699,6 +1702,7 @@ COMMENT ON TABLE submission_status_type IS 'The status types of submissions. Typ
 CREATE TABLE survey(
     survey_id               integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     project_id              integer                     NOT NULL,
+    uuid                    uuid                        DEFAULT public.gen_random_uuid(),
     name                    varchar(300),
     objectives              varchar(3000)               NOT NULL,
     start_date              date                        NOT NULL,
@@ -1724,6 +1728,8 @@ CREATE TABLE survey(
 COMMENT ON COLUMN survey.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey.project_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey.uuid IS 'The universally unique identifier for the record.'
 ;
 COMMENT ON COLUMN survey.name IS 'Name given to a survey.'
 ;
@@ -2396,22 +2402,40 @@ CREATE UNIQUE INDEX management_action_type_nuk1 ON management_action_type(name, 
 CREATE INDEX "Ref165161" ON occurrence(occurrence_submission_id)
 ;
 -- 
+-- INDEX: "Ref185170" 
+--
+
+CREATE INDEX "Ref185170" ON occurrence_data_package(data_package_id)
+;
+-- 
+-- INDEX: "Ref169174" 
+--
+
+CREATE INDEX "Ref169174" ON occurrence_data_package(occurrence_id)
+;
+-- 
 -- INDEX: "Ref153160" 
 --
 
 CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
 ;
 -- 
--- INDEX: "Ref165169" 
+-- INDEX: occurrence_submission_data_package_uk1 
 --
 
-CREATE INDEX "Ref165169" ON occurrence_submission_data_package(occurrence_submission_id)
+CREATE UNIQUE INDEX occurrence_submission_data_package_uk1 ON occurrence_submission_data_package(data_package_id, occurrence_submission_id)
 ;
 -- 
--- INDEX: "Ref185170" 
+-- INDEX: "Ref185175" 
 --
 
-CREATE INDEX "Ref185170" ON occurrence_submission_data_package(data_package_id)
+CREATE INDEX "Ref185175" ON occurrence_submission_data_package(data_package_id)
+;
+-- 
+-- INDEX: "Ref165176" 
+--
+
+CREATE INDEX "Ref165176" ON occurrence_submission_data_package(occurrence_submission_id)
 ;
 -- 
 -- INDEX: permit_uk1 
@@ -2586,18 +2610,6 @@ CREATE INDEX "Ref78149" ON project_participation(system_user_id)
 --
 
 CREATE INDEX "Ref100150" ON project_participation(project_role_id)
-;
--- 
--- INDEX: project_region_uk1 
---
-
-CREATE UNIQUE INDEX project_region_uk1 ON project_region(name, project_id)
-;
--- 
--- INDEX: "Ref45131" 
---
-
-CREATE INDEX "Ref45131" ON project_region(project_id)
 ;
 -- 
 -- INDEX: project_role_nuk1 
@@ -2857,6 +2869,21 @@ ALTER TABLE occurrence ADD CONSTRAINT "Refoccurrence_submission161"
 
 
 -- 
+-- TABLE: occurrence_data_package 
+--
+
+ALTER TABLE occurrence_data_package ADD CONSTRAINT "Refdata_package170" 
+    FOREIGN KEY (data_package_id)
+    REFERENCES data_package(data_package_id)
+;
+
+ALTER TABLE occurrence_data_package ADD CONSTRAINT "Refoccurrence174" 
+    FOREIGN KEY (occurrence_id)
+    REFERENCES occurrence(occurrence_id)
+;
+
+
+-- 
 -- TABLE: occurrence_submission 
 --
 
@@ -2870,14 +2897,14 @@ ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160"
 -- TABLE: occurrence_submission_data_package 
 --
 
-ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refoccurrence_submission169" 
-    FOREIGN KEY (occurrence_submission_id)
-    REFERENCES occurrence_submission(occurrence_submission_id)
-;
-
-ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refdata_package170" 
+ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refdata_package175" 
     FOREIGN KEY (data_package_id)
     REFERENCES data_package(data_package_id)
+;
+
+ALTER TABLE occurrence_submission_data_package ADD CONSTRAINT "Refoccurrence_submission176" 
+    FOREIGN KEY (occurrence_submission_id)
+    REFERENCES occurrence_submission(occurrence_submission_id)
 ;
 
 
@@ -3028,16 +3055,6 @@ ALTER TABLE project_participation ADD CONSTRAINT "Refsystem_user149"
 ALTER TABLE project_participation ADD CONSTRAINT "Refproject_role150" 
     FOREIGN KEY (project_role_id)
     REFERENCES project_role(project_role_id)
-;
-
-
--- 
--- TABLE: project_region 
---
-
-ALTER TABLE project_region ADD CONSTRAINT "Refproject131" 
-    FOREIGN KEY (project_id)
-    REFERENCES project(project_id)
 ;
 
 
