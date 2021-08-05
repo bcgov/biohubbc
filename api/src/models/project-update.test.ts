@@ -25,10 +25,6 @@ describe('PutLocationData', () => {
       data = new PutLocationData(null);
     });
 
-    it('sets regions', () => {
-      expect(data.regions).to.eql([]);
-    });
-
     it('sets location_description', () => {
       expect(data.location_description).to.equal(null);
     });
@@ -46,7 +42,6 @@ describe('PutLocationData', () => {
     let data: PutLocationData;
 
     const obj = {
-      regions: ['region 1', 'region 2'],
       location_description: 'location',
       geometry: [
         {
@@ -70,10 +65,6 @@ describe('PutLocationData', () => {
 
     before(() => {
       data = new PutLocationData(obj);
-    });
-
-    it('sets regions', () => {
-      expect(data.regions).to.eql(obj.regions);
     });
 
     it('sets location_description', () => {
@@ -588,10 +579,6 @@ describe('GetLocationData', () => {
       locationData = new GetLocationData(null);
     });
 
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql([]);
-    });
-
     it('sets location_description', function () {
       expect(locationData.location_description).to.equal('');
     });
@@ -615,13 +602,11 @@ describe('GetLocationData', () => {
 
     const locationDataObj = [
       {
-        name: 'region 1',
         location_description,
         geometry,
         revision_count
       },
       {
-        name: 'region 2',
         location_description,
         geometry,
         revision_count
@@ -630,10 +615,6 @@ describe('GetLocationData', () => {
 
     before(() => {
       locationData = new GetLocationData(locationDataObj);
-    });
-
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql(['region 1', 'region 2']);
     });
 
     it('sets location_description', function () {

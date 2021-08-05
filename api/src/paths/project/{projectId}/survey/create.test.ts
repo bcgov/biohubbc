@@ -46,8 +46,6 @@ describe('createSurvey', () => {
       end_date: '2080-12-30',
       first_nations_id: 0,
       foippa_requirements_accepted: true,
-      management_unit: 'Management unit 1',
-      park: 'Park name 1',
       proprietary_data_category: 1,
       proprietor_name: 'test name',
       sedis_procedures_accepted: true,

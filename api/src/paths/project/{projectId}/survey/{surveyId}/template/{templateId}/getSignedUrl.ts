@@ -50,6 +50,10 @@ export function getSingleTemplateURL(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get single template url', message: 'params', req_params: req.params });
 
+    if (!req.params.projectId) {
+      throw new HTTP400('Missing required path param `projectId`');
+    }
+
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required path param `surveyId`');
     }

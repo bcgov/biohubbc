@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -24,6 +25,7 @@ import {
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
+import { useEffect } from 'react';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
@@ -67,6 +69,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(null as any);
   const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(ProjectLocationFormInitialValues);
+  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+    parks: [],
+    nrm: [],
+    env: [],
+    wmu: []
+  });
+  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   const handleDialogEditOpen = async () => {
     let locationResponseData;
@@ -89,7 +99,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setLocationDataForUpdate(locationResponseData);
 
     setLocationFormData({
-      regions: locationResponseData.regions,
       location_description: locationResponseData.location_description,
       geometry: generateValidGeometryCollection(locationResponseData.geometry).geometryCollection
     });
@@ -115,10 +124,15 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     props.refresh();
   };
 
-  const { geometryCollection, bounds } = generateValidGeometryCollection(location.geometry);
-  const nonEditableGeometries = geometryCollection.map((geom: Feature) => {
-    return { feature: geom };
-  });
+  useEffect(() => {
+    const geometryCollectionResult = generateValidGeometryCollection(location.geometry);
+    const nonEditableGeometriesResult = geometryCollectionResult.geometryCollection.map((geom: Feature) => {
+      return { feature: geom };
+    });
+
+    setBounds(geometryCollectionResult.bounds);
+    setNonEditableGeometries(nonEditableGeometriesResult);
+  }, [location.geometry]);
 
   return (
     <>
@@ -151,19 +165,23 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Region(s)
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {location.regions.join(', ')}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Location Description
               </Typography>
               <Typography component="dd" variant="body1">
                 {location.location_description ? <>{location.location_description}</> : 'No Description'}
               </Typography>
+            </Grid>
+            <Grid item xs={6}>
+              {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
+            </Grid>
+            <Grid item xs={6}>
+              {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
+            </Grid>
+            <Grid item xs={6}>
+              {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
+            </Grid>
+            <Grid item xs={6}>
+              {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
             </Grid>
           </Grid>
         </dl>
@@ -173,6 +191,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
           />
         </Box>
       </Box>

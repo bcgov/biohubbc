@@ -23,7 +23,6 @@ import {
   postProjectFundingSourceSQL,
   postProjectIndigenousNationSQL,
   postProjectIUCNSQL,
-  postProjectRegionSQL,
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
@@ -127,15 +126,6 @@ export function createProject(): RequestHandler {
 
         const promises: Promise<any>[] = [];
 
-        // Handle regions
-        promises.push(
-          Promise.all(
-            sanitizedProjectPostData.location.regions.map((region: string) =>
-              insertRegion(region, projectId, connection)
-            )
-          )
-        );
-
         // Handle funding sources
         promises.push(
           Promise.all(
@@ -216,24 +206,6 @@ export function createProject(): RequestHandler {
     }
   };
 }
-
-export const insertRegion = async (region: string, project_id: number, connection: IDBConnection): Promise<number> => {
-  const sqlStatement = postProjectRegionSQL(region, project_id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert project region data');
-  }
-
-  return result.id;
-};
 
 export const insertFundingSource = async (
   fundingSource: PostFundingSource,

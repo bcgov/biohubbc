@@ -76,12 +76,6 @@ describe('getProjectListSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns a SQLStatement when filter fields provided (only regions)', () => {
-    const response = getProjectListSQL({ regions: ['region 1', 'region 2'] });
-
-    expect(response).to.not.be.null;
-  });
-
   it('returns a SQLStatement when filter fields provided (only species)', () => {
     const response = getProjectListSQL({ species: ['species 1', 'species 2'] });
 

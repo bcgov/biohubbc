@@ -76,7 +76,6 @@ begin
   insert into stakeholder_partnership (project_id, name) values (_project_id, 'test');
   insert into project_activity (project_id, activity_id) values (_project_id, (select activity_id from activity where name = 'Monitoring'));
   insert into project_climate_initiative (project_id, climate_change_initiative_id) values (_project_id, (select climate_change_initiative_id from climate_change_initiative where name = 'Monitoring'));
-  insert into project_region (project_id, name) values (_project_id, 'test');
   insert into project_management_actions (project_id, management_action_type_id) values (_project_id, (select management_action_type_id from management_action_type where name = 'Recovery Action'));
   insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (_project_id, (select investment_action_category_id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test');
   --insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date) values (_project_id, 43, '$1,000.00', now(), now());
@@ -91,8 +90,6 @@ begin
   assert _count = 1, 'FAIL project_activity';
   select count(1) into _count from project_climate_initiative;
   assert _count = 1, 'FAIL project_climate_initiative';
-  select count(1) into _count from project_region;
-  assert _count = 1, 'FAIL project_region';
   select count(1) into _count from project_management_actions;
   assert _count = 1, 'FAIL project_management_actions';
   select count(1) into _count from project_funding_source;

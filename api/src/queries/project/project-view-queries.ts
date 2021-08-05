@@ -95,8 +95,6 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       on sp.survey_id = s.survey_id
     left outer join wldtaxonomic_units as wu
       on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
-    left outer join project_region as r
-      on r.project_id = p.project_id
     where 1 = 1
   `;
 
@@ -137,10 +135,6 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
 
     if (filterFields.agency_id) {
       sqlStatement.append(SQL` AND fs.funding_source_id = ${filterFields.agency_id}`);
-    }
-
-    if (filterFields.regions && filterFields.regions.length) {
-      sqlStatement.append(SQL` AND r.name =${filterFields.regions[0]}`);
     }
 
     if (filterFields.species && filterFields.species.length) {

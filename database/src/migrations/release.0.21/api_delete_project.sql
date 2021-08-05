@@ -4,7 +4,7 @@ drop procedure if exists api_delete_project;
 create or replace procedure api_delete_project(p_project_id project.project_id%type)
 language plpgsql
 security definer
-as 
+as
 $$
 -- *******************************************************************
 -- Procedure: api_delete_project
@@ -40,6 +40,6 @@ begin
 
 exception
   when others THEN
-    raise;    
+    raise;
 end;
 $$;

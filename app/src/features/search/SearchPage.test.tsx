@@ -6,6 +6,8 @@ import { Router } from 'react-router-dom';
 
 const history = createMemoryHistory();
 
+jest.spyOn(console, 'debug').mockImplementation(() => {});
+
 describe('SearchPage', () => {
   it('matches the snapshot', () => {
     const { asFragment } = render(

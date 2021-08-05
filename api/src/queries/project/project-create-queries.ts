@@ -96,41 +96,6 @@ export const postProjectSQL = (
 };
 
 /**
- * SQL query to insert a project region row.
- *
- * @param {string} region
- * @returns {SQLStatement} sql query object
- */
-export const postProjectRegionSQL = (region: string, projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postProjectRegionSQL', message: 'params', region, projectId });
-
-  if (!region || !projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_region (
-        project_id,
-        name
-      ) VALUES (
-        ${projectId},
-        ${region}
-      )
-      RETURNING
-        project_region_id as id;
-    `;
-
-  defaultLog.debug({
-    label: 'postProjectRegionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to insert a project funding source row.
  *
  * @param {PostFundingSource} fundingSource

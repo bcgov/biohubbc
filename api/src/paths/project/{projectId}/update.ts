@@ -41,7 +41,6 @@ import {
   deleteIUCNSQL,
   deleteIndigenousPartnershipsSQL,
   deleteStakeholderPartnershipsSQL,
-  deleteRegionsSQL,
   deleteProjectFundingSourceSQL,
   deletePermitSQL
 } from '../../../queries/project/project-delete-queries';
@@ -55,7 +54,6 @@ import { logRequest } from '../../../utils/path-utils';
 import {
   insertClassificationDetail,
   insertIndigenousNation,
-  insertRegion,
   insertProjectActivity,
   insertStakeholderPartnership,
   insertPermit,
@@ -506,10 +504,6 @@ function updateProject(): RequestHandler {
         promises.push(updateProjectPermitData(projectId, entities, connection));
       }
 
-      if (entities?.location) {
-        promises.push(updateProjectRegionsData(projectId, entities, connection));
-      }
-
       if (entities?.iucn) {
         promises.push(updateProjectIUCNData(projectId, entities, connection));
       }
@@ -568,31 +562,6 @@ export const updateProjectPermitData = async (
     }) || [];
 
   await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
-};
-
-export const updateProjectRegionsData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
-
-  const sqlDeleteRegionsStatement = deleteRegionsSQL(projectId);
-
-  if (!sqlDeleteRegionsStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteRegionsResult = await connection.query(sqlDeleteRegionsStatement.text, sqlDeleteRegionsStatement.values);
-
-  if (!deleteRegionsResult) {
-    throw new HTTP409('Failed to delete project regions data');
-  }
-
-  const insertRegionsPromises =
-    putLocationData?.regions?.map((region: string) => insertRegion(region, projectId, connection)) || [];
-
-  await Promise.all(insertRegionsPromises);
 };
 
 export const updateProjectIUCNData = async (

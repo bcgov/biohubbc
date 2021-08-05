@@ -14,8 +14,6 @@ export const surveyCreatePostRequestObject = {
     'biologist_first_name',
     'biologist_last_name',
     'survey_area_name',
-    'park',
-    'management_unit',
     'survey_data_proprietary'
   ],
   properties: {
@@ -55,18 +53,6 @@ export const surveyCreatePostRequestObject = {
     },
     survey_area_name: {
       type: 'string'
-    },
-    park: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-    management_unit: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
     },
     survey_data_proprietary: {
       type: 'string'

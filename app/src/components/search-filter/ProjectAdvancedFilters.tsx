@@ -19,7 +19,6 @@ export interface IProjectAdvancedFilters {
   end_date: string;
   keyword: string;
   project_name: string;
-  regions: string[];
   agency_id: number;
   agency_project_id: string;
   species: number[];
@@ -33,14 +32,12 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   end_date: '',
   keyword: '',
   project_name: '',
-  regions: [],
   agency_id: ('' as unknown) as number,
   agency_project_id: '',
   species: []
 };
 
 export interface IProjectAdvancedFiltersProps {
-  region: IMultiAutocompleteFieldOption[];
   species: IMultiAutocompleteFieldOption[];
   funding_sources: IMultiAutocompleteFieldOption[];
   coordinator_agency: string[];
@@ -132,9 +129,6 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
         </Grid>
         <Grid item xs={6}>
           <MultiAutocompleteFieldVariableSize id="species" label="Species" options={props.species} required={false} />
-        </Grid>
-        <Grid item xs={6}>
-          <MultiAutocompleteFieldVariableSize id="regions" label="Regions" options={props.region} required={false} />
         </Grid>
       </Grid>
     </form>

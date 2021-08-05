@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import SurveyDetails from './SurveyDetails';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
@@ -17,9 +17,13 @@ describe('SurveyDetails', () => {
     />
   );
 
-  it('renders correctly', () => {
+  jest.spyOn(console, 'debug').mockImplementation(() => {});
+
+  it('renders correctly', async () => {
     const { asFragment } = render(component);
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 });

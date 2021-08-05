@@ -55,12 +55,6 @@ POST.apiDoc = {
               type: 'string',
               nullable: true
             },
-            regions: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
-            },
             agency_id: {
               anyOf: [
                 {

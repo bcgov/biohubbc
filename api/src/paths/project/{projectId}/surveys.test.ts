@@ -98,14 +98,55 @@ describe('getSurveyList', () => {
     }
   });
 
-  it('should return the surveys on success', async () => {
+  it('should return the surveys on success (unpublished and active)', async () => {
+    const survey = {
+      id: 1,
+      name: 'name',
+      species: 'species',
+      start_date: '2020/04/04',
+      end_date: '2099/05/05',
+      publish_timestamp: null
+    };
+
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [survey] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_view_queries, 'getSurveyListSQL').returns(SQL`some query`);
+
+    const result = surveys.getSurveyList();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql([
+      {
+        id: 1,
+        name: 'name',
+        start_date: '2020/04/04',
+        end_date: '2099/05/05',
+        species: ['species'],
+        publish_status: 'Unpublished',
+        completion_status: 'Active'
+      }
+    ]);
+  });
+
+  it('should return the surveys on success (published and completed)', async () => {
     const survey = {
       id: 1,
       name: 'name',
       species: 'species',
       start_date: '2020/04/04',
       end_date: '2020/05/05',
-      publish_timestamp: null
+      publish_timestamp: '2020/04/04'
     };
 
     const mockQuery = sinon.stub();
@@ -133,7 +174,7 @@ describe('getSurveyList', () => {
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         species: ['species'],
-        publish_status: 'Unpublished',
+        publish_status: 'Published',
         completion_status: 'Completed'
       }
     ]);

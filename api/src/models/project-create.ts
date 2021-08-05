@@ -152,14 +152,12 @@ export class PostObjectivesData {
  */
 export class PostLocationData {
   location_description: string;
-  regions: string[];
   geometry: Feature[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostLocationData', message: 'params', obj });
 
     this.location_description = (obj && obj.location_description) || null;
-    this.regions = (obj?.regions?.length && obj.regions) || [];
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
   }
 }

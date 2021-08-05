@@ -266,10 +266,6 @@ describe('GetLocationData', () => {
       locationData = new GetLocationData(null);
     });
 
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql([]);
-    });
-
     it('sets location_description', function () {
       expect(locationData.location_description).to.equal('');
     });
@@ -284,10 +280,6 @@ describe('GetLocationData', () => {
 
     before(() => {
       locationData = new GetLocationData([]);
-    });
-
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql([]);
     });
 
     it('sets location_description', function () {
@@ -308,12 +300,10 @@ describe('GetLocationData', () => {
 
     const locationDataObj = [
       {
-        name: 'region 1',
         location_description,
         geometry
       },
       {
-        name: 'region 2',
         location_description,
         geometry
       }
@@ -321,10 +311,6 @@ describe('GetLocationData', () => {
 
     before(() => {
       locationData = new GetLocationData(locationDataObj);
-    });
-
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql(['region 1', 'region 2']);
     });
 
     it('sets location_description', function () {
