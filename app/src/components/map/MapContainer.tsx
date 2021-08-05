@@ -77,7 +77,7 @@ const layerContentHandlers = {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
-      const tooltip = `${feature.properties.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
+      const tooltip = `${feature.properties.WILDLIFE_MGMT_UNIT_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
 
       const content = (
         <>
