@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.21';
+const DB_RELEASE = 'release.0.22';
 
 /**
  * Apply biohub release changes.
@@ -38,6 +38,9 @@ export async function up(knex: Knex): Promise<void> {
   const tr_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_survey.sql'));
   const tr_permit = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'tr_permit.sql'));
   const api_get_system_constant = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_system_constant.sql'));
+  const api_get_system_metadata_constant = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'api_get_system_metadata_constant.sql')
+  );
   const vw_survey_status = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'vw_survey_status.sql'));
 
   const api_delete_occurrence_submission = fs.readFileSync(
@@ -45,6 +48,8 @@ export async function up(knex: Knex): Promise<void> {
   );
   const api_delete_survey = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_survey.sql'));
   const api_delete_project = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_delete_project.sql'));
+  const api_xml_string_replace = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_xml_string_replace.sql'));
+  const api_get_eml_data_package = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'api_get_eml_data_package.sql'));
 
   const populate_system_constants = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_system_constant.sql'));
   const populate_first_nations = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_first_nations.sql'));
@@ -134,11 +139,14 @@ export async function up(knex: Knex): Promise<void> {
     ${tr_survey}
     ${tr_permit}
     ${api_get_system_constant}
+    ${api_get_system_metadata_constant}
     ${vw_survey_status}
 
     ${api_delete_occurrence_submission}
     ${api_delete_survey}
     ${api_delete_project}
+    ${api_xml_string_replace}
+    ${api_get_eml_data_package}
 
     -- populate look up tables
     set search_path = biohub;
