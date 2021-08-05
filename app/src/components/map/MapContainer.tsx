@@ -204,7 +204,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [preDefinedGeometry]);
 
   useEffect(() => {
-    if (!geometryState?.geometry.length) {
+    console.log('in here')
+    if (!geometryState?.geometry.length || !nonEditableGeometries?.length) {
       setInferredLayersInfo &&
         setInferredLayersInfo({
           parks: [],
@@ -219,7 +220,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     if (isAllPointGeometries) {
       throttledGetFeatureDetails(layersToInfer);
     }
-  }, [geometryState?.geometry]);
+  }, [geometryState?.geometry, nonEditableGeometries]);
 
   useEffect(() => {
     if (!bounds || !bounds.length) {
