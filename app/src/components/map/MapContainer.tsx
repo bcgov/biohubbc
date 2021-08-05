@@ -204,7 +204,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   }, [preDefinedGeometry]);
 
   useEffect(() => {
-    console.log('in here')
     if (!geometryState?.geometry.length || !nonEditableGeometries?.length) {
       setInferredLayersInfo &&
         setInferredLayersInfo({

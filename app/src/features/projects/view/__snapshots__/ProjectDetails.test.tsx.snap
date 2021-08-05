@@ -599,6 +599,9 @@ exports[`ProjectDetails renders correctly 1`] = `
                 <div
                   class="leaflet-draw leaflet-control"
                 />
+                <div
+                  class="leaflet-draw leaflet-control"
+                />
               </div>
               <div
                 class="leaflet-bottom leaflet-left"
