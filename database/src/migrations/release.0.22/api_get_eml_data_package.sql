@@ -2,7 +2,7 @@
 
 drop function if exists api_get_eml_data_package;
 
-create or replace function api_get_eml_data_package(p_data_package_id data_package.data_package_id%type, p_supplied_title varchar) returns xml
+create or replace function api_get_eml_data_package(p_data_package_id data_package.data_package_id%type, p_supplied_title varchar) returns varchar
 language plpgsql
 security definer
 stable
@@ -718,7 +718,7 @@ begin
   end if;
 
   _eml_xml_text := _eml_xml_text||'</eml:eml>';
-  return xmlparse(DOCUMENT _eml_xml_text);
+  return _eml_xml_text;
 
 exception
   when others then
