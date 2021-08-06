@@ -349,9 +349,7 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
-            {location.pathname.includes('/observations') && (
-              <SurveyObservations projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
-            )}
+            {location.pathname.includes('/observations') && <SurveyObservations />}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
