@@ -2,16 +2,16 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { ensureCustomError, HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL
-} from '../../../../../../queries/survey/survey-occurrence-queries';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { logRequest } from '../../../../../../utils/path-utils';
+} from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import { logRequest } from '../../../../../../../utils/path-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/template/upload');
 

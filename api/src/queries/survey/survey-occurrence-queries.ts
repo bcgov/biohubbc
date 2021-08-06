@@ -193,3 +193,35 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get the record for a single occurrence.
+ *
+ * @param {number} surveyId
+ * @param {number} submissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveySubmissionOccurrenceSQL = (surveyId: number, submissionId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveySubmissionOccurrenceSQL', message: 'params', surveyId });
+
+  if (!surveyId || !submissionId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT *
+    FROM
+      occurrence_submission
+    WHERE
+      occurrence_submission_id = ${submissionId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveySubmissionOccurrenceSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
