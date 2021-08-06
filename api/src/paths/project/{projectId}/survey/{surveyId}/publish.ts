@@ -1,10 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import moment from 'moment';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { PostOccurrence } from '../../../../../models/occurrence-create';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
-import { postOccurrenceSubmissionSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
+import { postOccurrenceSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
+import xlsx from 'xlsx';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL
@@ -225,18 +228,82 @@ export const getSurveyOccurrenceSubmission = async (surveyId: number, connection
   return response.rows[0];
 };
 
-export function uploadDWCArchive(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({ label: 'uploadDWCArchive', message: 'files.length', files: req?.files?.length });
+// TODO needs improvement
+export const uploadDWCArchiveOccurrences = async (
+  occurrenceSubmissionId: number,
+  file: DWCArchive,
+  connection: IDBConnection
+) => {
+  defaultLog.debug({ label: 'uploadDWCArchiveOccurrences', message: 'occurrenceSubmissionId', occurrenceSubmissionId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+  const eventHeaders = file.worksheets.event?.getHeaders();
+  const eventRows = file.worksheets.event?.getRows();
 
-    const dwcArchive: DWCArchive = req['dwcArchive'];
+  const eventEventIdHeader = eventHeaders?.indexOf('eventID') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
 
-    try {
-      await connection.open();
+  const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
+  const occurrenceRows = file.worksheets.occurrence?.getRows();
 
-      const sqlStatement = postOccurrenceSubmissionSQL(Number(req.params.surveyId));
+  const taxonHeaders = file.worksheets.taxon?.getHeaders();
+  const taxonRows = file.worksheets.taxon?.getRows();
+  const taxonEventIdHeader = taxonHeaders?.indexOf('eventID') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
+
+  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
+  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
+
+  const scrapedOccurrences = occurrenceRows?.map((row) => {
+    const occurrenceEventId = row[occurrenceEventIdHeader];
+    const associatedTaxa = row[associatedTaxaHeader];
+    const lifeStage = row[lifeStageHeader];
+    const individualCount = row[individualCountHeader];
+    const organismQuantity = row[organismQuantityHeader];
+    const organismQuantityType = row[organismQuantityTypeHeader];
+
+    const data = { headers: occurrenceHeaders, rows: row };
+
+    let verbatimCoordinates;
+    let eventDate;
+
+    eventRows?.forEach((row) => {
+      if (row[eventEventIdHeader] === occurrenceEventId) {
+        const eventMoment = convertExcelDateToMoment(row[eventDateHeader] as number);
+        eventDate = eventMoment.toISOString();
+
+        verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
+      }
+    });
+
+    let vernacularName;
+
+    taxonRows?.forEach((row) => {
+      if (row[taxonEventIdHeader] === occurrenceEventId) {
+        vernacularName = row[vernacularNameHeader];
+      }
+    });
+
+    return new PostOccurrence({
+      associatedTaxa: associatedTaxa,
+      lifeStage: lifeStage,
+      individualCount: individualCount,
+      vernacularName: vernacularName,
+      data,
+      verbatimCoordinates: verbatimCoordinates,
+      organismQuantity: organismQuantity,
+      organismQuantityType: organismQuantityType,
+      eventDate: eventDate
+    });
+  });
+
+  return Promise.all(
+    scrapedOccurrences.map(async (scrapedOccurrence) => {
+      const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL post statement');
@@ -244,23 +311,22 @@ export function uploadDWCArchive(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      if (!response || !response.rows || !response.rows.length) {
-        throw new HTTP400('Failed to insert occurrence submission data');
+      if (!response || !response.rowCount) {
+        throw new HTTP400('Failed to insert occurrence data');
       }
+    })
+  );
+};
 
-      const occurrenceSubmissionId = response.rows[0].id;
+export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
+  const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
 
-      await uploadDWCArchiveOccurrences(occurrenceSubmissionId, dwcArchive, connection);
-
-      await connection.commit();
-
-      return res.status(200).send();
-    } catch (error) {
-      defaultLog.debug({ label: 'uploadDWCArchive', message: 'error', error });
-      await connection.rollback();
-      throw ensureCustomError(error);
-    } finally {
-      connection.release();
-    }
-  };
-}
+  return moment({
+    year: ssfDate.y,
+    month: ssfDate.m,
+    day: ssfDate.d,
+    hour: ssfDate.H,
+    minute: ssfDate.M,
+    second: ssfDate.S
+  });
+};
