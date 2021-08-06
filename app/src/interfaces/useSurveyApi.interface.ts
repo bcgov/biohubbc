@@ -175,21 +175,15 @@ export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
 }
 
-export interface IGetTemplateObservations {
-  id: number;
-  fileName: string;
-  lastModified: string;
-  size: number;
-}
-
 /**
- * Get observation template response object.
+ * Get observation submission response object.
  *
  * @export
- * @interface IGetTemplateObservationsResponse
+ * @interface IGetObservationSubmissionResponse
  */
-export interface IGetTemplateObservationsResponse {
-  templateObservationsList: IGetTemplateObservations[];
+export interface IGetObservationSubmissionResponse {
+  id: number;
+  fileName: string;
 }
 
 export interface SurveyPermits {

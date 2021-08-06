@@ -2,14 +2,15 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as list from './list';
-import * as db from '../../../../../../database/db';
-import * as observation_view_queries from '../../../../../../queries/observation/observation-view-queries';
+import * as get_signed_url from './getSignedUrl';
+import * as db from '../../../../../../../../database/db';
+import * as survey_occurrence_queries from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import SQL from 'sql-template-strings';
+import * as file_utils from '../../../../../../../../utils/file-utils';
 
 chai.use(sinonChai);
 
-describe('getObservationsList', () => {
+describe('getSingleSubmissionURL', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -39,7 +40,8 @@ describe('getObservationsList', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
-      surveyId: 1
+      surveyId: 2,
+      submissionId: 3
     }
   } as any;
 
@@ -55,16 +57,11 @@ describe('getObservationsList', () => {
     }
   };
 
-  it('should throw a 400 error when no project id path param', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+  it('should throw an error when projectId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = list.getObservationsList();
+      const result = get_signed_url.getSingleSubmissionURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -78,16 +75,11 @@ describe('getObservationsList', () => {
     }
   });
 
-  it('should throw a 400 error when no survey id path param', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+  it('should throw an error when surveyId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = list.getObservationsList();
+      const result = get_signed_url.getSingleSubmissionURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
@@ -101,7 +93,25 @@ describe('getObservationsList', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for block observations', async () => {
+  it('should throw an error when submissionId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = get_signed_url.getSingleSubmissionURL();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, submissionId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path param `submissionId`');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement returned', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -109,10 +119,10 @@ describe('getObservationsList', () => {
       }
     });
 
-    sinon.stub(observation_view_queries, 'getBlockObservationListSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(null);
 
     try {
-      const result = list.getObservationsList();
+      const result = get_signed_url.getSingleSubmissionURL();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -122,18 +132,10 @@ describe('getObservationsList', () => {
     }
   });
 
-  it('should return the observations on success', async () => {
-    const blockObservations = {
-      id: 1,
-      b_id: 2,
-      observation_cnt: 3,
-      start_datetime: '2020/04/04',
-      end_datetime: '2020/05/05'
-    };
-
+  it('should return null when getting signed url from S3 fails', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [blockObservations] });
+    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -143,29 +145,20 @@ describe('getObservationsList', () => {
       query: mockQuery
     });
 
-    sinon.stub(observation_view_queries, 'getBlockObservationListSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`some query`);
+    sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
-    const result = list.getObservationsList();
+    const result = get_signed_url.getSingleSubmissionURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql({
-      blocks: [
-        {
-          id: 1,
-          block_id: 2,
-          number_of_observations: 3,
-          start_time: '2020/04/04',
-          end_time: '2020/05/05'
-        }
-      ]
-    });
+    expect(actualResult).to.equal(null);
   });
 
-  it('should return null blocks when block observations response has no rows', async () => {
+  it('should return the signed url response on success', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: null });
+    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -175,12 +168,13 @@ describe('getObservationsList', () => {
       query: mockQuery
     });
 
-    sinon.stub(observation_view_queries, 'getBlockObservationListSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`some query`);
+    sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
-    const result = list.getObservationsList();
+    const result = get_signed_url.getSingleSubmissionURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult.blocks).to.be.null;
+    expect(actualResult).to.eql('myurlsigned.com');
   });
 });

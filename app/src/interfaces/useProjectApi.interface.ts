@@ -15,13 +15,6 @@ export interface IGetProjectAttachment {
   size: number;
 }
 
-export interface IGetTemplateObservations {
-  id: number;
-  fileName: string;
-  lastModified: string;
-  size: number;
-}
-
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */

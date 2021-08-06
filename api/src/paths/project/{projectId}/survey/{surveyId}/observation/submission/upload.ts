@@ -2,26 +2,26 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { ensureCustomError, HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL
-} from '../../../../../../queries/survey/survey-occurrence-queries';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { logRequest } from '../../../../../../utils/path-utils';
+} from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import { logRequest } from '../../../../../../../utils/path-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/template/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 
 export const POST: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/template/upload', 'POST'),
+  logRequest('paths/project/{projectId}/survey/{surveyId}/observation/submission/upload', 'POST'),
   uploadMedia()
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey template observations file.',
+  description: 'Upload survey observation submission file.',
   tags: ['attachments'],
   security: [
     {
@@ -41,14 +41,14 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey template file to upload',
+    description: 'Survey observation submission file to upload',
     content: {
       'multipart/form-data': {
         schema: {
           type: 'object',
           properties: {
             media: {
-              description: 'A survey template file.',
+              description: 'A survey observation submission file.',
               type: 'string',
               format: 'binary'
             }

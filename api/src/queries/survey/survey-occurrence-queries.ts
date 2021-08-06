@@ -198,13 +198,13 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
  * SQL query to get the record for a single occurrence.
  *
  * @param {number} surveyId
- * @param {number} templateId
+ * @param {number} submissionId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyTemplateOccurrenceSQL = (surveyId: number, templateId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyTemplateOccurrenceSQL', message: 'params', surveyId });
+export const getSurveySubmissionOccurrenceSQL = (surveyId: number, submissionId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveySubmissionOccurrenceSQL', message: 'params', surveyId });
 
-  if (!surveyId || !templateId) {
+  if (!surveyId || !submissionId) {
     return null;
   }
 
@@ -213,11 +213,11 @@ export const getSurveyTemplateOccurrenceSQL = (surveyId: number, templateId: num
     FROM
       occurrence_submission
     WHERE
-      occurrence_submission_id = ${templateId};
+      occurrence_submission_id = ${submissionId};
   `;
 
   defaultLog.debug({
-    label: 'getSurveyTemplateOccurrenceSQL',
+    label: 'getSurveySubmissionOccurrenceSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
