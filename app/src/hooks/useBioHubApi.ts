@@ -1,7 +1,6 @@
 import axios from 'axios';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
-import useObservationApi from './api/useObservationApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
@@ -35,8 +34,6 @@ export const useBiohubApi = () => {
 
   const admin = useAdminApi(customAxios);
 
-  const observation = useObservationApi(customAxios);
-
   const external = useExternalApi(axios);
 
   return {
@@ -48,7 +45,6 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
-    observation,
     external
   };
 };

@@ -19,14 +19,14 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
-  it('getTemplateObservationsSignedURL works as expected', async () => {
-    const templateId = 4;
+  it('getObservationSubmissionSignedURL works as expected', async () => {
+    const submissionId = 4;
 
     mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`)
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`)
       .reply(200, 'www.signedurl.com');
 
-    const result = await useSurveyApi(axios).getTemplateObservationsSignedURL(projectId, surveyId, templateId);
+    const result = await useSurveyApi(axios).getObservationSubmissionSignedURL(projectId, surveyId, submissionId);
 
     expect(result).toEqual('www.signedurl.com');
   });
@@ -130,14 +130,14 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(signedUrl);
   });
 
-  it('uploadTemplateObservations works as expected', async () => {
+  it('uploadObservationSubmission works as expected', async () => {
     const file = new File(['foo'], 'foo.txt', {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/template/upload`).reply(200, 'OK');
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, 'OK');
 
-    const result = await useSurveyApi(axios).uploadTemplateObservations(projectId, surveyId, file);
+    const result = await useSurveyApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
     expect(result).toEqual('OK');
   });
