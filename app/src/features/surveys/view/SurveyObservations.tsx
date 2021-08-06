@@ -14,29 +14,15 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState, useEffect } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
-import TablePagination from '@material-ui/core/TablePagination';
-import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
-import { useHistory } from 'react-router';
-import { TIME_FORMAT } from 'constants/dateTimeFormats';
-import { getFormattedTime } from 'utils/Utils';
+import { useParams } from 'react-router';
+import { mdiUploadOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUpload from 'components/attachments/FileUpload';
+import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  }
-}));
-
-export interface ISurveyObservationsProps {
-  projectForViewData: IGetProjectForViewResponse;
-  surveyForViewData: IGetSurveyForViewResponse;
-}
-
-const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
-  const classes = useStyles();
+const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
@@ -118,69 +104,15 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           </Box>
         </Box>
       </Box>
-      <Paper>
-        <TableContainer>
-          <Table className={classes.table} aria-label="block-list-table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.heading}>ID</TableCell>
-                <TableCell className={classes.heading}>Location</TableCell>
-                <TableCell className={classes.heading}>Observations</TableCell>
-                <TableCell className={classes.heading}>Start Time</TableCell>
-                <TableCell className={classes.heading}>End Time</TableCell>
-                <TableCell className={classes.heading}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {observations.length > 0 &&
-                observations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.id}
-                    </TableCell>
-                    <TableCell className={classes.heading}>
-                      {surveyType} {surveyType === 'Block' && row.block_id}
-                    </TableCell>
-                    <TableCell>
-                      {row.number_of_observations > 0 ? row.number_of_observations : `No Observations`}
-                    </TableCell>
-                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.start_time)}</TableCell>
-                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.end_time)}</TableCell>
-                    <TableCell>
-                      <Link
-                        underline="always"
-                        component="button"
-                        variant="body2"
-                        onClick={() => editObservation(row.id)}>
-                        Edit
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {!observations.length && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    No Observations
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {observations.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={observations.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        )}
-      </Paper>
+      <Box mt={2}>
+        <ObservationSubmissionCSV submissionId={1} />
+      </Box>
+      <ComponentDialog
+        open={openImportObservations}
+        dialogTitle="Import Observation Data"
+        onClose={() => setOpenImportObservations(false)}>
+        <FileUpload uploadHandler={importObservations()} />
+      </ComponentDialog>
     </>
   );
 };
