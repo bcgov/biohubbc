@@ -77,12 +77,16 @@ const layerContentHandlers = {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
-      const tooltip = `${feature.properties.REGION_RESPONSIBLE_NAME} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
+      const tooltip = `${feature.properties.WILDLIFE_MGMT_UNIT_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
 
       const content = (
         <>
-          <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_RESPONSIBLE_NAME}`}</div>
-          <div key={`${feature.id}-zone`}>{`Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
+          <div
+            key={`${feature.id}-management-unit-id`}>{`Wildlife Management Unit: ${feature.properties.WILDLIFE_MGMT_UNIT_ID}`}</div>
+          <div
+            key={`${feature.id}-game-management-zone-id`}>{`Game Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_ID}`}</div>
+          <div
+            key={`${feature.id}-game-management-zone-name`}>{`Game Management Zone Name: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
           <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
             0
           )} ha`}</div>
