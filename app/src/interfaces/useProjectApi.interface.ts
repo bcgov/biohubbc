@@ -15,11 +15,6 @@ export interface IGetProjectAttachment {
   size: number;
 }
 
-export interface IGetObservationSubmission {
-  id: number;
-  fileName: string;
-}
-
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */
