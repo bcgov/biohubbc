@@ -4,6 +4,7 @@ import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/CustomError';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
+import { postOccurrenceSubmissionSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL
@@ -14,7 +15,6 @@ import { getLogger } from '../../../../../utils/logger';
 import { DWCArchive } from '../../../../../utils/media/csv/dwc/dwc-archive-file';
 import { parseUnknownMedia } from '../../../../../utils/media/media-utils';
 import { logRequest } from '../../../../../utils/path-utils';
-import { uploadDWCArchiveOccurrences } from './observations/upload';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 
@@ -224,3 +224,43 @@ export const getSurveyOccurrenceSubmission = async (surveyId: number, connection
 
   return response.rows[0];
 };
+
+export function uploadDWCArchive(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'uploadDWCArchive', message: 'files.length', files: req?.files?.length });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    const dwcArchive: DWCArchive = req['dwcArchive'];
+
+    try {
+      await connection.open();
+
+      const sqlStatement = postOccurrenceSubmissionSQL(Number(req.params.surveyId));
+
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL post statement');
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      if (!response || !response.rows || !response.rows.length) {
+        throw new HTTP400('Failed to insert occurrence submission data');
+      }
+
+      const occurrenceSubmissionId = response.rows[0].id;
+
+      await uploadDWCArchiveOccurrences(occurrenceSubmissionId, dwcArchive, connection);
+
+      await connection.commit();
+
+      return res.status(200).send();
+    } catch (error) {
+      defaultLog.debug({ label: 'uploadDWCArchive', message: 'error', error });
+      await connection.rollback();
+      throw ensureCustomError(error);
+    } finally {
+      connection.release();
+    }
+  };
+}
