@@ -246,8 +246,7 @@ describe('uploadSubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to insert occurrence submission data');
+      expect(actualError.name).to.equal('Failed to insert occurrence submission data');
     }
   });
 

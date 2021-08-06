@@ -236,8 +236,7 @@ describe('publishSurveyAndOccurrences', () => {
       await result(sampleReq, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('An occurrence error');
-      expect(actualError.status).to.equal(500);
+      expect(actualError.name).to.equal('An occurrence error');
     }
   });
 
