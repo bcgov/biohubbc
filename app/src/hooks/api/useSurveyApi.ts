@@ -8,7 +8,7 @@ import {
   IGetSurveyForUpdateResponse,
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
-  IGetTemplateObservationsResponse,
+  IGetObservationSubmissionResponse,
   SurveyPermits,
   SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
@@ -124,7 +124,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Upload survey template.
+   * Upload survey observation submission.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -133,7 +133,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
-  const uploadTemplateObservations = async (
+  const uploadObservationSubmission = async (
     projectId: number,
     surveyId: number,
     file: File,
@@ -144,10 +144,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/template/upload`, req_message, {
-      cancelToken: cancelTokenSource?.token,
-      onUploadProgress: onProgress
-    });
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
 
     return data;
   };
@@ -166,17 +170,17 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation template based on survey ID
+   * Get observation submission based on survey ID
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {*} {Promise<IGetTemplateObservationsResponse>}
+   * @returns {*} {Promise<IGetObservationSubmissionResponse>}
    */
-  const getTemplateObservations = async (
+  const getObservationSubmission = async (
     projectId: number,
     surveyId: number
-  ): Promise<IGetTemplateObservationsResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/templates/list`);
+  ): Promise<IGetObservationSubmissionResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
 
     return data;
   };
@@ -254,18 +258,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get template observations S3 url based on survey and template ID
+   * Get observation submission S3 url based on survey and submission ID
    *
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
    */
-  const getTemplateObservationsSignedURL = async (
+  const getObservationSubmissionSignedURL = async (
     projectId: number,
     surveyId: number,
-    templateId: number
+    submissionId: number
   ): Promise<string> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`
     );
 
     return data;
@@ -295,12 +299,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
-    getTemplateObservationsSignedURL,
+    getObservationSubmissionSignedURL,
     deleteSurvey,
     getSurveyPermits,
-    uploadTemplateObservations,
+    uploadObservationSubmission,
     getSurveyFundingSources,
-    getTemplateObservations,
+    getObservationSubmission,
     publishSurvey
   };
 };

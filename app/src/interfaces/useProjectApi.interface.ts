@@ -15,11 +15,9 @@ export interface IGetProjectAttachment {
   size: number;
 }
 
-export interface IGetTemplateObservations {
+export interface IGetObservationSubmission {
   id: number;
   fileName: string;
-  lastModified: string;
-  size: number;
 }
 
 /**

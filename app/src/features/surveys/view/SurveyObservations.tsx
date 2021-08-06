@@ -21,7 +21,7 @@ const SurveyObservations = () => {
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadTemplateObservations(
+      return biohubApi.survey.uploadObservationSubmission(
         projectId,
         surveyId,
         files[0],
