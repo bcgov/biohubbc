@@ -9,6 +9,7 @@ import Icon from '@mdi/react';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/attachments/FileUpload';
+import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 
 const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
@@ -21,7 +22,7 @@ const SurveyObservations = () => {
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadObservationSubmission(
+      return biohubApi.observation.uploadObservationSubmission(
         projectId,
         surveyId,
         files[0],
@@ -42,6 +43,9 @@ const SurveyObservations = () => {
           <Icon path={mdiUploadOutline} size={1} />
           <Typography>Import</Typography>
         </Button>
+      </Box>
+      <Box>
+        <ObservationSubmissionCSV submissionId={5} />
       </Box>
       <ComponentDialog
         open={openImportObservations}

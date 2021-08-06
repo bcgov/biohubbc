@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useParams } from 'react-router';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 
 const a11yProps = (index: number) => {
   return {
@@ -43,11 +47,39 @@ export interface IObservationSubmissionCSVProps {
 }
 
 const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (props) => {
-  const [value, setValue] = React.useState(0);
+  const biohubApi = useBiohubApi();
+  const urlParams = useParams();
+
+  const { submissionId } = props;
+
+  const [value, setValue] = useState(0);
+  const [isLoadingSubmissionCSV, setIsLoadingSubmissionCSV] = useState(true);
+  const [submissionCSVDetails, setSubmissionCSVDetails] = useState<IGetSubmissionCSVForViewResponse | null>(null);
+
+  const getSubmissionCSVDetails = useCallback(async () => {
+    const submissionCSVWithDetailsResponse = await biohubApi.observation.getSubmissionCSVForView(urlParams['id'], urlParams['survey_id'], submissionId);
+
+    if (!submissionCSVWithDetailsResponse) {
+      return;
+    }
+
+    setSubmissionCSVDetails(submissionCSVWithDetailsResponse);
+  }, [biohubApi.observation, urlParams, submissionId]);
+
+  useEffect(() => {
+    if (isLoadingSubmissionCSV && !submissionCSVDetails) {
+      getSubmissionCSVDetails();
+      setIsLoadingSubmissionCSV(false);
+    }
+  }, [isLoadingSubmissionCSV, submissionCSVDetails, getSubmissionCSVDetails]);
 
   const handleChange = (event: any, newValue: any) => {
     setValue(newValue);
   };
+
+  if (!submissionCSVDetails) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <Paper>
