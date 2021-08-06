@@ -497,8 +497,8 @@ begin
 			      <IUCNConservationActions>
 			      	<IUCNConservationAction>
 			      		<IUCNConservationActionLevel1Classification>%1$s</IUCNConservationActionLevel1Classification>
-			      		<IUCNConservationActionLevel2SubClassification>%1$s</IUCNConservationActionLevel2SubClassification>
-			      		<IUCNConservationActionLevel3SubClassification>%1$s</IUCNConservationActionLevel3SubClassification>
+			      		<IUCNConservationActionLevel2SubClassification>%2$s</IUCNConservationActionLevel2SubClassification>
+			      		<IUCNConservationActionLevel3SubClassification>%3$s</IUCNConservationActionLevel3SubClassification>
 			      	</IUCNConservationAction>					
 			      </IUCNConservationActions>
 		      </metadata>'
