@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import moment from 'moment';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
 import { PostOccurrence } from '../../../../../models/occurrence-create';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import { postOccurrenceSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
@@ -134,7 +134,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'publishSurveyAndOccurrences', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }

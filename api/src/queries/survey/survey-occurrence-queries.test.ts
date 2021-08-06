@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL,
-  getSurveySubmissionOccurrenceSQL,
+  getSurveyOccurrenceSubmissionSQL,
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL
 } from './survey-occurrence-queries';
@@ -82,15 +82,15 @@ describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
   });
 });
 
-describe('getSurveySubmissionOccurrenceSQL', () => {
+describe('getSurveyOccurrenceSubmissionSQL', () => {
   it('returns null response when null submissionId provided', () => {
-    const response = getSurveySubmissionOccurrenceSQL((null as unknown) as number);
+    const response = getSurveyOccurrenceSubmissionSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getSurveySubmissionOccurrenceSQL(1);
+    const response = getSurveyOccurrenceSubmissionSQL(1);
 
     expect(response).to.not.be.null;
   });

@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { getSurveySubmissionOccurrenceSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 
@@ -67,7 +67,7 @@ export function getSingleSubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySubmissionOccurrenceSQLStatement = getSurveySubmissionOccurrenceSQL(
+      const getSurveySubmissionOccurrenceSQLStatement = getSurveyOccurrenceSubmissionSQL(
         Number(req.params.submissionId)
       );
 

@@ -27,6 +27,17 @@ export class MediaFile implements IMediaFile {
     this.mediaValidation = new MediaValidation(this.fileName);
   }
 
+  /**
+   * The file name without extension.
+   *
+   * @readonly
+   * @type {string}
+   * @memberof MediaFile
+   */
+  get name(): string {
+    return this.fileName.split('.')[0];
+  }
+
   validate(validators: MediaValidator[]): MediaValidation {
     validators.forEach((validator) => validator(this));
 

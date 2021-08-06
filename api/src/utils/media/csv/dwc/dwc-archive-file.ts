@@ -3,6 +3,8 @@ import { IMediaState, MediaFile } from '../../media-file';
 import { getFileEmptyValidator, getFileMimeTypeValidator } from '../../validation/file-type-and-content-validator';
 import { CSVWorksheet, IWorksheets } from '../csv-file';
 
+const DEFAULT_XLSX_SHEET = 'Sheet1';
+
 /**
  * Supports Darwin Core Archive CSV files.
  *
@@ -29,56 +31,40 @@ export class DWCArchive implements IWorksheets {
   }
 
   _init() {
-    for (let i = 0; i < this.rawFiles.length; i++) {
-      if (/^event\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.worksheets.event = new CSVWorksheet(
-          this.rawFiles[i].fileName,
-          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
-        );
-
-        continue;
-      }
-
-      if (/^occurrence\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.worksheets.occurrence = new CSVWorksheet(
-          this.rawFiles[i].fileName,
-          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
-        );
-
-        continue;
-      }
-
-      if (/^measurementorfact\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.worksheets.measurementorfact = new CSVWorksheet(
-          this.rawFiles[i].fileName,
-          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
-        );
-
-        continue;
-      }
-
-      if (/^resourcerelationship\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.worksheets.resourcerelationship = new CSVWorksheet(
-          this.rawFiles[i].fileName,
-          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
-        );
-
-        continue;
-      }
-
-      if (/^taxon\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.worksheets.taxon = new CSVWorksheet(
-          this.rawFiles[i].fileName,
-          xlsx.read(this.rawFiles[i].buffer).Sheets['Sheet1']
-        );
-
-        continue;
-      }
-
-      if (/^meta\.\w+$/.test(this.rawFiles[i].fileName)) {
-        this.extra.meta = this.rawFiles[i];
-
-        continue;
+    for (const rawFile of this.rawFiles) {
+      switch (rawFile.name) {
+        case 'event':
+          this.worksheets.event = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case 'occurrence':
+          this.worksheets.occurrence = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case 'measurementorfact':
+          this.worksheets.measurementorfact = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case 'resourcerelationship':
+          this.worksheets.resourcerelationship = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case 'taxon':
+          this.worksheets.taxon = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case 'meta':
+          this.extra.meta = rawFile;
       }
     }
   }
