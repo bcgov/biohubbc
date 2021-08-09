@@ -28,6 +28,10 @@ const useStyles = makeStyles({
   tableCellBorderTop: {
     borderTop: '1px solid rgba(224, 224, 224, 1)'
   }
+  // root: {
+  //   width: "100%",
+  //   overflowX: "auto"
+  // }
 });
 
 const a11yProps = (index: number) => {
@@ -55,7 +59,7 @@ const TabPanel: React.FC<ITabPanelProps> = (props) => {
       {...other}>
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <Typography component="div">{children}</Typography>
         </Box>
       )}
     </div>
@@ -73,7 +77,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
 
   const { submissionId } = props;
 
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
   const [value, setValue] = useState(0);
   const [isLoadingSubmissionCSV, setIsLoadingSubmissionCSV] = useState(true);
@@ -112,7 +116,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
     <Paper>
       <Tabs value={value} onChange={handleChange} aria-label="csv-groups" indicatorColor="primary">
         {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
-          <Tab label={dataItem.name} {...a11yProps(index)} />
+          <Tab key={index} label={dataItem.name} {...a11yProps(index)} />
         ))}
       </Tabs>
       {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
@@ -121,16 +125,18 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
             <Table className={classes.table} aria-label="submission-data-table">
               <TableHead>
                 <TableRow>
-                  {dataItem.headers.map((header: string) => (
-                    <TableCell className={classes.heading}>{header}</TableCell>
+                  {dataItem.headers.map((header: string, headerIndex: number) => (
+                    <TableCell key={headerIndex} className={classes.heading}>
+                      {header}
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {dataItem.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow key={index}>
-                    {row.map((rowItem: any) => (
-                      <TableCell>{rowItem}</TableCell>
+                    {dataItem.headers.map((header: string, headerIndex: number) => (
+                      <TableCell key={headerIndex}>{row[headerIndex]}</TableCell>
                     ))}
                   </TableRow>
                 ))}
@@ -138,7 +144,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
+            rowsPerPageOptions={[25, 50, 75, 100]}
             component="div"
             count={dataItem.rows.length}
             rowsPerPage={rowsPerPage}
