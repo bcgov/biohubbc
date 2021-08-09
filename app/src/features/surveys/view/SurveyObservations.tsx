@@ -45,7 +45,7 @@ const SurveyObservations = () => {
         </Button>
       </Box>
       <Box>
-        <ObservationSubmissionCSV submissionId={5} />
+        <ObservationSubmissionCSV submissionId={3} />
       </Box>
       <ComponentDialog
         open={openImportObservations}

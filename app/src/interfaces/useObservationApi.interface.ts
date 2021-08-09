@@ -1,4 +1,4 @@
-interface IGetSubmissionCSVForViewItem {
+export interface IGetSubmissionCSVForViewItem {
   name: string;
   headers: string[];
   rows: string[][];

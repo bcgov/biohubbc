@@ -4,10 +4,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { getLatestSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
+import { getSurveySubmissionOccurrenceSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
+import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
+import { DWCArchive } from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/view');
@@ -64,6 +66,12 @@ GET.apiDoc = {
                   properties: {
                     name: {
                       type: 'string'
+                    },
+                    headers: {
+                      type: 'array'
+                    },
+                    rows: {
+                      type: 'array'
                     }
                   }
                 }
@@ -110,23 +118,21 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getObservationSubmissionSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
+      const getSubmissionSQLStatement = getSurveySubmissionOccurrenceSQL(Number(req.params.submissionId));
 
-      if (!getObservationSubmissionSQLStatement) {
+      if (!getSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
-      const observationSubmissionData = await connection.query(
-        getObservationSubmissionSQLStatement.text,
-        getObservationSubmissionSQLStatement.values
-      );
+      const submissionData = await connection.query(getSubmissionSQLStatement.text, getSubmissionSQLStatement.values);
 
       await connection.commit();
 
-      const fileName = (observationSubmissionData && observationSubmissionData.rows && observationSubmissionData.rows[0] && observationSubmissionData.rows[0].file_name) || null;
-      
+      const fileName =
+        (submissionData && submissionData.rows && submissionData.rows[0] && submissionData.rows[0].file_name) || null;
+
       const s3Key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
@@ -136,9 +142,44 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
 
       const s3File = await getFileFromS3(s3Key);
 
+      if (!s3File) {
+        throw new HTTP500('Failed to retrieve file from S3');
+      }
+
       const mediaFiles = parseUnknownMedia(s3File);
 
-      return res.status(200).json(mediaFiles);
+      if (!mediaFiles || !mediaFiles.length) {
+        throw new HTTP500('Failed to parse media file');
+      }
+
+      const mediaFile = mediaFiles[0];
+      let worksheets;
+      const data = [];
+
+      // Get the worksheets for the file based on type
+      if (mediaFile.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        // xslx
+        const xlsxCSV = new XLSXCSV(mediaFile);
+
+        worksheets = xlsxCSV.workbook.worksheets;
+      } else {
+        // dwc archive
+        const dwcArchive = new DWCArchive(mediaFiles);
+
+        worksheets = dwcArchive.worksheets;
+      }
+
+      for (const [key] of Object.entries(worksheets)) {
+        const dataItem = {
+          name: key,
+          headers: worksheets[key]?.getHeaders(),
+          rows: worksheets[key]?.getRows()
+        };
+
+        data.push(dataItem);
+      }
+
+      return res.status(200).json({ data });
     } catch (error) {
       defaultLog.debug({ label: 'getObservationSubmissionCSVForView', message: 'error', error });
       await connection.rollback();
