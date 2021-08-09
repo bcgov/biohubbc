@@ -47,7 +47,10 @@ const SurveyObservations = () => {
         open={openImportObservations}
         dialogTitle="Import Observation Data"
         onClose={() => setOpenImportObservations(false)}>
-        <FileUpload uploadHandler={importObservations()} />
+        <FileUpload
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: 'text/csv, .xls, .txt, .zip, .xlsm,  .xlsx, .txt' }}
+          uploadHandler={importObservations()}
+        />
       </ComponentDialog>
     </>
   );

@@ -42,6 +42,11 @@ exports[`DropZone matches the snapshot 1`] = `
         <span
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >
+          Accepted file types: undefined
+        </span>
+        <span
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
           Maximum file size: 50 MB
         </span>
         <span
