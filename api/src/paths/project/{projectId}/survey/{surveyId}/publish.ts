@@ -159,7 +159,7 @@ export const insertOccurrences = async (surveyId: number, connection: IDBConnect
 
   const dwcArchive = new DWCArchive(mediaFiles);
 
-  await uploadDWCArchiveOccurrences(occurrenceSubmission.occurrence_submission_id, dwcArchive, connection);
+  await uploadDWCArchiveOccurrences(occurrenceSubmission.id, dwcArchive, connection);
 };
 
 /**
@@ -171,7 +171,7 @@ export const insertOccurrences = async (surveyId: number, connection: IDBConnect
 export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
   const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
 
-  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.occurrence_submission_id);
+  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build delete survey occurrences SQL statement');
