@@ -28,10 +28,6 @@ const useStyles = makeStyles({
   tableCellBorderTop: {
     borderTop: '1px solid rgba(224, 224, 224, 1)'
   }
-  // root: {
-  //   width: "100%",
-  //   overflowX: "auto"
-  // }
 });
 
 const a11yProps = (index: number) => {
@@ -113,50 +109,54 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
   }
 
   return (
-    <Paper>
+    <>
       <Tabs value={value} onChange={handleChange} aria-label="csv-groups" indicatorColor="primary">
         {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
           <Tab key={index} label={dataItem.name} {...a11yProps(index)} />
         ))}
       </Tabs>
-      {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
-        <TabPanel value={value} index={index}>
-          <TableContainer>
-            <Table className={classes.table} aria-label="submission-data-table">
-              <TableHead>
-                <TableRow>
-                  {dataItem.headers.map((header: string, headerIndex: number) => (
-                    <TableCell key={headerIndex} className={classes.heading}>
-                      {header}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dataItem.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={index}>
-                    {dataItem.headers.map((header: string, headerIndex: number) => (
-                      <TableCell key={headerIndex}>{row[headerIndex]}</TableCell>
+      <Box mt={2}>
+        <Paper>
+          {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
+            <TabPanel value={value} index={index}>
+              <TableContainer>
+                <Table className={classes.table} aria-label="submission-data-table">
+                  <TableHead>
+                    <TableRow>
+                      {dataItem.headers.map((header: string, headerIndex: number) => (
+                        <TableCell key={headerIndex} className={classes.heading}>
+                          {header}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {dataItem.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                      <TableRow key={index}>
+                        {dataItem.headers.map((header: string, headerIndex: number) => (
+                          <TableCell key={headerIndex}>{row[headerIndex]}</TableCell>
+                        ))}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[25, 50, 75, 100]}
-            component="div"
-            count={dataItem.rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        </TabPanel>
-      ))}
-    </Paper>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[25, 50, 75, 100]}
+                component="div"
+                count={dataItem.rows.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+                onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+                }
+              />
+            </TabPanel>
+          ))}
+        </Paper>
+      </Box>
+    </>
   );
 };
 
