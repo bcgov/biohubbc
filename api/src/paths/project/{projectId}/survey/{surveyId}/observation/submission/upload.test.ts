@@ -3,9 +3,9 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import * as db from '../../../../../../database/db';
-import * as survey_occurrence_queries from '../../../../../../queries/survey/survey-occurrence-queries';
-import * as file_utils from '../../../../../../utils/file-utils';
+import * as db from '../../../../../../../database/db';
+import * as survey_occurrence_queries from '../../../../../../../queries/survey/survey-occurrence-queries';
+import * as file_utils from '../../../../../../../utils/file-utils';
 import * as upload from './upload';
 
 chai.use(sinonChai);
