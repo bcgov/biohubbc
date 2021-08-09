@@ -9,7 +9,6 @@ import Icon from '@mdi/react';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/attachments/FileUpload';
-import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 
 const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
@@ -47,7 +46,6 @@ const SurveyObservations = () => {
           Import
         </Button>
       </Box>
-      <ObservationSubmissionCSV submissionId={2} />
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"
