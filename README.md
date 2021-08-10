@@ -13,7 +13,7 @@ The objectives for the BioHubBC project are:
 
 # Running Locally with Docker
 
-See `./Makefile` for all available commands.
+See `./Makefile` for all the available commands.
 
 ## Pre-reqs
 
