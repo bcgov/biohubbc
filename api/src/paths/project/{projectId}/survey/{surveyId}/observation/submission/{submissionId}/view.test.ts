@@ -225,7 +225,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon.stub(media_utils, 'parseUnknownMedia').returns([
@@ -262,7 +262,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon.stub(media_utils, 'parseUnknownMedia').returns([
