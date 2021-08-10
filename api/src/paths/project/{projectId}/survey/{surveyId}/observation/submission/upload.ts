@@ -86,7 +86,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files.length', files: req?.files?.length });
+    defaultLog.debug({ label: 'uploadMedia', message: 'files', files: req.files });
 
     if (!req.files || !req.files.length) {
       // no media objects included

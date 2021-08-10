@@ -19,6 +19,17 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
+  it('getObservationSubmission works as expected', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`)
+      .reply(200, { id: 1, fileName: 'file.txt' });
+
+    const result = await useSurveyApi(axios).getObservationSubmission(projectId, surveyId);
+
+    expect(result.id).toEqual(1);
+    expect(result.fileName).toEqual('file.txt');
+  });
+
   it('getObservationSubmissionSignedURL works as expected', async () => {
     const submissionId = 4;
 
