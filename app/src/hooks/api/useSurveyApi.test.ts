@@ -130,18 +130,6 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(signedUrl);
   });
 
-  it('uploadObservationSubmission works as expected', async () => {
-    const file = new File(['foo'], 'foo.txt', {
-      type: 'text/plain'
-    });
-
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, 'OK');
-
-    const result = await useSurveyApi(axios).uploadObservationSubmission(projectId, surveyId, file);
-
-    expect(result).toEqual('OK');
-  });
-
   it('getSurveyAttachments works as expected', async () => {
     const res = {
       attachmentsList: [

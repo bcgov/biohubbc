@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import React, { useState } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useParams } from 'react-router';
-import { mdiUploadOutline } from '@mdi/js';
+import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
@@ -21,7 +21,7 @@ const SurveyObservations = () => {
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadObservationSubmission(
+      return biohubApi.observation.uploadObservationSubmission(
         projectId,
         surveyId,
         files[0],
@@ -38,9 +38,12 @@ const SurveyObservations = () => {
           Observations
         </Typography>
 
-        <Button variant="outlined" onClick={() => setOpenImportObservations(true)}>
-          <Icon path={mdiUploadOutline} size={1} />
-          <Typography>Import</Typography>
+        <Button
+          startIcon={<Icon path={mdiImport} size={1} />}
+          variant="outlined"
+          color="primary"
+          onClick={() => setOpenImportObservations(true)}>
+          Import
         </Button>
       </Box>
       <ComponentDialog

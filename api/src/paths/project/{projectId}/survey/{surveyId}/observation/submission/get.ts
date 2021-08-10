@@ -14,7 +14,7 @@ export const GET: Operation = [getObservationSubmission()];
 
 GET.apiDoc = {
   description: 'Fetches an observation submission for a survey.',
-  tags: ['attachments'],
+  tags: ['observation_submission'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -40,7 +40,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey get response file description array.',
+      description: 'Observation submission get response.',
       content: {
         'application/json': {
           schema: {

@@ -124,39 +124,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Upload survey observation submission.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
-   */
-  const uploadObservationSubmission = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string[]> => {
-    const req_message = new FormData();
-
-    req_message.append('media', file);
-
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
-
-    return data;
-  };
-
-  /**
    * Get survey attachments based on survey ID
    *
    * @param {number} projectId
@@ -302,7 +269,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getObservationSubmissionSignedURL,
     deleteSurvey,
     getSurveyPermits,
-    uploadObservationSubmission,
     getSurveyFundingSources,
     getObservationSubmission,
     publishSurvey
