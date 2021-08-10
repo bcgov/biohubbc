@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ObservationSubmissionCSV renders correctly with file contents 1`] = `
+exports[`ObservationSubmissionCSV renders a spinner with no data 1`] = `
 <DocumentFragment>
   <div
     class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
@@ -20,6 +20,258 @@ exports[`ObservationSubmissionCSV renders correctly with file contents 1`] = `
         stroke-width="3.6"
       />
     </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ObservationSubmissionCSV renders correctly with file csv data 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiTabs-root"
+  >
+    <div
+      class="MuiTabs-scroller MuiTabs-fixed"
+      style="overflow: hidden;"
+    >
+      <div
+        aria-label="csv-groups"
+        class="MuiTabs-flexContainer"
+        role="tablist"
+      >
+        <button
+          aria-controls="full-width-tabpanel-0"
+          aria-selected="true"
+          class="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit Mui-selected"
+          id="full-width-tab-0"
+          role="tab"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiTab-wrapper"
+          >
+            test 1
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <button
+          aria-controls="full-width-tabpanel-1"
+          aria-selected="false"
+          class="MuiButtonBase-root MuiTab-root MuiTab-textColorInherit"
+          id="full-width-tab-1"
+          role="tab"
+          tabindex="-1"
+          type="button"
+        >
+          <span
+            class="MuiTab-wrapper"
+          >
+            test 2
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <span
+        class="PrivateTabIndicator-root-7 PrivateTabIndicator-colorPrimary-8 MuiTabs-indicator"
+        style="left: 0px; width: 0px;"
+      />
+    </div>
+  </div>
+  <div
+    class="MuiBox-root MuiBox-root-11"
+  >
+    <div
+      class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    >
+      <div
+        aria-labelledby="full-width-tab-0"
+        id="full-width-tabpanel-0"
+        role="tabpanel"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <div
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            <div
+              class="MuiTableContainer-root"
+            >
+              <table
+                aria-label="submission-data-table"
+                class="MuiTable-root makeStyles-table-4"
+                data-testid="submission-data-table"
+              >
+                <thead
+                  class="MuiTableHead-root"
+                >
+                  <tr
+                    class="MuiTableRow-root MuiTableRow-head"
+                  >
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-5"
+                      scope="col"
+                    >
+                      header 1
+                    </th>
+                    <th
+                      class="MuiTableCell-root MuiTableCell-head makeStyles-heading-5"
+                      scope="col"
+                    >
+                      header 2
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="MuiTableBody-root"
+                >
+                  <tr
+                    class="MuiTableRow-root"
+                  >
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body"
+                    >
+                      content 1
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body"
+                    >
+                      content 2
+                    </td>
+                  </tr>
+                  <tr
+                    class="MuiTableRow-root"
+                  >
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body"
+                    >
+                      content 3
+                    </td>
+                    <td
+                      class="MuiTableCell-root MuiTableCell-body"
+                    >
+                      content 4
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div
+              class="MuiTablePagination-root"
+            >
+              <div
+                class="MuiToolbar-root MuiToolbar-regular MuiTablePagination-toolbar MuiToolbar-gutters"
+              >
+                <div
+                  class="MuiTablePagination-spacer"
+                />
+                <p
+                  class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+                  id="mui-16053"
+                >
+                  Rows per page:
+                </p>
+                <div
+                  class="MuiInputBase-root MuiTablePagination-input MuiTablePagination-selectRoot"
+                >
+                  <div
+                    aria-haspopup="listbox"
+                    aria-labelledby="mui-16053 mui-35157"
+                    class="MuiSelect-root MuiSelect-select MuiTablePagination-select MuiSelect-selectMenu MuiInputBase-input"
+                    id="mui-35157"
+                    role="button"
+                    tabindex="0"
+                  >
+                    50
+                  </div>
+                  <input
+                    aria-hidden="true"
+                    class="MuiSelect-nativeInput"
+                    tabindex="-1"
+                    value="50"
+                  />
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSelect-icon MuiTablePagination-selectIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M7 10l5 5 5-5z"
+                    />
+                  </svg>
+                </div>
+                <p
+                  class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
+                >
+                  1-2 of 2
+                </p>
+                <div
+                  class="MuiTablePagination-actions"
+                >
+                  <button
+                    aria-label="Previous page"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit Mui-disabled Mui-disabled"
+                    disabled=""
+                    tabindex="-1"
+                    title="Previous page"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                  <button
+                    aria-label="Next page"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit Mui-disabled Mui-disabled"
+                    disabled=""
+                    tabindex="-1"
+                    title="Next page"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        aria-labelledby="full-width-tab-1"
+        hidden=""
+        id="full-width-tabpanel-1"
+        role="tabpanel"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;

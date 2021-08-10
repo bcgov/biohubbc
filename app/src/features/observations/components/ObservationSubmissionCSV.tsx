@@ -120,7 +120,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
           {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
             <TabPanel key={dataItemIndex} value={value} index={dataItemIndex}>
               <TableContainer>
-                <Table className={classes.table} aria-label="submission-data-table">
+                <Table data-testid="submission-data-table" className={classes.table} aria-label="submission-data-table">
                   <TableHead>
                     <TableRow>
                       {dataItem.headers.map((header: string, headerIndex: number) => (

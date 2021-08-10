@@ -35,7 +35,15 @@ describe('ObservationSubmissionCSV', () => {
     cleanup();
   });
 
-  it('renders correctly with file contents', async () => {
+  it('renders a spinner with no data', async () => {
+    const { asFragment } = renderContainer();
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('renders correctly with file csv data', async () => {
     mockBiohubApi().observation.getSubmissionCSVForView.mockResolvedValue({
       data: [
         {
@@ -57,10 +65,12 @@ describe('ObservationSubmissionCSV', () => {
       ]
     });
 
-    const { asFragment } = renderContainer();
+    const { asFragment, getByTestId } = renderContainer();
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByTestId('submission-data-table')).toBeInTheDocument();
     });
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });
