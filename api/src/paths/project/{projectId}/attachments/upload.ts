@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/CustomError';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { upsertProjectAttachment } from '../../../project';
@@ -144,7 +144,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }

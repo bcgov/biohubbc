@@ -113,7 +113,7 @@ describe('getObservationSubmissionCSVForView', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getSurveySubmissionOccurrenceSQL', async () => {
+  it('should throw a 400 error when no sql statement returned for getSurveyOccurrenceSubmissionSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -121,7 +121,7 @@ describe('getObservationSubmissionCSVForView', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = view.getObservationSubmissionCSVForView();
@@ -154,7 +154,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves((null as unknown) as GetObjectOutput);
 
@@ -189,7 +189,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon.stub(media_utils, 'parseUnknownMedia').returns([]);

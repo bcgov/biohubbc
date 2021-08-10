@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import moment from 'moment';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
 import { PostOccurrence } from '../../../../../models/occurrence-create';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import { postOccurrenceSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
@@ -134,7 +134,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'publishSurveyAndOccurrences', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }
@@ -221,7 +221,7 @@ export const getSurveyOccurrenceSubmission = async (surveyId: number, connection
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response || !response.rowCount) {
+  if (!response || !response.rows.length) {
     throw new HTTP500('Failed to get survey occurrence submissions');
   }
 
@@ -302,7 +302,7 @@ export const uploadDWCArchiveOccurrences = async (
   });
 
   return Promise.all(
-    scrapedOccurrences.map(async (scrapedOccurrence) => {
+    scrapedOccurrences?.map(async (scrapedOccurrence) => {
       const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
       if (!sqlStatement) {
@@ -314,7 +314,7 @@ export const uploadDWCArchiveOccurrences = async (
       if (!response || !response.rowCount) {
         throw new HTTP400('Failed to insert occurrence data');
       }
-    })
+    }) || []
   );
 };
 
