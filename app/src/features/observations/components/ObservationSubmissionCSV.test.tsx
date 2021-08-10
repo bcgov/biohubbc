@@ -36,10 +36,10 @@ describe('ObservationSubmissionCSV', () => {
   });
 
   it('renders a spinner with no data', async () => {
-    const { asFragment } = renderContainer();
+    const { getByTestId } = renderContainer();
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByTestId('spinner')).toBeInTheDocument();
     });
   });
 
@@ -65,12 +65,10 @@ describe('ObservationSubmissionCSV', () => {
       ]
     });
 
-    const { asFragment, getByTestId } = renderContainer();
+    const { getByTestId } = renderContainer();
 
     await waitFor(() => {
       expect(getByTestId('submission-data-table')).toBeInTheDocument();
     });
-
-    expect(asFragment()).toMatchSnapshot();
   });
 });

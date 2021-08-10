@@ -105,7 +105,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
   };
 
   if (!submissionCSVDetails || !submissionCSVDetails.data || submissionCSVDetails.data.length === 0) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress data-testid="spinner" className="pageProgress" size={40} />;
   }
 
   return (
