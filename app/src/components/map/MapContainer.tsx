@@ -219,6 +219,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     throttledGetFeatureDetails(layersToInfer);
+    // eslint-disable-next-line
   }, [geometryState?.geometry, nonEditableGeometries]);
 
   let shownDrawControls: any = {};

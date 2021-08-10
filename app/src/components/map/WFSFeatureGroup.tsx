@@ -135,6 +135,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     )?.catch(/* catch and ignore errors */);
 
     setFeatures(newFeatures);
+    // eslint-disable-next-line
   }, [map, throttledGetFeatures, bounds, isMounted, props]);
 
   useEffect(() => {
