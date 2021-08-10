@@ -270,7 +270,11 @@ describe('uploadSubmission', () => {
 
     const result = upload.uploadMedia();
 
-    await result(mockReq, mockRes, mockNext);
+    await result(
+      { ...mockReq, auth_payload: { preferred_username: 'user', email: 'example@email.com' } },
+      mockRes,
+      mockNext
+    );
     expect(actualStatus).to.equal(200);
   });
 });

@@ -105,7 +105,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
   };
 
   if (!submissionCSVDetails || !submissionCSVDetails.data || submissionCSVDetails.data.length === 0) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress data-testid="spinner" className="pageProgress" size={40} />;
   }
 
   return (
@@ -118,9 +118,9 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
       <Box mt={2}>
         <Paper>
           {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
-            <TabPanel value={value} index={dataItemIndex}>
+            <TabPanel key={dataItemIndex} value={value} index={dataItemIndex}>
               <TableContainer>
-                <Table className={classes.table} aria-label="submission-data-table">
+                <Table data-testid="submission-data-table" className={classes.table} aria-label="submission-data-table">
                   <TableHead>
                     <TableRow>
                       {dataItem.headers.map((header: string, headerIndex: number) => (
