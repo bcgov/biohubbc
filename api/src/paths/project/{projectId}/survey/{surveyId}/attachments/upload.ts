@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentByFileNameSQL,
   postSurveyAttachmentSQL,
@@ -153,7 +153,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }

@@ -1,13 +1,13 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaFile } from '../media-file';
 import { getFileEmptyValidator, getFileMimeTypeValidator } from '../validation/file-type-and-content-validator';
+import { DWC_CLASS } from './dwc/dwc-archive-file';
 
 export interface IWorkbook {
   workbook: CSVWorkBook;
 }
-
 export interface IWorksheets {
-  worksheets: { [name: string]: CSVWorksheet };
+  worksheets: { [name in DWC_CLASS]?: CSVWorksheet } | { [name: string]: CSVWorksheet };
 }
 
 export class CSVWorkBook implements IWorksheets {
