@@ -67,19 +67,19 @@ export function getSingleSubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySubmissionOccurrenceSQLStatement = getSurveyOccurrenceSubmissionSQL(
+      const getSurveyOccurrenceSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(
         Number(req.params.submissionId)
       );
 
-      if (!getSurveySubmissionOccurrenceSQLStatement) {
+      if (!getSurveyOccurrenceSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const result = await connection.query(
-        getSurveySubmissionOccurrenceSQLStatement.text,
-        getSurveySubmissionOccurrenceSQLStatement.values
+        getSurveyOccurrenceSubmissionSQLStatement.text,
+        getSurveyOccurrenceSubmissionSQLStatement.values
       );
 
       await connection.commit();

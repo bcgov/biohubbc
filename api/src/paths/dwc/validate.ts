@@ -11,8 +11,8 @@ import {
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
-import { DWCArchive } from '../../utils/media/csv/dwc/dwc-archive-file';
-import { isDWCArchiveValid } from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { DWCArchive, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
+import { getDWCCSVValidators, getDWCMediaValidators } from '../../utils/media/csv/dwc/dwc-archive-validator';
 import { IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
@@ -24,6 +24,7 @@ export const POST: Operation = [
   getSubmissionS3Key(),
   getSubmissionFileFromS3(),
   prepDWCArchive(),
+  getValidationRules(),
   validateDWCArchive(),
   persistValidationResults()
 ];
@@ -161,6 +162,43 @@ function prepDWCArchive(): RequestHandler {
   };
 }
 
+function getValidationRules(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
+
+    try {
+      // TODO fetch/generate validation rules from reference data service
+      const mediaValidationRules = {
+        [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
+        [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
+        [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
+        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCMediaValidators(DWC_CLASS.RESOURCERELATIONSHIP),
+        [DWC_CLASS.TAXON]: getDWCMediaValidators(DWC_CLASS.TAXON),
+        [DWC_CLASS.META]: getDWCMediaValidators(DWC_CLASS.META)
+      };
+
+      req['mediaValidationRules'] = mediaValidationRules;
+
+      // TODO fetch/generate validation rules from reference data service
+      const contentValidationRules = {
+        [DWC_CLASS.EVENT]: getDWCCSVValidators(DWC_CLASS.EVENT),
+        [DWC_CLASS.OCCURRENCE]: getDWCCSVValidators(DWC_CLASS.OCCURRENCE),
+        [DWC_CLASS.MEASUREMENTORFACT]: getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT),
+        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP),
+        [DWC_CLASS.TAXON]: getDWCCSVValidators(DWC_CLASS.TAXON),
+        [DWC_CLASS.META]: getDWCCSVValidators(DWC_CLASS.META)
+      };
+
+      req['contentValidationRules'] = contentValidationRules;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
 function validateDWCArchive(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
@@ -168,8 +206,9 @@ function validateDWCArchive(): RequestHandler {
     try {
       const dwcArchive: DWCArchive = req['dwcArchive'];
 
-      // TODO make the `dwcArchive.isValid` function take in validation rules, rather than hard coding them?
-      const mediaState: IMediaState[] = dwcArchive.isValid();
+      const mediaValidationRules = req['mediaValidationRules'];
+
+      const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
 
       if (mediaState.some((item) => !item.isValid)) {
         req['mediaState'] = mediaState;
@@ -178,7 +217,9 @@ function validateDWCArchive(): RequestHandler {
         return next();
       }
 
-      const csvState: ICsvState[] = isDWCArchiveValid(dwcArchive);
+      const contentValidationRules = req['contentValidationRules'];
+
+      const csvState: ICsvState[] = dwcArchive.isContentValid(contentValidationRules);
 
       req['csvState'] = csvState;
 
@@ -257,7 +298,7 @@ function persistValidationResults(): RequestHandler {
 
       await connection.commit();
 
-      // TODO return something to indicate if any errors had been found, or not?F
+      // TODO return something to indicate if any errors had been found, or not?
       return res.status(200).json();
     } catch (error) {
       defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
@@ -268,6 +309,14 @@ function persistValidationResults(): RequestHandler {
   };
 }
 
+/**
+ * Insert a record into the submission_status table.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<number>}
+ */
 export const insertSubmissionStatus = async (
   occurrenceSubmissionId: number,
   submissionStatusType: string,
@@ -290,6 +339,15 @@ export const insertSubmissionStatus = async (
   return result.id;
 };
 
+/**
+ * Insert a record into the submission_message table.
+ *
+ * @param {number} submissionStatusId
+ * @param {string} submissionMessageType
+ * @param {string} message
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
 export const insertSubmissionMessage = async (
   submissionStatusId: number,
   submissionMessageType: string,

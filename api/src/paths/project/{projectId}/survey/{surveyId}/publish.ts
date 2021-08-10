@@ -302,7 +302,7 @@ export const uploadDWCArchiveOccurrences = async (
   });
 
   return Promise.all(
-    scrapedOccurrences.map(async (scrapedOccurrence) => {
+    scrapedOccurrences?.map(async (scrapedOccurrence) => {
       const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
       if (!sqlStatement) {
@@ -314,7 +314,7 @@ export const uploadDWCArchiveOccurrences = async (
       if (!response || !response.rowCount) {
         throw new HTTP400('Failed to insert occurrence data');
       }
-    })
+    }) || []
   );
 };
 
