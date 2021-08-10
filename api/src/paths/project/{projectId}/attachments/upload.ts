@@ -92,18 +92,25 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files', files: { ...req.files, buffer: 'Too big to print' } });
+    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!req.files || !req.files.length) {
+    if (!rawMediaArray || !rawMediaArray.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
+
+    defaultLog.debug({
+      label: 'uploadMedia',
+      message: 'files',
+      files: rawMediaArray.map((item) => {
+        return { ...item, buffer: 'Too big to print' };
+      })
+    });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing projectId');
     }
 
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
     const connection = getDBConnection(req['keycloak_token']);
 
     // Insert file metadata into project_attachment table
