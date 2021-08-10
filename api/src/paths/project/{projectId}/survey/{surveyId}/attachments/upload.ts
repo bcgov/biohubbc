@@ -101,7 +101,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files', files: req.files });
+    defaultLog.debug({ label: 'uploadMedia', message: 'files', files: { ...req.files, buffer: 'Too big to print' } });
 
     if (!req.files || !req.files.length) {
       // no media objects included, skipping media upload step
