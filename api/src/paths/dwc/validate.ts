@@ -100,7 +100,7 @@ function getSubmissionS3Key(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      if (!response?.rows?.length) {
+      if (!response || !response.rows.length) {
         throw new HTTP400('Failed to get survey occurrence submission');
       }
 

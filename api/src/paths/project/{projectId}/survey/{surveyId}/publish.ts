@@ -221,7 +221,7 @@ export const getSurveyOccurrenceSubmission = async (surveyId: number, connection
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response?.rows?.length) {
+  if (!response || !response.rows.length) {
     throw new HTTP500('Failed to get survey occurrence submissions');
   }
 
