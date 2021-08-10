@@ -9,6 +9,7 @@ import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
+import useObservationApi from './api/useObservationApi';
 
 /**
  * Returns a set of supported api methods.
@@ -34,6 +35,8 @@ export const useBiohubApi = () => {
 
   const admin = useAdminApi(customAxios);
 
+  const observation = useObservationApi(customAxios);
+
   const external = useExternalApi(axios);
 
   return {
@@ -41,6 +44,7 @@ export const useBiohubApi = () => {
     permit,
     search,
     survey,
+    observation,
     codes,
     draft,
     user,

@@ -83,20 +83,14 @@ describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
 });
 
 describe('getSurveySubmissionOccurrenceSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getSurveySubmissionOccurrenceSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
   it('returns null response when null submissionId provided', () => {
-    const response = getSurveySubmissionOccurrenceSQL(1, (null as unknown) as number);
+    const response = getSurveySubmissionOccurrenceSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getSurveySubmissionOccurrenceSQL(1, 1);
+    const response = getSurveySubmissionOccurrenceSQL(1);
 
     expect(response).to.not.be.null;
   });

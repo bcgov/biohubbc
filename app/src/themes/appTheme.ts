@@ -11,7 +11,6 @@ const appTheme = createMuiTheme({
       xl: 1440
     }
   },
-
   palette: {
     background: {
       default: '#f7f8fa'
@@ -173,6 +172,11 @@ const appTheme = createMuiTheme({
       head: {
         fontWeight: 700,
         lineHeight: 'auto'
+      }
+    },
+    MuiTab: {
+      root: {
+        textTransform: 'none'
       }
     }
   }

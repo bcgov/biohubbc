@@ -68,7 +68,6 @@ export function getSingleSubmissionURL(): RequestHandler {
 
     try {
       const getSurveySubmissionOccurrenceSQLStatement = getSurveySubmissionOccurrenceSQL(
-        Number(req.params.surveyId),
         Number(req.params.submissionId)
       );
 
