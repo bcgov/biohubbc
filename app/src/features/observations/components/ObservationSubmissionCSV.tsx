@@ -117,8 +117,8 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
       </Tabs>
       <Box mt={2}>
         <Paper>
-          {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, index: number) => (
-            <TabPanel value={value} index={index}>
+          {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
+            <TabPanel value={value} index={dataItemIndex}>
               <TableContainer>
                 <Table className={classes.table} aria-label="submission-data-table">
                   <TableHead>
@@ -131,13 +131,15 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataItem.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                      <TableRow key={index}>
-                        {dataItem.headers.map((header: string, headerIndex: number) => (
-                          <TableCell key={headerIndex}>{row[headerIndex]}</TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
+                    {dataItem.rows
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row: any[], rowIndex: number) => (
+                        <TableRow key={rowIndex}>
+                          {dataItem.headers.map((header: string, headerIndex: number) => (
+                            <TableCell key={headerIndex}>{row[headerIndex]}</TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </TableContainer>
