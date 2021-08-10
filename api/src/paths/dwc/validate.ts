@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
   insertSurveySubmissionMessageSQL,
@@ -100,7 +100,7 @@ function getSubmissionS3Key(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      if (!response || !response.rowCount) {
+      if (!response?.rows?.length) {
         throw new HTTP400('Failed to get survey occurrence submission');
       }
 
@@ -128,7 +128,7 @@ function getSubmissionFileFromS3(): RequestHandler {
       const s3File = await getFileFromS3(s3Key);
 
       if (!s3File) {
-        throw new HTTP400('Failed to get occurrence submission file');
+        throw new HTTP500('Failed to get occurrence submission file');
       }
 
       req['s3File'] = s3File;
