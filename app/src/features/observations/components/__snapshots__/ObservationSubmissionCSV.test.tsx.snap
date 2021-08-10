@@ -171,7 +171,7 @@ exports[`ObservationSubmissionCSV renders correctly with file csv data 1`] = `
                 />
                 <p
                   class="MuiTypography-root MuiTablePagination-caption MuiTypography-body2 MuiTypography-colorInherit"
-                  id="mui-16053"
+                  id="mui-69455"
                 >
                   Rows per page:
                 </p>
@@ -180,9 +180,9 @@ exports[`ObservationSubmissionCSV renders correctly with file csv data 1`] = `
                 >
                   <div
                     aria-haspopup="listbox"
-                    aria-labelledby="mui-16053 mui-35157"
+                    aria-labelledby="mui-69455 mui-40670"
                     class="MuiSelect-root MuiSelect-select MuiTablePagination-select MuiSelect-selectMenu MuiInputBase-input"
-                    id="mui-35157"
+                    id="mui-40670"
                     role="button"
                     tabindex="0"
                   >
