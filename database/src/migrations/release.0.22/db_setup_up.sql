@@ -55,12 +55,16 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i tr_project.sql
 \i tr_survey.sql
 \i tr_permit.sql
+\i tr_occurrence_submission.sql
 \i api_get_system_constant.sql
+\i api_get_system_metadata_constant.sql
 \i vw_survey_status.sql
 
 \i api_delete_occurrence_submission.sql
 \i api_delete_survey.sql
 \i api_delete_project.sql
+\i api_xml_string_replace.sql
+\i api_get_eml_data_package.sql
 
 -- populate look up tables
 \set QUIET on
