@@ -184,6 +184,8 @@ export interface IGetSurveyAttachmentsResponse {
 export interface IGetObservationSubmissionResponse {
   id: number;
   fileName: string;
+  status: string;
+  message: string;
 }
 
 export interface SurveyPermits {

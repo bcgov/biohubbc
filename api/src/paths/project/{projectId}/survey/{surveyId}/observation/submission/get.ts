@@ -50,7 +50,15 @@ GET.apiDoc = {
                 type: 'number'
               },
               fileName: {
-                description: 'The file name of the attachment',
+                description: 'The file name of the submission',
+                type: 'string'
+              },
+              status: {
+                description: 'The validation status of the submission',
+                type: 'string'
+              },
+              message: {
+                description: 'The validation status message of the submission',
                 type: 'string'
               }
             }
@@ -100,6 +108,10 @@ export function getObservationSubmission(): RequestHandler {
         getObservationSubmissionSQLStatement.values
       );
 
+      console.log('***********************');
+
+      console.log(observationSubmissionData);
+
       await connection.commit();
 
       const getObservationSubmissionData =
@@ -107,7 +119,9 @@ export function getObservationSubmission(): RequestHandler {
           observationSubmissionData.rows &&
           observationSubmissionData.rows[0] && {
             id: observationSubmissionData.rows[0].id,
-            fileName: observationSubmissionData.rows[0].file_name
+            fileName: observationSubmissionData.rows[0].file_name,
+            status: observationSubmissionData.rows[0].submission_status_type_name,
+            message: observationSubmissionData.rows[0].message
           }) ||
         null;
 

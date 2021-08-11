@@ -125,7 +125,9 @@ describe('getObservationSubmission', () => {
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'filename.txt'
+      fileName: 'filename.txt',
+      status: 'Published',
+      message: 'works fine'
     });
   });
 
