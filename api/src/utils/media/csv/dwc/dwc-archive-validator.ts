@@ -1,4 +1,6 @@
-import { CSVValidator, ICsvState } from '../csv-file';
+import { MediaValidator } from '../../media-file';
+import { getFileEmptyValidator, getFileMimeTypeValidator } from '../../validation/file-type-and-content-validator';
+import { CSVValidator } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
@@ -9,18 +11,13 @@ import {
   getRequiredFieldsValidator,
   ICodeValuesByHeader
 } from '../validation/csv-row-validator';
-import { DWCArchive } from './dwc-archive-file';
+import { DWC_CLASS } from './dwc-archive-file';
 
-export enum DWC_CLASS {
-  EVENT = 'event',
-  OCCURRENCE = 'occurrence',
-  MEASUREMENTORFACT = 'measurementorfact',
-  RESOURCERELATIONSHIP = 'resourcerelationship',
-  TAXON = 'taxon',
-  META = 'meta'
-}
+/**
+ * TODO This entire file should eventually be replaced by calls to the reference data service
+ */
 
-export const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
+const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
   switch (dwcClass) {
     case DWC_CLASS.EVENT:
       return [
@@ -62,7 +59,7 @@ export const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
   }
 };
 
-export const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
+const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
   switch (dwcClass) {
     case DWC_CLASS.EVENT:
       return [
@@ -101,7 +98,7 @@ export const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
   }
 };
 
-export const getRequiredFieldsByHeader = (dwcClass: DWC_CLASS): string[] => {
+const getRequiredFieldsByHeader = (dwcClass: DWC_CLASS): string[] => {
   switch (dwcClass) {
     case DWC_CLASS.EVENT:
       return ['eventID'];
@@ -118,7 +115,7 @@ export const getRequiredFieldsByHeader = (dwcClass: DWC_CLASS): string[] => {
   }
 };
 
-export const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
+const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
   switch (dwcClass) {
     case DWC_CLASS.OCCURRENCE:
       return [
@@ -130,33 +127,12 @@ export const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[
   }
 };
 
-export function isDWCArchiveValid(dwcArchive: DWCArchive): ICsvState[] {
-  const responses: ICsvState[] = [];
-
-  dwcArchive?.worksheets.event &&
-    responses.push(dwcArchive?.worksheets.event.validate(getDWCCSVValidators(DWC_CLASS.EVENT)).getState());
-
-  dwcArchive?.worksheets.occurrence &&
-    responses.push(dwcArchive?.worksheets.occurrence.validate(getDWCCSVValidators(DWC_CLASS.OCCURRENCE)).getState());
-
-  dwcArchive?.worksheets.measurementorfact &&
-    responses.push(
-      dwcArchive?.worksheets.measurementorfact.validate(getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT)).getState()
-    );
-
-  dwcArchive?.worksheets.resourcerelationship &&
-    responses.push(
-      dwcArchive?.worksheets.resourcerelationship
-        .validate(getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP))
-        .getState()
-    );
-
-  dwcArchive?.worksheets.taxon &&
-    responses.push(dwcArchive?.worksheets.taxon.validate(getDWCCSVValidators(DWC_CLASS.TAXON)).getState());
-
-  return responses;
-}
-
+/**
+ * Get content validation rules for a given DWC class.
+ *
+ * @param {DWC_CLASS} dwcClass
+ * @return {*}  {CSVValidator[]}
+ */
 export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
@@ -165,4 +141,29 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass))
   ];
+};
+
+const getRequiredMimeTypesByDWCClass = (dwcClass: DWC_CLASS): RegExp[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.EVENT:
+    case DWC_CLASS.OCCURRENCE:
+    case DWC_CLASS.MEASUREMENTORFACT:
+    case DWC_CLASS.RESOURCERELATIONSHIP:
+    case DWC_CLASS.TAXON:
+      return [/text\/plain/, /text\/csv/];
+    case DWC_CLASS.META:
+      return [/application\/xml/];
+    default:
+      return [];
+  }
+};
+
+/**
+ * Get media validation rules for a given DWC class.
+ *
+ * @param {DWC_CLASS} dwcClass
+ * @return {*}  {MediaValidator[]}
+ */
+export const getDWCMediaValidators = (dwcClass: DWC_CLASS): MediaValidator[] => {
+  return [getFileEmptyValidator(), getFileMimeTypeValidator(getRequiredMimeTypesByDWCClass(dwcClass))];
 };

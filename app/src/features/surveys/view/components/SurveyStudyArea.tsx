@@ -46,6 +46,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     refresh
   } = props;
 
+  const surveyGeometry = survey_details?.geometry;
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
@@ -59,14 +61,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {
-    const geometryCollectionResult = generateValidGeometryCollection(survey_details?.geometry);
+    const geometryCollectionResult = generateValidGeometryCollection(surveyGeometry);
     const nonEditableGeometriesResult = geometryCollectionResult.geometryCollection.map((geom: Feature) => {
       return { feature: geom };
     });
 
     setBounds(geometryCollectionResult.bounds);
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [survey_details?.geometry]);
+  }, [surveyGeometry]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,

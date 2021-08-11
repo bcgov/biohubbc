@@ -23,7 +23,27 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
         agency_name: 'Funding Agency Blah'
       }
     ],
-    geometry: [],
+    geometry: [
+      {
+        type: 'Feature',
+        id: 'myGeo',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [-128, 55],
+              [-128, 55.5],
+              [-128, 56],
+              [-126, 58],
+              [-128, 55]
+            ]
+          ]
+        },
+        properties: {
+          name: 'Biohub Islands'
+        }
+      }
+    ],
     completion_status: 'Active',
     publish_date: (null as unknown) as string
   },

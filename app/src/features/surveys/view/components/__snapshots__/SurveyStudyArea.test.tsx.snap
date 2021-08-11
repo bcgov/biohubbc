@@ -1,0 +1,278 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SurveyStudyArea renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Study Area
+      </h3>
+      <button
+        aria-label="Edit Study Area"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        tabindex="0"
+        title="Edit Study Area"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          Edit
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
+    </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Survey Area Name
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            study area
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+        />
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+        />
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+        />
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+        />
+      </div>
+    </dl>
+    <div
+      class="MuiBox-root MuiBox-root-3"
+    >
+      <div
+        class="leaflet-container leaflet-grab leaflet-touch-drag"
+        id="survey_study_area_map"
+        style="height: 100%; position: relative;"
+        tabindex="0"
+      >
+        <div
+          class="leaflet-pane leaflet-map-pane"
+          style="left: 0px; top: 0px;"
+        >
+          <div
+            class="leaflet-pane leaflet-tile-pane"
+          >
+            <div
+              class="leaflet-layer "
+              style="z-index: 1;"
+            >
+              <div
+                class="leaflet-tile-container leaflet-zoom-animated"
+                style="z-index: 18; left: 0px; top: 0px;"
+              >
+                <img
+                  alt=""
+                  class="leaflet-tile"
+                  role="presentation"
+                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  style="width: 256px; height: 256px; left: -38px; top: -79px;"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="leaflet-pane leaflet-shadow-pane"
+          />
+          <div
+            class="leaflet-pane leaflet-overlay-pane"
+          >
+            <svg
+              height="0"
+              pointer-events="none"
+              style="left: 0px; top: 0px;"
+              viewBox="0 0 0 0"
+              width="0"
+            >
+              <g>
+                <path
+                  class="leaflet-interactive"
+                  d="M-1 2L0 -2z"
+                  fill="#3388ff"
+                  fill-opacity="0.2"
+                  fill-rule="evenodd"
+                  stroke="#3388ff"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-opacity="1"
+                  stroke-width="3"
+                />
+              </g>
+            </svg>
+          </div>
+          <div
+            class="leaflet-pane leaflet-marker-pane"
+          />
+          <div
+            class="leaflet-pane leaflet-tooltip-pane"
+          />
+          <div
+            class="leaflet-pane leaflet-popup-pane"
+          />
+        </div>
+        <div
+          class="leaflet-control-container"
+        >
+          <div
+            class="leaflet-top leaflet-left"
+          >
+            <div
+              class="leaflet-control-zoom leaflet-bar leaflet-control"
+            >
+              <a
+                aria-label="Zoom in"
+                class="leaflet-control-zoom-in"
+                href="#"
+                role="button"
+                title="Zoom in"
+              >
+                +
+              </a>
+              <a
+                aria-label="Zoom out"
+                class="leaflet-control-zoom-out leaflet-disabled"
+                href="#"
+                role="button"
+                title="Zoom out"
+              >
+                −
+              </a>
+            </div>
+            <div
+              class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+            >
+              <a
+                class="leaflet-control-fullscreen-button leaflet-bar-part"
+                href="#"
+                title="View Fullscreen"
+              />
+            </div>
+          </div>
+          <div
+            class="leaflet-top leaflet-right"
+          >
+            <div
+              class="leaflet-draw leaflet-control"
+            />
+            <div
+              class="leaflet-draw leaflet-control"
+            />
+          </div>
+          <div
+            class="leaflet-bottom leaflet-left"
+          />
+          <div
+            class="leaflet-bottom leaflet-right"
+          >
+            <div
+              aria-haspopup="true"
+              class="leaflet-control-layers leaflet-control"
+            >
+              <a
+                class="leaflet-control-layers-toggle"
+                href="#"
+                title="Layers"
+              />
+              <section
+                class="leaflet-control-layers-list"
+              >
+                <div
+                  class="leaflet-control-layers-base"
+                >
+                  <label>
+                    <div>
+                      <input
+                        checked="checked"
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_36"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_36"
+                        type="radio"
+                      />
+                      <span>
+                         BC Government
+                      </span>
+                    </div>
+                  </label>
+                </div>
+                <div
+                  class="leaflet-control-layers-separator"
+                  style="display: none;"
+                />
+                <div
+                  class="leaflet-control-layers-overlays"
+                />
+              </section>
+            </div>
+            <div
+              class="leaflet-control-attribution leaflet-control"
+            >
+              <a
+                href="https://leafletjs.com"
+                title="A JS library for interactive maps"
+              >
+                Leaflet
+              </a>
+               | © 
+              <a
+                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
+              >
+                ESRI Basemap
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

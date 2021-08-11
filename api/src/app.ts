@@ -2,6 +2,7 @@ import express from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
 import { OpenAPI } from 'openapi-types';
+import { ensureCustomError } from './errors/CustomError';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
 import { authenticate, authorize } from './security/auth-utils';
@@ -70,13 +71,10 @@ initialize({
   // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
-    if (!error.status) {
-      // TODO some unplanned errors do have a status, maybe change status to code for intentional errors?
-      // log any unintentionally thrown errors (where no status has been set)
-      defaultLog.error({ label: 'errorMiddleware', message: 'unexpected error', error });
-    }
+    // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
+    const httpError = ensureCustomError(error);
 
-    res.status(error.status || 500).json(error);
+    res.status(httpError.status).json(httpError);
   }
 });
 

@@ -119,7 +119,7 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = get_signed_url.getSingleSubmissionURL();
@@ -145,7 +145,7 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
     const result = get_signed_url.getSingleSubmissionURL();
@@ -168,7 +168,7 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveySubmissionOccurrenceSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
     const result = get_signed_url.getSingleSubmissionURL();
