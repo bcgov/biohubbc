@@ -29,52 +29,62 @@ export const POST: Operation = [
   persistValidationResults()
 ];
 
-POST.apiDoc = {
-  description: 'Validates a Darwin Core (DWC) Archive survey observation submission.',
-  tags: ['survey', 'observation', 'dwc'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
-  requestBody: {
-    description: 'Request body',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          required: ['occurrence_submission_id'],
-          properties: {
-            occurrence_submission_id: {
-              description: 'A survey occurrence submission ID',
-              type: 'number',
-              example: 1
+export const getValidateAPIDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
+  return {
+    description: basicDescription,
+    tags: tags,
+    security: [
+      {
+        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      }
+    ],
+    requestBody: {
+      description: 'Request body',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['occurrence_submission_id'],
+            properties: {
+              occurrence_submission_id: {
+                description: 'A survey occurrence submission ID',
+                type: 'number',
+                example: 1
+              }
             }
           }
         }
       }
+    },
+    responses: {
+      200: {
+        description: successDescription
+      },
+      400: {
+        $ref: '#/components/responses/400'
+      },
+      401: {
+        $ref: '#/components/responses/401'
+      },
+      403: {
+        $ref: '#/components/responses/401'
+      },
+      500: {
+        $ref: '#/components/responses/500'
+      },
+      default: {
+        $ref: '#/components/responses/default'
+      }
     }
-  },
-  responses: {
-    200: {
-      description: 'Validate Darwin Core (DWC) Archive survey observation submission OK'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  };
+};
+
+POST.apiDoc = {
+  ...getValidateAPIDoc(
+    'Validates a Darwin Core (DWC) Archive survey observation submission.',
+    'Validate Darwin Core (DWC) Archive survey observation submission OK',
+    ['survey', 'observation', 'dwc']
+  )
 };
 
 export function getSubmissionS3Key(): RequestHandler {

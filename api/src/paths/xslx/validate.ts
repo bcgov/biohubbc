@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
@@ -12,6 +11,7 @@ import { logRequest } from '../../utils/path-utils';
 import {
   getSubmissionFileFromS3,
   getSubmissionS3Key,
+  getValidateAPIDoc,
   insertSubmissionMessage,
   insertSubmissionStatus
 } from '../dwc/validate';
@@ -29,51 +29,11 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Validates an XSLX survey observation submission.',
-  tags: ['survey', 'observation', 'xslx'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
-  requestBody: {
-    description: 'Request body',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          required: ['occurrence_submission_id'],
-          properties: {
-            occurrence_submission_id: {
-              description: 'A survey occurrence submission ID',
-              type: 'number',
-              example: 1
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Validate XSLX survey observation submission OK'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  ...getValidateAPIDoc(
+    'Validates an XSLX survey observation submission.',
+    'Validate XSLX survey observation submission OK',
+    ['survey', 'observation', 'xslx']
+  )
 };
 
 function prepXSLX(): RequestHandler {
