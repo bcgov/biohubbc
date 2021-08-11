@@ -246,8 +246,7 @@ describe('uploadSubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to insert occurrence submission data');
+      expect(actualError.name).to.equal('Failed to insert occurrence submission data');
     }
   });
 
@@ -271,7 +270,11 @@ describe('uploadSubmission', () => {
 
     const result = upload.uploadMedia();
 
-    await result(mockReq, mockRes, mockNext);
+    await result(
+      { ...mockReq, auth_payload: { preferred_username: 'user', email: 'example@email.com' } },
+      mockRes,
+      mockNext
+    );
     expect(actualStatus).to.equal(200);
   });
 });

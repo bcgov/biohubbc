@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
-import { getSurveySubmissionOccurrenceSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
@@ -118,7 +118,7 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSubmissionSQLStatement = getSurveySubmissionOccurrenceSQL(Number(req.params.submissionId));
+      const getSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(Number(req.params.submissionId));
 
       if (!getSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

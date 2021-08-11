@@ -73,7 +73,7 @@ describe('SurveyGeneralInformation', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('editing the project details works in the dialog', async () => {
+  it('editing the survey details works in the dialog', async () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
       survey_details: {
         id: 1,

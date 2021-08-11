@@ -6,7 +6,8 @@ import { MediaFile } from './media-file';
 /**
  * Parses an unknown file into an array of MediaFile.
  *
- * Note: The array will always have 1 item unless the unknown file is a zip file containing multiple files.
+ * Note: The array will always have 1 item unless the unknown file is a zip file containing multiple files, in which
+ * case the array will have 1 item per file in the zip (folders ignored).
  *
  * @param {(Express.Multer.File | GetObjectOutput)} rawMedia
  * @return {*}  {MediaFile[]}

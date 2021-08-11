@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentByFileNameSQL,
   postSurveyAttachmentSQL,
@@ -101,18 +101,25 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files', files: req.files });
+    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!req.files || !req.files.length) {
+    if (!rawMediaArray || !rawMediaArray.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
+
+    defaultLog.debug({
+      label: 'uploadMedia',
+      message: 'files',
+      files: rawMediaArray.map((item) => {
+        return { ...item, buffer: 'Too big to print' };
+      })
+    });
 
     if (!req.params.surveyId) {
       throw new HTTP400('Missing surveyId');
     }
 
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
     const connection = getDBConnection(req['keycloak_token']);
 
     // Insert file metadata into survey_attachment table
@@ -153,7 +160,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }

@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { ensureCustomError, HTTP400 } from '../../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL
@@ -86,14 +86,22 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'uploadMedia', message: 'files.length', files: req?.files?.length });
+    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!req.files || !req.files.length) {
-      // no media objects included
+    if (!rawMediaArray || !rawMediaArray.length) {
+      // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
 
-    if (req.files.length !== 1) {
+    defaultLog.debug({
+      label: 'uploadMedia',
+      message: 'files',
+      files: rawMediaArray.map((item) => {
+        return { ...item, buffer: 'Too big to print' };
+      })
+    });
+
+    if (rawMediaArray.length !== 1) {
       // no media objects included
       throw new HTTP400('Too many files uploaded, expected 1');
     }
@@ -109,8 +117,6 @@ export function uploadMedia(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
       const rawMediaFile = rawMediaArray[0];
 
       await connection.open();
@@ -149,7 +155,7 @@ export function uploadMedia(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }
