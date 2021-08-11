@@ -108,10 +108,6 @@ export function getObservationSubmission(): RequestHandler {
         getObservationSubmissionSQLStatement.values
       );
 
-      console.log('***********************');
-
-      console.log(observationSubmissionData);
-
       await connection.commit();
 
       const getObservationSubmissionData =

@@ -128,6 +128,8 @@ function getSubmissionFileFromS3(): RequestHandler {
       const s3File = await getFileFromS3(s3Key);
 
       if (!s3File) {
+
+
         throw new HTTP500('Failed to get occurrence submission file');
       }
 

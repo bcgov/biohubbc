@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c5dfdd03-7957-4c04-9e4e-fa41d198f9a2",
+		"_postman_id": "773374df-849a-42e1-9c36-8e7f30f39d80",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -42,14 +42,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "occurrence_submission_id",
-									"value": "1",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"occurrence_submission_id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "{{BASEURL}}/dwc/validate",
@@ -362,7 +361,9 @@
 															"request": {
 																"method": "GET",
 																"header": [],
-																"url": null
+																"url": {
+																	"raw": ""
+																}
 															},
 															"response": []
 														}
@@ -373,7 +374,9 @@
 													"request": {
 														"method": "GET",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												},

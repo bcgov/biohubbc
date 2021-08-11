@@ -82,14 +82,12 @@ const SurveyObservations: React.FC = () => {
             if (!status || status === 'Published' || status === 'Rejected') {
               clearInterval(timer);
             }
-            console.log('os.status = ', os?.status);
-            console.log('This will run every five seconds - ', timer, status);
           } catch (e) {
             console.error('Failed to call the API - ', e);
           }
         }
         fetchObservationSubmission();
-      }, 100);
+      }, 5000);
       setMyTimer(timer);
     }
   }, [myTimer]);
