@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../database/db';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
 import { XSLX } from '../../utils/media/csv/xslx/xslx-file';
@@ -12,8 +11,7 @@ import {
   getSubmissionFileFromS3,
   getSubmissionS3Key,
   getValidateAPIDoc,
-  insertSubmissionMessage,
-  insertSubmissionStatus
+  persistValidationResults
 } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xslx/validate');
@@ -25,7 +23,7 @@ export const POST: Operation = [
   prepXSLX(),
   getValidationRules(),
   validateXSLX(),
-  persistValidationResults()
+  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' })
 ];
 
 POST.apiDoc = {
@@ -116,84 +114,6 @@ function validateXSLX(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'validateXSLX', message: 'error', error });
       throw error;
-    }
-  };
-}
-
-function persistValidationResults(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      const mediaState: IMediaState[] = req['mediaState'];
-      const csvState: ICsvState[] = req['csvState'];
-
-      await connection.open();
-
-      let submissionStatusType = 'Template Validated';
-      if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists
-        submissionStatusType = 'Rejected';
-      }
-
-      const submissionStatusId = await insertSubmissionStatus(
-        req.body.occurrence_submission_id,
-        submissionStatusType,
-        connection
-      );
-
-      const promises: Promise<any>[] = [];
-
-      mediaState?.forEach((mediaStateItem) => {
-        mediaStateItem.fileErrors?.forEach((fileError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              `${mediaStateItem.fileName} - ${fileError}`,
-              connection
-            )
-          );
-        });
-      });
-
-      csvState?.forEach((csvStateItem) => {
-        csvStateItem.headerErrors?.forEach((headerError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              `${csvStateItem.fileName} - ${headerError.type} - ${headerError.code} - ${headerError.col} - ${headerError.message}`,
-              connection
-            )
-          );
-        });
-
-        csvStateItem.rowErrors?.forEach((rowError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              `${csvStateItem.fileName} - ${rowError.type} - ${rowError.code} - ${rowError.row} - ${rowError.message}`,
-              connection
-            )
-          );
-        });
-      });
-
-      await Promise.all(promises);
-
-      await connection.commit();
-
-      // TODO return something to indicate if any errors had been found, or not?
-      return res.status(200).json();
-    } catch (error) {
-      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
     }
   };
 }

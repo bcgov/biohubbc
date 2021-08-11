@@ -26,7 +26,7 @@ export const POST: Operation = [
   prepDWCArchive(),
   getValidationRules(),
   validateDWCArchive(),
-  persistValidationResults()
+  persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' })
 ];
 
 export const getValidateAPIDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
@@ -241,7 +241,7 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
-function persistValidationResults(): RequestHandler {
+export function persistValidationResults(statusTypeObject: any): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
@@ -253,7 +253,7 @@ function persistValidationResults(): RequestHandler {
 
       await connection.open();
 
-      let submissionStatusType = 'Darwin Core Validated';
+      let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
       if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists
         submissionStatusType = 'Rejected';
