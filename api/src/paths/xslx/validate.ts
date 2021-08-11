@@ -224,7 +224,6 @@ function validateXSLX(): RequestHandler {
 
 function persistValidationResults(): RequestHandler {
   return async (req, res) => {
-    console.log('IN HEREEEEEEEEEEEEEEEEEEEE');
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     const connection = getDBConnection(req['keycloak_token']);
