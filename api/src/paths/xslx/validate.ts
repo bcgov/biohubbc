@@ -9,7 +9,12 @@ import { getXSLXCSVValidators, getXSLXMediaValidators, XSLX_CLASS } from '../../
 import { IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
-import { getSubmissionFileFromS3, getSubmissionS3Key, insertSubmissionMessage, insertSubmissionStatus } from '../dwc/validate';
+import {
+  getSubmissionFileFromS3,
+  getSubmissionS3Key,
+  insertSubmissionMessage,
+  insertSubmissionStatus
+} from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xslx/validate');
 
