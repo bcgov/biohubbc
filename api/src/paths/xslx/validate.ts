@@ -197,9 +197,6 @@ function validateXSLX(): RequestHandler {
     try {
       const xslx: XSLX = req['xslx'];
 
-      console.log('MEDIA VALIDATION TULESSSSSSSSSSSSSSSSSSSSSS');
-      console.log(req['mediaValidationRules']);
-
       const mediaValidationRules = req['mediaValidationRules'];
 
       const mediaState: IMediaState[] = xslx.isMediaValid(mediaValidationRules);
@@ -235,9 +232,6 @@ function persistValidationResults(): RequestHandler {
     try {
       const mediaState: IMediaState[] = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
-
-      console.log(mediaState);
-      console.log(csvState);
 
       await connection.open();
 
