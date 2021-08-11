@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
 import { MediaFile } from '../media-file';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError, XLSXCSV } from './csv-file';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -211,71 +211,6 @@ describe('CSVWorksheet', () => {
       expect(mockValidationFunction1).to.have.been.calledOnce;
       expect(mockValidationFunction2).to.have.been.calledOnce;
       expect(mockValidationFunction3).to.have.been.calledOnce;
-    });
-  });
-});
-
-describe('XLSXCSV', () => {
-  it('constructs', () => {
-    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
-
-    const xlsxCSV = new XLSXCSV(mediaFile);
-
-    expect(xlsxCSV).not.to.be.null;
-  });
-
-  describe('isValid', () => {
-    it('returns validation errors if the buffer is empty', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'application/vnd.ms-excel', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([{ fileName: 'fileName', fileErrors: ['File is empty'], isValid: false }]);
-    });
-
-    it('returns validation errors if the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from('fileData'));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
-    });
-
-    it('returns validation errors if the buffer is empty and the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File is empty',
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
     });
   });
 });

@@ -10,7 +10,7 @@ import * as file_utils from '../../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { MediaFile } from '../../../../../../../../utils/media/media-file';
-import * as csv_file from '../../../../../../../../utils/media/csv/csv-file';
+import * as xslx_file from '../../../../../../../../utils/media/csv/xslx/xslx-file';
 import * as dwc_archive_file from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
 
 chai.use(sinonChai);
@@ -234,7 +234,7 @@ describe('getObservationSubmissionCSVForView', () => {
         mimetype: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       } as MediaFile
     ]);
-    sinon.stub(csv_file, 'XLSXCSV').returns({ workbook: { worksheets: [] } });
+    sinon.stub(xslx_file, 'XSLX').returns({ workbook: { worksheets: [] } });
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);

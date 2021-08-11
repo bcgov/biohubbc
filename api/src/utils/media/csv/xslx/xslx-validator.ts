@@ -1,4 +1,6 @@
-import { CSVValidator, ICsvState, XLSXCSV } from '../csv-file';
+import { MediaValidator } from '../../media-file';
+import { getFileEmptyValidator, getFileMimeTypeValidator } from '../../validation/file-type-and-content-validator';
+import { CSVValidator } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
@@ -10,15 +12,15 @@ import {
   ICodeValuesByHeader
 } from '../validation/csv-row-validator';
 
-export enum SPI_CLASS {
+export enum XSLX_CLASS {
   SAMPLE_STATION_INFORMATION = 'Sample Station Information',
   GENERAL_SURVEY = 'General Survey',
   SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
 }
 
-export const getValidHeaders = (spiClass: SPI_CLASS): string[] => {
-  switch (spiClass) {
-    case SPI_CLASS.SAMPLE_STATION_INFORMATION:
+export const getValidHeaders = (xslxClass: XSLX_CLASS): string[] => {
+  switch (xslxClass) {
+    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Study Area Photos',
@@ -33,7 +35,7 @@ export const getValidHeaders = (spiClass: SPI_CLASS): string[] => {
         'Nesting Habitat Rating Modifier',
         'Design Type Given'
       ];
-    case SPI_CLASS.GENERAL_SURVEY:
+    case XSLX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -98,7 +100,7 @@ export const getValidHeaders = (spiClass: SPI_CLASS): string[] => {
         'Sign Voucher collected',
         'Sign Photos'
       ];
-    case SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -144,9 +146,9 @@ export const getValidHeaders = (spiClass: SPI_CLASS): string[] => {
   }
 };
 
-export const getRequiredHeaders = (spiClass: SPI_CLASS): string[] => {
-  switch (spiClass) {
-    case SPI_CLASS.SAMPLE_STATION_INFORMATION:
+export const getRequiredHeaders = (xslxClass: XSLX_CLASS): string[] => {
+  switch (xslxClass) {
+    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -155,7 +157,7 @@ export const getRequiredHeaders = (spiClass: SPI_CLASS): string[] => {
         'Northing Sample Station',
         'Design Type Given'
       ];
-    case SPI_CLASS.GENERAL_SURVEY:
+    case XSLX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -167,7 +169,7 @@ export const getRequiredHeaders = (spiClass: SPI_CLASS): string[] => {
         'Easting',
         'Northing'
       ];
-    case SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -184,9 +186,9 @@ export const getRequiredHeaders = (spiClass: SPI_CLASS): string[] => {
   }
 };
 
-export const getRequiredFieldsByHeader = (spiClass: SPI_CLASS): string[] => {
-  switch (spiClass) {
-    case SPI_CLASS.SAMPLE_STATION_INFORMATION:
+export const getRequiredFieldsByHeader = (xslxClass: XSLX_CLASS): string[] => {
+  switch (xslxClass) {
+    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -195,7 +197,7 @@ export const getRequiredFieldsByHeader = (spiClass: SPI_CLASS): string[] => {
         'Northing Sample Station',
         'Design Type Given'
       ];
-    case SPI_CLASS.GENERAL_SURVEY:
+    case XSLX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -207,7 +209,7 @@ export const getRequiredFieldsByHeader = (spiClass: SPI_CLASS): string[] => {
         'Easting',
         'Northing'
       ];
-    case SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -224,46 +226,31 @@ export const getRequiredFieldsByHeader = (spiClass: SPI_CLASS): string[] => {
   }
 };
 
-export const getCodeValuesByHeader = (dwcClass: SPI_CLASS): ICodeValuesByHeader[] => {
-  switch (dwcClass) {
+export const getCodeValuesByHeader = (xslxClass: XSLX_CLASS): ICodeValuesByHeader[] => {
+  switch (xslxClass) {
     default:
       return [];
   }
 };
 
-export function isSPITemplateValid(xlsxCSV: XLSXCSV): ICsvState[] {
-  const responses: ICsvState[] = [];
-
-  xlsxCSV?.workbook.worksheets[SPI_CLASS.SAMPLE_STATION_INFORMATION] &&
-    responses.push(
-      xlsxCSV?.workbook.worksheets[SPI_CLASS.SAMPLE_STATION_INFORMATION]
-        .validate(getSPITemplateValidators(SPI_CLASS.SAMPLE_STATION_INFORMATION))
-        .getState()
-    );
-
-  xlsxCSV?.workbook.worksheets[SPI_CLASS.GENERAL_SURVEY] &&
-    responses.push(
-      xlsxCSV?.workbook.worksheets[SPI_CLASS.GENERAL_SURVEY]
-        .validate(getSPITemplateValidators(SPI_CLASS.GENERAL_SURVEY))
-        .getState()
-    );
-
-  xlsxCSV?.workbook.worksheets[SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS] &&
-    responses.push(
-      xlsxCSV?.workbook.worksheets[SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS]
-        .validate(getSPITemplateValidators(SPI_CLASS.SITE_INCIDENTAL_OBSERVATIONS))
-        .getState()
-    );
-
-  return responses;
-}
-
-export const getSPITemplateValidators = (spiClass: SPI_CLASS): CSVValidator[] => {
+export const getXSLXCSVValidators = (xslxClass: XSLX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
-    hasRequiredHeadersValidator(getRequiredHeaders(spiClass)),
-    getValidHeadersValidator(getValidHeaders(spiClass)),
-    getRequiredFieldsValidator(getRequiredFieldsByHeader(spiClass)),
-    getCodeValueFieldsValidator(getCodeValuesByHeader(spiClass))
+    hasRequiredHeadersValidator(getRequiredHeaders(xslxClass)),
+    getValidHeadersValidator(getValidHeaders(xslxClass)),
+    getRequiredFieldsValidator(getRequiredFieldsByHeader(xslxClass)),
+    getCodeValueFieldsValidator(getCodeValuesByHeader(xslxClass))
+  ];
+};
+
+/**
+ * Get media validation rules for a given XSLX class.
+ *
+ * @return {*}  {MediaValidator[]}
+ */
+export const getXSLXMediaValidators = (): MediaValidator[] => {
+  return [
+    getFileEmptyValidator(),
+    getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])
   ];
 };

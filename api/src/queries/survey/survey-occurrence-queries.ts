@@ -241,6 +241,10 @@ export const insertSurveySubmissionStatusSQL = (
     return null;
   }
 
+  console.log('IN HEREEEEEEEEEEEEEEE');
+  console.log(submissionStatusType);
+  console.log(occurrenceSubmissionId);
+
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO submission_status (
       occurrence_submission_id,

@@ -1,13 +1,17 @@
 import xlsx from 'xlsx';
-import { IMediaState, MediaFile } from '../media-file';
-import { getFileEmptyValidator, getFileMimeTypeValidator } from '../validation/file-type-and-content-validator';
+import { IMediaState } from '../media-file';
 import { DWC_CLASS } from './dwc/dwc-archive-file';
+import { XSLX_CLASS } from './xslx/xslx-validator';
 
 export interface IWorkbook {
   workbook: CSVWorkBook;
 }
+
 export interface IWorksheets {
-  worksheets: { [name in DWC_CLASS]?: CSVWorksheet } | { [name: string]: CSVWorksheet };
+  worksheets:
+    | { [name in DWC_CLASS]?: CSVWorksheet }
+    | { [name in XSLX_CLASS]?: CSVWorksheet }
+    | { [name: string]: CSVWorksheet };
 }
 
 export class CSVWorkBook implements IWorksheets {
@@ -157,41 +161,6 @@ export class CSVWorksheet {
     validators.forEach((validator) => validator(this));
 
     return this.csvValidation;
-  }
-}
-
-export class XLSXCSV implements IWorkbook {
-  rawFile: MediaFile;
-
-  workbook: CSVWorkBook;
-
-  constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
-    this.rawFile = file;
-
-    const rawWorkbook = xlsx.read(this.rawFile.buffer, { ...options });
-
-    this.workbook = new CSVWorkBook(rawWorkbook);
-  }
-
-  /**
-   * Runs validation against the raw MediaFile and its properties (does not validate the content).
-   *
-   * @return {*}  {IMediaState[]}
-   * @memberof XLSXCSV
-   */
-  isValid(): IMediaState[] {
-    const mediaState: IMediaState[] = [];
-
-    mediaState.push(
-      this.rawFile
-        .validate([
-          getFileEmptyValidator(),
-          getFileMimeTypeValidator([/application\/vnd\.ms-excel/, /application\/vnd\.openxmlformats/])
-        ])
-        .getState()
-    );
-
-    return mediaState;
   }
 }
 

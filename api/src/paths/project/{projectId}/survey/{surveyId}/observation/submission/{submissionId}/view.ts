@@ -8,8 +8,8 @@ import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
 import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
 import { DWCArchive } from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
+import { XSLX } from '../../../../../../../../utils/media/csv/xslx/xslx-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/view');
@@ -159,9 +159,9 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
       // Get the worksheets for the file based on type
       if (mediaFile.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
         // xslx
-        const xlsxCSV = new XLSXCSV(mediaFile);
+        const xslx = new XSLX(mediaFiles);
 
-        worksheets = xlsxCSV.workbook.worksheets;
+        worksheets = xslx.worksheets;
       } else {
         // dwc archive
         const dwcArchive = new DWCArchive(mediaFiles);

@@ -1,21 +1,18 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../database/db';
+import { getDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import {
-  getSurveyOccurrenceSubmissionSQL,
-  insertSurveySubmissionMessageSQL,
-  insertSurveySubmissionStatusSQL
-} from '../../queries/survey/survey-occurrence-queries';
+import { getSurveyOccurrenceSubmissionSQL } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, XLSXCSV } from '../../utils/media/csv/csv-file';
-import { DWCArchive, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
-import { getDWCCSVValidators, getDWCMediaValidators } from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { ICsvState } from '../../utils/media/csv/csv-file';
+import { XSLX } from '../../utils/media/csv/xslx/xslx-file';
+import { getXSLXCSVValidators, getXSLXMediaValidators, XSLX_CLASS } from '../../utils/media/csv/xslx/xslx-validator';
 import { IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
+import { insertSubmissionMessage, insertSubmissionStatus } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xslx/validate');
 
@@ -149,9 +146,8 @@ function prepXSLX(): RequestHandler {
       const s3File = req['s3File'];
 
       const mediaFiles = parseUnknownMedia(s3File);
-      const mediaFile = mediaFiles[0];
 
-      const xslx = new XLSXCSV(mediaFile);
+      const xslx = new XSLX(mediaFiles);
 
       req['xslx'] = xslx;
 
@@ -170,24 +166,18 @@ function getValidationRules(): RequestHandler {
     try {
       // TODO fetch/generate validation rules from reference data service
       const mediaValidationRules = {
-        [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCMediaValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCMediaValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCMediaValidators(DWC_CLASS.META)
+        [XSLX_CLASS.SAMPLE_STATION_INFORMATION]: getXSLXMediaValidators(),
+        [XSLX_CLASS.GENERAL_SURVEY]: getXSLXMediaValidators(),
+        [XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]: getXSLXMediaValidators()
       };
 
       req['mediaValidationRules'] = mediaValidationRules;
 
       // TODO fetch/generate validation rules from reference data service
       const contentValidationRules = {
-        [DWC_CLASS.EVENT]: getDWCCSVValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCCSVValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCCSVValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCCSVValidators(DWC_CLASS.META)
+        [XSLX_CLASS.SAMPLE_STATION_INFORMATION]: getXSLXCSVValidators(XSLX_CLASS.SAMPLE_STATION_INFORMATION),
+        [XSLX_CLASS.GENERAL_SURVEY]: getXSLXCSVValidators(XSLX_CLASS.GENERAL_SURVEY),
+        [XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]: getXSLXCSVValidators(XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS)
       };
 
       req['contentValidationRules'] = contentValidationRules;
@@ -200,16 +190,19 @@ function getValidationRules(): RequestHandler {
   };
 }
 
-function validateDWCArchive(): RequestHandler {
+function validateXSLX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
+    defaultLog.debug({ label: 'validateXSLX', message: 'dwcArchive' });
 
     try {
-      const dwcArchive: DWCArchive = req['dwcArchive'];
+      const xslx: XSLX = req['xslx'];
+
+      console.log('MEDIA VALIDATION TULESSSSSSSSSSSSSSSSSSSSSS');
+      console.log(req['mediaValidationRules']);
 
       const mediaValidationRules = req['mediaValidationRules'];
 
-      const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
+      const mediaState: IMediaState[] = xslx.isMediaValid(mediaValidationRules);
 
       if (mediaState.some((item) => !item.isValid)) {
         req['mediaState'] = mediaState;
@@ -220,13 +213,13 @@ function validateDWCArchive(): RequestHandler {
 
       const contentValidationRules = req['contentValidationRules'];
 
-      const csvState: ICsvState[] = dwcArchive.isContentValid(contentValidationRules);
+      const csvState: ICsvState[] = xslx.isContentValid(contentValidationRules);
 
       req['csvState'] = csvState;
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'validateDWCArchive', message: 'error', error });
+      defaultLog.debug({ label: 'validateXSLX', message: 'error', error });
       throw error;
     }
   };
@@ -234,6 +227,7 @@ function validateDWCArchive(): RequestHandler {
 
 function persistValidationResults(): RequestHandler {
   return async (req, res) => {
+    console.log('IN HEREEEEEEEEEEEEEEEEEEEE');
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -242,9 +236,12 @@ function persistValidationResults(): RequestHandler {
       const mediaState: IMediaState[] = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
 
+      console.log(mediaState);
+      console.log(csvState);
+
       await connection.open();
 
-      let submissionStatusType = 'Darwin Core Validated';
+      let submissionStatusType = 'Template Validated';
       if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists
         submissionStatusType = 'Rejected';
@@ -309,61 +306,3 @@ function persistValidationResults(): RequestHandler {
     }
   };
 }
-
-/**
- * Insert a record into the submission_status table.
- *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @param {IDBConnection} connection
- * @return {*}  {Promise<number>}
- */
-export const insertSubmissionStatus = async (
-  occurrenceSubmissionId: number,
-  submissionStatusType: string,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = insertSurveySubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert survey submission status data');
-  }
-
-  return result.id;
-};
-
-/**
- * Insert a record into the submission_message table.
- *
- * @param {number} submissionStatusId
- * @param {string} submissionMessageType
- * @param {string} message
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const insertSubmissionMessage = async (
-  submissionStatusId: number,
-  submissionMessageType: string,
-  message: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = insertSurveySubmissionMessageSQL(submissionStatusId, submissionMessageType, message);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert survey submission message data');
-  }
-};

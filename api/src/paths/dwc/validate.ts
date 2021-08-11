@@ -207,6 +207,8 @@ function validateDWCArchive(): RequestHandler {
       const dwcArchive: DWCArchive = req['dwcArchive'];
 
       const mediaValidationRules = req['mediaValidationRules'];
+      console.log('YPPPPPPPPPPPPPPPPPPPPPPPPPPPP');
+      console.log(mediaValidationRules);
 
       const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
 
@@ -240,6 +242,10 @@ function persistValidationResults(): RequestHandler {
     try {
       const mediaState: IMediaState[] = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
+
+      console.log('HEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEERE');
+      console.log(mediaState);
+      console.log(csvState);
 
       await connection.open();
 
