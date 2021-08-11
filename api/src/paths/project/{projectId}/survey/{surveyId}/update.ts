@@ -412,15 +412,15 @@ export const updateSurveyDetailsData = async (
 
   const promises: Promise<any>[] = [];
 
-  putDetailsData.focal_species.map((focalSpeciesId: number) =>
+  putDetailsData.focal_species.forEach((focalSpeciesId: number) =>
     promises.push(insertFocalSpecies(focalSpeciesId, surveyId, connection))
   );
 
-  putDetailsData.ancillary_species.map((ancillarySpeciesId: number) =>
+  putDetailsData.ancillary_species.forEach((ancillarySpeciesId: number) =>
     promises.push(insertAncillarySpecies(ancillarySpeciesId, surveyId, connection))
   );
 
-  putDetailsData.funding_sources.map((fsId: number) =>
+  putDetailsData.funding_sources.forEach((fsId: number) =>
     promises.push(insertSurveyFundingSource(fsId, surveyId, connection))
   );
 
