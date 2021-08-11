@@ -2,9 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import { getSurveyOccurrenceSubmissionSQL } from '../../queries/survey/survey-occurrence-queries';
-import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
 import { XSLX } from '../../utils/media/csv/xslx/xslx-file';
@@ -12,7 +9,7 @@ import { getXSLXCSVValidators, getXSLXMediaValidators, XSLX_CLASS } from '../../
 import { IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
-import { insertSubmissionMessage, insertSubmissionStatus } from '../dwc/validate';
+import { getSubmissionFileFromS3, getSubmissionS3Key, insertSubmissionMessage, insertSubmissionStatus } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xslx/validate');
 
@@ -73,70 +70,6 @@ POST.apiDoc = {
     }
   }
 };
-
-function getSubmissionS3Key(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const occurrenceSubmissionId = req.body.occurrence_submission_id;
-
-    if (!occurrenceSubmissionId) {
-      throw new HTTP400('Missing required body param `occurrence_submission_id`.');
-    }
-
-    try {
-      const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      if (!response || !response.rows.length) {
-        throw new HTTP400('Failed to get survey occurrence submission');
-      }
-
-      const s3Key = response.rows[0].key;
-
-      req['s3Key'] = s3Key;
-
-      next();
-    } catch (error) {
-      defaultLog.debug({ label: 'getSubmissionS3Key', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-function getSubmissionFileFromS3(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'params', files: req.body });
-
-    try {
-      const s3Key = req['s3Key'];
-
-      const s3File = await getFileFromS3(s3Key);
-
-      if (!s3File) {
-        throw new HTTP500('Failed to get occurrence submission file');
-      }
-
-      req['s3File'] = s3File;
-
-      next();
-    } catch (error) {
-      defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'error', error });
-      throw error;
-    }
-  };
-}
 
 function prepXSLX(): RequestHandler {
   return async (req, res, next) => {

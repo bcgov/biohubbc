@@ -77,7 +77,7 @@ POST.apiDoc = {
   }
 };
 
-function getSubmissionS3Key(): RequestHandler {
+export function getSubmissionS3Key(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
 
@@ -118,7 +118,7 @@ function getSubmissionS3Key(): RequestHandler {
   };
 }
 
-function getSubmissionFileFromS3(): RequestHandler {
+export function getSubmissionFileFromS3(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'params', files: req.body });
 
