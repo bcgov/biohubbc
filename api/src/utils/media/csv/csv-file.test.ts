@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
-import { MediaFile } from '../media-file';
 import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {

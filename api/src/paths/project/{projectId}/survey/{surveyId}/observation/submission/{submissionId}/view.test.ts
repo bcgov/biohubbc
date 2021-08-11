@@ -234,7 +234,7 @@ describe('getObservationSubmissionCSVForView', () => {
         mimetype: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       } as MediaFile
     ]);
-    sinon.stub(xslx_file, 'XSLX').returns({ workbook: { worksheets: [] } });
+    sinon.stub(xslx_file, 'XSLX').returns({ worksheets: [] });
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
