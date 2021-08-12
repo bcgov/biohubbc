@@ -1,6 +1,6 @@
 import { MediaValidator } from '../../media-file';
 import { getFileEmptyValidator, getFileMimeTypeValidator } from '../../validation/file-type-and-content-validator';
-import { CSVValidator } from '../csv-file';
+import { CSVValidator, XLSX_CLASS } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
@@ -11,12 +11,6 @@ import {
   getRequiredFieldsValidator,
   ICodeValuesByHeader
 } from '../validation/csv-row-validator';
-
-export enum XLSX_CLASS {
-  SAMPLE_STATION_INFORMATION = 'Sample Station Information',
-  GENERAL_SURVEY = 'General Survey',
-  SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
-}
 
 export const getValidHeaders = (xlsxClass: XLSX_CLASS): string[] => {
   switch (xlsxClass) {
@@ -249,6 +243,18 @@ export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
  * @return {*}  {MediaValidator[]}
  */
 export const getXLSXMediaValidators = (): MediaValidator[] => {
+  return [
+    getFileEmptyValidator(),
+    getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])
+  ];
+};
+
+/**
+ * Get media validation rules for a XLSX CSV file.
+ *
+ * @return {*}  {((MediaValidator)[])}
+ */
+export const getXLSXCSVFileValidators = (): MediaValidator[] => {
   return [
     getFileEmptyValidator(),
     getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])

@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
+import { MediaFile } from '../media-file';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError, XLSXCSV } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -336,5 +337,15 @@ describe('CSVValidation', () => {
         isValid: false
       });
     });
+  });
+});
+
+describe('XLSXCSV', () => {
+  it('constructs', () => {
+    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
+
+    const xlsxCSV = new XLSXCSV(mediaFile);
+
+    expect(xlsxCSV).not.to.be.null;
   });
 });

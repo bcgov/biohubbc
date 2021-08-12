@@ -1,15 +1,23 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaFile, MediaValidator } from '../media-file';
 import { DWC_CLASS } from './dwc/dwc-archive-file';
-import { XLSX_CLASS } from './xlsx/xlsx-validator';
+
+export enum XLSX_CLASS {
+  SAMPLE_STATION_INFORMATION = 'Sample Station Information',
+  GENERAL_SURVEY = 'General Survey',
+  SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
+}
+
+export enum XLSX_CSV {
+  STRUCTURE = 'structure'
+}
 
 const DEFAULT_XLSX_SHEET = 'Sheet1';
 
-export type XLSXMediaValidationRules = {
-  [key in XLSX_CLASS]?: MediaValidator[];
-};
+export type XLSXCSVMediaValidationRules = { [key in XLSX_CSV]?: MediaValidator[] } &
+  { [key in XLSX_CLASS]?: MediaValidator[] };
 
-export type XLSXMediaContentValidationRules = {
+export type XLSXContentValidationRules = {
   [key in XLSX_CLASS]?: CSVValidator[];
 };
 
@@ -177,49 +185,46 @@ export class CSVWorksheet {
 /**
  * Supports XLSX CSV files.
  *
- * Expects an array of known named-files
+ * Expects a known named file
  *
  * @export
  * @class XLSXCSV
- * @implements {IWorksheets}
+ * @implements {IWorkbook}
  */
-export class XLSXCSV implements IWorksheets {
-  rawFiles: MediaFile[];
+export class XLSXCSV implements IWorkbook {
+  rawFile: MediaFile;
 
-  worksheets: { [name in XLSX_CLASS]?: CSVWorksheet };
+  workbook: CSVWorkBook;
 
-  extra: { [name: string]: any };
+  constructor(file: MediaFile) {
+    this.rawFile = file;
 
-  constructor(files: MediaFile[]) {
-    this.rawFiles = files;
+    const rawWorkbook = xlsx.read(this.rawFile.buffer);
 
-    this.worksheets = {};
-    this.extra = {};
+    this.workbook = new CSVWorkBook(rawWorkbook);
 
     this._init();
   }
 
   _init() {
-    for (const rawFile of this.rawFiles) {
-      switch (rawFile.name) {
-        case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
-          this.worksheets['Sample Station Information'] = new CSVWorksheet(
-            rawFile.fileName,
-            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-          );
-          break;
-        case XLSX_CLASS.GENERAL_SURVEY:
-          this.worksheets['General Survey'] = new CSVWorksheet(
-            rawFile.fileName,
-            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-          );
-          break;
-        case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
-          this.worksheets['Site & Incidental Observations'] = new CSVWorksheet(
-            rawFile.fileName,
-            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-          );
-      }
+    switch (this.rawFile.name) {
+      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+        this.workbook.worksheets['Sample Station Information'] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
+        break;
+      case XLSX_CLASS.GENERAL_SURVEY:
+        this.workbook.worksheets['General Survey'] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
+        break;
+      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+        this.workbook.worksheets['Site & Incidental Observations'] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
     }
   }
 
@@ -229,45 +234,48 @@ export class XLSXCSV implements IWorksheets {
    * @return {*}  {IMediaState[]}
    * @memberof XLSX
    */
-  isMediaValid(validationRules: XLSXMediaValidationRules): IMediaState[] {
+  isMediaValid(validationRules: XLSXCSVMediaValidationRules): IMediaState[] {
     const mediaState: IMediaState[] = [];
 
-    for (const rawFile of this.rawFiles) {
-      switch (rawFile.name) {
-        case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
-          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || []).getState());
-          break;
-        case XLSX_CLASS.GENERAL_SURVEY:
-          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState());
-          break;
-        case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
-          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || []).getState());
-      }
+    // Validate the xlsx file itself
+    mediaState.push(this.rawFile.validate(validationRules[XLSX_CSV.STRUCTURE] || []).getState());
+
+    switch (this.rawFile.name) {
+      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || []).getState());
+        break;
+      case XLSX_CLASS.GENERAL_SURVEY:
+        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState());
+        break;
+      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+        mediaState.push(
+          this.rawFile.validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || []).getState()
+        );
     }
 
     return mediaState;
   }
 
-  isContentValid(validationRules: XLSXMediaContentValidationRules): ICsvState[] {
+  isContentValid(validationRules: XLSXContentValidationRules): ICsvState[] {
     const csvState: ICsvState[] = [];
 
-    if (this.worksheets['Sample Station Information']) {
+    if (this.workbook.worksheets['Sample Station Information']) {
       csvState.push(
-        this.worksheets['Sample Station Information']
+        this.workbook.worksheets['Sample Station Information']
           .validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || [])
           .getState()
       );
     }
 
-    if (this.worksheets['General Survey']) {
+    if (this.workbook.worksheets['General Survey']) {
       csvState.push(
-        this.worksheets['General Survey'].validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState()
+        this.workbook.worksheets['General Survey'].validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState()
       );
     }
 
-    if (this.worksheets['Site & Incidental Observations']) {
+    if (this.workbook.worksheets['Site & Incidental Observations']) {
       csvState.push(
-        this.worksheets['Site & Incidental Observations']
+        this.workbook.worksheets['Site & Incidental Observations']
           .validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || [])
           .getState()
       );

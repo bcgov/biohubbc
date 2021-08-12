@@ -159,9 +159,9 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
       // Get the worksheets for the file based on type
       if (parsedMedia instanceof MediaFile) {
         // xlsx csv
-        const xlsx = new XLSXCSV([parsedMedia]);
+        const xlsxCsv = new XLSXCSV(parsedMedia);
 
-        worksheets = xlsx.worksheets;
+        worksheets = xlsxCsv.workbook.worksheets;
       } else {
         // dwc archive
         const dwcArchive = new DWCArchive(parsedMedia);

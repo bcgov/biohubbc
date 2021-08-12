@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getLogger } from '../../utils/logger';
-import { ICsvState } from '../../utils/media/csv/csv-file';
-import { XLSXCSV } from '../../utils/media/csv/csv-file';
-import { getXLSXCSVValidators, getXLSXMediaValidators, XLSX_CLASS } from '../../utils/media/csv/xlsx/xlsx-validator';
+import { ICsvState, XLSX_CSV } from '../../utils/media/csv/csv-file';
+import { XLSXCSV, XLSX_CLASS } from '../../utils/media/csv/csv-file';
+import {
+  getXLSXCSVFileValidators,
+  getXLSXCSVValidators,
+  getXLSXMediaValidators
+} from '../../utils/media/csv/xlsx/xlsx-validator';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
@@ -57,7 +61,7 @@ function prepXLSX(): RequestHandler {
         return next();
       }
 
-      const xlsxCsv = new XLSXCSV([parsedMedia]);
+      const xlsxCsv = new XLSXCSV(parsedMedia);
 
       req['xlsx'] = xlsxCsv;
 
@@ -76,6 +80,7 @@ function getValidationRules(): RequestHandler {
     try {
       // TODO fetch/generate validation rules from reference data service
       const mediaValidationRules = {
+        [XLSX_CSV.STRUCTURE]: getXLSXCSVFileValidators(),
         [XLSX_CLASS.SAMPLE_STATION_INFORMATION]: getXLSXMediaValidators(),
         [XLSX_CLASS.GENERAL_SURVEY]: getXLSXMediaValidators(),
         [XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]: getXLSXMediaValidators()
