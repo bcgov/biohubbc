@@ -411,6 +411,18 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                           </span>
                         </div>
                       </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_43"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
+                          </span>
+                        </div>
+                      </label>
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
@@ -859,11 +871,23 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_70"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_71"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1322,11 +1346,23 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_94"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_96"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>

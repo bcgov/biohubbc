@@ -120,11 +120,23 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_120"
+                    name="leaflet-base-layers_123"
                     type="radio"
                   />
                   <span>
                      BC Government
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    name="leaflet-base-layers_123"
+                    type="radio"
+                  />
+                  <span>
+                     Esri Imagery
                   </span>
                 </div>
               </label>
@@ -412,11 +424,23 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_106"
+                    name="leaflet-base-layers_108"
                     type="radio"
                   />
                   <span>
                      BC Government
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    name="leaflet-base-layers_108"
+                    type="radio"
+                  />
+                  <span>
+                     Esri Imagery
                   </span>
                 </div>
               </label>
@@ -694,6 +718,18 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   />
                   <span>
                      BC Government
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    name="leaflet-base-layers_47"
+                    type="radio"
+                  />
+                  <span>
+                     Esri Imagery
                   </span>
                 </div>
               </label>
@@ -981,11 +1017,23 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_78"
+                    name="leaflet-base-layers_79"
                     type="radio"
                   />
                   <span>
                      BC Government
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    name="leaflet-base-layers_79"
+                    type="radio"
+                  />
+                  <span>
+                     Esri Imagery
                   </span>
                 </div>
               </label>
@@ -1258,11 +1306,23 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_185"
+                    name="leaflet-base-layers_190"
                     type="radio"
                   />
                   <span>
                      BC Government
+                  </span>
+                </div>
+              </label>
+              <label>
+                <div>
+                  <input
+                    class="leaflet-control-layers-selector"
+                    name="leaflet-base-layers_190"
+                    type="radio"
+                  />
+                  <span>
+                     Esri Imagery
                   </span>
                 </div>
               </label>

@@ -1370,6 +1370,18 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                     </span>
                                   </div>
                                 </label>
+                                <label>
+                                  <div>
+                                    <input
+                                      class="leaflet-control-layers-selector"
+                                      name="leaflet-base-layers_43"
+                                      type="radio"
+                                    />
+                                    <span>
+                                       Esri Imagery
+                                    </span>
+                                  </div>
+                                </label>
                               </div>
                               <div
                                 class="leaflet-control-layers-separator"

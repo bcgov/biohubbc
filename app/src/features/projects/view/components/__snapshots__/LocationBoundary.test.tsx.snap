@@ -223,11 +223,23 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_160"
+                        name="leaflet-base-layers_165"
                         type="radio"
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_165"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -494,11 +506,23 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_124"
+                        name="leaflet-base-layers_128"
                         type="radio"
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_128"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -753,11 +777,23 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_94"
+                        name="leaflet-base-layers_97"
                         type="radio"
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_97"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1012,11 +1048,23 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_67"
+                        name="leaflet-base-layers_69"
                         type="radio"
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_69"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1248,11 +1296,23 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_49"
+                        name="leaflet-base-layers_50"
                         type="radio"
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_50"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1489,6 +1549,18 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                       />
                       <span>
                          BC Government
+                      </span>
+                    </div>
+                  </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_32"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
                       </span>
                     </div>
                   </label>

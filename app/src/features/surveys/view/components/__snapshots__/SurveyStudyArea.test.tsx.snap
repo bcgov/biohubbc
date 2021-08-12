@@ -231,6 +231,18 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                       </span>
                     </div>
                   </label>
+                  <label>
+                    <div>
+                      <input
+                        class="leaflet-control-layers-selector"
+                        name="leaflet-base-layers_36"
+                        type="radio"
+                      />
+                      <span>
+                         Esri Imagery
+                      </span>
+                    </div>
+                  </label>
                 </div>
                 <div
                   class="leaflet-control-layers-separator"

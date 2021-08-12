@@ -418,11 +418,23 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_136"
+                            name="leaflet-base-layers_140"
                             type="radio"
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_140"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -856,6 +868,18 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_43"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1308,11 +1332,23 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_94"
+                            name="leaflet-base-layers_96"
                             type="radio"
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_96"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1758,11 +1794,23 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_70"
+                            name="leaflet-base-layers_71"
                             type="radio"
                           />
                           <span>
                              BC Government
+                          </span>
+                        </div>
+                      </label>
+                      <label>
+                        <div>
+                          <input
+                            class="leaflet-control-layers-selector"
+                            name="leaflet-base-layers_71"
+                            type="radio"
+                          />
+                          <span>
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
