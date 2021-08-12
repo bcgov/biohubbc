@@ -38,6 +38,15 @@ const useObservationApi = (axios: AxiosInstance) => {
       }
     );
 
+    console.log('data is ', data);
+
+    if (data.submissionId) {
+      console.log('Validating the dwca submission');
+      axios.post(`/api/dwc/validate`, {
+        occurrence_submission_id: data.submissionId
+      });
+    }
+
     return data;
   };
 

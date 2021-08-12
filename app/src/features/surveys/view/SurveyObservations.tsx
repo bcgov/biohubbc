@@ -1,17 +1,18 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useState, useEffect } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useParams } from 'react-router';
+import Typography from '@material-ui/core/Typography';
 import { mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
+import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/attachments/FileUpload';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -66,31 +67,51 @@ const SurveyObservations: React.FC = () => {
     };
   };
 
-  const [myStatus, setMyStatus] = useState<string | null>(null);
-  const [myTimer, setMyTimer] = useState<any>(null);
+  const [submissionStatus, setSubmissionStatus] = useState<any>(null);
+  const [timer, setTimer] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isValidating, setIsValidating] = useState(false);
 
   useEffect(() => {
-    if (!myTimer) {
-      const timer = setInterval(() => {
-        async function fetchObservationSubmission() {
-          try {
-            const os = await biohubApi.survey.getObservationSubmission(projectId, surveyId);
+    const fetchObservationSubmission = async () => {
+      try {
+        const submission = await biohubApi.survey.getObservationSubmission(projectId, surveyId);
 
-            const status = os?.status;
-            setMyStatus(status);
+        setSubmissionStatus(() => {
+          setIsLoading(false);
+          if (submission) {
+            if (submission.status === 'Rejected' || submission.status === 'Darwin Core Validated') {
+              setIsValidating(false);
 
-            if (!status || status === 'Published' || status === 'Rejected') {
-              clearInterval(timer);
+              if (timer) {
+                clearInterval(timer);
+                setTimer(null);
+              }
+            } else {
+              setIsValidating(true);
             }
-          } catch (e) {
-            console.error('Failed to call the API - ', e);
           }
-        }
-        fetchObservationSubmission();
-      }, 5000);
-      setMyTimer(timer);
+
+          return submission;
+        });
+      } catch (e) {
+        console.error('Failed to call the API - ', e);
+      }
+    };
+
+    if (isLoading) {
+      fetchObservationSubmission();
     }
-  }, [myTimer]);
+
+    if (isValidating && !timer) {
+      const t = setInterval(fetchObservationSubmission, 5000);
+      setTimer(t);
+    }
+  }, [biohubApi, isLoading, isValidating, submissionStatus, timer, projectId, surveyId]);
+
+  if (isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <>
@@ -107,9 +128,9 @@ const SurveyObservations: React.FC = () => {
           Import
         </Button>
       </Box>
-      {!myStatus && (
+      {!isLoading && !submissionStatus && (
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography data-testid="observations-summary" variant="body2" className={classes.infoBox}>
+          <Typography data-testid="observations-nodata" variant="body2" className={classes.infoBox}>
             No Observation Data.{' '}
             <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
               Click Here to Import
@@ -117,31 +138,41 @@ const SurveyObservations: React.FC = () => {
           </Typography>
         </Box>
       )}
-      {myStatus === 'Rejected' && (
-        <Box mb={5} display="flex" justifyContent="space-between">
-          <div className={classes.errorBox}>
-            <Typography data-testid="observations-summary" variant="body2" className={classes.center}>
-              Error occurred.
+      {!isLoading && !isValidating && submissionStatus?.status === 'Rejected' && (
+        <div>
+          <Box mb={5} display="flex" justifyContent="space-between">
+            <div className={classes.errorBox}>
+              <Typography data-testid="observations-error-summary" variant="body2" className={classes.center}>
+                Error occurred.
+              </Typography>
+            </div>
+          </Box>
+          <Box mb={5} display="flex" justifyContent="space-between">
+            <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+              {submissionStatus?.message}
             </Typography>
-          </div>
-        </Box>
+          </Box>
+        </div>
       )}
-      {myStatus === 'Published' && (
+      {!isLoading && !isValidating && submissionStatus?.status === 'Darwin Core Validated' && (
         <div>
           <Box mb={5} display="flex" justifyContent="space-between">
             <div className={classes.successBox}>
-              <Typography data-testid="observations-summary" variant="body2" className={classes.center}>
+              <Typography data-testid="observations-success-summary" variant="body2" className={classes.center}>
                 Success.
               </Typography>
             </div>
           </Box>
-          <ObservationSubmissionCSV submissionId={1} />
+          <ObservationSubmissionCSV submissionId={submissionStatus.id} />
         </div>
       )}
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"
-        onClose={() => setOpenImportObservations(false)}>
+        onClose={() => {
+          setOpenImportObservations(false);
+          setIsLoading(true);
+        }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
           uploadHandler={importObservations()}
