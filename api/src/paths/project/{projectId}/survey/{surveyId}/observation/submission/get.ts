@@ -121,9 +121,6 @@ export function getObservationSubmission(): RequestHandler {
           }) ||
         null;
 
-      console.log('********************************');
-      console.log(getObservationSubmissionData);
-
       return res.status(200).json(getObservationSubmissionData);
     } catch (error) {
       defaultLog.debug({ label: 'getObservationSubmission', message: 'error', error });
