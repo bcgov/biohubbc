@@ -10,6 +10,7 @@ import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
 import { XSLX } from '../../../../../../../../utils/media/csv/xslx/xslx-file';
+import { MediaFile } from '../../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/view');
@@ -146,25 +147,24 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
         throw new HTTP500('Failed to retrieve file from S3');
       }
 
-      const mediaFiles = parseUnknownMedia(s3File);
+      const parsedMedia = parseUnknownMedia(s3File);
 
-      if (!mediaFiles || !mediaFiles.length) {
-        throw new HTTP500('Failed to parse media file');
+      if (!parsedMedia) {
+        throw new HTTP400('Failed to parse submission, file was empty');
       }
 
-      const mediaFile = mediaFiles[0];
       let worksheets;
       const data = [];
 
       // Get the worksheets for the file based on type
-      if (mediaFile.mimetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      if (parsedMedia instanceof MediaFile) {
         // xslx
-        const xslx = new XSLX(mediaFiles);
+        const xlsx = new XSLX([parsedMedia]);
 
-        worksheets = xslx.worksheets;
+        worksheets = xlsx.worksheets;
       } else {
         // dwc archive
-        const dwcArchive = new DWCArchive(mediaFiles);
+        const dwcArchive = new DWCArchive(parsedMedia);
 
         worksheets = dwcArchive.worksheets;
       }

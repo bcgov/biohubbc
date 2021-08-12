@@ -11,9 +11,13 @@ import {
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
-import { DWCArchive, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
-import { getDWCCSVValidators, getDWCMediaValidators } from '../../utils/media/csv/dwc/dwc-archive-validator';
-import { IMediaState } from '../../utils/media/media-file';
+import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
+import {
+  getDWCArchiveValidators,
+  getDWCCSVValidators,
+  getDWCMediaValidators
+} from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { ArchiveFile, IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
 
@@ -24,6 +28,7 @@ export const POST: Operation = [
   getSubmissionS3Key(),
   getSubmissionFileFromS3(),
   prepDWCArchive(),
+  persistParseErrors(),
   getValidationRules(),
   validateDWCArchive(),
   persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' })
@@ -158,9 +163,21 @@ function prepDWCArchive(): RequestHandler {
     try {
       const s3File = req['s3File'];
 
-      const mediaFiles = parseUnknownMedia(s3File);
+      const parsedMedia = parseUnknownMedia(s3File);
 
-      const dwcArchive = new DWCArchive(mediaFiles);
+      if (!parsedMedia) {
+        req['parseError'] = 'Failed to parse submission, file was empty';
+
+        return next();
+      }
+
+      if (!(parsedMedia instanceof ArchiveFile)) {
+        req['parseError'] = 'Failed to parse submission, not a valid DwC Archive Zip file';
+
+        return next();
+      }
+
+      const dwcArchive = new DWCArchive(parsedMedia);
 
       req['dwcArchive'] = dwcArchive;
 
@@ -172,6 +189,44 @@ function prepDWCArchive(): RequestHandler {
   };
 }
 
+function persistParseErrors(): RequestHandler {
+  return async (req, res, next) => {
+    const parseError = req['parseError'];
+
+    if (!parseError) {
+      // no errors to persist, skip to next step
+      next();
+    }
+
+    defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const submissionStatusId = await insertSubmissionStatus(
+        req.body.occurrence_submission_id,
+        'Rejected',
+        connection
+      );
+
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
+
+      await connection.commit();
+
+      // archive is not parsable, don't continue to next step and return early
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
+      connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
@@ -179,6 +234,7 @@ function getValidationRules(): RequestHandler {
     try {
       // TODO fetch/generate validation rules from reference data service
       const mediaValidationRules = {
+        [DWC_ARCHIVE.STRUCTURE]: getDWCArchiveValidators(),
         [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
         [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
         [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
