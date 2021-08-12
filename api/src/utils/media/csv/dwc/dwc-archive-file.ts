@@ -1,6 +1,10 @@
 import xlsx from 'xlsx';
-import { IMediaState, MediaFile, MediaValidator } from '../../media-file';
+import { ArchiveFile, ArchiveValidator, IMediaState, MediaValidator } from '../../media-file';
 import { CSVValidator, CSVWorksheet, ICsvState, IWorksheets } from '../csv-file';
+
+export enum DWC_ARCHIVE {
+  STRUCTURE = 'structure'
+}
 
 export enum DWC_CLASS {
   EVENT = 'event',
@@ -13,11 +17,10 @@ export enum DWC_CLASS {
 
 const DEFAULT_XLSX_SHEET = 'Sheet1';
 
-export type DWCArchiveMediaValidationRules = {
-  [key in DWC_CLASS]?: MediaValidator[];
-};
+export type DWCArchiveMediaValidationRules = { [key in DWC_ARCHIVE]?: ArchiveValidator[] } &
+  { [key in DWC_CLASS]?: MediaValidator[] };
 
-export type DWCArchiveMediaContentValidationRules = {
+export type DWCContentValidationRules = {
   [key in DWC_CLASS]?: CSVValidator[];
 };
 
@@ -31,23 +34,26 @@ export type DWCArchiveMediaContentValidationRules = {
  * @implements {IWorksheets}
  */
 export class DWCArchive implements IWorksheets {
-  rawFiles: MediaFile[];
+  rawFile: ArchiveFile;
 
   worksheets: { [name in DWC_CLASS]?: CSVWorksheet };
 
   extra: { [name: string]: any };
 
-  constructor(files: MediaFile[]) {
-    this.rawFiles = files;
+  constructor(archiveFile: ArchiveFile) {
+    this.rawFile = archiveFile;
 
     this.worksheets = {};
+
+    // temporary storage for other non-csv files
     this.extra = {};
 
-    this._init();
+    // parse archive files
+    this._initArchiveFiles();
   }
 
-  _init() {
-    for (const rawFile of this.rawFiles) {
+  _initArchiveFiles() {
+    for (const rawFile of this.rawFile.mediaFiles) {
       switch (rawFile.name) {
         case DWC_CLASS.EVENT:
           this.worksheets.event = new CSVWorksheet(
@@ -86,7 +92,7 @@ export class DWCArchive implements IWorksheets {
   }
 
   /**
-   * Runs validation against the raw MediaFiles and their properties (does not validate their content).
+   * Runs general structural validation against the archive and its files. Does not validate the content of the files.
    *
    * @return {*}  {IMediaState[]}
    * @memberof DWCArchive
@@ -94,7 +100,11 @@ export class DWCArchive implements IWorksheets {
   isMediaValid(validationRules: DWCArchiveMediaValidationRules): IMediaState[] {
     const mediaState: IMediaState[] = [];
 
-    for (const rawFile of this.rawFiles) {
+    // Validate the archive itself
+    mediaState.push(this.rawFile.validate(validationRules[DWC_ARCHIVE.STRUCTURE] || []).getState());
+
+    // Validate the files within the archive
+    for (const rawFile of this.rawFile.mediaFiles) {
       switch (rawFile.name) {
         case DWC_CLASS.EVENT:
           mediaState.push(rawFile.validate(validationRules[DWC_CLASS.EVENT] || []).getState());
@@ -119,7 +129,14 @@ export class DWCArchive implements IWorksheets {
     return mediaState;
   }
 
-  isContentValid(validationRules: DWCArchiveMediaContentValidationRules): ICsvState[] {
+  /**
+   * Runs validation against the content of the files.
+   *
+   * @param {DWCContentValidationRules} validationRules
+   * @return {*}  {ICsvState[]}
+   * @memberof DWCArchive
+   */
+  isContentValid(validationRules: DWCContentValidationRules): ICsvState[] {
     const csvState: ICsvState[] = [];
 
     if (this.worksheets.event) {

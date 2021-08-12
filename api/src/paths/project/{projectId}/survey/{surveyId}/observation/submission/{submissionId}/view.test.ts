@@ -9,9 +9,8 @@ import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
-import { MediaFile } from '../../../../../../../../utils/media/media-file';
+import { ArchiveFile, MediaFile } from '../../../../../../../../utils/media/media-file';
 import * as csv_file from '../../../../../../../../utils/media/csv/csv-file';
-import * as dwc_archive_file from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
 
 chai.use(sinonChai);
 
@@ -192,7 +191,7 @@ describe('getObservationSubmissionCSVForView', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
-    sinon.stub(media_utils, 'parseUnknownMedia').returns([]);
+    sinon.stub(media_utils, 'parseUnknownMedia').returns(null);
 
     try {
       const result = view.getObservationSubmissionCSVForView();
@@ -200,8 +199,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to parse media file');
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to parse submission, file was empty');
     }
   });
 
@@ -228,13 +227,12 @@ describe('getObservationSubmissionCSVForView', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
-    sinon.stub(media_utils, 'parseUnknownMedia').returns([
-      {
-        fileName: 'myfile',
-        mimetype: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      } as MediaFile
-    ]);
-    sinon.stub(csv_file, 'XLSXCSV').returns({ workbook: { worksheets: [] } });
+    sinon
+      .stub(media_utils, 'parseUnknownMedia')
+      .returns(
+        new MediaFile('myfile', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', Buffer.from([]))
+      );
+    sinon.stub(csv_file, 'XLSXCSV').returns({ workbook: { worksheets: {} } });
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
@@ -265,13 +263,9 @@ describe('getObservationSubmissionCSVForView', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
-    sinon.stub(media_utils, 'parseUnknownMedia').returns([
-      {
-        fileName: 'myfile',
-        mimetype: 'text/plain'
-      } as MediaFile
-    ]);
-    sinon.stub(dwc_archive_file, 'DWCArchive').returns({ worksheets: [] });
+    sinon
+      .stub(media_utils, 'parseUnknownMedia')
+      .returns(new ArchiveFile('myfile', 'application/zip', Buffer.from([]), []));
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
