@@ -12,15 +12,15 @@ import {
   ICodeValuesByHeader
 } from '../validation/csv-row-validator';
 
-export enum XSLX_CLASS {
+export enum XLSX_CLASS {
   SAMPLE_STATION_INFORMATION = 'Sample Station Information',
   GENERAL_SURVEY = 'General Survey',
   SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
 }
 
-export const getValidHeaders = (xslxClass: XSLX_CLASS): string[] => {
-  switch (xslxClass) {
-    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
+export const getValidHeaders = (xlsxClass: XLSX_CLASS): string[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Study Area Photos',
@@ -35,7 +35,7 @@ export const getValidHeaders = (xslxClass: XSLX_CLASS): string[] => {
         'Nesting Habitat Rating Modifier',
         'Design Type Given'
       ];
-    case XSLX_CLASS.GENERAL_SURVEY:
+    case XLSX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -100,7 +100,7 @@ export const getValidHeaders = (xslxClass: XSLX_CLASS): string[] => {
         'Sign Voucher collected',
         'Sign Photos'
       ];
-    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -146,9 +146,9 @@ export const getValidHeaders = (xslxClass: XSLX_CLASS): string[] => {
   }
 };
 
-export const getRequiredHeaders = (xslxClass: XSLX_CLASS): string[] => {
-  switch (xslxClass) {
-    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
+export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -157,7 +157,7 @@ export const getRequiredHeaders = (xslxClass: XSLX_CLASS): string[] => {
         'Northing Sample Station',
         'Design Type Given'
       ];
-    case XSLX_CLASS.GENERAL_SURVEY:
+    case XLSX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -169,7 +169,7 @@ export const getRequiredHeaders = (xslxClass: XSLX_CLASS): string[] => {
         'Easting',
         'Northing'
       ];
-    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -186,9 +186,9 @@ export const getRequiredHeaders = (xslxClass: XSLX_CLASS): string[] => {
   }
 };
 
-export const getRequiredFieldsByHeader = (xslxClass: XSLX_CLASS): string[] => {
-  switch (xslxClass) {
-    case XSLX_CLASS.SAMPLE_STATION_INFORMATION:
+export const getRequiredFieldsByHeader = (xlsxClass: XLSX_CLASS): string[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -197,7 +197,7 @@ export const getRequiredFieldsByHeader = (xslxClass: XSLX_CLASS): string[] => {
         'Northing Sample Station',
         'Design Type Given'
       ];
-    case XSLX_CLASS.GENERAL_SURVEY:
+    case XLSX_CLASS.GENERAL_SURVEY:
       return [
         'Study Area Name',
         'Sample Station Label',
@@ -209,7 +209,7 @@ export const getRequiredFieldsByHeader = (xslxClass: XSLX_CLASS): string[] => {
         'Easting',
         'Northing'
       ];
-    case XSLX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+    case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
       return [
         'Site Study Area Name',
         'Site Sample Station Label',
@@ -226,29 +226,29 @@ export const getRequiredFieldsByHeader = (xslxClass: XSLX_CLASS): string[] => {
   }
 };
 
-export const getCodeValuesByHeader = (xslxClass: XSLX_CLASS): ICodeValuesByHeader[] => {
-  switch (xslxClass) {
+export const getCodeValuesByHeader = (xlsxClass: XLSX_CLASS): ICodeValuesByHeader[] => {
+  switch (xlsxClass) {
     default:
       return [];
   }
 };
 
-export const getXSLXCSVValidators = (xslxClass: XSLX_CLASS): CSVValidator[] => {
+export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
-    hasRequiredHeadersValidator(getRequiredHeaders(xslxClass)),
-    getValidHeadersValidator(getValidHeaders(xslxClass)),
-    getRequiredFieldsValidator(getRequiredFieldsByHeader(xslxClass)),
-    getCodeValueFieldsValidator(getCodeValuesByHeader(xslxClass))
+    hasRequiredHeadersValidator(getRequiredHeaders(xlsxClass)),
+    getValidHeadersValidator(getValidHeaders(xlsxClass)),
+    getRequiredFieldsValidator(getRequiredFieldsByHeader(xlsxClass)),
+    getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass))
   ];
 };
 
 /**
- * Get media validation rules for a given XSLX class.
+ * Get media validation rules for a given XLSX class.
  *
  * @return {*}  {MediaValidator[]}
  */
-export const getXSLXMediaValidators = (): MediaValidator[] => {
+export const getXLSXMediaValidators = (): MediaValidator[] => {
   return [
     getFileEmptyValidator(),
     getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])

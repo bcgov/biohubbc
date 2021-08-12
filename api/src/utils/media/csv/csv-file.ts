@@ -1,7 +1,17 @@
 import xlsx from 'xlsx';
-import { IMediaState } from '../media-file';
+import { IMediaState, MediaFile, MediaValidator } from '../media-file';
 import { DWC_CLASS } from './dwc/dwc-archive-file';
-import { XSLX_CLASS } from './xslx/xslx-validator';
+import { XLSX_CLASS } from './xlsx/xlsx-validator';
+
+const DEFAULT_XLSX_SHEET = 'Sheet1';
+
+export type XLSXMediaValidationRules = {
+  [key in XLSX_CLASS]?: MediaValidator[];
+};
+
+export type XLSXMediaContentValidationRules = {
+  [key in XLSX_CLASS]?: CSVValidator[];
+};
 
 export interface IWorkbook {
   workbook: CSVWorkBook;
@@ -10,7 +20,7 @@ export interface IWorkbook {
 export interface IWorksheets {
   worksheets:
     | { [name in DWC_CLASS]?: CSVWorksheet }
-    | { [name in XSLX_CLASS]?: CSVWorksheet }
+    | { [name in XLSX_CLASS]?: CSVWorksheet }
     | { [name: string]: CSVWorksheet };
 }
 
@@ -161,6 +171,109 @@ export class CSVWorksheet {
     validators.forEach((validator) => validator(this));
 
     return this.csvValidation;
+  }
+}
+
+/**
+ * Supports XLSX CSV files.
+ *
+ * Expects an array of known named-files
+ *
+ * @export
+ * @class XLSXCSV
+ * @implements {IWorksheets}
+ */
+export class XLSXCSV implements IWorksheets {
+  rawFiles: MediaFile[];
+
+  worksheets: { [name in XLSX_CLASS]?: CSVWorksheet };
+
+  extra: { [name: string]: any };
+
+  constructor(files: MediaFile[]) {
+    this.rawFiles = files;
+
+    this.worksheets = {};
+    this.extra = {};
+
+    this._init();
+  }
+
+  _init() {
+    for (const rawFile of this.rawFiles) {
+      switch (rawFile.name) {
+        case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+          this.worksheets['Sample Station Information'] = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case XLSX_CLASS.GENERAL_SURVEY:
+          this.worksheets['General Survey'] = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+          break;
+        case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+          this.worksheets['Site & Incidental Observations'] = new CSVWorksheet(
+            rawFile.fileName,
+            xlsx.read(rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+          );
+      }
+    }
+  }
+
+  /**
+   * Runs validation against the raw MediaFiles and their properties (does not validate their content).
+   *
+   * @return {*}  {IMediaState[]}
+   * @memberof XLSX
+   */
+  isMediaValid(validationRules: XLSXMediaValidationRules): IMediaState[] {
+    const mediaState: IMediaState[] = [];
+
+    for (const rawFile of this.rawFiles) {
+      switch (rawFile.name) {
+        case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || []).getState());
+          break;
+        case XLSX_CLASS.GENERAL_SURVEY:
+          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState());
+          break;
+        case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+          mediaState.push(rawFile.validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || []).getState());
+      }
+    }
+
+    return mediaState;
+  }
+
+  isContentValid(validationRules: XLSXMediaContentValidationRules): ICsvState[] {
+    const csvState: ICsvState[] = [];
+
+    if (this.worksheets['Sample Station Information']) {
+      csvState.push(
+        this.worksheets['Sample Station Information']
+          .validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || [])
+          .getState()
+      );
+    }
+
+    if (this.worksheets['General Survey']) {
+      csvState.push(
+        this.worksheets['General Survey'].validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState()
+      );
+    }
+
+    if (this.worksheets['Site & Incidental Observations']) {
+      csvState.push(
+        this.worksheets['Site & Incidental Observations']
+          .validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || [])
+          .getState()
+      );
+    }
+
+    return csvState;
   }
 }
 

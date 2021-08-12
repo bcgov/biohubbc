@@ -10,7 +10,7 @@ import * as file_utils from '../../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { ArchiveFile, MediaFile } from '../../../../../../../../utils/media/media-file';
-import * as xslx_file from '../../../../../../../../utils/media/csv/xslx/xslx-file';
+import * as csv_file from '../../../../../../../../utils/media/csv/csv-file';
 
 chai.use(sinonChai);
 
@@ -204,7 +204,7 @@ describe('getObservationSubmissionCSVForView', () => {
     }
   });
 
-  it('should return data on success with xslx file (empty)', async () => {
+  it('should return data on success with xlsx file (empty)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
@@ -232,7 +232,7 @@ describe('getObservationSubmissionCSVForView', () => {
       .returns(
         new MediaFile('myfile', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', Buffer.from([]))
       );
-    sinon.stub(xslx_file, 'XSLX').returns({ worksheets: [] });
+    sinon.stub(csv_file, 'XLSXCSV').returns({ worksheets: [] });
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);

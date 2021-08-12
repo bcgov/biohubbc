@@ -189,7 +189,7 @@ function prepDWCArchive(): RequestHandler {
   };
 }
 
-function persistParseErrors(): RequestHandler {
+export function persistParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
