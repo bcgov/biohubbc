@@ -203,6 +203,8 @@ function persistParseErrors(): RequestHandler {
 
       await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
 
+      await connection.commit();
+
       // archive is not parsable, don't continue to next step and return early
       return res.status(200).json();
     } catch (error) {
