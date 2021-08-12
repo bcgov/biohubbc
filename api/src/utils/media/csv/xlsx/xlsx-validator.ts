@@ -248,15 +248,3 @@ export const getXLSXMediaValidators = (): MediaValidator[] => {
     getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])
   ];
 };
-
-/**
- * Get media validation rules for a XLSX CSV file.
- *
- * @return {*}  {((MediaValidator)[])}
- */
-export const getXLSXCSVFileValidators = (): MediaValidator[] => {
-  return [
-    getFileEmptyValidator(),
-    getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])
-  ];
-};

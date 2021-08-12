@@ -196,10 +196,10 @@ export class XLSXCSV implements IWorkbook {
 
   workbook: CSVWorkBook;
 
-  constructor(file: MediaFile) {
+  constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
     this.rawFile = file;
 
-    const rawWorkbook = xlsx.read(this.rawFile.buffer);
+    const rawWorkbook = xlsx.read(this.rawFile.buffer, { ...options });
 
     this.workbook = new CSVWorkBook(rawWorkbook);
 
@@ -229,10 +229,10 @@ export class XLSXCSV implements IWorkbook {
   }
 
   /**
-   * Runs validation against the raw MediaFiles and their properties (does not validate their content).
+   * Runs validation against the raw MediaFile and its properties (does not validate the content).
    *
    * @return {*}  {IMediaState[]}
-   * @memberof XLSX
+   * @memberof XLSXCSV
    */
   isMediaValid(validationRules: XLSXCSVMediaValidationRules): IMediaState[] {
     const mediaState: IMediaState[] = [];

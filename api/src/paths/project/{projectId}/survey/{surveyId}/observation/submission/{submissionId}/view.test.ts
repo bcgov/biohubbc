@@ -232,7 +232,7 @@ describe('getObservationSubmissionCSVForView', () => {
       .returns(
         new MediaFile('myfile', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', Buffer.from([]))
       );
-    sinon.stub(csv_file, 'XLSXCSV').returns({ workbook: { worksheets: [] } });
+    sinon.stub(csv_file, 'XLSXCSV').returns({ workbook: { worksheets: {} } });
 
     const result = view.getObservationSubmissionCSVForView();
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
