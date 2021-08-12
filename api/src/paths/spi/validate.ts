@@ -5,7 +5,7 @@ import { HTTP400 } from '../../errors/CustomError';
 import { getLogger } from '../../utils/logger';
 import { ICsvState, XLSXCSV } from '../../utils/media/csv/csv-file';
 import { isSPITemplateValid } from '../../utils/media/csv/spi/spi-validator';
-import { IMediaState } from '../../utils/media/media-file';
+import { IMediaState, MediaFile } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { logRequest } from '../../utils/path-utils';
 
@@ -185,35 +185,17 @@ function prepSPITemplate(): RequestHandler {
 
       const rawMediaFile = rawMediaArray[0];
 
-      const mediaFiles = parseUnknownMedia(rawMediaFile);
+      const parsedMedia = parseUnknownMedia(rawMediaFile);
 
-      if (!mediaFiles || !mediaFiles.length) {
-        const response: ICsvState[] = [
-          {
-            fileName: rawMediaFile.originalname,
-            fileErrors: ['Not a compatible Excel Workbook. Unable to parse file.'],
-            isValid: false
-          }
-        ];
-
-        return res.status(200).json(response);
+      if (!parsedMedia) {
+        throw new HTTP400('Failed to parse submission, file was empty');
       }
 
-      if (mediaFiles.length > 1) {
-        const response: ICsvState[] = [
-          {
-            fileName: rawMediaFile.originalname,
-            fileErrors: ['Not a compatible Excel Workbook. Multiple files found when one expected.'],
-            isValid: false
-          }
-        ];
-
-        return res.status(200).json(response);
+      if (!(parsedMedia instanceof MediaFile)) {
+        throw new HTTP400('Failed to parse submission, not a valid XLS file');
       }
 
-      const mediaFile = mediaFiles[0];
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
+      const xlsxCSV = new XLSXCSV(parsedMedia);
 
       const mediaState: IMediaState[] = xlsxCSV.isValid();
 
