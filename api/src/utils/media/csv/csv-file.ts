@@ -209,19 +209,19 @@ export class XLSXCSV implements IWorkbook {
   _init() {
     switch (this.rawFile.name) {
       case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
-        this.workbook.worksheets['Sample Station Information'] = new CSVWorksheet(
+        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION] = new CSVWorksheet(
           this.rawFile.fileName,
           xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
         );
         break;
       case XLSX_CLASS.GENERAL_SURVEY:
-        this.workbook.worksheets['General Survey'] = new CSVWorksheet(
+        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY] = new CSVWorksheet(
           this.rawFile.fileName,
           xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
         );
         break;
       case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
-        this.workbook.worksheets['Site & Incidental Observations'] = new CSVWorksheet(
+        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] = new CSVWorksheet(
           this.rawFile.fileName,
           xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
         );
@@ -259,23 +259,25 @@ export class XLSXCSV implements IWorkbook {
   isContentValid(validationRules: XLSXContentValidationRules): ICsvState[] {
     const csvState: ICsvState[] = [];
 
-    if (this.workbook.worksheets['Sample Station Information']) {
+    if (this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]) {
       csvState.push(
-        this.workbook.worksheets['Sample Station Information']
+        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]
           .validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || [])
           .getState()
       );
     }
 
-    if (this.workbook.worksheets['General Survey']) {
+    if (this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]) {
       csvState.push(
-        this.workbook.worksheets['General Survey'].validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState()
+        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]
+          .validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || [])
+          .getState()
       );
     }
 
-    if (this.workbook.worksheets['Site & Incidental Observations']) {
+    if (this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]) {
       csvState.push(
-        this.workbook.worksheets['Site & Incidental Observations']
+        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]
           .validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || [])
           .getState()
       );
