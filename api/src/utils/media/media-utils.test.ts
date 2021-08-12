@@ -4,7 +4,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { MediaFile } from './media-file';
+import { ArchiveFile, MediaFile } from './media-file';
 import * as media_utils from './media-utils';
 
 chai.use(sinonChai);
@@ -32,7 +32,7 @@ describe('parseUnknownMedia', () => {
 });
 
 describe('parseUnknownMulterFile', () => {
-  it('returns an array of MediaFile elements', () => {
+  it('returns a MediaFile', () => {
     const multerFile = ({
       originalname: 'file1.txt',
       buffer: Buffer.from('file1data')
@@ -40,11 +40,10 @@ describe('parseUnknownMulterFile', () => {
 
     const response = media_utils.parseUnknownMulterFile(multerFile);
 
-    expect(response.length).to.equal(1);
-    expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
+    expect(response).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
   });
 
-  it('returns an array of MediaFile elements, when a zip file is provided', () => {
+  it('returns an ArchiveFile, when a zip file is provided', () => {
     const zipFile = new AdmZip();
 
     zipFile.addFile('file1.txt', Buffer.from('file1data'));
@@ -55,14 +54,17 @@ describe('parseUnknownMulterFile', () => {
 
     const response = media_utils.parseUnknownMulterFile(multerFile);
 
-    expect(response.length).to.equal(2);
-    expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
-    expect(response[1]).to.eql(new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data')));
+    expect(response).to.eql(
+      new ArchiveFile('zipFile.zip', 'application/zip', zipFile.toBuffer(), [
+        new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')),
+        new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data'))
+      ])
+    );
   });
 });
 
 describe('parseUnknownS3File', () => {
-  it('returns an array of MediaFile elements', () => {
+  it('returns a MediaFile', () => {
     const s3File = ({
       Metadata: { filename: 'file1.txt' },
       Body: Buffer.from('file1data')
@@ -70,11 +72,10 @@ describe('parseUnknownS3File', () => {
 
     const response = media_utils.parseUnknownS3File(s3File);
 
-    expect(response.length).to.equal(1);
-    expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
+    expect(response).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
   });
 
-  it('returns an array of MediaFile elements, when a zip file is provided', () => {
+  it('returns an ArchiveFile, when a zip file is provided', () => {
     const zipFile = new AdmZip();
 
     zipFile.addFile('file1.txt', Buffer.from('file1data'));
@@ -89,9 +90,12 @@ describe('parseUnknownS3File', () => {
 
     const response = media_utils.parseUnknownS3File(s3File);
 
-    expect(response.length).to.equal(2);
-    expect(response[0]).to.eql(new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')));
-    expect(response[1]).to.eql(new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data')));
+    expect(response).to.eql(
+      new ArchiveFile('zipFile.zip', 'application/zip', zipFile.toBuffer(), [
+        new MediaFile('file1.txt', 'text/plain', Buffer.from('file1data')),
+        new MediaFile('file2.csv', 'text/csv', Buffer.from('file2data'))
+      ])
+    );
   });
 });
 

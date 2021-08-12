@@ -18,6 +18,7 @@ import { getLogger } from '../../../../../utils/logger';
 import { DWCArchive } from '../../../../../utils/media/csv/dwc/dwc-archive-file';
 import { parseUnknownMedia } from '../../../../../utils/media/media-utils';
 import { logRequest } from '../../../../../utils/path-utils';
+import { ArchiveFile } from '../../../../../utils/media/media-file';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 
@@ -155,9 +156,17 @@ export const insertOccurrences = async (surveyId: number, connection: IDBConnect
 
   const s3Object = await getFileFromS3(occurrenceSubmission.key);
 
-  const mediaFiles = parseUnknownMedia(s3Object);
+  const parsedMedia = parseUnknownMedia(s3Object);
 
-  const dwcArchive = new DWCArchive(mediaFiles);
+  if (!parsedMedia) {
+    throw new HTTP400('Failed to parse submission, file was empty');
+  }
+
+  if (!(parsedMedia instanceof ArchiveFile)) {
+    throw new HTTP400('Failed to parse submission, not a valid DwC Archive Zip file');
+  }
+
+  const dwcArchive = new DWCArchive(parsedMedia);
 
   await uploadDWCArchiveOccurrences(occurrenceSubmission.id, dwcArchive, connection);
 };

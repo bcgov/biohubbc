@@ -1,4 +1,5 @@
-import { MediaValidator } from '../../media-file';
+import { ArchiveValidator, MediaValidator } from '../../media-file';
+import { getRequiredFilesArchiveValidator } from '../../validation/archive-type-and-content-validator';
 import { getFileEmptyValidator, getFileMimeTypeValidator } from '../../validation/file-type-and-content-validator';
 import { CSVValidator } from '../csv-file';
 import {
@@ -166,4 +167,17 @@ const getRequiredMimeTypesByDWCClass = (dwcClass: DWC_CLASS): RegExp[] => {
  */
 export const getDWCMediaValidators = (dwcClass: DWC_CLASS): MediaValidator[] => {
   return [getFileEmptyValidator(), getFileMimeTypeValidator(getRequiredMimeTypesByDWCClass(dwcClass))];
+};
+
+/**
+ * Get media validation rules for a DWC archive.
+ *
+ * @return {*}  {((MediaValidator | ArchiveValidator)[])}
+ */
+export const getDWCArchiveValidators = (): (MediaValidator | ArchiveValidator)[] => {
+  return [
+    getFileEmptyValidator(),
+    getFileMimeTypeValidator([/application\/zip/, /application\/x-zip-compressed/, /application\/x-rar-compressed/]),
+    getRequiredFilesArchiveValidator([DWC_CLASS.EVENT, DWC_CLASS.OCCURRENCE, DWC_CLASS.TAXON])
+  ];
 };
