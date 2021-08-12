@@ -101,10 +101,9 @@ describe('getObservationSubmission', () => {
       rows: [
         {
           id: 13,
-          file_name: 'filename.txt',
-          create_date: '2020-01-01',
-          update_date: '',
-          file_size: 0
+          file_name: 'dwca_moose.zip',
+          submission_status_type_name: 'Darwin Core Validated',
+          message: 'some message'
         }
       ]
     });
@@ -125,9 +124,9 @@ describe('getObservationSubmission', () => {
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'filename.txt',
-      status: 'Published',
-      message: 'works fine'
+      fileName: 'dwca_moose.zip',
+      status: 'Darwin Core Validated',
+      message: 'some message'
     });
   });
 

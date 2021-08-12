@@ -1,16 +1,54 @@
-import { render } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import SurveyObservations from './SurveyObservations';
 import { MemoryRouter } from 'react-router';
+import SurveyObservations from './SurveyObservations';
+
+jest.mock('../../../hooks/useBioHubApi');
+
+const mockUseBiohubApi = {
+  survey: {
+    getObservationSubmission: jest.fn()
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
 
 describe('SurveyObservations', () => {
-  it('renders correctly', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().survey.getObservationSubmission.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly', async () => {
     const { getByTestId } = render(
       <MemoryRouter>
         <SurveyObservations />
       </MemoryRouter>
     );
 
-    expect(getByTestId('observations-heading')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByTestId('observations-heading')).toBeInTheDocument();
+      expect(mockBiohubApi().survey.getObservationSubmission).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('shows circular spinner when observation data not yet loaded', async () => {
+    const { asFragment } = render(
+      <MemoryRouter>
+        <SurveyObservations />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 });
