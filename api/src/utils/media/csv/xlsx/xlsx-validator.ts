@@ -245,6 +245,10 @@ export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
 export const getXLSXMediaValidators = (): MediaValidator[] => {
   return [
     getFileEmptyValidator(),
-    getFileMimeTypeValidator([/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/])
+    getFileMimeTypeValidator([
+      /application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/,
+      /application\/vnd\.ms-excel/,
+      /application\/vnd\\.openxmlformats/
+    ])
   ];
 };
