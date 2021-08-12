@@ -104,7 +104,7 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
@@ -227,18 +227,6 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
-                      </span>
-                    </div>
-                  </label>
-                  <label>
-                    <div>
-                      <input
-                        class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_36"
-                        type="radio"
-                      />
-                      <span>
                          BC Government
                       </span>
                     </div>
@@ -261,12 +249,6 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>

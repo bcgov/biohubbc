@@ -202,7 +202,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                       style="width: 256px; height: 256px; left: -199px; top: -128px;"
                     />
                   </div>
@@ -418,19 +418,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_140"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_140"
+                            name="leaflet-base-layers_136"
                             type="radio"
                           />
                           <span>
@@ -456,12 +444,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>
@@ -676,7 +658,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -873,18 +855,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
-                            type="radio"
-                          />
-                          <span>
                              BC Government
                           </span>
                         </div>
@@ -907,12 +877,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>
@@ -1136,7 +1100,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1344,19 +1308,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
+                            name="leaflet-base-layers_94"
                             type="radio"
                           />
                           <span>
@@ -1382,12 +1334,6 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>
@@ -1604,7 +1550,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1812,19 +1758,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
+                            name="leaflet-base-layers_70"
                             type="radio"
                           />
                           <span>
@@ -1850,12 +1784,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>

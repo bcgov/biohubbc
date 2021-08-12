@@ -27,7 +27,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -120,19 +120,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_123"
-                    type="radio"
-                  />
-                  <span>
-                     Esri Imagery
-                  </span>
-                </div>
-              </label>
-              <label>
-                <div>
-                  <input
-                    class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_123"
+                    name="leaflet-base-layers_120"
                     type="radio"
                   />
                   <span>
@@ -158,12 +146,6 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
             title="A JS library for interactive maps"
           >
             Leaflet
-          </a>
-           | © 
-          <a
-            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-          >
-            ESRI Basemap
           </a>
         </div>
       </div>
@@ -199,7 +181,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -430,19 +412,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_108"
-                    type="radio"
-                  />
-                  <span>
-                     Esri Imagery
-                  </span>
-                </div>
-              </label>
-              <label>
-                <div>
-                  <input
-                    class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_108"
+                    name="leaflet-base-layers_106"
                     type="radio"
                   />
                   <span>
@@ -468,12 +438,6 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
             title="A JS library for interactive maps"
           >
             Leaflet
-          </a>
-           | © 
-          <a
-            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-          >
-            ESRI Basemap
           </a>
         </div>
       </div>
@@ -509,7 +473,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -729,18 +693,6 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                     type="radio"
                   />
                   <span>
-                     Esri Imagery
-                  </span>
-                </div>
-              </label>
-              <label>
-                <div>
-                  <input
-                    class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_47"
-                    type="radio"
-                  />
-                  <span>
                      BC Government
                   </span>
                 </div>
@@ -763,12 +715,6 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
             title="A JS library for interactive maps"
           >
             Leaflet
-          </a>
-           | © 
-          <a
-            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-          >
-            ESRI Basemap
           </a>
         </div>
       </div>
@@ -804,7 +750,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
               style="width: 256px; height: 256px; left: -159px; top: -31px;"
             />
           </div>
@@ -1035,19 +981,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_79"
-                    type="radio"
-                  />
-                  <span>
-                     Esri Imagery
-                  </span>
-                </div>
-              </label>
-              <label>
-                <div>
-                  <input
-                    class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_79"
+                    name="leaflet-base-layers_78"
                     type="radio"
                   />
                   <span>
@@ -1073,12 +1007,6 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
             title="A JS library for interactive maps"
           >
             Leaflet
-          </a>
-           | © 
-          <a
-            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-          >
-            ESRI Basemap
           </a>
         </div>
       </div>
@@ -1114,7 +1042,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
               alt=""
               class="leaflet-tile"
               role="presentation"
-              src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+              src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
               style="width: 256px; height: 256px; left: -38px; top: -79px;"
             />
           </div>
@@ -1330,19 +1258,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_190"
-                    type="radio"
-                  />
-                  <span>
-                     Esri Imagery
-                  </span>
-                </div>
-              </label>
-              <label>
-                <div>
-                  <input
-                    class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_190"
+                    name="leaflet-base-layers_185"
                     type="radio"
                   />
                   <span>
@@ -1368,12 +1284,6 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
             title="A JS library for interactive maps"
           >
             Leaflet
-          </a>
-           | © 
-          <a
-            href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-          >
-            ESRI Basemap
           </a>
         </div>
       </div>
