@@ -434,9 +434,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           const env: string = getENVRegionByGMZ(gmzId);
           const nrm = envToNrmRegionsMapping[env];
 
-          if (nrm) {
-            nrmInfo.add(nrm);
-          }
+          nrmInfo.add(nrm);
           envInfo.add(env);
           wmuInfo.add(
             `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
