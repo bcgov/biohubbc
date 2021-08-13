@@ -196,6 +196,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
   ];
 
+  // const nrmToEnvRegionalMapping = {
+  //   'West Coast Natural Resource Region': ['1- Vancouver Island'],
+  //   'South Coast Natural Resource Region': ['2- Lower Mainland'],
+  //   'Thompson-Okanagan Natural Resource Region': ['3- Thompson', '8- Okanagan'],
+
+  //   'Cariboo Natural Resource Region': ['5- Cariboo'],
+  //   'Skeena Natural Resource Region': ['6- Skeena'],
+  //   'Omineca Natural Resource Region': ['7- Omineca'],
+  //   'Northeast Natural Resource Region': ['9- Peace']
+  // };
+
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
     if (!preDefinedGeometry) {
@@ -397,12 +408,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         });
       });
 
+      console.log(geometryState?.geometry)
+
       inferredLayersInfo = {
         parks: Array.from(parksInfo),
         nrm: Array.from(nrmInfo),
         env: Array.from(envInfo),
         wmu: Array.from(wmuInfo)
       };
+
+      console.log(inferredLayersInfo)
 
       setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
     }, 300),
