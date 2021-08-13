@@ -195,7 +195,7 @@ export function persistParseErrors(): RequestHandler {
 
     if (!parseError) {
       // no errors to persist, skip to next step
-      next();
+      return next();
     }
 
     defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
