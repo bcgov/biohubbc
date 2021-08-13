@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import mime from 'mime';
-import { MediaFile } from './media-file';
+import { ArchiveFile, MediaFile } from './media-file';
 
 /**
  * Parses an unknown file into an array of MediaFile.
@@ -10,9 +10,9 @@ import { MediaFile } from './media-file';
  * case the array will have 1 item per file in the zip (folders ignored).
  *
  * @param {(Express.Multer.File | GetObjectOutput)} rawMedia
- * @return {*}  {MediaFile[]}
+ * @return {*}  {(MediaFile | ArchiveFile)}
  */
-export const parseUnknownMedia = (rawMedia: Express.Multer.File | GetObjectOutput): MediaFile[] => {
+export const parseUnknownMedia = (rawMedia: Express.Multer.File | GetObjectOutput): null | MediaFile | ArchiveFile => {
   if ((rawMedia as Express.Multer.File).originalname) {
     return parseUnknownMulterFile(rawMedia as Express.Multer.File);
   } else {
@@ -20,28 +20,34 @@ export const parseUnknownMedia = (rawMedia: Express.Multer.File | GetObjectOutpu
   }
 };
 
-export const parseUnknownMulterFile = (rawMedia: Express.Multer.File) => {
+export const parseUnknownMulterFile = (rawMedia: Express.Multer.File): null | MediaFile | ArchiveFile => {
   const mimetype = mime.getType(rawMedia.originalname);
 
-  if (mimetype === 'application/zip' || mimetype === 'application/x-zip-compressed') {
-    return parseUnknownZipFile(rawMedia.buffer);
+  if (isZipMimetype(mimetype || '')) {
+    const archiveFile = parseMulterFile(rawMedia);
+    const mediaFiles = parseUnknownZipFile(rawMedia.buffer);
+
+    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);
   }
 
-  return [parseMulterFile(rawMedia)];
+  return parseMulterFile(rawMedia);
 };
 
-export const parseUnknownS3File = (rawMedia: GetObjectOutput) => {
+export const parseUnknownS3File = (rawMedia: GetObjectOutput): null | MediaFile | ArchiveFile => {
   const mimetype = rawMedia.ContentType;
 
-  if (mimetype === 'application/zip' || mimetype === 'application/x-zip-compressed') {
+  if (isZipMimetype(mimetype || '')) {
     if (!rawMedia.Body) {
-      return [];
+      return null;
     }
 
-    return parseUnknownZipFile(rawMedia.Body as Buffer);
+    const archiveFile = parseS3File(rawMedia);
+    const mediaFiles = parseUnknownZipFile(rawMedia.Body as Buffer);
+
+    return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);
   }
 
-  return [parseS3File(rawMedia)];
+  return parseS3File(rawMedia);
 };
 
 /**
@@ -50,7 +56,7 @@ export const parseUnknownS3File = (rawMedia: GetObjectOutput) => {
  * Note: Ignores any directory structures, flattening all nested files into a single array.
  *
  * @param {Buffer} zipFile
- * @return {*}  {MediaFile[]}
+ * @return {*}  {ArchiveFile}
  */
 export const parseUnknownZipFile = (zipFile: Buffer): MediaFile[] => {
   const unzippedFile = new AdmZip(zipFile);
@@ -93,4 +99,14 @@ export const parseS3File = (file: GetObjectOutput): MediaFile => {
   const buffer = file?.Body as Buffer;
 
   return new MediaFile(fileName, mimetype, buffer);
+};
+
+export const isZipMimetype = (mimetype: string): boolean => {
+  if (!mimetype) {
+    return false;
+  }
+
+  return [/application\/zip/, /application\/x-zip-compressed/, /application\/x-rar-compressed/].some((regex) =>
+    regex.test(mimetype)
+  );
 };

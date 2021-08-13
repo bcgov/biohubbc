@@ -462,14 +462,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       )}
 
       <LayersControl position="bottomright">
-        <LayersControl.BaseLayer checked name="Esri Imagery">
+        <LayersControl.BaseLayer checked name="BC Government">
+          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="Esri Imagery">
           <TileLayer
             attribution='&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="BC Government">
-          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
       </LayersControl>
     </LeafletMapContainer>
