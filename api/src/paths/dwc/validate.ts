@@ -31,58 +31,68 @@ export const POST: Operation = [
   persistParseErrors(),
   getValidationRules(),
   validateDWCArchive(),
-  persistValidationResults()
+  persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' })
 ];
 
-POST.apiDoc = {
-  description: 'Validates a Darwin Core (DWC) Archive survey observation submission.',
-  tags: ['survey', 'observation', 'dwc'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
-  requestBody: {
-    description: 'Request body',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          required: ['occurrence_submission_id'],
-          properties: {
-            occurrence_submission_id: {
-              description: 'A survey occurrence submission ID',
-              type: 'number',
-              example: 1
+export const getValidateAPIDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
+  return {
+    description: basicDescription,
+    tags: tags,
+    security: [
+      {
+        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      }
+    ],
+    requestBody: {
+      description: 'Request body',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: ['occurrence_submission_id'],
+            properties: {
+              occurrence_submission_id: {
+                description: 'A survey occurrence submission ID',
+                type: 'number',
+                example: 1
+              }
             }
           }
         }
       }
+    },
+    responses: {
+      200: {
+        description: successDescription
+      },
+      400: {
+        $ref: '#/components/responses/400'
+      },
+      401: {
+        $ref: '#/components/responses/401'
+      },
+      403: {
+        $ref: '#/components/responses/401'
+      },
+      500: {
+        $ref: '#/components/responses/500'
+      },
+      default: {
+        $ref: '#/components/responses/default'
+      }
     }
-  },
-  responses: {
-    200: {
-      description: 'Validate Darwin Core (DWC) Archive survey observation submission OK'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
+  };
 };
 
-function getSubmissionS3Key(): RequestHandler {
+POST.apiDoc = {
+  ...getValidateAPIDoc(
+    'Validates a Darwin Core (DWC) Archive survey observation submission.',
+    'Validate Darwin Core (DWC) Archive survey observation submission OK',
+    ['survey', 'observation', 'dwc']
+  )
+};
+
+export function getSubmissionS3Key(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
 
@@ -123,7 +133,7 @@ function getSubmissionS3Key(): RequestHandler {
   };
 }
 
-function getSubmissionFileFromS3(): RequestHandler {
+export function getSubmissionFileFromS3(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'params', files: req.body });
 
@@ -179,13 +189,13 @@ function prepDWCArchive(): RequestHandler {
   };
 }
 
-function persistParseErrors(): RequestHandler {
+export function persistParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
     if (!parseError) {
       // no errors to persist, skip to next step
-      next();
+      return next();
     }
 
     defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
@@ -287,7 +297,7 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
-function persistValidationResults(): RequestHandler {
+export function persistValidationResults(statusTypeObject: any): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
@@ -299,7 +309,7 @@ function persistValidationResults(): RequestHandler {
 
       await connection.open();
 
-      let submissionStatusType = 'Darwin Core Validated';
+      let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
       if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists
         submissionStatusType = 'Rejected';

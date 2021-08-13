@@ -8,8 +8,8 @@ import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
 import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
 import { DWCArchive } from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
+import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
 import { MediaFile } from '../../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
 
@@ -158,10 +158,10 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
 
       // Get the worksheets for the file based on type
       if (parsedMedia instanceof MediaFile) {
-        // xslx
-        const xlsxCSV = new XLSXCSV(parsedMedia);
+        // xlsx csv
+        const xlsxCsv = new XLSXCSV(parsedMedia);
 
-        worksheets = xlsxCSV.workbook.worksheets;
+        worksheets = xlsxCsv.workbook.worksheets;
       } else {
         // dwc archive
         const dwcArchive = new DWCArchive(parsedMedia);
