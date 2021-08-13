@@ -1,8 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, XLSX_CSV } from '../../utils/media/csv/csv-file';
-import { XLSXCSV, XLSX_CLASS } from '../../utils/media/csv/csv-file';
+import { ICsvState, XLSX_CSV, XLSXCSV, XLSX_CLASS } from '../../utils/media/csv/csv-file';
 import { getXLSXCSVValidators, getXLSXMediaValidators } from '../../utils/media/csv/xlsx/xlsx-validator';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
