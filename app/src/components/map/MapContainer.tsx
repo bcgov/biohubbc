@@ -24,6 +24,7 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
 import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { getKeyByValue } from 'utils/Utils';
 
 /*
   Get leaflet icons working
@@ -196,16 +197,17 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
   ];
 
-  // const nrmToEnvRegionalMapping = {
-  //   'West Coast Natural Resource Region': ['1- Vancouver Island'],
-  //   'South Coast Natural Resource Region': ['2- Lower Mainland'],
-  //   'Thompson-Okanagan Natural Resource Region': ['3- Thompson', '8- Okanagan'],
-
-  //   'Cariboo Natural Resource Region': ['5- Cariboo'],
-  //   'Skeena Natural Resource Region': ['6- Skeena'],
-  //   'Omineca Natural Resource Region': ['7- Omineca'],
-  //   'Northeast Natural Resource Region': ['9- Peace']
-  // };
+  const envToNrmRegionsMapping = {
+    '1- Vancouver Island': 'West Coast Natural Resource Region',
+    '2- Lower Mainland': 'South Coast Natural Resource Region',
+    '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
+    '8- Okanagan': 'Thompson-Okanagan Natural Resource Region',
+    '4- Kootenay': 'Kootenay-Boundary Natural Resource Region',
+    '5- Cariboo': 'Cariboo Natural Resource Region',
+    '6- Skeena': 'Skeena Natural Resource Region',
+    '7- Omineca': 'Omineca Natural Resource Region',
+    '9- Peace': 'Northeast Natural Resource Region'
+  };
 
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
@@ -311,6 +313,59 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return coordinatesString;
   };
 
+  /**
+   * Determine if a WMU should be added to the list of inferred layers based on ENV region and WMU GMZ ID mapping
+   *
+   * @param {string} env
+   * @param {string} gmzId
+   * @returns {boolean}
+   */
+  const shouldAddWMULayer = (env: string, gmzId: string): boolean => {
+    let shouldAdd = false;
+
+    if (env[0] === '7' && gmzId.includes('7O')) {
+      shouldAdd = true;
+    } else if (env[0] === '9' && gmzId.includes('7P')) {
+      shouldAdd = true;
+    } else if (gmzId.includes(env[0])) {
+      shouldAdd = true;
+    }
+
+    return shouldAdd;
+  };
+
+  /**
+   * Gets the ENV region name based on the WMU GMZ ID
+   *
+   * @param {string} gmzId
+   * @returns {string} env region name
+   */
+  const getENVRegionByGMZ = (gmzId: string): string => {
+    let env: string = '';
+
+    if (gmzId.includes('1')) {
+      env = '1- Vancouver Island';
+    } else if (gmzId.includes('2')) {
+      env = '2- Lower Mainland';
+    } else if (gmzId.includes('3')) {
+      env = '3- Thompson';
+    } else if (gmzId.includes('4')) {
+      env = '4- Kootenay';
+    } else if (gmzId.includes('5')) {
+      env = '5- Cariboo';
+    } else if (gmzId.includes('6')) {
+      env = '6- Skeena';
+    } else if (gmzId.includes('7P')) {
+      env = '9- Peace';
+    } else if (gmzId.includes('7O')) {
+      env = '7- Omineca';
+    } else if (gmzId.includes('8')) {
+      env = '8- Okanagan';
+    }
+
+    return env;
+  };
+
   // TODO break this into smaller functions
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
@@ -339,33 +394,55 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
         filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
 
-        let equivalentType = '';
         const geoId = projectedGeo.id as string;
+        let typeNamesToSkip: string[] = [];
 
         if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
-          equivalentType = 'TA_PARK_ECORES_PA_SVW';
           parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
+
+          typeNamesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
         }
 
         if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
-          equivalentType = 'ADM_NR_REGIONS_SPG';
+          const env = getKeyByValue(envToNrmRegionsMapping, projectedGeo.properties?.REGION_NAME);
+
+          if (env) {
+            envInfo.add(env);
+          }
           nrmInfo.add(projectedGeo.properties?.REGION_NAME);
+
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
         }
 
         if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-          equivalentType = 'EADM_WLAP_REGION_BND_AREA_SVW';
           envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
+          nrmInfo.add(envToNrmRegionsMapping[projectedGeo.properties?.REGION_NUMBER_NAME]);
+
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
         }
 
         if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-          equivalentType = 'WAA_WILDLIFE_MGMT_UNITS_SVW';
+          const gmzId = projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID;
+          const env: string = getENVRegionByGMZ(gmzId);
+          const nrm = envToNrmRegionsMapping[env];
+
+          if (nrm) {
+            nrmInfo.add(nrm);
+          }
+          envInfo.add(env);
           wmuInfo.add(
-            `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
+            `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
           );
+
+          typeNamesToSkip.push('pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW');
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
+          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
         }
 
         typeNames.forEach((typeName: string) => {
-          if (!equivalentType || !typeName.includes(equivalentType)) {
+          if (!typeNamesToSkip.includes(typeName)) {
             const url = buildWFSURL(typeName, wfsParams);
             const geoFilterType = layerGeoFilterTypeMappings[typeName];
             const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
@@ -401,14 +478,21 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           }
 
           if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-            wmuInfo.add(
-              `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-            );
+            const gmzId = feature.properties?.GAME_MANAGEMENT_ZONE_ID;
+            const envRegions = envInfo as any;
+
+            for (let env of envRegions) {
+              const shouldAddWMU = shouldAddWMULayer(env, gmzId);
+
+              if (shouldAddWMU) {
+                wmuInfo.add(
+                  `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
+                );
+              }
+            }
           }
         });
       });
-
-      console.log(geometryState?.geometry)
 
       inferredLayersInfo = {
         parks: Array.from(parksInfo),
@@ -416,8 +500,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         env: Array.from(envInfo),
         wmu: Array.from(wmuInfo)
       };
-
-      console.log(inferredLayersInfo)
 
       setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
     }, 300),

@@ -135,3 +135,7 @@ export const getFormattedFileSize = (fileSize: number) => {
   // gigabyte size
   return `${(fileSize / 1000000000).toFixed(1)} GB`;
 };
+
+export function getKeyByValue(object: any, value: any) {
+  return Object.keys(object).find((key) => object[key] === value);
+}
