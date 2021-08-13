@@ -139,9 +139,9 @@ export const getFormattedFileSize = (fileSize: number) => {
 /**
  * Function to get an object key by the value
  * Ex: let obj = { 'role': 'admin' } -> getKeyByValue(obj, 'admin') will return 'role'
- * 
+ *
  * @param {object} object
- * @param {any} value 
+ * @param {any} value
  * @returns {any} key for the corresponding value
  */
 export function getKeyByValue(object: any, value: any) {

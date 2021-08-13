@@ -323,11 +323,11 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const shouldAddWMULayer = (env: string, gmzId: string): boolean => {
     let shouldAdd = false;
 
-    if (env[0] === '7' && gmzId.includes('7O')) {
-      shouldAdd = true;
-    } else if (env[0] === '9' && gmzId.includes('7P')) {
-      shouldAdd = true;
-    } else if (gmzId.includes(env[0])) {
+    if (
+      (env[0] === '7' && gmzId.includes('7O')) ||
+      (env[0] === '9' && gmzId.includes('7P')) ||
+      (env[0] !== '7' && env[0] !== '9' && gmzId.includes(env[0]))
+    ) {
       shouldAdd = true;
     }
 
@@ -404,12 +404,18 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         }
 
         if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
-          const env = getKeyByValue(envToNrmRegionsMapping, projectedGeo.properties?.REGION_NAME);
+          const nrm = projectedGeo.properties?.REGION_NAME;
+          const env =
+            nrm !== 'Thompson-Okanagan Natural Resource Region'
+              ? [getKeyByValue(envToNrmRegionsMapping, nrm)]
+              : ['3- Thompson', '8- Okanagan'];
 
-          if (env) {
-            envInfo.add(env);
-          }
-          nrmInfo.add(projectedGeo.properties?.REGION_NAME);
+          env.forEach((envRegion) => {
+            if (envRegion) {
+              envInfo.add(envRegion);
+            }
+          });
+          nrmInfo.add(nrm);
 
           typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
           typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
@@ -474,7 +480,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           }
 
           if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-            envInfo.add(feature.properties?.REGION_NUMBER_NAME);
+            const nrmRegions = nrmInfo as any;
+            for (let nrm of nrmRegions) {
+              const env = getKeyByValue(envToNrmRegionsMapping, nrm);
+
+              if (env) {
+                envInfo.add(env);
+              }
+            }
           }
 
           if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
