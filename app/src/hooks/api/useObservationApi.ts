@@ -1,5 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
+import {
+  IGetSubmissionCSVForViewResponse,
+  IGetObservationSubmissionResponse
+  //,IGetObservationSubmissionErrorListResponse
+} from 'interfaces/useObservationApi.interface';
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -69,9 +73,45 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get observation submission based on survey ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetObservationSubmissionResponse>}
+   */
+  const getObservationSubmission = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetObservationSubmissionResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+
+    return data;
+  };
+
+
+  // /**
+  //  * Get error list for a rejected observation submission based on survey ID
+  //  *
+  //  * @param {number} projectId
+  //  * @param {number} surveyId
+  //  * @returns {*} {Promise<IGetObservationSubmissionErrorListResponse>}
+  //  */
+  //  const getObservationErrorList = async (
+  //   projectId: number,
+  //   surveyId: number
+  // ): Promise<IGetObservationSubmissionErrorListResponse> => {
+  //   const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/getSubmissionErrorList`);
+
+  //   return data;
+  // };
+
+
   return {
     uploadObservationSubmission,
-    getSubmissionCSVForView
+    getSubmissionCSVForView,
+    getObservationSubmission
+    // getObservationErrorList
   };
 };
 

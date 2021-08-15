@@ -110,7 +110,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
   }
 
   const sqlStatement = SQL`
-    SELECT
+  SELECT
       os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
@@ -314,6 +314,62 @@ export const insertSurveySubmissionMessageSQL = (
 
   defaultLog.debug({
     label: 'insertSurveySubmissionMessageSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get the list of errors for an  occurrence submission.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyOccurrenceErrorListSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyOccurrenceErrorListSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      sm.submission_message_id as id,
+      smt.name as type,
+      sst.name as status,
+      sm.message
+    FROM
+      occurrence_submission as os
+    LEFT OUTER JOIN
+      submission_status as ss
+    ON
+      os.occurrence_submission_id = ss.occurrence_submission_id
+    LEFT OUTER JOIN
+      submission_status_type as sst
+    ON
+      sst.submission_status_type_id = ss.submission_status_type_id
+    LEFT OUTER JOIN
+      submission_message as sm
+    ON
+      sm.submission_status_id = ss.submission_status_id
+    LEFT OUTER JOIN
+      submission_message_type as smt
+    ON
+      smt.submission_message_type_id = sm.submission_message_type_id
+    WHERE
+      os.survey_id = ${surveyId}
+    ;
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyOccurrenceErrorListSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
