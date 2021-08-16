@@ -107,8 +107,6 @@ const SurveyObservations: React.FC = () => {
       }
     };
 
-    //console.log(errorList);
-
     if (isLoading) {
       fetchObservationSubmission();
     }
