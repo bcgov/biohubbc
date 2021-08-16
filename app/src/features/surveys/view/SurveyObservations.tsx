@@ -9,11 +9,11 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-//import { DialogContext } from 'contexts/dialogContext';
+import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, {
-  //useContext,
+  useContext,
   useEffect,
   useState
 } from 'react';
@@ -80,6 +80,8 @@ const SurveyObservations: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
 
+  const dialogContext = useContext(DialogContext);
+
   useEffect(() => {
     const fetchObservationSubmission = async () => {
       try {
@@ -121,15 +123,27 @@ const SurveyObservations: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  // const defaultYesNoDialogProps = {
-  //   dialogTitle: 'Upload Observation Data',
-  //   dialogText:
-  //     'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
-  //   open: false,
-  //   onClose: () => dialogContext.setYesNoDialog({ open: false }),
-  //   onNo: () => dialogContext.setYesNoDialog({ open: false }),
-  //   onYes: () => dialogContext.setYesNoDialog({ open: false })
-  // };
+  const defaultYesNoDialogProps = {
+    dialogTitle: 'Upload Observation Data',
+    dialogText:
+      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+
+  const showConfirmUploadDialog = () => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        setOpenImportObservations(true);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
 
   return (
     <>
@@ -142,7 +156,7 @@ const SurveyObservations: React.FC = () => {
           startIcon={<Icon path={mdiImport} size={1} />}
           variant="outlined"
           color="primary"
-          onClick={() => setOpenImportObservations(true)}>
+          onClick={() => showConfirmUploadDialog()}>
           Import
         </Button>
       </Box>

@@ -1,45 +1,43 @@
 import Box from '@material-ui/core/Box';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import {
-  mdiClipboardCheckMultipleOutline,
-  mdiTrashCanOutline,
-  mdiInformationOutline,
+  mdiClipboardCheckMultipleOutline, mdiInformationOutline,
   mdiPaperclip,
   mdiToggleSwitch,
-  mdiToggleSwitchOffOutline
+  mdiToggleSwitchOffOutline, mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { SurveyStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { DialogContext } from 'contexts/dialogContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
-import React, { useContext, useCallback, useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Link from '@material-ui/core/Link';
-import { useHistory, useParams, useLocation } from 'react-router';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useHistory, useLocation, useParams } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyObservations from './SurveyObservations';
-import Button from '@material-ui/core/Button';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyStatusType } from 'constants/misc';
-import Chip from '@material-ui/core/Chip';
-import clsx from 'clsx';
-import { AuthStateContext } from 'contexts/authStateContext';
-import { SYSTEM_ROLE } from 'constants/roles';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
