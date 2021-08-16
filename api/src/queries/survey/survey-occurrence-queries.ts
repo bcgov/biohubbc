@@ -226,6 +226,13 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
   return sqlStatement;
 };
 
+/**
+ * SQL query to insert the survey submission status.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @returns {SQLStatement} sql query object
+ */
 export const insertSurveySubmissionStatusSQL = (
   occurrenceSubmissionId: number,
   submissionStatusType: string
@@ -272,6 +279,14 @@ export const insertSurveySubmissionStatusSQL = (
   return sqlStatement;
 };
 
+/**
+ * SQL query to insert the survey submission message.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {string} submissionMessage
+ * @returns {SQLStatement} sql query object
+ */
 export const insertSurveySubmissionMessageSQL = (
   submissionStatusId: number,
   submissionMessageType: string,
