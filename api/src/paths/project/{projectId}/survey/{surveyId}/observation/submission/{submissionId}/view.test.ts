@@ -204,7 +204,7 @@ describe('getObservationSubmissionCSVForView', () => {
     }
   });
 
-  it('should return data on success with xslx file (empty)', async () => {
+  it('should return data on success with xlsx file (empty)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({

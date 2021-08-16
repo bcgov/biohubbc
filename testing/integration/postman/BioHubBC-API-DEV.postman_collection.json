@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "773374df-849a-42e1-9c36-8e7f30f39d80",
+		"_postman_id": "c4f67ff9-7252-4a76-a5b7-0bc5d3077e9d",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -43,7 +43,11 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
+<<<<<<< HEAD
 							"raw": "{\n    \"occurrence_submission_id\": 1\n}",
+=======
+							"raw": "{\r\n    \"occurrence_submission_id\": 2\r\n}",
+>>>>>>> 0963031c18622361847fa43f4691f55e2661c2c9
 							"options": {
 								"raw": {
 									"language": "json"
@@ -582,15 +586,31 @@
 			]
 		},
 		{
-			"name": "spi",
+			"name": "xlsx",
 			"item": [
 				{
 					"name": "validate",
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"occurrence_submission_id\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": ""
+							"raw": "{{BASEURL}}/xlsx/validate",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"xlsx",
+								"validate"
+							]
 						}
 					},
 					"response": []

@@ -215,71 +215,6 @@ describe('CSVWorksheet', () => {
   });
 });
 
-describe('XLSXCSV', () => {
-  it('constructs', () => {
-    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
-
-    const xlsxCSV = new XLSXCSV(mediaFile);
-
-    expect(xlsxCSV).not.to.be.null;
-  });
-
-  describe('isValid', () => {
-    it('returns validation errors if the buffer is empty', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'application/vnd.ms-excel', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([{ fileName: 'fileName', fileErrors: ['File is empty'], isValid: false }]);
-    });
-
-    it('returns validation errors if the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from('fileData'));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
-    });
-
-    it('returns validation errors if the buffer is empty and the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File is empty',
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
-    });
-  });
-});
-
 describe('CSVValidation', () => {
   it('constructs', () => {
     const csvValidation = new CSVValidation('fileName');
@@ -402,5 +337,15 @@ describe('CSVValidation', () => {
         isValid: false
       });
     });
+  });
+});
+
+describe('XLSXCSV', () => {
+  it('constructs', () => {
+    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
+
+    const xlsxCSV = new XLSXCSV(mediaFile);
+
+    expect(xlsxCSV).not.to.be.null;
   });
 });
