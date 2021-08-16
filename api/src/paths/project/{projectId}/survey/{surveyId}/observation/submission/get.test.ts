@@ -166,6 +166,62 @@ describe('getObservationSubmission', () => {
     }
   });
 
+  it('should return an observation submission on success, with rejected files', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery
+      .onFirstCall()
+      .resolves({
+        rows: [
+          {
+            id: 13,
+            file_name: 'dwca_moose.zip',
+            message: 'some message',
+            submission_status_type_name: 'Rejected'
+          }
+        ]
+      })
+      .onSecondCall()
+      .resolves({
+        rows: [
+          {
+            id: 1,
+            type: 'type',
+            status: 'status',
+            message: 'some error message'
+          },
+          {
+            id: 2,
+            type: 'type',
+            status: 'status',
+            message: 'some other error message'
+          }
+        ]
+      });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
+
+    const result = observationSubmission.getOccurenceSubmission();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.be.eql({
+      id: 13,
+      fileName: 'dwca_moose.zip',
+      status: 'Rejected',
+      messages: ['some error message', 'some other error message']
+    });
+  });
+
   it('should return null if the survey has no observation submission, on success', async () => {
     const mockQuery = sinon.stub();
 

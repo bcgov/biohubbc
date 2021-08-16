@@ -2,7 +2,6 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IGetSubmissionCSVForViewResponse,
   IGetObservationSubmissionResponse
-  //,IGetObservationSubmissionErrorListResponse
 } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -42,10 +41,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       }
     );
 
-    console.log('data is ', data);
-
     if (data.submissionId) {
-      console.log('Validating the dwca submission');
       axios.post(`/api/dwc/validate`, {
         occurrence_submission_id: data.submissionId
       });

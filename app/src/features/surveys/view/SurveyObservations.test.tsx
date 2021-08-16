@@ -7,7 +7,7 @@ import SurveyObservations from './SurveyObservations';
 jest.mock('../../../hooks/useBioHubApi');
 
 const mockUseBiohubApi = {
-  survey: {
+  observation: {
     getObservationSubmission: jest.fn()
   }
 };
@@ -19,7 +19,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 describe('SurveyObservations', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().survey.getObservationSubmission.mockClear();
+    mockBiohubApi().observation.getObservationSubmission.mockClear();
   });
 
   afterEach(() => {
@@ -36,7 +36,7 @@ describe('SurveyObservations', () => {
 
     await waitFor(() => {
       expect(getByTestId('observations-heading')).toBeInTheDocument();
-      expect(mockBiohubApi().survey.getObservationSubmission).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().observation.getObservationSubmission).toHaveBeenCalledTimes(1);
     });
   });
 
