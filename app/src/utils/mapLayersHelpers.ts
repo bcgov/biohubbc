@@ -153,7 +153,7 @@ export function getInferredLayersConfigByWFSFeature(feature: Feature, prevLayers
   }
 
   if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-    const nrmRegions = currentLayersConfig.nrmInfo as any;
+    const nrmRegions = currentLayersConfig.nrmInfo;
     for (let nrm of nrmRegions) {
       const env = getKeyByValue(envToNrmRegionsMapping, nrm);
 
@@ -165,7 +165,7 @@ export function getInferredLayersConfigByWFSFeature(feature: Feature, prevLayers
 
   if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
     const gmzId = feature.properties?.GAME_MANAGEMENT_ZONE_ID;
-    const envRegions = currentLayersConfig.envInfo as any;
+    const envRegions = currentLayersConfig.envInfo;
 
     for (let env of envRegions) {
       if (
