@@ -105,7 +105,7 @@ export function getOccurenceSubmission(): RequestHandler {
       const getOccurrenceSubmissionSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
 
       if (!getOccurrenceSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL statement');
+        throw new HTTP400('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
       }
 
       await connection.open();
@@ -127,7 +127,7 @@ export function getOccurenceSubmission(): RequestHandler {
         const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
 
         if (!getSubmissionErrorListSQLStatement) {
-          throw new HTTP400('Failed to build SQL statement');
+          throw new HTTP400('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');
         }
 
         const submissionErrorListData = await connection.query(
