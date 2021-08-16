@@ -24,7 +24,11 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
 import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { getKeyByValue } from 'utils/Utils';
+import {
+  determineMapGeometries,
+  getInferredLayersConfigByProjectedGeometry,
+  getInferredLayersConfigByWFSFeature
+} from 'utils/mapLayersHelpers';
 
 /*
   Get leaflet icons working
@@ -68,6 +72,25 @@ const layerGeoFilterTypeMappings = {
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW': 'GEOMETRY',
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'GEOMETRY'
+};
+
+const layersToInfer = [
+  'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
+  'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG',
+  'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW',
+  'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
+];
+
+export const envToNrmRegionsMapping = {
+  '1- Vancouver Island': 'West Coast Natural Resource Region',
+  '2- Lower Mainland': 'South Coast Natural Resource Region',
+  '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
+  '8- Okanagan': 'Thompson-Okanagan Natural Resource Region',
+  '4- Kootenay': 'Kootenay-Boundary Natural Resource Region',
+  '5- Cariboo': 'Cariboo Natural Resource Region',
+  '6- Skeena': 'Skeena Natural Resource Region',
+  '7- Omineca': 'Omineca Natural Resource Region',
+  '9- Peace': 'Northeast Natural Resource Region'
 };
 
 const layerContentHandlers = {
@@ -190,25 +213,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
-  const layersToInfer = [
-    'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
-    'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG',
-    'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW',
-    'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
-  ];
-
-  const envToNrmRegionsMapping = {
-    '1- Vancouver Island': 'West Coast Natural Resource Region',
-    '2- Lower Mainland': 'South Coast Natural Resource Region',
-    '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
-    '8- Okanagan': 'Thompson-Okanagan Natural Resource Region',
-    '4- Kootenay': 'Kootenay-Boundary Natural Resource Region',
-    '5- Cariboo': 'Cariboo Natural Resource Region',
-    '6- Skeena': 'Skeena Natural Resource Region',
-    '7- Omineca': 'Omineca Natural Resource Region',
-    '9- Peace': 'Northeast Natural Resource Region'
-  };
-
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
     if (!preDefinedGeometry) {
@@ -313,140 +317,31 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return coordinatesString;
   };
 
-  /**
-   * Determine if a WMU should be added to the list of inferred layers based on ENV region and WMU GMZ ID mapping
-   *
-   * @param {string} env
-   * @param {string} gmzId
-   * @returns {boolean}
-   */
-  const shouldAddWMULayer = (env: string, gmzId: string): boolean => {
-    let shouldAdd = false;
-
-    if (
-      (env[0] === '7' && gmzId.includes('7O')) ||
-      (env[0] === '9' && gmzId.includes('7P')) ||
-      (env[0] !== '7' && env[0] !== '9' && gmzId.includes(env[0]))
-    ) {
-      shouldAdd = true;
-    }
-
-    return shouldAdd;
-  };
-
-  /**
-   * Gets the ENV region name based on the WMU GMZ ID
-   *
-   * @param {string} gmzId
-   * @returns {string} env region name
-   */
-  const getENVRegionByGMZ = (gmzId: string): string => {
-    let env: string = '';
-
-    if (gmzId.includes('1')) {
-      env = '1- Vancouver Island';
-    } else if (gmzId.includes('2')) {
-      env = '2- Lower Mainland';
-    } else if (gmzId.includes('3')) {
-      env = '3- Thompson';
-    } else if (gmzId.includes('4')) {
-      env = '4- Kootenay';
-    } else if (gmzId.includes('5')) {
-      env = '5- Cariboo';
-    } else if (gmzId.includes('6')) {
-      env = '6- Skeena';
-    } else if (gmzId.includes('7P')) {
-      env = '9- Peace';
-    } else if (gmzId.includes('7O')) {
-      env = '7- Omineca';
-    } else if (gmzId.includes('8')) {
-      env = '8- Okanagan';
-    }
-
-    return env;
-  };
-
-  // TODO break this into smaller functions
+  /*
+    Function to get WFS feature details based on the existing map geometries
+    and layer types/filter criteria
+  */
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
-      let inferredLayersInfo;
-      const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
-      const nrmInfo: Set<string> = new Set(); // NRM Regions
-      const envInfo: Set<string> = new Set(); // ENV Regions
-      const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+      let inferredLayersConfig: any;
 
-      let drawnGeometries: any[] = [];
-
-      if (geometryState?.geometry.length) {
-        drawnGeometries = geometryState?.geometry;
-      } else if (nonEditableGeometries) {
-        drawnGeometries = nonEditableGeometries.map((geo: INonEditableGeometries) => geo.feature);
-      }
+      // Get map geometries based on whether boundary is non editable or drawn/uploaded
+      const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
 
       // Convert all geometries to BC Albers projection
-      const reprojectedGeometries = await Promise.all(changeProjections(drawnGeometries));
+      const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
 
       const wfsPromises: Promise<any>[] = [];
-
       reprojectedGeometries.forEach((projectedGeo) => {
         let filterCriteria = '';
         const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
         filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
+        inferredLayersConfig = getInferredLayersConfigByProjectedGeometry(projectedGeo);
 
-        const geoId = projectedGeo.id as string;
-        let typeNamesToSkip: string[] = [];
-
-        if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
-          parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
-
-          typeNamesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
-        }
-
-        if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
-          const nrm = projectedGeo.properties?.REGION_NAME;
-          const env =
-            nrm !== 'Thompson-Okanagan Natural Resource Region'
-              ? [getKeyByValue(envToNrmRegionsMapping, nrm)]
-              : ['3- Thompson', '8- Okanagan'];
-
-          env.forEach((envRegion) => {
-            if (envRegion) {
-              envInfo.add(envRegion);
-            }
-          });
-          nrmInfo.add(nrm);
-
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-        }
-
-        if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-          envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
-          nrmInfo.add(envToNrmRegionsMapping[projectedGeo.properties?.REGION_NUMBER_NAME]);
-
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-        }
-
-        if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-          const gmzId = projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID;
-          const env: string = getENVRegionByGMZ(gmzId);
-          const nrm = envToNrmRegionsMapping[env];
-
-          nrmInfo.add(nrm);
-          envInfo.add(env);
-          wmuInfo.add(
-            `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-          );
-
-          typeNamesToSkip.push('pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW');
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
-          typeNamesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-        }
-
+        // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
         typeNames.forEach((typeName: string) => {
-          if (!typeNamesToSkip.includes(typeName)) {
+          if (!inferredLayersConfig.layerTypesToSkip.includes(typeName)) {
             const url = buildWFSURL(typeName, wfsParams);
             const geoFilterType = layerGeoFilterTypeMappings[typeName];
             const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
@@ -462,54 +357,23 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           }
         });
       });
-
       const wfsResult = await Promise.all(wfsPromises);
 
       wfsResult.forEach((item: any) => {
         item?.features?.forEach((feature: Feature) => {
-          const featureId = feature.id as string;
-
-          if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
-            parksInfo.add(feature.properties?.PROTECTED_LANDS_NAME);
-          }
-
-          if (featureId.includes('ADM_NR_REGIONS_SPG')) {
-            nrmInfo.add(feature.properties?.REGION_NAME);
-          }
-
-          if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-            const nrmRegions = nrmInfo as any;
-            for (let nrm of nrmRegions) {
-              const env = getKeyByValue(envToNrmRegionsMapping, nrm);
-
-              if (env) {
-                envInfo.add(env);
-              }
-            }
-          }
-
-          if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-            const gmzId = feature.properties?.GAME_MANAGEMENT_ZONE_ID;
-            const envRegions = envInfo as any;
-
-            for (let env of envRegions) {
-              const shouldAddWMU = shouldAddWMULayer(env, gmzId);
-
-              if (shouldAddWMU) {
-                wmuInfo.add(
-                  `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-                );
-              }
-            }
-          }
+          inferredLayersConfig = getInferredLayersConfigByWFSFeature(feature, inferredLayersConfig);
         });
       });
 
-      inferredLayersInfo = {
-        parks: Array.from(parksInfo),
-        nrm: Array.from(nrmInfo),
-        env: Array.from(envInfo),
-        wmu: Array.from(wmuInfo)
+      if (!inferredLayersConfig) {
+        return;
+      }
+
+      const inferredLayersInfo = {
+        parks: Array.from(inferredLayersConfig.parksInfo),
+        nrm: Array.from(inferredLayersConfig.nrmInfo),
+        env: Array.from(inferredLayersConfig.envInfo),
+        wmu: Array.from(inferredLayersConfig.wmuInfo)
       };
 
       setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
