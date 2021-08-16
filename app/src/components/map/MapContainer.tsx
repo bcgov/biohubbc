@@ -323,7 +323,16 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
   */
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
-      let inferredLayersConfig: any;
+      const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
+      const nrmInfo: Set<string> = new Set(); // NRM Regions
+      const envInfo: Set<string> = new Set(); // ENV Regions
+      const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+      let inferredLayersConfig: any = {
+        parksInfo,
+        nrmInfo,
+        envInfo,
+        wmuInfo
+      };
 
       // Get map geometries based on whether boundary is non editable or drawn/uploaded
       const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
@@ -337,7 +346,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
         filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
-        inferredLayersConfig = getInferredLayersConfigByProjectedGeometry(projectedGeo);
+        inferredLayersConfig = getInferredLayersConfigByProjectedGeometry(projectedGeo, inferredLayersConfig);
 
         // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
         typeNames.forEach((typeName: string) => {

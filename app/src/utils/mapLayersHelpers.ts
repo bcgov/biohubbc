@@ -64,18 +64,16 @@ const getENVRegionByGMZ = (gmzId: string): string => {
  * (Open Maps API call is not required in this case)
  *
  * @param {any} projectedGeo
+ * @param {any} prevLayersConfig
  * @returns {any} inferredLayersConfig
  */
-export function getInferredLayersConfigByProjectedGeometry(projectedGeo: any) {
-  const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
-  const nrmInfo: Set<string> = new Set(); // NRM Regions
-  const envInfo: Set<string> = new Set(); // ENV Regions
-  const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+export function getInferredLayersConfigByProjectedGeometry(projectedGeo: any, prevLayersConfig: any) {
+  const currentLayersConfig = { ...prevLayersConfig };
   const geoId = projectedGeo.id as string;
   let layerTypesToSkip: string[] = [];
 
   if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
-    parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
+    currentLayersConfig.parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
 
     layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
   }
@@ -89,18 +87,18 @@ export function getInferredLayersConfigByProjectedGeometry(projectedGeo: any) {
 
     env.forEach((envRegion) => {
       if (envRegion) {
-        envInfo.add(envRegion);
+        currentLayersConfig.envInfo.add(envRegion);
       }
     });
-    nrmInfo.add(nrm);
+    currentLayersConfig.nrmInfo.add(nrm);
 
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
   }
 
   if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-    envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
-    nrmInfo.add(envToNrmRegionsMapping[projectedGeo.properties?.REGION_NUMBER_NAME]);
+    currentLayersConfig.envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
+    currentLayersConfig.nrmInfo.add(envToNrmRegionsMapping[projectedGeo.properties?.REGION_NUMBER_NAME]);
 
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
@@ -111,9 +109,9 @@ export function getInferredLayersConfigByProjectedGeometry(projectedGeo: any) {
     const env: string = getENVRegionByGMZ(gmzId);
     const nrm = envToNrmRegionsMapping[env];
 
-    nrmInfo.add(nrm);
-    envInfo.add(env);
-    wmuInfo.add(
+    currentLayersConfig.nrmInfo.add(nrm);
+    currentLayersConfig.envInfo.add(env);
+    currentLayersConfig.wmuInfo.add(
       `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
     );
 
@@ -123,10 +121,7 @@ export function getInferredLayersConfigByProjectedGeometry(projectedGeo: any) {
   }
 
   return {
-    parksInfo,
-    envInfo,
-    nrmInfo,
-    wmuInfo,
+    ...currentLayersConfig,
     layerTypesToSkip
   };
 }
