@@ -323,19 +323,19 @@ export const insertSurveySubmissionMessageSQL = (
 };
 
 /**
- * SQL query to get the list of errors for an  occurrence submission.
+ * SQL query to get the list of errors for an occurrence submission.
  *
- * @param {number} surveyId
+ * @param {number} occurrence_submission_id
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyOccurrenceErrorListSQL = (surveyId: number): SQLStatement | null => {
+export const getSurveyOccurrenceErrorListSQL = (occurrence_submission_id: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'getSurveyOccurrenceErrorListSQL',
     message: 'params',
-    surveyId
+    occurrence_submission_id
   });
 
-  if (!surveyId) {
+  if (!occurrence_submission_id) {
     return null;
   }
 
@@ -364,8 +364,8 @@ export const getSurveyOccurrenceErrorListSQL = (surveyId: number): SQLStatement 
     ON
       smt.submission_message_type_id = sm.submission_message_type_id
     WHERE
-      os.survey_id = ${surveyId}
-    ;
+      os.occurrence_submission_id = ${occurrence_submission_id}
+    ORDER BY sm.submission_message_id;
   `;
 
   defaultLog.debug({

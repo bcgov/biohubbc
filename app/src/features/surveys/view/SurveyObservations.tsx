@@ -13,13 +13,14 @@ import ObservationSubmissionCSV from 'features/observations/components/Observati
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-
-// import Table from '@material-ui/core/Table';
-// import TableBody from '@material-ui/core/TableBody';
-// import TableCell from '@material-ui/core/TableCell';
-// import TableContainer from '@material-ui/core/TableContainer';
-// import TableHead from '@material-ui/core/TableHead';
-// import TableRow from '@material-ui/core/TableRow';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -78,13 +79,12 @@ const SurveyObservations: React.FC = () => {
   const [timer, setTimer] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
-  //const [errorList, setErrorsList] = useState<any>(null);
 
   useEffect(() => {
     const fetchObservationSubmission = async () => {
       try {
         const submission = await biohubApi.observation.getObservationSubmission(projectId, surveyId);
-        console.log(submission);
+
         setSubmissionStatus(() => {
           setIsLoading(false);
           if (submission) {
@@ -99,13 +99,12 @@ const SurveyObservations: React.FC = () => {
               setIsValidating(true);
             }
           }
-          console.log(submission.status);
+
           return submission;
         });
       } catch (e) {
         console.error('Failed to call the API - ', e);
       }
-
     };
 
     //console.log(errorList);
@@ -123,75 +122,6 @@ const SurveyObservations: React.FC = () => {
   if (isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  // useEffect(() => {
-  //   const getErrorsList = async () => {
-  //     const errorList = await biohubApi.observation.getObservationErrorList(projectId, surveyId);
-  //     setErrorsList(() => {
-  //       return errorList;
-  //     });
-  //   };
-  //   if (isLoading) {
-  //     getErrorsList();
-  //   }
-  // }, [errorList]);
-
-  // const getErrorsTableData = () => {
-  //   const hasErrors = errorList?.length > 0;
-
-  //   if (!hasErrors) {
-  //     return (
-  //       <Table>
-  //         <TableHead>
-  //           <TableRow>
-  //             <TableCell>Number</TableCell>
-  //             <TableCell>Type</TableCell>
-  //             <TableCell>Coordinator Agency</TableCell>
-  //             <TableCell>Associated Project</TableCell>
-  //           </TableRow>
-  //         </TableHead>
-  //         <TableBody>
-  //           <TableRow>
-  //             <TableCell colSpan={6}>
-  //               <Box display="flex" justifyContent="center">
-  //                 No errors
-  //               </Box>
-  //             </TableCell>
-  //           </TableRow>
-  //         </TableBody>
-  //       </Table>
-  //     );
-  //   } else {
-  //     return (
-  //       <TableContainer>
-  //         <Table>
-  //           <TableHead>
-  //             <TableRow>
-  //               <TableCell>Number</TableCell>
-  //               <TableCell>Type</TableCell>
-  //               <TableCell>Status</TableCell>
-  //               <TableCell>Message</TableCell>
-  //             </TableRow>
-  //           </TableHead>
-  //           <TableBody data-testid="submission-error-list">
-  //             {errorList?.map((row) => (
-  //               <TableRow key={row.id}>
-  //                 <TableCell component="th" scope="row">
-  //                   {row.number}
-  //                 </TableCell>
-  //                 <TableCell>{row.type}</TableCell>
-  //                 <TableCell>{row.status}</TableCell>
-  //                 <TableCell>{row.message}</TableCell>
-  //               </TableRow>
-  //             ))}
-  //           </TableBody>
-  //         </Table>
-  //       </TableContainer>
-  //     );
-  //   }
-  // };
-
-  console.log('******', submissionStatus)
 
   return (
     <>
@@ -231,8 +161,33 @@ const SurveyObservations: React.FC = () => {
             <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
               You will need to resolve the following errors in your local file and re-import:
             </Typography>
-            {submissionStatus?.message}
-            {/* {getErrorsTableData()} */}
+          </Box>
+          <Box mb={5} display="flex" justifyContent="space-between">
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Error Item</TableCell>
+                    <TableCell>Error Message</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {submissionStatus?.messages.map((row: any, rowIndex: number) => (
+                    <TableRow key={rowIndex}>
+                      <TableCell>{rowIndex + 1}</TableCell>
+                      <TableCell>{row}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
+          <Box mb={5} display="flex" justifyContent="space-between">
+            <List>
+              {submissionStatus?.messages.map((row: any) => (
+                <ListItem>{row}</ListItem>
+              ))}
+            </List>
           </Box>
         </div>
       )}

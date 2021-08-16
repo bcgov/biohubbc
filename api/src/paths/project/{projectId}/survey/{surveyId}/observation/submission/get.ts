@@ -5,7 +5,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
-import { getLatestSurveyOccurrenceSubmissionSQL } from '../../../../../../../queries/survey/survey-occurrence-queries';
+import {
+  getLatestSurveyOccurrenceSubmissionSQL,
+  getSurveyOccurrenceErrorListSQL
+} from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
@@ -57,9 +60,13 @@ GET.apiDoc = {
                 description: 'The validation status of the submission',
                 type: 'string'
               },
-              message: {
-                description: 'The validation status message of the submission',
-                type: 'string'
+              messages: {
+                description: 'The validation status messages of the submission',
+                type: 'array',
+                items: {
+                  type: 'string',
+                  description: 'A validation status message of the submission'
+                }
               }
             }
           }
@@ -98,7 +105,7 @@ export function getObservationSubmission(): RequestHandler {
       const getObservationSubmissionSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
 
       if (!getObservationSubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+        throw new HTTP400('Failed to build SQL statement');
       }
 
       await connection.open();
@@ -107,6 +114,33 @@ export function getObservationSubmission(): RequestHandler {
         getObservationSubmissionSQLStatement.text,
         getObservationSubmissionSQLStatement.values
       );
+
+      let messageList = [];
+
+      if (
+        observationSubmissionData &&
+        observationSubmissionData.rows &&
+        observationSubmissionData.rows[0] &&
+        observationSubmissionData.rows[0].submission_status_type_name === 'Rejected'
+      ) {
+        const observation_submission_id = observationSubmissionData.rows[0].id;
+        const getSubmissionErrorListSQLStatement = getSurveyOccurrenceErrorListSQL(Number(observation_submission_id));
+
+        if (!getSubmissionErrorListSQLStatement) {
+          throw new HTTP400('Failed to build SQL statement');
+        }
+
+        const submissionErrorListData = await connection.query(
+          getSubmissionErrorListSQLStatement.text,
+          getSubmissionErrorListSQLStatement.values
+        );
+
+        messageList =
+          (submissionErrorListData &&
+            submissionErrorListData.rows &&
+            submissionErrorListData.rows.map((row) => row.message)) ||
+          [];
+      }
 
       await connection.commit();
 
@@ -117,7 +151,7 @@ export function getObservationSubmission(): RequestHandler {
             id: observationSubmissionData.rows[0].id,
             fileName: observationSubmissionData.rows[0].file_name,
             status: observationSubmissionData.rows[0].submission_status_type_name,
-            message: observationSubmissionData.rows[0].message
+            messages: messageList
           }) ||
         null;
 

@@ -1,4 +1,3 @@
-
 'use strict';
 
 import { RequestHandler } from 'express';
@@ -112,19 +111,18 @@ export function getSubmissionErrorList(): RequestHandler {
       await connection.commit();
 
       const getObservationErrorListData =
-        (getSurveyOccurrenceErrorListData &&
-          getSurveyOccurrenceErrorListData.rows) || null;
-        // (getSurveyOccurrenceErrorListData &&
-        //   getSurveyOccurrenceErrorListData.rows &&
-        //   getSurveyOccurrenceErrorListData.rows && {
-        //     id: getSurveyOccurrenceErrorListData.rows[0].id,
-        //     type: getSurveyOccurrenceErrorListData.rows[0].submission_message_type_name,
-        //     status: getSurveyOccurrenceErrorListData.rows[0].submission_status_type_name,
-        //     message: getSurveyOccurrenceErrorListData.rows[0].message
-        //   }) ||
-        // null;
+        (getSurveyOccurrenceErrorListData && getSurveyOccurrenceErrorListData.rows) || null;
+      // (getSurveyOccurrenceErrorListData &&
+      //   getSurveyOccurrenceErrorListData.rows &&
+      //   getSurveyOccurrenceErrorListData.rows && {
+      //     id: getSurveyOccurrenceErrorListData.rows[0].id,
+      //     type: getSurveyOccurrenceErrorListData.rows[0].submission_message_type_name,
+      //     status: getSurveyOccurrenceErrorListData.rows[0].submission_status_type_name,
+      //     message: getSurveyOccurrenceErrorListData.rows[0].message
+      //   }) ||
+      // null;
 
-        console.log(getObservationErrorListData);
+      console.log(getObservationErrorListData);
 
       return res.status(200).json(getObservationErrorListData);
     } catch (error) {
@@ -136,4 +134,3 @@ export function getSubmissionErrorList(): RequestHandler {
     }
   };
 }
-

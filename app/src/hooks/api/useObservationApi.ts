@@ -89,7 +89,6 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
-
   // /**
   //  * Get error list for a rejected observation submission based on survey ID
   //  *
@@ -105,7 +104,6 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   //   return data;
   // };
-
 
   return {
     uploadObservationSubmission,

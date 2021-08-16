@@ -18,7 +18,7 @@ export interface IGetObservationSubmissionResponse {
   id: number;
   fileName: string;
   status: string;
-  message: string;
+  messages: string[];
 }
 
 export interface IGetObservationSubmissionErrorListResponse {
