@@ -13,14 +13,6 @@ import ObservationSubmissionCSV from 'features/observations/components/Observati
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -139,7 +131,7 @@ const SurveyObservations: React.FC = () => {
         </Button>
       </Box>
       {!isLoading && !submissionStatus && (
-        <Box mb={5} display="flex" justifyContent="space-between">
+        <Box mb={5} display="flex" justifyContent="center" alignContent="center">
           <Typography data-testid="observations-nodata" variant="body2" className={classes.infoBox}>
             No Observation Data.{' '}
             <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
@@ -163,31 +155,11 @@ const SurveyObservations: React.FC = () => {
             </Typography>
           </Box>
           <Box mb={5} display="flex" justifyContent="space-between">
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Error Item</TableCell>
-                    <TableCell>Error Message</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {submissionStatus?.messages.map((row: any, rowIndex: number) => (
-                    <TableRow key={rowIndex}>
-                      <TableCell>{rowIndex + 1}</TableCell>
-                      <TableCell>{row}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-          <Box mb={5} display="flex" justifyContent="space-between">
-            <List>
+            <ul>
               {submissionStatus?.messages.map((row: any) => (
-                <ListItem>{row}</ListItem>
+                <li>{row}</li>
               ))}
-            </List>
+            </ul>
           </Box>
         </div>
       )}
