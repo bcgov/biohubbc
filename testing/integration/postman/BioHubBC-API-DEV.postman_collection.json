@@ -43,11 +43,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-<<<<<<< HEAD
-							"raw": "{\n    \"occurrence_submission_id\": 1\n}",
-=======
 							"raw": "{\r\n    \"occurrence_submission_id\": 2\r\n}",
->>>>>>> 0963031c18622361847fa43f4691f55e2661c2c9
 							"options": {
 								"raw": {
 									"language": "json"
