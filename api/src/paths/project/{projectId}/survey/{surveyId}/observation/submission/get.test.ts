@@ -60,7 +60,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = observationSubmission.getObservationSubmission();
+      const result = observationSubmission.getOccurenceSubmission();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
         (null as unknown) as any,
@@ -84,7 +84,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
-      const result = observationSubmission.getObservationSubmission();
+      const result = observationSubmission.getOccurenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -118,7 +118,7 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getObservationSubmission();
+    const result = observationSubmission.getOccurenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -145,7 +145,7 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getObservationSubmission();
+    const result = observationSubmission.getOccurenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 

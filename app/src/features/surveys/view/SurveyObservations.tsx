@@ -9,10 +9,17 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+//import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useEffect, useState } from 'react';
+import React, {
+  //useContext,
+  useEffect,
+  useState
+} from 'react';
 import { useParams } from 'react-router';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -54,6 +61,7 @@ const SurveyObservations: React.FC = () => {
   const [openImportObservations, setOpenImportObservations] = useState(false);
 
   const classes = useStyles();
+  //const dialogContext = useContext(DialogContext);
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
@@ -115,6 +123,16 @@ const SurveyObservations: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  // const defaultYesNoDialogProps = {
+  //   dialogTitle: 'Upload Observation Data',
+  //   dialogText:
+  //     'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+  //   open: false,
+  //   onClose: () => dialogContext.setYesNoDialog({ open: false }),
+  //   onNo: () => dialogContext.setYesNoDialog({ open: false }),
+  //   onYes: () => dialogContext.setYesNoDialog({ open: false })
+  // };
+
   return (
     <>
       <Box mb={5} display="flex" justifyContent="space-between">
@@ -142,14 +160,11 @@ const SurveyObservations: React.FC = () => {
       )}
       {!isLoading && !isValidating && submissionStatus?.status === 'Rejected' && (
         <div>
-          <Box mb={5} display="flex" justifyContent="space-between">
-            <div className={classes.errorBox}>
-              <Typography data-testid="observations-error-summary" variant="body2" className={classes.center}>
-                Error occurred.
-              </Typography>
-            </div>
-          </Box>
-          <Box mb={5} display="flex" justifyContent="space-between">
+          <Alert severity="error">
+            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+            Validation Failed
+          </Alert>
+          <Box mb={5} mt={5} display="flex" justifyContent="space-between">
             <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
               You will need to resolve the following errors in your local file and re-import:
             </Typography>
@@ -165,16 +180,31 @@ const SurveyObservations: React.FC = () => {
       )}
       {!isLoading && !isValidating && submissionStatus?.status === 'Darwin Core Validated' && (
         <div>
-          <Box mb={5} display="flex" justifyContent="space-between">
-            <div className={classes.successBox}>
-              <Typography data-testid="observations-success-summary" variant="body2" className={classes.center}>
-                Success.
-              </Typography>
-            </div>
-          </Box>
+          <Alert severity="success">
+            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+          </Alert>
           <ObservationSubmissionCSV submissionId={submissionStatus.id} />
         </div>
       )}
+      {!isLoading && isValidating && (
+        <div>
+          <Alert severity="info">
+            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+            Validating observation data. Please wait ...
+          </Alert>
+        </div>
+      )}
+      {/* {!isLoading && !submissionStatus && (
+        <div>
+          <Box mb={5} display="flex" justifyContent="space-between">
+            <div className={classes.successBox}>
+              <Typography data-testid="observations-validating" variant="body2" className={classes.center}>
+                Validating observation data. Please wait...
+              </Typography>
+            </div>
+          </Box>
+        </div>
+      )} */}
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"

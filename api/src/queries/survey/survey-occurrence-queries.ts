@@ -328,9 +328,9 @@ export const insertSurveySubmissionMessageSQL = (
  * @param {number} occurrence_submission_id
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyOccurrenceErrorListSQL = (occurrence_submission_id: number): SQLStatement | null => {
+export const getOccurrenceSubmissionMessagesSQL = (occurrence_submission_id: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getSurveyOccurrenceErrorListSQL',
+    label: 'getOccurrenceSubmissionMessagesSQL',
     message: 'params',
     occurrence_submission_id
   });
@@ -369,7 +369,7 @@ export const getSurveyOccurrenceErrorListSQL = (occurrence_submission_id: number
   `;
 
   defaultLog.debug({
-    label: 'getSurveyOccurrenceErrorListSQL',
+    label: 'getOccurrenceSubmissionMessagesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
