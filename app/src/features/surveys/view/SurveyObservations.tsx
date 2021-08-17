@@ -2,11 +2,12 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiImport, mdiFileOutline, mdiClockOutline } from '@mdi/js';
+import { mdiClockOutline, mdiFileOutline, mdiImport } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -16,7 +17,6 @@ import ObservationSubmissionCSV from 'features/observations/components/Observati
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -38,12 +38,6 @@ const useStyles = makeStyles(() => ({
   },
   infoBox: {
     background: 'rgba(241, 243, 245, 1)'
-  },
-  errorBox: {
-    background: 'rgba(244, 67, 54, 0.1)'
-  },
-  successBox: {
-    background: 'rgba(33, 150, 243, 0.1)'
   }
 }));
 
