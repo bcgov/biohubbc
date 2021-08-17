@@ -26,8 +26,9 @@ import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   determineMapGeometries,
-  getInferredLayersConfigByProjectedGeometry,
-  getInferredLayersConfigByWFSFeature
+  getInferredLayersInfoByProjectedGeometry,
+  getInferredLayersInfoByWFSFeature,
+  getLayerTypesToSkipByProjectedGeometry
 } from 'utils/mapLayersHelpers';
 
 /*
@@ -327,7 +328,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       const nrmInfo: Set<string> = new Set(); // NRM Regions
       const envInfo: Set<string> = new Set(); // ENV Regions
       const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
-      let inferredLayersConfig: any = {
+      let inferredLayersInfo = {
         parksInfo,
         nrmInfo,
         envInfo,
@@ -346,11 +347,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
         filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
-        inferredLayersConfig = getInferredLayersConfigByProjectedGeometry(projectedGeo, inferredLayersConfig);
+        inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
+        const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
 
         // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
         typeNames.forEach((typeName: string) => {
-          if (!inferredLayersConfig.layerTypesToSkip.includes(typeName)) {
+          if (!layerTypesToSkip.includes(typeName)) {
             const url = buildWFSURL(typeName, wfsParams);
             const geoFilterType = layerGeoFilterTypeMappings[typeName];
             const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
@@ -370,22 +372,22 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
       wfsResult.forEach((item: any) => {
         item?.features?.forEach((feature: Feature) => {
-          inferredLayersConfig = getInferredLayersConfigByWFSFeature(feature, inferredLayersConfig);
+          inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
         });
       });
 
-      if (!inferredLayersConfig) {
+      if (!inferredLayersInfo) {
         return;
       }
 
-      const inferredLayersInfo = {
-        parks: Array.from(inferredLayersConfig.parksInfo),
-        nrm: Array.from(inferredLayersConfig.nrmInfo),
-        env: Array.from(inferredLayersConfig.envInfo),
-        wmu: Array.from(inferredLayersConfig.wmuInfo)
+      const inferredLayers = {
+        parks: Array.from(inferredLayersInfo.parksInfo),
+        nrm: Array.from(inferredLayersInfo.nrmInfo),
+        env: Array.from(inferredLayersInfo.envInfo),
+        wmu: Array.from(inferredLayersInfo.wmuInfo)
       };
 
-      setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
+      setInferredLayersInfo && setInferredLayersInfo(inferredLayers);
     }, 300),
     [geometryState?.geometry, nonEditableGeometries]
   );
