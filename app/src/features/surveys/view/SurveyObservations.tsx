@@ -28,7 +28,7 @@ const useStyles = makeStyles(() => ({
   center: {
     alignSelf: 'center'
   },
-  infoBox: {
+  box: {
     width: '100%',
     background: 'rgba(241, 243, 245, 1)',
     alignItems: 'center',
@@ -36,17 +36,14 @@ const useStyles = makeStyles(() => ({
     justifyContent: 'center',
     minHeight: '3rem'
   },
+  infoBox: {
+    background: 'rgba(241, 243, 245, 1)'
+  },
   errorBox: {
-    width: '100%',
-    background: 'rgba(244, 67, 54, 0.1)',
-    alignSelf: 'center',
-    minHeight: '3rem'
+    background: 'rgba(244, 67, 54, 0.1)'
   },
   successBox: {
-    width: '100%',
-    background: 'rgba(33, 150, 243, 0.1)',
-    alignSelf: 'center',
-    minHeight: '3rem'
+    background: 'rgba(33, 150, 243, 0.1)'
   }
 }));
 
@@ -165,7 +162,7 @@ const SurveyObservations: React.FC = () => {
       </Box>
       {!isLoading && !submissionStatus && (
         <Box mb={5}>
-          <Typography data-testid="observations-nodata" variant="body2" className={classes.infoBox}>
+          <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
             No Observation Data.{' '}
             <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
               Click Here to Import
