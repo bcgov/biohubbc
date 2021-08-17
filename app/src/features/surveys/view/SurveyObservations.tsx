@@ -73,29 +73,25 @@ const SurveyObservations: React.FC = () => {
 
   useEffect(() => {
     const fetchObservationSubmission = async () => {
-      try {
-        const submission = await biohubApi.observation.getObservationSubmission(projectId, surveyId);
+      const submission = await biohubApi.observation.getObservationSubmission(projectId, surveyId);
 
-        setSubmissionStatus(() => {
-          setIsLoading(false);
-          if (submission) {
-            if (submission.status === 'Rejected' || submission.status === 'Darwin Core Validated') {
-              setIsValidating(false);
+      setSubmissionStatus(() => {
+        setIsLoading(false);
+        if (submission) {
+          if (submission.status === 'Rejected' || submission.status === 'Darwin Core Validated') {
+            setIsValidating(false);
 
-              if (timer) {
-                clearInterval(timer);
-                setTimer(null);
-              }
-            } else {
-              setIsValidating(true);
+            if (timer) {
+              clearInterval(timer);
+              setTimer(null);
             }
+          } else {
+            setIsValidating(true);
           }
+        }
 
-          return submission;
-        });
-      } catch (e) {
-        console.error('Failed to call the API - ', e);
-      }
+        return submission;
+      });
     };
 
     if (isLoading) {
