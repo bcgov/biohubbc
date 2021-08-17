@@ -12,14 +12,11 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, {
-  useContext,
-  useEffect,
-  useState
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
+//import { Container } from '@material-ui/core';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -34,7 +31,9 @@ const useStyles = makeStyles(() => ({
   infoBox: {
     width: '100%',
     background: 'rgba(241, 243, 245, 1)',
-    alignSelf: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
     minHeight: '3rem'
   },
   errorBox: {
@@ -133,16 +132,20 @@ const SurveyObservations: React.FC = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-
-  const showConfirmUploadDialog = () => {
-    dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      open: true,
-      onYes: () => {
-        setOpenImportObservations(true);
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
+  const showUploadDialog = () => {
+    if (submissionStatus) {
+      // already have observation data.  prompt user to confirm override
+      dialogContext.setYesNoDialog({
+        ...defaultYesNoDialogProps,
+        open: true,
+        onYes: () => {
+          setOpenImportObservations(true);
+          dialogContext.setYesNoDialog({ open: false });
+        }
+      });
+    } else {
+      setOpenImportObservations(true);
+    }
   };
 
   return (
@@ -156,12 +159,12 @@ const SurveyObservations: React.FC = () => {
           startIcon={<Icon path={mdiImport} size={1} />}
           variant="outlined"
           color="primary"
-          onClick={() => showConfirmUploadDialog()}>
+          onClick={() => showUploadDialog()}>
           Import
         </Button>
       </Box>
       {!isLoading && !submissionStatus && (
-        <Box mb={5} display="flex" justifyContent="center" alignContent="center">
+        <Box mb={5}>
           <Typography data-testid="observations-nodata" variant="body2" className={classes.infoBox}>
             No Observation Data.{' '}
             <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
@@ -206,17 +209,6 @@ const SurveyObservations: React.FC = () => {
           </Alert>
         </div>
       )}
-      {/* {!isLoading && !submissionStatus && (
-        <div>
-          <Box mb={5} display="flex" justifyContent="space-between">
-            <div className={classes.successBox}>
-              <Typography data-testid="observations-validating" variant="body2" className={classes.center}>
-                Validating observation data. Please wait...
-              </Typography>
-            </div>
-          </Box>
-        </div>
-      )} */}
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"

@@ -15,10 +15,12 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import {
-  mdiClipboardCheckMultipleOutline, mdiInformationOutline,
+  mdiClipboardCheckMultipleOutline,
+  mdiInformationOutline,
   mdiPaperclip,
   mdiToggleSwitch,
-  mdiToggleSwitchOffOutline, mdiTrashCanOutline
+  mdiToggleSwitchOffOutline,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
