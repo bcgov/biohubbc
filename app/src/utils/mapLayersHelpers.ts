@@ -98,7 +98,7 @@ export function getLayerTypesToSkipByProjectedGeometry(projectedGeo: any) {
  *
  * @param {any} projectedGeo
  * @param {any} currentLayersInfo
- * @returns {any} inferredLayersInfo
+ * @returns {any} updated currentLayersInfo
  */
 export function getInferredLayersInfoByProjectedGeometry(projectedGeo: any, currentLayersInfo: any) {
   const geoId = projectedGeo.id as string;
