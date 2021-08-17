@@ -57,7 +57,6 @@ const SurveyObservations: React.FC = () => {
   const [openImportObservations, setOpenImportObservations] = useState(false);
 
   const classes = useStyles();
-  //const dialogContext = useContext(DialogContext);
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
