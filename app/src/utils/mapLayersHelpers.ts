@@ -97,11 +97,10 @@ export function getLayerTypesToSkipByProjectedGeometry(projectedGeo: any) {
  * adds it to the list of inferred layers to display to the user
  *
  * @param {any} projectedGeo
- * @param {any} prevLayersInfo
+ * @param {any} currentLayersInfo
  * @returns {any} inferredLayersInfo
  */
-export function getInferredLayersInfoByProjectedGeometry(projectedGeo: any, prevLayersInfo: any) {
-  const currentLayersInfo = { ...prevLayersInfo };
+export function getInferredLayersInfoByProjectedGeometry(projectedGeo: any, currentLayersInfo: any) {
   const geoId = projectedGeo.id as string;
 
   if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
@@ -154,11 +153,10 @@ export function getInferredLayersInfoByProjectedGeometry(projectedGeo: any, prev
  * so Omineca is 7O and Peace is 7P (for wmu layer)
  *
  * @param {Feature} feature
- * @param {any} prevLayersInfo
- * @returns {any} currentLayersInfo
+ * @param {any} currentLayersInfo
+ * @returns {any} updated currentLayersInfo
  */
-export function getInferredLayersInfoByWFSFeature(feature: Feature, prevLayersInfo: any) {
-  const currentLayersInfo = { ...prevLayersInfo };
+export function getInferredLayersInfoByWFSFeature(feature: Feature, currentLayersInfo: any) {
   const featureId = feature.id as string;
 
   if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
