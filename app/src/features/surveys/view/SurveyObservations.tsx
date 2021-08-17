@@ -4,7 +4,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiImport } from '@mdi/js';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import { mdiImport, mdiFileOutline, mdiClockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -14,9 +16,7 @@ import ObservationSubmissionCSV from 'features/observations/components/Observati
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-//import { Container } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -115,10 +115,6 @@ const SurveyObservations: React.FC = () => {
     }
   }, [biohubApi, isLoading, isValidating, submissionStatus, timer, projectId, surveyId]);
 
-  if (isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   const defaultYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
     dialogText:
@@ -145,13 +141,16 @@ const SurveyObservations: React.FC = () => {
     }
   };
 
+  if (isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
   return (
     <>
       <Box mb={5} display="flex" justifyContent="space-between">
         <Typography data-testid="observations-heading" variant="h2">
           Observations
         </Typography>
-
         <Button
           startIcon={<Icon path={mdiImport} size={1} />}
           variant="outlined"
@@ -160,52 +159,62 @@ const SurveyObservations: React.FC = () => {
           Import
         </Button>
       </Box>
-      {!isLoading && !submissionStatus && (
-        <Box mb={5}>
+
+      <Box component={Paper} p={4}>
+        {!submissionStatus && (
           <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
-            No Observation Data.{' '}
+            No Observation Data. &nbsp;
             <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
               Click Here to Import
             </Link>
           </Typography>
-        </Box>
-      )}
-      {!isLoading && !isValidating && submissionStatus?.status === 'Rejected' && (
-        <div>
-          <Alert severity="error">
-            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
-            Validation Failed
-          </Alert>
-          <Box mb={5} mt={5} display="flex" justifyContent="space-between">
-            <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-              You will need to resolve the following errors in your local file and re-import:
-            </Typography>
-          </Box>
-          <Box mb={5} display="flex" justifyContent="space-between">
-            <ul>
-              {submissionStatus?.messages.map((row: any) => (
-                <li>{row}</li>
-              ))}
-            </ul>
-          </Box>
-        </div>
-      )}
-      {!isLoading && !isValidating && submissionStatus?.status === 'Darwin Core Validated' && (
-        <div>
-          <Alert severity="success">
-            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
-          </Alert>
-          <ObservationSubmissionCSV submissionId={submissionStatus.id} />
-        </div>
-      )}
-      {!isLoading && isValidating && (
-        <div>
-          <Alert severity="info">
-            <AlertTitle>{submissionStatus.fileName}</AlertTitle>
-            Validating observation data. Please wait ...
-          </Alert>
-        </div>
-      )}
+        )}
+        {!isValidating && submissionStatus?.status === 'Rejected' && (
+          <>
+            <Alert severity="error">
+              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              Validation Failed
+            </Alert>
+
+            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+                What's next?
+              </Typography>
+            </Box>
+            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+                You will need to resolve the following errors in your local file and re-import:
+              </Typography>
+            </Box>
+            <Box mb={5} display="flex" justifyContent="space-between">
+              <ul>
+                {submissionStatus?.messages.map((row: any) => (
+                  <li>{row}</li>
+                ))}
+              </ul>
+            </Box>
+          </>
+        )}
+        {!isValidating && submissionStatus?.status === 'Darwin Core Validated' && (
+          <>
+            <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info">
+              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+            </Alert>
+            <Box mt={5}>
+              <ObservationSubmissionCSV submissionId={submissionStatus.id} />
+            </Box>
+          </>
+        )}
+        {isValidating && (
+          <>
+            <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info">
+              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              Validating observation data. Please wait ...
+            </Alert>
+          </>
+        )}
+      </Box>
+
       <ComponentDialog
         open={openImportObservations}
         dialogTitle="Import Observation Data"
