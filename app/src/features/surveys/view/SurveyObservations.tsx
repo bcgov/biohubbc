@@ -99,8 +99,7 @@ const SurveyObservations: React.FC = () => {
     }
 
     if (isValidating && !timer) {
-      const t = setInterval(fetchObservationSubmission, 5000);
-      setTimer(t);
+      setTimer(setInterval(fetchObservationSubmission, 5000));
     }
   }, [biohubApi, isLoading, isValidating, submissionStatus, timer, projectId, surveyId]);
 
@@ -175,7 +174,7 @@ const SurveyObservations: React.FC = () => {
                 You will need to resolve the following errors in your local file and re-import:
               </Typography>
             </Box>
-            <Box mb={5} display="flex" justifyContent="space-between">
+            <Box display="flex" justifyContent="space-between">
               <ul>
                 {submissionStatus?.messages.map((row: any) => (
                   <li>{row}</li>

@@ -110,7 +110,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
   }
 
   const sqlStatement = SQL`
-  SELECT
+    SELECT
       os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
@@ -338,7 +338,7 @@ export const insertSurveySubmissionMessageSQL = (
 };
 
 /**
- * SQL query to get the list of errors for an occurrence submission.
+ * SQL query to get the list of messages for an occurrence submission.
  *
  * @param {number} occurrenceSubmissionId
  * @returns {SQLStatement} sql query object
