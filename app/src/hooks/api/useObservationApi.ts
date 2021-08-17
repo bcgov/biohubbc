@@ -42,9 +42,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     );
 
     if (data.submissionId) {
-      axios.post(`/api/dwc/validate`, {
-        occurrence_submission_id: data.submissionId
-      });
+      initiateObservationSubmissionValidation(data.submissionId);
     }
 
     return data;
@@ -83,6 +81,16 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
 
     return data;
+  };
+
+  /**
+   * Initiate the validation process for the submitted observations
+   * @param {number} submissionId
+   */
+  const initiateObservationSubmissionValidation = async (submissionId: number) => {
+    axios.post(`/api/dwc/validate`, {
+      occurrence_submission_id: submissionId
+    });
   };
 
   return {
