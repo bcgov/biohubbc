@@ -3,8 +3,13 @@ import { Feature } from 'geojson';
 import { getKeyByValue } from './Utils';
 
 /**
- * Function to return an array of Features that are on the map regardless
- * of if they're non editable or editable (drawn/uploaded)
+ * Function to returns an array of `Features`.
+
+  Only one of `geometry` and `nonEditableGeometries` will be defined at any given time.
+  - If the map loads as view-only, then nonEditableGeometries may be defined.
+  - If the map loads as editable, then `geometry` may be defined.
+  - If neither are defined, returns an empty array.
+  - When a boundary is drawn or added, everything on the map becomes part of the `geometry`
  *
  * @param {Feature[] | undefined} geometry
  * @param {INonEditableGeometries[] | undefined} nonEditableGeometries
