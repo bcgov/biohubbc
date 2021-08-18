@@ -6,8 +6,8 @@ import {
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
   insertSurveyOccurrenceSubmissionSQL,
-  insertSurveySubmissionMessageSQL,
-  insertSurveySubmissionStatusSQL,
+  insertOccurrenceSubmissionMessageSQL,
+  insertOccurrenceSubmissionStatusSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL
 } from './survey-occurrence-queries';
 
@@ -101,19 +101,19 @@ describe('getSurveyOccurrenceSubmissionSQL', () => {
 
 describe('insertSurveySubmissionStatusSQL', () => {
   it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertSurveySubmissionStatusSQL((null as unknown) as number, 'type');
+    const response = insertOccurrenceSubmissionStatusSQL((null as unknown) as number, 'type');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null submissionStatusType provided', () => {
-    const response = insertSurveySubmissionStatusSQL(1, (null as unknown) as string);
+    const response = insertOccurrenceSubmissionStatusSQL(1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = insertSurveySubmissionStatusSQL(1, 'type');
+    const response = insertOccurrenceSubmissionStatusSQL(1, 'type');
 
     expect(response).to.not.be.null;
   });
@@ -121,25 +121,25 @@ describe('insertSurveySubmissionStatusSQL', () => {
 
 describe('insertSurveySubmissionMessageSQL', () => {
   it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertSurveySubmissionMessageSQL((null as unknown) as number, 'type', 'message');
+    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null submissionStatusType provided', () => {
-    const response = insertSurveySubmissionMessageSQL(1, (null as unknown) as string, 'message');
+    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null submissionMessage provided', () => {
-    const response = insertSurveySubmissionMessageSQL(1, 'type', (null as unknown) as string);
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = insertSurveySubmissionMessageSQL(1, 'type', 'message');
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message');
 
     expect(response).to.not.be.null;
   });

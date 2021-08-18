@@ -227,13 +227,13 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
 };
 
 /**
- * SQL query to insert the survey submission status.
+ * SQL query to insert the occurrence submission status.
  *
  * @param {number} occurrenceSubmissionId
  * @param {string} submissionStatusType
  * @returns {SQLStatement} sql query object
  */
-export const insertSurveySubmissionStatusSQL = (
+export const insertOccurrenceSubmissionStatusSQL = (
   occurrenceSubmissionId: number,
   submissionStatusType: string
 ): SQLStatement | null => {
@@ -280,20 +280,20 @@ export const insertSurveySubmissionStatusSQL = (
 };
 
 /**
- * SQL query to insert the survey submission message.
+ * SQL query to insert the occurrence submission message.
  *
  * @param {number} occurrenceSubmissionId
  * @param {string} submissionStatusType
  * @param {string} submissionMessage
  * @returns {SQLStatement} sql query object
  */
-export const insertSurveySubmissionMessageSQL = (
+export const insertOccurrenceSubmissionMessageSQL = (
   submissionStatusId: number,
   submissionMessageType: string,
   submissionMessage: string
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'insertSurveySubmissionMessageSQL',
+    label: 'insertOccurrenceSubmissionMessageSQL',
     message: 'params',
     submissionStatusId,
     submissionMessageType,

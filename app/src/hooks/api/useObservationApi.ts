@@ -44,9 +44,9 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     if (data.submissionId) {
       if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-        initiateObservationSubmissionValidation(data.submissionId);
+        initiateDwCSubmissionValidation(data.submissionId);
       } else {
-        initiateXLXvalidation(data.submissionId);
+        initiateXLSXValidation(data.submissionId);
       }
     }
 
@@ -92,13 +92,13 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Initiate the validation process for the submitted observations
    * @param {number} submissionId
    */
-  const initiateObservationSubmissionValidation = async (submissionId: number) => {
+  const initiateDwCSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/dwc/validate`, {
       occurrence_submission_id: submissionId
     });
   };
 
-  const initiateXLXvalidation = async (submissionId: number) => {
+  const initiateXLSXValidation = async (submissionId: number) => {
     axios.post(`/api/xlsx/validate`, {
       occurrence_submission_id: submissionId
     });

@@ -5,8 +5,8 @@ import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
-  insertSurveySubmissionMessageSQL,
-  insertSurveySubmissionStatusSQL
+  insertOccurrenceSubmissionMessageSQL,
+  insertOccurrenceSubmissionStatusSQL
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -388,7 +388,7 @@ export const insertSubmissionStatus = async (
   submissionStatusType: string,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = insertSurveySubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
+  const sqlStatement = insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -420,7 +420,7 @@ export const insertSubmissionMessage = async (
   message: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveySubmissionMessageSQL(submissionStatusId, submissionMessageType, message);
+  const sqlStatement = insertOccurrenceSubmissionMessageSQL(submissionStatusId, submissionMessageType, message);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
