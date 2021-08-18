@@ -45,7 +45,7 @@ const useObservationApi = (axios: AxiosInstance) => {
       if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
         initiateDwCSubmissionValidation(data.submissionId);
       } else {
-        initiateXLSXValidation(data.submissionId);
+        initiateXLSXSubmissionValidation(data.submissionId);
       }
     }
 
@@ -97,7 +97,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     });
   };
 
-  const initiateXLSXValidation = async (submissionId: number) => {
+  const initiateXLSXSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/xlsx/validate`, {
       occurrence_submission_id: submissionId
     });
