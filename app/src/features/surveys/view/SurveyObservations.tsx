@@ -2,6 +2,8 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
@@ -15,7 +17,8 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useInterval } from 'hooks/useInterval';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles(() => ({
@@ -65,16 +68,16 @@ const SurveyObservations: React.FC = () => {
   };
 
   const [submissionStatus, setSubmissionStatus] = useState<any>(null);
-
   const [isLoading, setIsLoading] = useState(true);
-  //validating strictly looks for the validation state
   const [isValidating, setIsValidating] = useState(false);
-  //polling strictly manages the times the timer
   const [isPolling, setIsPolling] = useState(false);
 
-  const dialogContext = useContext(DialogContext);
+  const [pollingFunction, setPollingFunction] = useState<Function>();
+  const [pollingTime, setPollingTime] = useState<number | null>(0);
 
-  const pollingTimer = useRef<any>(null);
+  useInterval(pollingFunction, pollingTime);
+
+  const dialogContext = useContext(DialogContext);
 
   useEffect(() => {
     const fetchObservationSubmission = async () => {
@@ -91,8 +94,7 @@ const SurveyObservations: React.FC = () => {
             setIsValidating(false);
             setIsPolling(false);
 
-            clearInterval(pollingTimer.current);
-            pollingTimer.current = null;
+            setPollingTime(null);
           } else {
             setIsValidating(true);
             setIsPolling(true);
@@ -107,10 +109,11 @@ const SurveyObservations: React.FC = () => {
       fetchObservationSubmission();
     }
 
-    if (isPolling && !pollingTimer.current) {
-      pollingTimer.current = setInterval(fetchObservationSubmission, 1000);
+    if (isPolling && !pollingTime) {
+      setPollingTime(2000);
+      setPollingFunction(() => fetchObservationSubmission);
     }
-  }, [biohubApi, isLoading, isPolling, isValidating, submissionStatus, projectId, surveyId]);
+  }, [biohubApi, isLoading, isValidating, submissionStatus, projectId, surveyId]);
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
@@ -143,7 +146,7 @@ const SurveyObservations: React.FC = () => {
   }
 
   return (
-    <>
+    <Box>
       <Box mb={5} display="flex" justifyContent="space-between">
         <Typography data-testid="observations-heading" variant="h2">
           Observations
@@ -184,11 +187,11 @@ const SurveyObservations: React.FC = () => {
               </Typography>
             </Box>
             <Box display="flex" justifyContent="space-between">
-              <ul>
-                {submissionStatus?.messages.map((row: any) => (
-                  <li>{row}</li>
+              <List>
+                {submissionStatus?.messages.map((row: string, index: number) => (
+                  <ListItem key={index}>{row}</ListItem>
                 ))}
-              </ul>
+              </List>
             </Box>
           </>
         )}
@@ -199,7 +202,8 @@ const SurveyObservations: React.FC = () => {
               <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info">
                 <AlertTitle>{submissionStatus.fileName}</AlertTitle>
               </Alert>
-              <Box mt={5}>
+
+              <Box mt={5} overflow="hidden">
                 <ObservationSubmissionCSV submissionId={submissionStatus.id} />
               </Box>
             </>
@@ -226,7 +230,7 @@ const SurveyObservations: React.FC = () => {
           uploadHandler={importObservations()}
         />
       </ComponentDialog>
-    </>
+    </Box>
   );
 };
 
