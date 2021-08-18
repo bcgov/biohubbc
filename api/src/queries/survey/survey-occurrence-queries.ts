@@ -226,7 +226,14 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
   return sqlStatement;
 };
 
-export const insertSurveySubmissionStatusSQL = (
+/**
+ * SQL query to insert the occurrence submission status.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @returns {SQLStatement} sql query object
+ */
+export const insertOccurrenceSubmissionStatusSQL = (
   occurrenceSubmissionId: number,
   submissionStatusType: string
 ): SQLStatement | null => {
@@ -272,13 +279,21 @@ export const insertSurveySubmissionStatusSQL = (
   return sqlStatement;
 };
 
-export const insertSurveySubmissionMessageSQL = (
+/**
+ * SQL query to insert the occurrence submission message.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {string} submissionMessage
+ * @returns {SQLStatement} sql query object
+ */
+export const insertOccurrenceSubmissionMessageSQL = (
   submissionStatusId: number,
   submissionMessageType: string,
   submissionMessage: string
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'insertSurveySubmissionMessageSQL',
+    label: 'insertOccurrenceSubmissionMessageSQL',
     message: 'params',
     submissionStatusId,
     submissionMessageType,
@@ -314,6 +329,62 @@ export const insertSurveySubmissionMessageSQL = (
 
   defaultLog.debug({
     label: 'insertSurveySubmissionMessageSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get the list of messages for an occurrence submission.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getOccurrenceSubmissionMessagesSQL',
+    message: 'params',
+    occurrenceSubmissionId
+  });
+
+  if (!occurrenceSubmissionId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      sm.submission_message_id as id,
+      smt.name as type,
+      sst.name as status,
+      sm.message
+    FROM
+      occurrence_submission as os
+    LEFT OUTER JOIN
+      submission_status as ss
+    ON
+      os.occurrence_submission_id = ss.occurrence_submission_id
+    LEFT OUTER JOIN
+      submission_status_type as sst
+    ON
+      sst.submission_status_type_id = ss.submission_status_type_id
+    LEFT OUTER JOIN
+      submission_message as sm
+    ON
+      sm.submission_status_id = ss.submission_status_id
+    LEFT OUTER JOIN
+      submission_message_type as smt
+    ON
+      smt.submission_message_type_id = sm.submission_message_type_id
+    WHERE
+      os.occurrence_submission_id = ${occurrenceSubmissionId}
+    ORDER BY sm.submission_message_id;
+  `;
+
+  defaultLog.debug({
+    label: 'getOccurrenceSubmissionMessagesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

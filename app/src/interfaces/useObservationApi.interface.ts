@@ -7,3 +7,23 @@ export interface IGetSubmissionCSVForViewItem {
 export interface IGetSubmissionCSVForViewResponse {
   data: IGetSubmissionCSVForViewItem[];
 }
+
+/**
+ * Get observation submission response object.
+ *
+ * @export
+ * @interface IGetObservationSubmissionResponse
+ */
+export interface IGetObservationSubmissionResponse {
+  id: number;
+  fileName: string;
+  status: string;
+  messages: string[];
+}
+
+export interface IGetObservationSubmissionErrorListResponse {
+  id: number;
+  type: string;
+  status: string;
+  message: string;
+}

@@ -60,7 +60,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = observationSubmission.getObservationSubmission();
+      const result = observationSubmission.getOccurenceSubmission();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
         (null as unknown) as any,
@@ -84,27 +84,26 @@ describe('getObservationSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
-      const result = observationSubmission.getObservationSubmission();
+      const result = observationSubmission.getOccurenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect(actualError.message).to.equal('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
     }
   });
 
-  it('should return an observation submission, on success', async () => {
+  it('should return an observation submission, on success with no rejected files', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
       rows: [
         {
           id: 13,
-          file_name: 'filename.txt',
-          create_date: '2020-01-01',
-          update_date: '',
-          file_size: 0
+          file_name: 'dwca_moose.zip',
+          submission_status_type_name: 'Darwin Core Validated',
+          message: 'some message'
         }
       ]
     });
@@ -119,13 +118,107 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getObservationSubmission();
+    const result = observationSubmission.getOccurenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'filename.txt'
+      fileName: 'dwca_moose.zip',
+      status: 'Darwin Core Validated',
+      messages: []
+    });
+  });
+
+  it('should throw a 400 error with rejected files when failed to getOccurrenceSubmissionMessagesSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [
+        {
+          id: 13,
+          file_name: 'dwca_moose.zip',
+          message: 'some message',
+          submission_status_type_name: 'Rejected'
+        }
+      ]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(null);
+
+    try {
+      const result = observationSubmission.getOccurenceSubmission();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');
+    }
+  });
+
+  it('should return an observation submission on success, with rejected files', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery
+      .onFirstCall()
+      .resolves({
+        rows: [
+          {
+            id: 13,
+            file_name: 'dwca_moose.zip',
+            message: 'some message',
+            submission_status_type_name: 'Rejected'
+          }
+        ]
+      })
+      .onSecondCall()
+      .resolves({
+        rows: [
+          {
+            id: 1,
+            type: 'type',
+            status: 'status',
+            message: 'some error message'
+          },
+          {
+            id: 2,
+            type: 'type',
+            status: 'status',
+            message: 'some other error message'
+          }
+        ]
+      });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
+
+    const result = observationSubmission.getOccurenceSubmission();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.be.eql({
+      id: 13,
+      fileName: 'dwca_moose.zip',
+      status: 'Rejected',
+      messages: ['some error message', 'some other error message']
     });
   });
 
@@ -144,7 +237,7 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getObservationSubmission();
+    const result = observationSubmission.getOccurenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
