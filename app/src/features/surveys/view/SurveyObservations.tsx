@@ -15,7 +15,7 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles(() => ({
@@ -65,11 +65,16 @@ const SurveyObservations: React.FC = () => {
   };
 
   const [submissionStatus, setSubmissionStatus] = useState<any>(null);
-  const [timer, setTimer] = useState<any>(null);
+
   const [isLoading, setIsLoading] = useState(true);
+  //validating strictly looks for the validation state
   const [isValidating, setIsValidating] = useState(false);
+  //polling strictly manages the times the timer
+  const [isPolling, setIsPolling] = useState(false);
 
   const dialogContext = useContext(DialogContext);
+
+  const pollingTimer = useRef<any>(null);
 
   useEffect(() => {
     const fetchObservationSubmission = async () => {
@@ -78,15 +83,19 @@ const SurveyObservations: React.FC = () => {
       setSubmissionStatus(() => {
         setIsLoading(false);
         if (submission) {
-          if (submission.status === 'Rejected' || submission.status === 'Darwin Core Validated') {
+          if (
+            submission.status === 'Rejected' ||
+            submission.status === 'Darwin Core Validated' ||
+            submission.status === 'Template Validated'
+          ) {
             setIsValidating(false);
+            setIsPolling(false);
 
-            if (timer) {
-              clearInterval(timer);
-              setTimer(null);
-            }
+            clearInterval(pollingTimer.current);
+            pollingTimer.current = null;
           } else {
             setIsValidating(true);
+            setIsPolling(true);
           }
         }
 
@@ -98,10 +107,10 @@ const SurveyObservations: React.FC = () => {
       fetchObservationSubmission();
     }
 
-    if (isValidating && !timer) {
-      setTimer(setInterval(fetchObservationSubmission, 5000));
+    if (isPolling && !pollingTimer.current) {
+      pollingTimer.current = setInterval(fetchObservationSubmission, 1000);
     }
-  }, [biohubApi, isLoading, isValidating, submissionStatus, timer, projectId, surveyId]);
+  }, [biohubApi, isLoading, isPolling, isValidating, submissionStatus, projectId, surveyId]);
 
   const defaultYesNoDialogProps = {
     dialogTitle: 'Upload Observation Data',
@@ -183,16 +192,18 @@ const SurveyObservations: React.FC = () => {
             </Box>
           </>
         )}
-        {!isValidating && submissionStatus?.status === 'Darwin Core Validated' && (
-          <>
-            <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info">
-              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
-            </Alert>
-            <Box mt={5}>
-              <ObservationSubmissionCSV submissionId={submissionStatus.id} />
-            </Box>
-          </>
-        )}
+        {!isValidating &&
+          (submissionStatus?.status === 'Darwin Core Validated' ||
+            submissionStatus?.status === 'Template Validated') && (
+            <>
+              <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info">
+                <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              </Alert>
+              <Box mt={5}>
+                <ObservationSubmissionCSV submissionId={submissionStatus.id} />
+              </Box>
+            </>
+          )}
         {isValidating && (
           <>
             <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info">
@@ -208,7 +219,7 @@ const SurveyObservations: React.FC = () => {
         dialogTitle="Import Observation Data"
         onClose={() => {
           setOpenImportObservations(false);
-          setIsLoading(true);
+          setIsPolling(true);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}

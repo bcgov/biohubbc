@@ -32,6 +32,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
+    //if (file.type === 'application/x-zip-compressed' || 'application/zip' || '.zip') {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
       req_message,
@@ -42,7 +43,11 @@ const useObservationApi = (axios: AxiosInstance) => {
     );
 
     if (data.submissionId) {
-      initiateObservationSubmissionValidation(data.submissionId);
+      if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+        initiateObservationSubmissionValidation(data.submissionId);
+      } else {
+        initiateXLXvalidation(data.submissionId);
+      }
     }
 
     return data;
@@ -89,6 +94,12 @@ const useObservationApi = (axios: AxiosInstance) => {
    */
   const initiateObservationSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/dwc/validate`, {
+      occurrence_submission_id: submissionId
+    });
+  };
+
+  const initiateXLXvalidation = async (submissionId: number) => {
+    axios.post(`/api/xlsx/validate`, {
       occurrence_submission_id: submissionId
     });
   };
