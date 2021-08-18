@@ -26,7 +26,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { useEffect } from 'react';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ILocationBoundaryProps {
@@ -100,7 +100,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
     setLocationFormData({
       location_description: locationResponseData.location_description,
-      geometry: generateValidGeometryCollection(locationResponseData.geometry).geometryCollection
+      geometry: locationResponseData.geometry
     });
 
     setOpenEditDialog(true);
@@ -125,12 +125,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   };
 
   useEffect(() => {
-    const geometryCollectionResult = generateValidGeometryCollection(location.geometry);
-    const nonEditableGeometriesResult = geometryCollectionResult.geometryCollection.map((geom: Feature) => {
+    const nonEditableGeometriesResult = location.geometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    setBounds(geometryCollectionResult.bounds);
+    updateMapBounds(location.geometry, setBounds);
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 

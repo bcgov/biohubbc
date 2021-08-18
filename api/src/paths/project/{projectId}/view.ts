@@ -165,6 +165,9 @@ function getProjectForView(): RequestHandler {
 
       const getLocationData = (locationData && locationData.rows && new GetLocationData(locationData.rows)) || null;
 
+      console.log('OKKKKKKKKKKKKKKKKKKKKKKKKKK')
+      console.log(getLocationData)
+
       const getCoordinatorData =
         (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
 

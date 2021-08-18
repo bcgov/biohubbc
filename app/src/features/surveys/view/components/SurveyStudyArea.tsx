@@ -24,7 +24,7 @@ import {
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -61,12 +61,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {
-    const geometryCollectionResult = generateValidGeometryCollection(surveyGeometry);
-    const nonEditableGeometriesResult = geometryCollectionResult.geometryCollection.map((geom: Feature) => {
+    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    setBounds(geometryCollectionResult.bounds);
+    updateMapBounds(surveyGeometry, setBounds);
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry]);
 
@@ -111,7 +110,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       ...StudyAreaInitialValues,
       survey_area_name:
         (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
-      geometry: generateValidGeometryCollection(studyAreaResponseData.survey_details?.geometry).geometryCollection
+      geometry: studyAreaResponseData.survey_details?.geometry || []
     });
 
     setOpenEditDialog(true);
