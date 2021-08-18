@@ -89,9 +89,6 @@ export class GetLocationData {
       locationData
     });
 
-    console.log('YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-    console.log(locationData);
-
     const locationDataItem = locationData && locationData.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
