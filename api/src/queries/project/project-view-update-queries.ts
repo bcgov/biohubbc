@@ -19,7 +19,7 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
   const sqlStatement = SQL`
     SELECT
       p.location_description,
-      public.ST_asGeoJSON(p.geography) as geometry,
+      p.geojson as geometry,
       p.revision_count
     FROM
       project p
@@ -27,7 +27,7 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
       p.project_id = ${projectId}
     GROUP BY
       p.location_description,
-      p.geography,
+      p.geojson,
       p.revision_count;
   `;
 

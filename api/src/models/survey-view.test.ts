@@ -86,8 +86,18 @@ describe('GetViewSurveyDetailsData', () => {
         agency_name: 'name agency',
         funding_start_date: '2020/04/04',
         funding_end_date: '2020/05/05',
-        geometry:
-          '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}'
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }
+        ]
       }
     ];
 
@@ -136,7 +146,7 @@ describe('GetViewSurveyDetailsData', () => {
     });
 
     it('sets the geometry', () => {
-      expect(data.geometry).to.eql([JSON.parse(surveyData[0].geometry)]);
+      expect(data.geometry).to.eql(surveyData[0].geometry);
     });
 
     it('sets permit number', () => {

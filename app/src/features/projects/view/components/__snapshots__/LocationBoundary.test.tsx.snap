@@ -62,18 +62,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
             Location description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -267,6 +255,22 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
         </div>
       </div>
     </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -333,18 +337,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
             Location description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -550,6 +542,22 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
         </div>
       </div>
     </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -616,18 +624,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
             Location description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -821,6 +817,22 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         </div>
       </div>
     </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -887,18 +899,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
             Location description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -1092,6 +1092,22 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         </div>
       </div>
     </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -1158,18 +1174,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
             Location description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -1340,6 +1344,22 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         </div>
       </div>
     </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+    </div>
   </div>
 </DocumentFragment>
 `;
@@ -1406,18 +1426,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
             No Description
           </dd>
         </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-        />
       </div>
     </dl>
     <div
@@ -1587,6 +1595,22 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
           </div>
         </div>
       </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+      />
     </div>
   </div>
 </DocumentFragment>

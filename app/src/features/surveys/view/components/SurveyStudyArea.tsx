@@ -179,21 +179,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 {survey_details.survey_area_name}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-            </Grid>
           </Grid>
         </dl>
-        <Box mt={4} height={500}>
+        <Box mt={4} mb={4} height={500}>
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -202,6 +190,20 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             setInferredLayersInfo={setInferredLayersInfo}
           />
         </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
+          </Grid>
+        </Grid>
       </Box>
     </>
   );
