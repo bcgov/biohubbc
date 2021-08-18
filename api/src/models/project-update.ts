@@ -217,7 +217,7 @@ export class GetLocationData {
     const locationDataItem = locationData && locationData.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
-    this.geometry = (locationDataItem?.geometry?.length && [JSON.parse(locationDataItem.geometry)]) || [];
+    this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
     this.revision_count = locationDataItem?.revision_count ?? null;
   }
 }
