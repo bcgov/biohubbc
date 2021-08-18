@@ -28,8 +28,8 @@ export async function down(knex: Knex): Promise<void> {
 
     SET ROLE biohub_api;
 
-    DROP VIEW IF EXISTS biohub_dapi_v1.project;
-    DROP VIEW IF EXISTS biohub_dapi_v1.survey;
+    create or replace view project as select * from ${DB_SCHEMA}.project;
+    create or replace view survey as select * from ${DB_SCHEMA}.survey;
 
     SET ROLE postgres;
 
