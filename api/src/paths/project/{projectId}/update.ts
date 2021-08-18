@@ -209,8 +209,6 @@ function getProjectForUpdate(): RequestHandler {
       if (entities.includes(GET_ENTITIES.location)) {
         promises.push(
           getLocationData(projectId, connection).then((value) => {
-            console.log('WHATTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT');
-            console.log(value);
             results.location = value;
           })
         );
@@ -293,9 +291,6 @@ export const getLocationData = async (projectId: number, connection: IDBConnecti
   if (!result) {
     throw new HTTP400('Failed to get project location data');
   }
-
-  console.log('YOOOOOOOOOOOOOOOOOOOOOO');
-  console.log(result);
 
   return new GetLocationData(result);
 };
