@@ -258,18 +258,6 @@ exports[`SurveyDetails renders correctly 1`] = `
                 study area
               </dd>
             </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-            />
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-            />
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-            />
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-            />
           </div>
         </dl>
         <div
@@ -462,6 +450,22 @@ exports[`SurveyDetails renders correctly 1`] = `
               </div>
             </div>
           </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          />
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          />
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          />
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          />
         </div>
       </div>
     </section>

@@ -245,6 +245,7 @@ export const putProjectSQL = (
 
   if (location) {
     sqlSetStatements.push(SQL`location_description = ${location.location_description}`);
+    sqlSetStatements.push(SQL`geojson = ${JSON.stringify(location.geometry)}`);
 
     const geometrySQLStatement = SQL`geography = `;
 

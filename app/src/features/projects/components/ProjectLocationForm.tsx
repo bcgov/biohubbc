@@ -4,7 +4,7 @@ import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import MapBoundary from 'components/boundary/MapBoundary';
-import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectLocationForm {
@@ -38,7 +38,7 @@ const ProjectLocationForm = () => {
 
   useEffect(() => {
     setIsLoading(false);
-    updateMapBounds(values.geometry, setBounds);
+    setBounds(calculateUpdatedMapBounds(values.geometry));
   }, [values.geometry]);
 
   return (

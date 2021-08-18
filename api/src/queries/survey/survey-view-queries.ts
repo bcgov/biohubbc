@@ -160,7 +160,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.lead_first_name,
       s.lead_last_name,
       s.location_name,
-      public.ST_asGeoJSON(s.geography) as geometry,
+      s.geojson as geometry,
       per.number,
       per.type,
       sfs.project_funding_source_id as pfs_id,

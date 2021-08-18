@@ -91,9 +91,8 @@ export const handleKMLUpload = async (
 
 /**
  * @param geometries geometry values on map
- * @param setBounds change bounds on map
  */
-export const updateMapBounds = (geometries: Feature[], setBounds: (bounds: any[]) => void) => {
+export const calculateUpdatedMapBounds = (geometries: Feature[]): any[][] | undefined => {
   /*
     If no geometries, we do not need to set bounds
 
@@ -112,10 +111,10 @@ export const updateMapBounds = (geometries: Feature[], setBounds: (bounds: any[]
   };
   const bboxCoords = bbox(allGeosFeatureCollection);
 
-  setBounds([
+  return [
     [bboxCoords[1], bboxCoords[0]],
     [bboxCoords[3], bboxCoords[2]]
-  ]);
+  ];
 };
 
 /*
