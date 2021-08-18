@@ -82,8 +82,18 @@ describe('GetUpdateSurveyDetailsData', () => {
         type: 'scientific',
         number: '123',
         pfs_id: 1,
-        geometry:
-          '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}'
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }
+        ]
       }
     ];
 
@@ -132,7 +142,7 @@ describe('GetUpdateSurveyDetailsData', () => {
     });
 
     it('sets the geometry', () => {
-      expect(data.geometry).to.eql([JSON.parse(surveyData[0].geometry)]);
+      expect(data.geometry).to.eql(surveyData[0].geometry);
     });
 
     it('sets permit number', () => {
@@ -167,8 +177,18 @@ describe('GetUpdateSurveyDetailsData', () => {
         type: 'scientific',
         number: '123',
         pfs_id: 1,
-        geometry:
-          '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}'
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }
+        ]
       }
     ];
 
@@ -217,7 +237,7 @@ describe('GetUpdateSurveyDetailsData', () => {
     });
 
     it('sets the geometry', () => {
-      expect(data.geometry).to.eql([JSON.parse(surveyData[0].geometry)]);
+      expect(data.geometry).to.eql(surveyData[0].geometry);
     });
 
     it('sets permit number', () => {

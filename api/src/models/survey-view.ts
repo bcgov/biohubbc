@@ -78,7 +78,7 @@ export class GetViewSurveyDetailsData {
     this.biologist_first_name = surveyDataItem?.lead_first_name || '';
     this.biologist_last_name = surveyDataItem?.lead_last_name || '';
     this.survey_area_name = surveyDataItem?.location_name || '';
-    this.geometry = (surveyDataItem?.geometry?.length && [JSON.parse(surveyDataItem.geometry)]) || [];
+    this.geometry = (surveyDataItem?.geometry?.length && surveyDataItem.geometry) || [];
     this.permit_number = surveyDataItem?.number || '';
     this.permit_type = surveyDataItem?.type || '';
     this.funding_sources = (fundingSourcesList.length && fundingSourcesList.filter((item: any) => !!item)) || [];

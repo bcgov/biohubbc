@@ -295,8 +295,18 @@ describe('GetLocationData', () => {
     let locationData: GetLocationData;
 
     const location_description = 'location description';
-    const geometry =
-      '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}';
+    const geometry = [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [125.6, 10.1]
+        },
+        properties: {
+          name: 'Dinagat Islands'
+        }
+      }
+    ];
 
     const locationDataObj = [
       {
@@ -318,7 +328,7 @@ describe('GetLocationData', () => {
     });
 
     it('sets the geometry', function () {
-      expect(locationData.geometry).to.eql([JSON.parse(geometry)]);
+      expect(locationData.geometry).to.eql(geometry);
     });
   });
 });

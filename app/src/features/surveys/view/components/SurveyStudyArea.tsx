@@ -24,7 +24,7 @@ import {
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -61,12 +61,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {
-    const geometryCollectionResult = generateValidGeometryCollection(surveyGeometry);
-    const nonEditableGeometriesResult = geometryCollectionResult.geometryCollection.map((geom: Feature) => {
+    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    setBounds(geometryCollectionResult.bounds);
+    setBounds(calculateUpdatedMapBounds(surveyGeometry));
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry]);
 
@@ -111,7 +110,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       ...StudyAreaInitialValues,
       survey_area_name:
         (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
-      geometry: generateValidGeometryCollection(studyAreaResponseData.survey_details?.geometry).geometryCollection
+      geometry: studyAreaResponseData.survey_details?.geometry || []
     });
 
     setOpenEditDialog(true);
@@ -179,21 +178,9 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 {survey_details.survey_area_name}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-            </Grid>
-            <Grid item xs={6}>
-              {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-            </Grid>
           </Grid>
         </dl>
-        <Box mt={4} height={500}>
+        <Box mt={4} mb={4} height={500}>
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -202,6 +189,20 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             setInferredLayersInfo={setInferredLayersInfo}
           />
         </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
+          </Grid>
+        </Grid>
       </Box>
     </>
   );
