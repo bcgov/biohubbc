@@ -32,7 +32,6 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    //if (file.type === 'application/x-zip-compressed' || 'application/zip' || '.zip') {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
       req_message,
