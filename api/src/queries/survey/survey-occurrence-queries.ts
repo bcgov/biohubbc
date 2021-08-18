@@ -195,29 +195,125 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
 };
 
 /**
- * SQL query to get the record for a single occurrence.
+ * SQL query to get the record for a single occurrence submission.
  *
- * @param {number} surveyId
- * @param {number} templateId
+ * @param {number} submissionId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyTemplateOccurrenceSQL = (surveyId: number, templateId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyTemplateOccurrenceSQL', message: 'params', surveyId });
+export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyOccurrenceSubmissionSQL', message: 'params', occurrenceSubmissionId });
 
-  if (!surveyId || !templateId) {
+  if (!occurrenceSubmissionId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-    SELECT *
+    SELECT
+      *
     FROM
       occurrence_submission
     WHERE
-      occurrence_submission_id = ${templateId};
+      occurrence_submission_id = ${occurrenceSubmissionId};
   `;
 
   defaultLog.debug({
-    label: 'getSurveyTemplateOccurrenceSQL',
+    label: 'getSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+export const insertSurveySubmissionStatusSQL = (
+  occurrenceSubmissionId: number,
+  submissionStatusType: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveySubmissionStatusSQL',
+    message: 'params',
+    occurrenceSubmissionId,
+    submissionStatusType
+  });
+
+  if (!occurrenceSubmissionId || !submissionStatusType) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO submission_status (
+      occurrence_submission_id,
+      submission_status_type_id,
+      event_timestamp
+    ) VALUES (
+      ${occurrenceSubmissionId},
+      (
+        SELECT
+          submission_status_type_id
+        FROM
+          submission_status_type
+        WHERE
+          name = ${submissionStatusType}
+      ),
+      now()
+    )
+    RETURNING
+      submission_status_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'insertSurveySubmissionStatusSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+export const insertSurveySubmissionMessageSQL = (
+  submissionStatusId: number,
+  submissionMessageType: string,
+  submissionMessage: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveySubmissionMessageSQL',
+    message: 'params',
+    submissionStatusId,
+    submissionMessageType,
+    submissionMessage
+  });
+
+  if (!submissionStatusId || !submissionMessageType || !submissionMessage) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO submission_message (
+      submission_status_id,
+      submission_message_type_id,
+      event_timestamp,
+      message
+    ) VALUES (
+      ${submissionStatusId},
+      (
+        SELECT
+          submission_message_type_id
+        FROM
+          submission_message_type
+        WHERE
+          name = ${submissionMessageType}
+      ),
+      now(),
+      ${submissionMessage}
+    )
+    RETURNING
+      submission_message_id;
+  `;
+
+  defaultLog.debug({
+    label: 'insertSurveySubmissionMessageSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

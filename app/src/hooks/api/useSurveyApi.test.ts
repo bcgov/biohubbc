@@ -19,14 +19,25 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
 
-  it('getTemplateObservationsSignedURL works as expected', async () => {
-    const templateId = 4;
+  it('getObservationSubmission works as expected', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`)
+      .reply(200, { id: 1, fileName: 'file.txt' });
+
+    const result = await useSurveyApi(axios).getObservationSubmission(projectId, surveyId);
+
+    expect(result.id).toEqual(1);
+    expect(result.fileName).toEqual('file.txt');
+  });
+
+  it('getObservationSubmissionSignedURL works as expected', async () => {
+    const submissionId = 4;
 
     mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/template/${templateId}/getSignedUrl`)
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/getSignedUrl`)
       .reply(200, 'www.signedurl.com');
 
-    const result = await useSurveyApi(axios).getTemplateObservationsSignedURL(projectId, surveyId, templateId);
+    const result = await useSurveyApi(axios).getObservationSubmissionSignedURL(projectId, surveyId, submissionId);
 
     expect(result).toEqual('www.signedurl.com');
   });
@@ -128,18 +139,6 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).getSurveyAttachmentSignedURL(projectId, surveyId, attachmentId);
 
     expect(result).toEqual(signedUrl);
-  });
-
-  it('uploadTemplateObservations works as expected', async () => {
-    const file = new File(['foo'], 'foo.txt', {
-      type: 'text/plain'
-    });
-
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/template/upload`).reply(200, 'OK');
-
-    const result = await useSurveyApi(axios).uploadTemplateObservations(projectId, surveyId, file);
-
-    expect(result).toEqual('OK');
   });
 
   it('getSurveyAttachments works as expected', async () => {

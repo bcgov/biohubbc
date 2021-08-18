@@ -3,9 +3,9 @@ import { describe } from 'mocha';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL,
+  getSurveyOccurrenceSubmissionSQL,
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL,
-  getSurveyTemplateOccurrenceSQL
+  updateSurveyOccurrenceSubmissionWithKeySQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
@@ -82,21 +82,15 @@ describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
   });
 });
 
-describe('getSurveyTemplateOccurrenceSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getSurveyTemplateOccurrenceSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null key provided', () => {
-    const response = getSurveyTemplateOccurrenceSQL(1, (null as unknown) as number);
+describe('getSurveyOccurrenceSubmissionSQL', () => {
+  it('returns null response when null submissionId provided', () => {
+    const response = getSurveyOccurrenceSubmissionSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getSurveyTemplateOccurrenceSQL(1, 1);
+    const response = getSurveyOccurrenceSubmissionSQL(1);
 
     expect(response).to.not.be.null;
   });

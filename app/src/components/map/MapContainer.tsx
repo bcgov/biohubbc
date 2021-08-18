@@ -24,6 +24,12 @@ import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
 import { ReProjector } from 'reproj-helper';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import {
+  determineMapGeometries,
+  getInferredLayersInfoByProjectedGeometry,
+  getInferredLayersInfoByWFSFeature,
+  getLayerTypesToSkipByProjectedGeometry
+} from 'utils/mapLayersHelpers';
 
 /*
   Get leaflet icons working
@@ -69,6 +75,25 @@ const layerGeoFilterTypeMappings = {
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': 'GEOMETRY'
 };
 
+const layersToInfer = [
+  'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
+  'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG',
+  'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW',
+  'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
+];
+
+export const envToNrmRegionsMapping = {
+  '1- Vancouver Island': 'West Coast Natural Resource Region',
+  '2- Lower Mainland': 'South Coast Natural Resource Region',
+  '3- Thompson': 'Thompson-Okanagan Natural Resource Region',
+  '8- Okanagan': 'Thompson-Okanagan Natural Resource Region',
+  '4- Kootenay': 'Kootenay-Boundary Natural Resource Region',
+  '5- Cariboo': 'Cariboo Natural Resource Region',
+  '6- Skeena': 'Skeena Natural Resource Region',
+  '7- Omineca': 'Omineca Natural Resource Region',
+  '9- Peace': 'Northeast Natural Resource Region'
+};
+
 const layerContentHandlers = {
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW': {
     featureKeyHandler: (feature: Feature) => feature?.properties?.OBJECTID,
@@ -77,12 +102,16 @@ const layerContentHandlers = {
         return { tooltip: 'Unparsable Feature', content: [] };
       }
 
-      const tooltip = `${feature.properties.REGION_RESPONSIBLE_NAME} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
+      const tooltip = `${feature.properties.WILDLIFE_MGMT_UNIT_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_ID} - ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`;
 
       const content = (
         <>
-          <div key={`${feature.id}-region`}>{`Region Name: ${feature.properties.REGION_RESPONSIBLE_NAME}`}</div>
-          <div key={`${feature.id}-zone`}>{`Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
+          <div
+            key={`${feature.id}-management-unit-id`}>{`Wildlife Management Unit: ${feature.properties.WILDLIFE_MGMT_UNIT_ID}`}</div>
+          <div
+            key={`${feature.id}-game-management-zone-id`}>{`Game Management Zone: ${feature.properties.GAME_MANAGEMENT_ZONE_ID}`}</div>
+          <div
+            key={`${feature.id}-game-management-zone-name`}>{`Game Management Zone Name: ${feature.properties.GAME_MANAGEMENT_ZONE_NAME}`}</div>
           <div key={`${feature.id}-area`}>{`Region Area: ${(feature.properties.FEATURE_AREA_SQM / 10000).toFixed(
             0
           )} ha`}</div>
@@ -185,13 +214,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
-  const layersToInfer = [
-    'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
-    'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG',
-    'pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW',
-    'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
-  ];
-
   // Add a geometry defined from an existing overlay feature (via its popup)
   useEffect(() => {
     if (!preDefinedGeometry) {
@@ -215,6 +237,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     }
 
     throttledGetFeatureDetails(layersToInfer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geometryState?.geometry, nonEditableGeometries]);
 
   let shownDrawControls: any = {};
@@ -295,61 +318,41 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     return coordinatesString;
   };
 
-  // TODO break this into smaller functions
+  /*
+    Function to get WFS feature details based on the existing map geometries
+    and layer types/filter criteria
+  */
   const throttledGetFeatureDetails = useCallback(
     throttle(async (typeNames: string[], wfsParams?: IWFSParams) => {
-      let inferredLayersInfo;
       const parksInfo: Set<string> = new Set(); // Parks and Eco-Reserves
       const nrmInfo: Set<string> = new Set(); // NRM Regions
       const envInfo: Set<string> = new Set(); // ENV Regions
       const wmuInfo: Set<string> = new Set(); // Wildlife Management Units
+      let inferredLayersInfo = {
+        parksInfo,
+        nrmInfo,
+        envInfo,
+        wmuInfo
+      };
 
-      let drawnGeometries: any[] = [];
-
-      if (geometryState?.geometry.length) {
-        drawnGeometries = geometryState?.geometry;
-      } else if (nonEditableGeometries) {
-        drawnGeometries = nonEditableGeometries.map((geo: INonEditableGeometries) => geo.feature);
-      }
+      // Get map geometries based on whether boundary is non editable or drawn/uploaded
+      const mapGeometries: Feature[] = determineMapGeometries(geometryState?.geometry, nonEditableGeometries);
 
       // Convert all geometries to BC Albers projection
-      const reprojectedGeometries = await Promise.all(changeProjections(drawnGeometries));
+      const reprojectedGeometries = await Promise.all(changeProjections(mapGeometries));
 
       const wfsPromises: Promise<any>[] = [];
-
       reprojectedGeometries.forEach((projectedGeo) => {
         let filterCriteria = '';
         const coordinatesString = generateCoordinatesString(projectedGeo.geometry);
 
         filterCriteria = `${projectedGeo.geometry.type}${coordinatesString}`;
+        inferredLayersInfo = getInferredLayersInfoByProjectedGeometry(projectedGeo, inferredLayersInfo);
+        const layerTypesToSkip = getLayerTypesToSkipByProjectedGeometry(projectedGeo);
 
-        let equivalentType = '';
-        const geoId = projectedGeo.id as string;
-
-        if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
-          equivalentType = 'TA_PARK_ECORES_PA_SVW';
-          parksInfo.add(projectedGeo.properties?.PROTECTED_LANDS_NAME);
-        }
-
-        if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
-          equivalentType = 'ADM_NR_REGIONS_SPG';
-          nrmInfo.add(projectedGeo.properties?.REGION_NAME);
-        }
-
-        if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-          equivalentType = 'EADM_WLAP_REGION_BND_AREA_SVW';
-          envInfo.add(projectedGeo.properties?.REGION_NUMBER_NAME);
-        }
-
-        if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-          equivalentType = 'WAA_WILDLIFE_MGMT_UNITS_SVW';
-          wmuInfo.add(
-            `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_ID}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-          );
-        }
-
+        // Make Open Maps API call to retrieve intersecting features based on geometry and filter criteria
         typeNames.forEach((typeName: string) => {
-          if (!equivalentType || !typeName.includes(equivalentType)) {
+          if (!layerTypesToSkip.includes(typeName)) {
             const url = buildWFSURL(typeName, wfsParams);
             const geoFilterType = layerGeoFilterTypeMappings[typeName];
             const filterData = `INTERSECTS(${geoFilterType}, ${filterCriteria})`;
@@ -365,41 +368,26 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           }
         });
       });
-
       const wfsResult = await Promise.all(wfsPromises);
 
       wfsResult.forEach((item: any) => {
         item?.features?.forEach((feature: Feature) => {
-          const featureId = feature.id as string;
-
-          if (featureId.includes('TA_PARK_ECORES_PA_SVW')) {
-            parksInfo.add(feature.properties?.PROTECTED_LANDS_NAME);
-          }
-
-          if (featureId.includes('ADM_NR_REGIONS_SPG')) {
-            nrmInfo.add(feature.properties?.REGION_NAME);
-          }
-
-          if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
-            envInfo.add(feature.properties?.REGION_NUMBER_NAME);
-          }
-
-          if (featureId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
-            wmuInfo.add(
-              `${feature.properties?.WILDLIFE_MGMT_UNIT_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_ID}, ${feature.properties?.GAME_MANAGEMENT_ZONE_NAME}`
-            );
-          }
+          inferredLayersInfo = getInferredLayersInfoByWFSFeature(feature, inferredLayersInfo);
         });
       });
 
-      inferredLayersInfo = {
-        parks: Array.from(parksInfo),
-        nrm: Array.from(nrmInfo),
-        env: Array.from(envInfo),
-        wmu: Array.from(wmuInfo)
+      if (!inferredLayersInfo) {
+        return;
+      }
+
+      const inferredLayers = {
+        parks: Array.from(inferredLayersInfo.parksInfo),
+        nrm: Array.from(inferredLayersInfo.nrmInfo),
+        env: Array.from(inferredLayersInfo.envInfo),
+        wmu: Array.from(inferredLayersInfo.wmuInfo)
       };
 
-      setInferredLayersInfo && setInferredLayersInfo(inferredLayersInfo);
+      setInferredLayersInfo && setInferredLayersInfo(inferredLayers);
     }, 300),
     [geometryState?.geometry, nonEditableGeometries]
   );
@@ -457,14 +445,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       )}
 
       <LayersControl position="bottomright">
-        <LayersControl.BaseLayer checked name="Esri Imagery">
+        <LayersControl.BaseLayer checked name="BC Government">
+          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
+        </LayersControl.BaseLayer>
+        <LayersControl.BaseLayer name="Esri Imagery">
           <TileLayer
             attribution='&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="BC Government">
-          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
         </LayersControl.BaseLayer>
       </LayersControl>
     </LeafletMapContainer>

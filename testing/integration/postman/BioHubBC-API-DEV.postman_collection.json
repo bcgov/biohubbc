@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "34faa9c4-14df-4879-9524-c9ba6765abdb",
-		"name": "BioHubBC-API-DEV Copy",
+		"_postman_id": "c4f67ff9-7252-4a76-a5b7-0bc5d3077e9d",
+		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,7 +14,9 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
@@ -23,7 +25,9 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				}
@@ -37,7 +41,25 @@
 					"request": {
 						"method": "POST",
 						"header": [],
-						"url": null
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"occurrence_submission_id\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/dwc/validate",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"dwc",
+								"validate"
+							]
+						}
 					},
 					"response": []
 				}
@@ -51,7 +73,9 @@
 					"request": {
 						"method": "POST",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
@@ -60,7 +84,9 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				},
@@ -69,7 +95,9 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				}
@@ -92,7 +120,9 @@
 											"request": {
 												"method": "DELETE",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										},
@@ -101,7 +131,9 @@
 											"request": {
 												"method": "GET",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										}
@@ -153,7 +185,9 @@
 									"request": {
 										"method": "POST",
 										"header": [],
-										"url": null
+										"url": {
+											"raw": ""
+										}
 									},
 									"response": []
 								}
@@ -170,7 +204,9 @@
 											"request": {
 												"method": "DELETE",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										}
@@ -181,7 +217,9 @@
 									"request": {
 										"method": "POST",
 										"header": [],
-										"url": null
+										"url": {
+											"raw": ""
+										}
 									},
 									"response": []
 								}
@@ -204,7 +242,9 @@
 															"request": {
 																"method": "DELETE",
 																"header": [],
-																"url": null
+																"url": {
+																	"raw": ""
+																}
 															},
 															"response": []
 														},
@@ -213,7 +253,9 @@
 															"request": {
 																"method": "GET",
 																"header": [],
-																"url": null
+																"url": {
+																	"raw": ""
+																}
 															},
 															"response": []
 														}
@@ -224,7 +266,9 @@
 													"request": {
 														"method": "GET",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												},
@@ -233,7 +277,9 @@
 													"request": {
 														"method": "POST",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												}
@@ -250,7 +296,9 @@
 															"request": {
 																"method": "PUT",
 																"header": [],
-																"url": null
+																"url": {
+																	"raw": ""
+																}
 															},
 															"response": []
 														}
@@ -261,7 +309,9 @@
 													"request": {
 														"method": "POST",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												},
@@ -270,7 +320,9 @@
 													"request": {
 														"method": "GET",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												},
@@ -279,35 +331,85 @@
 													"request": {
 														"method": "POST",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												}
 											]
 										},
 										{
-											"name": "template",
+											"name": "submission",
 											"item": [
 												{
-													"name": "{templateId}",
+													"name": "{submissionId}",
 													"item": [
 														{
 															"name": "getSignedUrl",
 															"request": {
 																"method": "GET",
 																"header": [],
-																"url": null
+																"url": {
+																	"raw": ""
+																}
+															},
+															"response": []
+														},
+														{
+															"name": "view",
+															"request": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": ""
+																}
 															},
 															"response": []
 														}
 													]
 												},
 												{
+													"name": "get",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": ""
+														}
+													},
+													"response": []
+												},
+												{
 													"name": "upload",
 													"request": {
 														"method": "POST",
 														"header": [],
-														"url": null
+														"body": {
+															"mode": "formdata",
+															"formdata": [
+																{
+																	"key": "media",
+																	"type": "file",
+																	"src": "/C:/w/test files/dwc/dwca_moose.zip"
+																}
+															]
+														},
+														"url": {
+															"raw": "{{BASEURL}}/project/{{PROJECT_ID}}/survey/{{SURVEY_ID}}/observation/submission/upload",
+															"host": [
+																"{{BASEURL}}"
+															],
+															"path": [
+																"project",
+																"{{PROJECT_ID}}",
+																"survey",
+																"{{SURVEY_ID}}",
+																"observation",
+																"submission",
+																"upload"
+															]
+														}
 													},
 													"response": []
 												}
@@ -321,7 +423,9 @@
 													"request": {
 														"method": "GET",
 														"header": [],
-														"url": null
+														"url": {
+															"raw": ""
+														}
 													},
 													"response": []
 												}
@@ -332,7 +436,9 @@
 											"request": {
 												"method": "DELETE",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										},
@@ -341,7 +447,9 @@
 											"request": {
 												"method": "PUT",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										},
@@ -350,7 +458,9 @@
 											"request": {
 												"method": "PUT",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										},
@@ -359,7 +469,9 @@
 											"request": {
 												"method": "GET",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										}
@@ -373,7 +485,9 @@
 											"request": {
 												"method": "GET",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										}
@@ -387,7 +501,9 @@
 											"request": {
 												"method": "GET",
 												"header": [],
-												"url": null
+												"url": {
+													"raw": ""
+												}
 											},
 											"response": []
 										}
@@ -398,7 +514,9 @@
 									"request": {
 										"method": "POST",
 										"header": [],
-										"url": null
+										"url": {
+											"raw": ""
+										}
 									},
 									"response": []
 								}
@@ -409,7 +527,9 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						},
@@ -418,7 +538,9 @@
 							"request": {
 								"method": "PUT",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						},
@@ -427,7 +549,9 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						},
@@ -436,7 +560,9 @@
 							"request": {
 								"method": "PUT",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						},
@@ -445,7 +571,9 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						}
@@ -454,14 +582,32 @@
 			]
 		},
 		{
-			"name": "spi",
+			"name": "xlsx",
 			"item": [
 				{
 					"name": "validate",
 					"request": {
 						"method": "POST",
 						"header": [],
-						"url": null
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"occurrence_submission_id\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/xlsx/validate",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"xlsx",
+								"validate"
+							]
+						}
 					},
 					"response": []
 				}
@@ -478,7 +624,9 @@
 							"request": {
 								"method": "POST",
 								"header": [],
-								"url": null
+								"url": {
+									"raw": ""
+								}
 							},
 							"response": []
 						}
@@ -489,7 +637,9 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": ""
+						}
 					},
 					"response": []
 				}
@@ -500,7 +650,9 @@
 			"request": {
 				"method": "PUT",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -509,7 +661,9 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -518,7 +672,9 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -527,7 +683,9 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -761,7 +919,9 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -770,7 +930,9 @@
 			"request": {
 				"method": "POST",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},
@@ -779,7 +941,9 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": ""
+				}
 			},
 			"response": []
 		},

@@ -300,8 +300,8 @@ exports[`SurveyDetails renders correctly 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
-                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                      style="width: 256px; height: 256px; left: -38px; top: -79px;"
                     />
                   </div>
                 </div>
@@ -311,7 +311,30 @@ exports[`SurveyDetails renders correctly 1`] = `
               />
               <div
                 class="leaflet-pane leaflet-overlay-pane"
-              />
+              >
+                <svg
+                  height="0"
+                  pointer-events="none"
+                  style="left: 0px; top: 0px;"
+                  viewBox="0 0 0 0"
+                  width="0"
+                >
+                  <g>
+                    <path
+                      class="leaflet-interactive"
+                      d="M-1 2L0 -2z"
+                      fill="#3388ff"
+                      fill-opacity="0.2"
+                      fill-rule="evenodd"
+                      stroke="#3388ff"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-opacity="1"
+                      stroke-width="3"
+                    />
+                  </g>
+                </svg>
+              </div>
               <div
                 class="leaflet-pane leaflet-marker-pane"
               />
@@ -342,7 +365,7 @@ exports[`SurveyDetails renders correctly 1`] = `
                   </a>
                   <a
                     aria-label="Zoom out"
-                    class="leaflet-control-zoom-out"
+                    class="leaflet-control-zoom-out leaflet-disabled"
                     href="#"
                     role="button"
                     title="Zoom out"
@@ -396,11 +419,11 @@ exports[`SurveyDetails renders correctly 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_32"
+                            name="leaflet-base-layers_36"
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -408,11 +431,11 @@ exports[`SurveyDetails renders correctly 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_32"
+                            name="leaflet-base-layers_36"
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -434,12 +457,6 @@ exports[`SurveyDetails renders correctly 1`] = `
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>

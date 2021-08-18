@@ -1,13 +1,35 @@
 import xlsx from 'xlsx';
-import { IMediaState, MediaFile } from '../media-file';
-import { getFileEmptyValidator, getFileMimeTypeValidator } from '../validation/file-type-and-content-validator';
+import { IMediaState, MediaFile, MediaValidator } from '../media-file';
+import { DWC_CLASS } from './dwc/dwc-archive-file';
+
+export enum XLSX_CLASS {
+  SAMPLE_STATION_INFORMATION = 'Sample Station Information',
+  GENERAL_SURVEY = 'General Survey',
+  SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
+}
+
+export enum XLSX_CSV {
+  STRUCTURE = 'structure'
+}
+
+const DEFAULT_XLSX_SHEET = 'Sheet1';
+
+export type XLSXCSVMediaValidationRules = { [key in XLSX_CSV]?: MediaValidator[] } &
+  { [key in XLSX_CLASS]?: MediaValidator[] };
+
+export type XLSXContentValidationRules = {
+  [key in XLSX_CLASS]?: CSVValidator[];
+};
 
 export interface IWorkbook {
   workbook: CSVWorkBook;
 }
 
 export interface IWorksheets {
-  worksheets: { [name: string]: CSVWorksheet };
+  worksheets:
+    | { [name in DWC_CLASS]?: CSVWorksheet }
+    | { [name in XLSX_CLASS]?: CSVWorksheet }
+    | { [name: string]: CSVWorksheet };
 }
 
 export class CSVWorkBook implements IWorksheets {
@@ -160,6 +182,15 @@ export class CSVWorksheet {
   }
 }
 
+/**
+ * Supports XLSX CSV files.
+ *
+ * Expects a known named file
+ *
+ * @export
+ * @class XLSXCSV
+ * @implements {IWorkbook}
+ */
 export class XLSXCSV implements IWorkbook {
   rawFile: MediaFile;
 
@@ -171,6 +202,30 @@ export class XLSXCSV implements IWorkbook {
     const rawWorkbook = xlsx.read(this.rawFile.buffer, { ...options });
 
     this.workbook = new CSVWorkBook(rawWorkbook);
+
+    this._init();
+  }
+
+  _init() {
+    switch (this.rawFile.name) {
+      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
+        break;
+      case XLSX_CLASS.GENERAL_SURVEY:
+        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
+        break;
+      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] = new CSVWorksheet(
+          this.rawFile.fileName,
+          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
+        );
+    }
   }
 
   /**
@@ -179,19 +234,56 @@ export class XLSXCSV implements IWorkbook {
    * @return {*}  {IMediaState[]}
    * @memberof XLSXCSV
    */
-  isValid(): IMediaState[] {
+  isMediaValid(validationRules: XLSXCSVMediaValidationRules): IMediaState[] {
     const mediaState: IMediaState[] = [];
 
-    mediaState.push(
-      this.rawFile
-        .validate([
-          getFileEmptyValidator(),
-          getFileMimeTypeValidator([/application\/vnd\.ms-excel/, /application\/vnd\.openxmlformats/])
-        ])
-        .getState()
-    );
+    // Validate the xlsx file itself
+    mediaState.push(this.rawFile.validate(validationRules[XLSX_CSV.STRUCTURE] || []).getState());
+
+    switch (this.rawFile.name) {
+      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || []).getState());
+        break;
+      case XLSX_CLASS.GENERAL_SURVEY:
+        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState());
+        break;
+      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+        mediaState.push(
+          this.rawFile.validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || []).getState()
+        );
+    }
 
     return mediaState;
+  }
+
+  isContentValid(validationRules: XLSXContentValidationRules): ICsvState[] {
+    const csvState: ICsvState[] = [];
+
+    if (this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]) {
+      csvState.push(
+        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]
+          .validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || [])
+          .getState()
+      );
+    }
+
+    if (this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]) {
+      csvState.push(
+        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]
+          .validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || [])
+          .getState()
+      );
+    }
+
+    if (this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]) {
+      csvState.push(
+        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]
+          .validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || [])
+          .getState()
+      );
+    }
+
+    return csvState;
   }
 }
 

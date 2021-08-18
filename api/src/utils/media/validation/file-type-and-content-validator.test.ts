@@ -11,10 +11,7 @@ describe('getFileEmptyValidator', () => {
       fileName: 'testName',
       mimetype: 'testMime',
       buffer: Buffer.from(''), // empty buffer
-      mediaValidation: new MediaValidation('testName'),
-      validate: ((() => {
-        // do nothing
-      }) as unknown) as any
+      mediaValidation: new MediaValidation('testName')
     };
 
     validator(mediaFile);
@@ -29,10 +26,7 @@ describe('getFileEmptyValidator', () => {
       fileName: 'testName',
       mimetype: 'testMime',
       buffer: Buffer.from([123]), // non-empty buffer
-      mediaValidation: new MediaValidation('testName'),
-      validate: ((() => {
-        // do nothing
-      }) as unknown) as any
+      mediaValidation: new MediaValidation('testName')
     };
 
     validator(mediaFile);
@@ -51,10 +45,7 @@ describe('getFileMimeTypeValidator', () => {
       fileName: 'testName',
       mimetype: 'badMime', // invalid mime
       buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName'),
-      validate: ((() => {
-        // do nothing
-      }) as unknown) as any
+      mediaValidation: new MediaValidation('testName')
     };
 
     validator(mediaFile);
@@ -70,10 +61,7 @@ describe('getFileMimeTypeValidator', () => {
       fileName: 'testName',
       mimetype: 'validMime', // valid mime
       buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName'),
-      validate: ((() => {
-        // do nothing
-      }) as unknown) as any
+      mediaValidation: new MediaValidation('testName')
     };
 
     validator(mediaFile);
@@ -89,10 +77,7 @@ describe('getFileMimeTypeValidator', () => {
       fileName: 'testName',
       mimetype: 'validMime',
       buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName'),
-      validate: ((() => {
-        // do nothing
-      }) as unknown) as any
+      mediaValidation: new MediaValidation('testName')
     };
 
     validator(mediaFile);

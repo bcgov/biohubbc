@@ -1,7 +1,6 @@
 import axios from 'axios';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
-import useObservationApi from './api/useObservationApi';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
@@ -10,6 +9,7 @@ import useSearchApi from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
+import useObservationApi from './api/useObservationApi';
 
 /**
  * Returns a set of supported api methods.
@@ -44,11 +44,11 @@ export const useBiohubApi = () => {
     permit,
     search,
     survey,
+    observation,
     codes,
     draft,
     user,
     admin,
-    observation,
     external
   };
 };

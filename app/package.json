@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@bcgov/bc-sans": "~1.0.1",
-    "@handsontable/react": "~8.4.0",
     "@material-ui/core": "~4.11.0",
     "@material-ui/icons": "~4.2.1",
     "@material-ui/lab": "latest",
@@ -49,7 +48,6 @@
     "express": "~4.17.1",
     "fast-json-patch": "~3.0.0-1",
     "formik": "~2.2.6",
-    "handsontable": "~8.4.0",
     "json-schema-traverse": "~1.0.0",
     "keycloak-js": "~9.0.2",
     "leaflet": "~1.7.1",

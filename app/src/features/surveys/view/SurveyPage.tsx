@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
+  },
+  article: {
+    overflowX: 'hidden'
   }
 }));
 
@@ -340,7 +343,7 @@ const SurveyPage: React.FC = () => {
               </List>
             </Paper>
           </Box>
-          <Box component="article" flex="1 1 auto">
+          <Box className={classes.article} component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <SurveyDetails
                 projectForViewData={projectWithDetails}
@@ -349,9 +352,7 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
-            {location.pathname.includes('/observations') && (
-              <SurveyObservations projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
-            )}
+            {location.pathname.includes('/observations') && <SurveyObservations />}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}

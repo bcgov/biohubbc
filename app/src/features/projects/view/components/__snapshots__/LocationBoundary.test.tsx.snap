@@ -104,7 +104,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
@@ -227,7 +227,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -239,7 +239,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -261,12 +261,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a geometry c
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
@@ -381,7 +375,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -37px; top: -78px;"
                 />
               </div>
@@ -516,7 +510,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -528,7 +522,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -550,12 +544,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a multipolyg
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
@@ -670,7 +658,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
@@ -793,7 +781,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -805,7 +793,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -827,12 +815,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
@@ -947,7 +929,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                   style="width: 256px; height: 256px; left: -38px; top: -79px;"
                 />
               </div>
@@ -1070,7 +1052,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -1082,7 +1064,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1104,12 +1086,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
@@ -1224,7 +1200,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
               </div>
@@ -1324,7 +1300,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -1336,7 +1312,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1358,12 +1334,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
@@ -1478,7 +1448,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                   alt=""
                   class="leaflet-tile"
                   role="presentation"
-                  src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                  src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                   style="width: 256px; height: 256px; left: -159px; top: -31px;"
                 />
               </div>
@@ -1578,7 +1548,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                         type="radio"
                       />
                       <span>
-                         Esri Imagery
+                         BC Government
                       </span>
                     </div>
                   </label>
@@ -1590,7 +1560,7 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                         type="radio"
                       />
                       <span>
-                         BC Government
+                         Esri Imagery
                       </span>
                     </div>
                   </label>
@@ -1612,12 +1582,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
                 title="A JS library for interactive maps"
               >
                 Leaflet
-              </a>
-               | © 
-              <a
-                href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-              >
-                ESRI Basemap
               </a>
             </div>
           </div>
