@@ -24,7 +24,7 @@ import {
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
-import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -65,7 +65,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return { feature: geom };
     });
 
-    updateMapBounds(surveyGeometry, setBounds);
+    setBounds(calculateUpdatedMapBounds(surveyGeometry));
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry]);
 

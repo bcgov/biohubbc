@@ -26,7 +26,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { useEffect } from 'react';
-import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 export interface ILocationBoundaryProps {
@@ -129,7 +129,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       return { feature: geom };
     });
 
-    updateMapBounds(location.geometry, setBounds);
+    setBounds(calculateUpdatedMapBounds(location.geometry));
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 
