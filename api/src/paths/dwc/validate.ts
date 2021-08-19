@@ -122,6 +122,7 @@ export function getSubmissionS3Key(): RequestHandler {
       const s3Key = response.rows[0].key;
 
       req['s3Key'] = s3Key;
+      console.log('********************got the S3 key', req['s3Key']);
 
       next();
     } catch (error) {
@@ -141,6 +142,7 @@ export function getSubmissionFileFromS3(): RequestHandler {
       const s3Key = req['s3Key'];
 
       const s3File = await getFileFromS3(s3Key);
+      console.log('****************got file from S3', s3File);
 
       if (!s3File) {
         throw new HTTP500('Failed to get occurrence submission file');
@@ -165,6 +167,8 @@ function prepDWCArchive(): RequestHandler {
 
       const parsedMedia = parseUnknownMedia(s3File);
 
+      console.log('We have the parsedMedia', parsedMedia);
+
       if (!parsedMedia) {
         req['parseError'] = 'Failed to parse submission, file was empty';
 
@@ -178,6 +182,8 @@ function prepDWCArchive(): RequestHandler {
       }
 
       const dwcArchive = new DWCArchive(parsedMedia);
+
+      console.log('this is the dwcArchive', dwcArchive);
 
       req['dwcArchive'] = dwcArchive;
 
@@ -210,6 +216,8 @@ export function persistParseErrors(): RequestHandler {
         'Rejected',
         connection
       );
+
+      console.log('****************** This is the parseError:', parseError);
 
       await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
 
@@ -256,6 +264,10 @@ function getValidationRules(): RequestHandler {
       };
 
       req['contentValidationRules'] = contentValidationRules;
+      console.log(
+        '******************This request contains the media validation rules and the content validation rules: ',
+        req
+      );
 
       next();
     } catch (error) {
@@ -303,9 +315,14 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
     const connection = getDBConnection(req['keycloak_token']);
 
+    console.log('*******************statusTypeObject is: ', statusTypeObject);
+
     try {
       const mediaState: IMediaState[] = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
+
+      console.log('****************media state being persisted: ', mediaState);
+      console.log('*****************csv state being persisted: ', csvState);
 
       await connection.open();
 
@@ -325,14 +342,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       mediaState?.forEach((mediaStateItem) => {
         mediaStateItem.fileErrors?.forEach((fileError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              `${mediaStateItem.fileName} - ${fileError}`,
-              connection
-            )
-          );
+          promises.push(insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, connection));
         });
       });
 

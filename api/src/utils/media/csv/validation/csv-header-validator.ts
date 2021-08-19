@@ -9,6 +9,10 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
   return (csvWorksheet) => {
     const headers = csvWorksheet.getHeaders();
 
+    console.log('************** the csv worksheet headers are: ', headers);
+
+
+
     if (!headers?.length) {
       return csvWorksheet;
     }
@@ -25,8 +29,10 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
             col: header
           }
         ]);
+        console.log('*********** we are detecting duplicate headers: ', header);
       } else {
         seenHeaders.push(header);
+        console.log('*********** this is the first time we are seeing this header', header);
       }
     }
 

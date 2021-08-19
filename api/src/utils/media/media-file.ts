@@ -77,11 +77,14 @@ export class ArchiveFile implements IMediaFile {
    * @memberof ArchiveFile
    */
   get name(): string {
+    console.log('*******************got the fileName', this.fileName.split('.')[0]);
     return this.fileName.split('.')[0];
   }
 
   validate(validators: ArchiveValidator[]): MediaValidation {
     validators.forEach((validator) => validator(this));
+
+    console.log("*********************This is the media validation: ", this.mediaValidation);
 
     return this.mediaValidation;
   }
