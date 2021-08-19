@@ -115,6 +115,7 @@ export function getOccurenceSubmission(): RequestHandler {
         getOccurrenceSubmissionSQLStatement.values
       );
 
+      // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
       if (
         !occurrenceSubmissionData ||
         !occurrenceSubmissionData.rows ||
