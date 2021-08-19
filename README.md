@@ -100,14 +100,6 @@ make web
 Result of running `make web` (condensed to only show the important parts):  
 ![make web screenshot](readme_screenshots/running_make_start.png "Running `make web`")
 
-## Start only the Backend Applications
-
-Runs the database (including migrations/seeding) and api (but not the web-app).
-
-```
-make backend
-```
-
 ## Access the Running Applications
 
 api:
@@ -124,6 +116,12 @@ app:
 See `./Makefile` for all available commands.
 
 _Note: Run all make commands from the root folder of the repo._
+
+## Print Makefile Help Doc
+
+```
+make help
+```
 
 ## Install All Dependencies
 
@@ -145,7 +143,8 @@ make clean
 
 ## Run Linter and Fix Issues
 
-Will run the projects code linter and attempt to fix all issues found.  
+Will run the projects code linter and attempt to fix all issues found.
+
 _Note: Not all formatting issues can be auto-fixed._
 
 ```
@@ -194,6 +193,7 @@ docker ps -a
 
 What a successfully built/run set of docker containers looks like:
 ![make web screenshot](readme_screenshots/running_docker_ps_-a.png "Running `docker ps -a`")
+
 _Note: The exited container is correct, as that container executes database migrations and then closes_
 
 ## View the logs for a container
