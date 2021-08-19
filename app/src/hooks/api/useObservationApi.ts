@@ -88,6 +88,26 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Delete observation submission based on submission ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteObservationSubmission = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number
+  ): Promise<number> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
+    );
+
+    return data;
+  };
+
+  /**
    * Initiate the validation process for the submitted observations
    * @param {number} submissionId
    */
@@ -106,7 +126,8 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     uploadObservationSubmission,
     getSubmissionCSVForView,
-    getObservationSubmission
+    getObservationSubmission,
+    deleteObservationSubmission
   };
 };
 
