@@ -187,7 +187,9 @@ make app
 
 ## Show all running containers
 
-`docker ps`
+```
+docker ps
+```
 
 ## Show all containers (running and closed)
 
