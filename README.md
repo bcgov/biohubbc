@@ -153,7 +153,8 @@ make lint-fix
 
 ## Run Formatter and Fix Issues
 
-Will run the projects code formatter and attempt to fix all issues found.  
+Will run the projects code formatter and attempt to fix all issues found.
+
 _Note: Not all formatting issues can be auto-fixed._
 
 ```
