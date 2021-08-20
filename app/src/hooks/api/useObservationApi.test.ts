@@ -27,6 +27,18 @@ describe('useObservationApi', () => {
     expect(result.fileName).toEqual('file.txt');
   });
 
+  it('deleteObservationSubmission works as expected', async () => {
+    const submissionId = 1;
+
+    mock
+      .onDelete(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`)
+      .reply(200, 1);
+
+    const result = await useObservationApi(axios).deleteObservationSubmission(projectId, surveyId, submissionId);
+
+    expect(result).toEqual(1);
+  });
+
   it('uploadObservationSubmission works as expected', async () => {
     const file = new File(['foo'], 'foo.txt', {
       type: 'text/plain'
