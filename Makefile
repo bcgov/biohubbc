@@ -27,6 +27,9 @@ env: | setup ## Copies the default ./env_config/env.docker to ./.env
 all: | close build run ## Performs all commands necessary to run all projects in docker
 all-debug: | close build run-debug ## Performs all commands necessary to run all projects in docker in debug mode
 
+postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres db project in docker
+postgres-debug: | close build-postgres run-postgres-debug ## Performs all commands necessary to run the postgres db project in docker in debug mode
+
 backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects in docker
 backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all backend projects in docker in debug mode
 
@@ -107,6 +110,29 @@ run-backend-debug: ## Runs all backend containers in debug mode, where all conta
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db db_setup api nginx
+
+## ------------------------------------------------------------------------------
+## Build/Run Backend Commands
+## - Builds all of the biohub backend projects (db, db_setup)
+## ------------------------------------------------------------------------------
+
+build-postgres: ## Builds the postgres db containers
+	@echo "==============================================="
+	@echo "Make: build-postgres - building postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup
+
+run-postgres: ## Runs the postgres db containers
+	@echo "==============================================="
+	@echo "Make: run-postgres - running postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup
+
+run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -300,6 +326,33 @@ format-fix: ## Runs `npm run format:fix` for all projects
 	@echo "Running /database format:fix"
 	@echo "==============================================="
 	@cd database && npm run format:fix && cd ..
+
+## ------------------------------------------------------------------------------
+## Run `docker logs <container> -f` commands for all projects
+## ------------------------------------------------------------------------------
+log-app: ## Runs `docker logs <container> -f` for the app container
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker logs biohubbc-app-$(DOCKER_NAMESPACE)-container -f
+
+log-api: ## Runs `docker logs <container> -f` for the api container
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker logs biohubbc-api-$(DOCKER_NAMESPACE)-container -f
+
+log-db: ## Runs `docker logs <container> -f` for the database container
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker logs biohubbc-db-$(DOCKER_NAMESPACE)-container -f
+
+log-db-setup: ## Runs `docker logs <container> -f` for the database setup container
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker logs biohubbc-db-$(DOCKER_NAMESPACE)-setup-container -f
 
 ## ------------------------------------------------------------------------------
 ## Help
