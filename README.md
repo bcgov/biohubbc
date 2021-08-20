@@ -129,7 +129,6 @@ Result of running `make web` (condensed to only show the important parts):
 api:
 
 - `localhost:6100/api/`
-- `localhost:80/api/`
 
 app:
 
