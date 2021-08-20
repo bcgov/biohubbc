@@ -120,7 +120,7 @@ export function getOccurenceSubmission(): RequestHandler {
         !occurrenceSubmissionData ||
         !occurrenceSubmissionData.rows ||
         !occurrenceSubmissionData.rows[0] ||
-        occurrenceSubmissionData.rows[0].soft_delete_timestamp
+        occurrenceSubmissionData.rows[0].delete_timestamp
       ) {
         return res.status(200).json(null);
       }

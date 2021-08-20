@@ -56,7 +56,7 @@ To leverage live reload you will need to ensure Docker is running using Hyper-V 
     - If it is checked, uncheck it, and click `Apply & Restart`
       - Docker may crash, but that is fine, you can kill docker for now.
     - You will then need to go to the following URL and follow the instructions in the first section `Enable Hyper-V using Powershell`: https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v
-      - This should just consist of running the 1 command in Powershell: `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All`
+      - This should just consist of running the 1 command in Powershell (as Admin): `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All`
     - Once the powershell command has been run, it will ask you to restart your machine.
     - Once restarted, re-launch Docker, and check that docker starts successfully and that the `Use the WSL 2 based engine` setting is still unchecked
   - Go to settings (gear icon)
@@ -162,6 +162,32 @@ After you've run `make clean`, running `make web` will launch new containers, wi
 
 ```
 make clean
+```
+
+## View the logs for a container
+
+### API
+
+```
+make log-api
+```
+
+### APP
+
+```
+make log-app
+```
+
+### Database
+
+```
+make log-db
+```
+
+### Database Setup (migrations + seeding)
+
+```
+make log-db-setup
 ```
 
 ## Run Linter and Fix Issues
