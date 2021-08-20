@@ -30,16 +30,40 @@ The objectives for the BioHubBC project are:
 
 - https://www.docker.com/products/docker-desktop
 
+### Windows
+
+If prompted, install Docker using Hyper-V (not WSL 2)
+
 ### Grant Docker access to your local folders
 
 This setup for biohub uses volumes to support live reload.  
-Depending on your Docker and OS versions, you may need to grant docker access to the folder you have your BioHub repo cloned in.
+To leverage live reload you will need to ensure Docker is running using Hyper-V (not the WSL2 engine).
+
+#### MacOS
 
 - In the Docker-Desktop app:
   - Go to settings (gear icon)
-  - Go to Resoruces
-  - Go to File Sharing (if there is no File Sharing section, then no changes are needed and you can skip these steps)
-  - Add the parent folder your repo is cloned under
+  - Now go to Resources
+  - Go to File Sharing
+  - Add the folder/drive your repo is cloned under
+    - This will grant Docker access to the files under it, which is necessary for it to detect file changes.
+
+#### Windows
+
+- In the Docker-Desktop app:
+  - Go to settings (gear icon)
+  - On the general tab ensure that the `Use the WSL 2 based engine` is unchecked.
+    - If it is checked, uncheck it, and click `Apply & Restart`
+      - Docker may crash, but that is fine, you can kill docker for now.
+    - You will then need to go to the following URL and follow the instructions in the first section `Enable Hyper-V using Powershell`: https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v
+      - This should just consist of running the 1 command in Powershell: `Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All`
+    - Once the powershell command has been run, it will ask you to restart your machine.
+    - Once restarted, re-launch Docker, and check that docker starts successfully and that the `Use the WSL 2 based engine` setting is still unchecked
+  - Go to settings (gear icon)
+  - Now go to Resources
+  - Go to File Sharing
+  - Add the folder/drive your repo is cloned under
+    - This will grant Docker access to the files under it, which is necessary for it to detect file changes.
 
 ## Ensure you can run the `make` command
 
