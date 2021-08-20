@@ -26,6 +26,10 @@ describe('PostSurveyObject', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
+    it('sets survey type', () => {
+      expect(data.survey_type).to.equal(null);
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
     });
@@ -69,6 +73,7 @@ describe('PostSurveyObject', () => {
       foippa_requirements_accepted: 'true',
       focal_species: [1, 2],
       ancillary_species: [3, 4],
+      survey_type: 'type',
       start_date: '2020/03/03',
       survey_area_name: 'area name',
       survey_data_proprietary: 'false',
@@ -118,6 +123,10 @@ describe('PostSurveyObject', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
     });
 
+    it('sets survey_type', () => {
+      expect(data.survey_type).to.eql(surveyObj.survey_type);
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal(surveyObj.start_date);
     });
@@ -165,6 +174,7 @@ describe('PostSurveyObject', () => {
       foippa_requirements_accepted: 'true',
       focal_species: [1, 2],
       ancillary_species: [3, 4],
+      survey_type: 'type',
       start_date: '2020/03/03',
       survey_area_name: 'area name',
       survey_data_proprietary: 'true',
@@ -195,6 +205,10 @@ describe('PostSurveyObject', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
+    });
+
+    it('sets survey_type', () => {
+      expect(data.survey_type).to.eql(surveyObj.survey_type);
     });
 
     it('sets start_date', () => {

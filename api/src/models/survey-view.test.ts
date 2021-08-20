@@ -26,6 +26,10 @@ describe('GetViewSurveyDetailsData', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
+    it('sets survey type', () => {
+      expect(data.survey_type).to.equal('');
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -76,6 +80,7 @@ describe('GetViewSurveyDetailsData', () => {
         revision_count: 1,
         focal_species: 'species',
         ancillary_species: 'ancillary',
+        survey_type: 'type',
         lead_first_name: 'lead',
         lead_last_name: 'last',
         location_name: 'area',
@@ -119,6 +124,10 @@ describe('GetViewSurveyDetailsData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([surveyData[0].ancillary_species]);
+    });
+
+    it('sets survey type', () => {
+      expect(data.survey_type).to.equal(surveyData[0].survey_type);
     });
 
     it('sets start_date', () => {
