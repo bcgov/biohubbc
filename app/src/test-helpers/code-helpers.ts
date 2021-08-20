@@ -22,6 +22,10 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Role 2' }
   ],
   regional_offices: [{ id: 1, name: 'Office 1' }],
+  survey_types: [
+    { id: 1, name: 'Type 1' },
+    { id: 2, name: 'Type 2' }
+  ],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
     { id: 2, name: 'Actioned' },
