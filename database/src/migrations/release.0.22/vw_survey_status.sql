@@ -3,7 +3,7 @@
 create or replace view survey_status as 
 with not_published as (select os.survey_id, max(ss.submission_status_id) as submission_status_id from occurrence_submission os, submission_status ss 
 	where not exists (select 1 from submission_status ss2, submission_status_type sst, occurrence_submission os2
-		where os.survey_id = os2.survey_id
+		where os2.survey_id = os2.survey_id
 		and ss2.occurrence_submission_id = os2.occurrence_submission_id
 		and sst.submission_status_type_id = ss2.submission_status_type_id
 		and sst.name = api_get_character_system_constant('OCCURRENCE_SUBMISSION_STATE_PUBLISHED')
