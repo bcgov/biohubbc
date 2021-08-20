@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    ALTER TABLE ${DB_SCHEMA}.occurrence_submission add column soft_delete_timestamp timestamptz(6);
+    ALTER TABLE ${DB_SCHEMA}.occurrence_submission add column delete_timestamp timestamptz(6);
 
     set search_path = biohub_dapi_v1;
 
@@ -30,6 +30,6 @@ export async function down(knex: Knex): Promise<void> {
 
     SET ROLE postgres;
 
-    ALTER TABLE ${DB_SCHEMA}.occurrence_submission remove column soft_delete_timestamp;
+    ALTER TABLE ${DB_SCHEMA}.occurrence_submission remove column delete_timestamp;
   `);
 }
