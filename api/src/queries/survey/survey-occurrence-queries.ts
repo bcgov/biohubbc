@@ -114,7 +114,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
       os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
-      os.soft_delete_timestamp,
+      os.delete_timestamp,
       os.event_timestamp,
       os.key,
       os.file_name,
@@ -246,7 +246,7 @@ export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): S
 
   const sqlStatement: SQLStatement = SQL`
     UPDATE occurrence_submission
-    SET soft_delete_timestamp = now()
+    SET delete_timestamp = now()
     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
   `;
 

@@ -72,11 +72,7 @@ const SurveyObservations = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
-
-  const [pollingFunction, setPollingFunction] = useState<Function>();
   const [pollingTime, setPollingTime] = useState<number | null>(0);
-
-  useInterval(pollingFunction, pollingTime);
 
   const dialogContext = useContext(DialogContext);
 
@@ -107,6 +103,8 @@ const SurveyObservations = () => {
     });
   }, [biohubApi.observation, projectId, surveyId]);
 
+  useInterval(fetchObservationSubmission, pollingTime);
+
   useEffect(() => {
     if (isLoading) {
       fetchObservationSubmission();
@@ -114,7 +112,6 @@ const SurveyObservations = () => {
 
     if (isPolling && !pollingTime) {
       setPollingTime(2000);
-      setPollingFunction(() => fetchObservationSubmission);
     }
   }, [
     biohubApi,
