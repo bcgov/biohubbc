@@ -115,14 +115,19 @@ export function getOccurenceSubmission(): RequestHandler {
         getOccurrenceSubmissionSQLStatement.values
       );
 
+      // Ensure we only retrieve the latest occurrence submission record if it has not been soft deleted
+      if (
+        !occurrenceSubmissionData ||
+        !occurrenceSubmissionData.rows ||
+        !occurrenceSubmissionData.rows[0] ||
+        occurrenceSubmissionData.rows[0].soft_delete_timestamp
+      ) {
+        return res.status(200).json(null);
+      }
+
       let messageList = [];
 
-      if (
-        occurrenceSubmissionData &&
-        occurrenceSubmissionData.rows &&
-        occurrenceSubmissionData.rows[0] &&
-        occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected'
-      ) {
+      if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
         const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
 
