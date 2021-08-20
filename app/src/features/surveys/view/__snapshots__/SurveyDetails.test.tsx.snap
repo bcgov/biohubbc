@@ -139,6 +139,20 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
+                Survey Type
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Type
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
                 Permit
               </dt>
               <dd

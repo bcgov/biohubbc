@@ -38,6 +38,11 @@ describe('General Information Form', () => {
                 return { value: item.id, label: item.name };
               }) || []
             }
+            survey_types={
+              codes?.survey_types?.map((item) => {
+                return { value: item.name, label: item.name };
+              }) || []
+            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
@@ -73,6 +78,11 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            survey_types={
+              codes?.survey_types?.map((item) => {
+                return { value: item.name, label: item.name };
               }) || []
             }
             permit_numbers={[
@@ -128,6 +138,11 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
+              }) || []
+            }
+            survey_types={
+              codes?.survey_types?.map((item) => {
+                return { value: item.name, label: item.name };
               }) || []
             }
             permit_numbers={[
