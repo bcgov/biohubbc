@@ -303,30 +303,32 @@ format-fix: ## Runs `npm run format:fix` for all projects
 
 ## ------------------------------------------------------------------------------
 ## Run `docker logs <container> -f` commands for all projects
+## - You can include additional parameters by appaending an `args` param
+## - Ex: `make log-app args="--tail 0"`
 ## ------------------------------------------------------------------------------
 log-app: ## Runs `docker logs <container> -f` for the app container
 	@echo "==============================================="
 	@echo "Running docker logs for the app container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-app-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-app-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-api: ## Runs `docker logs <container> -f` for the api container
 	@echo "==============================================="
 	@echo "Running docker logs for the api container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-api-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-api-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-db: ## Runs `docker logs <container> -f` for the database container
 	@echo "==============================================="
 	@echo "Running docker logs for the db container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-db-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-db-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-db-setup: ## Runs `docker logs <container> -f` for the database setup container
 	@echo "==============================================="
 	@echo "Running docker logs for the db-setup container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

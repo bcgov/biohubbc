@@ -173,7 +173,11 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
   useEffect(() => {
     const getSystemAccessRequest = async () => {
-      const accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
+      let accessRequests: number;
+
+      try {
+        accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
+      } catch {}
 
       setHasAccessRequest(() => {
         setHasLoadedAllUserInfo(true);
