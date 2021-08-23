@@ -129,7 +129,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Type
+            Type 1
           </dd>
         </div>
         <div
@@ -324,7 +324,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Type
+            Type 1
           </dd>
         </div>
         <div

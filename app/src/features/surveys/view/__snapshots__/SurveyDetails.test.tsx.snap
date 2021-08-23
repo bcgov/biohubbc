@@ -144,7 +144,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                Type
+                Type 1
               </dd>
             </div>
             <div
