@@ -24,12 +24,12 @@ export async function down(knex: Knex): Promise<void> {
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA},public, biohub_dapi_v1;
 
-    SET ROLE biohub_api;
-
-    create or replace view survey as select * from ${DB_SCHEMA}.survey;
-
     SET ROLE postgres;
 
     ALTER TABLE ${DB_SCHEMA}.survey remove column survey_type;
+
+    SET ROLE biohub_api;
+
+    create or replace view survey as select * from ${DB_SCHEMA}.survey;
   `);
 }
