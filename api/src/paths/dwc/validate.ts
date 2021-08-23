@@ -165,8 +165,6 @@ function prepDWCArchive(): RequestHandler {
 
       const parsedMedia = parseUnknownMedia(s3File);
 
-      console.log('We have the parsedMedia', parsedMedia);
-
       if (!parsedMedia) {
         req['parseError'] = 'Failed to parse submission, file was empty';
 
@@ -180,8 +178,6 @@ function prepDWCArchive(): RequestHandler {
       }
 
       const dwcArchive = new DWCArchive(parsedMedia);
-
-      console.log('this is the dwcArchive', dwcArchive);
 
       req['dwcArchive'] = dwcArchive;
 
@@ -260,10 +256,6 @@ function getValidationRules(): RequestHandler {
       };
 
       req['contentValidationRules'] = contentValidationRules;
-      console.log(
-        '******************This request contains the media validation rules and the content validation rules: ',
-        req
-      );
 
       next();
     } catch (error) {
