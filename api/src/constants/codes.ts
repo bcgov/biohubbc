@@ -283,3 +283,9 @@ export const regional_offices = [
   { id: 2, name: 'Office 2' },
   { id: 3, name: 'Office 3' }
 ];
+
+export const survey_types = [
+  { id: 1, name: 'Stratified Random Block Survey' },
+  { id: 2, name: 'Composition Survey' },
+  { id: 3, name: 'Recruitment Survey' }
+];

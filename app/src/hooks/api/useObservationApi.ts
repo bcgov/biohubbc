@@ -1,7 +1,8 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IGetSubmissionCSVForViewResponse,
-  IGetObservationSubmissionResponse
+  IGetObservationSubmissionResponse,
+  IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -27,7 +28,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string[]> => {
+  ): Promise<IUploadObservationSubmissionResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);

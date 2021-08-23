@@ -27,3 +27,7 @@ export interface IGetObservationSubmissionErrorListResponse {
   status: string;
   message: string;
 }
+
+export interface IUploadObservationSubmissionResponse {
+  submissionId: number;
+}
