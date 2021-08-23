@@ -24,6 +24,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     SELECT
       s.survey_id as id,
       s.name,
+      s.survey_type,
       s.objectives,
       s.start_date,
       s.end_date,
