@@ -278,16 +278,16 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const rowError1: IRowError = {
-        type: 'Invalid',
         code: 'MissingRequiredField',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 
       const rowError2: IRowError = {
-        type: 'Invalid',
         code: 'MissingRequiredField',
         message: 'a second row error',
+        col: 'col1',
         row: 2
       };
 
@@ -320,6 +320,7 @@ describe('CSVValidation', () => {
         type: 'Invalid',
         code: 'MissingRequiredField',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 

@@ -46,14 +46,12 @@ describe('getDuplicateHeadersValidator', () => {
       {
         code: 'DuplicateHeader',
         col: 'Header1',
-        message: 'Duplicate header',
-        type: 'Invalid'
+        message: 'Duplicate header'
       },
       {
         code: 'DuplicateHeader',
         col: 'Header2',
-        message: 'Duplicate header',
-        type: 'Invalid'
+        message: 'Duplicate header'
       }
     ]);
   });
@@ -179,14 +177,12 @@ describe('getValidHeadersValidator', () => {
       {
         code: 'UnknownHeader',
         col: 'UnknownHeader2',
-        message: 'Unsupported header',
-        type: 'Invalid'
+        message: 'Unsupported header'
       },
       {
         code: 'UnknownHeader',
         col: 'UnknownHeader4',
-        message: 'Unsupported header',
-        type: 'Invalid'
+        message: 'Unsupported header'
       }
     ]);
   });

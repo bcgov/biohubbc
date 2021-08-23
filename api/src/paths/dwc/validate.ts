@@ -10,7 +10,7 @@ import {
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { ICsvState } from '../../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
 import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
 import {
   getDWCArchiveValidators,
@@ -122,7 +122,6 @@ export function getSubmissionS3Key(): RequestHandler {
       const s3Key = response.rows[0].key;
 
       req['s3Key'] = s3Key;
-      console.log('********************got the S3 key', req['s3Key']);
 
       next();
     } catch (error) {
@@ -142,7 +141,6 @@ export function getSubmissionFileFromS3(): RequestHandler {
       const s3Key = req['s3Key'];
 
       const s3File = await getFileFromS3(s3Key);
-      console.log('****************got file from S3', s3File);
 
       if (!s3File) {
         throw new HTTP500('Failed to get occurrence submission file');
@@ -216,8 +214,6 @@ export function persistParseErrors(): RequestHandler {
         'Rejected',
         connection
       );
-
-      console.log('****************** This is the parseError:', parseError);
 
       await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
 
@@ -309,20 +305,23 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
+function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  return `file name: ${fileName} - header: ${headerError.code} - Column: ${headerError.col} - message: ${headerError.message}`;
+}
+
+function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  return `file name: ${fileName} - header: ${rowError.code} - Column: ${rowError.col} - Row ${rowError.row} - message ${rowError.message}`;
+}
+
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    console.log('*******************statusTypeObject is: ', statusTypeObject);
-
     try {
       const mediaState: IMediaState[] = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
-
-      console.log('****************media state being persisted: ', mediaState);
-      console.log('*****************csv state being persisted: ', csvState);
 
       await connection.open();
 
@@ -352,7 +351,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
             insertSubmissionMessage(
               submissionStatusId,
               'Error',
-              `${csvStateItem.fileName} - ${headerError.type} - ${headerError.code} - ${headerError.col} - ${headerError.message}`,
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
               connection
             )
           );
@@ -363,7 +362,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
             insertSubmissionMessage(
               submissionStatusId,
               'Error',
-              `${csvStateItem.fileName} - ${rowError.type} - ${rowError.code} - ${rowError.row} - ${rowError.message}`,
+              generateRowErrorMessage(csvStateItem.fileName, rowError),
               connection
             )
           );

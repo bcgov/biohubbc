@@ -145,6 +145,17 @@ const SurveyObservations: React.FC = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  let messageMap = {
+    missingRequiredHeader: [
+      'occurrence.txt - col1 - missing required column',
+      'occurrence.txt - col2 - missing required column'
+    ],
+    missingRequiredField: [
+      'occurrence.txt - col3 - 5 - missing required field',
+      'occurrence.txt - col4 - 12 - missing required field'
+    ]
+  };
+
   return (
     <Box>
       <Box mb={5} display="flex" justifyContent="space-between">
@@ -188,10 +199,27 @@ const SurveyObservations: React.FC = () => {
             </Box>
             <Box display="flex" justifyContent="space-between">
               <List>
-                {submissionStatus?.messages.map((row: string, index: number) => (
-                  <ListItem key={index}>{row}</ListItem>
+                {submissionStatus?.messages.map((message: string, index: number) => (
+                  <ListItem key={index}>{message}</ListItem>
                 ))}
               </List>
+            </Box>
+            <Box display="flex" justifyContent="space-between">
+              <ul>
+                {Object.keys(messageMap).map((code: string, index: number) => (
+                  <li key={index}>
+                    {code}
+                    <ul>
+                      {/* {messageMap[code].map((message: string, index2: number) => {
+                        <li key={index2}>{message}</li>
+                      })} */}
+                      {messageMap[code].map((x2: string, index2: number) => (
+                        <li>{x2}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
             </Box>
           </>
         )}
