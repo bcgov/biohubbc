@@ -171,4 +171,96 @@ describe('SurveyProprietaryData', () => {
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
+
+  it('displays an error dialog when fetching the update data fails', async () => {
+    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue(null);
+
+    const { getByText, queryByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Proprietary Data')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Edit'));
+
+    await waitFor(() => {
+      expect(getByText('Error Editing Survey Proprietor')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('Error Editing Survey Proprietor')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows error dialog with API error message when getting survey proprietor data for update fails', async () => {
+    mockBiohubApi().survey.getSurveyForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText, getAllByRole } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Proprietary Data')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Edit'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows error dialog with API error message when updating survey proprietor data fails', async () => {
+    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+      survey_proprietor: {
+        id: 23,
+        revision_count: 1,
+        proprietary_data_category: 1,
+        first_nations_id: 0,
+        category_rationale: 'rationale',
+        proprietor_name: 'prop name',
+        data_sharing_agreement_required: 'true',
+        survey_data_proprietary: 'true'
+      }
+    });
+    mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByText, queryByText } = renderContainer();
+
+    await waitFor(() => {
+      expect(getByText('Proprietary Data')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Edit'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+        UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
+      ]);
+    });
+
+    await waitFor(() => {
+      expect(getByText('Edit Survey Proprietor')).toBeVisible();
+    });
+
+    fireEvent.click(getByText('Save Changes'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByText('Ok'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
 });
