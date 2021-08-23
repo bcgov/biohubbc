@@ -114,6 +114,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
       os.occurrence_submission_id as id,
       os.survey_id,
       os.source,
+      os.delete_timestamp,
       os.event_timestamp,
       os.key,
       os.file_name,
@@ -218,6 +219,39 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
 
   defaultLog.debug({
     label: 'getSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to soft delete the occurrence submission entry by ID
+ *
+ * @param {number} occurrenceSubmissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteOccurrenceSubmissionSQL',
+    message: 'params',
+    occurrenceSubmissionId
+  });
+
+  if (!occurrenceSubmissionId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE occurrence_submission
+    SET delete_timestamp = now()
+    WHERE occurrence_submission_id = ${occurrenceSubmissionId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteOccurrenceSubmissionSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
