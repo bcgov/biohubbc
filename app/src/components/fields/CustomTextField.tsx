@@ -1,5 +1,4 @@
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { useFormikContext } from 'formik';
 import React from 'react';
 
@@ -10,7 +9,7 @@ export interface ICustomTextField {
 }
 
 const CustomTextField: React.FC<ICustomTextField> = (props) => {
-  const { touched, errors, values, handleChange } = useFormikContext<IProjectCoordinatorForm>();
+  const { touched, errors, values, handleChange } = useFormikContext<object>();
   const { name, label, other } = props;
 
   return (
