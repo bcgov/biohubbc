@@ -8,8 +8,6 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL
-  //,
-  //getOccurrenceSubmissionDistinctMesssageGroupingsSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -127,29 +125,10 @@ export function getOccurenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      //let groupingList = [];
       let messageObject;
 
       if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
-
-        // const getErrorMessageGroupingsSQLStatement = getOccurrenceSubmissionDistinctMesssageGroupingsSQL(
-        //   Number(occurrence_submission_id)
-        // );
-
-        // if (!getErrorMessageGroupingsSQLStatement) {
-        //   throw new HTTP400('Failed to build SQL getErrorMessageGroupingsSQLStatement statement');
-        // }
-
-        // const submissionErrorGroupingsData = await connection.query(
-        //   getErrorMessageGroupingsSQLStatement.text,
-        //   getErrorMessageGroupingsSQLStatement.values
-        // );
-
-        // const groupingList =
-        //   (submissionErrorGroupingsData && submissionErrorGroupingsData.rows && submissionErrorGroupingsData) || [];
-
-        // console.log('**************************', groupingList);
 
         const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
 
@@ -191,8 +170,6 @@ export function getOccurenceSubmission(): RequestHandler {
             messages: messageObject
           }) ||
         null;
-
-      console.log('****************', getOccurrenceSubmissionData);
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {
