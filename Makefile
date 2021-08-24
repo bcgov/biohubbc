@@ -30,6 +30,9 @@ all-debug: | close build run-debug ## Performs all commands necessary to run all
 postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres db project in docker
 postgres-debug: | close build-postgres run-postgres-debug ## Performs all commands necessary to run the postgres db project in docker in debug mode
 
+n8n: | close build-n8n run-n8n ## Performs all commands necessary to run n8n project in docker
+n8n-debug: | close build-n8n run-n8n-debug ## Performs all commands necessary to run n8n project in docker in debug mode
+
 backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects in docker
 backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all backend projects in docker in debug mode
 
@@ -132,27 +135,50 @@ run-postgres-debug: ## Runs the postgres db containers in debug mode, where all 
 	@docker-compose -f docker-compose.yml up db db_setup
 
 ## ------------------------------------------------------------------------------
+## Build/Run n8n Commands
+## - Builds the biohub n8n container
+## ------------------------------------------------------------------------------
+
+build-n8n: ## Builds the n8n container
+	@echo "==============================================="
+	@echo "Make: build-n8n - building n8n image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build n8n
+
+run-n8n: ## Runs the n8n container
+	@echo "==============================================="
+	@echo "Make: run-n8n - running n8n image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d n8n
+
+run-n8n-debug: ## Runs the n8n container in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-n8n-debug - running n8n image in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up n8n
+
+## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, app)
+## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app
+	@docker-compose -f docker-compose.yml build db db_setup api app n8n
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app
+	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api app
+	@docker-compose -f docker-compose.yml up db db_setup api app n8n
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
