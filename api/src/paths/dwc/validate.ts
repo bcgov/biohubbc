@@ -298,11 +298,11 @@ function validateDWCArchive(): RequestHandler {
 }
 
 function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  return `${fileName} - ${headerError.code} - ${headerError.col} - ${headerError.message}`;
+  return `${fileName} - ${headerError.error_code} - ${headerError.col} - ${headerError.message}`;
 }
 
 function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
-  return `${fileName} - ${rowError.code} - ${rowError.col} - ${rowError.row} - ${rowError.message}`;
+  return `${fileName} - ${rowError.error_code} - ${rowError.col} - ${rowError.row} - ${rowError.message}`;
 }
 
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
@@ -346,7 +346,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
               submissionStatusId,
               'Error',
               generateHeaderErrorMessage(csvStateItem.fileName, headerError),
-              headerError.grouping,
+              headerError.error_code,
               connection
             )
           );
@@ -358,7 +358,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
               submissionStatusId,
               'Error',
               generateRowErrorMessage(csvStateItem.fileName, rowError),
-              'MiscellaneousForRow',
+              rowError.error_code,
               connection
             )
           );
@@ -423,14 +423,14 @@ export const insertSubmissionMessage = async (
   submissionStatusId: number,
   submissionMessageType: string,
   message: string,
-  grouping: string,
+  error_code: string,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertOccurrenceSubmissionMessageSQL(
     submissionStatusId,
     submissionMessageType,
     message,
-    grouping
+    error_code
   );
 
   if (!sqlStatement) {

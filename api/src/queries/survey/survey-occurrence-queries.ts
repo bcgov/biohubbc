@@ -325,7 +325,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
   submissionStatusId: number,
   submissionMessageType: string,
   submissionMessage: string,
-  grouping: string
+  error_code: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertOccurrenceSubmissionMessageSQL',
@@ -333,10 +333,10 @@ export const insertOccurrenceSubmissionMessageSQL = (
     submissionStatusId,
     submissionMessageType,
     submissionMessage,
-    grouping
+    error_code
   });
 
-  if (!submissionStatusId || !submissionMessageType || !submissionMessage || !grouping) {
+  if (!submissionStatusId || !submissionMessageType || !submissionMessage || !error_code) {
     return null;
   }
 
@@ -346,7 +346,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
       submission_message_type_id,
       event_timestamp,
       message,
-      message_grouping
+      error_code
     ) VALUES (
       ${submissionStatusId},
       (
@@ -358,7 +358,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
           name = ${submissionMessageType}
       ),
       now(),
-      ${submissionMessage}, ${grouping}
+      ${submissionMessage}, ${error_code}
     )
     RETURNING
       submission_message_id;
@@ -396,7 +396,7 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       sm.submission_message_id as id,
       smt.name as type,
       sst.name as status,
-      sm.message_grouping,
+      sm.error_code,
       sm.message
     FROM
       occurrence_submission as os

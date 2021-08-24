@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
 
-    ALTER TABLE ${DB_SCHEMA}.submission_message add column message_grouping varchar(300);
+    ALTER TABLE ${DB_SCHEMA}.submission_message add column error_code varchar(300);
 
     set search_path = biohub_dapi_v1;
 

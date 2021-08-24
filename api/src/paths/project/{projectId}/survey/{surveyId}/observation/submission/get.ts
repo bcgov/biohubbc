@@ -145,10 +145,10 @@ export function getOccurenceSubmission(): RequestHandler {
           (submissionErrorListData &&
             submissionErrorListData.rows &&
             submissionErrorListData.rows.reduce((workingData, row) => {
-              const groupingElement = workingData[row.message_grouping];
+              const groupingElement = workingData[row.error_code];
 
               if (!groupingElement) {
-                workingData[row.message_grouping] = [row.message];
+                workingData[row.error_code] = [row.message];
               } else {
                 groupingElement.push(row.message);
               }

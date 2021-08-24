@@ -35,13 +35,13 @@ describe('getRequiredFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        code: 'MissingRequiredField',
+        error_code: 'MissingRequiredField',
         message: 'Missing required value for column: Header1',
         row: 2,
         type: 'Missing'
       },
       {
-        code: 'MissingRequiredField',
+        error_code: 'MissingRequiredField',
         message: 'Missing required value for column: Header2',
         row: 2,
         type: 'Missing'
@@ -65,7 +65,7 @@ describe('getRequiredFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        code: 'MissingRequiredField',
+        error_code: 'MissingRequiredField',
         message: 'Missing required value for column: Header1',
         row: 2,
         type: 'Missing'
@@ -125,7 +125,7 @@ describe('getCodeValueFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        code: 'MissingRequiredField',
+        error_code: 'MissingRequiredField',
         message: 'Invalid value: invalidCode. Must be one of [Code1, Code2], for column: Header1',
         row: 2,
         type: 'Missing'

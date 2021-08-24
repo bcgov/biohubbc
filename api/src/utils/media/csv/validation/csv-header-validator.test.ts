@@ -44,12 +44,12 @@ describe('getDuplicateHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'DuplicateHeader',
+        error_code: 'DuplicateHeader',
         col: 'Header1',
         message: 'Duplicate header'
       },
       {
-        code: 'DuplicateHeader',
+        error_code: 'DuplicateHeader',
         col: 'Header2',
         message: 'Duplicate header'
       }
@@ -85,19 +85,19 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'MissingRequiredHeader',
+        coerror_codede: 'MissingRequiredHeader',
         col: 'Header1',
         message: 'Missing required header',
         type: 'Missing'
       },
       {
-        code: 'MissingRequiredHeader',
+        error_code: 'MissingRequiredHeader',
         col: 'Header2',
         message: 'Missing required header',
         type: 'Missing'
       },
       {
-        code: 'MissingRequiredHeader',
+        error_code: 'MissingRequiredHeader',
         col: 'Header3',
         message: 'Missing required header',
         type: 'Missing'
@@ -118,13 +118,13 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'MissingRequiredHeader',
+        error_code: 'MissingRequiredHeader',
         col: 'Header3',
         message: 'Missing required header',
         type: 'Missing'
       },
       {
-        code: 'MissingRequiredHeader',
+        error_code: 'MissingRequiredHeader',
         col: 'Header5',
         message: 'Missing required header',
         type: 'Missing'
@@ -175,12 +175,12 @@ describe('getValidHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'UnknownHeader',
+        error_code: 'UnknownHeader',
         col: 'UnknownHeader2',
         message: 'Unsupported header'
       },
       {
-        code: 'UnknownHeader',
+        error_code: 'UnknownHeader',
         col: 'UnknownHeader4',
         message: 'Unsupported header'
       }

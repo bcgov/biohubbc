@@ -199,9 +199,10 @@ const SurveyObservations = () => {
   }
 
   const errorType = {
-    MandatoryFields: 'Mandatory fields have not been filled out in your file',
-    UnsupportedColumnHeaders: 'Column headers in your file are not not supported',
-    MiscellaneousForRow: 'Miscellaneous'
+    missing_required_field: 'Mandatory fields have not been filled out in your file',
+    missing_required_header: 'Column headers in your file are not not supported',
+    unknown_header: 'Column header is not recognized',
+    miscellaneous_for_row: 'Miscellaneous'
   };
 
   console.log(errorType);
@@ -244,7 +245,7 @@ const SurveyObservations = () => {
             </Box>
             <Box mb={3} mt={3} display="flex" justifyContent="space-between">
               <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-                You will need to resolve the following errors in your local file and re-import:
+                Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
             <Box>
