@@ -211,7 +211,7 @@ export function persistParseErrors(): RequestHandler {
         connection
       );
 
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'miscelaneous', connection);
 
       await connection.commit();
 
@@ -298,11 +298,11 @@ function validateDWCArchive(): RequestHandler {
 }
 
 function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  return `file name: ${fileName} - header: ${headerError.code} - Column: ${headerError.col} - message: ${headerError.message}`;
+  return `${fileName} - ${headerError.code} - ${headerError.col} - ${headerError.message}`;
 }
 
 function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
-  return `file name: ${fileName} - header: ${rowError.code} - Column: ${rowError.col} - Row ${rowError.row} - message ${rowError.message}`;
+  return `${fileName} - ${rowError.code} - ${rowError.col} - ${rowError.row} - ${rowError.message}`;
 }
 
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
@@ -333,7 +333,9 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       mediaState?.forEach((mediaStateItem) => {
         mediaStateItem.fileErrors?.forEach((fileError) => {
-          promises.push(insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, connection));
+          promises.push(
+            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'miscellaneous', connection)
+          );
         });
       });
 
@@ -344,6 +346,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
               submissionStatusId,
               'Error',
               generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+              headerError.grouping,
               connection
             )
           );
@@ -355,6 +358,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
               submissionStatusId,
               'Error',
               generateRowErrorMessage(csvStateItem.fileName, rowError),
+              'MiscellaneousForRow',
               connection
             )
           );
@@ -419,9 +423,15 @@ export const insertSubmissionMessage = async (
   submissionStatusId: number,
   submissionMessageType: string,
   message: string,
+  grouping: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertOccurrenceSubmissionMessageSQL(submissionStatusId, submissionMessageType, message);
+  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
+    submissionStatusId,
+    submissionMessageType,
+    message,
+    grouping
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

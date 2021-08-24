@@ -287,8 +287,13 @@ export class XLSXCSV implements IWorkbook {
   }
 }
 
+export type IHeaderErrorGrouping = 'MandatoryFields' | 'UnsupportedColumnHeaders' | 'MiscellaneousForHeader';
+
+export type IRowErrorGrouping = 'UnexpectedFormats' | 'ValuesExceeded' | 'MultipleValues' | 'MiscellaneousForRow';
+
 export type IHeaderErrorCode = 'DuplicateHeader' | 'UnknownHeader' | 'MissingRequiredHeader';
 export interface IHeaderError {
+  grouping: IHeaderErrorGrouping;
   code: IHeaderErrorCode;
   message: string;
   col: string | number;

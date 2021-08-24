@@ -324,17 +324,19 @@ export const insertOccurrenceSubmissionStatusSQL = (
 export const insertOccurrenceSubmissionMessageSQL = (
   submissionStatusId: number,
   submissionMessageType: string,
-  submissionMessage: string
+  submissionMessage: string,
+  grouping: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertOccurrenceSubmissionMessageSQL',
     message: 'params',
     submissionStatusId,
     submissionMessageType,
-    submissionMessage
+    submissionMessage,
+    grouping
   });
 
-  if (!submissionStatusId || !submissionMessageType || !submissionMessage) {
+  if (!submissionStatusId || !submissionMessageType || !submissionMessage || !grouping) {
     return null;
   }
 
@@ -343,7 +345,8 @@ export const insertOccurrenceSubmissionMessageSQL = (
       submission_status_id,
       submission_message_type_id,
       event_timestamp,
-      message
+      message,
+      message_grouping
     ) VALUES (
       ${submissionStatusId},
       (
@@ -355,7 +358,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
           name = ${submissionMessageType}
       ),
       now(),
-      ${submissionMessage}
+      ${submissionMessage}, ${grouping}
     )
     RETURNING
       submission_message_id;
@@ -393,6 +396,7 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       sm.submission_message_id as id,
       smt.name as type,
       sst.name as status,
+      sm.message_grouping,
       sm.message
     FROM
       occurrence_submission as os
@@ -415,6 +419,62 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
     WHERE
       os.occurrence_submission_id = ${occurrenceSubmissionId}
     ORDER BY sm.submission_message_id;
+  `;
+
+  defaultLog.debug({
+    label: 'getOccurrenceSubmissionMessagesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get the list of messages for an occurrence submission.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const getOccurrenceSubmissionDistinctMesssageGroupingsSQL = (
+  occurrenceSubmissionId: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getOccurrenceSubmissionDistinctMesssageGroupingsSQL',
+    message: 'params',
+    occurrenceSubmissionId
+  });
+
+  if (!occurrenceSubmissionId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT distinct
+      sm.message_grouping
+    FROM
+      occurrence_submission as os
+    LEFT OUTER JOIN
+      submission_status as ss
+    ON
+      os.occurrence_submission_id = ss.occurrence_submission_id
+    LEFT OUTER JOIN
+      submission_status_type as sst
+    ON
+      sst.submission_status_type_id = ss.submission_status_type_id
+    LEFT OUTER JOIN
+      submission_message as sm
+    ON
+      sm.submission_status_id = ss.submission_status_id
+    LEFT OUTER JOIN
+      submission_message_type as smt
+    ON
+      smt.submission_message_type_id = sm.submission_message_type_id
+    WHERE
+      os.occurrence_submission_id = ${occurrenceSubmissionId}
+    GROUP BY
+      sm.message_grouping;
   `;
 
   defaultLog.debug({

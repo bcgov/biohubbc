@@ -8,6 +8,8 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL
+  //,
+  //getOccurrenceSubmissionDistinctMesssageGroupingsSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -64,7 +66,7 @@ GET.apiDoc = {
                 description: 'The validation status messages of the submission',
                 type: 'array',
                 items: {
-                  type: 'string',
+                  type: 'object',
                   description: 'A validation status message of the submission'
                 }
               }
@@ -125,10 +127,30 @@ export function getOccurenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      let messageList = [];
+      //let groupingList = [];
+      let messageObject;
 
       if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
+
+        // const getErrorMessageGroupingsSQLStatement = getOccurrenceSubmissionDistinctMesssageGroupingsSQL(
+        //   Number(occurrence_submission_id)
+        // );
+
+        // if (!getErrorMessageGroupingsSQLStatement) {
+        //   throw new HTTP400('Failed to build SQL getErrorMessageGroupingsSQLStatement statement');
+        // }
+
+        // const submissionErrorGroupingsData = await connection.query(
+        //   getErrorMessageGroupingsSQLStatement.text,
+        //   getErrorMessageGroupingsSQLStatement.values
+        // );
+
+        // const groupingList =
+        //   (submissionErrorGroupingsData && submissionErrorGroupingsData.rows && submissionErrorGroupingsData) || [];
+
+        // console.log('**************************', groupingList);
+
         const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
 
         if (!getSubmissionErrorListSQLStatement) {
@@ -140,10 +162,20 @@ export function getOccurenceSubmission(): RequestHandler {
           getSubmissionErrorListSQLStatement.values
         );
 
-        messageList =
+        messageObject =
           (submissionErrorListData &&
             submissionErrorListData.rows &&
-            submissionErrorListData.rows.map((row) => row.message)) ||
+            submissionErrorListData.rows.reduce((workingData, row) => {
+              const groupingElement = workingData[row.message_grouping];
+
+              if (!groupingElement) {
+                workingData[row.message_grouping] = [row.message];
+              } else {
+                groupingElement.push(row.message);
+              }
+
+              return workingData;
+            }, {})) ||
           [];
       }
 
@@ -156,9 +188,11 @@ export function getOccurenceSubmission(): RequestHandler {
             id: occurrenceSubmissionData.rows[0].id,
             fileName: occurrenceSubmissionData.rows[0].file_name,
             status: occurrenceSubmissionData.rows[0].submission_status_type_name,
-            messages: messageList
+            messages: messageObject
           }) ||
         null;
+
+      console.log('****************', getOccurrenceSubmissionData);
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {

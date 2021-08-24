@@ -7,6 +7,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
@@ -21,8 +22,9 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { mdiAlertCircleOutline } from '@mdi/js';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
     marginBottom: '1rem'
   },
@@ -42,6 +44,12 @@ const useStyles = makeStyles(() => ({
   },
   infoBox: {
     background: 'rgba(241, 243, 245, 1)'
+  },
+  tab: {
+    paddingLeft: theme.spacing(2)
+  },
+  nested: {
+    paddingLeft: theme.spacing(4)
   }
 }));
 
@@ -190,16 +198,13 @@ const SurveyObservations = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  let messageMap = {
-    missingRequiredHeader: [
-      'occurrence.txt - col1 - missing required column',
-      'occurrence.txt - col2 - missing required column'
-    ],
-    missingRequiredField: [
-      'occurrence.txt - col3 - 5 - missing required field',
-      'occurrence.txt - col4 - 12 - missing required field'
-    ]
+  const errorType = {
+    MandatoryFields: 'Mandatory fields have not been filled out in your file',
+    UnsupportedColumnHeaders: 'Column headers in your file are not not supported',
+    MiscellaneousForRow: 'Miscellaneous'
   };
+
+  console.log(errorType);
 
   return (
     <Box>
@@ -242,29 +247,22 @@ const SurveyObservations = () => {
                 You will need to resolve the following errors in your local file and re-import:
               </Typography>
             </Box>
-            <Box display="flex" justifyContent="space-between">
-              <List>
-                {submissionStatus?.messages.map((message: string, index: number) => (
-                  <ListItem key={index}>{message}</ListItem>
-                ))}
-              </List>
-            </Box>
-            <Box display="flex" justifyContent="space-between">
-              <ul>
-                {Object.keys(messageMap).map((code: string, index: number) => (
-                  <li key={index}>
-                    {code}
-                    <ul>
-                      {/* {messageMap[code].map((message: string, index2: number) => {
+            <Box>
+              <List component="div">
+                {Object.keys(submissionStatus?.messages).map((code: string, index: number) => (
+                  <div>
+                    <ListItem>
+                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
+                      <strong className={classes.tab}>{errorType[code]}</strong>
+                    </ListItem>
+                    <ul key={index}>
+                      {submissionStatus?.messages[code].map((message: string, index2: number) => (
                         <li key={index2}>{message}</li>
-                      })} */}
-                      {messageMap[code].map((x2: string, index2: number) => (
-                        <li>{x2}</li>
                       ))}
                     </ul>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </List>
             </Box>
           </>
         )}
