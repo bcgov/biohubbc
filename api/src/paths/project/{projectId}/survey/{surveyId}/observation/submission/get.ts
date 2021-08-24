@@ -125,7 +125,7 @@ export function getOccurenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      let messageObject;
+      let messageList;
 
       if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
@@ -141,21 +141,7 @@ export function getOccurenceSubmission(): RequestHandler {
           getSubmissionErrorListSQLStatement.values
         );
 
-        messageObject =
-          (submissionErrorListData &&
-            submissionErrorListData.rows &&
-            submissionErrorListData.rows.reduce((workingData, row) => {
-              const groupingElement = workingData[row.error_code];
-
-              if (!groupingElement) {
-                workingData[row.error_code] = [row.message];
-              } else {
-                groupingElement.push(row.message);
-              }
-
-              return workingData;
-            }, {})) ||
-          [];
+        messageList = (submissionErrorListData && submissionErrorListData.rows) || [];
       }
 
       await connection.commit();
@@ -167,13 +153,13 @@ export function getOccurenceSubmission(): RequestHandler {
             id: occurrenceSubmissionData.rows[0].id,
             fileName: occurrenceSubmissionData.rows[0].file_name,
             status: occurrenceSubmissionData.rows[0].submission_status_type_name,
-            messages: messageObject
+            messages: messageList
           }) ||
         null;
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {
-      defaultLog.debug({ label: 'getOccurenceSubmission', message: 'error', error });
+      defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

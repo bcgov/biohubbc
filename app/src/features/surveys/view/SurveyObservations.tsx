@@ -207,6 +207,25 @@ const SurveyObservations = () => {
 
   console.log(errorType);
 
+  let messageList = submissionStatus.messages;
+
+  const messageObject = messageList.reduce((workingData: any, row: any) => {
+    console.log('Hello');
+    console.log('row is: ', row);
+    const groupingElement = workingData[row.error_code];
+    console.log('grouping element is: ', groupingElement);
+
+    if (!groupingElement) {
+      workingData[row.error_code] = [row.message];
+    } else {
+      groupingElement.push(row.message);
+    }
+
+    return workingData;
+  }, {});
+
+  console.log('messageObject is', messageObject);
+
   return (
     <Box>
       <Box mb={5} display="flex" justifyContent="space-between">
@@ -250,14 +269,14 @@ const SurveyObservations = () => {
             </Box>
             <Box>
               <List component="div">
-                {Object.keys(submissionStatus?.messages).map((code: string, index: number) => (
+                {Object.keys(messageObject).map((code: string, index: number) => (
                   <div>
                     <ListItem>
                       <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
                       <strong className={classes.tab}>{errorType[code]}</strong>
                     </ListItem>
                     <ul key={index}>
-                      {submissionStatus?.messages[code].map((message: string, index2: number) => (
+                      {messageObject[code].map((message: string, index2: number) => (
                         <li key={index2}>{message}</li>
                       ))}
                     </ul>
