@@ -240,15 +240,15 @@ const SurveyObservations = () => {
             </Box>
           </>
         )}
-        {!isValidating &&
-          (submissionStatus?.status === 'Darwin Core Validated' ||
-            submissionStatus?.status === 'Template Validated') && (
+        {!isValidating && submissionStatus &&
+          (submissionStatus.status === 'Darwin Core Validated' ||
+            submissionStatus.status === 'Template Validated') && (
             <>
               <Alert
                 icon={<Icon path={mdiFileOutline} size={1} />}
                 severity="info"
                 action={deleteSubmissionAlertAction()}>
-                <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+                <AlertTitle>{submissionStatus?.fileName}</AlertTitle>
               </Alert>
 
               <Box mt={5} overflow="hidden">
@@ -256,7 +256,7 @@ const SurveyObservations = () => {
               </Box>
             </>
           )}
-        {isValidating && (
+        {isValidating && submissionStatus && (
           <>
             <Alert
               icon={<Icon path={mdiClockOutline} size={1} />}

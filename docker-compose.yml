@@ -64,6 +64,7 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
+      - api-network
     depends_on:
       - db
       - db_setup
@@ -91,27 +92,16 @@ services:
       - 5678:5678
     environment:
       - NODE_ENV=${NODE_ENV}
-      # - DB_TYPE=${N8N_DB_TYPE}
-      # - DB_POSTGRESDB_HOST=${DB_HOST}
-      # - DB_POSTGRESDB_USER=${DB_ADMIN}
-      # - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
-      # - DB_POSTGRESDB_PORT=${DB_PORT}
-      # - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
-      # - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
       - NODE_FUNCTION_ALLOW_EXTERNAL=${N8N_EXTERNAL_DEPENDENCIES}
     networks:
       - local-network
-    depends_on:
-      - api
-      - db
-    links:
-      - api
+      - n8n-network
     volumes:
       - ~/.n8n:/home/node/.n8n
-    command: ["n8n", "start", "--tunnel"]
+    command: ["n8n", "start"]
 
   ## Build the app docker image
   app:
@@ -137,8 +127,12 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
+      - n8n-network
+    links:
+      - n8n
     depends_on:
       - api
+      - n8n
 
   ## Run the database migrations and seeding
   db_setup:
@@ -223,6 +217,10 @@ services:
 
 networks:
   local-network:
+    driver: bridge
+  api-network:
+    driver: bridge
+  n8n-network:
     driver: bridge
 
 volumes:

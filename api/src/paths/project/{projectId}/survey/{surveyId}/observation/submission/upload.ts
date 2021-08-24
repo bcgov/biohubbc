@@ -137,6 +137,9 @@ export function uploadMedia(): RequestHandler {
         fileName: rawMediaFile.originalname
       });
 
+      console.log('YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+      console.log(key)
+
       //query to update the record with the key before uploading the file
 
       await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);

@@ -43,8 +43,15 @@ const useObservationApi = (axios: AxiosInstance) => {
     );
 
     if (data.submissionId) {
+      // Initiate the appropriate validation process for the submitted observations
       if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-        initiateDwCSubmissionValidation(data.submissionId);
+        await axios.get('http://10.0.0.42:5678/webhook-test/11eeb63d-18fe-43fa-963d-8acd54184a7e', {
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        });
+        // await axios.get('http://localhost:6100/api/version');
+        // await axios.get('https://swapi.dev/api/people/1');
       } else {
         initiateXLSXSubmissionValidation(data.submissionId);
       }
@@ -112,11 +119,11 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Initiate the validation process for the submitted observations
    * @param {number} submissionId
    */
-  const initiateDwCSubmissionValidation = async (submissionId: number) => {
-    axios.post(`/api/dwc/validate`, {
-      occurrence_submission_id: submissionId
-    });
-  };
+  // const initiateDwCSubmissionValidation = async (submissionId: number) => {
+  //   axios.post(`/api/dwc/validate`, {
+  //     occurrence_submission_id: submissionId
+  //   });
+  // };
 
   const initiateXLSXSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/xlsx/validate`, {
