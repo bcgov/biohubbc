@@ -3,8 +3,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -20,6 +18,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
@@ -75,7 +74,7 @@ const SurveyObservations = () => {
     };
   };
 
-  const [submissionStatus, setSubmissionStatus] = useState<any>(null);
+  const [submissionStatus, setSubmissionStatus] = useState<IGetObservationSubmissionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
@@ -193,39 +192,37 @@ const SurveyObservations = () => {
     </IconButton>
   );
 
-  const groupType = {
-    mandatory: 'Mandatory fields have not been filled out in your file',
-    unsupported_header: 'Column headers in your file are not supported',
-    miscellaneous: 'Miscellaneous errors exist in your file'
+  type MessageGrouping = { [key: string]: { errorCodes: string[]; label: string } };
+
+  const messageGrouping: MessageGrouping = {
+    mandatory: {
+      errorCodes: ['missing_required_field'],
+      label: 'Mandatory fields have not been filled out in your file'
+    },
+    unsupported_header: {
+      errorCodes: ['unknown_header'],
+      label: 'Column headers in your file are not supported'
+    },
+    miscellaneous: { errorCodes: ['miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
+
+  const submissionMessages: { [key: string]: string[] } = {};
 
   const messageList = submissionStatus?.messages;
 
-  const messageObject =
-    (messageList &&
-      messageList.reduce((workingData: any, row: any) => {
-        let group;
+  if (messageList) {
+    Object.entries(messageGrouping).forEach(([key, value]) => {
+      messageList.forEach((message) => {
+        if (value.errorCodes.includes(message.error_code)) {
+          if (!submissionMessages[key]) {
+            submissionMessages[key] = [];
+          }
 
-        switch (row.error_code) {
-          case 'missing_required_header':
-          case 'missing_required_field':
-            group = 'mandatory';
-            break;
-          case 'unknown_header':
-            group = 'unsupported_header';
-            break;
-          default:
-            group = 'miscellaneous';
+          submissionMessages[key].push(message.message);
         }
-
-        if (!workingData[group]) {
-          workingData[group] = [row.message];
-        } else {
-          workingData[group].push(row.message);
-        }
-        return workingData;
-      }, {})) ||
-    {};
+      });
+    });
+  }
 
   if (isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -262,38 +259,34 @@ const SurveyObservations = () => {
               Validation Failed
             </Alert>
 
-            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+            <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
                 What's next?
               </Typography>
             </Box>
-            <Box mb={3} mt={1} display="flex" justifyContent="space-between">
+            <Box mb={3}>
               <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
                 Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
             <Box>
-              <List component="div">
-                {Object.keys(groupType).map((code: string, index: number) => {
-                  if (messageObject[code]) {
-                    return (
-                      <div>
-                        <ListItem>
-                          <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
-                          <strong className={classes.tab}>{groupType[code]}</strong>
-                        </ListItem>
-                        <Box pl={1}>
-                          <ul key={index}>
-                            {messageObject[code].map((message: string, index2: number) => (
-                              <li key={index2}>{message}</li>
-                            ))}
-                          </ul>
-                        </Box>
-                      </div>
-                    );
-                  }
-                })}
-              </List>
+              {Object.entries(submissionMessages).map(([key, value], index) => {
+                return (
+                  <Box>
+                    <Box display="flex" alignItems="center">
+                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
+                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                    </Box>
+                    <Box pl={2}>
+                      <ul>
+                        {value.map((message: string, index2: number) => {
+                          return <li>{message}</li>;
+                        })}
+                      </ul>
+                    </Box>
+                  </Box>
+                );
+              })}
             </Box>
           </>
         )}
@@ -319,7 +312,7 @@ const SurveyObservations = () => {
               icon={<Icon path={mdiClockOutline} size={1} />}
               severity="info"
               action={deleteSubmissionAlertAction()}>
-              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              <AlertTitle>{submissionStatus?.fileName}</AlertTitle>
               Validating observation data. Please wait ...
             </Alert>
           </>
