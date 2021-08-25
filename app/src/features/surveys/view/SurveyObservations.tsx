@@ -206,7 +206,9 @@ const SurveyObservations = () => {
     miscellaneous: { errorCodes: ['miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 
-  const submissionMessages: { [key: string]: string[] } = {};
+  type SubmissionMessages = { [key: string]: string[] };
+
+  const submissionMessages: SubmissionMessages = {};
 
   const messageList = submissionStatus?.messages;
 
