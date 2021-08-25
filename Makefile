@@ -63,7 +63,8 @@ clean: ## Closes and cleans (removes) all project containers
 	@echo "==============================================="
 	@echo "Make: clean - closing and cleaning Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+	@docker-compose -f docker-compose.yml down
+## @docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Frontend Commands
@@ -159,26 +160,26 @@ run-n8n-debug: ## Runs the n8n container in debug mode, where all container outp
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n)
+## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app n8n
+	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n
+	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api app n8n
+	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container

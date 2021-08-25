@@ -64,43 +64,56 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
-      - api-network
     depends_on:
       - db
       - db_setup
 
-  # Build the nginx web-server docker image
-  nginx:
-    image: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-container
+  # Build the n8n nginx proxy docker image
+  n8n_nginx:
+    image: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-container
     build:
-      context: ./.docker/nginx
+      context: ./.docker/nginx/n8n
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 80:80
+      - 5100:5100
     networks:
       - local-network
     depends_on:
-      - api
+      - n8n
 
   ## Build the n8n workflow automation image
   n8n:
     image: n8nio/n8n
     container_name: ${DOCKER_PROJECT_NAME}-n8n-${DOCKER_NAMESPACE}-container
     ports:
-      - 5678:5678
+      - ${N8N_PORT}:${N8N_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_PORT=${N8N_PORT}
+      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      # - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
-      - NODE_FUNCTION_ALLOW_EXTERNAL=${N8N_EXTERNAL_DEPENDENCIES}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      # - NODE_FUNCTION_ALLOW_EXTERNAL=${N8N_EXTERNAL_DEPENDENCIES}
     networks:
       - local-network
-      - n8n-network
     volumes:
-      - ~/.n8n:/home/node/.n8n
+      - ./n8n:/home/node/.n8n
+    depends_on:
+      - api
+      - db
     command: ["n8n", "start"]
 
   ## Build the app docker image
@@ -127,9 +140,6 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
-      - n8n-network
-    links:
-      - n8n
     depends_on:
       - api
       - n8n
@@ -217,10 +227,6 @@ services:
 
 networks:
   local-network:
-    driver: bridge
-  api-network:
-    driver: bridge
-  n8n-network:
     driver: bridge
 
 volumes:

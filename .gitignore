@@ -108,3 +108,7 @@ dist
 
 # Apple macOS folder attributes file
 **/.DS_Store
+
+# n8N
+/.n8n
+/n8n
