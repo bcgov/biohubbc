@@ -19,7 +19,7 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
       if (seenHeaders.includes(header)) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
-            error_code: 'duplicate_header',
+            errorCode: 'duplicate_header',
             message: 'Duplicate header',
             col: header
           }
@@ -51,7 +51,7 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
       csvWorksheet.csvValidation.addHeaderErrors(
         requiredHeaders.map((requiredHeader) => {
           return {
-            error_code: 'missing_required_header',
+            errorCode: 'missing_required_header',
             message: 'Missing required header',
             col: requiredHeader
           };
@@ -65,7 +65,7 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
       if (!headers.includes(requiredHeader)) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
-            error_code: 'missing_required_header',
+            errorCode: 'missing_required_header',
             message: 'Missing required header',
             col: requiredHeader
           }
@@ -95,7 +95,7 @@ export const getValidHeadersValidator = (validHeaders?: string[]): CSVValidator 
       if (!validHeaders.includes(header)) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
-            error_code: 'unknown_header',
+            errorCode: 'unknown_header',
             message: 'Unsupported header',
             col: header
           }

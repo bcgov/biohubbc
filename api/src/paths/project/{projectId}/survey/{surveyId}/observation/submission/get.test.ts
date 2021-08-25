@@ -108,8 +108,6 @@ describe('getObservationSubmission', () => {
       ]
     });
 
-    //[{ id: '1', type: 'Error', status: 'Rejected', error_code: 'duplicate_header', message: 'something' }]
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -191,14 +189,14 @@ describe('getObservationSubmission', () => {
       .resolves({
         rows: [
           {
-            error_code: 'missing_required_header',
+            errorCode: 'missing_required_header',
             id: 1,
             message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
             status: 'Rejected',
             type: 'Error'
           },
           {
-            error_code: 'missing_required_header',
+            errorCode: 'missing_required_header',
             id: 2,
             message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
             status: 'Rejected',
@@ -228,14 +226,14 @@ describe('getObservationSubmission', () => {
       status: 'Rejected',
       messages: [
         {
-          error_code: 'missing_required_header',
+          errorCode: 'missing_required_header',
           id: 1,
           message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
           status: 'Rejected',
           type: 'Error'
         },
         {
-          error_code: 'missing_required_header',
+          errorCode: 'missing_required_header',
           id: 2,
           message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
           status: 'Rejected',

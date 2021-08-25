@@ -301,13 +301,13 @@ export type IRowErrorCode =
   | 'multiple_values'
   | 'miscellaneous_for_row';
 export interface IHeaderError {
-  error_code: IHeaderErrorCode;
+  errorCode: IHeaderErrorCode;
   message: string;
   col: string | number;
 }
 
 export interface IRowError {
-  error_code: IRowErrorCode;
+  errorCode: IRowErrorCode;
   message: string;
   col: string;
   row: number;
