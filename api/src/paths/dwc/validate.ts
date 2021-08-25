@@ -211,7 +211,7 @@ export function persistParseErrors(): RequestHandler {
         connection
       );
 
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'miscelaneous', connection);
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'miscellaneous', connection);
 
       await connection.commit();
 

@@ -196,7 +196,7 @@ const SurveyObservations = () => {
   const groupType = {
     mandatory: 'Mandatory fields have not been filled out in your file',
     unsupported_header: 'Column headers in your file are not supported',
-    miscellaneous: 'Miscellaneous'
+    miscellaneous: 'Miscellaneous errors in your file'
   };
 
   const messageList = submissionStatus?.messages;
@@ -218,12 +218,10 @@ const SurveyObservations = () => {
             group = 'miscellaneous';
         }
 
-        let groupArray = workingData[group];
-
-        if (!groupArray) {
+        if (!workingData[group]) {
           workingData[group] = [row.message];
         } else {
-          groupArray.push(row.message);
+          workingData[group].push(row.message);
         }
         return workingData;
       }, {})) ||

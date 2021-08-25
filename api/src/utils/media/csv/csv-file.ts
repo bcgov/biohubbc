@@ -297,7 +297,7 @@ export type IHeaderErrorCode =
 export type IRowErrorCode =
   | 'missing_required_field'
   | 'unexpected_formats'
-  | 'Values_exceeded'
+  | 'values_exceeded'
   | 'multiple_values'
   | 'miscellaneous_for_row';
 export interface IHeaderError {
