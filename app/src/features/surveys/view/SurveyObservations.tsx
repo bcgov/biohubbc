@@ -6,12 +6,12 @@ import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiClockOutline, mdiFileOutline, mdiImport, mdiTrashCanOutline } from '@mdi/js';
+import { mdiAlertCircleOutline, mdiClockOutline, mdiFileOutline, mdiImport, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -22,7 +22,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { mdiAlertCircleOutline } from '@mdi/js';
 
 const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
@@ -194,37 +193,45 @@ const SurveyObservations = () => {
     </IconButton>
   );
 
+  const groupType = {
+    mandatory: 'Mandatory fields have not been filled out in your file',
+    unsupported_header: 'Column headers in your file are not supported',
+    miscellaneous: 'Miscellaneous'
+  };
+
+  const messageList = submissionStatus?.messages;
+
+  const messageObject =
+    (messageList &&
+      messageList.reduce((workingData: any, row: any) => {
+        let group;
+
+        switch (row.error_code) {
+          case 'missing_required_header':
+          case 'missing_required_field':
+            group = 'mandatory';
+            break;
+          case 'unknown_header':
+            group = 'unsupported_header';
+            break;
+          default:
+            group = 'miscellaneous';
+        }
+
+        let groupArray = workingData[group];
+
+        if (!groupArray) {
+          workingData[group] = [row.message];
+        } else {
+          groupArray.push(row.message);
+        }
+        return workingData;
+      }, {})) ||
+    {};
+
   if (isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  const errorType = {
-    missing_required_field: 'Mandatory fields have not been filled out in your file',
-    missing_required_header: 'Column headers in your file are not not supported',
-    unknown_header: 'Column header is not recognized',
-    miscellaneous_for_row: 'Miscellaneous'
-  };
-
-  console.log(errorType);
-
-  let messageList = submissionStatus.messages;
-
-  const messageObject = messageList.reduce((workingData: any, row: any) => {
-    console.log('Hello');
-    console.log('row is: ', row);
-    const groupingElement = workingData[row.error_code];
-    console.log('grouping element is: ', groupingElement);
-
-    if (!groupingElement) {
-      workingData[row.error_code] = [row.message];
-    } else {
-      groupingElement.push(row.message);
-    }
-
-    return workingData;
-  }, {});
-
-  console.log('messageObject is', messageObject);
 
   return (
     <Box>
@@ -269,19 +276,23 @@ const SurveyObservations = () => {
             </Box>
             <Box>
               <List component="div">
-                {Object.keys(messageObject).map((code: string, index: number) => (
-                  <div>
-                    <ListItem>
-                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
-                      <strong className={classes.tab}>{errorType[code]}</strong>
-                    </ListItem>
-                    <ul key={index}>
-                      {messageObject[code].map((message: string, index2: number) => (
-                        <li key={index2}>{message}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                {Object.keys(groupType).map((code: string, index: number) => {
+                  if (messageObject[code]) {
+                    return (
+                      <div>
+                        <ListItem>
+                          <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
+                          <strong className={classes.tab}>{groupType[code]}</strong>
+                        </ListItem>
+                        <ul key={index}>
+                          {messageObject[code].map((message: string, index2: number) => (
+                            <li key={index2}>{message}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  }
+                })}
               </List>
             </Box>
           </>
@@ -321,6 +332,7 @@ const SurveyObservations = () => {
         onClose={() => {
           setOpenImportObservations(false);
           setIsPolling(true);
+          setIsLoading(true);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
