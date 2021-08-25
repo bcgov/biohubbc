@@ -151,7 +151,7 @@ export function uploadMedia(): RequestHandler {
 
       await uploadFileToS3(rawMediaFile, key, metadata);
 
-      return res.status(200).send();
+      return res.status(200).send({ submissionId });
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

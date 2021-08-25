@@ -3,9 +3,13 @@ import { describe } from 'mocha';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL,
+  getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL
+  insertOccurrenceSubmissionMessageSQL,
+  insertOccurrenceSubmissionStatusSQL,
+  updateSurveyOccurrenceSubmissionWithKeySQL,
+  deleteOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
@@ -29,6 +33,20 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteOccurrenceSubmissionSQL', () => {
+  it('returns null response when null submissionId provided', () => {
+    const response = deleteOccurrenceSubmissionSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = deleteOccurrenceSubmissionSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -83,7 +101,7 @@ describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
 });
 
 describe('getSurveyOccurrenceSubmissionSQL', () => {
-  it('returns null response when null submissionId provided', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
     const response = getSurveyOccurrenceSubmissionSQL((null as unknown) as number);
 
     expect(response).to.be.null;
@@ -91,6 +109,66 @@ describe('getSurveyOccurrenceSubmissionSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = getSurveyOccurrenceSubmissionSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveySubmissionStatusSQL', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
+    const response = insertOccurrenceSubmissionStatusSQL((null as unknown) as number, 'type');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null submissionStatusType provided', () => {
+    const response = insertOccurrenceSubmissionStatusSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = insertOccurrenceSubmissionStatusSQL(1, 'type');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveySubmissionMessageSQL', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
+    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null submissionStatusType provided', () => {
+    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null submissionMessage provided', () => {
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getOccurrenceSubmissionMessagesSQL', () => {
+  it('returns null response when null occurrenceSubmissionId provided', () => {
+    const response = getOccurrenceSubmissionMessagesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getOccurrenceSubmissionMessagesSQL(1);
 
     expect(response).to.not.be.null;
   });

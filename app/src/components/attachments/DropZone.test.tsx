@@ -5,7 +5,7 @@ import DropZone from './DropZone';
 const onFiles = jest.fn();
 
 const renderContainer = () => {
-  return render(<DropZone projectId={1} onFiles={onFiles} />);
+  return render(<DropZone onFiles={onFiles} acceptedFileExtensions=".txt" />);
 };
 
 describe('DropZone', () => {

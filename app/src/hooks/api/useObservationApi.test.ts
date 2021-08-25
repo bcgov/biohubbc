@@ -16,16 +16,69 @@ describe('useObservationApi', () => {
   const projectId = 1;
   const surveyId = 2;
 
-  it('uploadObservationSubmission works as expected', async () => {
+  it('getObservationSubmission works as expected', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`)
+      .reply(200, { id: 1, fileName: 'file.txt' });
+
+    const result = await useObservationApi(axios).getObservationSubmission(projectId, surveyId);
+
+    expect(result.id).toEqual(1);
+    expect(result.fileName).toEqual('file.txt');
+  });
+
+  it('deleteObservationSubmission works as expected', async () => {
+    const submissionId = 1;
+
+    mock
+      .onDelete(`/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`)
+      .reply(200, 1);
+
+    const result = await useObservationApi(axios).deleteObservationSubmission(projectId, surveyId, submissionId);
+
+    expect(result).toEqual(1);
+  });
+
+  it('uploadObservationSubmission works as expected with dwc', async () => {
     const file = new File(['foo'], 'foo.txt', {
-      type: 'text/plain'
+      type: 'application/x-zip-compressed'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, 'OK');
+    mock
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .reply(200, { submissionId: 1 });
+    mock.onPost('/api/dwc/validate').reply(200);
 
     const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
 
-    expect(result).toEqual('OK');
+    expect(result.submissionId).toEqual(1);
+  });
+
+  it('uploadObservationSubmission works as expected with xlsx', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'xlsx'
+    });
+
+    mock
+      .onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`)
+      .reply(200, { submissionId: 1 });
+    mock.onPost('/api/xlsx/validate').reply(200);
+
+    const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
+
+    expect(result.submissionId).toEqual(1);
+  });
+
+  it('uploadObservationSubmission works as expected when response has no submissionId', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'xlsx'
+    });
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`).reply(200, {});
+
+    const result = await useObservationApi(axios).uploadObservationSubmission(projectId, surveyId, file);
+
+    expect(result).toEqual({});
   });
 
   it('getSubmissionCSVForView works as expected', async () => {

@@ -8,6 +8,7 @@ exports[`DropZone matches the snapshot 1`] = `
       tabindex="0"
     >
       <input
+        accept=".txt"
         autocomplete="off"
         data-testid="drop-zone-input"
         multiple=""
@@ -39,6 +40,11 @@ exports[`DropZone matches the snapshot 1`] = `
             Browse Files
           </a>
         </h3>
+        <span
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Accepted file types: .txt
+        </span>
         <span
           class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
         >

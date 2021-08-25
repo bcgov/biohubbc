@@ -42,6 +42,7 @@ export const postProjectSQL = (
       coordinator_email_address,
       coordinator_agency_name,
       coordinator_public,
+      geojson,
       geography
     ) VALUES (
       ${project.type},
@@ -56,7 +57,8 @@ export const postProjectSQL = (
       ${project.last_name},
       ${project.email_address},
       ${project.coordinator_agency},
-      ${project.share_contact_details}
+      ${project.share_contact_details},
+      ${JSON.stringify(project.geometry)}
   `;
 
   if (project.geometry && project.geometry.length) {
