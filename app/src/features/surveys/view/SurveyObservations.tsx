@@ -57,14 +57,21 @@ const SurveyObservations = () => {
   const classes = useStyles();
 
   const importObservations = (): IUploadHandler => {
-    return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.observation.uploadObservationSubmission(
+    return async (files, cancelToken, handleFileUploadProgress) => {
+      const uploadResult = biohubApi.observation.uploadObservationSubmission(
         projectId,
         surveyId,
         files[0],
         cancelToken,
         handleFileUploadProgress
       );
+      const awaitedUploadResult = await uploadResult;
+
+      if (!awaitedUploadResult || !awaitedUploadResult.submissionId) {
+        return uploadResult;
+      }
+
+      return biohubApi.observation.initiateSubmissionValidation(awaitedUploadResult.submissionId, files[0].type);
     };
   };
 
@@ -240,15 +247,15 @@ const SurveyObservations = () => {
             </Box>
           </>
         )}
-        {!isValidating && submissionStatus &&
-          (submissionStatus.status === 'Darwin Core Validated' ||
-            submissionStatus.status === 'Template Validated') && (
+        {!isValidating &&
+          submissionStatus &&
+          (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
               <Alert
                 icon={<Icon path={mdiFileOutline} size={1} />}
                 severity="info"
                 action={deleteSubmissionAlertAction()}>
-                <AlertTitle>{submissionStatus?.fileName}</AlertTitle>
+                <AlertTitle>{submissionStatus.fileName}</AlertTitle>
               </Alert>
 
               <Box mt={5} overflow="hidden">

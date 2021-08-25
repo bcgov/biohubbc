@@ -48,8 +48,6 @@ export async function uploadFileToS3(
   key: string,
   metadata: Metadata = {}
 ): Promise<ManagedUpload.SendData> {
-  console.log('YOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-  console.log(OBJECT_STORE_BUCKET_NAME)
   return S3.upload({
     Bucket: OBJECT_STORE_BUCKET_NAME,
     Body: file.buffer,
