@@ -1,4 +1,4 @@
--- db_setup_up.sql
+--  
 \set ON_ERROR_STOP on
 -- drop the database
 set role postgres;
@@ -83,6 +83,7 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i populate_administrative_activity_status_type.sql
 \i populate_proprietor_type.sql
 \i populate_submission_status_type.sql
+\i populate_submission_message_class.sql
 \i populate_submission_message_type.sql
 \i populate_system_metadata_constant.sql
 

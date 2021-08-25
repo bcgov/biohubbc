@@ -18,7 +18,6 @@
  create trigger journal_project_attachment after insert or update or delete on biohub.project_attachment for each row execute procedure tr_journal_trigger();
  create trigger journal_stakeholder_partnership after insert or update or delete on biohub.stakeholder_partnership for each row execute procedure tr_journal_trigger();
  create trigger journal_submission_message_type after insert or update or delete on biohub.submission_message_type for each row execute procedure tr_journal_trigger();
- create trigger journal_project_type after insert or update or delete on biohub.project_type for each row execute procedure tr_journal_trigger();
  create trigger journal_project_first_nation after insert or update or delete on biohub.project_first_nation for each row execute procedure tr_journal_trigger();
  create trigger journal_project_funding_source after insert or update or delete on biohub.project_funding_source for each row execute procedure tr_journal_trigger();
  create trigger journal_project_iucn_action_classification after insert or update or delete on biohub.project_iucn_action_classification for each row execute procedure tr_journal_trigger();
@@ -27,14 +26,15 @@
  create trigger journal_project_role after insert or update or delete on biohub.project_role for each row execute procedure tr_journal_trigger();
  create trigger journal_study_species after insert or update or delete on biohub.study_species for each row execute procedure tr_journal_trigger();
  create trigger journal_submission_message after insert or update or delete on biohub.submission_message for each row execute procedure tr_journal_trigger();
+ create trigger journal_submission_message_class after insert or update or delete on biohub.submission_message_class for each row execute procedure tr_journal_trigger();
  create trigger journal_proprietor_type after insert or update or delete on biohub.proprietor_type for each row execute procedure tr_journal_trigger();
- create trigger journal_submission_status_type after insert or update or delete on biohub.submission_status_type for each row execute procedure tr_journal_trigger();
+ create trigger journal_submission_status after insert or update or delete on biohub.submission_status for each row execute procedure tr_journal_trigger();
  create trigger journal_survey_funding_source after insert or update or delete on biohub.survey_funding_source for each row execute procedure tr_journal_trigger();
  create trigger journal_system_role after insert or update or delete on biohub.system_role for each row execute procedure tr_journal_trigger();
  create trigger journal_system_constant after insert or update or delete on biohub.system_constant for each row execute procedure tr_journal_trigger();
  create trigger journal_system_metadata_constant after insert or update or delete on biohub.system_metadata_constant for each row execute procedure tr_journal_trigger();
  create trigger journal_survey after insert or update or delete on biohub.survey for each row execute procedure tr_journal_trigger();
- create trigger journal_submission_status after insert or update or delete on biohub.submission_status for each row execute procedure tr_journal_trigger();
+ create trigger journal_submission_status_type after insert or update or delete on biohub.submission_status_type for each row execute procedure tr_journal_trigger();
  create trigger journal_survey_attachment after insert or update or delete on biohub.survey_attachment for each row execute procedure tr_journal_trigger();
  create trigger journal_survey_proprietor after insert or update or delete on biohub.survey_proprietor for each row execute procedure tr_journal_trigger();
  create trigger journal_system_user_role after insert or update or delete on biohub.system_user_role for each row execute procedure tr_journal_trigger();
@@ -45,4 +45,5 @@
  create trigger journal_occurrence_submission after insert or update or delete on biohub.occurrence_submission for each row execute procedure tr_journal_trigger();
  create trigger journal_project after insert or update or delete on biohub.project for each row execute procedure tr_journal_trigger();
  create trigger journal_permit after insert or update or delete on biohub.permit for each row execute procedure tr_journal_trigger();
+ create trigger journal_project_type after insert or update or delete on biohub.project_type for each row execute procedure tr_journal_trigger();
 
