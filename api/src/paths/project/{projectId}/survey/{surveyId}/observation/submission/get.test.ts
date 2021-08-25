@@ -120,11 +120,7 @@ describe('getObservationSubmission', () => {
 
     const result = observationSubmission.getOccurrenceSubmission();
 
-    console.log('result is: ', result);
-
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    console.log('actual result is: ', actualResult);
 
     expect(actualResult).to.be.eql({
       id: 13,

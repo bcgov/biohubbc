@@ -298,11 +298,11 @@ function validateDWCArchive(): RequestHandler {
 }
 
 function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  return `${fileName} - ${headerError.errorCode} - ${headerError.col} - ${headerError.message}`;
+  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
 }
 
 function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
-  return `${fileName} - ${rowError.errorCode} - ${rowError.col} - ${rowError.row} - ${rowError.message}`;
+  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
 }
 
 export function persistValidationResults(statusTypeObject: any): RequestHandler {

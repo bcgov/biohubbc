@@ -196,7 +196,7 @@ const SurveyObservations = () => {
   const groupType = {
     mandatory: 'Mandatory fields have not been filled out in your file',
     unsupported_header: 'Column headers in your file are not supported',
-    miscellaneous: 'Miscellaneous errors in your file'
+    miscellaneous: 'Miscellaneous errors exist in your file'
   };
 
   const messageList = submissionStatus?.messages;
@@ -267,7 +267,7 @@ const SurveyObservations = () => {
                 What's next?
               </Typography>
             </Box>
-            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+            <Box mb={3} mt={1} display="flex" justifyContent="space-between">
               <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
                 Resolve the following errors in your local file and re-import.
               </Typography>
@@ -282,11 +282,13 @@ const SurveyObservations = () => {
                           <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
                           <strong className={classes.tab}>{groupType[code]}</strong>
                         </ListItem>
-                        <ul key={index}>
-                          {messageObject[code].map((message: string, index2: number) => (
-                            <li key={index2}>{message}</li>
-                          ))}
-                        </ul>
+                        <Box pl={1}>
+                          <ul key={index}>
+                            {messageObject[code].map((message: string, index2: number) => (
+                              <li key={index2}>{message}</li>
+                            ))}
+                          </ul>
+                        </Box>
                       </div>
                     );
                   }
