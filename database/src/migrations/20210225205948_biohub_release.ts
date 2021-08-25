@@ -82,6 +82,9 @@ export async function up(knex: Knex): Promise<void> {
   const populate_submission_status_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_submission_status_type.sql')
   );
+  const populate_submission_message_class = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_submission_message_class.sql')
+  );
   const populate_submission_message_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
   );
@@ -167,6 +170,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_administrative_activity_status_type}
     ${populate_proprietor_type}
     ${populate_submission_status_type}
+    ${populate_submission_message_class}
     ${populate_submission_message_type}
     ${populate_system_metadata_constant}
 

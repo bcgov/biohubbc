@@ -86,7 +86,7 @@ begin
   insert into project_management_actions (project_id, management_action_type_id) values (_project_id, (select management_action_type_id from management_action_type where name = 'Recovery Action'));
   insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (_project_id, (select investment_action_category_id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test') returning project_funding_source_id into _project_funding_source_id;
   --insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date) values (_project_id, 43, '$1,000.00', now(), now());
-  insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary education'));
+  insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary Education'));
   insert into project_attachment (project_id, file_name, title, key, file_size) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000);
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
   insert into permit (system_user_id, project_id, number, type, issue_date, end_date) values (_system_user_id, _project_id, '8377262', 'permit type', now(), now()+interval '1 day');
@@ -138,13 +138,11 @@ begin
   select count(1) into _count from occurrence;
   assert _count = 1, 'FAIL occurrence';
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Submitted'), now()-interval '1 day') returning submission_status_id into _submission_status_id;
-  insert into submission_message (submission_status_id, submission_message_type_id, event_timestamp, message) values (_submission_status_id, (select submission_message_type_id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage submitted.');
   -- transpose comments on next three lines to test deletion of published surveys by system administrator
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Awaiting Curration'), now()-interval '1 day') returning submission_status_id into _submission_status_id;
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Published'), now()-interval '1 day') returning submission_status_id into _submission_status_id;
   --insert into system_user_role (system_user_id, system_role_id) values (_system_user_id, (select system_role_id from system_role where name = 'System Administrator'));
-  insert into submission_message (submission_status_id, submission_message_type_id, event_timestamp, message) values (_submission_status_id, (select submission_message_type_id from submission_message_type where name = 'Notice'), now()-interval '1 day', 'A notice message at stage published.');
-
+  
   -- occurrence submission 2
   insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()) returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
@@ -153,13 +151,12 @@ begin
   select count(1) into _count from occurrence;
   assert _count = 2, 'FAIL occurrence';
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Submitted'), now()) returning submission_status_id into _submission_status_id;
-  insert into submission_message (submission_status_id, submission_message_type_id, event_timestamp, message) values (_submission_status_id, (select submission_message_type_id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage submitted.');
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Rejected'), now()) returning submission_status_id into _submission_status_id;
-  insert into submission_message (submission_status_id, submission_message_type_id, event_timestamp, message) values (_submission_status_id, (select submission_message_type_id from submission_message_type where name = 'Notice'), now(), 'A notice message at stage published.');
+  insert into submission_message (submission_status_id, submission_message_type_id, event_timestamp, message) values (_submission_status_id, (select submission_message_type_id from submission_message_type where name = 'Missing Required Field'), now(), 'Some required field was not supplied.');
   select count(1) into _count from submission_status;
   assert _count = 5, 'FAIL submission_status';
   select count(1) into _count from submission_message;
-  assert _count = 4, 'FAIL submission_message';  
+  assert _count = 1, 'FAIL submission_message';  
 
 --  raise notice 'survey status (project_id, survey_id, survey_status):';
 --  for _survey_status_rec in execute _survey_status_query loop
