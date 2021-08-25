@@ -102,7 +102,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   // Initiate the validation process for the submitted observations using n8n webhook
   const initiateSubmissionValidation = async (submissionId: number, fileType: string) => {
-    await axios.post('http://localhost:5100/webhook-test/a346c2c5-d43e-4bc8-8dd1-dbcee88e1638', {
+    await axios.post('http://localhost:5100/webhook/validate', {
       occurrence_submission_id: submissionId,
       file_type: fileType
     });
