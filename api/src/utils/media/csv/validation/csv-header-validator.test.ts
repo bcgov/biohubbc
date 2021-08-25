@@ -44,12 +44,12 @@ describe('getDuplicateHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        error_code: 'DuplicateHeader',
+        error_code: 'duplicate_header',
         col: 'Header1',
         message: 'Duplicate header'
       },
       {
-        error_code: 'DuplicateHeader',
+        error_code: 'duplicate_header',
         col: 'Header2',
         message: 'Duplicate header'
       }
@@ -85,22 +85,19 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        coerror_codede: 'MissingRequiredHeader',
+        error_code: 'missing_required_header',
         col: 'Header1',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        error_code: 'MissingRequiredHeader',
+        error_code: 'missing_required_header',
         col: 'Header2',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        error_code: 'MissingRequiredHeader',
+        error_code: 'missing_required_header',
         col: 'Header3',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       }
     ]);
   });
@@ -118,16 +115,14 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        error_code: 'MissingRequiredHeader',
+        error_code: 'missing_required_header',
         col: 'Header3',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        error_code: 'MissingRequiredHeader',
+        error_code: 'missing_required_header',
         col: 'Header5',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       }
     ]);
   });
@@ -175,12 +170,12 @@ describe('getValidHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        error_code: 'UnknownHeader',
+        error_code: 'unknown_header',
         col: 'UnknownHeader2',
         message: 'Unsupported header'
       },
       {
-        error_code: 'UnknownHeader',
+        error_code: 'unknown_header',
         col: 'UnknownHeader4',
         message: 'Unsupported header'
       }

@@ -60,7 +60,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = observationSubmission.getOccurenceSubmission();
+      const result = observationSubmission.getOccurrenceSubmission();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
         (null as unknown) as any,
@@ -84,7 +84,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
-      const result = observationSubmission.getOccurenceSubmission();
+      const result = observationSubmission.getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -103,10 +103,12 @@ describe('getObservationSubmission', () => {
           id: 13,
           file_name: 'dwca_moose.zip',
           submission_status_type_name: 'Darwin Core Validated',
-          message: 'some message'
+          messages: [{}]
         }
       ]
     });
+
+    //[{ id: '1', type: 'Error', status: 'Rejected', error_code: 'duplicate_header', message: 'something' }]
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -118,9 +120,13 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getOccurenceSubmission();
+    const result = observationSubmission.getOccurrenceSubmission();
+
+    console.log('result is: ', result);
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    console.log('actual result is: ', actualResult);
 
     expect(actualResult).to.be.eql({
       id: 13,
@@ -156,7 +162,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(null);
 
     try {
-      const result = observationSubmission.getOccurenceSubmission();
+      const result = observationSubmission.getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -176,7 +182,7 @@ describe('getObservationSubmission', () => {
           {
             id: 13,
             file_name: 'dwca_moose.zip',
-            message: 'some message',
+            messages: [],
             submission_status_type_name: 'Rejected'
           }
         ]
@@ -185,16 +191,18 @@ describe('getObservationSubmission', () => {
       .resolves({
         rows: [
           {
+            error_code: 'missing_required_header',
             id: 1,
-            type: 'type',
-            status: 'status',
-            message: 'some error message'
+            message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+            status: 'Rejected',
+            type: 'Error'
           },
           {
+            error_code: 'missing_required_header',
             id: 2,
-            type: 'type',
-            status: 'status',
-            message: 'some other error message'
+            message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+            status: 'Rejected',
+            type: 'Error'
           }
         ]
       });
@@ -210,7 +218,7 @@ describe('getObservationSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getOccurenceSubmission();
+    const result = observationSubmission.getOccurrenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -218,7 +226,22 @@ describe('getObservationSubmission', () => {
       id: 13,
       fileName: 'dwca_moose.zip',
       status: 'Rejected',
-      messages: ['some error message', 'some other error message']
+      messages: [
+        {
+          error_code: 'missing_required_header',
+          id: 1,
+          message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+          status: 'Rejected',
+          type: 'Error'
+        },
+        {
+          error_code: 'missing_required_header',
+          id: 2,
+          message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+          status: 'Rejected',
+          type: 'Error'
+        }
+      ]
     });
   });
 
@@ -237,7 +260,7 @@ describe('getObservationSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = observationSubmission.getOccurenceSubmission();
+    const result = observationSubmission.getOccurrenceSubmission();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 

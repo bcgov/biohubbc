@@ -13,7 +13,7 @@ import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
 
-export const GET: Operation = [getOccurenceSubmission()];
+export const GET: Operation = [getOccurrenceSubmission()];
 
 GET.apiDoc = {
   description: 'Fetches an observation occurrence submission for a survey.',
@@ -91,7 +91,7 @@ GET.apiDoc = {
   }
 };
 
-export function getOccurenceSubmission(): RequestHandler {
+export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get an occurrence submission', message: 'params', req_params: req.params });
 
@@ -125,7 +125,7 @@ export function getOccurenceSubmission(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      let messageList;
+      let messageList: any[] = [];
 
       if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;

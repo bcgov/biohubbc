@@ -35,16 +35,16 @@ describe('getRequiredFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        error_code: 'MissingRequiredField',
-        message: 'Missing required value for column: Header1',
-        row: 2,
-        type: 'Missing'
+        col: 'Header1',
+        error_code: 'missing_required_field',
+        message: 'Missing required value for column',
+        row: 2
       },
       {
-        error_code: 'MissingRequiredField',
-        message: 'Missing required value for column: Header2',
-        row: 2,
-        type: 'Missing'
+        col: 'Header2',
+        error_code: 'missing_required_field',
+        message: 'Missing required value for column',
+        row: 2
       }
     ]);
   });
@@ -65,10 +65,10 @@ describe('getRequiredFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        error_code: 'MissingRequiredField',
-        message: 'Missing required value for column: Header1',
-        row: 2,
-        type: 'Missing'
+        col: 'Header1',
+        error_code: 'missing_required_field',
+        message: 'Missing required value for column',
+        row: 2
       }
     ]);
   });
@@ -125,10 +125,10 @@ describe('getCodeValueFieldsValidator', () => {
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
       {
-        error_code: 'MissingRequiredField',
-        message: 'Invalid value: invalidCode. Must be one of [Code1, Code2], for column: Header1',
-        row: 2,
-        type: 'Missing'
+        col: 'Header1',
+        error_code: 'missing_required_field',
+        message: 'Invalid value: invalidCode. Must be one of [Code1, Code2], for column',
+        row: 2
       }
     ]);
   });
