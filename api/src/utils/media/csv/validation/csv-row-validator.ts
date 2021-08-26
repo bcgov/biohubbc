@@ -86,7 +86,6 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
 
         const rowValueForColumn = row[columnIndex];
 
-
         if (!rowValueForColumn) {
           // cell is empty, use the getRequiredFieldsValidator to assert required fields
           return;
