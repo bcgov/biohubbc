@@ -211,7 +211,7 @@ export function persistParseErrors(): RequestHandler {
         connection
       );
 
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'miscellaneous', connection);
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
 
       await connection.commit();
 
@@ -334,7 +334,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
       mediaState?.forEach((mediaStateItem) => {
         mediaStateItem.fileErrors?.forEach((fileError) => {
           promises.push(
-            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'miscellaneous', connection)
+            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
           );
         });
       });

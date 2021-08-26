@@ -31,6 +31,7 @@
  create or replace view stakeholder_partnership as select * from biohub.stakeholder_partnership;
  create or replace view study_species as select * from biohub.study_species;
  create or replace view submission_message as select * from biohub.submission_message;
+ create or replace view submission_message_class as select * from biohub.submission_message_class;
  create or replace view submission_message_type as select * from biohub.submission_message_type;
  create or replace view submission_status as select * from biohub.submission_status;
  create or replace view submission_status_type as select * from biohub.submission_status_type;

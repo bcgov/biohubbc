@@ -345,8 +345,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
       submission_status_id,
       submission_message_type_id,
       event_timestamp,
-      message,
-      error_code
+      message
     ) VALUES (
       ${submissionStatusId},
       (
@@ -355,10 +354,10 @@ export const insertOccurrenceSubmissionMessageSQL = (
         FROM
           submission_message_type
         WHERE
-          name = ${submissionMessageType}
+          name = ${errorCode}
       ),
       now(),
-      ${submissionMessage}, ${errorCode}
+      ${submissionMessage}
     )
     RETURNING
       submission_message_id;
@@ -396,7 +395,6 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       sm.submission_message_id as id,
       smt.name as type,
       sst.name as status,
-      sm.error_code,
       sm.message
     FROM
       occurrence_submission as os
