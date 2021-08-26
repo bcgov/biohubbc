@@ -86,6 +86,8 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
 
         const rowValueForColumn = row[columnIndex];
 
+        console.log('rowvalueforcolumn', rowValueForColumn);
+
         if (!rowValueForColumn) {
           // cell is empty, use the getRequiredFieldsValidator to assert required fields
           return;
@@ -95,7 +97,7 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
         if (!codeValuesByHeader.codeValues.includes(rowValueForColumn)) {
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Missing Required Field',
+              errorCode: 'Invalid Value',
               message: `Invalid value: ${rowValueForColumn}. Must be one of [${codeValuesByHeader.codeValues.join(
                 ', '
               )}], for column`,
