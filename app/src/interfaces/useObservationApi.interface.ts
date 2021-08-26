@@ -10,9 +10,8 @@ export interface IGetSubmissionCSVForViewResponse {
 
 interface IGetObservationSubmissionResponseMessages {
   id: number;
-  type: string;
   status: string;
-  error_code: string;
+  type: string;
   message: string;
 }
 

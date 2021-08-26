@@ -393,7 +393,7 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
   const sqlStatement = SQL`
     SELECT
       sm.submission_message_id as id,
-      smt.name as error_code,
+      smt.name as type,
       sst.name as status,
       sm.message
     FROM

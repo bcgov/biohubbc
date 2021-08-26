@@ -192,18 +192,18 @@ const SurveyObservations = () => {
     </IconButton>
   );
 
-  type MessageGrouping = { [key: string]: { errorCodes: string[]; label: string } };
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
-      errorCodes: ['Missing Required Field', 'Missing Required Header'],
+      type: ['Missing Required Field', 'Missing Required Header'],
       label: 'Mandatory fields have not been filled out in your file'
     },
     unsupported_header: {
-      errorCodes: ['Unknown Header'],
+      type: ['Unknown Header'],
       label: 'Column headers in your file are not supported'
     },
-    miscellaneous: { errorCodes: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 
   type SubmissionMessages = { [key: string]: string[] };
@@ -215,7 +215,7 @@ const SurveyObservations = () => {
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
-        if (value.errorCodes.includes(message.error_code)) {
+        if (value.type.includes(message.type)) {
           if (!submissionMessages[key]) {
             submissionMessages[key] = [];
           }
@@ -282,7 +282,7 @@ const SurveyObservations = () => {
                     <Box pl={2}>
                       <ul>
                         {value.map((message: string, index2: number) => {
-                          return <li>{message}</li>;
+                          return <li key={`${index}-${index2}`}>{message}</li>;
                         })}
                       </ul>
                     </Box>
