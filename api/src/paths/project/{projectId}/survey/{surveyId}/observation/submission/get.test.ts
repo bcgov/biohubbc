@@ -185,16 +185,16 @@ describe('getObservationSubmission', () => {
       .resolves({
         rows: [
           {
-            errorCode: 'missing_required_header',
+            errorCode: 'Missing Required Header',
             id: 1,
-            message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+            message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
             status: 'Rejected',
             type: 'Error'
           },
           {
-            errorCode: 'missing_required_header',
+            errorCode: 'Missing Required Header',
             id: 2,
-            message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+            message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
             status: 'Rejected',
             type: 'Error'
           }
@@ -222,16 +222,16 @@ describe('getObservationSubmission', () => {
       status: 'Rejected',
       messages: [
         {
-          errorCode: 'missing_required_header',
+          errorCode: 'Missing Required Header',
           id: 1,
-          message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
           status: 'Rejected',
           type: 'Error'
         },
         {
-          errorCode: 'missing_required_header',
+          errorCode: 'Missing Required Header',
           id: 2,
-          message: 'occurrence.txt - missing_required_header - associatedTaxa - Missing required header',
+          message: 'occurrence.txt - Missing Required Header - associatedTaxa - Missing required header',
           status: 'Rejected',
           type: 'Error'
         }
