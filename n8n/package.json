@@ -8,8 +8,8 @@
     "url": "https://github.com/bcgov/biohubbc.git"
   },
   "engines": {
-    "node": ">= 10.0.0",
-    "npm": ">= 6.0.0"
+    "node": ">= 14.0.0",
+    "npm": ">= 7.0.0"
   },
   "scripts": {
     "export": "npm-run-all -l -s export-credentials export-workflows",
