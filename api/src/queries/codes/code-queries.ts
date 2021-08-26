@@ -102,10 +102,7 @@ export const getTaxonsSQL = (): SQLStatement =>
   SQL`
     SELECT
       wldtaxonomic_units_id as id,
-      CASE
-        WHEN english_name IS NULL THEN unit_name2
-        ELSE CONCAT(english_name, ' - ', unit_name2)
-      END as name
+      CONCAT_WS(' - ', english_name, CONCAT_WS(' ', unit_name1, unit_name2, unit_name3)) as name
     FROM
       wldtaxonomic_units
     WHERE

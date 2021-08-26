@@ -296,7 +296,12 @@ export type IHeaderErrorCode =
   | 'Missing Recommended Header'
   | 'Miscellaneous';
 
-export type IRowErrorCode = 'Missing Required Field' | 'Unexpected Formats' | 'Out of Range' | 'Miscellaneous';
+export type IRowErrorCode =
+  | 'Missing Required Field'
+  | 'Unexpected Formats'
+  | 'Out of Range'
+  | 'Invalid Value'
+  | 'Miscellaneous';
 export interface IHeaderError {
   errorCode: IHeaderErrorCode;
   message: string;
