@@ -86,6 +86,29 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 	@docker-compose -f docker-compose.yml up
 
 ## ------------------------------------------------------------------------------
+## Build/Run Postgrse DB Commands
+## - Builds all of the biohub postgres db projects (db, db_setup)
+## ------------------------------------------------------------------------------
+
+build-postgres: ## Builds the postgres db containers
+	@echo "==============================================="
+	@echo "Make: build-postgres - building postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup
+
+run-postgres: ## Runs the postgres db containers
+	@echo "==============================================="
+	@echo "Make: run-postgres - running postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup
+
+run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup
+
+## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
 ## - Builds all of the biohub backend projects (db, db_setup, api)
 ## ------------------------------------------------------------------------------
@@ -107,29 +130,6 @@ run-backend-debug: ## Runs all backend containers in debug mode, where all conta
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db db_setup api
-
-## ------------------------------------------------------------------------------
-## Build/Run Backend Commands
-## - Builds all of the biohub backend projects (db, db_setup)
-## ------------------------------------------------------------------------------
-
-build-postgres: ## Builds the postgres db containers
-	@echo "==============================================="
-	@echo "Make: build-postgres - building postgres db  images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup
-
-run-postgres: ## Runs the postgres db containers
-	@echo "==============================================="
-	@echo "Make: run-postgres - running postgres db  images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup
-
-run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -171,7 +171,7 @@ app: ## Executes into the app container.
 	@echo "==============================================="
 	@docker-compose exec app bash
 
-api: ## Executes into the workspace container.
+api: ## Executes into the api container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
