@@ -40,6 +40,8 @@ db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to ru
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
 db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
 
+n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
+
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
 ## ------------------------------------------------------------------------------
@@ -177,6 +179,12 @@ api: ## Executes into the workspace container.
 	@echo "==============================================="
 	@docker-compose exec api bash
 
+n8n: ## Executes into the n8n container.
+	@echo "==============================================="
+	@echo "Shelling into n8n container"
+	@echo "==============================================="
+	@docker-compose exec n8n bash
+
 ## ------------------------------------------------------------------------------
 ## Database migration commands
 ## ------------------------------------------------------------------------------
@@ -216,6 +224,22 @@ run-db-rollback: ## Rollback the latest database migrations
 	@echo "Make: run-db-rollback - rolling back the latest database migrations"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db_rollback
+
+## ------------------------------------------------------------------------------
+## n8n commands
+## ------------------------------------------------------------------------------
+
+build-n8n-setup: ## Build the n8n setup image
+	@echo "==============================================="
+	@echo "Make: build-n8n-setup - building n8n setup image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build n8n_setup
+
+run-n8n-setup: ## Run the n8n setup
+	@echo "==============================================="
+	@echo "Make: run-n8n-setup - running n8n setup"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up n8n_setup
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects

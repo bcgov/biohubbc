@@ -109,11 +109,35 @@ services:
     networks:
       - local-network
     volumes:
-      - ./n8n:/home/node/.n8n
+      - ./.n8n:/home/node/.n8n
     depends_on:
       - api
       - db
     command: ["n8n", "start"]
+
+  ## Run the n8n setup
+  n8n_setup:
+    image: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./n8n
+      dockerfile: ./.docker/n8n/Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+    networks:
+      - local-network
+    depends_on:
+      - n8n
 
   ## Build the app docker image
   app:

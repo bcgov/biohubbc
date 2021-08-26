@@ -1,0 +1,47 @@
+{
+  "name": "biohubbc-n8n",
+  "version": "0.0.0",
+  "description": "N8N setup",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/biohubbc.git"
+  },
+  "engines": {
+    "node": ">= 10.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "scripts": {
+    "export": "npm-run-all -l -s export-credentials export-workflows",
+    "export-workflows": "n8n export:workflow --all",
+    "export-credentials": "n8n export:workflow --all",
+    "import": "npm-run-all -l -s import-credentials import-workflows ",
+    "import-workflows": "",
+    "import-credentials": "",
+    "setup": "npm-run-all -l -s migrate:latest seed",
+    "migrate:latest": "knex migrate:latest --knexfile ./src/knexfile.ts",
+    "migrate:rollback": "knex migrate:rollback --knexfile ./src/knexfile.ts",
+    "seed": "knex seed:run --knexfile ./src/knexfile.ts",
+    "lint": "eslint src/ --ext .js,.ts",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
+    "format:fix": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\""
+  },
+  "dependencies": {
+    "pg": "~8.3.0",
+    "typescript": "~3.9.4"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.24",
+    "@types/pg": "~7.14.4",
+    "@typescript-eslint/eslint-plugin": "~3.7.1",
+    "@typescript-eslint/parser": "~3.7.1",
+    "eslint": "~7.5.0",
+    "eslint-config-prettier": "~6.11.0",
+    "eslint-plugin-prettier": "~3.1.4",
+    "npm-run-all": "~4.1.5",
+    "n8n": "^0.135.2",
+    "prettier": "^2.3.2",
+    "ts-node": "~8.10.2"
+  }
+}
