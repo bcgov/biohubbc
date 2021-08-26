@@ -10,7 +10,7 @@ import {
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { ICsvState } from '../../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
 import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
 import {
   getDWCArchiveValidators,
@@ -211,7 +211,7 @@ export function persistParseErrors(): RequestHandler {
         connection
       );
 
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, connection);
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'miscellaneous', connection);
 
       await connection.commit();
 
@@ -297,6 +297,14 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
+function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
+}
+
+function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+}
+
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
@@ -326,12 +334,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
       mediaState?.forEach((mediaStateItem) => {
         mediaStateItem.fileErrors?.forEach((fileError) => {
           promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              `${mediaStateItem.fileName} - ${fileError}`,
-              connection
-            )
+            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'miscellaneous', connection)
           );
         });
       });
@@ -342,7 +345,8 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
             insertSubmissionMessage(
               submissionStatusId,
               'Error',
-              `${csvStateItem.fileName} - ${headerError.type} - ${headerError.code} - ${headerError.col} - ${headerError.message}`,
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+              headerError.errorCode,
               connection
             )
           );
@@ -353,7 +357,8 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
             insertSubmissionMessage(
               submissionStatusId,
               'Error',
-              `${csvStateItem.fileName} - ${rowError.type} - ${rowError.code} - ${rowError.row} - ${rowError.message}`,
+              generateRowErrorMessage(csvStateItem.fileName, rowError),
+              rowError.errorCode,
               connection
             )
           );
@@ -418,9 +423,15 @@ export const insertSubmissionMessage = async (
   submissionStatusId: number,
   submissionMessageType: string,
   message: string,
+  errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertOccurrenceSubmissionMessageSQL(submissionStatusId, submissionMessageType, message);
+  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
+    submissionStatusId,
+    submissionMessageType,
+    message,
+    errorCode
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

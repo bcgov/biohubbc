@@ -287,21 +287,29 @@ export class XLSXCSV implements IWorkbook {
   }
 }
 
-export type IHeaderErrorType = 'Invalid' | 'Missing';
-export type IHeaderErrorCode = 'DuplicateHeader' | 'UnknownHeader' | 'MissingRequiredHeader';
+export type IHeaderErrorCode =
+  | 'duplicate_header'
+  | 'unknown_header'
+  | 'missing_required_header'
+  | 'missing_recommended_header'
+  | 'miscellaneous_for_header';
+
+export type IRowErrorCode =
+  | 'missing_required_field'
+  | 'unexpected_formats'
+  | 'values_exceeded'
+  | 'multiple_values'
+  | 'miscellaneous_for_row';
 export interface IHeaderError {
-  type: IHeaderErrorType;
-  code: IHeaderErrorCode;
+  errorCode: IHeaderErrorCode;
   message: string;
   col: string | number;
 }
 
-export type IRowErrorType = 'Invalid' | 'Missing';
-export type IRowErrorCode = 'MissingRequiredField';
 export interface IRowError {
-  type: IRowErrorType;
-  code: IRowErrorCode;
+  errorCode: IRowErrorCode;
   message: string;
+  col: string;
   row: number;
 }
 
