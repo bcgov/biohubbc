@@ -10,6 +10,9 @@ import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
 import useObservationApi from './api/useObservationApi';
+import { useContext } from 'react';
+import { ConfigContext } from 'contexts/configContext';
+import useN8NApi from './api/useN8NApi';
 
 /**
  * Returns a set of supported api methods.
@@ -17,26 +20,30 @@ import useObservationApi from './api/useObservationApi';
  * @return {*} object whose properties are supported api methods.
  */
 export const useBiohubApi = () => {
-  const customAPIAxios = useAxios('api');
-  const customN8NAxios = useAxios('n8n');
+  const config = useContext(ConfigContext);
 
-  const project = useProjectApi(customAPIAxios);
+  const apiAxios = useAxios(config?.API_HOST);
+  const n8nAxios = useAxios(config?.N8N_HOST);
 
-  const permit = usePermitApi(customAPIAxios);
+  const project = useProjectApi(apiAxios);
 
-  const search = useSearchApi(customAPIAxios);
+  const permit = usePermitApi(apiAxios);
 
-  const survey = useSurveyApi(customAPIAxios);
+  const search = useSearchApi(apiAxios);
 
-  const codes = useCodesApi(customAPIAxios);
+  const survey = useSurveyApi(apiAxios);
 
-  const draft = useDraftApi(customAPIAxios);
+  const codes = useCodesApi(apiAxios);
 
-  const user = useUserApi(customAPIAxios);
+  const draft = useDraftApi(apiAxios);
 
-  const admin = useAdminApi(customAPIAxios);
+  const user = useUserApi(apiAxios);
 
-  const observation = useObservationApi(customAPIAxios, customN8NAxios);
+  const admin = useAdminApi(apiAxios);
+
+  const observation = useObservationApi(apiAxios);
+
+  const n8n = useN8NApi(n8nAxios);
 
   const external = useExternalApi(axios);
 
@@ -50,6 +57,7 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
+    n8n,
     external
   };
 };

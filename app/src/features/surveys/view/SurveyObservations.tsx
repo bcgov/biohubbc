@@ -57,21 +57,16 @@ const SurveyObservations = () => {
   const classes = useStyles();
 
   const importObservations = (): IUploadHandler => {
-    return async (files, cancelToken, handleFileUploadProgress) => {
-      const uploadResult = biohubApi.observation.uploadObservationSubmission(
-        projectId,
-        surveyId,
-        files[0],
-        cancelToken,
-        handleFileUploadProgress
-      );
-      const awaitedUploadResult = await uploadResult;
+    return (files, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.observation
+        .uploadObservationSubmission(projectId, surveyId, files[0], cancelToken, handleFileUploadProgress)
+        .then((result) => {
+          if (!result || !result.submissionId) {
+            return;
+          }
 
-      if (!awaitedUploadResult || !awaitedUploadResult.submissionId) {
-        return uploadResult;
-      }
-
-      return biohubApi.observation.initiateSubmissionValidation(awaitedUploadResult.submissionId, files[0].type);
+          return biohubApi.n8n.initiateSubmissionValidation(result.submissionId, files[0].type);
+        });
     };
   };
 

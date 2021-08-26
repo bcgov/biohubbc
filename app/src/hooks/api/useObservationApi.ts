@@ -8,11 +8,10 @@ import {
 /**
  * Returns a set of supported api methods for working with observations.
  *
- * @param {AxiosInstance} apiAxios for API calls
- * @param {AxiosInstance} n8nAxios for N8N calls
+ * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
  */
-const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => {
+const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Upload survey observation submission.
    *
@@ -34,7 +33,7 @@ const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => 
 
     req_message.append('media', file);
 
-    const { data } = await apiAxios.post(
+    const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
       req_message,
       {
@@ -58,7 +57,7 @@ const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => 
     surveyId: number,
     submissionId: number
   ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await apiAxios.get(
+    const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`
     );
 
@@ -76,7 +75,7 @@ const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => 
     projectId: number,
     surveyId: number
   ): Promise<IGetObservationSubmissionResponse> => {
-    const { data } = await apiAxios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
 
     return data;
   };
@@ -94,24 +93,15 @@ const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => 
     surveyId: number,
     submissionId: number
   ): Promise<number> => {
-    const { data } = await apiAxios.delete(
+    const { data } = await axios.delete(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
     );
 
     return data;
   };
 
-  // Initiate the validation process for the submitted observations using n8n webhook
-  const initiateSubmissionValidation = async (submissionId: number, fileType: string) => {
-    await n8nAxios.post('/webhook/validate', {
-      occurrence_submission_id: submissionId,
-      file_type: fileType
-    });
-  };
-
   return {
     uploadObservationSubmission,
-    initiateSubmissionValidation,
     getSubmissionCSVForView,
     getObservationSubmission,
     deleteObservationSubmission
