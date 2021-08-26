@@ -86,7 +86,7 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 	@docker-compose -f docker-compose.yml up
 
 ## ------------------------------------------------------------------------------
-## Build/Run Postgrse DB Commands
+## Build/Run Postgres DB Commands
 ## - Builds all of the biohub postgres db projects (db, db_setup)
 ## ------------------------------------------------------------------------------
 
