@@ -60,7 +60,7 @@ clean: ## Closes and cleans (removes) all project containers
 	@echo "==============================================="
 	@echo "Make: clean - closing and cleaning Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down
+	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Frontend Commands
