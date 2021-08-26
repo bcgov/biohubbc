@@ -203,6 +203,10 @@ const SurveyObservations = () => {
       type: ['Unknown Header'],
       label: 'Column headers in your file are not supported'
     },
+    out_of_range: {
+      type: ['Out of Range'],
+      label: 'Values in your file are out of range'
+    },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 

@@ -62,6 +62,12 @@ export interface ICodeValuesByHeader {
   header: string;
 }
 
+export interface IValueRangesByHeader {
+  min_value: number;
+  max_value: number;
+  header: string;
+}
+
 /**
  * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
  *
@@ -100,6 +106,54 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
                 ', '
               )}], for column`,
               col: codeValuesByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+      }
+    });
+
+    return csvWorksheet;
+  };
+};
+
+/**
+ * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
+ *
+ * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
+ * @param {ICodeValuesByHeader[]} [codeValuesByHeader]
+ * @return {*}  {CSVValidator}
+ */
+export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRangesByHeader[]): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!requiredRangeByHeader) {
+      return csvWorksheet;
+    }
+
+    const rows = csvWorksheet.getRows();
+    const headers = csvWorksheet.getHeaders();
+
+    rows.forEach((row, rowIndex) => {
+      for (const valueRangesByHeader of requiredRangeByHeader) {
+        const columnIndex = headers.indexOf(valueRangesByHeader.header);
+
+        const rowValueForColumn = row[columnIndex];
+
+        if (!rowValueForColumn) {
+          // cell is empty, use the getRequiredFieldsValidator to assert required fields
+          return;
+        }
+
+        // Add an error if the cell value is not in the correct range provided in the array
+
+        if (valueRangesByHeader.min_value <= rowValueForColumn || valueRangesByHeader.max_value >= rowValueForColumn) {
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Out of Range',
+              message: `Invalid: ${rowValueForColumn}. Must be between  [${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value}, for column`,
+              col: valueRangesByHeader.header,
               row: rowIndex + 2
             }
           ]);
