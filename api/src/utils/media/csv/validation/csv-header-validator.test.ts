@@ -44,12 +44,12 @@ describe('getDuplicateHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'duplicate_header',
+        errorCode: 'Duplicate Header',
         col: 'Header1',
         message: 'Duplicate header'
       },
       {
-        errorCode: 'duplicate_header',
+        errorCode: 'Duplicate Header',
         col: 'Header2',
         message: 'Duplicate header'
       }
@@ -85,17 +85,17 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'missing_required_header',
+        errorCode: 'Missing Required Header',
         col: 'Header1',
         message: 'Missing required header'
       },
       {
-        errorCode: 'missing_required_header',
+        errorCode: 'Missing Required Header',
         col: 'Header2',
         message: 'Missing required header'
       },
       {
-        errorCode: 'missing_required_header',
+        errorCode: 'Missing Required Header',
         col: 'Header3',
         message: 'Missing required header'
       }
@@ -115,12 +115,12 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'missing_required_header',
+        errorCode: 'Missing Required Header',
         col: 'Header3',
         message: 'Missing required header'
       },
       {
-        errorCode: 'missing_required_header',
+        errorCode: 'Missing Required Header',
         col: 'Header5',
         message: 'Missing required header'
       }
@@ -170,12 +170,12 @@ describe('getValidHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        errorCode: 'unknown_header',
+        errorCode: 'Unknown Header',
         col: 'UnknownHeader2',
         message: 'Unsupported header'
       },
       {
-        errorCode: 'unknown_header',
+        errorCode: 'Unknown Header',
         col: 'UnknownHeader4',
         message: 'Unsupported header'
       }

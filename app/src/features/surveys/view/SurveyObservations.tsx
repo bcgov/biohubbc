@@ -196,14 +196,14 @@ const SurveyObservations = () => {
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
-      errorCodes: ['missing_required_field'],
+      errorCodes: ['Missing Required Field', 'Missing Required Header'],
       label: 'Mandatory fields have not been filled out in your file'
     },
     unsupported_header: {
-      errorCodes: ['unknown_header'],
+      errorCodes: ['Unknown Header'],
       label: 'Column headers in your file are not supported'
     },
-    miscellaneous: { errorCodes: ['miscellaneous'], label: 'Miscellaneous errors exist in your file' }
+    miscellaneous: { errorCodes: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 
   type SubmissionMessages = { [key: string]: string[] };
