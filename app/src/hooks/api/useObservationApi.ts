@@ -8,10 +8,11 @@ import {
 /**
  * Returns a set of supported api methods for working with observations.
  *
- * @param {AxiosInstance} axios
+ * @param {AxiosInstance} apiAxios for API calls
+ * @param {AxiosInstance} n8nAxios for N8N calls
  * @return {*} object whose properties are supported api methods.
  */
-const useObservationApi = (axios: AxiosInstance) => {
+const useObservationApi = (apiAxios: AxiosInstance, n8nAxios: AxiosInstance) => {
   /**
    * Upload survey observation submission.
    *
@@ -33,7 +34,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    const { data } = await axios.post(
+    const { data } = await apiAxios.post(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
       req_message,
       {
@@ -57,7 +58,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     submissionId: number
   ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
+    const { data } = await apiAxios.get(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`
     );
 
@@ -75,7 +76,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number
   ): Promise<IGetObservationSubmissionResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+    const { data } = await apiAxios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
 
     return data;
   };
@@ -93,7 +94,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number,
     submissionId: number
   ): Promise<number> => {
-    const { data } = await axios.delete(
+    const { data } = await apiAxios.delete(
       `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
     );
 
@@ -102,7 +103,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   // Initiate the validation process for the submitted observations using n8n webhook
   const initiateSubmissionValidation = async (submissionId: number, fileType: string) => {
-    await axios.post('http://localhost:5100/webhook/validate', {
+    await n8nAxios.post('/webhook/validate', {
       occurrence_submission_id: submissionId,
       file_type: fileType
     });

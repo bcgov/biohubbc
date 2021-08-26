@@ -17,25 +17,26 @@ import useObservationApi from './api/useObservationApi';
  * @return {*} object whose properties are supported api methods.
  */
 export const useBiohubApi = () => {
-  const customAxios = useAxios();
+  const customAPIAxios = useAxios('api');
+  const customN8NAxios = useAxios('n8n');
 
-  const project = useProjectApi(customAxios);
+  const project = useProjectApi(customAPIAxios);
 
-  const permit = usePermitApi(customAxios);
+  const permit = usePermitApi(customAPIAxios);
 
-  const search = useSearchApi(customAxios);
+  const search = useSearchApi(customAPIAxios);
 
-  const survey = useSurveyApi(customAxios);
+  const survey = useSurveyApi(customAPIAxios);
 
-  const codes = useCodesApi(customAxios);
+  const codes = useCodesApi(customAPIAxios);
 
-  const draft = useDraftApi(customAxios);
+  const draft = useDraftApi(customAPIAxios);
 
-  const user = useUserApi(customAxios);
+  const user = useUserApi(customAPIAxios);
 
-  const admin = useAdminApi(customAxios);
+  const admin = useAdminApi(customAPIAxios);
 
-  const observation = useObservationApi(customAxios);
+  const observation = useObservationApi(customAPIAxios, customN8NAxios);
 
   const external = useExternalApi(axios);
 

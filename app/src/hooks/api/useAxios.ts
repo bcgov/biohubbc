@@ -28,17 +28,24 @@ export class APIError {
  *
  * @return {*} {AxiosInstance} an instance of axios
  */
-const useAxios = (): AxiosInstance => {
+const useAxios = (host: string): AxiosInstance => {
   const { keycloak } = useKeycloak();
 
   const config = useContext(ConfigContext);
+
+  let baseUrl: string | undefined;
+  if (host === 'api') {
+    baseUrl = config?.API_HOST && ensureProtocol(config.API_HOST);
+  } else if (host === 'n8n') {
+    baseUrl = config?.N8N_HOST && ensureProtocol(config.N8N_HOST);
+  }
 
   return useMemo(() => {
     const instance = axios.create({
       headers: {
         Authorization: `Bearer ${keycloak?.token}`
       },
-      baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
+      baseURL: baseUrl
     });
 
     instance.interceptors.response.use(

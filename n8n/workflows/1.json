@@ -17,7 +17,7 @@
       "parameters": {
         "authentication": "headerAuth",
         "requestMethod": "POST",
-        "url": "http://api:6100/api/dwc/validate",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -61,8 +61,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        1130,
-        760
+        940,
+        750
       ],
       "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
     },
@@ -86,15 +86,15 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1450,
-        765
+        1520,
+        750
       ]
     },
     {
       "parameters": {
         "authentication": "headerAuth",
         "requestMethod": "POST",
-        "url": "http://api:6100/api/xlsx/validate",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/validate",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -109,6 +109,30 @@
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
       }
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_HOST}"
+      },
+      "name": "Get N8N API Host",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        750
+      ]
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_PORT}"
+      },
+      "name": "Get N8N API Port",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        750
+      ]
     }
   ],
   "connections": {
@@ -116,7 +140,7 @@
       "main": [
         [
           {
-            "node": "IF",
+            "node": "Get N8N API Host",
             "type": "main",
             "index": 0
           }
@@ -140,10 +164,32 @@
           }
         ]
       ]
+    },
+    "Get N8N API Host": {
+      "main": [
+        [
+          {
+            "node": "Get N8N API Port",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N API Port": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2021-08-26T12:19:31.100Z",
-  "updatedAt": "2021-08-26T21:21:14.759Z",
+  "updatedAt": "2021-08-26T22:51:07.908Z",
   "settings": {},
   "staticData": null
 }
