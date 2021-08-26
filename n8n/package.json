@@ -15,9 +15,9 @@
     "export": "npm-run-all -l -s export-credentials export-workflows",
     "export-workflows": "n8n export:workflow --backup --output=workflows/",
     "export-credentials": "n8n export:credentials --backup --output=credentials/",
-    "import": "npm-run-all -l -s import-credentials import-workflows ",
-    "import-workflows": "",
-    "import-credentials": ""
+    "import": "npm-run-all -l -s import-credentials import-workflows",
+    "import-workflows": "n8n import:workflow --separate --input=workflows/",
+    "import-credentials": "n8n import:credentials --separate --input=credentials/"
   },
   "dependencies": {
     "pg": "~8.3.0",

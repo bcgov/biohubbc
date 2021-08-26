@@ -41,6 +41,7 @@ db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary
 db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
 
 n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
+n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
 
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
@@ -135,26 +136,26 @@ run-postgres-debug: ## Runs the postgres db containers in debug mode, where all 
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx)
+## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx
+	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx
+	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx
+	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx n8n_setup
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
@@ -240,6 +241,18 @@ run-n8n-setup: ## Run the n8n setup
 	@echo "Make: run-n8n-setup - running n8n setup"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up n8n_setup
+
+build-n8n-export: ## Build the n8n export image
+	@echo "==============================================="
+	@echo "Make: build-n8n-export - building n8n export image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build n8n_export
+
+run-n8n-export: ## Run the n8n export
+	@echo "==============================================="
+	@echo "Make: run-n8n-export - exporting the n8n credentials and workflows"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up n8n_export
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects

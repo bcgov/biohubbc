@@ -1,8 +1,5 @@
 FROM node:14
 
-# RUN apt-get -qq update
-# RUN npm install -g npm
-
 # set variables
 ENV HOME_ROOT=/opt/app-root
 ENV HOME=/opt/app-root/src
@@ -21,4 +18,4 @@ COPY . .
 RUN npm install
 
 # run the database migrations and seeding
-CMD [ "npm", "run", "import" ]
+CMD [ "npm", "run", "export" ]

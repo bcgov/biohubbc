@@ -121,7 +121,7 @@ services:
     container_name: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-container
     build:
       context: ./n8n
-      dockerfile: ./.docker/n8n/Dockerfile
+      dockerfile: ./.docker/n8n/Dockerfile.setup
     environment:
       - NODE_ENV=${NODE_ENV}
       - DB_TYPE=${N8N_DB_TYPE}
@@ -134,6 +134,32 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+      - ./n8n:/opt/app-root/src
+    networks:
+      - local-network
+    depends_on:
+      - n8n
+
+  ## Export the n8n credentials and workflows
+  n8n_export:
+    image: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./n8n
+      dockerfile: ./.docker/n8n/Dockerfile.export
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+      - ./n8n:/opt/app-root/src
     networks:
       - local-network
     depends_on:
