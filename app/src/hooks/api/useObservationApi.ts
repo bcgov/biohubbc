@@ -104,7 +104,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Initiate the validation process for the submitted observations
    * @param {number} submissionId
    */
-   const initiateDwCSubmissionValidation = async (submissionId: number) => {
+  const initiateDwCSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/dwc/validate`, {
       occurrence_submission_id: submissionId
     });
