@@ -19,9 +19,9 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       csvWorksheet.csvValidation.addRowErrors(
         requiredFieldsByHeader.map((requiredFieldByHeader) => {
           return {
-            type: 'Missing',
-            code: 'MissingRequiredField',
-            message: `Missing required value for column: ${requiredFieldByHeader}`,
+            errorCode: 'Missing Required Field',
+            message: `Missing required value for column`,
+            col: requiredFieldByHeader,
             row: 2
           };
         })
@@ -43,9 +43,9 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
         if (!rowValueForColumn) {
           csvWorksheet.csvValidation.addRowErrors([
             {
-              type: 'Missing',
-              code: 'MissingRequiredField',
-              message: `Missing required value for column: ${requiredFieldByHeader}`,
+              errorCode: 'Missing Required Field',
+              message: `Missing required value for column`,
+              col: requiredFieldByHeader,
               row: rowIndex + 2
             }
           ]);
@@ -95,11 +95,11 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
         if (!codeValuesByHeader.codeValues.includes(rowValueForColumn)) {
           csvWorksheet.csvValidation.addRowErrors([
             {
-              type: 'Missing',
-              code: 'MissingRequiredField',
+              errorCode: 'Invalid Value',
               message: `Invalid value: ${rowValueForColumn}. Must be one of [${codeValuesByHeader.codeValues.join(
                 ', '
-              )}], for column: ${codeValuesByHeader.header}`,
+              )}], for column`,
+              col: codeValuesByHeader.header,
               row: rowIndex + 2
             }
           ]);

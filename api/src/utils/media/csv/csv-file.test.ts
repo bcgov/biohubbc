@@ -248,15 +248,13 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const headerError1: IHeaderError = {
-        type: 'Invalid',
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         message: 'a header error',
         col: 0
       };
 
       const headerError2: IHeaderError = {
-        type: 'Invalid',
-        code: 'UnknownHeader',
+        errorCode: 'Unknown Header',
         message: 'a second header error',
         col: 1
       };
@@ -278,16 +276,16 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const rowError1: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 
       const rowError2: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a second row error',
+        col: 'col1',
         row: 2
       };
 
@@ -310,16 +308,15 @@ describe('CSVValidation', () => {
       const fileError1 = 'a file error';
 
       const headerError1: IHeaderError = {
-        type: 'Invalid',
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         message: 'a header error',
         col: 0
       };
 
       const rowError1: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 

@@ -136,25 +136,25 @@ describe('insertSurveySubmissionStatusSQL', () => {
 
 describe('insertSurveySubmissionMessageSQL', () => {
   it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message');
+    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message', 'errorcode');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null submissionStatusType provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message');
+    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorcode');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null submissionMessage provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string);
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorcode');
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message');
+    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message', 'errorcode');
 
     expect(response).to.not.be.null;
   });

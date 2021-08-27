@@ -89,6 +89,29 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 	@docker-compose -f docker-compose.yml up
 
 ## ------------------------------------------------------------------------------
+## Build/Run Postgres DB Commands
+## - Builds all of the biohub postgres db projects (db, db_setup)
+## ------------------------------------------------------------------------------
+
+build-postgres: ## Builds the postgres db containers
+	@echo "==============================================="
+	@echo "Make: build-postgres - building postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup
+
+run-postgres: ## Runs the postgres db containers
+	@echo "==============================================="
+	@echo "Make: run-postgres - running postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup
+
+run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup
+
+## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
 ## - Builds all of the biohub backend projects (db, db_setup, api)
 ## ------------------------------------------------------------------------------
@@ -110,29 +133,6 @@ run-backend-debug: ## Runs all backend containers in debug mode, where all conta
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db db_setup api
-
-## ------------------------------------------------------------------------------
-## Build/Run Backend Commands
-## - Builds all of the biohub backend projects (db, db_setup)
-## ------------------------------------------------------------------------------
-
-build-postgres: ## Builds the postgres db containers
-	@echo "==============================================="
-	@echo "Make: build-postgres - building postgres db  images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup
-
-run-postgres: ## Runs the postgres db containers
-	@echo "==============================================="
-	@echo "Make: run-postgres - running postgres db  images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup
-
-run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -174,7 +174,7 @@ app: ## Executes into the app container.
 	@echo "==============================================="
 	@docker-compose exec app bash
 
-api: ## Executes into the workspace container.
+api: ## Executes into the api container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
@@ -340,30 +340,32 @@ format-fix: ## Runs `npm run format:fix` for all projects
 
 ## ------------------------------------------------------------------------------
 ## Run `docker logs <container> -f` commands for all projects
+## - You can include additional parameters by appaending an `args` param
+## - Ex: `make log-app args="--tail 0"`
 ## ------------------------------------------------------------------------------
 log-app: ## Runs `docker logs <container> -f` for the app container
 	@echo "==============================================="
 	@echo "Running docker logs for the app container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-app-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-app-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-api: ## Runs `docker logs <container> -f` for the api container
 	@echo "==============================================="
 	@echo "Running docker logs for the api container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-api-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-api-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-db: ## Runs `docker logs <container> -f` for the database container
 	@echo "==============================================="
 	@echo "Running docker logs for the db container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-db-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-db-$(DOCKER_NAMESPACE)-container -f $(args)
 
 log-db-setup: ## Runs `docker logs <container> -f` for the database setup container
 	@echo "==============================================="
 	@echo "Running docker logs for the db-setup container"
 	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f
+	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

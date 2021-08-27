@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Thursday, August 05, 2021 14:02:54
+-- Date Created : Wednesday, August 25, 2021 13:54:14
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1567,20 +1567,65 @@ COMMENT ON TABLE submission_message IS 'Intersection table to track submission m
 ;
 
 -- 
+-- TABLE: submission_message_class 
+--
+
+CREATE TABLE submission_message_class(
+    submission_message_class_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                           varchar(50)       NOT NULL,
+    record_end_date                date,
+    record_effective_date          date              NOT NULL,
+    description                    varchar(250),
+    create_date                    timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                    integer           NOT NULL,
+    update_date                    timestamptz(6),
+    update_user                    integer,
+    revision_count                 integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT submission_message_class_pk PRIMARY KEY (submission_message_class_id)
+)
+;
+
+
+
+COMMENT ON COLUMN submission_message_class.submission_message_class_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message_class.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN submission_message_class.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN submission_message_class.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN submission_message_class.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN submission_message_class.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN submission_message_class.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message_class.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN submission_message_class.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN submission_message_class.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE submission_message_class IS 'The classification of submission message types available to report.'
+;
+
+-- 
 -- TABLE: submission_message_type 
 --
 
 CREATE TABLE submission_message_type(
-    submission_message_type_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    name                          varchar(50)       NOT NULL,
-    record_end_date               date,
-    record_effective_date         date              NOT NULL,
-    description                   varchar(250),
-    create_date                   timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                   integer           NOT NULL,
-    update_date                   timestamptz(6),
-    update_user                   integer,
-    revision_count                integer           DEFAULT 0 NOT NULL,
+    submission_message_type_id     integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    submission_message_class_id    integer           NOT NULL,
+    name                           varchar(50)       NOT NULL,
+    record_end_date                date,
+    record_effective_date          date              NOT NULL,
+    description                    varchar(250),
+    create_date                    timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                    integer           NOT NULL,
+    update_date                    timestamptz(6),
+    update_user                    integer,
+    revision_count                 integer           DEFAULT 0 NOT NULL,
     CONSTRAINT submission_message_type_pk PRIMARY KEY (submission_message_type_id)
 )
 ;
@@ -1588,6 +1633,8 @@ CREATE TABLE submission_message_type(
 
 
 COMMENT ON COLUMN submission_message_type.submission_message_type_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN submission_message_type.submission_message_class_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN submission_message_type.name IS 'The name of the record.'
 ;
@@ -2474,16 +2521,16 @@ CREATE INDEX "Ref128119" ON project(project_type_id)
 CREATE UNIQUE INDEX project_activity_uk1 ON project_activity(project_id, activity_id)
 ;
 -- 
--- INDEX: "Ref45127" 
---
-
-CREATE INDEX "Ref45127" ON project_activity(project_id)
-;
--- 
 -- INDEX: "Ref136128" 
 --
 
 CREATE INDEX "Ref136128" ON project_activity(activity_id)
+;
+-- 
+-- INDEX: "Ref45127" 
+--
+
+CREATE INDEX "Ref45127" ON project_activity(project_id)
 ;
 -- 
 -- INDEX: project_attachment_uk1 
@@ -2672,10 +2719,22 @@ CREATE INDEX "Ref184166" ON submission_message(submission_status_id)
 CREATE INDEX "Ref182167" ON submission_message(submission_message_type_id)
 ;
 -- 
+-- INDEX: submission_message_class_nuk1 
+--
+
+CREATE UNIQUE INDEX submission_message_class_nuk1 ON submission_message_class(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
 -- INDEX: submission_message_type_nuk1 
 --
 
 CREATE UNIQUE INDEX submission_message_type_nuk1 ON submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: "Ref189177" 
+--
+
+CREATE INDEX "Ref189177" ON submission_message_type(submission_message_class_id)
 ;
 -- 
 -- INDEX: "Ref165163" 
@@ -2942,14 +3001,14 @@ ALTER TABLE project ADD CONSTRAINT "Refproject_type119"
 -- TABLE: project_activity 
 --
 
-ALTER TABLE project_activity ADD CONSTRAINT "Refproject127" 
-    FOREIGN KEY (project_id)
-    REFERENCES project(project_id)
-;
-
 ALTER TABLE project_activity ADD CONSTRAINT "Refactivity128" 
     FOREIGN KEY (activity_id)
     REFERENCES activity(activity_id)
+;
+
+ALTER TABLE project_activity ADD CONSTRAINT "Refproject127" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 
@@ -3095,6 +3154,16 @@ ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_status166"
 ALTER TABLE submission_message ADD CONSTRAINT "Refsubmission_message_type167" 
     FOREIGN KEY (submission_message_type_id)
     REFERENCES submission_message_type(submission_message_type_id)
+;
+
+
+-- 
+-- TABLE: submission_message_type 
+--
+
+ALTER TABLE submission_message_type ADD CONSTRAINT "Refsubmission_message_class177" 
+    FOREIGN KEY (submission_message_class_id)
+    REFERENCES submission_message_class(submission_message_class_id)
 ;
 
 

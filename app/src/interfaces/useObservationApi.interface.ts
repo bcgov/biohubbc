@@ -8,6 +8,13 @@ export interface IGetSubmissionCSVForViewResponse {
   data: IGetSubmissionCSVForViewItem[];
 }
 
+interface IGetObservationSubmissionResponseMessages {
+  id: number;
+  status: string;
+  type: string;
+  message: string;
+}
+
 /**
  * Get observation submission response object.
  *
@@ -18,7 +25,7 @@ export interface IGetObservationSubmissionResponse {
   id: number;
   fileName: string;
   status: string;
-  messages: string[];
+  messages: IGetObservationSubmissionResponseMessages[];
 }
 
 export interface IGetObservationSubmissionErrorListResponse {
