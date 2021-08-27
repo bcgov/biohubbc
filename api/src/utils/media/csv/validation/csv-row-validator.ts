@@ -143,7 +143,19 @@ export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRange
       for (const valueRangesByHeader of requiredRangeByHeader) {
         const columnIndex = headers.indexOf(valueRangesByHeader.header);
 
-        const rowValueForColumn = row[columnIndex];
+        const rowValueForColumn = Number(row[columnIndex]);
+
+        if (isNaN(rowValueForColumn)) {
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Invalid Value',
+              message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+              col: valueRangesByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+
         // Add an error if the cell value is not in the correct range provided in the array
 
         if (rowValueForColumn < valueRangesByHeader.min_value || rowValueForColumn > valueRangesByHeader.max_value) {
