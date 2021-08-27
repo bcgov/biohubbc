@@ -44,16 +44,14 @@ describe('getDuplicateHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         col: 'Header1',
-        message: 'Duplicate header',
-        type: 'Invalid'
+        message: 'Duplicate header'
       },
       {
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         col: 'Header2',
-        message: 'Duplicate header',
-        type: 'Invalid'
+        message: 'Duplicate header'
       }
     ]);
   });
@@ -87,22 +85,19 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'MissingRequiredHeader',
+        errorCode: 'Missing Required Header',
         col: 'Header1',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        code: 'MissingRequiredHeader',
+        errorCode: 'Missing Required Header',
         col: 'Header2',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        code: 'MissingRequiredHeader',
+        errorCode: 'Missing Required Header',
         col: 'Header3',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       }
     ]);
   });
@@ -120,16 +115,14 @@ describe('hasRequiredHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'MissingRequiredHeader',
+        errorCode: 'Missing Required Header',
         col: 'Header3',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       },
       {
-        code: 'MissingRequiredHeader',
+        errorCode: 'Missing Required Header',
         col: 'Header5',
-        message: 'Missing required header',
-        type: 'Missing'
+        message: 'Missing required header'
       }
     ]);
   });
@@ -177,16 +170,14 @@ describe('getValidHeadersValidator', () => {
 
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
-        code: 'UnknownHeader',
+        errorCode: 'Unknown Header',
         col: 'UnknownHeader2',
-        message: 'Unsupported header',
-        type: 'Invalid'
+        message: 'Unsupported header'
       },
       {
-        code: 'UnknownHeader',
+        errorCode: 'Unknown Header',
         col: 'UnknownHeader4',
-        message: 'Unsupported header',
-        type: 'Invalid'
+        message: 'Unsupported header'
       }
     ]);
   });

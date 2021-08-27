@@ -3,14 +3,13 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiClockOutline, mdiFileOutline, mdiImport, mdiTrashCanOutline } from '@mdi/js';
+import { mdiAlertCircleOutline, mdiClockOutline, mdiFileOutline, mdiImport, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -19,10 +18,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
     marginBottom: '1rem'
   },
@@ -42,6 +42,12 @@ const useStyles = makeStyles(() => ({
   },
   infoBox: {
     background: 'rgba(241, 243, 245, 1)'
+  },
+  tab: {
+    paddingLeft: theme.spacing(2)
+  },
+  nested: {
+    paddingLeft: theme.spacing(4)
   }
 }));
 
@@ -68,7 +74,7 @@ const SurveyObservations = () => {
     };
   };
 
-  const [submissionStatus, setSubmissionStatus] = useState<any>(null);
+  const [submissionStatus, setSubmissionStatus] = useState<IGetObservationSubmissionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isValidating, setIsValidating] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
@@ -186,6 +192,44 @@ const SurveyObservations = () => {
     </IconButton>
   );
 
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
+
+  const messageGrouping: MessageGrouping = {
+    mandatory: {
+      type: ['Missing Required Field', 'Missing Required Header'],
+      label: 'Mandatory fields have not been filled out in your file'
+    },
+    value_not_from_list: {
+      type: ['Invalid Value'],
+      label: "Values have not been selected from the field's dropdown list"
+    },
+    unsupported_header: {
+      type: ['Unknown Header'],
+      label: 'Column headers in your file are not supported'
+    },
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
+  };
+
+  type SubmissionMessages = { [key: string]: string[] };
+
+  const submissionMessages: SubmissionMessages = {};
+
+  const messageList = submissionStatus?.messages;
+
+  if (messageList) {
+    Object.entries(messageGrouping).forEach(([key, value]) => {
+      messageList.forEach((message) => {
+        if (value.type.includes(message.type)) {
+          if (!submissionMessages[key]) {
+            submissionMessages[key] = [];
+          }
+
+          submissionMessages[key].push(message.message);
+        }
+      });
+    });
+  }
+
   if (isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -221,22 +265,34 @@ const SurveyObservations = () => {
               Validation Failed
             </Alert>
 
-            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+            <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
                 What's next?
               </Typography>
             </Box>
-            <Box mb={3} mt={3} display="flex" justifyContent="space-between">
+            <Box mb={3}>
               <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-                You will need to resolve the following errors in your local file and re-import:
+                Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
-            <Box display="flex" justifyContent="space-between">
-              <List>
-                {submissionStatus?.messages.map((row: string, index: number) => (
-                  <ListItem key={index}>{row}</ListItem>
-                ))}
-              </List>
+            <Box>
+              {Object.entries(submissionMessages).map(([key, value], index) => {
+                return (
+                  <Box>
+                    <Box display="flex" alignItems="center">
+                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
+                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                    </Box>
+                    <Box pl={2}>
+                      <ul>
+                        {value.map((message: string, index2: number) => {
+                          return <li key={`${index}-${index2}`}>{message}</li>;
+                        })}
+                      </ul>
+                    </Box>
+                  </Box>
+                );
+              })}
             </Box>
           </>
         )}
@@ -262,7 +318,7 @@ const SurveyObservations = () => {
               icon={<Icon path={mdiClockOutline} size={1} />}
               severity="info"
               action={deleteSubmissionAlertAction()}>
-              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              <AlertTitle>{submissionStatus?.fileName}</AlertTitle>
               Validating observation data. Please wait ...
             </Alert>
           </>
@@ -275,6 +331,7 @@ const SurveyObservations = () => {
         onClose={() => {
           setOpenImportObservations(false);
           setIsPolling(true);
+          setIsLoading(true);
         }}>
         <FileUpload
           dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
