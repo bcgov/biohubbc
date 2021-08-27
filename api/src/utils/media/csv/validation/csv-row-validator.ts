@@ -140,19 +140,13 @@ export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRange
         const columnIndex = headers.indexOf(valueRangesByHeader.header);
 
         const rowValueForColumn = row[columnIndex];
-
-        if (!rowValueForColumn) {
-          // cell is empty, use the getRequiredFieldsValidator to assert required fields
-          return;
-        }
-
         // Add an error if the cell value is not in the correct range provided in the array
 
-        if (valueRangesByHeader.min_value <= rowValueForColumn || valueRangesByHeader.max_value >= rowValueForColumn) {
+        if (rowValueForColumn < valueRangesByHeader.min_value || rowValueForColumn > valueRangesByHeader.max_value) {
           csvWorksheet.csvValidation.addRowErrors([
             {
               errorCode: 'Out of Range',
-              message: `Invalid: ${rowValueForColumn}. Must be between  [${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value}, for column`,
+              message: `Invalid value: ${rowValueForColumn}. Value range must be between ${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value} `,
               col: valueRangesByHeader.header,
               row: rowIndex + 2
             }
