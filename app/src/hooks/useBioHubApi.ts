@@ -21,7 +21,6 @@ import useN8NApi from './api/useN8NApi';
  */
 export const useBiohubApi = () => {
   const config = useContext(ConfigContext);
-
   const apiAxios = useAxios(config?.API_HOST);
   const n8nAxios = useAxios(config?.N8N_HOST);
 

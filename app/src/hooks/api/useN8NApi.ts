@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 
 /**
- * Returns a set of supported api methods for working with observations.
+ * Returns a set of supported api methods for working with n8n webhooks.
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
