@@ -197,7 +197,7 @@ const SurveyObservations = () => {
   const messageGrouping: MessageGrouping = {
     mandatory: {
       type: ['Missing Required Field', 'Missing Required Header'],
-      label: 'Mandatory fields have not been filled out in your file'
+      label: 'Mandatory fields have not been filled out'
     },
     value_not_from_list: {
       type: ['Invalid Value'],
@@ -205,11 +205,11 @@ const SurveyObservations = () => {
     },
     unsupported_header: {
       type: ['Unknown Header'],
-      label: 'Column headers in your file are not supported'
+      label: 'Column headers are not supported'
     },
     out_of_range: {
       type: ['Out of Range'],
-      label: 'Values in your file are out of range'
+      label: 'Values are out of range'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
