@@ -37,6 +37,10 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       for (const requiredFieldByHeader of requiredFieldsByHeader) {
         const columnIndex = headers.indexOf(requiredFieldByHeader);
 
+        if (columnIndex < 0) {
+          return csvWorksheet;
+        }
+
         const rowValueForColumn = row[columnIndex];
 
         // Add an error if the cell value is empty
@@ -104,7 +108,7 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
               errorCode: 'Invalid Value',
               message: `Invalid value: ${rowValueForColumn}. Must be one of [${codeValuesByHeader.codeValues.join(
                 ', '
-              )}], for column`,
+              )}]`,
               col: codeValuesByHeader.header,
               row: rowIndex + 2
             }
