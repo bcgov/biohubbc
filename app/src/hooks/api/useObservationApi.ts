@@ -100,11 +100,29 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Initiate the validation process for the submitted observations
+   * @param {number} submissionId
+   */
+   const initiateDwCSubmissionValidation = async (submissionId: number) => {
+    axios.post(`/api/dwc/validate`, {
+      occurrence_submission_id: submissionId
+    });
+  };
+
+  const initiateXLSXSubmissionValidation = async (submissionId: number) => {
+    axios.post(`/api/xlsx/validate`, {
+      occurrence_submission_id: submissionId
+    });
+  };
+
   return {
     uploadObservationSubmission,
     getSubmissionCSVForView,
     getObservationSubmission,
-    deleteObservationSubmission
+    deleteObservationSubmission,
+    initiateDwCSubmissionValidation,
+    initiateXLSXSubmissionValidation
   };
 };
 

@@ -64,14 +64,24 @@ const SurveyObservations = () => {
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
+      const file = files[0];
+
       return biohubApi.observation
-        .uploadObservationSubmission(projectId, surveyId, files[0], cancelToken, handleFileUploadProgress)
+        .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((result) => {
           if (!result || !result.submissionId) {
             return;
           }
 
-          return biohubApi.n8n.initiateSubmissionValidation(result.submissionId, files[0].type);
+          if (process.env.REACT_APP_N8N_PORT) {
+            return biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+          }
+
+          if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId);
+          } else {
+            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId);
+          }
         });
     };
   };
