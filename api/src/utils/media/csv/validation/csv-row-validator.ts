@@ -37,6 +37,8 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       for (const requiredFieldByHeader of requiredFieldsByHeader) {
         const columnIndex = headers.indexOf(requiredFieldByHeader);
 
+        //if column does not exist, return
+
         if (columnIndex < 0) {
           return csvWorksheet;
         }
@@ -99,6 +101,12 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
       for (const codeValuesByHeader of requiredCodeValuesByHeader) {
         const columnIndex = headers.indexOf(codeValuesByHeader.header);
 
+        //if column does not exist, return
+
+        if (columnIndex < 0) {
+          return csvWorksheet;
+        }
+
         const rowValueForColumn = row[columnIndex];
 
         if (!rowValueForColumn) {
@@ -147,6 +155,12 @@ export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRange
     rows.forEach((row, rowIndex) => {
       for (const valueRangesByHeader of requiredRangeByHeader) {
         const columnIndex = headers.indexOf(valueRangesByHeader.header);
+
+        //if column does not exist, return
+
+        if (columnIndex < 0) {
+          return csvWorksheet;
+        }
 
         const rowValueForColumn = Number(row[columnIndex]);
 
@@ -202,13 +216,14 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
       for (const formatByHeader of requiredFormatsByHeader) {
         const columnIndex = headers.indexOf(formatByHeader.header);
 
-        const rowValueForColumn = row[columnIndex].toString();
+        //if column does not exist, return
+
+        if (columnIndex < 0) {
+          return csvWorksheet;
+        }
+
+        const rowValueForColumn = String(row[columnIndex]);
         const regex = new RegExp(formatByHeader.reg_exp);
-
-        console.log('rowIndex', rowIndex);
-
-        console.log('rowValueForColumn', rowValueForColumn);
-        console.log('regex', regex);
 
         // Add an error if the cell value is not in the correct range provided in the array
 

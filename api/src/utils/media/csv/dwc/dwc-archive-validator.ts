@@ -136,7 +136,7 @@ const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
 const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => {
   switch (dwcClass) {
     case DWC_CLASS.OCCURRENCE:
-      return [{ header: 'count', min_value: 1, max_value: 10 }];
+      return [{ header: 'individualCount', min_value: 0, max_value: 10 }];
     default:
       return [];
   }
@@ -144,8 +144,8 @@ const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => 
 
 const getValidFormatsByHeader = (dwcClass: DWC_CLASS): IFormatByHeader[] => {
   switch (dwcClass) {
-    case DWC_CLASS.OCCURRENCE:
-      return [{ header: 'date', reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/' }];
+    case DWC_CLASS.EVENT:
+      return [{ header: 'eventDate', reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/' }];
     default:
       return [];
   }
