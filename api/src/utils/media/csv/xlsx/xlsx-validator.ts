@@ -240,7 +240,6 @@ export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRanges
   }
 };
 
-
 const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
   switch (xlsxClass) {
     case XLSX_CLASS.GENERAL_SURVEY:
