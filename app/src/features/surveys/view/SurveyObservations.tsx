@@ -74,7 +74,8 @@ const SurveyObservations = () => {
           }
 
           if (process.env.REACT_APP_N8N_PORT) {
-            return biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+            return;
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
