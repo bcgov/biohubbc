@@ -9,7 +9,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiAlertCircleOutline, mdiClockOutline, mdiFileOutline, mdiImport, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiAlertCircleOutline,
+  mdiClockOutline,
+  mdiFileOutline,
+  mdiImport,
+  mdiTrashCanOutline,
+  mdiDownload
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -48,6 +55,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   nested: {
     paddingLeft: theme.spacing(4)
+  },
+  alertActions: {
+    '& > *': {
+      marginLeft: theme.spacing(2)
+    }
   }
 }));
 
@@ -199,10 +211,15 @@ const SurveyObservations = () => {
   };
 
   // Action prop for the Alert MUI component to render the delete icon and associated action
-  const deleteSubmissionAlertAction = () => (
-    <IconButton aria-label="close" color="inherit" size="small" onClick={() => showDeleteDialog()}>
-      <Icon path={mdiTrashCanOutline} size={1} />
-    </IconButton>
+  const submissionAlertAction = () => (
+    <Box className={classes.alertActions}>
+      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+        <Icon path={mdiDownload} size={1} />
+      </IconButton>
+      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+        <Icon path={mdiTrashCanOutline} size={1} />
+      </IconButton>
+    </Box>
   );
 
   type MessageGrouping = { [key: string]: { type: string[]; label: string } };
@@ -210,7 +227,7 @@ const SurveyObservations = () => {
   const messageGrouping: MessageGrouping = {
     mandatory: {
       type: ['Missing Required Field', 'Missing Required Header'],
-      label: 'Mandatory fields have not been filled out in your file'
+      label: 'Mandatory fields have not been filled out'
     },
     value_not_from_list: {
       type: ['Invalid Value'],
@@ -218,7 +235,11 @@ const SurveyObservations = () => {
     },
     unsupported_header: {
       type: ['Unknown Header'],
-      label: 'Column headers in your file are not supported'
+      label: 'Column headers are not supported'
+    },
+    out_of_range: {
+      type: ['Out of Range'],
+      label: 'Values are out of range'
     },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
@@ -242,6 +263,26 @@ const SurveyObservations = () => {
       });
     });
   }
+
+  const viewFileContents = async () => {
+    if (!occurrenceSubmissionId) {
+      return;
+    }
+
+    let response;
+
+    try {
+      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmissionId);
+    } catch {
+      return;
+    }
+
+    if (!response) {
+      return;
+    }
+
+    window.open(response);
+  };
 
   if (isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -273,8 +314,15 @@ const SurveyObservations = () => {
         )}
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
-            <Alert severity="error" action={deleteSubmissionAlertAction()}>
-              <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+            <Alert
+              icon={<Icon path={mdiAlertCircleOutline} size={1} />}
+              severity="error"
+              action={submissionAlertAction()}>
+              <Box component={AlertTitle} display="flex">
+                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <strong>{submissionStatus.fileName}</strong>
+                </Link>
+              </Box>
               Validation Failed
             </Alert>
 
@@ -291,9 +339,9 @@ const SurveyObservations = () => {
             <Box>
               {Object.entries(submissionMessages).map(([key, value], index) => {
                 return (
-                  <Box>
+                  <Box key={index}>
                     <Box display="flex" alignItems="center">
-                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />{' '}
+                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />
                       <strong className={classes.tab}>{messageGrouping[key].label}</strong>
                     </Box>
                     <Box pl={2}>
@@ -313,11 +361,12 @@ const SurveyObservations = () => {
           submissionStatus &&
           (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
-              <Alert
-                icon={<Icon path={mdiFileOutline} size={1} />}
-                severity="info"
-                action={deleteSubmissionAlertAction()}>
-                <AlertTitle>{submissionStatus.fileName}</AlertTitle>
+              <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info" action={submissionAlertAction()}>
+                <Box component={AlertTitle} display="flex">
+                  <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                    <strong>{submissionStatus.fileName}</strong>
+                  </Link>
+                </Box>
               </Alert>
 
               <Box mt={5} overflow="hidden">
@@ -327,11 +376,12 @@ const SurveyObservations = () => {
           )}
         {isValidating && submissionStatus && (
           <>
-            <Alert
-              icon={<Icon path={mdiClockOutline} size={1} />}
-              severity="info"
-              action={deleteSubmissionAlertAction()}>
-              <AlertTitle>{submissionStatus?.fileName}</AlertTitle>
+            <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info" action={submissionAlertAction()}>
+              <Box component={AlertTitle} display="flex">
+                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <strong>{submissionStatus?.fileName}</strong>
+                </Link>
+              </Box>
               Validating observation data. Please wait ...
             </Alert>
           </>
