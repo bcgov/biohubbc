@@ -10,7 +10,9 @@ import {
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
-  ICodeValuesByHeader
+  getValidRangeFieldsValidator,
+  ICodeValuesByHeader,
+  IValueRangesByHeader
 } from '../validation/csv-row-validator';
 import { DWC_CLASS } from './dwc-archive-file';
 
@@ -128,6 +130,15 @@ const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
   }
 };
 
+const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.OCCURRENCE:
+      return [{ header: 'count', min_value: 1, max_value: 10 }];
+    default:
+      return [];
+  }
+};
+
 /**
  * Get content validation rules for a given DWC class.
  *
@@ -140,7 +151,8 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
     hasRequiredHeadersValidator(getRequiredHeaders(dwcClass)),
     getValidHeadersValidator(getValidHeaders(dwcClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
-    getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass))
+    getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass)),
+    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass))
   ];
 };
 

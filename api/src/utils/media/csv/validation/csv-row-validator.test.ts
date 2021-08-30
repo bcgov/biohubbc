@@ -127,7 +127,7 @@ describe('getCodeValueFieldsValidator', () => {
       {
         col: 'Header1',
         errorCode: 'Invalid Value',
-        message: 'Invalid value: invalidCode. Must be one of [Code1, Code2], for column',
+        message: 'Invalid value: invalidCode. Must be one of [Code1, Code2]',
         row: 2
       }
     ]);

@@ -9,7 +9,9 @@ import {
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
-  ICodeValuesByHeader
+  getValidRangeFieldsValidator,
+  ICodeValuesByHeader,
+  IValueRangesByHeader
 } from '../validation/csv-row-validator';
 
 export const getValidHeaders = (xlsxClass: XLSX_CLASS): string[] => {
@@ -227,13 +229,23 @@ export const getCodeValuesByHeader = (xlsxClass: XLSX_CLASS): ICodeValuesByHeade
   }
 };
 
+export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRangesByHeader[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.GENERAL_SURVEY:
+      return [{ header: 'UTM Zone', min_value: 8, max_value: 11 }];
+    default:
+      return [];
+  }
+};
+
 export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
     hasRequiredHeadersValidator(getRequiredHeaders(xlsxClass)),
     getValidHeadersValidator(getValidHeaders(xlsxClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(xlsxClass)),
-    getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass))
+    getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass)),
+    getValidRangeFieldsValidator(getValidRangeFieldsByHeader(xlsxClass))
   ];
 };
 
