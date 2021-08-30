@@ -11,8 +11,10 @@ import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
   getValidRangeFieldsValidator,
+  getValidFormatFieldsValidator,
   ICodeValuesByHeader,
-  IValueRangesByHeader
+  IValueRangesByHeader,
+  IFormatByHeader
 } from '../validation/csv-row-validator';
 import { DWC_CLASS } from './dwc-archive-file';
 
@@ -49,7 +51,8 @@ const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
         'occurrenceRemarks',
         'identifiedBy',
         'organismQuantity',
-        'organismQuantityType'
+        'organismQuantityType',
+        'date'
       ];
     case DWC_CLASS.MEASUREMENTORFACT:
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
@@ -139,6 +142,15 @@ const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => 
   }
 };
 
+const getValidFormatsByHeader = (dwcClass: DWC_CLASS): IFormatByHeader[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.OCCURRENCE:
+      return [{ header: 'date', reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/' }];
+    default:
+      return [];
+  }
+};
+
 /**
  * Get content validation rules for a given DWC class.
  *
@@ -152,7 +164,8 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
     getValidHeadersValidator(getValidHeaders(dwcClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass)),
-    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass))
+    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass)),
+    getValidFormatFieldsValidator(getValidFormatsByHeader(dwcClass))
   ];
 };
 

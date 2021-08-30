@@ -211,6 +211,11 @@ const SurveyObservations = () => {
       type: ['Out of Range'],
       label: 'Values are out of range'
     },
+    formatting_issues:{
+      type: ['Unexpected Format'],
+      label: 'Unexpected formats in the values provided'
+
+    },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 

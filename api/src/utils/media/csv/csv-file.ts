@@ -298,7 +298,7 @@ export type IHeaderErrorCode =
 
 export type IRowErrorCode =
   | 'Missing Required Field'
-  | 'Unexpected Formats'
+  | 'Unexpected Format'
   | 'Out of Range'
   | 'Invalid Value'
   | 'Miscellaneous';

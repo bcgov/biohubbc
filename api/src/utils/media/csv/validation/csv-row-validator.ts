@@ -72,6 +72,11 @@ export interface IValueRangesByHeader {
   header: string;
 }
 
+export interface IFormatByHeader {
+  reg_exp: string;
+  header: string;
+}
+
 /**
  * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
  *
@@ -164,6 +169,55 @@ export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRange
               errorCode: 'Out of Range',
               message: `Invalid value: ${rowValueForColumn}. Value range must be between ${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value} `,
               col: valueRangesByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+      }
+    });
+
+    return csvWorksheet;
+  };
+};
+
+/**
+ * For each item in `requiredFormatsByHeader`, adds an error for each row cell whose value does not match the regular expression pattern.
+ *
+ * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
+ * @param {IFormatByHeader[]} [requiredFormatsByHeader]
+ * @return {*}  {CSVValidator}
+ */
+export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatByHeader[]): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!requiredFormatsByHeader) {
+      return csvWorksheet;
+    }
+
+    const rows = csvWorksheet.getRows();
+    const headers = csvWorksheet.getHeaders();
+
+    rows.forEach((row, rowIndex) => {
+      for (const formatByHeader of requiredFormatsByHeader) {
+        const columnIndex = headers.indexOf(formatByHeader.header);
+
+        const rowValueForColumn = row[columnIndex].toString();
+        const regex = new RegExp(formatByHeader.reg_exp);
+
+        console.log('rowIndex', rowIndex);
+
+        console.log('rowValueForColumn', rowValueForColumn);
+        console.log('regex', regex);
+
+        // Add an error if the cell value is not in the correct range provided in the array
+
+        if (!regex.test(rowValueForColumn)) {
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Unexpected Format',
+              message: `Date: ${rowValueForColumn}. Date must be formatted as between YYYY-MM-DD`,
+              col: formatByHeader.header,
               row: rowIndex + 2
             }
           ]);
